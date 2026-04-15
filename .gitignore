@@ -1,6 +1,15 @@
 # Build artifacts
+gogs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 .bin/
 dist/
+
+# Dependencies
+vendor/
 
 # Runtime data
 log/
@@ -9,8 +18,11 @@ data/
 
 # Configuration and application files
 .idea/
+.vscode/
 .task/
 .envrc
+.env
 
 # System junk
 .DS_Store
+Thumbs.db
