@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/cockroachdb/errors"
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/osx"
 )
@@ -18,12 +17,22 @@ import (
 //go:embed *.tmpl **/*
 var files embed.FS
 
-// fileSystem implements the macaron.TemplateFileSystem interface.
-type fileSystem struct {
-	files []macaron.TemplateFile
+type TemplateFile struct {
+	name string
+	data []byte
+	ext  string
 }
 
-func (fs *fileSystem) ListFiles() []macaron.TemplateFile {
+func (f *TemplateFile) Name() string { return f.name }
+func (f *TemplateFile) Data() []byte { return f.data }
+func (f *TemplateFile) Ext() string  { return f.ext }
+
+// fileSystem implements a generic TemplateFileSystem interface.
+type fileSystem struct {
+	files []*TemplateFile
+}
+
+func (fs *fileSystem) ListFiles() []*TemplateFile {
 	return fs.files
 }
 
@@ -50,16 +59,16 @@ func mustNames(fsys fs.FS) []string {
 	return names
 }
 
-// NewTemplateFileSystem returns a macaron.TemplateFileSystem instance for embedded assets.
+// NewTemplateFileSystem returns a file system instance for embedded assets.
 // The argument "dir" can be used to serve subset of embedded assets. Template file
 // found under the "customDir" on disk has higher precedence over embedded assets.
-func NewTemplateFileSystem(dir, customDir string) macaron.TemplateFileSystem {
+func NewTemplateFileSystem(dir, customDir string) *fileSystem {
 	if dir != "" && !strings.HasSuffix(dir, "/") {
 		dir += "/"
 	}
 
 	var err error
-	var tmplFiles []macaron.TemplateFile
+	var tmplFiles []*TemplateFile
 	names := mustNames(files)
 	for _, name := range names {
 		if !strings.HasPrefix(name, dir) {
@@ -79,7 +88,11 @@ func NewTemplateFileSystem(dir, customDir string) macaron.TemplateFileSystem {
 		name = strings.TrimPrefix(name, dir)
 		ext := path.Ext(name)
 		name = strings.TrimSuffix(name, ext)
-		tmplFiles = append(tmplFiles, macaron.NewTplFile(name, data, ext))
+		tmplFiles = append(tmplFiles, &TemplateFile{
+			name: name,
+			data: data,
+			ext:  ext,
+		})
 	}
 	return &fileSystem{files: tmplFiles}
 }

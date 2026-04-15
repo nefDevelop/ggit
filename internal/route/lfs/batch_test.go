@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/database"
@@ -118,18 +118,19 @@ func TestServeBatch(t *testing.T) {
 				mockStore = test.mockStore()
 			}
 
-			m := macaron.New()
-			m.Use(func(c *macaron.Context) {
-				c.Map(&database.User{Name: "owner"})
-				c.Map(&database.Repository{Name: "repo"})
+			gin.SetMode(gin.TestMode)
+			r := gin.New()
+			r.Use(func(c *gin.Context) {
+				c.Set("owner", &database.User{Name: "owner"})
+				c.Set("repo", &database.Repository{Name: "repo"})
 			})
-			m.Post("/", serveBatch(mockStore))
+			r.POST("/", serveBatch(mockStore))
 
-			r, err := http.NewRequest(http.MethodPost, "/", bytes.NewBufferString(test.body))
+			req, err := http.NewRequest(http.MethodPost, "/", bytes.NewBufferString(test.body))
 			require.NoError(t, err)
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)

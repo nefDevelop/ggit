@@ -1,18 +1,13 @@
 package mocks
 
 import (
-	"gopkg.in/macaron.v1"
+	"gogs.io/gogs/internal/context"
 )
 
-var _ macaron.Locale = (*Locale)(nil)
+var _ context.Locale = (*Locale)(nil)
 
 type Locale struct {
-	MockLang string
-	MockTr   func(string, ...any) string
-}
-
-func (l *Locale) Language() string {
-	return l.MockLang
+	MockTr func(string, ...any) string
 }
 
 func (l *Locale) Tr(format string, args ...any) string {

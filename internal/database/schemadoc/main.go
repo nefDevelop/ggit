@@ -180,10 +180,8 @@ func generate(dialector gorm.Dialector) ([]*tableInfo, error) {
 				}
 			}
 
-			var indexes []*schema.Index
-			for _, index := range stmt.Schema.ParseIndexes() {
-				indexes = append(indexes, index)
-			}
+			indexes := stmt.Schema.ParseIndexes()
+
 			sort.Slice(indexes, func(i, j int) bool {
 				return indexes[i].Name < indexes[j].Name
 			})

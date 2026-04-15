@@ -2,7 +2,6 @@ package form
 
 import (
 	"github.com/go-macaron/binding"
-	"gopkg.in/macaron.v1"
 )
 
 type Authentication struct {
@@ -40,6 +39,6 @@ type Authentication struct {
 	GitHubAPIEndpoint string `form:"github_api_endpoint" binding:"Url"`
 }
 
-func (f *Authentication) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *Authentication) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }

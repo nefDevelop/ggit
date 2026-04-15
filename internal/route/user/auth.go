@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/cockroachdb/errors"
-	"github.com/go-macaron/captcha"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/auth"
@@ -17,6 +16,7 @@ import (
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/email"
 	"gogs.io/gogs/internal/form"
+	authservice "gogs.io/gogs/internal/services/auth"
 	"gogs.io/gogs/internal/tool"
 	"gogs.io/gogs/internal/urlx"
 	"gogs.io/gogs/internal/userx"
@@ -162,7 +162,11 @@ func LoginPost(c *context.Context, f form.SignIn) {
 		return
 	}
 
-	u, err := database.Handle.Users().Authenticate(c.Req.Context(), f.UserName, f.Password, f.LoginSource)
+	u, err := authservice.Auth.Authenticate(c.Req.Context(), authservice.LoginOptions{
+		Username:    f.UserName,
+		Password:    f.Password,
+		LoginSource: f.LoginSource,
+	})
 	if err != nil {
 		switch {
 		case auth.IsErrBadCredentials(err):
@@ -309,7 +313,7 @@ func SignUp(c *context.Context) {
 	c.Success(tmplUserAuthSignup)
 }
 
-func SignUpPost(c *context.Context, cpt *captcha.Captcha, f form.Register) {
+func SignUpPost(c *context.Context, cpt context.Captcha, f form.Register) {
 	c.Title("sign_up")
 
 	c.Data["EnableCaptcha"] = conf.Auth.EnableRegistrationCaptcha
@@ -336,15 +340,11 @@ func SignUpPost(c *context.Context, cpt *captcha.Captcha, f form.Register) {
 		return
 	}
 
-	user, err := database.Handle.Users().Create(
-		c.Req.Context(),
-		f.UserName,
-		f.Email,
-		database.CreateUserOptions{
-			Password:  f.Password,
-			Activated: !conf.Auth.RequireEmailConfirmation,
-		},
-	)
+	user, err := authservice.Auth.Register(c.Req.Context(), authservice.SignupOptions{
+		Username: f.UserName,
+		Email:    f.Email,
+		Password: f.Password,
+	})
 	if err != nil {
 		switch {
 		case database.IsErrUserAlreadyExist(err):
@@ -357,37 +357,13 @@ func SignUpPost(c *context.Context, cpt *captcha.Captcha, f form.Register) {
 			c.FormErr("UserName")
 			c.RenderWithErr(c.Tr("user.form.name_not_allowed", err.(database.ErrNameNotAllowed).Value()), http.StatusBadRequest, tmplUserAuthSignup, &f)
 		default:
-			c.Error(err, "create user")
+			c.Error(err, "register user")
 		}
 		return
 	}
 	log.Trace("Account created: %s", user.Name)
 
-	// FIXME: Count has pretty bad performance implication in large instances, we
-	// should have a dedicate method to check whether the "user" table is empty.
-	//
-	// Auto-set admin for the only user.
-	if database.Handle.Users().Count(c.Req.Context()) == 1 {
-		v := true
-		err := database.Handle.Users().Update(
-			c.Req.Context(),
-			user.ID,
-			database.UpdateUserOptions{
-				IsActivated: &v,
-				IsAdmin:     &v,
-			},
-		)
-		if err != nil {
-			c.Error(err, "update user")
-			return
-		}
-	}
-
-	// Send confirmation email.
-	if conf.Auth.RequireEmailConfirmation && user.ID > 1 {
-		if err := email.SendActivateAccountMail(c.Context, database.NewMailerUser(user)); err != nil {
-			log.Error("Failed to send activate account mail: %v", err)
-		}
+	if !user.IsActive && conf.Auth.RequireEmailConfirmation && user.ID > 1 {
 		c.Data["IsSendRegisterMail"] = true
 		c.Data["Email"] = user.Email
 		c.Data["Hours"] = conf.Auth.ActivateCodeLives / 60
@@ -471,7 +447,7 @@ func Activate(c *context.Context) {
 				c.Data["ResendLimited"] = true
 			} else {
 				c.Data["Hours"] = conf.Auth.ActivateCodeLives / 60
-				if err := email.SendActivateAccountMail(c.Context, database.NewMailerUser(c.User)); err != nil {
+				if err := email.SendActivateAccountMail(database.NewMailerUser(c.User), c.Tr("mail.activate_account")); err != nil {
 					log.Error("Failed to send activate account mail: %v", err)
 				}
 
@@ -583,7 +559,7 @@ func ForgotPasswdPost(c *context.Context) {
 		return
 	}
 
-	if err = email.SendResetPasswordMail(c.Context, database.NewMailerUser(u)); err != nil {
+	if err = email.SendResetPasswordMail(database.NewMailerUser(u), c.Tr("mail.reset_password")); err != nil {
 		log.Error("Failed to send reset password mail: %v", err)
 	}
 	if err = c.Cache.Put(userx.MailResendCacheKey(u.ID), 1, 180); err != nil {

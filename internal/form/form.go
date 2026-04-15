@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-macaron/binding"
 	"github.com/unknwon/com"
-	"gopkg.in/macaron.v1"
 
+	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/lazyregexp"
 )
 
@@ -34,6 +34,11 @@ func init() {
 
 type Form interface {
 	binding.Validator
+}
+
+type ValidationContext interface {
+	GetData() map[string]any
+	GetLocale() context.Locale
 }
 
 // Assign assign form values back to the template data.
@@ -86,7 +91,7 @@ func getInclude(field reflect.StructField) string {
 	return getRuleBody(field, "Include(")
 }
 
-func validate(errs binding.Errors, data map[string]any, f Form, l macaron.Locale) binding.Errors {
+func validate(errs binding.Errors, data map[string]any, f Form, l context.Locale) binding.Errors {
 	if errs.Len() == 0 {
 		return errs
 	}

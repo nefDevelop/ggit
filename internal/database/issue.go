@@ -768,37 +768,7 @@ func NewIssue(repo *Repository, issue *Issue, labelIDs []int64, uuids []string) 
 		return errors.Newf("new issue: %v", err)
 	}
 
-	if err = sess.Commit(); err != nil {
-		return errors.Newf("commit: %v", err)
-	}
-
-	if err = NotifyWatchers(&Action{
-		ActUserID:    issue.Poster.ID,
-		ActUserName:  issue.Poster.Name,
-		OpType:       ActionCreateIssue,
-		Content:      fmt.Sprintf("%d|%s", issue.Index, issue.Title),
-		RepoID:       repo.ID,
-		RepoUserName: repo.Owner.Name,
-		RepoName:     repo.Name,
-		IsPrivate:    repo.IsPrivate,
-	}); err != nil {
-		log.Error("NotifyWatchers: %v", err)
-	}
-	if err = issue.MailParticipants(); err != nil {
-		log.Error("MailParticipants: %v", err)
-	}
-
-	if err = PrepareWebhooks(repo, HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
-		Action:     apiv1types.WebhookIssueOpened,
-		Index:      issue.Index,
-		Issue:      issue.APIFormat(),
-		Repository: repo.APIFormatLegacy(nil),
-		Sender:     issue.Poster.APIFormat(),
-	}); err != nil {
-		log.Error("PrepareWebhooks: %v", err)
-	}
-
-	return nil
+	return sess.Commit()
 }
 
 var _ errx.NotFound = (*ErrIssueNotExist)(nil)

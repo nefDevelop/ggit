@@ -15,6 +15,11 @@ func listIssueLabels(c *context.APIContext) {
 		return
 	}
 
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
+		return
+	}
+
 	apiLabels := make([]*types.IssueLabel, len(issue.Labels))
 	for i := range issue.Labels {
 		apiLabels[i] = toIssueLabel(issue.Labels[i])
@@ -30,6 +35,11 @@ func addIssueLabels(c *context.APIContext, form issueLabelsRequest) {
 	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, c.ParamsInt64(":index"))
 	if err != nil {
 		c.NotFoundOrError(err, "get issue by index")
+		return
+	}
+
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
 		return
 	}
 
@@ -64,6 +74,11 @@ func deleteIssueLabel(c *context.APIContext) {
 		return
 	}
 
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
+		return
+	}
+
 	label, err := database.GetLabelOfRepoByID(c.Repo.Repository.ID, c.ParamsInt64(":id"))
 	if err != nil {
 		if database.IsErrLabelNotExist(err) {
@@ -86,6 +101,11 @@ func replaceIssueLabels(c *context.APIContext, form issueLabelsRequest) {
 	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, c.ParamsInt64(":index"))
 	if err != nil {
 		c.NotFoundOrError(err, "get issue by index")
+		return
+	}
+
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
 		return
 	}
 
@@ -117,6 +137,11 @@ func clearIssueLabels(c *context.APIContext) {
 	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, c.ParamsInt64(":index"))
 	if err != nil {
 		c.NotFoundOrError(err, "get issue by index")
+		return
+	}
+
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
 		return
 	}
 

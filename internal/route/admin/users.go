@@ -106,7 +106,7 @@ func NewUserPost(c *context.Context, f form.AdminCrateUser) {
 
 	// Send email notification.
 	if f.SendNotify && conf.Email.Enabled {
-		if err := email.SendRegisterNotifyMail(c.Context, database.NewMailerUser(user)); err != nil {
+		if err := email.SendRegisterNotifyMail(database.NewMailerUser(user), c.Tr("mail.register_notify")); err != nil {
 			log.Error("Failed to send register notify mail: %v", err)
 		}
 	}

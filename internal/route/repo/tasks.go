@@ -3,14 +3,14 @@ package repo
 import (
 	"net/http"
 
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/cryptox"
 	"gogs.io/gogs/internal/database"
 )
 
-func TriggerTask(c *macaron.Context) {
+func TriggerTask(c *context.Context) {
 	branch := c.Query("branch")
 	pusherID := c.QueryInt64("pusher")
 	secret := c.Query("secret")

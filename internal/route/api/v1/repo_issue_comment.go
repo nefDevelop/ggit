@@ -27,6 +27,11 @@ func listIssueComments(c *context.APIContext) {
 		return
 	}
 
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
+		return
+	}
+
 	comments, err := database.GetCommentsByIssueIDSince(issue.ID, since.Unix())
 	if err != nil {
 		c.Error(err, "get comments by issue ID")
@@ -57,9 +62,12 @@ func listRepoIssueComments(c *context.APIContext) {
 		return
 	}
 
-	apiComments := make([]*types.IssueComment, len(comments))
+	apiComments := make([]*types.IssueComment, 0, len(comments))
 	for i := range comments {
-		apiComments[i] = toIssueComment(comments[i])
+		if comments[i].Issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+			continue
+		}
+		apiComments = append(apiComments, toIssueComment(comments[i]))
 	}
 	c.JSONSuccess(&apiComments)
 }
@@ -72,6 +80,11 @@ func createIssueComment(c *context.APIContext, form createIssueCommentRequest) {
 	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, c.ParamsInt64(":index"))
 	if err != nil {
 		c.Error(err, "get issue by index")
+		return
+	}
+
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
 		return
 	}
 

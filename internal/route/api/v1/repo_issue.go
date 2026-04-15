@@ -10,6 +10,7 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/route/api/v1/types"
+	issueservice "gogs.io/gogs/internal/services/issue"
 )
 
 func queryIssues(c *context.APIContext, opts *database.IssuesOptions) {
@@ -65,6 +66,12 @@ func getIssue(c *context.APIContext) {
 		c.NotFoundOrError(err, "get issue by index")
 		return
 	}
+
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
+		return
+	}
+
 	c.JSONSuccess(toIssue(issue))
 }
 
@@ -104,7 +111,15 @@ func createIssue(c *context.APIContext, form createIssueRequest) {
 		form.Labels = nil
 	}
 
-	if err := database.NewIssue(c.Repo.Repository, issue, form.Labels, nil); err != nil {
+	if err := issueservice.Issues.CreateIssue(c.Req.Context(), c.Repo.Repository, issue, issueservice.CreateIssueOptions{
+		RepoID:      c.Repo.Repository.ID,
+		PosterID:    c.User.ID,
+		Title:       form.Title,
+		Content:     form.Body,
+		MilestoneID: form.Milestone,
+		AssigneeID:  issue.AssigneeID,
+		LabelIDs:    form.Labels,
+	}); err != nil {
 		c.Error(err, "new issue")
 		return
 	}
@@ -138,6 +153,11 @@ func editIssue(c *context.APIContext, form editIssueRequest) {
 	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, c.ParamsInt64(":index"))
 	if err != nil {
 		c.NotFoundOrError(err, "get issue by index")
+		return
+	}
+
+	if issue.IsPull && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
 		return
 	}
 

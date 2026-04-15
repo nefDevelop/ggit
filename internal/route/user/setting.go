@@ -13,7 +13,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/auth"
@@ -280,7 +280,7 @@ func SettingsEmailPost(c *context.Context, f form.AddEmail) {
 
 	// Send confirmation email
 	if conf.Auth.RequireEmailConfirmation {
-		if err := email.SendActivateEmailMail(c.Context, database.NewMailerUser(c.User), f.Email); err != nil {
+		if err := email.SendActivateEmailMail(database.NewMailerUser(c.User), f.Email, c.Tr("mail.activate_email")); err != nil {
 			log.Error("Failed to send activate email mail: %v", err)
 		}
 
@@ -589,8 +589,7 @@ func SettingsLeaveOrganization(c *context.Context) {
 	})
 }
 
-func (h *SettingsHandler) Applications() macaron.Handler {
-	return func(c *context.Context) {
+func (h *SettingsHandler) Applications(c *context.Context) {
 		c.Title("settings.applications")
 		c.PageIs("SettingsApplications")
 
@@ -601,12 +600,10 @@ func (h *SettingsHandler) Applications() macaron.Handler {
 		}
 		c.Data["Tokens"] = tokens
 
-		c.Success(tmplUserSettingsApplications)
 	}
 }
 
-func (h *SettingsHandler) ApplicationsPost() macaron.Handler {
-	return func(c *context.Context, f form.NewAccessToken) {
+func (h *SettingsHandler) ApplicationsPost(c *context.Context, f form.NewAccessToken) {
 		c.Title("settings.applications")
 		c.PageIs("SettingsApplications")
 
@@ -635,12 +632,10 @@ func (h *SettingsHandler) ApplicationsPost() macaron.Handler {
 
 		c.Flash.Success(c.Tr("settings.generate_token_succees"))
 		c.Flash.Info(t.Sha1)
-		c.RedirectSubpath("/user/settings/applications")
 	}
 }
 
-func (h *SettingsHandler) DeleteApplication() macaron.Handler {
-	return func(c *context.Context) {
+func (h *SettingsHandler) DeleteApplication(c *context.Context) {
 		if err := h.store.DeleteAccessTokenByID(c.Req.Context(), c.User.ID, c.QueryInt64("id")); err != nil {
 			c.Flash.Error("DeleteAccessTokenByID: " + err.Error())
 		} else {
@@ -649,7 +644,6 @@ func (h *SettingsHandler) DeleteApplication() macaron.Handler {
 
 		c.JSONSuccess(map[string]any{
 			"redirect": conf.Server.Subpath + "/user/settings/applications",
-		})
 	}
 }
 

@@ -478,39 +478,7 @@ func NewPullRequest(repo *Repository, pull *Issue, labelIDs []int64, uuids []str
 		return errors.Newf("insert pull repo: %v", err)
 	}
 
-	if err = sess.Commit(); err != nil {
-		return errors.Newf("commit: %v", err)
-	}
-
-	if err = NotifyWatchers(&Action{
-		ActUserID:    pull.Poster.ID,
-		ActUserName:  pull.Poster.Name,
-		OpType:       ActionCreatePullRequest,
-		Content:      fmt.Sprintf("%d|%s", pull.Index, pull.Title),
-		RepoID:       repo.ID,
-		RepoUserName: repo.Owner.Name,
-		RepoName:     repo.Name,
-		IsPrivate:    repo.IsPrivate,
-	}); err != nil {
-		log.Error("NotifyWatchers: %v", err)
-	}
-	if err = pull.MailParticipants(); err != nil {
-		log.Error("MailParticipants: %v", err)
-	}
-
-	pr.Issue = pull
-	pull.PullRequest = pr
-	if err = PrepareWebhooks(repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-		Action:      apiv1types.WebhookIssueOpened,
-		Index:       pull.Index,
-		PullRequest: pr.APIFormat(),
-		Repository:  repo.APIFormatLegacy(nil),
-		Sender:      pull.Poster.APIFormat(),
-	}); err != nil {
-		log.Error("PrepareWebhooks: %v", err)
-	}
-
-	return nil
+	return sess.Commit()
 }
 
 // GetUnmergedPullRequest returns a pull request that is open and has not been merged

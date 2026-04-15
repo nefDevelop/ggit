@@ -5,8 +5,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/database"
@@ -17,19 +17,19 @@ import (
 // regardless of whether the user has access to the repository, or the repository
 // does exist at all. This is particular a workaround for "go get" command which
 // does not respect .netrc file.
-func ServeGoGet() macaron.Handler {
-	return func(c *macaron.Context) {
+func ServeGoGet() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		if c.Query("go-get") != "1" {
 			return
 		}
 
-		ownerName := c.Params(":username")
-		repoName := c.Params(":reponame")
+		ownerName := c.Param("username")
+		repoName := strings.TrimSuffix(c.Param("reponame"), ".git")
 		branchName := "master"
 
-		owner, err := database.Handle.Users().GetByUsername(c.Req.Context(), ownerName)
+		owner, err := database.Handle.Users().GetByUsername(c.Request.Context(), ownerName)
 		if err == nil {
-			repo, err := database.Handle.Repositories().GetByName(c.Req.Context(), owner.ID, repoName)
+			repo, err := database.Handle.Repositories().GetByName(c.Request.Context(), owner.ID, repoName)
 			if err == nil && repo.DefaultBranch != "" {
 				branchName = repo.DefaultBranch
 			}
@@ -40,7 +40,7 @@ func ServeGoGet() macaron.Handler {
 		if !strings.HasPrefix(conf.Server.ExternalURL, "https://") {
 			insecureFlag = "--insecure "
 		}
-		c.PlainText(http.StatusOK, []byte(com.Expand(`<!doctype html>
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(com.Expand(`<!doctype html>
 <html>
 	<head>
 		<meta name="go-import" content="{GoGetImport} git {CloneLink}">
@@ -59,5 +59,6 @@ func ServeGoGet() macaron.Handler {
 				"InsecureFlag":   insecureFlag,
 			},
 		)))
+		c.Abort()
 	}
 }

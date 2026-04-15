@@ -1,10 +1,11 @@
 package app
 
 import (
+	"io"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
 	"github.com/microcosm-cc/bluemonday"
-	"gopkg.in/macaron.v1"
 )
 
 func ipynbSanitizer() *bluemonday.Policy {
@@ -15,16 +16,16 @@ func ipynbSanitizer() *bluemonday.Policy {
 	return p
 }
 
-func SanitizeIpynb() macaron.Handler {
+func SanitizeIpynb() gin.HandlerFunc {
 	p := ipynbSanitizer()
 
-	return func(c *macaron.Context) {
-		html, err := c.Req.Body().String()
+	return func(c *gin.Context) {
+		body, err := io.ReadAll(c.Request.Body)
 		if err != nil {
-			c.Error(http.StatusInternalServerError, "read body")
+			c.String(http.StatusInternalServerError, "read body: %v", err)
 			return
 		}
 
-		c.PlainText(http.StatusOK, []byte(p.Sanitize(html)))
+		c.String(http.StatusOK, p.Sanitize(string(body)))
 	}
 }

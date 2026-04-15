@@ -3,7 +3,7 @@ package context
 import (
 	"strings"
 
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/database"
@@ -40,10 +40,10 @@ func HandleOrgAssignment(c *Context, args ...bool) {
 		requireTeamAdmin = args[3]
 	}
 
-	orgName := c.Params(":org")
+	orgName := c.Param("org")
 
 	var err error
-	c.Org.Organization, err = database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	c.Org.Organization, err = database.Handle.Users().GetByUsername(c.Request.Context(), orgName)
 	if err != nil {
 		c.NotFoundOrError(err, "get organization by name")
 		return
@@ -58,7 +58,7 @@ func HandleOrgAssignment(c *Context, args ...bool) {
 	}
 
 	// Admin has super access.
-	if c.IsLogged && c.User.IsAdmin {
+	if gctx := c; gctx.IsLogged && gctx.User.IsAdmin {
 		c.Org.IsOwner = true
 		c.Org.IsMember = true
 		c.Org.IsTeamMember = true
@@ -103,7 +103,7 @@ func HandleOrgAssignment(c *Context, args ...bool) {
 		}
 	}
 
-	teamName := c.Params(":team")
+	teamName := c.Param("team")
 	if len(teamName) > 0 {
 		teamExists := false
 		for _, team := range org.Teams {
@@ -136,8 +136,9 @@ func HandleOrgAssignment(c *Context, args ...bool) {
 	}
 }
 
-func OrgAssignment(args ...bool) macaron.Handler {
-	return func(c *Context) {
-		HandleOrgAssignment(c, args...)
+func OrgAssignment(args ...bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
+		HandleOrgAssignment(gctx, args...)
 	}
 }

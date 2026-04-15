@@ -16,6 +16,7 @@ import (
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/form"
 	"gogs.io/gogs/internal/gitx"
+	issueservice "gogs.io/gogs/internal/services/issue"
 )
 
 const (
@@ -743,11 +744,24 @@ func CompareAndPullRequestPost(c *context.Context, f form.NewIssue) {
 	}
 	// FIXME: check error in the case two people send pull request at almost same time, give nice error prompt
 	// instead of 500.
-	if err := database.NewPullRequest(repo, pullIssue, labelIDs, attachments, pullRequest, patch); err != nil {
+	if err := issueservice.Issues.CreatePullRequest(c.Req.Context(), repo, pullIssue, pullRequest, issueservice.CreatePullRequestOptions{
+		CreateIssueOptions: issueservice.CreateIssueOptions{
+			RepoID:      repo.ID,
+			PosterID:    c.User.ID,
+			Title:       f.Title,
+			Content:     f.Content,
+			MilestoneID: milestoneID,
+			AssigneeID:  assigneeID,
+			LabelIDs:    labelIDs,
+			Attachments: attachments,
+		},
+		HeadRepoID: headRepo.ID,
+		BaseRepoID: repo.ID,
+		HeadBranch: headRef,
+		BaseBranch: baseRef,
+		Patch:      patch,
+	}); err != nil {
 		c.Error(err, "new pull request")
-		return
-	} else if err := pullRequest.PushToBaseRepo(); err != nil {
-		c.Error(err, "push to base repository")
 		return
 	}
 

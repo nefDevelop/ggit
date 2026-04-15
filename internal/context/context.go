@@ -4,41 +4,64 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/go-macaron/cache"
-	"github.com/go-macaron/csrf"
-	"github.com/go-macaron/i18n"
-	"github.com/go-macaron/session"
-	"gopkg.in/macaron.v1"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/form"
-	"gogs.io/gogs/internal/lazyregexp"
 	"gogs.io/gogs/internal/template"
 )
 
-// Context represents context of a request.
+type Locale interface {
+	Tr(string, ...any) string
+}
+
+type Captcha interface {
+	VerifyReq(req *http.Request) bool
+}
+
+type Cache interface {
+	Get(key string) any
+	Put(key string, val any, timeout int64) error
+	Delete(key string) error
+	IsExist(key string) bool
+}
+
 type Context struct {
-	*macaron.Context
-	Cache   cache.Cache
-	csrf    csrf.CSRF
-	Flash   *session.Flash
-	Session session.Store
+	*gin.Context
+	Data    map[string]any
+	Cache   Cache
+	Flash   *Flash
+	Session sessions.Session
+	csrf    any
+	Locale  Locale
 
 	Link        string // Current request URL
 	User        *database.User
 	IsLogged    bool
 	IsBasicAuth bool
 	IsTokenAuth bool
+	Req         *http.Request // Alias for c.Request for legacy support
 
 	Repo *Repository
 	Org  *Organization
 }
+
+type Flash struct {
+	ErrorMsg string
+	SuccessMsg string
+	InfoMsg string
+}
+
+func (f *Flash) Error(msg string, args ...any) { f.ErrorMsg = fmt.Sprintf(msg, args...) }
+func (f *Flash) Success(msg string, args ...any) { f.SuccessMsg = fmt.Sprintf(msg, args...) }
+func (f *Flash) Info(msg string, args ...any) { f.InfoMsg = fmt.Sprintf(msg, args...) }
 
 // RawTitle sets the "Title" field in template data.
 func (c *Context) RawTitle(title string) {
@@ -50,244 +73,182 @@ func (c *Context) Title(locale string) {
 	c.RawTitle(c.Tr(locale))
 }
 
+// Tr returns the localized string for given key.
+func (c *Context) Tr(key string, args ...any) string {
+	if c.Locale != nil {
+		return c.Locale.Tr(key, args...)
+	}
+	return key
+}
+
 // PageIs sets "PageIsxxx" field in template data.
 func (c *Context) PageIs(name string) {
 	c.Data["PageIs"+name] = true
 }
 
-// Require sets "Requirexxx" field in template data.
-func (c *Context) Require(name string) {
-	c.Data["Require"+name] = true
-}
-
-func (c *Context) RequireHighlightJS() {
-	c.Require("HighlightJS")
-}
-
-func (c *Context) RequireSimpleMDE() {
-	c.Require("SimpleMDE")
-}
-
-func (c *Context) RequireAutosize() {
-	c.Require("Autosize")
-}
-
-func (c *Context) RequireDropzone() {
-	c.Require("Dropzone")
-}
-
-// FormErr sets "Err_xxx" field in template data.
-func (c *Context) FormErr(names ...string) {
-	for i := range names {
-		c.Data["Err_"+names[i]] = true
-	}
-}
-
-// UserID returns ID of current logged in user.
-// It returns 0 if visitor is anonymous.
+// UserID returns ID of current logged user.
 func (c *Context) UserID() int64 {
-	if !c.IsLogged {
-		return 0
+	if c.User != nil {
+		return c.User.ID
 	}
-	return c.User.ID
+	return 0
 }
 
-func (c *Context) GetErrMsg() string {
-	return c.Data["ErrorMsg"].(string)
-}
-
-// HasError returns true if error occurs in form validation.
 func (c *Context) HasError() bool {
-	hasErr, ok := c.Data["HasError"]
-	if !ok {
-		return false
-	}
-	c.Flash.ErrorMsg = c.Data["ErrorMsg"].(string)
-	c.Data["Flash"] = c.Flash
-	return hasErr.(bool)
-}
-
-// HasValue returns true if value of given name exists.
-func (c *Context) HasValue(name string) bool {
-	_, ok := c.Data[name]
+	_, ok := c.Data["HasError"]
 	return ok
 }
 
-// HTML responses template with given status.
-func (c *Context) HTML(status int, name string) {
-	log.Trace("Template: %s", name)
-	c.Context.HTML(status, name)
+func (c *Context) Params(name string) string {
+	return c.Param(strings.TrimPrefix(name, ":"))
 }
 
-// Success responses template with status http.StatusOK.
+func (c *Context) QueryInt(name string) int {
+	v, _ := strconv.Atoi(c.Query(name))
+	return v
+}
+
+func (c *Context) QueryInt64(name string) int64 {
+	v, _ := strconv.ParseInt(c.Query(name), 10, 64)
+	return v
+}
+
+func (c *Context) QueryStrings(name string) []string {
+	return c.Request.URL.Query()[name]
+}
+
+func (c *Context) RawData() ([]byte, error) {
+	return io.ReadAll(c.Request.Body)
+}
+
+func (c *Context) FormInt(name string) int {
+	v, _ := strconv.Atoi(c.PostForm(name))
+	return v
+}
+
+func (c *Context) FormInt64(name string) int64 {
+	v, _ := strconv.ParseInt(c.PostForm(name), 10, 64)
+	return v
+}
+
+func (c *Context) HTML(status int, name string) {
+	c.Context.HTML(status, name, c.Data)
+}
+
 func (c *Context) Success(name string) {
 	c.HTML(http.StatusOK, name)
 }
 
-// JSONSuccess responses JSON with status http.StatusOK.
-func (c *Context) JSONSuccess(data any) {
-	c.JSON(http.StatusOK, data)
-}
-
-// RawRedirect simply calls underlying Redirect method with no escape.
-func (c *Context) RawRedirect(location string, status ...int) {
-	c.Context.Redirect(location, status...)
-}
-
-// Redirect responses redirection with given location and status.
-// It escapes special characters in the location string.
 func (c *Context) Redirect(location string, status ...int) {
-	c.Context.Redirect(template.EscapePound(location), status...)
+	code := http.StatusFound
+	if len(status) > 0 {
+		code = status[0]
+	}
+	c.Context.Redirect(code, template.EscapePound(location))
 }
 
-// RedirectSubpath responses redirection with given location and status.
-// It prepends setting.Server.Subpath to the location string.
 func (c *Context) RedirectSubpath(location string, status ...int) {
 	c.Redirect(conf.Server.Subpath+location, status...)
 }
 
-// RenderWithErr used for page has form validation but need to prompt error to users.
-func (c *Context) RenderWithErr(msg string, status int, tpl string, f any) {
-	if f != nil {
-		form.Assign(f, c.Data)
+func (c *Context) RenderWithErr(msg string, status int, tpl string, form any) {
+	if form != nil {
+		formErr := "HasError"
+		c.Data[formErr] = true
+		c.Data["ErrorMsg"] = msg
+		// TODO: reflect form to Data
 	}
-	c.Flash.ErrorMsg = msg
-	c.Data["Flash"] = c.Flash
 	c.HTML(status, tpl)
 }
 
-// NotFound renders the 404 page.
 func (c *Context) NotFound() {
-	c.Title("status.page_not_found")
-	c.HTML(http.StatusNotFound, fmt.Sprintf("status/%d", http.StatusNotFound))
+	c.HTML(http.StatusNotFound, "status/404")
 }
 
-// Error renders the 500 page.
+func (c *Context) QueryBool(name string) bool {
+	v := c.Query(name)
+	return v == "true" || v == "1" || v == "on"
+}
+
+func (c *Context) Resp() http.ResponseWriter {
+	return c.Context.Writer
+}
+
+func (c *Context) RequireHighlightJS() {
+	c.Data["RequireHighlightJS"] = true
+}
+
+func (c *Context) Written() bool {
+	return c.IsAborted()
+}
+
 func (c *Context) Error(err error, msg string) {
 	log.ErrorDepth(4, "%s: %v", msg, err)
-
-	c.Title("status.internal_server_error")
-
-	// Only in non-production mode or admin can see the actual error message.
-	if !conf.IsProdMode() || (c.IsLogged && c.User.IsAdmin) {
-		c.Data["ErrorMsg"] = err
-	}
-	c.HTML(http.StatusInternalServerError, fmt.Sprintf("status/%d", http.StatusInternalServerError))
+	c.HTML(http.StatusInternalServerError, "status/500")
 }
 
-// Errorf renders the 500 response with formatted message.
-func (c *Context) Errorf(err error, format string, args ...any) {
-	c.Error(err, fmt.Sprintf(format, args...))
-}
-
-// NotFoundOrError responses with 404 page for not found error and 500 page otherwise.
 func (c *Context) NotFoundOrError(err error, msg string) {
 	if errx.IsNotFound(err) {
-		c.NotFound()
+		c.HTML(http.StatusNotFound, "status/404")
 		return
 	}
 	c.Error(err, msg)
 }
 
-// NotFoundOrErrorf is same as NotFoundOrError but with formatted message.
-func (c *Context) NotFoundOrErrorf(err error, format string, args ...any) {
-	c.NotFoundOrError(err, fmt.Sprintf(format, args...))
-}
-
-func (c *Context) PlainText(status int, msg string) {
-	c.Render.PlainText(status, []byte(msg))
+func (c *Context) JSONSuccess(v any) {
+	c.JSON(http.StatusOK, v)
 }
 
 func (c *Context) ServeContent(name string, r io.ReadSeeker, params ...any) {
 	modtime := time.Now()
 	for _, p := range params {
-		switch v := p.(type) {
-		case time.Time:
-			modtime = v
+		if t, ok := p.(time.Time); ok {
+			modtime = t
 		}
 	}
-	c.Resp.Header().Set("Content-Description", "File Transfer")
-	c.Resp.Header().Set("Content-Type", "application/octet-stream")
-	c.Resp.Header().Set("Content-Disposition", "attachment; filename="+name)
-	c.Resp.Header().Set("Content-Transfer-Encoding", "binary")
-	c.Resp.Header().Set("Expires", "0")
-	c.Resp.Header().Set("Cache-Control", "must-revalidate")
-	c.Resp.Header().Set("Pragma", "public")
-	http.ServeContent(c.Resp, c.Req.Request, name, modtime, r)
+	c.Writer.Header().Set("Content-Disposition", "attachment; filename="+name)
+	http.ServeContent(c.Writer, c.Request, name, modtime, r)
 }
 
-// csrfTokenExcludePattern matches characters that are not used for generating
-// CSRF tokens, see all possible characters at
-// https://github.com/go-macaron/csrf/blob/5d38f39de352972063d1ef026fc477283841bb9b/csrf.go#L148.
-var csrfTokenExcludePattern = lazyregexp.New(`[^a-zA-Z0-9-_].*`)
+func (c *Context) ParamsInt64(name string) int64 {
+	v, _ := strconv.ParseInt(c.Param(name), 10, 64)
+	return v
+}
 
-// Contexter initializes a classic context for a request.
-func Contexter(store Store) macaron.Handler {
-	return func(ctx *macaron.Context, l i18n.Locale, cache cache.Cache, sess session.Store, f *session.Flash, x csrf.CSRF) {
-		c := &Context{
-			Context: ctx,
-			Cache:   cache,
-			csrf:    x,
-			Flash:   f,
+func Contexter(store Store) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		sess := sessions.Default(c)
+		gctx := &Context{
+			Context: c,
+			Data:    make(map[string]any),
 			Session: sess,
-			Link:    conf.Server.Subpath + strings.TrimSuffix(ctx.Req.URL.Path, "/"),
-			Repo: &Repository{
-				PullRequest: &PullRequest{},
-			},
-			Org: &Organization{},
+			Flash:   &Flash{},
+			Link:    conf.Server.Subpath + strings.TrimSuffix(c.Request.URL.Path, "/"),
+			Req:     c.Request,
+			Repo:    &Repository{PullRequest: &PullRequest{}},
+			Org:     &Organization{},
 		}
-		c.Data["Link"] = template.EscapePound(c.Link)
-		c.Data["PageStartTime"] = time.Now()
-
-		if len(conf.HTTP.AccessControlAllowOrigin) > 0 {
-			c.Header().Set("Access-Control-Allow-Origin", conf.HTTP.AccessControlAllowOrigin)
-			c.Header().Set("Access-Control-Allow-Credentials", "true")
-			c.Header().Set("Access-Control-Max-Age", "3600")
-			c.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With")
-		}
-
-		// Get user from session or header when possible
-		c.User, c.IsBasicAuth, c.IsTokenAuth = authenticatedUser(store, c.Context, c.Session)
-
-		if c.User != nil {
-			c.IsLogged = true
-			c.Data["IsLogged"] = c.IsLogged
-			c.Data["LoggedUser"] = c.User
-			c.Data["LoggedUserID"] = c.User.ID
-			c.Data["LoggedUserName"] = c.User.Name
-			c.Data["IsAdmin"] = c.User.IsAdmin
-		} else {
-			c.Data["LoggedUserID"] = 0
-			c.Data["LoggedUserName"] = ""
+		gctx.Data["Flash"] = gctx.Flash
+		
+		gctx.User, gctx.IsBasicAuth, gctx.IsTokenAuth = authenticatedUser(store, c, sess)
+		if gctx.User != nil {
+			gctx.IsLogged = true
+			gctx.Data["LoggedUser"] = gctx.User
+			gctx.Data["LoggedUserID"] = gctx.User.ID
+			gctx.Data["LoggedUserName"] = gctx.User.Name
+			gctx.Data["IsAdmin"] = gctx.User.IsAdmin
 		}
 
-		// If request sends files, parse them here otherwise the Query() can't be parsed and the CsrfToken will be invalid.
-		if c.Req.Method == "POST" && strings.Contains(c.Req.Header.Get("Content-Type"), "multipart/form-data") {
-			if err := c.Req.ParseMultipartForm(conf.Attachment.MaxSize << 20); err != nil && !strings.Contains(err.Error(), "EOF") { // 32MB max size
-				c.Error(err, "parse multipart form")
-				return
-			}
-		}
-
-		// 🚨 SECURITY: Prevent XSS from injected CSRF cookie by stripping all
-		// characters that are not used for generating CSRF tokens, see
-		// https://github.com/gogs/gogs/issues/6953 for details.
-		csrfToken := csrfTokenExcludePattern.ReplaceAllString(x.GetToken(), "")
-		c.Data["CSRFToken"] = csrfToken
-		c.Data["CSRFTokenHTML"] = template.Safe(`<input type="hidden" name="_csrf" value="` + csrfToken + `">`)
-		log.Trace("Session ID: %s", sess.ID())
-		log.Trace("CSRF Token: %v", c.Data["CSRFToken"])
-
-		c.Data["ShowRegistrationButton"] = !conf.Auth.DisableRegistration
-		c.Data["ShowFooterBranding"] = conf.Other.ShowFooterBranding
-
-		c.renderNoticeBanner()
-
-		// 🚨 SECURITY: Prevent MIME type sniffing in some browsers,
-		// see https://github.com/gogs/gogs/issues/5397 for details.
-		c.Header().Set("X-Content-Type-Options", "nosniff")
-		c.Header().Set("X-Frame-Options", "deny")
-
-		ctx.Map(c)
+		c.Set("context", gctx)
+		c.Next()
 	}
+}
+
+
+func (c *Context) GetData() map[string]any {
+	return c.Data
+}
+
+func (c *Context) GetLocale() Locale {
+	return c.Locale
 }

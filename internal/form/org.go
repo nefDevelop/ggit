@@ -2,15 +2,14 @@ package form
 
 import (
 	"github.com/go-macaron/binding"
-	"gopkg.in/macaron.v1"
 )
 
 type CreateOrg struct {
 	OrgName string `binding:"Required;AlphaDashDot;MaxSize(35)" locale:"org.org_name_holder"`
 }
 
-func (f *CreateOrg) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *CreateOrg) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type UpdateOrgSetting struct {
@@ -22,8 +21,8 @@ type UpdateOrgSetting struct {
 	MaxRepoCreation int
 }
 
-func (f *UpdateOrgSetting) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *UpdateOrgSetting) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type CreateTeam struct {
@@ -32,6 +31,6 @@ type CreateTeam struct {
 	Permission  string
 }
 
-func (f *CreateTeam) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *CreateTeam) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }

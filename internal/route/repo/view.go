@@ -169,13 +169,9 @@ func renderFile(c *context.Context, entry *git.TreeEntry, treeLink, rawLink stri
 			}
 
 			var output bytes.Buffer
-			lines := strings.Split(fileContent, "\n")
-			// Remove blank line at the end of file
-			if len(lines) > 0 && lines[len(lines)-1] == "" {
-				lines = lines[:len(lines)-1]
-			}
+			lines := highlight.Code(blob.Name(), fileContent)
 			for index, line := range lines {
-				output.WriteString(fmt.Sprintf(`<li class="L%d" rel="L%d">%s</li>`, index+1, index+1, gotemplate.HTMLEscapeString(strings.TrimRight(line, "\r"))) + "\n")
+				output.WriteString(fmt.Sprintf(`<li class="L%d" rel="L%d">%s</li>`, index+1, index+1, strings.TrimRight(line, "\r")) + "\n")
 			}
 			c.Data["FileContent"] = gotemplate.HTML(output.String())
 

@@ -1,19 +1,21 @@
 package email
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"net/mail"
+	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/cockroachdb/errors"
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/templates"
+	"gogs.io/gogs/internal/osx"
 )
 
 const (
@@ -29,46 +31,63 @@ const (
 )
 
 var (
-	tplRender     *macaron.TplRender
+	tplRender     *template.Template
 	tplRenderOnce sync.Once
 )
 
 // render renders a mail template with given data.
 func render(tpl string, data map[string]any) (string, error) {
 	tplRenderOnce.Do(func() {
-		customDir := filepath.Join(conf.CustomDir(), "templates")
-		opt := &macaron.RenderOptions{
-			Directory:         filepath.Join(conf.WorkDir(), "templates", "mail"),
-			AppendDirectories: []string{filepath.Join(customDir, "mail")},
-			Extensions:        []string{".tmpl", ".html"},
-			Funcs: []template.FuncMap{map[string]any{
-				"AppName": func() string {
-					return conf.App.BrandName
-				},
-				"AppURL": func() string {
-					return conf.Server.ExternalURL
-				},
-				"Year": func() int {
-					return time.Now().Year()
-				},
-				"Str2HTML": func(raw string) template.HTML {
-					return template.HTML(markup.Sanitize(raw))
-				},
-			}},
-		}
-		if !conf.Server.LoadAssetsFromDisk {
-			opt.TemplateFileSystem = templates.NewTemplateFileSystem("mail", customDir)
+		tplRender = template.New("mail").Funcs(template.FuncMap{
+			"AppName": func() string {
+				return conf.App.BrandName
+			},
+			"AppURL": func() string {
+				return conf.Server.ExternalURL
+			},
+			"Year": func() int {
+				return time.Now().Year()
+			},
+			"Str2HTML": func(raw string) template.HTML {
+				return template.HTML(markup.Sanitize(raw))
+			},
+		})
+
+		customDir := filepath.Join(conf.CustomDir(), "templates", "mail")
+		workDir := filepath.Join(conf.WorkDir(), "templates", "mail")
+
+		loadTemplates := func(root string) {
+			_ = filepath.Walk(root, func(p string, info os.FileInfo, err error) error {
+				if err != nil || info.IsDir() || !strings.HasSuffix(p, ".tmpl") {
+					return nil
+				}
+				
+				rel, _ := filepath.Rel(root, p)
+				name := rel[:len(rel)-len(".tmpl")]
+				name = filepath.ToSlash(name)
+
+				data, err := os.ReadFile(p)
+				if err != nil {
+					return nil
+				}
+				
+				_, _ = tplRender.New(name).Parse(string(data))
+				return nil
+			})
 		}
 
-		ts := macaron.NewTemplateSet()
-		ts.Set(macaron.DEFAULT_TPL_SET_NAME, opt)
-		tplRender = &macaron.TplRender{
-			TemplateSet: ts,
-			Opt:         opt,
+		// Load from work dir first, then override with custom dir
+		loadTemplates(workDir)
+		if osx.IsDir(customDir) {
+			loadTemplates(customDir)
 		}
 	})
 
-	return tplRender.HTMLString(tpl, data)
+	var buf bytes.Buffer
+	if err := tplRender.ExecuteTemplate(&buf, tpl, data); err != nil {
+		return "", errors.Wrap(err, "execute template")
+	}
+	return buf.String(), nil
 }
 
 func SendTestMail(email string) error {
@@ -102,7 +121,7 @@ type Issue interface {
 	HTMLURL() string
 }
 
-func SendUserMail(_ *macaron.Context, u User, tpl, code, subject, info string) error {
+func SendUserMail(u User, tpl, code, subject, info string) error {
 	data := map[string]any{
 		"Username":          u.DisplayName(),
 		"ActiveCodeLives":   conf.Auth.ActivateCodeLives / 60,
@@ -124,15 +143,15 @@ func SendUserMail(_ *macaron.Context, u User, tpl, code, subject, info string) e
 	return nil
 }
 
-func SendActivateAccountMail(c *macaron.Context, u User) error {
-	return SendUserMail(c, u, tmplAuthActivate, u.GenerateEmailActivateCode(u.Email()), c.Tr("mail.activate_account"), "activate account")
+func SendActivateAccountMail(u User, subject string) error {
+	return SendUserMail(u, tmplAuthActivate, u.GenerateEmailActivateCode(u.Email()), subject, "activate account")
 }
 
-func SendResetPasswordMail(c *macaron.Context, u User) error {
-	return SendUserMail(c, u, tmplAuthResetPassword, u.GenerateEmailActivateCode(u.Email()), c.Tr("mail.reset_password"), "reset password")
+func SendResetPasswordMail(u User, subject string) error {
+	return SendUserMail(u, tmplAuthResetPassword, u.GenerateEmailActivateCode(u.Email()), subject, "reset password")
 }
 
-func SendActivateEmailMail(c *macaron.Context, u User, email string) error {
+func SendActivateEmailMail(u User, email string, subject string) error {
 	data := map[string]any{
 		"Username":        u.DisplayName(),
 		"ActiveCodeLives": conf.Auth.ActivateCodeLives / 60,
@@ -144,7 +163,7 @@ func SendActivateEmailMail(c *macaron.Context, u User, email string) error {
 		return errors.Wrap(err, "render")
 	}
 
-	msg, err := newMessage([]string{email}, c.Tr("mail.activate_email"), body)
+	msg, err := newMessage([]string{email}, subject, body)
 	if err != nil {
 		return errors.Wrap(err, "new message")
 	}
@@ -154,7 +173,7 @@ func SendActivateEmailMail(c *macaron.Context, u User, email string) error {
 	return nil
 }
 
-func SendRegisterNotifyMail(c *macaron.Context, u User) error {
+func SendRegisterNotifyMail(u User, subject string) error {
 	data := map[string]any{
 		"Username": u.DisplayName(),
 	}
@@ -163,7 +182,7 @@ func SendRegisterNotifyMail(c *macaron.Context, u User) error {
 		return errors.Wrap(err, "render")
 	}
 
-	msg, err := newMessage([]string{u.Email()}, c.Tr("mail.register_notify"), body)
+	msg, err := newMessage([]string{u.Email()}, subject, body)
 	if err != nil {
 		return errors.Wrap(err, "new message")
 	}

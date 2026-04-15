@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/auth"
 	"gogs.io/gogs/internal/database"
@@ -127,20 +127,21 @@ func TestAuthenticate(t *testing.T) {
 				test.mockStore = NewMockStore
 			}
 
-			m := macaron.New()
-			m.Use(macaron.Renderer())
-			m.Get("/", authenticate(test.mockStore()), func(w http.ResponseWriter, user *database.User) {
-				_, _ = fmt.Fprintf(w, "ID: %d, Name: %s", user.ID, user.Name)
+			gin.SetMode(gin.TestMode)
+			r := gin.New()
+			r.GET("/", authenticate(test.mockStore()), func(c *gin.Context) {
+				user := c.MustGet("actor").(*database.User)
+				_, _ = fmt.Fprintf(c.Writer, "ID: %d, Name: %s", user.ID, user.Name)
 			})
 
-			r, err := http.NewRequest("GET", "/", nil)
+			req, err := http.NewRequest("GET", "/", nil)
 			if err != nil {
 				t.Fatal(err)
 			}
-			r.Header = test.header
+			req.Header = test.header
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)
@@ -232,26 +233,28 @@ func TestAuthorize(t *testing.T) {
 				mockStore = test.mockStore()
 			}
 
-			m := macaron.New()
-			m.Use(macaron.Renderer())
-			m.Use(func(c *macaron.Context) {
-				c.Map(&database.User{})
+			gin.SetMode(gin.TestMode)
+			r := gin.New()
+			r.Use(func(c *gin.Context) {
+				c.Set("actor", &database.User{})
 			})
-			m.Get(
+			r.GET(
 				"/:username/:reponame",
 				authorize(mockStore, test.accessMode),
-				func(w http.ResponseWriter, owner *database.User, repo *database.Repository) {
-					_, _ = fmt.Fprintf(w, "owner.Name: %s, repo.Name: %s", owner.Name, repo.Name)
+				func(c *gin.Context) {
+					owner := c.MustGet("owner").(*database.User)
+					repo := c.MustGet("repo").(*database.Repository)
+					_, _ = fmt.Fprintf(c.Writer, "owner.Name: %s, repo.Name: %s", owner.Name, repo.Name)
 				},
 			)
 
-			r, err := http.NewRequest("GET", "/owner/repo", nil)
+			req, err := http.NewRequest("GET", "/owner/repo", nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)
@@ -268,7 +271,7 @@ func TestAuthorize(t *testing.T) {
 func Test_verifyHeader(t *testing.T) {
 	tests := []struct {
 		name          string
-		verifyHeader  macaron.Handler
+		verifyHeader  gin.HandlerFunc
 		header        http.Header
 		expStatusCode int
 	}{
@@ -289,18 +292,18 @@ func Test_verifyHeader(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			m := macaron.New()
-			m.Use(macaron.Renderer())
-			m.Get("/", test.verifyHeader)
+			gin.SetMode(gin.TestMode)
+			r := gin.New()
+			r.GET("/", test.verifyHeader)
 
-			r, err := http.NewRequest("GET", "/", nil)
+			req, err := http.NewRequest("GET", "/", nil)
 			if err != nil {
 				t.Fatal(err)
 			}
-			r.Header = test.header
+			req.Header = test.header
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)
@@ -309,9 +312,11 @@ func Test_verifyHeader(t *testing.T) {
 }
 
 func Test_verifyOID(t *testing.T) {
-	m := macaron.New()
-	m.Get("/:oid", verifyOID(), func(w http.ResponseWriter, oid lfsx.OID) {
-		fmt.Fprintf(w, "oid: %s", oid)
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.GET("/:oid", verifyOID(), func(c *gin.Context) {
+		oid := c.MustGet("oid").(lfsx.OID)
+		fmt.Fprintf(c.Writer, "oid: %s", oid)
 	})
 
 	tests := []struct {
@@ -336,13 +341,13 @@ func Test_verifyOID(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			r, err := http.NewRequest("GET", test.url, nil)
+			req, err := http.NewRequest("GET", test.url, nil)
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)

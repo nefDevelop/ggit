@@ -1,71 +1,21 @@
 package highlight
 
 import (
+	"bytes"
 	"path"
 	"strings"
 
+	"github.com/alecthomas/chroma/v2"
+	"github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
+	"github.com/go-enry/go-enry/v2"
 	"gogs.io/gogs/internal/conf"
 )
 
-var (
-	// File name should ignore highlight.
-	ignoreFileNames = map[string]bool{
-		"license": true,
-		"copying": true,
-	}
-
-	// File names that are representing highlight classes.
-	highlightFileNames = map[string]bool{
-		"cmakelists.txt": true,
-		"dockerfile":     true,
-		"makefile":       true,
-	}
-
-	// Extensions that are same as highlight classes.
-	highlightExts = map[string]bool{
-		".arm":    true,
-		".as":     true,
-		".sh":     true,
-		".cs":     true,
-		".cpp":    true,
-		".c":      true,
-		".css":    true,
-		".cmake":  true,
-		".bat":    true,
-		".dart":   true,
-		".patch":  true,
-		".elixir": true,
-		".erlang": true,
-		".go":     true,
-		".html":   true,
-		".xml":    true,
-		".hs":     true,
-		".ini":    true,
-		".json":   true,
-		".java":   true,
-		".js":     true,
-		".less":   true,
-		".lua":    true,
-		".php":    true,
-		".py":     true,
-		".rb":     true,
-		".scss":   true,
-		".sql":    true,
-		".scala":  true,
-		".swift":  true,
-		".ts":     true,
-		".vb":     true,
-		".r":      true,
-		".sas":    true,
-		".tex":    true,
-		".yaml":   true,
-	}
-
-	// Extensions that are not same as highlight classes.
-	highlightMapping = map[string]string{
-		".txt": "nohighlight",
-	}
-)
+var highlightMapping = map[string]string{
+	".txt": "nohighlight",
+}
 
 func NewContext() {
 	keys := conf.File.Section("highlight.mapping").Keys()
@@ -74,27 +24,57 @@ func NewContext() {
 	}
 }
 
-// FileNameToHighlightClass returns the best match for highlight class name
-// based on the rule of highlight.js.
+// FileNameToHighlightClass returns the best match for highlight class name.
 func FileNameToHighlightClass(fname string) string {
 	fname = strings.ToLower(fname)
-	if ignoreFileNames[fname] {
-		return "nohighlight"
-	}
-
-	if highlightFileNames[fname] {
-		return fname
-	}
-
 	ext := path.Ext(fname)
-	if highlightExts[ext] {
-		return ext[1:]
-	}
-
-	name, ok := highlightMapping[ext]
-	if ok {
+	if name, ok := highlightMapping[ext]; ok {
 		return name
 	}
-
+	lang, _ := enry.GetLanguageByExtension(fname)
+	if lang != "" {
+		return strings.ToLower(lang)
+	}
 	return ""
+}
+
+// Code returns the highlighted HTML lines using Chroma.
+func Code(fileName, code string) []string {
+	lang := enry.GetLanguage(fileName, []byte(code))
+	if lang == "" {
+		lang = "fallback"
+	}
+
+	lexer := lexers.Get(lang)
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+	lexer = chroma.Coalesce(lexer)
+
+	style := styles.Get("github")
+	if style == nil {
+		style = styles.Fallback
+	}
+
+	formatter := html.New(html.WithClasses(false), html.PreventSurroundingPre(true))
+	iterator, err := lexer.Tokenise(nil, code)
+	if err != nil {
+		return splitLines(code)
+	}
+
+	var buf bytes.Buffer
+	err = formatter.Format(&buf, style, iterator)
+	if err != nil {
+		return splitLines(code)
+	}
+
+	return splitLines(buf.String())
+}
+
+func splitLines(s string) []string {
+	lines := strings.Split(s, "\n")
+	if len(lines) > 0 && lines[len(lines)-1] == "" {
+		lines = lines[:len(lines)-1]
+	}
+	return lines
 }

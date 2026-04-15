@@ -8,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/lfsx"
@@ -46,13 +46,13 @@ func TestBasicHandler_serveDownload(t *testing.T) {
 		},
 	}
 
-	m := macaron.New()
-	m.Use(macaron.Renderer())
-	m.Use(func(c *macaron.Context) {
-		c.Map(&database.Repository{Name: "repo"})
-		c.Map(lfsx.OID("ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f"))
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.Use(func(c *gin.Context) {
+		c.Set("repo", &database.Repository{Name: "repo"})
+		c.Set("oid", lfsx.OID("ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f"))
 	})
-	m.Get("/", basic.serveDownload)
+	r.GET("/", basic.serveDownload)
 
 	tests := []struct {
 		name          string
@@ -117,11 +117,11 @@ func TestBasicHandler_serveDownload(t *testing.T) {
 
 			s.buf = bytes.NewBufferString(test.content)
 
-			r, err := http.NewRequest(http.MethodGet, "/", nil)
+			req, err := http.NewRequest(http.MethodGet, "/", nil)
 			require.NoError(t, err)
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)
@@ -143,13 +143,13 @@ func TestBasicHandler_serveUpload(t *testing.T) {
 		},
 	}
 
-	m := macaron.New()
-	m.Use(macaron.Renderer())
-	m.Use(func(c *macaron.Context) {
-		c.Map(&database.Repository{Name: "repo"})
-		c.Map(lfsx.OID("ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f"))
+	gin.SetMode(gin.TestMode)
+	r_upload := gin.New()
+	r_upload.Use(func(c *gin.Context) {
+		c.Set("repo", &database.Repository{Name: "repo"})
+		c.Set("oid", lfsx.OID("ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f"))
 	})
-	m.Put("/", basic.serveUpload)
+	r_upload.PUT("/", basic.serveUpload)
 
 	tests := []struct {
 		name          string
@@ -180,11 +180,11 @@ func TestBasicHandler_serveUpload(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			basic.store = test.mockStore()
 
-			r, err := http.NewRequest("PUT", "/", strings.NewReader("Hello world!"))
+			req, err := http.NewRequest("PUT", "/", strings.NewReader("Hello world!"))
 			require.NoError(t, err)
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r_upload.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)
@@ -199,12 +199,12 @@ func TestBasicHandler_serveUpload(t *testing.T) {
 func TestBasicHandler_serveVerify(t *testing.T) {
 	basic := &basicHandler{}
 
-	m := macaron.New()
-	m.Use(macaron.Renderer())
-	m.Use(func(c *macaron.Context) {
-		c.Map(&database.Repository{Name: "repo"})
+	gin.SetMode(gin.TestMode)
+	r_verify := gin.New()
+	r_verify.Use(func(c *gin.Context) {
+		c.Set("repo", &database.Repository{Name: "repo"})
 	})
-	m.Post("/", basic.serveVerify)
+	r_verify.POST("/", basic.serveVerify)
 
 	tests := []struct {
 		name          string
@@ -259,11 +259,11 @@ func TestBasicHandler_serveVerify(t *testing.T) {
 				basic.store = test.mockStore()
 			}
 
-			r, err := http.NewRequest("POST", "/", strings.NewReader(test.body))
+			req, err := http.NewRequest("POST", "/", strings.NewReader(test.body))
 			require.NoError(t, err)
 
 			rr := httptest.NewRecorder()
-			m.ServeHTTP(rr, r)
+			r_verify.ServeHTTP(rr, req)
 
 			resp := rr.Result()
 			assert.Equal(t, test.expStatusCode, resp.StatusCode)

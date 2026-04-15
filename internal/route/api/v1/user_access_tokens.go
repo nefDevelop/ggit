@@ -4,7 +4,6 @@ import (
 	gocontext "context"
 	"net/http"
 
-	"gopkg.in/macaron.v1"
 
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
@@ -24,45 +23,41 @@ func newAccessTokensHandler(s AccessTokensStore) *accessTokensHandler {
 	}
 }
 
-func (h *accessTokensHandler) List() macaron.Handler {
-	return func(c *context.APIContext) {
-		tokens, err := h.store.ListAccessTokens(c.Req.Context(), c.User.ID)
-		if err != nil {
-			c.Error(err, "list access tokens")
-			return
-		}
-
-		apiTokens := make([]*types.UserAccessToken, len(tokens))
-		for i := range tokens {
-			apiTokens[i] = &types.UserAccessToken{
-				Name: tokens[i].Name,
-				Sha1: tokens[i].Sha1,
-			}
-		}
-		c.JSONSuccess(&apiTokens)
+func (h *accessTokensHandler) List(c *context.APIContext) {
+	tokens, err := h.store.ListAccessTokens(c.Req.Context(), c.User.ID)
+	if err != nil {
+		c.Error(err, "list access tokens")
+		return
 	}
+
+	apiTokens := make([]*types.UserAccessToken, len(tokens))
+	for i := range tokens {
+		apiTokens[i] = &types.UserAccessToken{
+			Name: tokens[i].Name,
+			Sha1: tokens[i].Sha1,
+		}
+	}
+	c.JSONSuccess(&apiTokens)
 }
 
 type createAccessTokenRequest struct {
 	Name string `json:"name" binding:"Required"`
 }
 
-func (h *accessTokensHandler) Create() macaron.Handler {
-	return func(c *context.APIContext, form createAccessTokenRequest) {
-		t, err := h.store.CreateAccessToken(c.Req.Context(), c.User.ID, form.Name)
-		if err != nil {
-			if database.IsErrAccessTokenAlreadyExist(err) {
-				c.ErrorStatus(http.StatusUnprocessableEntity, err)
-			} else {
-				c.Error(err, "new access token")
-			}
-			return
+func (h *accessTokensHandler) Create(c *context.APIContext, form createAccessTokenRequest) {
+	t, err := h.store.CreateAccessToken(c.Req.Context(), c.User.ID, form.Name)
+	if err != nil {
+		if database.IsErrAccessTokenAlreadyExist(err) {
+			c.ErrorStatus(http.StatusUnprocessableEntity, err)
+		} else {
+			c.Error(err, "new access token")
 		}
-		c.JSON(http.StatusCreated, &types.UserAccessToken{
-			Name: t.Name,
-			Sha1: t.Sha1,
-		})
+		return
 	}
+	c.JSON(http.StatusCreated, &types.UserAccessToken{
+		Name: t.Name,
+		Sha1: t.Sha1,
+	})
 }
 
 // AccessTokensStore is the data layer carrier for user access tokens API

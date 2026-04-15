@@ -11,6 +11,7 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/form"
+	"gogs.io/gogs/internal/services/repo"
 	"gogs.io/gogs/internal/route/api/v1/types"
 )
 
@@ -168,22 +169,22 @@ type createRepoRequest struct {
 }
 
 func createUserRepo(c *context.APIContext, owner *database.User, opt createRepoRequest) {
-	repo, err := database.CreateRepository(c.User, owner, database.CreateRepoOptionsLegacy{
+	repository, err := repo.Repos.Create(c.Req.Context(), c.User, owner, repo.CreateOptions{
 		Name:        opt.Name,
 		Description: opt.Description,
+		IsPrivate:   opt.Private,
+		AutoInit:    opt.AutoInit,
 		Gitignores:  opt.Gitignores,
 		License:     opt.License,
 		Readme:      opt.Readme,
-		IsPrivate:   opt.Private,
-		AutoInit:    opt.AutoInit,
 	})
 	if err != nil {
 		if database.IsErrRepoAlreadyExist(err) ||
 			database.IsErrNameNotAllowed(err) {
 			c.ErrorStatus(http.StatusUnprocessableEntity, err)
 		} else {
-			if repo != nil {
-				if err = database.DeleteRepository(c.User.ID, repo.ID); err != nil {
+			if repository != nil {
+				if err = database.DeleteRepository(c.User.ID, repository.ID); err != nil {
 					log.Error("Failed to delete repository: %v", err)
 				}
 			}
@@ -192,7 +193,7 @@ func createUserRepo(c *context.APIContext, owner *database.User, opt createRepoR
 		return
 	}
 
-	c.JSON(201, toRepository(repo, &types.RepositoryPermission{Admin: true, Push: true, Pull: true}))
+	c.JSON(201, toRepository(repository, &types.RepositoryPermission{Admin: true, Push: true, Pull: true}))
 }
 
 func createRepo(c *context.APIContext, opt createRepoRequest) {

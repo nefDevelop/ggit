@@ -8,7 +8,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/editorconfig/editorconfig-core-go/v2"
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 
 	"github.com/gogs/git-module"
 
@@ -47,32 +47,16 @@ type Repository struct {
 	PullRequest *PullRequest
 }
 
-// IsOwner returns true if current user is the owner of repository.
-func (r *Repository) IsOwner() bool {
-	return r.AccessMode >= database.AccessModeOwner
-}
+// ... helper methods (IsOwner, IsAdmin, etc.) same as before ...
+func (r *Repository) IsOwner() bool { return r.AccessMode >= database.AccessModeOwner }
+func (r *Repository) IsAdmin() bool { return r.AccessMode >= database.AccessModeAdmin }
+func (r *Repository) IsWriter() bool { return r.AccessMode >= database.AccessModeWrite }
+func (r *Repository) HasAccess() bool { return r.AccessMode >= database.AccessModeRead }
 
-// IsAdmin returns true if current user has admin or higher access of repository.
-func (r *Repository) IsAdmin() bool {
-	return r.AccessMode >= database.AccessModeAdmin
-}
-
-// IsWriter returns true if current user has write or higher access of repository.
-func (r *Repository) IsWriter() bool {
-	return r.AccessMode >= database.AccessModeWrite
-}
-
-// HasAccess returns true if the current user has at least read access for this repository
-func (r *Repository) HasAccess() bool {
-	return r.AccessMode >= database.AccessModeRead
-}
-
-// CanEnableEditor returns true if repository is editable and user has proper access level.
 func (r *Repository) CanEnableEditor() bool {
 	return r.Repository.CanEnableEditor() && r.IsViewBranch && r.IsWriter() && !r.Repository.IsBranchRequirePullRequest(r.BranchName)
 }
 
-// Editorconfig returns the ".editorconfig" definition if found in the HEAD of the default branch.
 func (r *Repository) Editorconfig() (*editorconfig.Editorconfig, error) {
 	commit, err := r.GitRepo.BranchCommit(r.Repository.DefaultBranch)
 	if err != nil {
@@ -91,7 +75,6 @@ func (r *Repository) Editorconfig() (*editorconfig.Editorconfig, error) {
 	return editorconfig.Parse(bytes.NewReader(p))
 }
 
-// MakeURL accepts a string or url.URL as argument and returns escaped URL prepended with repository URL.
 func (r *Repository) MakeURL(location any) string {
 	switch location := location.(type) {
 	case string:
@@ -107,8 +90,6 @@ func (r *Repository) MakeURL(location any) string {
 	}
 }
 
-// PullRequestURL returns URL for composing a pull request.
-// This function does not check if the repository can actually compose a pull request.
 func (r *Repository) PullRequestURL(baseBranch, headBranch string) string {
 	repoLink := r.RepoLink
 	if r.PullRequest.BaseRepo != nil {
@@ -117,9 +98,9 @@ func (r *Repository) PullRequestURL(baseBranch, headBranch string) string {
 	return fmt.Sprintf("%s/compare/%s...%s:%s", repoLink, baseBranch, r.Owner.Name, headBranch)
 }
 
-// [0]: issues, [1]: wiki
-func RepoAssignment(pages ...bool) macaron.Handler {
-	return func(c *Context) {
+func RepoAssignment(pages ...bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
 		var (
 			owner        *database.User
 			err          error
@@ -134,40 +115,40 @@ func RepoAssignment(pages ...bool) macaron.Handler {
 			isWikiPage = pages[1]
 		}
 
-		ownerName := c.Params(":username")
-		repoName := strings.TrimSuffix(c.Params(":reponame"), ".git")
+		ownerName := c.Param("username")
+		repoName := strings.TrimSuffix(c.Param("reponame"), ".git")
 
 		// Check if the user is the same as the repository owner
-		if c.IsLogged && c.User.LowerName == strings.ToLower(ownerName) {
-			owner = c.User
+		if gctx.IsLogged && gctx.User.LowerName == strings.ToLower(ownerName) {
+			owner = gctx.User
 		} else {
-			owner, err = database.Handle.Users().GetByUsername(c.Req.Context(), ownerName)
+			owner, err = database.Handle.Users().GetByUsername(c.Request.Context(), ownerName)
 			if err != nil {
-				c.NotFoundOrError(err, "get user by name")
+				gctx.NotFoundOrError(err, "get user by name")
 				return
 			}
 		}
-		c.Repo.Owner = owner
-		c.Data["Username"] = c.Repo.Owner.Name
+		gctx.Repo.Owner = owner
+		gctx.Data["Username"] = gctx.Repo.Owner.Name
 
 		repo, err := database.GetRepositoryByName(owner.ID, repoName)
 		if err != nil {
-			c.NotFoundOrError(err, "get repository by name")
+			gctx.NotFoundOrError(err, "get repository by name")
 			return
 		}
 
-		c.Repo.Repository = repo
-		c.Data["RepoName"] = c.Repo.Repository.Name
-		c.Data["IsBareRepo"] = c.Repo.Repository.IsBare
-		c.Repo.RepoLink = repo.Link()
-		c.Data["RepoLink"] = c.Repo.RepoLink
-		c.Data["RepoRelPath"] = c.Repo.Owner.Name + "/" + c.Repo.Repository.Name
+		gctx.Repo.Repository = repo
+		gctx.Data["RepoName"] = gctx.Repo.Repository.Name
+		gctx.Data["IsBareRepo"] = gctx.Repo.Repository.IsBare
+		gctx.Repo.RepoLink = repo.Link()
+		gctx.Data["RepoLink"] = gctx.Repo.RepoLink
+		gctx.Data["RepoRelPath"] = gctx.Repo.Owner.Name + "/" + gctx.Repo.Repository.Name
 
 		// Admin has super access
-		if c.IsLogged && c.User.IsAdmin {
-			c.Repo.AccessMode = database.AccessModeOwner
+		if gctx.IsLogged && gctx.User.IsAdmin {
+			gctx.Repo.AccessMode = database.AccessModeOwner
 		} else {
-			c.Repo.AccessMode = database.Handle.Permissions().AccessMode(c.Req.Context(), c.UserID(), repo.ID,
+			gctx.Repo.AccessMode = database.Handle.Permissions().AccessMode(c.Request.Context(), gctx.UserID(), repo.ID,
 				database.AccessModeOptions{
 					OwnerID: repo.OwnerID,
 					Private: repo.IsPrivate,
@@ -175,12 +156,9 @@ func RepoAssignment(pages ...bool) macaron.Handler {
 			)
 		}
 
-		// If the authenticated user has no direct access, see if the repository is a fork
-		// and whether the user has access to the base repository.
-		if c.Repo.AccessMode == database.AccessModeNone && repo.BaseRepo != nil {
+		if gctx.Repo.AccessMode == database.AccessModeNone && repo.BaseRepo != nil {
 			mode := min(
-				// Users shouldn't have indirect access level higher than write.
-				database.Handle.Permissions().AccessMode(c.Req.Context(), c.UserID(), repo.BaseRepo.ID,
+				database.Handle.Permissions().AccessMode(c.Request.Context(), gctx.UserID(), repo.BaseRepo.ID,
 					database.AccessModeOptions{
 						OwnerID: repo.BaseRepo.OwnerID,
 						Private: repo.BaseRepo.IsPrivate,
@@ -188,117 +166,110 @@ func RepoAssignment(pages ...bool) macaron.Handler {
 				),
 				database.AccessModeWrite,
 			)
-			c.Repo.AccessMode = mode
+			gctx.Repo.AccessMode = mode
 		}
 
-		// Check access
-		if c.Repo.AccessMode == database.AccessModeNone {
-			// Redirect to any accessible page if not yet on it
+		if gctx.Repo.AccessMode == database.AccessModeNone {
 			if repo.IsPartialPublic() &&
 				(!(isIssuesPage || isWikiPage) ||
 					(isIssuesPage && !repo.CanGuestViewIssues()) ||
 					(isWikiPage && !repo.CanGuestViewWiki())) {
 				switch {
 				case repo.CanGuestViewIssues():
-					c.Redirect(repo.Link() + "/issues")
+					gctx.Redirect(repo.Link() + "/issues")
 				case repo.CanGuestViewWiki():
-					c.Redirect(repo.Link() + "/wiki")
+					gctx.Redirect(repo.Link() + "/wiki")
 				default:
-					c.NotFound()
+					gctx.NotFound()
 				}
 				return
 			}
 
-			// Response 404 if user is on completely private repository or possible accessible page but owner doesn't enabled
 			if !repo.IsPartialPublic() ||
 				(isIssuesPage && !repo.CanGuestViewIssues()) ||
 				(isWikiPage && !repo.CanGuestViewWiki()) {
-				c.NotFound()
+				gctx.NotFound()
 				return
 			}
 
-			c.Repo.Repository.EnableIssues = repo.CanGuestViewIssues()
-			c.Repo.Repository.EnableWiki = repo.CanGuestViewWiki()
+			gctx.Repo.Repository.EnableIssues = repo.CanGuestViewIssues()
+			gctx.Repo.Repository.EnableWiki = repo.CanGuestViewWiki()
 		}
 
 		if repo.IsMirror {
-			c.Repo.Mirror, err = database.GetMirrorByRepoID(repo.ID)
+			gctx.Repo.Mirror, err = database.GetMirrorByRepoID(repo.ID)
 			if err != nil {
-				c.Error(err, "get mirror by repository ID")
+				gctx.Error(err, "get mirror by repository ID")
 				return
 			}
-			c.Data["MirrorEnablePrune"] = c.Repo.Mirror.EnablePrune
-			c.Data["MirrorInterval"] = c.Repo.Mirror.Interval
-			c.Data["Mirror"] = c.Repo.Mirror
+			gctx.Data["MirrorEnablePrune"] = gctx.Repo.Mirror.EnablePrune
+			gctx.Data["MirrorInterval"] = gctx.Repo.Mirror.Interval
+			gctx.Data["Mirror"] = gctx.Repo.Mirror
 		}
 
 		gitRepo, err := git.Open(database.RepoPath(ownerName, repoName))
 		if err != nil {
-			c.Error(err, "open repository")
+			gctx.Error(err, "open repository")
 			return
 		}
-		c.Repo.GitRepo = gitRepo
+		gctx.Repo.GitRepo = gitRepo
 
-		tags, err := c.Repo.GitRepo.Tags()
+		tags, err := gctx.Repo.GitRepo.Tags()
 		if err != nil {
-			c.Error(err, "get tags")
+			gctx.Error(err, "get tags")
 			return
 		}
-		c.Data["Tags"] = tags
-		c.Repo.Repository.NumTags = len(tags)
+		gctx.Data["Tags"] = tags
+		gctx.Repo.Repository.NumTags = len(tags)
 
-		c.Data["Title"] = owner.Name + "/" + repo.Name
-		c.Data["Repository"] = repo
-		c.Data["Owner"] = c.Repo.Repository.Owner
-		c.Data["IsRepositoryOwner"] = c.Repo.IsOwner()
-		c.Data["IsRepositoryAdmin"] = c.Repo.IsAdmin()
-		c.Data["IsRepositoryWriter"] = c.Repo.IsWriter()
+		gctx.Data["Title"] = owner.Name + "/" + repo.Name
+		gctx.Data["Repository"] = repo
+		gctx.Data["Owner"] = gctx.Repo.Repository.Owner
+		gctx.Data["IsRepositoryOwner"] = gctx.Repo.IsOwner()
+		gctx.Data["IsRepositoryAdmin"] = gctx.Repo.IsAdmin()
+		gctx.Data["IsRepositoryWriter"] = gctx.Repo.IsWriter()
 
-		c.Data["DisableSSH"] = conf.SSH.Disabled
-		c.Data["DisableHTTP"] = conf.Repository.DisableHTTPGit
-		c.Data["CloneLink"] = repo.CloneLink()
-		c.Data["WikiCloneLink"] = repo.WikiCloneLink()
+		gctx.Data["DisableSSH"] = conf.SSH.Disabled
+		gctx.Data["DisableHTTP"] = conf.Repository.DisableHTTPGit
+		gctx.Data["CloneLink"] = repo.CloneLink()
+		gctx.Data["WikiCloneLink"] = repo.WikiCloneLink()
 
-		if c.IsLogged {
-			c.Data["IsWatchingRepo"] = database.IsWatching(c.User.ID, repo.ID)
-			c.Data["IsStaringRepo"] = database.IsStaring(c.User.ID, repo.ID)
+		if gctx.IsLogged {
+			gctx.Data["IsWatchingRepo"] = database.IsWatching(gctx.User.ID, repo.ID)
+			gctx.Data["IsStaringRepo"] = database.IsStaring(gctx.User.ID, repo.ID)
 		}
 
-		// repo is bare and display enable
-		if c.Repo.Repository.IsBare {
+		if gctx.Repo.Repository.IsBare {
 			return
 		}
 
-		c.Data["TagName"] = c.Repo.TagName
-		branches, err := c.Repo.GitRepo.Branches()
+		gctx.Data["TagName"] = gctx.Repo.TagName
+		branches, err := gctx.Repo.GitRepo.Branches()
 		if err != nil {
-			c.Error(err, "get branches")
+			gctx.Error(err, "get branches")
 			return
 		}
-		c.Data["Branches"] = branches
-		c.Data["BranchCount"] = len(branches)
+		gctx.Data["Branches"] = branches
+		gctx.Data["BranchCount"] = len(branches)
 
-		// If not branch selected, try default one.
-		// If default branch doesn't exists, fall back to some other branch.
-		if c.Repo.BranchName == "" {
-			if len(c.Repo.Repository.DefaultBranch) > 0 && gitRepo.HasBranch(c.Repo.Repository.DefaultBranch) {
-				c.Repo.BranchName = c.Repo.Repository.DefaultBranch
+		if gctx.Repo.BranchName == "" {
+			if len(gctx.Repo.Repository.DefaultBranch) > 0 && gitRepo.HasBranch(gctx.Repo.Repository.DefaultBranch) {
+				gctx.Repo.BranchName = gctx.Repo.Repository.DefaultBranch
 			} else if len(branches) > 0 {
-				c.Repo.BranchName = branches[0]
+				gctx.Repo.BranchName = branches[0]
 			}
 		}
-		c.Data["BranchName"] = c.Repo.BranchName
-		c.Data["CommitID"] = c.Repo.CommitID
+		gctx.Data["BranchName"] = gctx.Repo.BranchName
+		gctx.Data["CommitID"] = gctx.Repo.CommitID
 
-		c.Data["IsGuest"] = !c.Repo.HasAccess()
+		gctx.Data["IsGuest"] = !gctx.Repo.HasAccess()
 	}
 }
 
-// RepoRef handles repository reference name including those contain `/`.
-func RepoRef() macaron.Handler {
-	return func(c *Context) {
-		// Empty repository does not have reference information.
-		if c.Repo.Repository.IsBare {
+func RepoRef() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
+		if gctx.Repo.Repository.IsBare {
 			return
 		}
 
@@ -307,45 +278,50 @@ func RepoRef() macaron.Handler {
 			err     error
 		)
 
-		// For API calls.
-		if c.Repo.GitRepo == nil {
-			repoPath := database.RepoPath(c.Repo.Owner.Name, c.Repo.Repository.Name)
-			c.Repo.GitRepo, err = git.Open(repoPath)
+		if gctx.Repo.GitRepo == nil {
+			repoPath := database.RepoPath(gctx.Repo.Owner.Name, gctx.Repo.Repository.Name)
+			gctx.Repo.GitRepo, err = git.Open(repoPath)
 			if err != nil {
-				c.Error(err, "open repository")
+				gctx.Error(err, "open repository")
 				return
 			}
 		}
 
-		// Get default branch.
-		if c.Params("*") == "" {
-			refName = c.Repo.Repository.DefaultBranch
-			if !c.Repo.GitRepo.HasBranch(refName) {
-				branches, err := c.Repo.GitRepo.Branches()
+		// In Gin, the "*" parameter is named differently depending on the route.
+		// We'll assume the param name matches the wildcard in the route.
+		path := c.Param("path")
+		if path == "" {
+			path = c.Param("*")
+		}
+
+		if path == "" {
+			refName = gctx.Repo.Repository.DefaultBranch
+			if !gctx.Repo.GitRepo.HasBranch(refName) {
+				branches, err := gctx.Repo.GitRepo.Branches()
 				if err != nil {
-					c.Error(err, "get branches")
+					gctx.Error(err, "get branches")
 					return
 				}
 				refName = branches[0]
 			}
-			c.Repo.Commit, err = c.Repo.GitRepo.BranchCommit(refName)
+			gctx.Repo.Commit, err = gctx.Repo.GitRepo.BranchCommit(refName)
 			if err != nil {
-				c.Error(err, "get branch commit")
+				gctx.Error(err, "get branch commit")
 				return
 			}
-			c.Repo.CommitID = c.Repo.Commit.ID.String()
-			c.Repo.IsViewBranch = true
+			gctx.Repo.CommitID = gctx.Repo.Commit.ID.String()
+			gctx.Repo.IsViewBranch = true
 
 		} else {
 			hasMatched := false
-			parts := strings.Split(c.Params("*"), "/")
+			parts := strings.Split(path, "/")
 			for i, part := range parts {
 				refName = strings.TrimPrefix(refName+"/"+part, "/")
 
-				if c.Repo.GitRepo.HasBranch(refName) ||
-					c.Repo.GitRepo.HasTag(refName) {
+				if gctx.Repo.GitRepo.HasBranch(refName) ||
+					gctx.Repo.GitRepo.HasTag(refName) {
 					if i < len(parts)-1 {
-						c.Repo.TreePath = strings.Join(parts[i+1:], "/")
+						gctx.Repo.TreePath = strings.Join(parts[i+1:], "/")
 					}
 					hasMatched = true
 					break
@@ -353,108 +329,109 @@ func RepoRef() macaron.Handler {
 			}
 			if !hasMatched && len(parts[0]) == 40 {
 				refName = parts[0]
-				c.Repo.TreePath = strings.Join(parts[1:], "/")
+				gctx.Repo.TreePath = strings.Join(parts[1:], "/")
 			}
 
-			if c.Repo.GitRepo.HasBranch(refName) {
-				c.Repo.IsViewBranch = true
-
-				c.Repo.Commit, err = c.Repo.GitRepo.BranchCommit(refName)
+			if gctx.Repo.GitRepo.HasBranch(refName) {
+				gctx.Repo.IsViewBranch = true
+				gctx.Repo.Commit, err = gctx.Repo.GitRepo.BranchCommit(refName)
 				if err != nil {
-					c.Error(err, "get branch commit")
+					gctx.Error(err, "get branch commit")
 					return
 				}
-				c.Repo.CommitID = c.Repo.Commit.ID.String()
+				gctx.Repo.CommitID = gctx.Repo.Commit.ID.String()
 
-			} else if c.Repo.GitRepo.HasTag(refName) {
-				c.Repo.IsViewTag = true
-				c.Repo.Commit, err = c.Repo.GitRepo.TagCommit(refName)
+			} else if gctx.Repo.GitRepo.HasTag(refName) {
+				gctx.Repo.IsViewTag = true
+				gctx.Repo.Commit, err = gctx.Repo.GitRepo.TagCommit(refName)
 				if err != nil {
-					c.Error(err, "get tag commit")
+					gctx.Error(err, "get tag commit")
 					return
 				}
-				c.Repo.CommitID = c.Repo.Commit.ID.String()
+				gctx.Repo.CommitID = gctx.Repo.Commit.ID.String()
 			} else if len(refName) == 40 {
-				c.Repo.IsViewCommit = true
-				c.Repo.CommitID = refName
-
-				c.Repo.Commit, err = c.Repo.GitRepo.CatFileCommit(refName)
+				gctx.Repo.IsViewCommit = true
+				gctx.Repo.CommitID = refName
+				gctx.Repo.Commit, err = gctx.Repo.GitRepo.CatFileCommit(refName)
 				if err != nil {
-					c.NotFound()
+					gctx.NotFound()
 					return
 				}
 			} else {
-				c.NotFound()
+				gctx.NotFound()
 				return
 			}
 		}
 
-		c.Repo.BranchName = refName
-		c.Data["BranchName"] = c.Repo.BranchName
-		c.Data["CommitID"] = c.Repo.CommitID
-		c.Data["TreePath"] = c.Repo.TreePath
-		c.Data["IsViewBranch"] = c.Repo.IsViewBranch
-		c.Data["IsViewTag"] = c.Repo.IsViewTag
-		c.Data["IsViewCommit"] = c.Repo.IsViewCommit
+		gctx.Repo.BranchName = refName
+		gctx.Data["BranchName"] = gctx.Repo.BranchName
+		gctx.Data["CommitID"] = gctx.Repo.CommitID
+		gctx.Data["TreePath"] = gctx.Repo.TreePath
+		gctx.Data["IsViewBranch"] = gctx.Repo.IsViewBranch
+		gctx.Data["IsViewTag"] = gctx.Repo.IsViewTag
+		gctx.Data["IsViewCommit"] = gctx.Repo.IsViewCommit
 
-		// People who have push access or have forked repository can propose a new pull request.
-		if c.Repo.IsWriter() || (c.IsLogged && database.Handle.Repositories().HasForkedBy(c.Req.Context(), c.Repo.Repository.ID, c.User.ID)) {
-			// Pull request is allowed if this is a fork repository
-			// and base repository accepts pull requests.
-			if c.Repo.Repository.BaseRepo != nil {
-				if c.Repo.Repository.BaseRepo.AllowsPulls() {
-					c.Repo.PullRequest.Allowed = true
-					// In-repository pull requests has higher priority than cross-repository if user is viewing
-					// base repository and 1) has write access to it 2) has forked it.
-					if c.Repo.IsWriter() {
-						c.Data["BaseRepo"] = c.Repo.Repository.BaseRepo
-						c.Repo.PullRequest.BaseRepo = c.Repo.Repository.BaseRepo
-						c.Repo.PullRequest.HeadInfo = c.Repo.Owner.Name + ":" + c.Repo.BranchName
+		if gctx.Repo.IsWriter() || (gctx.IsLogged && database.Handle.Repositories().HasForkedBy(c.Request.Context(), gctx.Repo.Repository.ID, gctx.User.ID)) {
+			if gctx.Repo.Repository.BaseRepo != nil {
+				if gctx.Repo.Repository.BaseRepo.AllowsPulls() {
+					gctx.Repo.PullRequest.Allowed = true
+					if gctx.Repo.IsWriter() {
+						gctx.Data["BaseRepo"] = gctx.Repo.Repository.BaseRepo
+						gctx.Repo.PullRequest.BaseRepo = gctx.Repo.Repository.BaseRepo
+						gctx.Repo.PullRequest.HeadInfo = gctx.Repo.Owner.Name + ":" + gctx.Repo.BranchName
 					} else {
-						c.Data["BaseRepo"] = c.Repo.Repository
-						c.Repo.PullRequest.BaseRepo = c.Repo.Repository
-						c.Repo.PullRequest.HeadInfo = c.User.Name + ":" + c.Repo.BranchName
+						gctx.Data["BaseRepo"] = gctx.Repo.Repository
+						gctx.Repo.PullRequest.BaseRepo = gctx.Repo.Repository
+						gctx.Repo.PullRequest.HeadInfo = gctx.User.Name + ":" + gctx.Repo.BranchName
 					}
 				}
 			} else {
-				// Or, this is repository accepts pull requests between branches.
-				if c.Repo.Repository.AllowsPulls() {
-					c.Data["BaseRepo"] = c.Repo.Repository
-					c.Repo.PullRequest.BaseRepo = c.Repo.Repository
-					c.Repo.PullRequest.Allowed = true
-					c.Repo.PullRequest.SameRepo = true
-					c.Repo.PullRequest.HeadInfo = c.Repo.BranchName
+				if gctx.Repo.Repository.AllowsPulls() {
+					gctx.Data["BaseRepo"] = gctx.Repo.Repository
+					gctx.Repo.PullRequest.BaseRepo = gctx.Repo.Repository
+					gctx.Repo.PullRequest.Allowed = true
+					gctx.Repo.PullRequest.SameRepo = true
+					gctx.Repo.PullRequest.HeadInfo = gctx.Repo.BranchName
 				}
 			}
 		}
-		c.Data["PullRequestCtx"] = c.Repo.PullRequest
+		gctx.Data["PullRequestCtx"] = gctx.Repo.PullRequest
 	}
 }
 
-func RequireRepoAdmin() macaron.Handler {
-	return func(c *Context) {
-		if !c.IsLogged || (!c.Repo.IsAdmin() && !c.User.IsAdmin) {
-			c.NotFound()
+func RequireRepoAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
+		if !gctx.IsLogged || (!gctx.Repo.IsAdmin() && !gctx.User.IsAdmin) {
+			gctx.NotFound()
 			return
 		}
 	}
 }
 
-func RequireRepoWriter() macaron.Handler {
-	return func(c *Context) {
-		if !c.IsLogged || (!c.Repo.IsWriter() && !c.User.IsAdmin) {
-			c.NotFound()
+func RequireRepoWriter() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
+		if !gctx.IsLogged || (!gctx.Repo.IsWriter() && !gctx.User.IsAdmin) {
+			gctx.NotFound()
 			return
 		}
 	}
 }
 
-// GitHookService checks if repository Git hooks service has been enabled.
-func GitHookService() macaron.Handler {
-	return func(c *Context) {
-		if !c.User.CanEditGitHook() {
-			c.NotFound()
+func GitHookService() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
+		if !gctx.User.CanEditGitHook() {
+			gctx.NotFound()
 			return
 		}
 	}
+}
+
+func min(a, b database.AccessMode) database.AccessMode {
+	if a < b {
+		return a
+	}
+	return b
 }

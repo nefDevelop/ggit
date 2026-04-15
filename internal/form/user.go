@@ -4,7 +4,6 @@ import (
 	"mime/multipart"
 
 	"github.com/go-macaron/binding"
-	"gopkg.in/macaron.v1"
 )
 
 //nolint:staticcheck // Reason: needed for legacy code
@@ -50,8 +49,8 @@ type Install struct {
 	AdminEmail         string `binding:"OmitEmpty;MinSize(3);MaxSize(254);Include(@)" locale:"install.admin_email"`
 }
 
-func (f *Install) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *Install) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 //    _____   ____ _________________ ___
@@ -68,8 +67,8 @@ type Register struct {
 	Retype   string
 }
 
-func (f *Register) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *Register) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type SignIn struct {
@@ -79,8 +78,8 @@ type SignIn struct {
 	Remember    bool
 }
 
-func (f *SignIn) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *SignIn) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 //   __________________________________________.___ _______    ________  _________
@@ -97,8 +96,8 @@ type UpdateProfile struct {
 	Location string `binding:"MaxSize(50)"`
 }
 
-func (f *UpdateProfile) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *UpdateProfile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 const (
@@ -113,16 +112,16 @@ type Avatar struct {
 	Federavatar bool
 }
 
-func (f *Avatar) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *Avatar) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type AddEmail struct {
 	Email string `binding:"Required;Email;MaxSize(254)"`
 }
 
-func (f *AddEmail) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *AddEmail) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type ChangePassword struct {
@@ -131,8 +130,8 @@ type ChangePassword struct {
 	Retype      string
 }
 
-func (f *ChangePassword) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *ChangePassword) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type AddSSHKey struct {
@@ -140,14 +139,14 @@ type AddSSHKey struct {
 	Content string `binding:"Required"`
 }
 
-func (f *AddSSHKey) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *AddSSHKey) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type NewAccessToken struct {
 	Name string `binding:"Required"`
 }
 
-func (f *NewAccessToken) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *NewAccessToken) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }

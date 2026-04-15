@@ -1,8 +1,7 @@
 package context
 
 import (
-	"gopkg.in/macaron.v1"
-
+	"github.com/gin-gonic/gin"
 	"gogs.io/gogs/internal/database"
 )
 
@@ -13,13 +12,14 @@ type ParamsUser struct {
 
 // InjectParamsUser returns a handler that retrieves target user based on URL parameter ':username',
 // and injects it as *ParamsUser.
-func InjectParamsUser() macaron.Handler {
-	return func(c *Context) {
-		user, err := database.Handle.Users().GetByUsername(c.Req.Context(), c.Params(":username"))
+func InjectParamsUser() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		gctx := c.MustGet("context").(*Context)
+		user, err := database.Handle.Users().GetByUsername(c.Request.Context(), c.Param("username"))
 		if err != nil {
-			c.NotFoundOrError(err, "get user by name")
+			gctx.NotFoundOrError(err, "get user by name")
 			return
 		}
-		c.Map(&ParamsUser{user})
+		c.Set("paramsUser", &ParamsUser{user})
 	}
 }

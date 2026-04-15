@@ -16,6 +16,7 @@ import (
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/form"
 	"gogs.io/gogs/internal/osx"
+	"gogs.io/gogs/internal/services/repo"
 	"gogs.io/gogs/internal/tool"
 	"gogs.io/gogs/internal/urlx"
 )
@@ -116,7 +117,7 @@ func CreatePost(c *context.Context, f form.CreateRepo) {
 		return
 	}
 
-	repo, err := database.CreateRepository(c.User, ctxUser, database.CreateRepoOptionsLegacy{
+	repo, err := repo.Repos.Create(c.Req.Context(), c.User, ctxUser, repo.CreateOptions{
 		Name:        f.RepoName,
 		Description: f.Description,
 		Gitignores:  f.Gitignores,

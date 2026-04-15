@@ -12,7 +12,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 	"gopkg.in/ini.v1"
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
@@ -23,6 +23,7 @@ import (
 	"gogs.io/gogs/internal/form"
 	"gogs.io/gogs/internal/markup"
 	"gogs.io/gogs/internal/osx"
+	"gogs.io/gogs/internal/services"
 	"gogs.io/gogs/internal/ssh"
 	"gogs.io/gogs/internal/strx"
 	"gogs.io/gogs/internal/template/highlight"
@@ -34,13 +35,12 @@ const (
 
 func checkRunMode() {
 	if conf.IsProdMode() {
-		macaron.Env = macaron.PROD
-		macaron.ColorLog = false
+		gin.SetMode(gin.ReleaseMode)
 		git.SetOutput(nil)
 	} else {
 		git.SetOutput(os.Stdout)
 	}
-	log.Info("Run mode: %s", strings.Title(macaron.Env))
+	log.Info("Run mode: %s", strings.Title(gin.Mode()))
 }
 
 // GlobalInit is for global configuration reload-able.
@@ -73,6 +73,8 @@ func GlobalInit(customConf string) error {
 			log.Fatal("Failed to initialize ORM engine: %v", err)
 		}
 		database.HasEngine = true
+
+		services.Init()
 
 		database.LoadRepoConfig()
 		database.NewRepoContext()

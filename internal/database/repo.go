@@ -907,32 +907,14 @@ func cleanUpMigrateGitConfig(configPath string) error {
 	return nil
 }
 
-var hooksTpls = map[git.HookName]string{
-	"pre-receive":  "#!/usr/bin/env %s\n\"%s\" hook --config='%s' pre-receive\n",
-	"update":       "#!/usr/bin/env %s\n\"%s\" hook --config='%s' update $1 $2 $3\n",
-	"post-receive": "#!/usr/bin/env %s\n\"%s\" hook --config='%s' post-receive\n",
-}
-
-func createDelegateHooks(repoPath string) (err error) {
-	for _, name := range git.ServerSideHooks {
-		hookPath := filepath.Join(repoPath, "hooks", string(name))
-		if err = os.WriteFile(hookPath,
-			fmt.Appendf(nil, hooksTpls[name], conf.Repository.ScriptType, conf.AppPath(), conf.CustomConf),
-			os.ModePerm); err != nil {
-			return errors.Newf("create delegate hook '%s': %v", hookPath, err)
-		}
-	}
-	return nil
-}
-
 // Finish migrating repository and/or wiki with things that don't need to be done for mirrors.
 func CleanUpMigrateInfo(repo *Repository) (*Repository, error) {
 	repoPath := repo.RepoPath()
-	if err := createDelegateHooks(repoPath); err != nil {
+	if err := repox.CreateDelegateHooks(repoPath); err != nil {
 		return repo, errors.Newf("createDelegateHooks: %v", err)
 	}
 	if repo.HasWiki() {
-		if err := createDelegateHooks(repo.WikiPath()); err != nil {
+		if err := repox.CreateDelegateHooks(repo.WikiPath()); err != nil {
 			return repo, errors.Newf("createDelegateHooks.(wiki): %v", err)
 		}
 	}
@@ -1062,7 +1044,8 @@ func initRepository(e Engine, repoPath string, doer *User, repo *Repository, opt
 	// Init bare new repository.
 	if err = git.Init(repoPath, git.InitOptions{Bare: true}); err != nil {
 		return errors.Newf("init repository: %v", err)
-	} else if err = createDelegateHooks(repoPath); err != nil {
+	}
+	if err = repox.CreateDelegateHooks(repoPath); err != nil {
 		return errors.Newf("createDelegateHooks: %v", err)
 	}
 
@@ -1225,8 +1208,8 @@ func CreateRepository(doer, owner *User, opts CreateRepoOptionsLegacy) (_ *Repos
 	if osx.Exist(repoPath) {
 		return nil, errors.Errorf("repository directory already exists: %s", repoPath)
 	}
-	if !owner.canCreateRepo() {
-		return nil, ErrReachLimitOfRepo{Limit: owner.maxNumRepos()}
+	if !doer.CanCreateRepo() {
+		return nil, ErrReachLimitOfRepo{Limit: doer.MaxNumRepos()}
 	}
 
 	repo := &Repository{
@@ -2069,12 +2052,13 @@ func SyncRepositoryHooks() error {
 	return x.Where("id > 0").Iterate(new(Repository),
 		func(idx int, bean any) error {
 			repo := bean.(*Repository)
-			if err := createDelegateHooks(repo.RepoPath()); err != nil {
-				return err
-			}
-
-			if repo.HasWiki() {
-				return createDelegateHooks(repo.WikiPath())
+			if !repo.IsBare {
+				if err := repox.CreateDelegateHooks(repo.RepoPath()); err != nil {
+					return err
+				}
+				if repo.HasWiki() {
+					return repox.CreateDelegateHooks(repo.WikiPath())
+				}
 			}
 			return nil
 		})
@@ -2553,8 +2537,8 @@ func HasForkedRepo(ownerID, repoID int64) (*Repository, bool, error) {
 
 // ForkRepository creates a fork of target repository under another user domain.
 func ForkRepository(doer, owner *User, baseRepo *Repository, name, desc string) (_ *Repository, err error) {
-	if !owner.canCreateRepo() {
-		return nil, ErrReachLimitOfRepo{Limit: owner.maxNumRepos()}
+	if !owner.CanCreateRepo() {
+		return nil, ErrReachLimitOfRepo{Limit: owner.MaxNumRepos()}
 	}
 
 	repo := &Repository{
@@ -2599,7 +2583,7 @@ func ForkRepository(doer, owner *User, baseRepo *Repository, name, desc string) 
 		return nil, errors.Newf("git update-server-info: %v - %s", err, stderr)
 	}
 
-	if err = createDelegateHooks(repoPath); err != nil {
+	if err = repox.CreateDelegateHooks(repoPath); err != nil {
 		return nil, errors.Newf("createDelegateHooks: %v", err)
 	}
 

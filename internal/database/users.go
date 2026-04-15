@@ -1308,18 +1308,18 @@ func (u *User) APIFormat() *apiv1types.User {
 	}
 }
 
-// maxNumRepos returns the maximum number of repositories that the user can have
-// direct ownership.
-func (u *User) maxNumRepos() int {
+func (u *User) CanCreateRepo() bool {
+	if u.MaxRepoCreation <= -1 {
+		return conf.Repository.MaxCreationLimit <= -1 || u.NumRepos < conf.Repository.MaxCreationLimit
+	}
+	return u.NumRepos < u.MaxRepoCreation
+}
+
+func (u *User) MaxNumRepos() int {
 	if u.MaxRepoCreation <= -1 {
 		return conf.Repository.MaxCreationLimit
 	}
 	return u.MaxRepoCreation
-}
-
-// canCreateRepo returns true if the user can create a repository.
-func (u *User) canCreateRepo() bool {
-	return u.maxNumRepos() <= -1 || u.NumRepos < u.maxNumRepos()
 }
 
 // CanCreateOrganization returns true if user can create organizations.

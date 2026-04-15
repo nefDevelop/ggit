@@ -2,7 +2,6 @@ package form
 
 import (
 	"github.com/go-macaron/binding"
-	"gopkg.in/macaron.v1"
 )
 
 type AdminCrateUser struct {
@@ -14,8 +13,8 @@ type AdminCrateUser struct {
 	SendNotify bool
 }
 
-func (f *AdminCrateUser) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *AdminCrateUser) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
 type AdminEditUser struct {
@@ -34,6 +33,6 @@ type AdminEditUser struct {
 	ProhibitLogin    bool
 }
 
-func (f *AdminEditUser) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.Data, f, ctx.Locale)
+func (f *AdminEditUser) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }

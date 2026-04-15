@@ -18,6 +18,7 @@ import (
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/form"
 	"gogs.io/gogs/internal/markup"
+	issueservice "gogs.io/gogs/internal/services/issue"
 	"gogs.io/gogs/internal/tool"
 )
 
@@ -52,6 +53,13 @@ func MustEnableIssues(c *context.Context) {
 
 	if c.Repo.Repository.EnableExternalTracker {
 		c.Redirect(c.Repo.Repository.ExternalTrackerURL)
+		return
+	}
+}
+
+func MustEnableIssuesOrPulls(c *context.Context) {
+	if !c.Repo.Repository.EnableIssues && !c.Repo.Repository.AllowsPulls() {
+		c.NotFound()
 		return
 	}
 }
@@ -426,7 +434,16 @@ func NewIssuePost(c *context.Context, f form.NewIssue) {
 		AssigneeID:  assigneeID,
 		Content:     f.Content,
 	}
-	if err := database.NewIssue(c.Repo.Repository, issue, labelIDs, attachments); err != nil {
+	if err := issueservice.Issues.CreateIssue(c.Req.Context(), c.Repo.Repository, issue, issueservice.CreateIssueOptions{
+		RepoID:      c.Repo.Repository.ID,
+		PosterID:    c.User.ID,
+		Title:       f.Title,
+		Content:     f.Content,
+		MilestoneID: milestoneID,
+		AssigneeID:  assigneeID,
+		LabelIDs:    labelIDs,
+		Attachments: attachments,
+	}); err != nil {
 		c.Error(err, "new issue")
 		return
 	}
@@ -675,10 +692,21 @@ func getActionIssue(c *context.Context) *database.Issue {
 		return nil
 	}
 
-	// Prevent guests accessing pull requests
-	if !c.Repo.HasAccess() && issue.IsPull {
-		c.NotFound()
-		return nil
+	if issue.IsPull {
+		if !c.Repo.Repository.AllowsPulls() {
+			c.NotFound()
+			return nil
+		}
+		// Prevent guests accessing pull requests
+		if !c.Repo.HasAccess() {
+			c.NotFound()
+			return nil
+		}
+	} else {
+		if !c.Repo.Repository.EnableIssues || c.Repo.Repository.EnableExternalTracker {
+			c.NotFound()
+			return nil
+		}
 	}
 
 	return issue

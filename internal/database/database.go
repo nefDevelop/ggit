@@ -1,6 +1,8 @@
 package database
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -138,6 +140,21 @@ type DB struct {
 // single-thread process).
 var Handle *DB
 
+// WithTransaction returns a new DB handler with the given transaction.
+func (db *DB) WithTransaction(tx *gorm.DB) *DB {
+	return &DB{db: tx}
+}
+
+// WithContext returns a new DB handler with the given context.
+func (db *DB) WithContext(ctx context.Context) *DB {
+	return &DB{db: db.db.WithContext(ctx)}
+}
+
+// Transaction executes the given function within a database transaction.
+func (db *DB) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) error {
+	return db.db.Transaction(fc, opts...)
+}
+
 func (db *DB) AccessTokens() *AccessTokensStore {
 	return newAccessTokensStore(db.db)
 }
@@ -176,6 +193,10 @@ func (db *DB) PublicKey() *PublicKeysStore {
 
 func (db *DB) Repositories() *RepositoriesStore {
 	return newReposStore(db.db)
+}
+
+func (db *DB) Issues() *IssuesStore {
+	return newIssuesStore(db.db)
 }
 
 func (db *DB) TwoFactors() *TwoFactorsStore {

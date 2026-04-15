@@ -3,16 +3,17 @@ package app
 import (
 	"net/http"
 
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 
 	"gogs.io/gogs/internal/authx"
 	"gogs.io/gogs/internal/conf"
 )
 
-func MetricsFilter() macaron.Handler {
-	return func(w http.ResponseWriter, r *http.Request) {
+func MetricsFilter() gin.HandlerFunc {
+	return func(c *gin.Context) {
 		if !conf.Prometheus.Enabled {
-			w.WriteHeader(http.StatusNotFound)
+			c.Status(http.StatusNotFound)
+			c.Abort()
 			return
 		}
 
@@ -20,9 +21,10 @@ func MetricsFilter() macaron.Handler {
 			return
 		}
 
-		username, password := authx.DecodeBasic(r.Header)
+		username, password := authx.DecodeBasic(c.Request.Header)
 		if username != conf.Prometheus.BasicAuthUsername || password != conf.Prometheus.BasicAuthPassword {
-			w.WriteHeader(http.StatusForbidden)
+			c.Status(http.StatusForbidden)
+			c.Abort()
 			return
 		}
 	}

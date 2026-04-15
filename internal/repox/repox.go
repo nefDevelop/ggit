@@ -1,10 +1,14 @@
 package repox
 
 import (
-	"fmt"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"os"
+	"fmt"
+
+	"github.com/cockroachdb/errors"
+	"github.com/gogs/git-module"
 
 	"gogs.io/gogs/internal/conf"
 )
@@ -68,4 +72,23 @@ func RepositoryLocalPath(repoID int64) string {
 // wiki copy with the given ID.
 func RepositoryLocalWikiPath(repoID int64) string {
 	return filepath.Join(conf.Server.AppDataPath, "tmp", "local-wiki", strconv.FormatInt(repoID, 10))
+}
+
+var hooksTpls = map[git.HookName]string{
+	"pre-receive":  "#!/usr/bin/env %s\n\"%s\" hook --config='%s' pre-receive\n",
+	"update":       "#!/usr/bin/env %s\n\"%s\" hook --config='%s' update $1 $2 $3\n",
+	"post-receive": "#!/usr/bin/env %s\n\"%s\" hook --config='%s' post-receive\n",
+}
+
+// CreateDelegateHooks creates delegate hooks for the given repository path.
+func CreateDelegateHooks(repoPath string) error {
+	for _, name := range git.ServerSideHooks {
+		hookPath := filepath.Join(repoPath, "hooks", string(name))
+		if err := os.WriteFile(hookPath,
+			fmt.Appendf(nil, hooksTpls[name], conf.Repository.ScriptType, conf.AppPath(), conf.CustomConf),
+			os.ModePerm); err != nil {
+			return errors.Newf("create delegate hook '%s': %v", hookPath, err)
+		}
+	}
+	return nil
 }

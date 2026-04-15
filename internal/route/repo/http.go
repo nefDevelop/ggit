@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/macaron.v1"
+	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/auth"
@@ -26,7 +26,7 @@ import (
 )
 
 type HTTPContext struct {
-	*macaron.Context
+	*context.Context
 	OwnerName string
 	OwnerSalt string
 	RepoID    int64
@@ -35,34 +35,42 @@ type HTTPContext struct {
 }
 
 // askCredentials responses HTTP header and status which informs client to provide credentials.
-func askCredentials(c *macaron.Context, status int, text string) {
-	c.Header().Set("WWW-Authenticate", "Basic realm=\".\"")
-	c.Error(status, text)
+func askCredentials(c *gin.Context, status int, text string) {
+	c.Header("WWW-Authenticate", "Basic realm=\".\"")
+	c.String(status, text)
 }
 
-func HTTPContexter(store Store) macaron.Handler {
-	return func(c *macaron.Context) {
+type Store interface {
+	GetUserByUsername(ctx interface{}, name string) (*database.User, error)
+	GetRepositoryByName(ctx interface{}, ownerID int64, name string) (*database.Repository, error)
+	AuthenticateUser(ctx interface{}, login, password string, loginSourceID int64) (*database.User, error)
+	IsTwoFactorEnabled(ctx interface{}, userID int64) bool
+}
+
+func HTTPContexter(store Store) gin.HandlerFunc {
+	return func(c *gin.Context) {
 		if len(conf.HTTP.AccessControlAllowOrigin) > 0 {
 			// Set CORS headers for browser-based git clients
-			c.Header().Set("Access-Control-Allow-Origin", conf.HTTP.AccessControlAllowOrigin)
-			c.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, User-Agent")
+			c.Header("Access-Control-Allow-Origin", conf.HTTP.AccessControlAllowOrigin)
+			c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization, User-Agent")
 
 			// Handle preflight OPTIONS request
-			if c.Req.Method == "OPTIONS" {
+			if c.Request.Method == "OPTIONS" {
 				c.Status(http.StatusOK)
+				c.Abort()
 				return
 			}
 		}
 
-		ownerName := c.Params(":username")
-		repoName := strings.TrimSuffix(c.Params(":reponame"), ".git")
+		ownerName := c.Param("username")
+		repoName := strings.TrimSuffix(c.Param("reponame"), ".git")
 		repoName = strings.TrimSuffix(repoName, ".wiki")
 
 		isPull := c.Query("service") == "git-upload-pack" ||
-			strings.HasSuffix(c.Req.URL.Path, "git-upload-pack") ||
-			c.Req.Method == "GET"
+			strings.HasSuffix(c.Request.URL.Path, "git-upload-pack") ||
+			c.Request.Method == "GET"
 
-		owner, err := store.GetUserByUsername(c.Req.Context(), ownerName)
+		owner, err := store.GetUserByUsername(c.Request.Context(), ownerName)
 		if err != nil {
 			if database.IsErrUserNotExist(err) {
 				c.Status(http.StatusNotFound)
@@ -70,10 +78,11 @@ func HTTPContexter(store Store) macaron.Handler {
 				c.Status(http.StatusInternalServerError)
 				log.Error("Failed to get user [name: %s]: %v", ownerName, err)
 			}
+			c.Abort()
 			return
 		}
 
-		repo, err := store.GetRepositoryByName(c.Req.Context(), owner.ID, repoName)
+		repo, err := store.GetRepositoryByName(c.Request.Context(), owner.ID, repoName)
 		if err != nil {
 			if database.IsErrRepoNotExist(err) {
 				c.Status(http.StatusNotFound)
@@ -81,63 +90,70 @@ func HTTPContexter(store Store) macaron.Handler {
 				c.Status(http.StatusInternalServerError)
 				log.Error("Failed to get repository [owner_id: %d, name: %s]: %v", owner.ID, repoName, err)
 			}
+			c.Abort()
 			return
 		}
 
 		// Authentication is not required for pulling from public repositories.
 		if isPull && !repo.IsPrivate && !conf.Auth.RequireSigninView {
-			c.Map(&HTTPContext{
-				Context: c,
+			c.Set("httpContext", &HTTPContext{
+				Context: &context.Context{Context: c},
 			})
 			return
 		}
 
 		// In case user requested a wrong URL and not intended to access Git objects.
-		action := c.Params("*")
-		if !strings.Contains(action, "git-") &&
+		action := c.Param("action")
+		if action != "" && !strings.Contains(action, "git-") &&
 			!strings.Contains(action, "info/") &&
 			!strings.Contains(action, "HEAD") &&
 			!strings.Contains(action, "objects/") {
-			c.Error(http.StatusBadRequest, fmt.Sprintf("Unrecognized action %q", action))
+			c.String(http.StatusBadRequest, fmt.Sprintf("Unrecognized action %q", action))
+			c.Abort()
 			return
 		}
 
 		// Handle HTTP Basic Authentication
-		authHead := c.Req.Header.Get("Authorization")
+		authHead := c.GetHeader("Authorization")
 		if authHead == "" {
 			askCredentials(c, http.StatusUnauthorized, "")
+			c.Abort()
 			return
 		}
 
 		auths := strings.Fields(authHead)
 		if len(auths) != 2 || auths[0] != "Basic" {
 			askCredentials(c, http.StatusUnauthorized, "")
+			c.Abort()
 			return
 		}
 		authUsername, authPassword, err := tool.BasicAuthDecode(auths[1])
 		if err != nil {
 			askCredentials(c, http.StatusUnauthorized, "")
+			c.Abort()
 			return
 		}
 
-		authUser, err := store.AuthenticateUser(c.Req.Context(), authUsername, authPassword, -1)
+		authUser, err := store.AuthenticateUser(c.Request.Context(), authUsername, authPassword, -1)
 		if err != nil && !auth.IsErrBadCredentials(err) {
 			c.Status(http.StatusInternalServerError)
 			log.Error("Failed to authenticate user [name: %s]: %v", authUsername, err)
+			c.Abort()
 			return
 		}
 
 		// If username and password combination failed, try again using either username
 		// or password as the token.
 		if authUser == nil {
-			authUser, err = context.AuthenticateByToken(store, c.Req.Context(), authUsername)
+			authUser, err = context.AuthenticateByToken(store, c.Request.Context(), authUsername)
 			if err != nil && !database.IsErrAccessTokenNotExist(err) {
 				c.Status(http.StatusInternalServerError)
 				log.Error("Failed to authenticate by access token via username: %v", err)
+				c.Abort()
 				return
 			} else if database.IsErrAccessTokenNotExist(err) {
 				// Try again using the password field as the token.
-				authUser, err = context.AuthenticateByToken(store, c.Req.Context(), authPassword)
+				authUser, err = context.AuthenticateByToken(store, c.Request.Context(), authPassword)
 				if err != nil {
 					if database.IsErrAccessTokenNotExist(err) {
 						askCredentials(c, http.StatusUnauthorized, "")
@@ -145,12 +161,14 @@ func HTTPContexter(store Store) macaron.Handler {
 						c.Status(http.StatusInternalServerError)
 						log.Error("Failed to authenticate by access token via password: %v", err)
 					}
+					c.Abort()
 					return
 				}
 			}
-		} else if store.IsTwoFactorEnabled(c.Req.Context(), authUser.ID) {
+		} else if store.IsTwoFactorEnabled(c.Request.Context(), authUser.ID) {
 			askCredentials(c, http.StatusUnauthorized, `User with two-factor authentication enabled cannot perform HTTP/HTTPS operations via plain username and password
 Please create and use personal access token on user settings page`)
+			c.Abort()
 			return
 		}
 
@@ -160,23 +178,25 @@ Please create and use personal access token on user settings page`)
 		if isPull {
 			mode = database.AccessModeRead
 		}
-		if !database.Handle.Permissions().Authorize(c.Req.Context(), authUser.ID, repo.ID, mode,
+		if !database.Handle.Permissions().Authorize(c.Request.Context(), authUser.ID, repo.ID, mode,
 			database.AccessModeOptions{
 				OwnerID: repo.OwnerID,
 				Private: repo.IsPrivate,
 			},
 		) {
 			askCredentials(c, http.StatusForbidden, "User permission denied")
+			c.Abort()
 			return
 		}
 
 		if !isPull && repo.IsMirror {
-			c.Error(http.StatusForbidden, "Mirror repository is read-only")
+			c.String(http.StatusForbidden, "Mirror repository is read-only")
+			c.Abort()
 			return
 		}
 
-		c.Map(&HTTPContext{
-			Context:   c,
+		c.Set("httpContext", &HTTPContext{
+			Context:   &context.Context{Context: c},
 			OwnerName: ownerName,
 			OwnerSalt: owner.Salt,
 			RepoID:    repo.ID,
@@ -386,9 +406,16 @@ func getGitRepoPath(dir string) (string, error) {
 	return filename, nil
 }
 
-func HTTP(c *HTTPContext) {
+func HTTP(c *gin.Context) {
+	hctxVal, ok := c.Get("httpContext")
+	if !ok {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+	hctx := hctxVal.(*HTTPContext)
+
 	for _, route := range routes {
-		reqPath := strings.ToLower(c.Req.URL.Path)
+		reqPath := strings.ToLower(c.Request.URL.Path)
 		m := route.re.FindStringSubmatch(reqPath)
 		if m == nil {
 			continue
@@ -398,19 +425,19 @@ func HTTP(c *HTTPContext) {
 		// but we only want to output this message only if user is really trying to access
 		// Git HTTP endpoints.
 		if conf.Repository.DisableHTTPGit {
-			c.Error(http.StatusForbidden, "Interacting with repositories by HTTP protocol is disabled")
+			c.String(http.StatusForbidden, "Interacting with repositories by HTTP protocol is disabled")
 			return
 		}
 
-		if route.method != c.Req.Method {
-			c.Error(http.StatusNotFound)
+		if route.method != c.Request.Method {
+			c.Status(http.StatusNotFound)
 			return
 		}
 
 		// 🚨 SECURITY: Prevent path traversal.
 		cleaned := pathx.Clean(m[1])
 		if m[1] != "/"+cleaned {
-			c.Error(http.StatusBadRequest, "Request path contains suspicious characters")
+			c.String(http.StatusBadRequest, "Request path contains suspicious characters")
 			return
 		}
 
@@ -418,24 +445,24 @@ func HTTP(c *HTTPContext) {
 		dir, err := getGitRepoPath(cleaned)
 		if err != nil {
 			log.Warn("HTTP.getGitRepoPath: %v", err)
-			c.Error(http.StatusNotFound)
+			c.Status(http.StatusNotFound)
 			return
 		}
 
 		route.handler(serviceHandler{
-			w:    c.Resp,
-			r:    c.Req.Request,
+			w:    c.Writer,
+			r:    c.Request,
 			dir:  dir,
 			file: file,
 
-			authUser:  c.AuthUser,
-			ownerName: c.OwnerName,
-			ownerSalt: c.OwnerSalt,
-			repoID:    c.RepoID,
-			repoName:  c.RepoName,
+			authUser:  hctx.AuthUser,
+			ownerName: hctx.OwnerName,
+			ownerSalt: hctx.OwnerSalt,
+			repoID:    hctx.RepoID,
+			repoName:  hctx.RepoName,
 		})
 		return
 	}
 
-	c.Error(http.StatusNotFound)
+	c.Status(http.StatusNotFound)
 }
