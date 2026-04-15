@@ -1,0 +1,16 @@
+# Build artifacts
+.bin/
+dist/
+
+# Runtime data
+log/
+custom/
+data/
+
+# Configuration and application files
+.idea/
+.task/
+.envrc
+
+# System junk
+.DS_Store
