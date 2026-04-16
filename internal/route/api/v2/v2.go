@@ -11,6 +11,8 @@ import (
 func RegisterRoutes(r *gin.RouterGroup) {
 	r.Use(context.APIContexter())
 	
+	r.GET("/install/settings", ginx.Handle(GetInstallSettings))
+
 	user := r.Group("/user")
 	{
 		user.POST("/login", ginx.Handle(Login))
