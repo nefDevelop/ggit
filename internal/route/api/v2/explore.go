@@ -33,8 +33,13 @@ func ExploreRepos(c *context.APIContext) {
 		return
 	}
 
+	apiRepos := make([]any, len(repos))
+	for i, r := range repos {
+		apiRepos[i] = r.APIFormat(r.Owner)
+	}
+
 	c.JSON(http.StatusOK, map[string]any{
-		"repos": repos,
+		"repos": apiRepos,
 		"total": count,
 	})
 }
@@ -67,8 +72,13 @@ func ExploreUsers(c *context.APIContext) {
 		}
 	}
 
+	apiUsers := make([]any, len(users))
+	for i, u := range users {
+		apiUsers[i] = u.APIFormat()
+	}
+
 	c.JSON(http.StatusOK, map[string]any{
-		"users": users,
+		"users": apiUsers,
 		"total": count,
 	})
 }
@@ -101,8 +111,13 @@ func ExploreOrganizations(c *context.APIContext) {
 		}
 	}
 
+	apiOrgs := make([]any, len(orgs))
+	for i, o := range orgs {
+		apiOrgs[i] = o.APIFormat()
+	}
+
 	c.JSON(http.StatusOK, map[string]any{
-		"organizations": orgs,
+		"organizations": apiOrgs,
 		"total":         count,
 	})
 }

@@ -32,7 +32,13 @@
     );
   });
 
-  const groupedRepos = $derived(() => {
+  interface GroupedRepos {
+    all?: any[];
+    recent?: any[];
+    older?: any[];
+  }
+
+  const groupedRepos = $derived((): GroupedRepos => {
     const repos = searchQuery ? filteredRepos() : allRepos;
     if (viewMode === 'list') return { all: repos };
     return {
@@ -41,29 +47,37 @@
     };
   });
 
-  onMount(async () => {
-    const handleGlobalSearch = (e: any) => { searchQuery = e.detail; };
-    window.addEventListener('ggit:search', handleGlobalSearch);
+  async function loadDashboard() {
     try {
       const [dataRes, feedsRes] = await Promise.all([
         fetch('/api/v2/user/dashboard/data'),
         fetch('/api/v2/user/dashboard/feeds')
       ]);
-      if (dataRes.ok) data = await dataRes.json();
+      if (dataRes.ok) {
+        data = await dataRes.json();
+        console.log("Dashboard Data Loaded:", data);
+      }
       if (feedsRes.ok) {
         const feedsData = await feedsRes.json();
         feeds = feedsData.feeds;
+        console.log("Dashboard Feeds Loaded:", feeds.length);
       }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    const handleGlobalSearch = (e: any) => { searchQuery = e.detail; };
+    window.addEventListener('ggit:search', handleGlobalSearch);
+    loadDashboard();
     return () => window.removeEventListener('ggit:search', handleGlobalSearch);
   });
 </script>
 
-<div class="dashboard-grid">
+<div class="dashboard-grid" style:grid-template-columns={authState.user?.disable_news_feed ? '1fr' : '1.5fr 1fr'}>
     <section class="repos-island island">
         <header class="island-header-search">
             <GlobalSearch />
@@ -101,13 +115,13 @@
                 <div class="repo-list-container">
                 {#if viewMode === 'temporal'}
                     {@const groups = groupedRepos()}
-                    {#if groups.recent.length > 0}
+                    {#if groups.recent && groups.recent.length > 0}
                         <div class="group-header"><span class="group-label">Active this week</span></div>
                         <div class="repo-group-flat">
                             {#each groups.recent as repo}<RepoRow {repo} />{/each}
                         </div>
                     {/if}
-                    {#if groups.older.length > 0}
+                    {#if groups.older && groups.older.length > 0}
                         <div class="group-header" style="margin-top: 1rem;"><span class="group-label">Older</span></div>
                         <div class="repo-group-flat">
                             {#each groups.older as repo}<RepoRow {repo} isOlder={true} />{/each}
@@ -115,7 +129,7 @@
                     {/if}
                 {:else}
                     <div class="repo-group-flat">
-                        {#each groupedRepos().all as repo}<RepoRow {repo} />{/each}
+                        {#each groupedRepos().all || [] as repo}<RepoRow {repo} />{/each}
                     </div>
                 {/if}
                 </div>
@@ -123,41 +137,63 @@
         </div>
     </section>
 
-    <section class="activity-island island">
-        <header class="simple-header">
-            <h2 class="section-label">Recent Activity</h2>
-        </header>
-        <div class="island-body">
-            {#if loading}
-                <div class="skeletons">
-                    {#each Array(5) as _}<div class="skeleton-feed"></div>{/each}
-                </div>
-            {:else if feeds.length === 0}
-                <div class="empty-state mini"><p class="text-muted">No activity.</p></div>
-            {:else}
-                <div class="feed-list">
-                {#each feeds as act}
-                    <div class="feed-item">
-                    <img src={act.act_avatar} alt="" class="feed-avatar" />
-                    <div class="feed-content">
-                        <span class="feed-user">{act.act_user_name}</span>
-                        <span class="feed-action">{@html act.content}</span>
-                        <span class="feed-time">{new Date(act.created_unix * 1000).toLocaleDateString()}</span>
+    {#if !authState.user?.disable_news_feed}
+    <div class="sidebar-column">
+        <!-- Organizations Section -->
+        {#if (data.organizations || []).length > 0}
+            <section class="orgs-island island tonal">
+                <header class="simple-header">
+                    <h2 class="section-label">Organizations</h2>
+                </header>
+                <div class="island-body">
+                    <div class="org-list">
+                        {#each data.organizations as org}
+                            <a href="/org/{org.username}" class="org-item hover-lift">
+                                <img src={org.avatar_url} alt="" class="org-avatar" />
+                                <span class="org-name">{org.username}</span>
+                            </a>
+                        {/each}
                     </div>
-                    </div>
-                {/each}
                 </div>
-            {/if}
-        </div>
-    </section>
+            </section>
+        {/if}
+
+        <section class="activity-island island">
+            <header class="simple-header">
+                <h2 class="section-label">Recent Activity</h2>
+            </header>
+            <div class="island-body">
+                {#if loading}
+                    <div class="skeletons">
+                        {#each Array(5) as _}<div class="skeleton-feed"></div>{/each}
+                    </div>
+                {:else if feeds.length === 0}
+                    <div class="empty-state mini"><p class="text-muted">No activity.</p></div>
+                {:else}
+                    <div class="feed-list">
+                    {#each feeds as act}
+                        <div class="feed-item">
+                        <img src={act.act_avatar} alt="" class="feed-avatar" />
+                        <div class="feed-content">
+                            <span class="feed-user">{act.act_user_name}</span>
+                            <span class="feed-action">{@html act.content}</span>
+                            <span class="feed-time">{new Date(act.created_unix * 1000).toLocaleDateString()}</span>
+                        </div>
+                        </div>
+                    {/each}
+                    </div>
+                {/if}
+            </div>
+        </section>
+    </div>
+    {/if}
 </div>
 
 <style>
   .dashboard-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr; /* Both stretch, repositories get more weight */
     gap: 1.5rem;
-    align-items: stretch; /* Make them same height */
+    align-items: stretch;
     height: 100%;
   }
 
@@ -238,6 +274,14 @@
 
   .skeleton-line { height: 64px; background: var(--md3-surface-3); border-radius: 0.75rem; margin-bottom: 0.5rem; animation: pulse 1.5s infinite; }
   .skeleton-feed { height: 40px; background: var(--md3-surface-3); border-radius: 0.5rem; margin-bottom: 1rem; animation: pulse 1.5s infinite; }
+
+  .sidebar-column { display: flex; flex-direction: column; gap: 1.5rem; }
+  .orgs-island { margin-bottom: 0; }
+  .org-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .org-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--text-color); padding: 0.5rem; border-radius: 0.75rem; transition: background 0.2s; }
+  .org-item:hover { background: rgba(255,255,255,0.05); }
+  .org-avatar { width: 24px; height: 24px; border-radius: 4px; }
+  .org-name { font-weight: 600; font-size: 0.9rem; }
 
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
   @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }

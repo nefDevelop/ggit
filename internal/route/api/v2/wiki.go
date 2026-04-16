@@ -9,6 +9,7 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/form"
+	"gogs.io/gogs/internal/markup"
 )
 
 // ListWikiPages returns a list of wiki pages for the repository.
@@ -99,8 +100,9 @@ func GetWikiPage(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"name":    pageName,
-		"content": string(p),
+		"name":         pageName,
+		"content":      string(p),
+		"content_html": string(markup.Render(markup.TypeMarkdown, p, c.Repo.RepoLink, nil)),
 	})
 }
 
@@ -165,4 +167,41 @@ func DeleteWikiPage(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
 		"status": "ok",
 	})
+}
+// GetWikiPageHistory returns the commit history of a single wiki page.
+func GetWikiPageHistory(c *context.APIContext) {
+	pageURL := c.Params("page")
+	if pageURL == "" {
+		pageURL = "Home"
+	}
+
+	wikiPath := c.Repo.Repository.WikiPath()
+	wikiRepo, err := git.Open(wikiPath)
+	if err != nil {
+		c.Error(err, "open repository")
+		return
+	}
+
+	branch := database.WikiBranch(wikiPath)
+	pageName := database.ToWikiPageName(pageURL)
+	fileName := pageName + ".md"
+
+	commits, err := wikiRepo.Log(git.RefsHeads+branch, git.LogOptions{Path: fileName})
+	if err != nil {
+		c.Error(err, "get commits by path")
+		return
+	}
+
+	result := make([]map[string]any, len(commits))
+	for i, commit := range commits {
+		result[i] = map[string]any{
+			"id":      commit.ID.String(),
+			"author":  commit.Author.Name,
+			"email":   commit.Author.Email,
+			"message": commit.Summary(),
+			"created": commit.Author.When.Unix(),
+		}
+	}
+
+	c.JSON(http.StatusOK, result)
 }

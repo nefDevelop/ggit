@@ -2,12 +2,13 @@
   import { authState } from '$lib/auth.svelte';
   import { page } from '$app/state';
 
-  const navItems = [
+  const navItems = $derived([
     { name: 'Dashboard', icon: 'grid_view', path: '/dashboard' },
     { name: 'Explore', icon: 'search', path: '/explore/repos' },
-    { name: 'Issues', icon: 'rule', path: '/issues' },
+    { name: 'Organizations', icon: 'corporate_fare', path: '/explore/users' }, // Shortcut to org list or similar
+    ...(authState.user?.is_admin ? [{ name: 'Admin Panel', icon: 'security', path: '/admin/dashboard' }] : []),
     { name: 'Settings', icon: 'settings', path: '/user/settings/profile' },
-  ];
+  ]);
 
   function getCsrfToken() {
     if (typeof document === 'undefined') return '';
@@ -57,7 +58,7 @@
     <div class="logo-circle-flat">G</div>
     <div class="brand-info">
         <span class="brand-name">Ggit</span>
-        <span class="version">v2026.4</span>
+        <span class="version">v2026.4.0</span>
     </div>
   </div>
 </nav>

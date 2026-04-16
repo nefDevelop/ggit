@@ -301,13 +301,3 @@ func GetRepoCommits(c *context.APIContext) {
 	})
 }
 
-// GetRepoBranches returns a list of branches for the repository.
-func GetRepoBranches(c *context.APIContext) {
-	branches, err := c.Repo.Repository.GetBranches()
-	if err != nil {
-		c.Error(err, "get branches")
-		return
-	}
-
-	c.JSON(http.StatusOK, branches)
-}

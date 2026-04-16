@@ -147,10 +147,15 @@ git push -u origin main</code></pre>
                      <span class="filename">{repoData.name}</span>
                      <span class="filesize">{formatSize(repoData.size)}</span>
                    </div>
-                   <div class="file-tools">
-                     <button class="tool-btn">Raw</button>
-                     <button class="tool-btn"><span class="material-symbols-rounded">download</span></button>
-                   </div>
+                    <div class="file-tools">
+                      {#if repoData.is_text_file}
+                        <a href="/{username}/{reponame}/_edit/{repoData.branch}/{path}" class="tool-btn">
+                          <span class="material-symbols-rounded">edit</span>
+                        </a>
+                      {/if}
+                      <button class="tool-btn">Raw</button>
+                      <button class="tool-btn"><span class="material-symbols-rounded">download</span></button>
+                    </div>
                 </div>
                 <div class="code-box">
                    {#if repoData.is_text_file}

@@ -90,6 +90,13 @@ func GetDashboardData(c *context.APIContext) {
 
 // GetDashboardFeeds returns the activity feed for the dashboard.
 func GetDashboardFeeds(c *context.APIContext) {
+	if c.User.DisableNewsFeed {
+		c.JSON(http.StatusOK, map[string]any{
+			"feeds": []any{},
+		})
+		return
+	}
+
 	ctxUser := c.User
 	afterID := c.QueryInt64("after_id")
 
@@ -98,6 +105,15 @@ func GetDashboardFeeds(c *context.APIContext) {
 		c.Error(err, "list actions")
 		return
 	}
+
+	// Filter for technical events: Pushes (ActionCommitRepo = 5) and Merges (ActionMergePullRequest = 11)
+	technicalActions := make([]*database.Action, 0, len(actions))
+	for _, act := range actions {
+		if act.OpType == database.ActionCommitRepo || act.OpType == database.ActionMergePullRequest {
+			technicalActions = append(technicalActions, act)
+		}
+	}
+	actions = technicalActions
 
 	// Prepare avatars for the feed
 	unameAvatars := make(map[string]string)

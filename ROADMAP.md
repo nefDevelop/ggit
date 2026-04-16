@@ -1,4 +1,4 @@
-# Roadmap: Modernización de Gogs a Stack Moderno (Go/Gin + Svelte)
+# Roadmap: Modernización de Ggit a Stack Moderno (Go/Gin + Svelte)
 
 Este documento describe el plan de acción paso a paso para la refactorización arquitectónica y modernización del repositorio, pasando de una arquitectura tradicional renderizada en el servidor (SSR con Macaron y Templates HTML) a una arquitectura moderna (API REST con Gin y Frontend reactivo con Svelte), además de incorporar nuevas funcionalidades de análisis de código.
 
@@ -77,17 +77,46 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 *   [ ] **Migración Progresiva de Pantallas:**
     *   [x] **Login/Registro:** Flujos de autenticación fluidos. [COMPLETO]
     *   [x] **Dashboard:** Vista de islas con repositorios y feeds de actividad. [COMPLETO]
-    *   [ ] **Technical Audit Log:** Refactorizar el Feed de actividad hacia eventos técnicos (Pushes/Merges) con opción de desactivarlo en Settings.
-    *   [ ] **Vista de Repositorio:** Navegador de archivos, visor de código (Chroma) e historial de commits. [SIGUIENTE PASO]
-    *   [ ] **Colaboración:** Interfaz de Issues, Pull Requests y Wiki.
-    *   [ ] **Ajustes:** Panel de Configuración de Usuario y Repositorio.
-    *   [ ] **Explorar:** Descubrimiento global de proyectos.
-## Fase 5: Sistema de Diseño y Pulido (Paralelo)
-**Objetivo:** Garantizar que Gogs Modernized se sienta como una aplicación premium de 2026.
+    *   [x] **Technical Audit Log:** Refactorizar el Feed de actividad hacia eventos técnicos (Pushes/Merges) con opción de desactivarlo en Settings. [COMPLETO]
+    *   [x] **Vista de Repositorio:** Navegador de archivos, visor de código (Chroma) e historial de commits. [COMPLETO]
+    *   [x] **Colaboración:** Interfaz de Issues, Pull Requests y Wiki. [COMPLETO]
+    *   [x] **Ajustes:** Panel de Configuración de Usuario y Repositorio. [COMPLETO]
+    *   [x] **Explorar:** Descubrimiento global de proyectos. [COMPLETO]
+    *   [x] **Administración:** Panel de Control Global para administradores. [COMPLETO]
+    *   [x] **Organizaciones:** Gestión de equipos, miembros y permisos a nivel organizacional. [COMPLETO]
+    *   [x] **Avanzado de Repo:** Releases, etiquetas, visor de ramas y editor web. [COMPLETO]
+
+## Fase 9: Sistema de Diseño y Pulido (Paralelo)
+**Objetivo:** Garantizar que Ggit se sienta como una aplicación premium de 2026.
+    *   [ ] Micro-animaciones en botones y transiciones de página.
+    *   [ ] Refinado de sombras
+    *   [ ] Soporte avanzado para temas (Deep Night / Solarized).
+
+## Fase 10: Limpieza de Legacy y Consistencia UX
+**Objetivo:** Eliminar el 100% de los rastro de Gogs antiguo y unificar la experiencia.
+
+*   [x] **Páginas de Error:** Modernizar 404 y 500 con Svelte. [COMPLETO]
+*   [x] **Migración:** Interfaz de importación de repositorios (Phase 10.1). [COMPLETO]
+*   [x] **Wiki Avanzado:** Edición e historial modernizados. [COMPLETO]
+*   [x] **PR Diff Viewer:** Visor de cambios interactivo y de alto rendimiento. [COMPLETO]
+*   [x] **Fase 10.3: Capa Social y Organizacional:**
+    *   [x] **Perfiles Pro:** Pestañas de Stars, Followers, Following y actividad extendida.
+    *   [x] **Watchers y Forks:** Listados de interactuación social en repositorios.
+    *   [x] **Org Intelligence:** Gestión refinada de equipos y miembros.
+*   [ ] **Fase 10.4: Herramientas de Precisión:**
+    *   [ ] **PR Creator:** Selector de ramas y preview de comparación (master...branch).
+    *   [ ] **Release Suite:** Gestión de etiquetas, assets y notas de versión.
+    *   [ ] **Webhook Logs:** Historial de entregas y depuración de hooks.
+
+## Fase 11: El Fin del Legacy (0 Templates)
+**Objetivo:** Desconexión total del motor de plantillas de Go.
+
+*   [ ] **Audit de Plantillas:** Eliminar archivos `.tmpl` redundantes (Meta: 0 legacy templates).
+*   [ ] **Modernización de Emails:** Restilo de los 7 templates de mail a MD3 o sistema moderno.
+*   [ ] **Admin Monitor:** Live status del servidor (Go routines, memoria, CPU) en Svelte.
+*   [ ] **Finalizar API v2:** Documentación OpenAPI/Swagger completa.
 
 *   [ ] **Component Library (M3 Expressive):**
     *   Crear una librería interna de Svelte para Botones, Inputs, Modals y Toasts con el nuevo sistema de colores y elevaciones.
 *   [ ] **Micro-interacciones:**
     *   Añadir transiciones suaves entre rutas, esqueletos de carga (skeleton loaders) y feedback háptico visual.
-*   [ ] **Documentación API:**
-    *   Generar especificación OpenAPI/Swagger para la API v2 de forma automática.

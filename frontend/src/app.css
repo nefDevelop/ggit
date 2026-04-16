@@ -6,14 +6,45 @@
   --on-primary: #062e6f;
   --primary-rgb: 168, 199, 250;
   
-  --bg-color: #08090a; /* Exterior more dark */
-  --md3-surface-container: #1b1d21; /* Islands surface */
+  --bg-color: #08090a;
+  --md3-surface-container: #1b1d21;
   --md3-surface-2: #23272b;
   --md3-surface-3: #2c3136;
   
-  --text-color: #e2e2e6;
-  --text-muted: #90949a;
-  --border-color: rgba(255, 255, 255, 0.06);
+  --primary: #a8c7fa;
+  --on-primary: #062e6f;
+  --primary-container: #0842a0;
+  --on-primary-container: #d3e3fd;
+
+  --secondary: #7fcfff;
+  --on-secondary: #003354;
+
+  --error: #ffb4ab;
+  --on-error: #690005;
+  --error-container: #93000a;
+  --on-error-container: #ffdad6;
+
+  --success: #67e1a3;
+  --success-container: #005233;
+
+  --text-primary: #e2e2e6;
+  --text-secondary: #c2c6cf;
+  --text-tertiary: #90949a;
+  
+  /* Legacy compatibility aliases */
+  --text-color: var(--text-primary);
+  --text-muted: var(--text-tertiary);
+  
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --island-bg: var(--md3-surface-container);
+  --surface-variant: rgba(255, 255, 255, 0.04);
+  --surface-variant-hover: rgba(255, 255, 255, 0.08);
+
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.4);
+  --shadow-xl: 0 12px 32px rgba(0,0,0,0.5);
   
   --radius: 1.5rem;
   --font-family: 'Inter', system-ui, sans-serif;

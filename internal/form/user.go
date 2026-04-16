@@ -90,10 +90,11 @@ func (f *SignIn) Validate(ctx ValidationContext, errs binding.Errors) binding.Er
 //         \/         \/                                   \/        \/        \/
 
 type UpdateProfile struct {
-	Name     string `binding:"Required;AlphaDashDot;MaxSize(35)"`
-	FullName string `binding:"MaxSize(100)"`
-	Website  string `binding:"Url;MaxSize(100)"`
-	Location string `binding:"MaxSize(50)"`
+	Name            string `binding:"Required;AlphaDashDot;MaxSize(35)"`
+	FullName        string `binding:"MaxSize(100)"`
+	Website         string `binding:"Url;MaxSize(100)"`
+	Location        string `binding:"MaxSize(50)"`
+	DisableNewsFeed bool   `json:"disable_news_feed"`
 }
 
 func (f *UpdateProfile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {

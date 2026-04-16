@@ -89,6 +89,7 @@ func Login(c *context.APIContext) {
 			"email":    u.Email,
 			"avatar":   u.AvatarURL(),
 			"is_admin": u.IsAdmin,
+			"disable_news_feed": u.DisableNewsFeed,
 		},
 	})
 }
@@ -107,6 +108,7 @@ func CheckAuth(c *context.APIContext) {
 			"email":    c.User.Email,
 			"avatar":   c.User.AvatarURL(),
 			"is_admin": c.User.IsAdmin,
+			"disable_news_feed": c.User.DisableNewsFeed,
 		},
 	})
 }
@@ -249,6 +251,7 @@ func LoginTwoFactor(c *context.APIContext) {
 			"email":    u.Email,
 			"avatar":   u.AvatarURL(),
 			"is_admin": u.IsAdmin,
+			"disable_news_feed": u.DisableNewsFeed,
 		},
 	})
 }

@@ -1,9 +1,71 @@
-{{template "base/head" .}}
-<div class="ui container center">
-	<p style="margin-top: 100px"><img src="{{AppSubURL}}/img/500.png" alt="500"/></p>
-	<div class="ui divider"></div>
-	<br>
-	{{if .ErrorMsg}}<p>An error has occurred : {{.ErrorMsg}}</p>{{end}}
-	{{if .IsAdmin}}<p>Application Version: {{AppVer}}</p>{{end}}
+{{template "base/header" .}}
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-badge">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin-slow"><path d="M21 12a9 9 0 1 1-6.219-8.56"/><path d="M22 2 15 9"/><path d="M22 9 15 2"/></svg>
+        </div>
+        <h1 class="error-title">Error Interno del Servidor</h1>
+        <p class="error-desc">Nuestros servidores han encontrado un conflicto imprevisto. Estamos trabajando en resolver la incidencia.</p>
+        <div class="error-actions">
+            <a href="{{AppSubUrl}}/" class="btn-primary">
+                Volver al Dashboard
+            </a>
+        </div>
+    </div>
 </div>
+
+<style>
+    .error-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 70vh;
+        padding: 2rem;
+    }
+    .error-card {
+        background: var(--island-bg, #1a1c1e);
+        border: 1px solid var(--border-color, #44474a);
+        border-radius: 28px;
+        padding: 3rem;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .error-badge {
+        margin-bottom: 2rem;
+        color: #ffb4ab;
+        display: flex;
+        justify-content: center;
+    }
+    .error-title {
+        font-size: 1.75rem;
+        color: #e2e2e6;
+        margin-bottom: 1rem;
+    }
+    .error-desc {
+        color: #c2c6cf;
+        margin-bottom: 2.5rem;
+    }
+    .btn-primary {
+        background: #93000a;
+        color: #ffdad6;
+        padding: 0.75rem 2rem;
+        border-radius: 100px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .btn-primary:hover {
+        background: #bc1111;
+        transform: translateY(-2px);
+    }
+    @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+        animation: spin-slow 8s linear infinite;
+    }
+</style>
 {{template "base/footer" .}}

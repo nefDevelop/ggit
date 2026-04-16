@@ -37,7 +37,7 @@
 {:else}
   <div class="container landing-container">
     <header style="margin-bottom: 4rem; text-align: center;">
-      <h1 class="hero-title">Gogs Modernized</h1>
+      <h1 class="hero-title">Ggit</h1>
       <p style="color: var(--text-muted); font-size: 1.25rem;">
         The world's easiest self-hosted Git service, now faster and more beautiful.
       </p>
@@ -69,7 +69,7 @@
     </div>
 
     <footer style="margin-top: 6rem; text-align: center; color: var(--text-muted);">
-      <p>&copy; {new Date().getFullYear()} Gogs Modernization Project</p>
+      <p>&copy; {new Date().getFullYear()} Ggit Modernization Project</p>
     </footer>
   </div>
 {/if}

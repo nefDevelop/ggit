@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"mime/multipart"
 	"net/http"
 
 	"github.com/cockroachdb/errors"
@@ -15,27 +16,55 @@ import (
 	"gogs.io/gogs/internal/userx"
 )
 
+type EditProfile struct {
+	Name            string `json:"name" binding:"max=35"`
+	FullName        string `json:"full_name" binding:"max=100"`
+	Website         string `json:"website" binding:"omitempty,url,max=100"`
+	Location        string `json:"location" binding:"max=50"`
+	DisableNewsFeed bool   `json:"disable_news_feed"`
+}
+
+type EditPassword struct {
+	OldPassword string `json:"old_password" binding:"required,max=255"`
+	Password    string `json:"password" binding:"required,max=255"`
+	Retype      string `json:"retype"`
+}
+
+type AddEmail struct {
+	Email string `json:"email" binding:"required,email,max=254"`
+}
+
+type NewAccessToken struct {
+	Name string `json:"name" binding:"required"`
+}
+
+type AddSSHKey struct {
+	Title   string `json:"title" binding:"required,max=50"`
+	Content string `json:"content" binding:"required"`
+}
+
 // GetUserProfileSettings returns the current user's profile settings.
 func GetUserProfileSettings(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
-		"username":  c.User.Name,
+		"name":      c.User.Name,
 		"full_name": c.User.FullName,
 		"email":     c.User.Email,
 		"website":   c.User.Website,
 		"location":  c.User.Location,
+		"disable_news_feed": c.User.DisableNewsFeed,
 	})
 }
 
 // UpdateUserProfileSettings updates the current user's profile settings.
 func UpdateUserProfileSettings(c *context.APIContext) {
-	var f form.UpdateProfile
+	var f EditProfile
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
 
 	// Non-local users are not allowed to change their username
-	if c.User.IsLocal() {
+	if c.User.IsLocal() && f.Name != "" {
 		// Check if the username (including cases) had been changed
 		if c.User.Name != f.Name {
 			err := database.Handle.Users().ChangeUsername(c.Req.Context(), c.User.ID, f.Name)
@@ -59,9 +88,10 @@ func UpdateUserProfileSettings(c *context.APIContext) {
 		c.Req.Context(),
 		c.User.ID,
 		database.UpdateUserOptions{
-			FullName: &f.FullName,
-			Website:  &f.Website,
-			Location: &f.Location,
+			FullName:        &f.FullName,
+			Website:         &f.Website,
+			Location:        &f.Location,
+			DisableNewsFeed: &f.DisableNewsFeed,
 		},
 	)
 	if err != nil {
@@ -76,7 +106,7 @@ func UpdateUserProfileSettings(c *context.APIContext) {
 
 // UpdateUserPassword updates the current user's password.
 func UpdateUserPassword(c *context.APIContext) {
-	var f form.ChangePassword
+	var f EditPassword
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -121,7 +151,7 @@ func GetUserEmails(c *context.APIContext) {
 
 // AddUserEmail adds a new email address for the current user.
 func AddUserEmail(c *context.APIContext) {
-	var f form.AddEmail
+	var f AddEmail
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -202,7 +232,7 @@ func GetUserSSHKeys(c *context.APIContext) {
 
 // AddUserSSHKey adds a new SSH key for the current user.
 func AddUserSSHKey(c *context.APIContext) {
-	var f form.AddSSHKey
+	var f AddSSHKey
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -257,7 +287,7 @@ func GetUserAccessTokens(c *context.APIContext) {
 
 // AddUserAccessToken adds a new access token for the current user.
 func AddUserAccessToken(c *context.APIContext) {
-	var f form.NewAccessToken
+	var f NewAccessToken
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -291,7 +321,11 @@ func DeleteUserAccessToken(c *context.APIContext) {
 
 // UpdateUserAvatar updates the current user's avatar.
 func UpdateUserAvatar(c *context.APIContext) {
-	var f form.Avatar
+	var f struct {
+		Source   string                `json:"source"`
+		Avatar   *multipart.FileHeader `form:"avatar"`
+		Gravatar string                `json:"gravatar" binding:"omitempty,email,max=254"`
+	}
 	// Try to bind as multipart form first
 	if err := c.Request.ParseMultipartForm(32 << 20); err == nil {
 		f.Source = c.Req.PostFormValue("source")
@@ -309,7 +343,13 @@ func UpdateUserAvatar(c *context.APIContext) {
 		}
 	}
 
-	if err := userroute.UpdateAvatarSetting(c.Context, f, c.User); err != nil {
+	// Map to legacy form for the existing helper
+	legacyForm := form.Avatar{
+		Source:   f.Source,
+		Avatar:   f.Avatar,
+		Gravatar: f.Gravatar,
+	}
+	if err := userroute.UpdateAvatarSetting(c.Context, legacyForm, c.User); err != nil {
 		c.StatusError(http.StatusInternalServerError, err.Error(), err)
 		return
 	}

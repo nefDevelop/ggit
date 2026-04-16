@@ -109,3 +109,25 @@ func DeleteRepoHook(c *context.APIContext) {
 		"status": "ok",
 	})
 }
+// DeleteRepository deletes the repository.
+func DeleteRepository(c *context.APIContext) {
+	var f struct {
+		Name string `json:"name" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if f.Name != c.Repo.Repository.Name {
+		c.StatusError(http.StatusUnprocessableEntity, "Confirmation name does not match.", nil)
+		return
+	}
+
+	if err := database.DeleteRepository(c.User.ID, c.Repo.Repository.ID); err != nil {
+		c.Error(err, "delete repository")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}

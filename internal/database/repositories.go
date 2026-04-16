@@ -429,3 +429,26 @@ func (s *RepositoriesStore) HasForkedBy(ctx context.Context, repoID, userID int6
 	s.db.WithContext(ctx).Model(new(Repository)).Where("owner_id = ? AND fork_id = ?", userID, repoID).Count(&count)
 	return count > 0
 }
+
+// ListStars returns a list of users that starred the given repository.
+func (s *RepositoriesStore) ListStars(ctx context.Context, repoID int64, page, pageSize int) ([]*User, error) {
+	users := make([]*User, 0, pageSize)
+	return users, s.db.WithContext(ctx).
+		Joins("JOIN star ON star.uid = user.id").
+		Where("star.repo_id = ?", repoID).
+		Limit(pageSize).Offset((page - 1) * pageSize).
+		Order("star.id DESC").
+		Find(&users).
+		Error
+}
+
+// ListForks returns a list of repositories that are forks of the given repository.
+func (s *RepositoriesStore) ListForks(ctx context.Context, repoID int64, page, pageSize int) ([]*Repository, error) {
+	repos := make([]*Repository, 0, pageSize)
+	return repos, s.db.WithContext(ctx).
+		Where("fork_id = ?", repoID).
+		Limit(pageSize).Offset((page - 1) * pageSize).
+		Order("updated_unix DESC").
+		Find(&repos).
+		Error
+}

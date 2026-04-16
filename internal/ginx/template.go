@@ -1,13 +1,13 @@
 package ginx
 
 import (
+	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
 	internalTmpl "gogs.io/gogs/internal/template"
@@ -15,6 +15,7 @@ import (
 
 // SetupTemplates configures Gin to use the same Go templates as Macaron did.
 func SetupTemplates(r *gin.Engine) {
+	fmt.Printf("[DEBUG] SetupTemplates: Initializing on %p\n", r)
 	// 1. Gather all template functions
 	funcMap := internalTmpl.FuncMap()[0] // Gogs returns a slice, we take the first map
 
@@ -50,9 +51,11 @@ func SetupTemplates(r *gin.Engine) {
 	})
 
 	if err != nil {
-		log.Error("Failed to load templates: %v", err)
+		fmt.Printf("[DEBUG] Failed to walk template dir: %v\n", err)
 		return
 	}
 
+	templates := tmpl.Templates()
+	fmt.Printf("[DEBUG] Loaded %d HTML templates from %s\n", len(templates), workTmplDir)
 	r.SetHTMLTemplate(tmpl)
 }

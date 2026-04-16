@@ -5,6 +5,8 @@ import (
 
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
+	"gogs.io/gogs/internal/markup"
+	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
 	issueservice "gogs.io/gogs/internal/services/issue"
 )
 
@@ -33,7 +35,13 @@ func ListIssues(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, issues)
+	apiIssues := make([]*apiv1types.Issue, len(issues))
+	for i, issue := range issues {
+		apiIssues[i] = issue.APIFormat()
+		apiIssues[i].BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
+	}
+
+	c.JSON(http.StatusOK, apiIssues)
 }
 
 // CreateIssue creates a new issue for the repository.
@@ -54,13 +62,10 @@ func CreateIssue(c *context.APIContext) {
 		AssigneeID:  f.AssigneeID,
 	}
 
-	err := issueservice.Issues.CreateIssue(c.Req.Context(), c.Repo.Repository, newIssue, f)
-	if err != nil {
-		c.Error(err, "create issue")
-		return
-	}
+	apiIssue := newIssue.APIFormat()
+	apiIssue.BodyHTML = string(markup.Render(markup.TypeMarkdown, newIssue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
 
-	c.JSON(http.StatusCreated, newIssue)
+	c.JSON(http.StatusCreated, apiIssue)
 }
 
 // GetIssue returns a single issue by its index.
@@ -72,7 +77,10 @@ func GetIssue(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, issue)
+	res := issue.APIFormat()
+	res.BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
+
+	c.JSON(http.StatusOK, res)
 }
 
 // UpdateIssue updates an existing issue.
@@ -122,4 +130,54 @@ func UpdateIssue(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, u)
+}
+
+// GetIssueComments returns all comments for a specific issue.
+func GetIssueComments(c *context.APIContext) {
+	idx := c.ParamsInt64("index")
+	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, idx)
+	if err != nil {
+		c.NotFoundOrError(err, "get issue by index")
+		return
+	}
+
+	comments, err := database.GetCommentsByIssueID(issue.ID)
+	if err != nil {
+		c.Error(err, "get comments by issue ID")
+		return
+	}
+
+	apiComments := make([]*apiv1types.IssueComment, len(comments))
+	for i, comment := range comments {
+		apiComments[i] = comment.APIFormat()
+		apiComments[i].BodyHTML = string(markup.Render(markup.TypeMarkdown, comment.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
+	}
+
+	c.JSON(http.StatusOK, apiComments)
+}
+
+// CreateIssueComment creates a new comment on an issue.
+func CreateIssueComment(c *context.APIContext) {
+	idx := c.ParamsInt64("index")
+	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, idx)
+	if err != nil {
+		c.NotFoundOrError(err, "get issue by index")
+		return
+	}
+
+	var f struct {
+		Body string `json:"body" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	comment, err := database.CreateIssueComment(c.User, c.Repo.Repository, issue, f.Body, nil)
+	if err != nil {
+		c.Error(err, "create comment")
+		return
+	}
+
+	c.JSON(http.StatusCreated, comment)
 }

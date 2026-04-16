@@ -910,6 +910,8 @@ type UpdateUserOptions struct {
 
 	Avatar      *string
 	AvatarEmail *string
+
+	DisableNewsFeed *bool
 }
 
 // Update updates fields for the given user.
@@ -995,6 +997,10 @@ func (s *UsersStore) Update(ctx context.Context, userID int64, opts UpdateUserOp
 	}
 	if opts.AvatarEmail != nil {
 		updates["avatar_email"] = strx.Truncate(*opts.AvatarEmail, 255)
+	}
+
+	if opts.DisableNewsFeed != nil {
+		updates["disable_news_feed"] = *opts.DisableNewsFeed
 	}
 
 	return s.db.WithContext(ctx).Model(&User{}).Where("id = ?", userID).Updates(updates).Error
@@ -1267,6 +1273,8 @@ type User struct {
 	NumMembers  int
 	Teams       []*Team `xorm:"-" gorm:"-" json:"-"`
 	Members     []*User `xorm:"-" gorm:"-" json:"-"`
+
+	DisableNewsFeed bool
 }
 
 // BeforeCreate implements the GORM create hook.

@@ -20,6 +20,7 @@ type Issue struct {
 	Poster      *User            `json:"user"`
 	Title       string           `json:"title"`
 	Body        string           `json:"body"`
+	BodyHTML    string           `json:"body_html"`
 	Labels      []*IssueLabel    `json:"labels"`
 	Milestone   *IssueMilestone  `json:"milestone"`
 	Assignee    *User            `json:"assignee"`
@@ -53,6 +54,7 @@ type IssueComment struct {
 	HTMLURL string    `json:"html_url"`
 	Poster  *User     `json:"user"`
 	Body    string    `json:"body"`
+	BodyHTML string   `json:"body_html"`
 	Created time.Time `json:"created_at"`
 	Updated time.Time `json:"updated_at"`
 }
