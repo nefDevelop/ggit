@@ -118,6 +118,11 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 		ownerName := c.Param("username")
 		repoName := strings.TrimSuffix(c.Param("reponame"), ".git")
 
+		// Check if Gogs is installed/locked
+		if !database.HasEngine || database.Handle == nil {
+			return
+		}
+
 		// Check if the user is the same as the repository owner
 		if gctx.IsLogged && gctx.User.LowerName == strings.ToLower(ownerName) {
 			owner = gctx.User

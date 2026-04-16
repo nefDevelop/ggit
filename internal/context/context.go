@@ -360,13 +360,15 @@ func Contexter(store Store) gin.HandlerFunc {
 		}
 		gctx.Data["Flash"] = gctx.Flash
 		
-		gctx.User, gctx.IsBasicAuth, gctx.IsTokenAuth = authenticatedUser(store, c, sess)
-		if gctx.User != nil {
-			gctx.IsLogged = true
-			gctx.Data["LoggedUser"] = gctx.User
-			gctx.Data["LoggedUserID"] = gctx.User.ID
-			gctx.Data["LoggedUserName"] = gctx.User.Name
-			gctx.Data["IsAdmin"] = gctx.User.IsAdmin
+		if database.HasEngine && database.Handle != nil {
+			gctx.User, gctx.IsBasicAuth, gctx.IsTokenAuth = authenticatedUser(store, c, sess)
+			if gctx.User != nil {
+				gctx.IsLogged = true
+				gctx.Data["LoggedUser"] = gctx.User
+				gctx.Data["LoggedUserID"] = gctx.User.ID
+				gctx.Data["LoggedUserName"] = gctx.User.Name
+				gctx.Data["IsAdmin"] = gctx.User.IsAdmin
+			}
 		}
 
 		c.Set("context", gctx)

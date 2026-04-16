@@ -39,6 +39,11 @@ func CSRF() gin.HandlerFunc {
 			ctx.Data["CSRFTokenHTML"] = template.HTML(fmt.Sprintf(`<input type="hidden" name="_csrf" value="%s">`, token))
 		}
 
+		// Provide token to SPA/Frontend via a non-HttpOnly cookie
+		if c.Request.Method == http.MethodGet {
+			c.SetCookie("XSRF-TOKEN", token, 86400, "/", "", false, false)
+		}
+
 		// Validate token for mutable requests
 		if c.Request.Method == http.MethodPost ||
 			c.Request.Method == http.MethodPut ||

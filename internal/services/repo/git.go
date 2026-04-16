@@ -40,9 +40,13 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 	}
 
 	// README
-	data, err := getRepoInitFile("readme", opts.Readme)
+	readmeName := opts.Readme
+	if readmeName == "" {
+		readmeName = "Default"
+	}
+	data, err := getRepoInitFile("readme", readmeName)
 	if err != nil {
-		return errors.Newf("getRepoInitFile[%s]: %v", opts.Readme, err)
+		return errors.Newf("getRepoInitFile[%s]: %v", readmeName, err)
 	}
 
 	cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name, false)

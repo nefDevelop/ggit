@@ -16,6 +16,7 @@ import (
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/route/repo"
 	"gogs.io/gogs/public"
+	"io/fs"
 )
 
 type Engine struct {
@@ -128,13 +129,39 @@ func UseCombo(rg *gin.RouterGroup, path string) *Combo {
 
 func setupStatic(r *Engine) {
 	customPublic := filepath.Join(conf.CustomDir(), "public")
-	if osx.IsDir(customPublic) {
-		r.Static("/public", customPublic)
-	} else if conf.Server.LoadAssetsFromDisk {
-		r.Static("/public", filepath.Join(conf.WorkDir(), "public"))
-	} else {
-		r.StaticFS("/public", http.FS(public.Files))
+	
+	serveStatic := func(prefix, path string) {
+		r.Static(prefix, path)
 	}
+	serveStaticFS := func(prefix string, fs http.FileSystem) {
+		r.StaticFS(prefix, fs)
+	}
+
+	if osx.IsDir(customPublic) {
+		serveStatic("/public", customPublic)
+		// Also serve common dirs at root for legacy templates
+		for _, dir := range []string{"js", "css", "img", "fonts", "plugins", "vendor", "assets"} {
+			if osx.IsDir(filepath.Join(customPublic, dir)) {
+				serveStatic("/"+dir, filepath.Join(customPublic, dir))
+			}
+		}
+	} else if conf.Server.LoadAssetsFromDisk {
+		publicDir := filepath.Join(conf.WorkDir(), "public")
+		serveStatic("/public", publicDir)
+		for _, dir := range []string{"js", "css", "img", "fonts", "plugins", "vendor", "assets"} {
+			serveStatic("/"+dir, filepath.Join(publicDir, dir))
+		}
+	} else {
+		serveStaticFS("/public", http.FS(public.Files))
+		// For FS, we manually handle root-level assets by sub-mounting each dir
+		for _, dir := range []string{"js", "css", "img", "fonts", "plugins", "vendor", "assets"} {
+			sub, err := fs.Sub(public.Files, dir)
+			if err == nil {
+				serveStaticFS("/"+dir, http.FS(sub))
+			}
+		}
+	}
+
 	r.Static(conf.UsersAvatarPathPrefix, conf.Picture.AvatarUploadPath)
 	r.Static(database.RepoAvatarURLPrefix, conf.Picture.RepositoryAvatarUploadPath)
 }

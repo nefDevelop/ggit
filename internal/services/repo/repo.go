@@ -62,6 +62,8 @@ func (s *repositoryService) Create(ctx context.Context, doer, owner *database.Us
 			return err
 		}
 
+		repo.Owner = owner
+
 		// 2. Inicializar el repositorio Git
 		err = initRepository(repoPath, doer, repo, opts)
 		if err != nil {

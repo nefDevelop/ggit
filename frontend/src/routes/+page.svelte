@@ -1,7 +1,14 @@
-<script>
+<script lang="ts">
+  import { authState } from '$lib/auth.svelte';
+  import DashboardView from '$lib/components/DashboardView.svelte';
+
+  // State to check backend while logged out
   let serverInfo = $state({ version: '...', status: 'Checking...' });
 
   async function checkBackend() {
+    // Only check if not authenticated otherwise Dashboard will do its own fetching
+    if (authState.isAuthenticated) return;
+    
     try {
       const res = await fetch('/api/v1/repos/search');
       if (res.ok) {
@@ -14,56 +21,113 @@
     }
   }
 
-  checkBackend();
+  $effect(() => {
+    if (!authState.loading && !authState.isAuthenticated) {
+      checkBackend();
+    }
+  });
 </script>
 
-<div class="container">
-  <header style="margin-bottom: 4rem; text-align: center;">
-    <h1 style="font-size: 3.5rem; margin-bottom: 1rem; background: linear-gradient(to right, #6366f1, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-      Gogs Modernized
-    </h1>
-    <p style="color: var(--text-muted); font-size: 1.25rem;">
-      The world's easiest self-hosted Git service, now faster and more beautiful.
-    </p>
-  </header>
-
-  <div class="grid">
-    <div class="glass">
-      <h3>Quick Start</h3>
-      <p>Configure your server and start hosting your projects in minutes.</p>
-      <a href="/install" class="btn">Go to Install</a>
-    </div>
-
-    <div class="glass">
-      <h3>Explore</h3>
-      <p>Discover interesting repositories and active developers.</p>
-      <a href="/explore/repos" class="btn" style="background: transparent; border: 1px solid var(--primary-color);">Explore Repos</a>
-    </div>
-
-    <div class="glass">
-      <h3>Server Status</h3>
-      <div style="margin-top: 1rem;">
-        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; background-color: {serverInfo.status === 'Online' ? '#10b981' : (serverInfo.status === 'Offline' ? '#ef4444' : '#f59e0b')}; pulse animate"></span>
-        <span>{serverInfo.status}</span>
-      </div>
-      <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 1rem;">
-        Backend: <strong>Gin + GORM</strong>
-      </p>
-    </div>
+{#if authState.loading}
+  <div class="loading-screen">
+    <div class="spinner"></div>
   </div>
+{:else if authState.isAuthenticated}
+  <DashboardView />
+{:else}
+  <div class="container landing-container">
+    <header style="margin-bottom: 4rem; text-align: center;">
+      <h1 class="hero-title">Gogs Modernized</h1>
+      <p style="color: var(--text-muted); font-size: 1.25rem;">
+        The world's easiest self-hosted Git service, now faster and more beautiful.
+      </p>
+    </header>
 
-  <footer style="margin-top: 6rem; text-align: center; color: var(--text-muted);">
-    <p>&copy; {new Date().getFullYear()} Gogs Modernization Project</p>
-  </footer>
-</div>
+    <div class="grid">
+      <div class="glass">
+        <h3>Welcome Back</h3>
+        <p>Sign in to your account and manage your repositories.</p>
+        <a href="/user/login" class="btn">Sign In</a>
+      </div>
+
+      <div class="glass">
+        <h3>Explore</h3>
+        <p>Discover interesting repositories and active developers.</p>
+        <a href="/explore/repos" class="btn btn-tonal">Explore Repos</a>
+      </div>
+
+      <div class="glass">
+        <h3>Server Status</h3>
+        <div style="margin-top: 1rem; display: flex; align-items: center;">
+          <span class="status-indicator {serverInfo.status === 'Online' ? 'online' : (serverInfo.status === 'Offline' ? 'offline' : 'auth')} animate"></span>
+          <span>{serverInfo.status}</span>
+        </div>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 1rem;">
+          Backend: <strong>Gin + GORM</strong>
+        </p>
+      </div>
+    </div>
+
+    <footer style="margin-top: 6rem; text-align: center; color: var(--text-muted);">
+      <p>&copy; {new Date().getFullYear()} Gogs Modernization Project</p>
+    </footer>
+  </div>
+{/if}
 
 <style>
+  .landing-container {
+    padding-top: 4rem;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--on-primary), var(--primary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+
+  .status-indicator.online { background-color: #10b981; }
+  .status-indicator.offline { background-color: #ef4444; }
+  .status-indicator.auth { background-color: #f59e0b; }
+
   @keyframes pulse {
     0% { opacity: 1; }
-    50% { opacity: 0.5; }
+    50% { opacity: 0.4; }
     100% { opacity: 1; }
   }
   .animate {
     animation: pulse 2s infinite ease-in-out;
   }
+
+  .loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 </style>
+
