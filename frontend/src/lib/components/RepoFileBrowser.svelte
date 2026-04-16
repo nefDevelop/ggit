@@ -42,17 +42,39 @@
 
   const repoContext = getContext<any>('repo');
 
-  const healthStats = $derived({
-    commits: 124,
-    branches: repoContext?.branches?.length || 1,
-    tags: 3,
-    license: 'MIT'
+  const langEntries = $derived(() => {
+    if (!repoData?.languages) return [];
+    const total = Object.values(repoData.languages as Record<string, number>).reduce((a, b) => a + b, 0);
+    return Object.entries(repoData.languages as Record<string, number>)
+      .map(([name, bytes]) => ({
+        name,
+        percent: ((bytes / total) * 100).toFixed(1),
+        color: getLanguageColor(name)
+      }))
+      .sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
   });
+
+  function timeAgo(dateInput: any) {
+    if (!dateInput) return '';
+    const date = new Date(dateInput);
+    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 30) return `${days}d ago`;
+    return date.toLocaleDateString();
+  }
 </script>
 
 <div class="workspace-area">
   {#if loading}
-    <div class="skeleton-grid"></div>
+    <div class="skeleton-grid">
+        <div class="skeleton-main"></div>
+        <div class="skeleton-side"></div>
+    </div>
   {:else if error}
     <div class="error-state">
       <span class="material-symbols-rounded">error</span>
@@ -68,7 +90,7 @@
         <div class="setup-commands">
           <div class="command-block">
             <span class="cmd-label">Quick Setup</span>
-            <pre><code>git remote add origin {repoData.repository.clone_url}
+            <pre><code>git remote add origin {repoData.repository?.clone_url}
 git branch -M main
 git push -u origin main</code></pre>
           </div>
@@ -76,76 +98,21 @@ git push -u origin main</code></pre>
       </div>
     {:else}
       <div class="technical-grid">
-        <!-- Main Explorer / Code -->
         <div class="main-column">
-          <!-- Branch & Path Row -->
-          <div class="browser-controls">
-            <div class="branch-selector">
-              <span class="material-symbols-rounded">account_tree</span>
-              <select 
-                class="branch-select"
-                value={repoData.branch}
-                onchange={(e) => {
-                  const newBranch = e.currentTarget.value;
-                  window.location.href = `/${username}/${reponame}/${newBranch}`;
-                }}
-              >
-                {#each repoContext.branches as b}
-                  <option value={b}>{b}</option>
-                {/each}
-              </select>
+          {#if repoData.last_commit}
+            <div class="last-commit-bar">
+                <div class="commit-avatar">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
+                <div class="commit-info">
+                <span class="commit-msg">{repoData.last_commit.summary}</span>
+                <span class="commit-meta">
+                    <span class="author">{repoData.last_commit.author?.name}</span>
+                    <span class="time">{timeAgo(repoData.last_commit.author?.when)}</span>
+                </span>
+                </div>
+                <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
             </div>
+          {/if}
 
-            <nav class="breadcrumbs">
-              <a href="/{username}/{reponame}" class="crumb-root">
-                <span class="material-symbols-rounded">home</span>
-              </a>
-              {#each path.split('/').filter(p => p) as part, i}
-                <span class="sep">/</span>
-                <a href="/{username}/{reponame}/{path.split('/').slice(0, i+1).join('/')}" class="crumb-link">
-                  {part}
-                </a>
-              {/each}
-            </nav>
-          </div>
-
-          <!-- Git Stats (Flat design) -->
-          <div class="health-row">
-            <a href="/{username}/{reponame}/commits" class="health-item">
-              <span class="material-symbols-rounded">history</span>
-              <span class="count">{healthStats.commits}</span>
-              <span class="label">Commits</span>
-            </a>
-            <a href="/{username}/{reponame}/branches" class="health-item">
-              <span class="material-symbols-rounded">account_tree</span>
-              <span class="count">{healthStats.branches}</span>
-              <span class="label">Branches</span>
-            </a>
-            <div class="health-item">
-              <span class="material-symbols-rounded">tag</span>
-              <span class="count">{healthStats.tags}</span>
-              <span class="label">Tags</span>
-            </div>
-            <div class="health-item license">
-              <span class="material-symbols-rounded">balance</span>
-              <span class="label">{healthStats.license}</span>
-            </div>
-          </div>
-
-          <!-- Last Commit (Flat design) -->
-          <div class="last-commit-bar">
-            <div class="commit-avatar">A</div>
-            <div class="commit-info">
-               <span class="commit-msg">Refactor technical workspace layout for density</span>
-               <span class="commit-meta">
-                 <span class="author">nef734</span>
-                 <span class="time">2 hours ago</span>
-               </span>
-            </div>
-            <code class="sha">a1b2c3d</code>
-          </div>
-
-          <!-- File Content / Table -->
           <div class="content-view">
             {#if repoData.type === 'directory'}
               <table class="file-table">
@@ -156,14 +123,14 @@ git push -u origin main</code></pre>
                         <span class="material-symbols-rounded icon-{entry.type === 'tree' ? 'tree' : 'blob'}">
                           {entry.type === 'tree' ? 'folder' : 'description'}
                         </span>
-                        <a href="/{username}/{reponame}/{path ? path + '/' : ''}{entry.name}">
+                        <a href="/{username}/{reponame}/src/{repoData.branch}/{path ? path + '/' : ''}{entry.name}">
                           {entry.name}
                         </a>
                       </td>
                       <td class="msg-cell">
-                        <span class="msg-text">Update {entry.name}</span>
+                        <span class="msg-text">...</span>
                       </td>
-                      <td class="date-cell">2d</td>
+                      <td class="date-cell">--</td>
                     </tr>
                   {/each}
                 </tbody>
@@ -185,12 +152,12 @@ git push -u origin main</code></pre>
                    {#if repoData.is_text_file}
                       <div class="code-grid">
                         <div class="ln-col">
-                          {#each repoData.highlighted_content as _, i}
+                          {#each repoData.highlighted_content || [] as _, i}
                             <span>{i + 1}</span>
                           {/each}
                         </div>
                         <pre class="code-pre">
-                          {#each repoData.highlighted_content as line}
+                          {#each repoData.highlighted_content || [] as line}
                             <div class="line">{@html line || '&nbsp;'}</div>
                           {/each}
                         </pre>
@@ -206,7 +173,6 @@ git push -u origin main</code></pre>
             {/if}
           </div>
 
-          <!-- README Section -->
           <div class="readme-section">
              <header class="readme-header">
                 <span class="material-symbols-rounded">menu_book</span>
@@ -218,31 +184,30 @@ git push -u origin main</code></pre>
           </div>
         </div>
 
-        <!-- Sidebar (Inside technical-grid) -->
         <aside class="side-column">
-          <div class="side-section">
-            <h4 class="side-title">About</h4>
-            <p class="about-text">{repoContext.data?.description || 'No description.'}</p>
-          </div>
+          {#if langEntries().length > 0}
+            <div class="side-section">
+                <h4 class="side-title">Languages</h4>
+                <div class="lang-bar">
+                    {#each langEntries() as lang}
+                        <div class="lang-progress" style="width: {lang.percent}%; background: {lang.color}"></div>
+                    {/each}
+                </div>
+                <div class="lang-list">
+                    {#each langEntries() as lang}
+                        <div class="lang-item">
+                            <span class="dot" style="background: {lang.color}"></span>
+                            <span class="name">{lang.name}</span>
+                            <span class="percent">{lang.percent}%</span>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+          {/if}
 
           <div class="side-section">
-            <h4 class="side-title">Languages</h4>
-            <div class="lang-bar">
-               <div class="lang-progress" style="width: 70%; background: #00ADD8"></div>
-               <div class="lang-progress" style="width: 30%; background: #3178C6"></div>
-            </div>
-            <div class="lang-list">
-               <div class="lang-item">
-                 <span class="dot" style="background: #00ADD8"></span>
-                 <span class="name">Go</span>
-                 <span class="percent">70%</span>
-               </div>
-               <div class="lang-item">
-                 <span class="dot" style="background: #3178C6"></span>
-                 <span class="name">TypeScript</span>
-                 <span class="percent">30%</span>
-               </div>
-            </div>
+            <h4 class="side-title">About</h4>
+            <p class="about-text">{repoContext.data?.description || 'No description provided.'}</p>
           </div>
         </aside>
       </div>
@@ -252,97 +217,49 @@ git push -u origin main</code></pre>
 
 <style>
   .workspace-area { height: 100%; }
-
-  .technical-grid {
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 2.5rem;
-  }
-
-  .main-column {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-
-  /* Browser Controls */
-  .browser-controls { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
-  .branch-selector { display: flex; align-items: center; gap: 0.5rem; background: var(--md3-surface-container); padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid var(--border-color); }
-  .branch-select { background: transparent; border: none; color: var(--text-color); font-weight: 700; outline: none; cursor: pointer; }
-  
-  .breadcrumbs { display: flex; align-items: center; gap: 0.4rem; background: var(--md3-surface-2); padding: 0.4rem 1rem; border-radius: 0.5rem; }
-  .crumb-root { color: var(--primary-color); display: flex; }
-  .crumb-link { color: var(--text-muted); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
-  .sep { opacity: 0.3; }
-
-  /* Integrated Bars */
-  .health-row {
-    display: flex;
-    padding: 0.75rem 0.5rem;
-    gap: 2rem;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1rem;
-  }
-  .health-item { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
-  .health-item .count { color: var(--text-color); font-weight: 700; }
-  .health-item.license { margin-left: auto; }
-
-  .last-commit-bar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background: var(--md3-surface-container);
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
-    margin-bottom: 1rem;
-  }
+  .technical-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2.5rem; }
+  .main-column { display: flex; flex-direction: column; min-width: 0; }
+  .last-commit-bar { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; margin-bottom: 1.5rem; }
   .commit-avatar { width: 24px; height: 24px; background: var(--primary-color); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; color: var(--on-primary); }
   .commit-msg { font-weight: 600; font-size: 0.95rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .commit-meta { display: flex; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
   .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; }
-
-  /* Content (Table or Viewer) */
-  .content-view {
-    background: var(--md3-surface-1);
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    overflow: hidden;
-  }
-
+  .content-view { background: rgba(0,0,0,0.1); border-radius: 0.5rem; overflow: hidden; }
   .file-table { width: 100%; border-collapse: collapse; }
   .file-row { border-bottom: 1px solid rgba(255,255,255,0.02); }
-  .file-row:hover { background: rgba(255,255,255,0.01); }
   .file-row td { padding: 0.6rem 1rem; }
   .name-cell { display: flex; align-items: center; gap: 0.75rem; min-width: 250px; }
   .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 500; }
   .icon-tree { color: #facc15; font-size: 1.2rem; }
   .icon-blob { color: var(--text-muted); font-size: 1.2rem; }
-  .msg-cell { font-size: 0.85rem; color: var(--text-muted); opacity: 0.7; }
-  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; }
-
-  /* File Viewer */
-  .file-header { background: var(--md3-surface-3); padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+  .msg-cell { font-size: 0.85rem; color: var(--text-muted); opacity: 0.6; }
+  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.4; }
+  .file-header { background: var(--md3-surface-3); padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; }
   .file-meta { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem; }
   .tool-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.2rem 0.6rem; border-radius: 0.4rem; cursor: pointer; font-size: 0.8rem; }
   .code-box { background: #0d1117; }
   .code-grid { display: grid; grid-template-columns: 45px 1fr; }
   .ln-col { border-right: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; text-align: right; }
   .ln-col span { display: block; font-family: monospace; font-size: 0.75rem; color: var(--text-muted); opacity: 0.3; padding-right: 0.75rem; line-height: 1.5; }
-  .code-pre { margin: 0; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5; }
-
-  /* Readme */
-  .readme-section { margin-top: 1.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; overflow: hidden; }
-  .readme-header { padding: 0.75rem 1.25rem; background: var(--md3-surface-2); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.9rem; }
+  .code-pre { margin: 0; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5; color: #e6edf3; }
+  .readme-section { margin-top: 1.5rem; background: rgba(255,255,255,0.01); border-radius: 0.5rem; overflow: hidden; }
+  .readme-header { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); }
   .readme-content { padding: 2rem; }
-
-  /* Sidebar */
   .side-column { display: flex; flex-direction: column; gap: 2.5rem; }
-  .side-title { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
-  .about-text { font-size: 0.95rem; line-height: 1.5; color: var(--text-color); }
-  .lang-bar { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: var(--md3-surface-3); margin-bottom: 1rem; }
-  .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; margin-bottom: 0.5rem; }
+  .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .about-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-color); opacity: 0.8; }
+  .lang-bar { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(0,0,0,0.3); margin-bottom: 1rem; }
+  .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; margin-bottom: 0.4rem; }
   .lang-item .dot { width: 8px; height: 8px; border-radius: 50%; }
   .lang-item .name { flex: 1; font-weight: 600; }
+  .lang-item .percent { color: var(--text-muted); }
+  .skeleton-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2.5rem; height: 400px; }
+  .skeleton-main { background: var(--md3-surface-2); border-radius: 1rem; animation: pulse 1.5s infinite; }
+  .skeleton-side { background: var(--md3-surface-2); border-radius: 1rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+  .empty-state { padding: 4rem 2rem; text-align: center; }
+  .empty-icon-ring { width: 64px; height: 64px; border: 2px dashed var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary-color); }
+  .command-block { background: #000; padding: 1.5rem; border-radius: 0.75rem; text-align: left; margin-top: 2rem; }
+  .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.5rem; }
+  code { font-family: 'JetBrains Mono', monospace; }
 </style>

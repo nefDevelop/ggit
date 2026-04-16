@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -47,6 +48,11 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		opt = opts[0]
 	}
 
+	var langs map[string]int64
+	if r.Languages != "" {
+		_ = json.Unmarshal([]byte(r.Languages), &langs)
+	}
+
 	cloneLink := repox.NewCloneLink(owner.Name, r.Name, false)
 	return &apiv1types.Repository{
 		ID:            r.ID,
@@ -69,6 +75,8 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		Watchers:      r.NumWatches,
 		OpenIssues:    r.NumOpenIssues,
 		DefaultBranch: r.DefaultBranch,
+		Language:      r.PrimaryLanguage,
+		Languages:     langs,
 		Created:       r.Created,
 		Updated:       r.Updated,
 		Permissions:   opt.Permission,
@@ -158,6 +166,28 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 		}
 		return nil
 	})
+}
+
+type UpdateRepoOptions struct {
+	PrimaryLanguage *string
+	Languages       *string
+}
+
+// Update updates the repository record in the database.
+func (s *RepositoriesStore) Update(ctx context.Context, repoID int64, opts UpdateRepoOptions) error {
+	updates := make(map[string]any)
+	if opts.PrimaryLanguage != nil {
+		updates["primary_language"] = *opts.PrimaryLanguage
+	}
+	if opts.Languages != nil {
+		updates["languages"] = *opts.Languages
+	}
+
+	if len(updates) == 0 {
+		return nil
+	}
+
+	return s.db.WithContext(ctx).Model(&Repository{}).Where("id = ?", repoID).Updates(updates).Error
 }
 
 // GetByCollaboratorID returns a list of repositories that the given

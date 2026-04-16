@@ -4,6 +4,7 @@
 	import { authState, checkAuth } from '$lib/auth.svelte';
 	import { onMount } from 'svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
+
 	let { children } = $props();
 
 	onMount(() => {
@@ -17,8 +18,11 @@
 
 <div id="app-layout">
 	{#if authState.isAuthenticated}
-		<Navigation />
+        <div class="navigation-sidebar">
+		    <Navigation />
+        </div>
 	{/if}
+
 	<main id="main-content">
 		{@render children()}
 	</main>

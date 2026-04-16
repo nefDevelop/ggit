@@ -16,6 +16,19 @@
     return date.toLocaleDateString();
   }
 
+  // Calculate language percentages for the mini bar
+  const langEntries = $derived(() => {
+    if (!repo?.languages) return [];
+    const total = Object.values(repo.languages as Record<string, number>).reduce((a, b) => a + b, 0);
+    return Object.entries(repo.languages as Record<string, number>)
+      .map(([name, bytes]) => ({
+        name,
+        percent: ((bytes / total) * 100).toFixed(1),
+        color: getLanguageColor(name)
+      }))
+      .sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
+  });
+
   let copied = $state(false);
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
@@ -30,17 +43,27 @@
       <a href="/{repo.full_name}" class="repo-name">
         {repo.name}
       </a>
+      {#if repo.empty}
+        <span class="badge-empty">Empty</span>
+      {/if}
+    </div>
+
+    <!-- REAL MINI LANGUAGE BAR ABOVE DESCRIPTION -->
+    {#if langEntries().length > 0}
+      <div class="mini-lang-bar">
+        {#each langEntries() as lang}
+          <div class="lang-segment" style="width: {lang.percent}%; background: {lang.color}" title="{lang.name} {lang.percent}%"></div>
+        {/each}
+      </div>
+    {/if}
+
+    <div class="desc-line">
       {#if repo.private}
         <span class="material-symbols-rounded status-icon" title="Private">lock</span>
       {/if}
       {#if repo.fork}
         <span class="material-symbols-rounded status-icon" title="Fork">account_tree</span>
       {/if}
-      {#if repo.empty}
-        <span class="badge-empty">Empty</span>
-      {/if}
-    </div>
-    <div class="desc-line">
       <p class="repo-desc">
         {repo.description || 'No description provided.'}
       </p>
@@ -55,8 +78,6 @@
       </div>
     {:else if repo.empty}
       <div class="setup-hint">Ready for code</div>
-    {:else}
-      <div class="lang-none">N/A</div>
     {/if}
   </div>
 
@@ -84,92 +105,43 @@
     display: grid;
     grid-template-columns: 1fr 120px 140px 140px;
     align-items: center;
-    padding: 1.2rem 1.5rem;
+    padding: 1rem 1.25rem;
     background: transparent;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     gap: 1rem;
-    border: none;
     position: relative;
-    border-radius: 0.75rem;
+    border: none;
   }
 
-  /* SUBTLE ALTERNATING BACKGROUND */
-  :global(.repo-group .repo-row:nth-child(even)) {
-    background: rgba(255, 255, 255, 0.025);
-  }
-
-  /* CAPSULE EFFECT ON HOVER */
   .repo-row:hover {
-    background: var(--md3-surface-3) !important;
-    transform: scale(1.015) translateX(12px);
-    border-radius: 5rem; /* Full capsule */
-    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    background: var(--md3-surface-3);
+    transform: scale(1.01) translateX(8px);
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     z-index: 10;
   }
 
-  .older-row {
-    padding: 0.75rem 1.25rem;
-    opacity: 0.8;
-  }
+  .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }
+  .main-info { display: flex; flex-direction: column; min-width: 0; gap: 0.35rem; }
 
-  .main-info { display: flex; flex-direction: column; min-width: 0; gap: 0.25rem; }
-
-  .title-line {
+  /* MINI LANG BAR */
+  .mini-lang-bar {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-width: 0;
-  }
-
-  .desc-line {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-width: 0;
-  }
-
-  .status-icon {
-    font-size: 1rem;
-    color: var(--text-color);
-    opacity: 0.5;
-    flex-shrink: 0;
-    transition: opacity 0.2s ease;
-  }
-
-  .repo-row:hover .status-icon {
-    opacity: 0.9;
-    color: var(--primary-color);
-  }
-
-  .repo-name {
-    font-weight: 700;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .repo-desc {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin: 0.25rem 0 0 0;
-    white-space: nowrap;
+    height: 4px;
+    width: 120px;
+    border-radius: 2px;
     overflow: hidden;
-    text-overflow: ellipsis;
+    background: rgba(0,0,0,0.2);
+    margin: 0.1rem 0;
   }
+  .lang-segment { height: 100%; }
 
-  .badge-empty {
-    font-size: 0.65rem;
-    background: var(--md3-surface-2);
-    padding: 0.1rem 0.5rem;
-    border-radius: 2rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    border: 1px solid var(--border-color);
-  }
+  .desc-line { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+  .status-icon { font-size: 1rem; color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
+  .repo-name { font-weight: 700; color: var(--primary-color); text-decoration: none; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .repo-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+  .badge-empty { font-size: 0.65rem; background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; font-weight: 800; letter-spacing: 0.05em; }
   .lang { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
   .lang-dot { width: 10px; height: 10px; border-radius: 50%; }
 
@@ -178,38 +150,11 @@
   .stat-item.dim { opacity: 0.2; }
   .stat-item.active { color: var(--primary-color); font-weight: 700; }
 
-  .actions-info {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-
+  .actions-info { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
   .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
-  /* ON-DEMAND ACTIONS */
-  .copy-btn {
-    opacity: 0;
-    transform: translateX(10px);
-    transition: all 0.2s ease;
-    background: var(--primary-color);
-    color: white;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .copy-btn span { font-size: 1.1rem; }
-
-  .repo-row:hover .copy-btn {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  .copy-btn { opacity: 0; transform: translateX(10px); transition: all 0.2s ease; background: var(--primary-color); color: var(--on-primary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .repo-row:hover .copy-btn { opacity: 1; transform: translateX(0); }
 
   @media (max-width: 900px) {
     .repo-row { grid-template-columns: 1fr 100px; }

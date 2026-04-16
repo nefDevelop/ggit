@@ -194,6 +194,7 @@ type Repository struct {
 	NumTags             int `xorm:"-" gorm:"-" json:"-"`
 
 	IsPrivate bool
+	IsFork    bool
 	// TODO: When migrate to GORM, make sure to do a loose migration with `HasColumn` and `AddColumn`,
 	// see docs in https://gorm.io/docs/migration.html.
 	IsUnlisted bool `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
@@ -217,8 +218,11 @@ type Repository struct {
 	EnablePulls           bool              `xorm:"NOT NULL DEFAULT true" gorm:"not null;default:TRUE"`
 	PullsIgnoreWhitespace bool              `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
 	PullsAllowRebase      bool              `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
+	PullsAllowManualMerge bool              `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
 
-	IsFork   bool `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
+	PrimaryLanguage string `xorm:"VARCHAR(32)" gorm:"type:VARCHAR(32)"`
+	Languages       string `xorm:"TEXT" gorm:"type:TEXT"`
+
 	ForkID   int64
 	BaseRepo *Repository `xorm:"-" gorm:"-" json:"-"`
 

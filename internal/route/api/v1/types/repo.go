@@ -29,6 +29,8 @@ type Repository struct {
 	Watchers      int                   `json:"watchers_count"`
 	OpenIssues    int                   `json:"open_issues_count"`
 	DefaultBranch string                `json:"default_branch"`
+	Language      string                `json:"language"`
+	Languages     map[string]int64      `json:"languages"`
 	Created       time.Time             `json:"created_at"`
 	Updated       time.Time             `json:"updated_at"`
 	Permissions   *RepositoryPermission `json:"permissions,omitempty"`
