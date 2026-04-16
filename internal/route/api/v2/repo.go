@@ -48,7 +48,7 @@ func CreateRepo(c *context.APIContext) {
 
 // GetRepoView returns the content of a file or directory in the repository.
 func GetRepoView(c *context.APIContext) {
-	if c.Repo.Repository.IsBare {
+	if c.Repo.Repository.IsBare || c.Repo.Commit == nil {
 		c.JSON(http.StatusOK, map[string]any{
 			"repository": c.Repo.Repository.APIFormatLegacy(nil),
 			"is_bare":    true,

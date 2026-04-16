@@ -17,29 +17,49 @@
   let feeds = $state<any[]>([]);
   let loading = $state(true);
   let viewMode = $state<'list' | 'temporal'>('temporal');
+  let searchQuery = $state('');
+  let searchInput: HTMLInputElement;
 
   const oneWeekAgo = $derived(Date.now() - (7 * 24 * 60 * 60 * 1000));
 
+  const allRepos = $derived([...data.repositories, ...data.collaborative]);
+  
+  const filteredRepos = $derived(() => {
+    if (!searchQuery) return allRepos;
+    const q = searchQuery.toLowerCase();
+    return allRepos.filter(r => 
+      r.name.toLowerCase().includes(q) || 
+      (r.description && r.description.toLowerCase().includes(q))
+    );
+  });
+
   const groupedRepos = $derived(() => {
-    const all = [...data.repositories, ...data.collaborative];
-    if (viewMode === 'list') return { all };
+    const repos = searchQuery ? filteredRepos() : allRepos;
+    if (viewMode === 'list') return { all: repos };
 
     return {
-      recent: all.filter(r => new Date(r.updated_at).getTime() > oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
-      older: all.filter(r => new Date(r.updated_at).getTime() <= oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      recent: repos.filter(r => new Date(r.updated_at).getTime() > oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
+      older: repos.filter(r => new Date(r.updated_at).getTime() <= oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     };
   });
 
+  // Shortcut for search
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === '/' && document.activeElement?.tagName !== 'INPUT') {
+      e.preventDefault();
+      searchInput?.focus();
+    }
+  }
+
   onMount(async () => {
+    window.addEventListener('keydown', handleKeydown);
     try {
       const [dataRes, feedsRes] = await Promise.all([
         fetch('/api/v2/user/dashboard/data'),
         fetch('/api/v2/user/dashboard/feeds')
       ]);
 
-      if (dataRes.ok) {
-        data = await dataRes.json();
-      }
+      if (dataRes.ok) data = await dataRes.json();
       if (feedsRes.ok) {
         const feedsData = await feedsRes.json();
         feeds = feedsData.feeds;
@@ -49,13 +69,8 @@
     } finally {
       loading = false;
     }
+    return () => window.removeEventListener('keydown', handleKeydown);
   });
-
-  function getCsrfToken() {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
-    return match ? match[2] : '';
-  }
 </script>
 
 <div class="dashboard-content">
@@ -64,29 +79,46 @@
       <section class="repos-island">
         <header class="content-header">
           <div class="header-main">
-            <h2 class="expressive-heading">Repositories</h2>
-            <div class="view-controls">
-              <button 
-                class="view-btn {viewMode === 'temporal' ? 'active' : ''}" 
-                onclick={() => viewMode = 'temporal'}
-                title="Temporal View"
-              >
-                <span class="material-symbols-rounded">schedule</span>
-                <span class="btn-text">Temporal</span>
-              </button>
-              <button 
-                class="view-btn {viewMode === 'list' ? 'active' : ''}" 
-                onclick={() => viewMode = 'list'}
-                title="Full List"
-              >
-                <span class="material-symbols-rounded">list</span>
-                <span class="btn-text">List</span>
-              </button>
+            <div class="search-row">
+              <div class="search-container pill">
+                <span class="material-symbols-rounded search-icon">search</span>
+                <input 
+                  bind:this={searchInput}
+                  bind:value={searchQuery}
+                  placeholder="Search projects... (Press /)" 
+                  class="search-input"
+                />
+                {#if searchQuery}
+                  <button class="clear-search" onclick={() => searchQuery = ''}>
+                    <span class="material-symbols-rounded">close</span>
+                  </button>
+                {/if}
+              </div>
+              <a class="btn btn-sm btn-primary" href="/repo/create">
+                 <span class="material-symbols-rounded">add</span> New
+              </a>
+            </div>
+
+            <div class="title-row">
+              <h2 class="expressive-heading">Repositories</h2>
+              <div class="view-controls">
+                <button 
+                  class="view-btn {viewMode === 'temporal' ? 'active' : ''}" 
+                  onclick={() => viewMode = 'temporal'}
+                >
+                  <span class="material-symbols-rounded">schedule</span>
+                  <span class="btn-text">Temporal</span>
+                </button>
+                <button 
+                  class="view-btn {viewMode === 'list' ? 'active' : ''}" 
+                  onclick={() => viewMode = 'list'}
+                >
+                  <span class="material-symbols-rounded">list</span>
+                  <span class="btn-text">List</span>
+                </button>
+              </div>
             </div>
           </div>
-          <a class="btn btn-sm btn-primary" href="/repo/create">
-             <span class="material-symbols-rounded">add</span> New
-          </a>
         </header>
 
         {#if loading}
@@ -95,7 +127,7 @@
               <div class="skeleton-line"></div>
             {/each}
           </div>
-        {:else if data.repositories.length === 0 && data.collaborative.length === 0}
+        {:else if allRepos.length === 0}
           <div class="empty-state">
             <div class="empty-icon">
               <span class="material-symbols-rounded" style="font-size: 3rem;">folder_open</span>
@@ -106,32 +138,39 @@
             <a class="btn" href="/repo/create">Create Repository</a>
           </div>
         {:else}
-          <div class="repo-list">
+          <div class="repo-list-container">
             {#if viewMode === 'temporal'}
               {@const groups = groupedRepos()}
+              
               {#if groups.recent.length > 0}
-                <div class="group-label">Active this week</div>
-                {#each groups.recent as repo}
-                  <RepoRow {repo} />
-                {/each}
+                <div class="group-header">
+                  <span class="group-label">Active this week</span>
+                  <span class="group-count">{groups.recent.length}</span>
+                </div>
+                <div class="repo-group recent">
+                  {#each groups.recent as repo}
+                    <RepoRow {repo} />
+                  {/each}
+                </div>
               {/if}
 
               {#if groups.older.length > 0}
-                <div class="group-label">Older</div>
-                {#each groups.older as repo}
-                  <RepoRow {repo} />
-                {/each}
+                <div class="group-header">
+                  <span class="group-label">Older</span>
+                  <span class="group-count">{groups.older.length}</span>
+                </div>
+                <div class="repo-group older">
+                  {#each groups.older as repo}
+                    <RepoRow {repo} isOlder={true} />
+                  {/each}
+                </div>
               {/if}
             {:else}
-              {#each data.repositories as repo}
-                <RepoRow {repo} />
-              {/each}
-              {#if data.collaborative.length > 0}
-                <div class="collaboration-divider">Collaborative</div>
-                {#each data.collaborative as repo}
+              <div class="repo-group">
+                {#each groupedRepos().all as repo}
                   <RepoRow {repo} />
                 {/each}
-              {/if}
+              </div>
             {/if}
           </div>
         {/if}
@@ -173,17 +212,15 @@
 
 <style>
   .dashboard-content {
-    max-width: 1400px;
-    margin: 0 auto;
     width: 100%;
-    padding: 1.5rem;
+    box-sizing: border-box;
   }
 
   .expressive-heading {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: 800;
     letter-spacing: -0.02em;
-    margin: 0;
+    color: var(--text-color);
   }
 
   .content {
@@ -203,7 +240,77 @@
   .header-main {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 1.5rem;
+    flex: 1;
+    width: 100%;
+  }
+
+  .search-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    gap: 1.5rem;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Search Terminal Style */
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--md3-surface-3);
+    border-radius: 0.75rem;
+    padding: 0 0.75rem;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    flex: 1;
+    max-width: 500px;
+  }
+
+  .search-container.pill {
+    border-radius: 2rem;
+    background: var(--md3-surface-container);
+    border: 1px solid var(--border-color);
+  }
+
+  .search-container:focus-within {
+    background: var(--md3-surface-1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .search-icon {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+  }
+
+  .search-input {
+    background: transparent;
+    border: none;
+    padding: 0.75rem;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    width: 100%;
+    font-family: inherit;
+  }
+
+  .search-input:focus { outline: none; }
+
+  .clear-search {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    padding: 0.25rem;
   }
 
   .view-controls {
@@ -224,22 +331,22 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
   }
-
-  .view-btn span { font-size: 1.2rem; }
-  .btn-text { font-size: 0.85rem; font-weight: 600; }
 
   .view-btn.active {
     background: var(--md3-surface-1);
     color: var(--primary-color);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
 
+  .btn-text { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+
+  /* Grid & Layout */
   .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 340px;
-    gap: 2rem;
+    gap: 1.5rem; /* Consistent gap between islands */
   }
 
   .repos-island, .activity-island {
@@ -247,9 +354,17 @@
     padding: 1.5rem;
     border-radius: 1.5rem;
     border: 1px solid var(--border-color);
+    height: fit-content;
   }
 
-  .repo-list {
+  /* Rhythm & Partitioning */
+  .repo-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .repo-group {
     display: flex;
     flex-direction: column;
     background: var(--md3-surface-1);
@@ -258,38 +373,37 @@
     border: 1px solid var(--border-color);
   }
 
+  .repo-group.recent {
+    gap: 2px;
+    background: transparent;
+    border: none;
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.5rem;
+  }
+
   .group-label {
-    padding: 1.25rem 1rem 0.5rem 1rem;
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--primary-color);
-    background: var(--md3-surface-1);
   }
 
-  .collaboration-divider {
-    padding: 0.75rem 1rem;
+  .group-count {
+    font-size: 0.7rem;
     background: var(--md3-surface-3);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    padding: 0.1rem 0.5rem;
+    border-radius: 1rem;
     color: var(--text-muted);
-    border-top: 1px solid var(--border-color);
   }
 
-  .feed-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .feed-item {
-    display: flex;
-    gap: 1rem;
-    font-size: 0.9rem;
-  }
-
+  .feed-list { display: flex; flex-direction: column; gap: 1.5rem; }
+  .feed-item { display: flex; gap: 1rem; font-size: 0.9rem; }
   .feed-avatar { width: 36px; height: 36px; border-radius: 50%; }
   .feed-user { font-weight: 600; color: var(--primary-color); }
   .feed-time { display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }

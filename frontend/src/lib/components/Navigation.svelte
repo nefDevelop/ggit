@@ -3,7 +3,6 @@
   import { page } from '$app/state';
 
   const navItems = [
-    { name: 'Home', icon: 'home', path: '/' },
     { name: 'Dashboard', icon: 'grid_view', path: '/dashboard' },
     { name: 'Explore', icon: 'search', path: '/explore/repos' },
     { name: 'Issues', icon: 'rule', path: '/issues' },

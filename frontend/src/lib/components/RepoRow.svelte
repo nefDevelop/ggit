@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getLanguageColor } from '$lib/utils/languages';
 
-  let { repo } = $props();
+  let { repo, isOlder = false } = $props();
 
   function timeAgo(dateStr: string) {
     const date = new Date(dateStr);
@@ -15,27 +15,36 @@
     if (days < 30) return `${days}d ago`;
     return date.toLocaleDateString();
   }
+
+  let copied = $state(false);
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
+    copied = true;
+    setTimeout(() => copied = false, 2000);
+  }
 </script>
 
-<div class="repo-row">
+<div class="repo-row {isOlder ? 'older-row' : ''}">
   <div class="main-info">
     <div class="title-line">
       <a href="/{repo.full_name}" class="repo-name">
-        {#if repo.private}
-          <span class="material-symbols-rounded icon-sm" title="Private">lock</span>
-        {/if}
-        {#if repo.fork}
-          <span class="material-symbols-rounded icon-sm">account_tree</span>
-        {/if}
         {repo.name}
       </a>
+      {#if repo.private}
+        <span class="material-symbols-rounded status-icon" title="Private">lock</span>
+      {/if}
+      {#if repo.fork}
+        <span class="material-symbols-rounded status-icon" title="Fork">account_tree</span>
+      {/if}
       {#if repo.empty}
         <span class="badge-empty">Empty</span>
       {/if}
     </div>
-    <p class="repo-desc">
-      {repo.description || 'No description provided.'}
-    </p>
+    <div class="desc-line">
+      <p class="repo-desc">
+        {repo.description || 'No description provided.'}
+      </p>
+    </div>
   </div>
 
   <div class="tech-info">
@@ -62,7 +71,10 @@
     </div>
   </div>
 
-  <div class="activity-info">
+  <div class="actions-info">
+    <button class="action-btn copy-btn" onclick={() => copyToClipboard(repo.clone_url)} title="Copy Clone URL">
+      <span class="material-symbols-rounded">{copied ? 'check' : 'content_copy'}</span>
+    </button>
     <span class="time">{timeAgo(repo.updated_at)}</span>
   </div>
 </div>
@@ -70,150 +82,137 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 1fr 120px 140px 100px;
+    grid-template-columns: 1fr 120px 140px 140px;
     align-items: center;
-    padding: 0.85rem 1.25rem;
-    border-bottom: 1px solid var(--border-color);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 1.2rem 1.5rem;
+    background: transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     gap: 1rem;
+    border: none;
     position: relative;
-    z-index: 1;
-  }
-
-  .repo-row:hover {
-    background: var(--md3-surface-3);
-    transform: scale(1.005) translateX(4px);
-    z-index: 2;
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     border-radius: 0.75rem;
   }
 
-  .repo-row:last-child {
-    border-bottom: none;
+  /* SUBTLE ALTERNATING BACKGROUND */
+  :global(.repo-group .repo-row:nth-child(even)) {
+    background: rgba(255, 255, 255, 0.025);
   }
 
-  .main-info {
+  /* CAPSULE EFFECT ON HOVER */
+  .repo-row:hover {
+    background: var(--md3-surface-3) !important;
+    transform: scale(1.015) translateX(12px);
+    border-radius: 5rem; /* Full capsule */
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    z-index: 10;
+  }
+
+  .older-row {
+    padding: 0.75rem 1.25rem;
+    opacity: 0.8;
+  }
+
+  .main-info { display: flex; flex-direction: column; min-width: 0; gap: 0.25rem; }
+
+  .title-line {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
     min-width: 0;
   }
 
-  .repo-name {
-    font-weight: 600;
-    color: var(--primary-color);
-    text-decoration: none;
-    font-size: 1.05rem;
-    display: inline-flex;
+  .desc-line {
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    gap: 0.5rem;
+    min-width: 0;
   }
 
-  .repo-name:hover {
-    text-decoration: underline;
+  .status-icon {
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.5;
+    flex-shrink: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .repo-row:hover .status-icon {
+    opacity: 0.9;
+    color: var(--primary-color);
+  }
+
+  .repo-name {
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .repo-desc {
     font-size: 0.85rem;
     color: var(--text-muted);
-    margin: 0.2rem 0 0 0;
+    margin: 0.25rem 0 0 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-style: italic;
   }
 
   .badge-empty {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     background: var(--md3-surface-2);
-    color: var(--text-muted);
-    padding: 0.15rem 0.6rem;
-    border-radius: 1rem;
-    border: 1px solid var(--border-color);
-    text-transform: uppercase;
+    padding: 0.1rem 0.5rem;
+    border-radius: 2rem;
     font-weight: 800;
     letter-spacing: 0.05em;
+    border: 1px solid var(--border-color);
   }
 
-  .setup-hint {
-    font-size: 0.8rem;
-    color: var(--primary-color);
-    opacity: 0.8;
-    font-weight: 600;
-  }
+  .lang { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
+  .lang-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-  .lang-none {
-    opacity: 0.4;
-    font-size: 0.8rem;
-  }
+  .stats-info { display: flex; gap: 1.5rem; }
+  .stat-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; }
+  .stat-item.dim { opacity: 0.2; }
+  .stat-item.active { color: var(--primary-color); font-weight: 700; }
 
-  .stat-item.dim {
-    opacity: 0.25;
-  }
-
-  .stat-item.active {
-    color: var(--primary-color);
-    font-weight: 600;
-  }
-
-  .icon-sm {
-    font-size: 1.1rem;
-    opacity: 0.7;
-  }
-
-  .tech-info {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .lang {
+  .actions-info {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-weight: 500;
+    justify-content: flex-end;
+    gap: 1rem;
   }
 
-  .lang-dot {
-    width: 10px;
-    height: 10px;
+  .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+
+  /* ON-DEMAND ACTIONS */
+  .copy-btn {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.2s ease;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    opacity: 0.9;
-    box-shadow: 0 0 4px rgba(0,0,0,0.1);
-  }
-
-  .stats-info {
-    display: flex;
-    gap: 1.25rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .stat-item {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    cursor: pointer;
   }
 
-  .stat-item span {
-    font-size: 1.15rem;
+  .copy-btn span { font-size: 1.1rem; }
+
+  .repo-row:hover .copy-btn {
+    opacity: 1;
+    transform: translateX(0);
   }
 
-  .activity-info {
-    text-align: right;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    font-variant-numeric: tabular-nums;
-  }
-
-  @media (max-width: 800px) {
-    .repo-row {
-      grid-template-columns: 1fr 100px;
-    }
-    .tech-info, .stats-info {
-      display: none;
-    }
+  @media (max-width: 900px) {
+    .repo-row { grid-template-columns: 1fr 100px; }
+    .tech-info, .stats-info { display: none; }
   }
 </style>

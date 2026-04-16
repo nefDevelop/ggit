@@ -24,7 +24,7 @@
       
       if (repoRes.ok) {
         const data = await repoRes.json();
-        repoData = data.repository;
+        repoData = data.repository || data; 
       } else {
         error = 'Repository not found or access denied.';
       }
@@ -43,7 +43,6 @@
     fetchRepoInfo();
   });
 
-  // Provide repo data and branches to children
   setContext('repo', {
     get data() { return repoData; },
     get branches() { return branches; },
@@ -56,16 +55,21 @@
     currentPath.includes('/issues') ? 'issues' :
     currentPath.includes('/pulls') ? 'pulls' : 'code'
   );
+
+  let showCloneDropdown = $state(false);
+  function copyCloneUrl(url: string) {
+    navigator.clipboard.writeText(url);
+    showCloneDropdown = false;
+  }
 </script>
 
-<div class="repo-shell">
+<div class="workspace-shell">
   {#if loading}
-    <div class="repo-container">
-      <div class="skeleton-header"></div>
-      <div class="skeleton-content"></div>
+    <div class="workspace-container">
+      <div class="skeleton-island island"></div>
     </div>
   {:else if error}
-    <div class="repo-container">
+    <div class="workspace-container">
       <div class="island error-island">
         <span class="material-symbols-rounded">error</span>
         <p>{error}</p>
@@ -73,236 +77,190 @@
       </div>
     </div>
   {:else if repoData}
-    <div class="repo-container">
-      <!-- Repo Header Island -->
-      <header class="repo-header-island island">
-        <div class="repo-title-row">
-          <div class="repo-name-stack">
-            <div class="repo-path">
-              <a href="/{username}" class="owner-link">{username}</a> /
-            </div>
-            <h1 class="repo-name">{reponame}</h1>
-            {#if repoData.is_private}
-              <span class="badge private-badge">
-                <span class="material-symbols-rounded">lock</span> Private
-              </span>
+    <div class="workspace-container">
+      <!-- THE MASTER ISLAND -->
+      <div class="master-island island">
+        
+        <!-- Technical Header (Integrated) -->
+        <header class="tech-header">
+          <div class="breadcrumb-nav">
+            <a href="/dashboard" class="bc-item home-icon">
+              <span class="material-symbols-rounded">grid_view</span>
+            </a>
+            <span class="bc-sep">/</span>
+            <a href="/{username}" class="bc-item">{username}</a>
+            <span class="bc-sep">/</span>
+            <h1 class="bc-item active">{reponame}</h1>
+            {#if repoData.private}
+              <span class="lock-icon material-symbols-rounded">lock</span>
             {/if}
           </div>
-          
-          <div class="repo-actions">
-            <div class="stat-group">
-              <div class="stat-item">
-                <span class="material-symbols-rounded">star</span>
-                <span>{repoData.num_stars || 0}</span>
-              </div>
-              <div class="stat-item">
-                <span class="material-symbols-rounded">fork_right</span>
-                <span>{repoData.num_forks || 0}</span>
-              </div>
-            </div>
-            <button class="btn">
-              <span class="material-symbols-rounded">download</span>
-              Clone
-            </button>
-          </div>
-        </div>
-        
-        {#if repoData.description}
-          <p class="repo-description">{repoData.description}</p>
-        {/if}
 
-        <!-- Tabs Navigation -->
-        <nav class="repo-tabs">
-          <a href="/{username}/{reponame}" class="tab-item" class:active={activeTab === 'code'}>
+          <div class="header-actions">
+            <div class="clone-zone">
+              <button class="btn btn-sm btn-primary clone-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                <span class="material-symbols-rounded">download</span>
+                Clone
+              </button>
+              {#if showCloneDropdown}
+                <div class="clone-dropdown island shadow-lg">
+                  <div class="clone-option">
+                    <span class="label">HTTPS</span>
+                    <code class="url">{repoData.clone_url}</code>
+                    <button class="copy-icon" onclick={() => copyCloneUrl(repoData.clone_url)}>
+                      <span class="material-symbols-rounded">content_copy</span>
+                    </button>
+                  </div>
+                </div>
+              {/if}
+            </div>
+            <a href="/{username}/{reponame}/settings" class="btn-icon" title="Settings">
+              <span class="material-symbols-rounded">settings</span>
+            </a>
+          </div>
+        </header>
+
+        <!-- Technical Tabs (Integrated) -->
+        <nav class="tech-tabs">
+          <a href="/{username}/{reponame}" class="tab" class:active={activeTab === 'code'}>
             <span class="material-symbols-rounded">code</span>
             Code
           </a>
-          <a href="/{username}/{reponame}/commits" class="tab-item" class:active={activeTab === 'commits'}>
+          <a href="/{username}/{reponame}/commits" class="tab" class:active={activeTab === 'commits'}>
             <span class="material-symbols-rounded">history</span>
             Commits
           </a>
-          <a href="/{username}/{reponame}/issues" class="tab-item" class:active={activeTab === 'issues'}>
-            <span class="material-symbols-rounded">error_outline</span>
+          <a href="/{username}/{reponame}/issues" class="tab" class:active={activeTab === 'issues'}>
+            <span class="material-symbols-rounded">error</span>
             Issues
+            {#if repoData.open_issues_count > 0}
+              <span class="badge">{repoData.open_issues_count}</span>
+            {/if}
           </a>
-          <a href="/{username}/{reponame}/pulls" class="tab-item" class:active={activeTab === 'pulls'}>
+          <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
             <span class="material-symbols-rounded">merge</span>
-            Pull Requests
+            PRs
           </a>
         </nav>
-      </header>
 
-      <main class="repo-content">
-        {@render children()}
-      </main>
+        <!-- Content Area (Children render here) -->
+        <div class="master-content">
+          {@render children()}
+        </div>
+      </div>
     </div>
   {/if}
 </div>
 
 <style>
-  .repo-shell {
-    min-height: 100vh;
-    padding: 2rem 0;
+  .workspace-shell {
+    height: 100%;
+    width: 100%;
+    padding: 0;
   }
 
-  .repo-container {
-    max-width: 1200px;
-    margin: 0 auto;
+  .workspace-container {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 0 1rem;
   }
 
-  .repo-header-island {
-    padding: 2rem 2rem 0;
+  .master-island {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--md3-surface-container);
+    border-radius: var(--radius);
     overflow: hidden;
+    /* We don't want internal scrolls if the page can handle it, 
+       but for sticky sidebars we need a good layout */
   }
 
-  .repo-title-row {
+  .tech-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
-  }
-
-  .repo-name-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .repo-path {
-    font-size: 1.1rem;
-    color: var(--text-muted);
-  }
-
-  .owner-link {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .repo-name {
-    font-size: 2.25rem;
-    font-weight: 800;
-    margin: 0;
-    letter-spacing: -0.04em;
-  }
-
-  .private-badge {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: 0.25rem 0.75rem;
-    border-radius: 2rem;
-    font-size: 0.8rem;
-    display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    margin-top: 0.5rem;
-    width: fit-content;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border-color);
   }
 
-  .repo-description {
-    margin: 0.5rem 0 2rem;
-    font-size: 1.1rem;
-    color: var(--text-color);
-    max-width: 800px;
-    opacity: 0.8;
+  .breadcrumb-nav { display: flex; align-items: center; gap: 0.5rem; font-size: 1.1rem; }
+  .bc-item { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+  .bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.2rem; }
+  .bc-sep { color: var(--text-muted); opacity: 0.3; }
+  .home-icon span { font-size: 1.2rem; }
+  .lock-icon { font-size: 1rem; color: var(--primary-color); opacity: 0.8; }
+
+  .header-actions { display: flex; align-items: center; gap: 1rem; }
+  .clone-zone { position: relative; }
+  .clone-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 350px;
+    z-index: 100;
+    padding: 1rem;
+    background: var(--md3-surface-2);
   }
 
-  .repo-actions {
+  .clone-option {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.75rem;
+    background: var(--md3-surface-container);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
   }
+  .clone-option code { flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
 
-  .stat-group {
+  .btn-icon { color: var(--text-muted); display: flex; padding: 0.5rem; border-radius: 50%; }
+  .btn-icon:hover { background: var(--md3-surface-3); color: var(--primary-color); }
+
+  /* Integrated Tabs */
+  .tech-tabs {
     display: flex;
-    gap: 1rem;
+    padding: 0 1rem;
+    background: rgba(255,255,255,0.01);
+    border-bottom: 1px solid var(--border-color);
   }
 
-  .stat-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.03);
-    padding: 0.5rem 0.8rem;
-    border-radius: 0.75rem;
-    font-weight: 600;
-  }
-
-  /* Tabs Navigation */
-  .repo-tabs {
-    display: flex;
-    gap: 2rem;
-    margin-top: 1rem;
-  }
-
-  .tab-item {
-    padding: 1rem 0;
-    color: var(--text-muted);
-    text-decoration: none;
-    font-weight: 600;
+  .tab {
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    padding: 1rem 1.25rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
     position: relative;
-    transition: color 0.2s;
   }
 
-  .tab-item:hover {
-    color: var(--text-color);
-  }
-
-  .tab-item.active {
-    color: var(--primary-color);
-  }
-
-  .tab-item.active::after {
+  .tab:hover { color: var(--text-color); }
+  .tab.active { color: var(--primary-color); }
+  .tab.active::after {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: -1px;
+    left: 1.25rem;
+    right: 1.25rem;
     height: 3px;
-    background-color: var(--primary-color);
-    border-radius: 3px 3px 0 0;
+    background: var(--primary-color);
+    border-radius: 4px 4px 0 0;
   }
 
-  .repo-content {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+  .badge { background: var(--primary-color); color: var(--on-primary); font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 1rem; margin-left: 0.25rem; }
+
+  .master-content {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
   }
 
-  /* Skeletons */
-  .skeleton-header {
-    height: 200px;
-    background: var(--md3-surface-2);
-    border-radius: var(--radius);
-    animation: pulse 1.5s infinite;
-  }
+  .skeleton-island { height: 100%; width: 100%; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
 
-  .skeleton-content {
-    height: 400px;
-    background: var(--md3-surface-2);
-    border-radius: var(--radius);
-    animation: pulse 1.5s infinite;
-  }
-
-  @keyframes pulse {
-    0% { opacity: 0.6; }
-    50% { opacity: 0.3; }
-    100% { opacity: 0.6; }
-  }
-
-  .error-island {
-    text-align: center;
-    color: #f87171;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    padding: 4rem;
-  }
+  .error-island { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; }
 </style>

@@ -298,6 +298,7 @@ func RepoRef() gin.HandlerFunc {
 		if path == "" {
 			path = c.Param("*")
 		}
+		path = strings.Trim(path, "/")
 
 		if path == "" {
 			refName = gctx.Repo.Repository.DefaultBranch
@@ -307,7 +308,13 @@ func RepoRef() gin.HandlerFunc {
 					gctx.Error(err, "get branches")
 					return
 				}
-				refName = branches[0]
+
+				if len(branches) > 0 {
+					refName = branches[0]
+				} else {
+					// If no branches and not bare, something is wrong or it's empty
+					return
+				}
 			}
 			gctx.Repo.Commit, err = gctx.Repo.GitRepo.BranchCommit(refName)
 			if err != nil {
