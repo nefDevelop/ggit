@@ -13,7 +13,6 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/auth"
@@ -443,8 +442,8 @@ func SettingsTwoFactorEnable(c *context.Context) {
 	}
 	c.Data["QRCode"] = template.URL("data:image/png;base64," + base64.StdEncoding.EncodeToString(buf.Bytes()))
 
-	_ = c.Session.Set("twoFactorSecret", c.Data["TwoFactorSecret"])
-	_ = c.Session.Set("twoFactorURL", key.String())
+	c.Session.Set("twoFactorSecret", c.Data["TwoFactorSecret"])
+	c.Session.Set("twoFactorURL", key.String())
 	c.Success(tmplUserSettingsTwoFactorEnable)
 }
 
@@ -467,8 +466,8 @@ func SettingsTwoFactorEnablePost(c *context.Context) {
 		return
 	}
 
-	_ = c.Session.Delete("twoFactorSecret")
-	_ = c.Session.Delete("twoFactorURL")
+	c.Session.Delete("twoFactorSecret")
+	c.Session.Delete("twoFactorURL")
 	c.Flash.Success(c.Tr("settings.two_factor_enable_success"))
 	c.RedirectSubpath("/user/settings/security/two_factor_recovery_codes")
 }

@@ -21,7 +21,7 @@ func markdown(c *context.APIContext, form markdownRequest) {
 }
 
 func markdownRaw(c *context.APIContext) {
-	body, err := c.Req.Body().Bytes()
+	body, err := c.RawData()
 	if err != nil {
 		c.Error(err, "read body")
 		return

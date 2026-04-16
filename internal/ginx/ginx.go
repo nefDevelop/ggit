@@ -13,6 +13,7 @@ import (
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
+	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/route/repo"
 	"gogs.io/gogs/public"
 )
@@ -126,8 +127,10 @@ func UseCombo(rg *gin.RouterGroup, path string) *Combo {
 }
 
 func setupStatic(r *Engine) {
-	r.Static("/public", filepath.Join(conf.CustomDir(), "public"))
-	if conf.Server.LoadAssetsFromDisk {
+	customPublic := filepath.Join(conf.CustomDir(), "public")
+	if osx.IsDir(customPublic) {
+		r.Static("/public", customPublic)
+	} else if conf.Server.LoadAssetsFromDisk {
 		r.Static("/public", filepath.Join(conf.WorkDir(), "public"))
 	} else {
 		r.StaticFS("/public", http.FS(public.Files))

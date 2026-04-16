@@ -5,10 +5,13 @@ export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
 		proxy: {
-			'/api': {
-				target: 'http://localhost:3000',
-				changeOrigin: true,
-			}
+			'/api': 'http://localhost:3000',
+			'/install': 'http://localhost:3000',
+			'/user': 'http://localhost:3000',
+			'/explore': 'http://localhost:3000',
+			'/admin': 'http://localhost:3000',
+			'/avatars': 'http://localhost:3000',
+			'/repo-avatars': 'http://localhost:3000',
 		}
 	}
 });

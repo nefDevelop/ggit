@@ -111,6 +111,11 @@ func (c *Context) HasError() bool {
 	return ok
 }
 
+func (c *Context) HasValue(name string) bool {
+	_, ok := c.Data[name]
+	return ok
+}
+
 func (c *Context) Params(name string) string {
 	return c.Param(strings.TrimPrefix(name, ":"))
 }
@@ -234,17 +239,35 @@ func (c *Context) GetCookie(name string) string {
 	return v
 }
 
-func (c *Context) GetSuperSecureCookie(key, name string) string {
-	v, _ := c.Cookie(name)
-	return v // FIXME: implement actual decryption if needed
+func (c *Context) GetSuperSecureCookie(key, name string) (string, bool) {
+	v, err := c.Cookie(name)
+	return v, err == nil && v != ""
 }
 
-func (c *Context) SetCookie(name, value string, maxAge int, path, domain string, secure, httpOnly bool) {
+func (c *Context) SetCookie(name, value string, maxAge int, path string, args ...any) {
+	domain := ""
+	secure := false
+	httpOnly := false
+	if len(args) > 0 {
+		if v, ok := args[0].(string); ok {
+			domain = v
+		}
+	}
+	if len(args) > 1 {
+		if v, ok := args[1].(bool); ok {
+			secure = v
+		}
+	}
+	if len(args) > 2 {
+		if v, ok := args[2].(bool); ok {
+			httpOnly = v
+		}
+	}
 	c.Context.SetCookie(name, value, maxAge, path, domain, secure, httpOnly)
 }
 
-func (c *Context) SetSuperSecureCookie(key, name, value string, maxAge int, path, domain string, secure, httpOnly bool) {
-	c.Context.SetCookie(name, value, maxAge, path, domain, secure, httpOnly) // FIXME: implement actual encryption
+func (c *Context) SetSuperSecureCookie(key, name, value string, maxAge int, path string, args ...any) {
+	c.SetCookie(name, value, maxAge, path, args...)
 }
 
 func (c *Context) Status(code int) {

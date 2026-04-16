@@ -95,7 +95,7 @@ func retrieveFeeds(c *context.Context, ctxUser *database.User, userID int64, isP
 	if len(feeds) > 0 {
 		afterID := feeds[len(feeds)-1].ID
 		c.Data["AfterID"] = afterID
-		c.Header().Set("X-AJAX-URL", fmt.Sprintf("%s?after_id=%d", c.Data["Link"], afterID))
+		c.Header("X-AJAX-URL", fmt.Sprintf("%s?after_id=%d", c.Data["Link"], afterID))
 	}
 }
 
