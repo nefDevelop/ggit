@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path"
@@ -257,7 +258,7 @@ func Action(c *context.Context) {
 	}
 
 	if err != nil {
-		c.Errorf(err, "action %q", c.Params(":action"))
+		c.Error(err, fmt.Sprintf("action %q", c.Params(":action")))
 		return
 	}
 

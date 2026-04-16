@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +21,7 @@ import (
 
 type Locale interface {
 	Tr(string, ...any) string
+	Language() string
 }
 
 type Captcha interface {
@@ -41,6 +43,7 @@ type Context struct {
 	Session sessions.Session
 	csrf    any
 	Locale  Locale
+	Resp    http.ResponseWriter
 
 	Link        string // Current request URL
 	User        *database.User
@@ -54,14 +57,16 @@ type Context struct {
 }
 
 type Flash struct {
-	ErrorMsg string
+	ErrorMsg   string
 	SuccessMsg string
-	InfoMsg string
+	InfoMsg    string
+	WarningMsg string
 }
 
-func (f *Flash) Error(msg string, args ...any) { f.ErrorMsg = fmt.Sprintf(msg, args...) }
+func (f *Flash) Error(msg string, args ...any)   { f.ErrorMsg = fmt.Sprintf(msg, args...) }
 func (f *Flash) Success(msg string, args ...any) { f.SuccessMsg = fmt.Sprintf(msg, args...) }
-func (f *Flash) Info(msg string, args ...any) { f.InfoMsg = fmt.Sprintf(msg, args...) }
+func (f *Flash) Info(msg string, args ...any)    { f.InfoMsg = fmt.Sprintf(msg, args...) }
+func (f *Flash) Warning(msg string, args ...any) { f.WarningMsg = fmt.Sprintf(msg, args...) }
 
 // RawTitle sets the "Title" field in template data.
 func (c *Context) RawTitle(title string) {
@@ -79,6 +84,13 @@ func (c *Context) Tr(key string, args ...any) string {
 		return c.Locale.Tr(key, args...)
 	}
 	return key
+}
+
+func (c *Context) Language() string {
+	if c.Locale != nil {
+		return c.Locale.Language()
+	}
+	return "en-US"
 }
 
 // PageIs sets "PageIsxxx" field in template data.
@@ -111,6 +123,10 @@ func (c *Context) QueryInt(name string) int {
 func (c *Context) QueryInt64(name string) int64 {
 	v, _ := strconv.ParseInt(c.Query(name), 10, 64)
 	return v
+}
+
+func (c *Context) QueryTrim(name string) string {
+	return strings.TrimSpace(c.Query(name))
 }
 
 func (c *Context) QueryStrings(name string) []string {
@@ -170,21 +186,111 @@ func (c *Context) QueryBool(name string) bool {
 	return v == "true" || v == "1" || v == "on"
 }
 
-func (c *Context) Resp() http.ResponseWriter {
-	return c.Context.Writer
-}
-
 func (c *Context) RequireHighlightJS() {
 	c.Data["RequireHighlightJS"] = true
+}
+
+func (c *Context) RequireSimpleMDE() {
+	c.Data["RequireSimpleMDE"] = true
+}
+
+func (c *Context) RequireSimpleMDECDE() {
+	c.Data["RequireSimpleMDECDE"] = true
+}
+
+func (c *Context) RequireAutosize() {
+	c.Data["RequireAutosize"] = true
+}
+
+func (c *Context) RequireDropzone() {
+	c.Data["RequireDropzone"] = true
+}
+
+func (c *Context) FormErr(names ...string) {
+	for _, name := range names {
+		c.Data["Err_"+name] = true
+	}
+	c.Data["HasError"] = true
 }
 
 func (c *Context) Written() bool {
 	return c.IsAborted()
 }
 
+func (c *Context) RawRedirect(location string) {
+	c.Context.Redirect(http.StatusFound, location)
+}
+
+func (c *Context) PlainText(status int, body string) {
+	c.String(status, body)
+}
+
+func (c *Context) SetCookiePath(name, value string, maxAge int, path string) {
+	c.Context.SetCookie(name, value, maxAge, path, "", false, false)
+}
+
+func (c *Context) GetCookie(name string) string {
+	v, _ := c.Cookie(name)
+	return v
+}
+
+func (c *Context) GetSuperSecureCookie(key, name string) string {
+	v, _ := c.Cookie(name)
+	return v // FIXME: implement actual decryption if needed
+}
+
+func (c *Context) SetCookie(name, value string, maxAge int, path, domain string, secure, httpOnly bool) {
+	c.Context.SetCookie(name, value, maxAge, path, domain, secure, httpOnly)
+}
+
+func (c *Context) SetSuperSecureCookie(key, name, value string, maxAge int, path, domain string, secure, httpOnly bool) {
+	c.Context.SetCookie(name, value, maxAge, path, domain, secure, httpOnly) // FIXME: implement actual encryption
+}
+
+func (c *Context) Status(code int) {
+	c.Context.Status(code)
+}
+
+func (c *Context) ServeFile(file string, names ...string) {
+	var name string
+	if len(names) > 0 {
+		name = names[0]
+	} else {
+		name = filepath.Base(file)
+	}
+	c.FileAttachment(file, name)
+}
+
 func (c *Context) Error(err error, msg string) {
 	log.ErrorDepth(4, "%s: %v", msg, err)
 	c.HTML(http.StatusInternalServerError, "status/500")
+}
+
+func (c *Context) Errorf(err error, format string, args ...any) {
+	log.ErrorDepth(4, format, args...)
+	c.Error(err, fmt.Sprintf(format, args...))
+}
+
+func (c *Context) StatusErrorf(status int, format string, args ...any) {
+	log.ErrorDepth(4, format, args...)
+	c.HTML(status, "status/500")
+}
+
+func (c *Context) BaseURL() string {
+	return conf.Server.ExternalURL + c.Link
+}
+
+func (c *Context) SetParams(name, val string) {
+	// Not easily supported in Gin without hacking, but let's see
+	// Gin params are immutable in the context usually.
+}
+
+func (c *Context) Write(p []byte) (int, error) {
+	return c.Writer.Write(p)
+}
+
+func (c *Context) GetErrMsg() string {
+	return c.Data["ErrorMsg"].(string)
 }
 
 func (c *Context) NotFoundOrError(err error, msg string) {
@@ -225,6 +331,7 @@ func Contexter(store Store) gin.HandlerFunc {
 			Flash:   &Flash{},
 			Link:    conf.Server.Subpath + strings.TrimSuffix(c.Request.URL.Path, "/"),
 			Req:     c.Request,
+			Resp:    c.Writer,
 			Repo:    &Repository{PullRequest: &PullRequest{}},
 			Org:     &Organization{},
 		}

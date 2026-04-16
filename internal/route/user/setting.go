@@ -590,61 +590,59 @@ func SettingsLeaveOrganization(c *context.Context) {
 }
 
 func (h *SettingsHandler) Applications(c *context.Context) {
-		c.Title("settings.applications")
-		c.PageIs("SettingsApplications")
+	c.Title("settings.applications")
+	c.PageIs("SettingsApplications")
 
+	tokens, err := h.store.ListAccessTokens(c.Req.Context(), c.User.ID)
+	if err != nil {
+		c.Errorf(err, "list access tokens")
+		return
+	}
+	c.Data["Tokens"] = tokens
+}
+
+func (h *SettingsHandler) ApplicationsPost(c *context.Context, f form.NewAccessToken) {
+	c.Title("settings.applications")
+	c.PageIs("SettingsApplications")
+
+	if c.HasError() {
 		tokens, err := h.store.ListAccessTokens(c.Req.Context(), c.User.ID)
 		if err != nil {
 			c.Errorf(err, "list access tokens")
 			return
 		}
+
 		c.Data["Tokens"] = tokens
-
+		c.HTML(http.StatusBadRequest, tmplUserSettingsApplications)
+		return
 	}
-}
 
-func (h *SettingsHandler) ApplicationsPost(c *context.Context, f form.NewAccessToken) {
-		c.Title("settings.applications")
-		c.PageIs("SettingsApplications")
-
-		if c.HasError() {
-			tokens, err := h.store.ListAccessTokens(c.Req.Context(), c.User.ID)
-			if err != nil {
-				c.Errorf(err, "list access tokens")
-				return
-			}
-
-			c.Data["Tokens"] = tokens
-			c.HTML(http.StatusBadRequest, tmplUserSettingsApplications)
-			return
+	t, err := h.store.CreateAccessToken(c.Req.Context(), c.User.ID, f.Name)
+	if err != nil {
+		if database.IsErrAccessTokenAlreadyExist(err) {
+			c.Flash.Error(c.Tr("settings.token_name_exists"))
+			c.RedirectSubpath("/user/settings/applications")
+		} else {
+			c.Errorf(err, "new access token")
 		}
-
-		t, err := h.store.CreateAccessToken(c.Req.Context(), c.User.ID, f.Name)
-		if err != nil {
-			if database.IsErrAccessTokenAlreadyExist(err) {
-				c.Flash.Error(c.Tr("settings.token_name_exists"))
-				c.RedirectSubpath("/user/settings/applications")
-			} else {
-				c.Errorf(err, "new access token")
-			}
-			return
-		}
-
-		c.Flash.Success(c.Tr("settings.generate_token_succees"))
-		c.Flash.Info(t.Sha1)
+		return
 	}
+
+	c.Flash.Success(c.Tr("settings.generate_token_success"))
+	c.Flash.Info(t.Sha1)
+	c.RedirectSubpath("/user/settings/applications")
 }
 
 func (h *SettingsHandler) DeleteApplication(c *context.Context) {
-		if err := h.store.DeleteAccessTokenByID(c.Req.Context(), c.User.ID, c.QueryInt64("id")); err != nil {
-			c.Flash.Error("DeleteAccessTokenByID: " + err.Error())
-		} else {
-			c.Flash.Success(c.Tr("settings.delete_token_success"))
-		}
-
-		c.JSONSuccess(map[string]any{
-			"redirect": conf.Server.Subpath + "/user/settings/applications",
+	if err := h.store.DeleteAccessTokenByID(c.Req.Context(), c.User.ID, c.QueryInt64("id")); err != nil {
+		c.Flash.Error("DeleteAccessTokenByID: " + err.Error())
+	} else {
+		c.Flash.Success(c.Tr("settings.delete_token_success"))
 	}
+
+	c.JSONSuccess(map[string]any{
+		"redirect": conf.Server.Subpath + "/user/settings/applications",
+	})
 }
 
 func SettingsDelete(c *context.Context) {

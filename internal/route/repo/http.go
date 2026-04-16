@@ -18,7 +18,7 @@ import (
 
 	"gogs.io/gogs/internal/auth"
 	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
+	gcontext "gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/lazyregexp"
 	"gogs.io/gogs/internal/pathx"
@@ -26,7 +26,7 @@ import (
 )
 
 type HTTPContext struct {
-	*context.Context
+	*gcontext.Context
 	OwnerName string
 	OwnerSalt string
 	RepoID    int64
@@ -38,13 +38,6 @@ type HTTPContext struct {
 func askCredentials(c *gin.Context, status int, text string) {
 	c.Header("WWW-Authenticate", "Basic realm=\".\"")
 	c.String(status, text)
-}
-
-type Store interface {
-	GetUserByUsername(ctx interface{}, name string) (*database.User, error)
-	GetRepositoryByName(ctx interface{}, ownerID int64, name string) (*database.Repository, error)
-	AuthenticateUser(ctx interface{}, login, password string, loginSourceID int64) (*database.User, error)
-	IsTwoFactorEnabled(ctx interface{}, userID int64) bool
 }
 
 func HTTPContexter(store Store) gin.HandlerFunc {
@@ -97,7 +90,7 @@ func HTTPContexter(store Store) gin.HandlerFunc {
 		// Authentication is not required for pulling from public repositories.
 		if isPull && !repo.IsPrivate && !conf.Auth.RequireSigninView {
 			c.Set("httpContext", &HTTPContext{
-				Context: &context.Context{Context: c},
+				Context: &gcontext.Context{Context: c},
 			})
 			return
 		}
@@ -145,7 +138,7 @@ func HTTPContexter(store Store) gin.HandlerFunc {
 		// If username and password combination failed, try again using either username
 		// or password as the token.
 		if authUser == nil {
-			authUser, err = context.AuthenticateByToken(store, c.Request.Context(), authUsername)
+			authUser, err = gcontext.AuthenticateByToken(store, c.Request.Context(), authUsername)
 			if err != nil && !database.IsErrAccessTokenNotExist(err) {
 				c.Status(http.StatusInternalServerError)
 				log.Error("Failed to authenticate by access token via username: %v", err)
@@ -153,7 +146,7 @@ func HTTPContexter(store Store) gin.HandlerFunc {
 				return
 			} else if database.IsErrAccessTokenNotExist(err) {
 				// Try again using the password field as the token.
-				authUser, err = context.AuthenticateByToken(store, c.Request.Context(), authPassword)
+				authUser, err = gcontext.AuthenticateByToken(store, c.Request.Context(), authPassword)
 				if err != nil {
 					if database.IsErrAccessTokenNotExist(err) {
 						askCredentials(c, http.StatusUnauthorized, "")
@@ -196,7 +189,7 @@ Please create and use personal access token on user settings page`)
 		}
 
 		c.Set("httpContext", &HTTPContext{
-			Context:   &context.Context{Context: c},
+			Context:   &gcontext.Context{Context: c},
 			OwnerName: ownerName,
 			OwnerSalt: owner.Salt,
 			RepoID:    repo.ID,

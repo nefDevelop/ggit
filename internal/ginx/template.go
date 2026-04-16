@@ -18,7 +18,6 @@ func SetupTemplates(r *gin.Engine) {
 	// 2. Load templates from directory
 	// In Gogs, templates are in WorkDir + "/templates" and can be overridden by CustomDir + "/templates"
 	workTmplDir := filepath.Join(conf.WorkDir(), "templates")
-	customTmplDir := filepath.Join(conf.CustomDir(), "templates")
 
 	// Gin's LoadHTMLGlob doesn't easily support merging two directories with priority.
 	// We'll manually parse the templates to ensure custom overrides work.

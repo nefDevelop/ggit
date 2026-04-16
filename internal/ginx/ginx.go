@@ -9,7 +9,6 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/context"
@@ -38,7 +37,8 @@ func New() *Engine {
 
 	store := cookie.NewStore([]byte(conf.Security.SecretKey))
 	r.Use(sessions.Sessions("gogs_session", store))
-	r.Use(context.Contexter(database.Handle))
+	r.Use(context.Contexter(context.NewStore()))
+	r.Use(CSRF())
 
 	setupStatic(r)
 	return r
@@ -68,7 +68,7 @@ func Handle(h any) gin.HandlerFunc {
 			case "*context.ParamsUser":
 				pu, _ := c.Get("paramsUser")
 				inputs[i] = reflect.ValueOf(pu)
-			case "*repo.OrgRepoContext":
+			case reflect.TypeOf((*repo.OrgRepoContext)(nil)).String():
 				orc, _ := c.Get("orgRepoContext")
 				inputs[i] = reflect.ValueOf(orc)
 			default:

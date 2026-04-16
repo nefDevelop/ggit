@@ -1,7 +1,7 @@
 package repo
 
 import (
-	"context"
+	stdctx "context"
 
 	"gogs.io/gogs/internal/database"
 )
@@ -12,30 +12,30 @@ import (
 type Store interface {
 	// GetAccessTokenBySHA1 returns the access token with given SHA1. It returns
 	// database.ErrAccessTokenNotExist when not found.
-	GetAccessTokenBySHA1(ctx context.Context, sha1 string) (*database.AccessToken, error)
+	GetAccessTokenBySHA1(ctx stdctx.Context, sha1 string) (*database.AccessToken, error)
 	// TouchAccessTokenByID updates the updated time of the given access token to
 	// the current time.
-	TouchAccessTokenByID(ctx context.Context, id int64) error
+	TouchAccessTokenByID(ctx stdctx.Context, id int64) error
 
 	// GetRepositoryByName returns the repository with given owner and name. It
 	// returns database.ErrRepoNotExist when not found.
-	GetRepositoryByName(ctx context.Context, ownerID int64, name string) (*database.Repository, error)
+	GetRepositoryByName(ctx stdctx.Context, ownerID int64, name string) (*database.Repository, error)
 
 	// IsTwoFactorEnabled returns true if the user has enabled 2FA.
-	IsTwoFactorEnabled(ctx context.Context, userID int64) bool
+	IsTwoFactorEnabled(ctx stdctx.Context, userID int64) bool
 
 	// GetUserByID returns the user with given ID. It returns
 	// database.ErrUserNotExist when not found.
-	GetUserByID(ctx context.Context, id int64) (*database.User, error)
+	GetUserByID(ctx stdctx.Context, id int64) (*database.User, error)
 	// GetUserByUsername returns the user with given username. It returns
 	// database.ErrUserNotExist when not found.
-	GetUserByUsername(ctx context.Context, username string) (*database.User, error)
+	GetUserByUsername(ctx stdctx.Context, username string) (*database.User, error)
 	// CreateUser creates a new user and persists to database. It returns
 	// database.ErrNameNotAllowed if the given name or pattern of the name is not
 	// allowed as a username, or database.ErrUserAlreadyExist when a user with same
 	// name already exists, or database.ErrEmailAlreadyUsed if the email has been
 	// verified by another user.
-	CreateUser(ctx context.Context, username, email string, opts database.CreateUserOptions) (*database.User, error)
+	CreateUser(ctx stdctx.Context, username, email string, opts database.CreateUserOptions) (*database.User, error)
 	// AuthenticateUser validates username and password via given login source ID.
 	// It returns database.ErrUserNotExist when the user was not found.
 	//
@@ -48,7 +48,7 @@ type Store interface {
 	//
 	// When the "loginSourceID" is positive, it tries to authenticate via given
 	// login source and creates a new user when not yet exists in the database.
-	AuthenticateUser(ctx context.Context, login, password string, loginSourceID int64) (*database.User, error)
+	AuthenticateUser(ctx stdctx.Context, login, password string, loginSourceID int64) (*database.User, error)
 }
 
 type store struct{}
@@ -58,34 +58,34 @@ func NewStore() Store {
 	return &store{}
 }
 
-func (*store) GetAccessTokenBySHA1(ctx context.Context, sha1 string) (*database.AccessToken, error) {
+func (*store) GetAccessTokenBySHA1(ctx stdctx.Context, sha1 string) (*database.AccessToken, error) {
 	return database.Handle.AccessTokens().GetBySHA1(ctx, sha1)
 }
 
-func (*store) TouchAccessTokenByID(ctx context.Context, id int64) error {
+func (*store) TouchAccessTokenByID(ctx stdctx.Context, id int64) error {
 	return database.Handle.AccessTokens().Touch(ctx, id)
 }
 
-func (*store) GetRepositoryByName(ctx context.Context, ownerID int64, name string) (*database.Repository, error) {
+func (*store) GetRepositoryByName(ctx stdctx.Context, ownerID int64, name string) (*database.Repository, error) {
 	return database.Handle.Repositories().GetByName(ctx, ownerID, name)
 }
 
-func (*store) IsTwoFactorEnabled(ctx context.Context, userID int64) bool {
+func (*store) IsTwoFactorEnabled(ctx stdctx.Context, userID int64) bool {
 	return database.Handle.TwoFactors().IsEnabled(ctx, userID)
 }
 
-func (*store) GetUserByID(ctx context.Context, id int64) (*database.User, error) {
+func (*store) GetUserByID(ctx stdctx.Context, id int64) (*database.User, error) {
 	return database.Handle.Users().GetByID(ctx, id)
 }
 
-func (*store) GetUserByUsername(ctx context.Context, username string) (*database.User, error) {
+func (*store) GetUserByUsername(ctx stdctx.Context, username string) (*database.User, error) {
 	return database.Handle.Users().GetByUsername(ctx, username)
 }
 
-func (*store) CreateUser(ctx context.Context, username, email string, opts database.CreateUserOptions) (*database.User, error) {
+func (*store) CreateUser(ctx stdctx.Context, username, email string, opts database.CreateUserOptions) (*database.User, error) {
 	return database.Handle.Users().Create(ctx, username, email, opts)
 }
 
-func (*store) AuthenticateUser(ctx context.Context, login, password string, loginSourceID int64) (*database.User, error) {
+func (*store) AuthenticateUser(ctx stdctx.Context, login, password string, loginSourceID int64) (*database.User, error) {
 	return database.Handle.Users().Authenticate(ctx, login, password, loginSourceID)
 }

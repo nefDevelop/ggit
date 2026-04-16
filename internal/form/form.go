@@ -33,7 +33,7 @@ func init() {
 }
 
 type Form interface {
-	binding.Validator
+	Validate(ctx ValidationContext, errs binding.Errors) binding.Errors
 }
 
 type ValidationContext interface {

@@ -40,7 +40,7 @@ type repoContent struct {
 }
 
 func toRepoContent(c *context.APIContext, ref, subpath string, commit *git.Commit, entry *git.TreeEntry) (*repoContent, error) {
-	repoURL := fmt.Sprintf("%s/repos/%s/%s", c.BaseURL, c.Params(":username"), c.Params(":reponame"))
+	repoURL := fmt.Sprintf("%s/repos/%s/%s", c.BaseURL(), c.Params(":username"), c.Params(":reponame"))
 	selfURL := fmt.Sprintf("%s/contents/%s", repoURL, subpath)
 	htmlURL := fmt.Sprintf("%s/src/%s/%s", repox.HTMLURL(c.Repo.Owner.Name, c.Repo.Repository.Name), ref, entry.Name())
 	downloadURL := fmt.Sprintf("%s/raw/%s/%s", repox.HTMLURL(c.Repo.Owner.Name, c.Repo.Repository.Name), ref, entry.Name())

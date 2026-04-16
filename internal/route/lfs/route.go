@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
@@ -17,7 +18,7 @@ import (
 
 // RegisterRoutes registers LFS routes using given router, and inherits all
 // groups and middleware.
-func RegisterRoutes(r gin.IRoutes) {
+func RegisterRoutes(r gin.IRouter) {
 	verifyAccept := verifyHeader("Accept", contentType, http.StatusNotAcceptable)
 	verifyContentTypeJSON := verifyHeader("Content-Type", contentType, http.StatusBadRequest)
 	verifyContentTypeStream := verifyHeader("Content-Type", "application/octet-stream", http.StatusBadRequest)

@@ -12,7 +12,7 @@ import (
 
 func TestValidateWebhook(t *testing.T) {
 	l := &mocks.Locale{
-		MockLang: "en",
+		MockLanguage: func() string { return "en" },
 		MockTr: func(s string, _ ...any) string {
 			return s
 		},

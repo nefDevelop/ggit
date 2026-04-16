@@ -3,9 +3,10 @@ package repo
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/cockroachdb/errors"
 	log "unknwon.dev/clog/v2"
 
+	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/cryptox"
 	"gogs.io/gogs/internal/database"
 )
@@ -15,17 +16,17 @@ func TriggerTask(c *context.Context) {
 	pusherID := c.QueryInt64("pusher")
 	secret := c.Query("secret")
 	if branch == "" || pusherID <= 0 || secret == "" {
-		c.Error(http.StatusBadRequest, "Incomplete branch, pusher or secret")
+		c.Error(errors.New("incomplete branch, pusher or secret"), "trigger task")
 		return
 	}
 
-	username := c.Params(":username")
-	reponame := c.Params(":reponame")
+	username := c.Param("username")
+	reponame := c.Param("reponame")
 
 	owner, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
 	if err != nil {
 		if database.IsErrUserNotExist(err) {
-			c.Error(http.StatusBadRequest, "Owner does not exist")
+			c.Error(err, "owner does not exist")
 		} else {
 			c.Status(http.StatusInternalServerError)
 			log.Error("Failed to get user [name: %s]: %v", username, err)
@@ -36,14 +37,14 @@ func TriggerTask(c *context.Context) {
 	// 🚨 SECURITY: No need to check existence of the repository if the client
 	// can't even get the valid secret. Mostly likely not a legitimate request.
 	if secret != cryptox.MD5(owner.Salt) {
-		c.Error(http.StatusBadRequest, "Invalid secret")
+		c.Error(errors.New("invalid secret"), "valid secret")
 		return
 	}
 
 	repo, err := database.Handle.Repositories().GetByName(c.Req.Context(), owner.ID, reponame)
 	if err != nil {
 		if database.IsErrRepoNotExist(err) {
-			c.Error(http.StatusBadRequest, "Repository does not exist")
+			c.Error(err, "repository does not exist")
 		} else {
 			c.Status(http.StatusInternalServerError)
 			log.Error("Failed to get repository [owner_id: %d, name: %s]: %v", owner.ID, reponame, err)
@@ -54,7 +55,7 @@ func TriggerTask(c *context.Context) {
 	pusher, err := database.Handle.Users().GetByID(c.Req.Context(), pusherID)
 	if err != nil {
 		if database.IsErrUserNotExist(err) {
-			c.Error(http.StatusBadRequest, "Pusher does not exist")
+			c.Error(err, "pusher does not exist")
 		} else {
 			c.Status(http.StatusInternalServerError)
 			log.Error("Failed to get user [id: %d]: %v", pusherID, err)

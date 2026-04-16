@@ -143,7 +143,7 @@ func gitCommitToAPICommit(commit *git.Commit, c *context.APIContext) (*types.Com
 	for i := 0; i < commit.ParentsCount(); i++ {
 		sha, _ := commit.ParentID(i)
 		apiParents[i] = &types.CommitMeta{
-			URL: c.BaseURL + "/repos/" + c.Repo.Repository.FullName() + "/commits/" + sha.String(),
+			URL: c.BaseURL() + "/repos/" + c.Repo.Repository.FullName() + "/commits/" + sha.String(),
 			SHA: sha.String(),
 		}
 	}
@@ -168,7 +168,7 @@ func gitCommitToAPICommit(commit *git.Commit, c *context.APIContext) (*types.Com
 			},
 			Message: commit.Summary(),
 			Tree: &types.CommitMeta{
-				URL: c.BaseURL + "/repos/" + c.Repo.Repository.FullName() + "/tree/" + commit.ID.String(),
+				URL: c.BaseURL() + "/repos/" + c.Repo.Repository.FullName() + "/tree/" + commit.ID.String(),
 				SHA: commit.ID.String(),
 			},
 		},

@@ -42,7 +42,7 @@ func repoGitBlob(c *context.APIContext) {
 	c.JSONSuccess(&repoGitBlob{
 		Content:  base64.StdEncoding.EncodeToString(content),
 		Encoding: "base64",
-		URL:      fmt.Sprintf("%s/repos/%s/%s/git/blobs/%s", c.BaseURL, c.Params(":username"), c.Params(":reponame"), sha),
+		URL:      fmt.Sprintf("%s/repos/%s/%s/git/blobs/%s", c.BaseURL(), c.Params(":username"), c.Params(":reponame"), sha),
 		SHA:      sha,
 		Size:     blob.Size(),
 	})

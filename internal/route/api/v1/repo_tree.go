@@ -43,7 +43,7 @@ func getRepoGitTree(c *context.APIContext) {
 		Tree []*repoGitTreeEntry `json:"tree"`
 	}
 
-	treesURL := fmt.Sprintf("%s/repos/%s/%s/git/trees", c.BaseURL, c.Params(":username"), c.Params(":reponame"))
+	treesURL := fmt.Sprintf("%s/repos/%s/%s/git/trees", c.BaseURL(), c.Params(":username"), c.Params(":reponame"))
 
 	if len(entries) == 0 {
 		c.JSONSuccess(&repoGitTree{

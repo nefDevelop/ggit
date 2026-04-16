@@ -31,19 +31,32 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 
 *   [x] **Inicialización y Middleware:**
     *   Reescribir `cmd/web.go` para inicializar el motor de `Gin`. [COMPLETO]
-    *   Migrar los middlewares esenciales (Autenticación, Sesiones, Logging, Recovery). [COMPLETO - CSRF pendiente]
+    *   Migrar los middlewares esenciales (Autenticación, Sesiones, Logging, Recovery). [COMPLETO]
+*   [x] Integrate Gin framework core
+*   [x] Port `internal/context` to Gin
+*   [x] Implement new CSRF middleware with Gin
+*   [x] Resolve `repo` package compilation and naming conflicts
+*   [ ] Port remaining route packages (`admin`, `user`, etc.)
+*   [ ] Finalize API v2 specification
 *   [ ] **Diseño de la API v2 (API First):**
+    *   Definir la estructura de paquetes en `internal/route/api/v2`.
     *   Comenzar a implementar los nuevos endpoints bajo el prefijo `/api/v2/`.
     *   Estos endpoints consumirán la nueva capa de Servicios (Fase 2) y devolverán exclusivamente JSON.
 *   [x] **Transición del SSR:**
     *   Adaptar temporalmente las rutas web para que `Gin` pueda renderizar los viejos `templates/` HTML, permitiendo que la aplicación siga funcionando mientras se construye el nuevo frontend. [COMPLETO]
 
-## Fase 4: Nuevo Frontend con Svelte / SvelteKit (Largo Plazo)
+## Fase 4: Nuevo Frontend con SvelteKit (Largo Plazo)
 **Objetivo:** Reemplazar el antiguo SSR basado en plantillas Go por una Single Page Application (SPA) o aplicación SvelteKit ultra-rápida y moderna.
 
-*   [ ] **Inicializar proyecto Svelte:**
-    *   Crear un nuevo directorio (ej: `frontend/` o `web/`) con el andamiaje de SvelteKit/Vite.
-    *   Configurar TypeScript, TailwindCSS (opcional, o CSS puro/SASS) y un sistema de componentes.
+*   [ ] **Inicializar proyecto SvelteKit:**
+    *   [x] Initialize SvelteKit project in `frontend/`
+    *   [ ] Configure Vite proxy for Gin backend
+    *   [ ] Implement base design system with Vanilla CSS
+*   [ ] **Configuración de Proxy y API:**
+    *   [x] Implement `internal/ginx/csrf.go` (Gin-compatible CSRF)
+    *   [x] Refactor `internal/context/context.go` to wrap `*gin.Context`
+    *   [x] Stabilize `internal/route/repo` package (Resolved `stdctx` vs `gcontext` conflicts)
+    *   [ ] Update `cmd/web.go` to use Gin router
 *   [ ] **Implementar Autenticación y Estado Global:**
     *   Conectar el frontend con los endpoints de login/registro de Gin (manejo de JWT o cookies seguras).
 *   [ ] **Migración Progresiva de Pantallas:**
@@ -53,5 +66,5 @@ Este documento describe el plan de acción paso a paso para la refactorización 
     *   Issues y Pull Requests.
     *   Panel de Configuración de Usuario y Repositorio.
 *   [ ] **Eliminación del Legacy:**
-    *   Una vez que el frontend Svelte cubra el 100% de las funcionalidades, eliminar el directorio `templates/` y la lógica de renderizado HTML del backend Gin.
+    *   Una vez que el frontend SvelteKit cubra el 100% de las funcionalidades, eliminar el directorio `templates/` y la lógica de renderizado HTML del backend Gin.
     *   Construir el frontend en estático y servirlo desde Gin (o usar un servidor web/CDN delante).
