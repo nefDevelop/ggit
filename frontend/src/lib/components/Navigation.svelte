@@ -25,10 +25,19 @@
 </script>
 
 <nav class="navigation-bar">
-  <div class="brand-section">
-    <div class="logo-circle">G</div>
-    <span class="brand-name">Ggit</span>
-  </div>
+  <!-- USER AT TOP -->
+  {#if authState.isAuthenticated}
+    <div class="user-section-top">
+      <img src={authState.user?.avatar} alt="Avatar" class="mini-avatar" />
+      <div class="user-info">
+        <span class="username">{authState.user?.username}</span>
+        <span class="user-role">Developer</span>
+      </div>
+      <button class="logout-btn-minimal" onclick={handleLogout} title="Logout">
+        <span class="material-symbols-rounded">logout</span>
+      </button>
+    </div>
+  {/if}
 
   <div class="nav-links">
     {#each navItems as item}
@@ -43,113 +52,44 @@
     {/each}
   </div>
 
-  {#if authState.isAuthenticated}
-    <div class="user-section">
-      <img src={authState.user?.avatar} alt="Avatar" class="mini-avatar" />
-      <div class="user-info">
-        <span class="username">{authState.user?.username}</span>
-      </div>
-      <button class="logout-btn" onclick={handleLogout} title="Logout">
-        <span class="material-symbols-rounded">logout</span>
-      </button>
+  <!-- BRAND AT BOTTOM -->
+  <div class="brand-section-bottom">
+    <div class="logo-circle-flat">G</div>
+    <div class="brand-info">
+        <span class="brand-name">Ggit</span>
+        <span class="version">v2026.4</span>
     </div>
-  {/if}
+  </div>
 </nav>
 
 <style>
   .navigation-bar {
-    background-color: var(--md3-surface-container);
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 0.75rem;
-    gap: 2rem;
-    border: 1px solid var(--border-color);
-    width: 280px;
-    height: calc(100vh - 3rem);
-    margin: 1.5rem 0 1.5rem 1.5rem;
-    border-radius: var(--radius);
+    padding: 2rem 1rem;
+    width: 260px;
+    height: 100vh;
     box-sizing: border-box;
     z-index: 1000;
-    box-shadow: var(--shadow-island);
+    /* No borders, no islands, just flat integration with background */
   }
 
-  .brand-section {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .logo-circle {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--primary-color), #7aa9f7);
-    color: var(--on-primary);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  }
-
-  .brand-name {
-    font-weight: 700;
-    font-size: 1.4rem;
-    letter-spacing: -0.03em;
-  }
-
-  .nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    flex: 1;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 0.85rem 1rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    border-radius: 1rem;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 500;
-  }
-
-  .nav-item:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-    color: var(--text-color);
-    transform: translateX(4px);
-  }
-
-  .nav-item.active {
-    background-color: var(--md3-tonal-primary);
-    color: var(--primary-color);
-    font-weight: 600;
-  }
-
-  .nav-item.active .material-symbols-rounded {
-    font-variation-settings: 'FILL' 1;
-  }
-
-  .user-section {
+  /* USER SECTION TOP */
+  .user-section-top {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem;
-    background: rgba(255, 255, 255, 0.04);
+    margin-bottom: 2.5rem;
     border-radius: 1rem;
-    border: 1px solid var(--border-color);
+    transition: background 0.2s;
   }
 
   .mini-avatar {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 2px solid var(--border-color);
   }
 
   .user-info {
@@ -161,93 +101,116 @@
 
   .username {
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: var(--text-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .logout-btn {
+  .user-role {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .logout-btn-minimal {
     background: transparent;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
+    padding: 0.4rem;
     display: flex;
-    align-items: center;
+    border-radius: 50%;
     transition: all 0.2s;
   }
-
-  .logout-btn:hover {
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
+  .logout-btn-minimal:hover {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
   }
 
-  /* Responsive Bottom Toolbar */
+  /* LINKS */
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.85rem 1.25rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 1rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .nav-item:hover {
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .nav-item.active {
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.08);
+  }
+
+  .nav-item.active .material-symbols-rounded {
+    font-variation-settings: 'FILL' 1;
+  }
+
+  /* BRAND SECTION BOTTOM */
+  .brand-section-bottom {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    margin-top: auto;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .brand-section-bottom:hover { opacity: 1; }
+
+  .logo-circle-flat {
+    width: 32px;
+    height: 32px;
+    background: var(--text-muted);
+    color: var(--bg-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1rem;
+  }
+
+  .brand-info { display: flex; flex-direction: column; }
+  .brand-name { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; line-height: 1; }
+  .version { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); }
+
+  /* Mobile stays similar but at bottom */
   @media (max-width: 768px) {
     .navigation-bar {
-      width: 100vw;
-      height: 80px;
-      flex-direction: row;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      padding: 0 0.5rem;
-      margin: 0;
-      border-right: none;
-      border-top: 1px solid var(--border-color);
-      background: rgba(30, 30, 30, 0.95);
-      backdrop-filter: blur(20px);
-      justify-content: space-around;
-      align-items: center;
-      gap: 0;
-      border-radius: 2rem 2rem 0 0;
-      box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+        width: 100vw;
+        height: 70px;
+        flex-direction: row;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        padding: 0 1rem;
+        background: var(--md3-surface-container);
+        border-top: 1px solid var(--border-color);
+        align-items: center;
     }
-
-    .brand-section, .user-section, .item-label {
-      display: none;
-    }
-
-    .nav-links {
-      flex-direction: row;
-      justify-content: space-around;
-      width: 100%;
-      gap: 0;
-    }
-
-    .nav-item {
-      flex-direction: column;
-      padding: 0.75rem 0.5rem;
-      gap: 0.25rem;
-      flex: 1;
-      border-radius: 0;
-      transform: none !important;
-    }
-
-    .nav-item:hover {
-      background: transparent;
-    }
-
-    .nav-item span {
-      font-size: 28px;
-    }
-
-    .nav-item.active {
-      background: transparent;
-      color: var(--primary-color);
-    }
-    
-    /* Active indicator bar for mobile */
-    .nav-item.active::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      width: 20px;
-      height: 3px;
-      background: var(--primary-color);
-      border-radius: 0 0 4px 4px;
-    }
+    .user-section-top, .brand-section-bottom, .item-label { display: none; }
+    .nav-links { flex-direction: row; width: 100%; justify-content: space-around; }
+    .nav-item { padding: 0.5rem; }
   }
 </style>
