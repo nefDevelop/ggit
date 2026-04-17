@@ -144,6 +144,8 @@
           </button>
         </div>
       </section>
+
+      <ThemeSelector />
     </div>
   {/if}
 </div>
@@ -243,4 +245,6 @@
   .skeleton-island { height: 300px; display: flex; flex-direction: column; gap: 1rem; padding: 2rem; justify-content: center; }
   .skeleton-line { height: 40px; background: var(--md3-surface-3); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+</style>
+y: 0.5; } 50% { opacity: 0.8; } }
 </style>

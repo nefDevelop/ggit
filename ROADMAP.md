@@ -90,7 +90,7 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 **Objetivo:** Garantizar que Ggit se sienta como una aplicación premium de 2026.
     *   [ ] Micro-animaciones en botones y transiciones de página.
     *   [ ] Refinado de sombras
-    *   [ ] Soporte avanzado para temas (Deep Night / Solarized).
+    *   [x] Soporte avanzado para temas (Deep Night / Solarized, Ayu, Monokai, Nord).
 
 ## Fase 10: Limpieza de Legacy y Consistencia UX
 **Objetivo:** Eliminar el 100% de los rastro de Gogs antiguo y unificar la experiencia.
@@ -114,9 +114,10 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 *   [ ] **Audit de Plantillas:** Eliminar archivos `.tmpl` redundantes (Meta: 0 legacy templates).
 *   [ ] **Modernización de Emails:** Restilo de los 7 templates de mail a MD3 o sistema moderno.
 *   [ ] **Admin Monitor:** Live status del servidor (Go routines, memoria, CPU) en Svelte.
-*   [ ] **Finalizar API v2:** Documentación OpenAPI/Swagger completa.
+*   [x] **Finalizar API v2:** Documentación OpenAPI/Swagger completa.
 
 *   [ ] **Component Library (M3 Expressive):**
     *   Crear una librería interna de Svelte para Botones, Inputs, Modals y Toasts con el nuevo sistema de colores y elevaciones.
 *   [ ] **Micro-interacciones:**
     *   Añadir transiciones suaves entre rutas, esqueletos de carga (skeleton loaders) y feedback háptico visual.
+

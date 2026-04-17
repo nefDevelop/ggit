@@ -35,6 +35,8 @@
   <main class="settings-content">
     {#if activeTab === 'profile'}
       <SettingsProfile />
+    {:else if activeTab === 'appearance'}
+      <ThemeSelector />
     {:else if activeTab === 'security'}
       <SettingsSecurity />
     {:else if activeTab === 'keys'}
@@ -114,6 +116,10 @@
   .settings-content {
     display: flex;
     flex-direction: column;
+    gap: 2rem;
+  }
+</style>
+flex-direction: column;
     gap: 2rem;
   }
 </style>

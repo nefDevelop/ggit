@@ -24,6 +24,17 @@ type loginPayload struct {
 	LoginSource int64  `json:"login_source"`
 }
 
+// @Summary User Login
+// @Description Authenticates a user and establishes a session via cookies.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param payload body loginPayload true "Login credentials"
+// @Success 200 {object} map[string]any "ok and user object"
+// @Success 202 {object} map[string]any "two_factor_required"
+// @Failure 400 {object} error "Bad request"
+// @Failure 401 {object} string "Invalid username or password"
+// @Router /user/login [post]
 // Login authenticates a user and establishes a session via cookies.
 func Login(c *context.APIContext) {
 	if !database.HasEngine || authservice.Auth == nil {
@@ -115,6 +126,17 @@ type registerPayload struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// @Summary User Registration
+// @Description Creates a new user account.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param payload body registerPayload true "Registration details"
+// @Success 201 {object} map[string]any "ok"
+// @Failure 400 {object} error "Bad request"
+// @Failure 403 {object} string "Registration disabled"
+// @Failure 409 {object} string "Conflict"
+// @Router /user/register [post]
 // Register creates a new user account.
 func Register(c *context.APIContext) {
 	if conf.Auth.DisableRegistration {

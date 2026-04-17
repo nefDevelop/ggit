@@ -7,6 +7,12 @@ import (
 	"gogs.io/gogs/internal/ginx"
 )
 
+// @title Ggit API v2
+// @version 2.0
+// @description REST API for Ggit, modernized to Go/Gin and Svelte.
+// @host localhost:3000
+// @BasePath /api/v2
+
 // RegisterRoutes registers all v2 API routes to the given router group.
 func RegisterRoutes(r *gin.RouterGroup) {
 	r.Use(context.APIContexter())

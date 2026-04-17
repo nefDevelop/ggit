@@ -1,0 +1,106 @@
+basePath: /api/v2
+definitions:
+  v2.loginPayload:
+    properties:
+      login_source:
+        type: integer
+      password:
+        type: string
+      remember:
+        type: boolean
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  v2.registerPayload:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: REST API for Ggit, modernized to Go/Gin and Svelte.
+  title: Ggit API v2
+  version: "2.0"
+paths:
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and establishes a session via cookies.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.loginPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok and user object
+          schema:
+            additionalProperties: true
+            type: object
+        "202":
+          description: two_factor_required
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema: {}
+        "401":
+          description: Invalid username or password
+          schema:
+            type: string
+      summary: User Login
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account.
+      parameters:
+      - description: Registration details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.registerPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ok
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema: {}
+        "403":
+          description: Registration disabled
+          schema:
+            type: string
+        "409":
+          description: Conflict
+          schema:
+            type: string
+      summary: User Registration
+      tags:
+      - user
+swagger: "2.0"
