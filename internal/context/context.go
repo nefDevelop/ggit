@@ -152,22 +152,12 @@ func (c *Context) FormInt64(name string) int64 {
 	return v
 }
 
+// HTML is now lobotomized (Zero Template). It logs and returns JSON if an error occurred.
 func (c *Context) HTML(status int, name string) {
-	// Fallback mechanism for Zero Template architecture
-	defer func() {
-		if r := recover(); r != nil {
-			// If HTML rendering fails (e.g. no renderer), fallback to JSON for errors or PlainText
-			if status >= 400 {
-				c.JSON(status, map[string]any{
-					"error": name,
-					"data":  c.Data,
-				})
-			} else {
-				c.String(status, "Template rendering failed/disabled: %s", name)
-			}
-		}
-	}()
-	c.Context.HTML(status, name, c.Data)
+	log.Trace("Legacy HTML call (disconnected): %s", name)
+	if status >= 400 {
+		c.JSON(status, map[string]any{"error": name})
+	}
 }
 
 func (c *Context) Success(name string) {
@@ -187,12 +177,8 @@ func (c *Context) RedirectSubpath(location string, status ...int) {
 }
 
 func (c *Context) RenderWithErr(msg string, status int, tpl string, form any) {
-	if form != nil {
-		formErr := "HasError"
-		c.Data[formErr] = true
-		c.Data["ErrorMsg"] = msg
-		// TODO: reflect form to Data
-	}
+	log.Trace("Legacy RenderWithErr call (disconnected): %s - %s", tpl, msg)
+	c.Data["ErrorMsg"] = msg
 	c.HTML(status, tpl)
 }
 
@@ -209,25 +195,11 @@ func (c *Context) QueryBool(name string) bool {
 	return v == "true" || v == "1" || v == "on"
 }
 
-func (c *Context) RequireHighlightJS() {
-	c.Data["RequireHighlightJS"] = true
-}
-
-func (c *Context) RequireSimpleMDE() {
-	c.Data["RequireSimpleMDE"] = true
-}
-
-func (c *Context) RequireSimpleMDECDE() {
-	c.Data["RequireSimpleMDECDE"] = true
-}
-
-func (c *Context) RequireAutosize() {
-	c.Data["RequireAutosize"] = true
-}
-
-func (c *Context) RequireDropzone() {
-	c.Data["RequireDropzone"] = true
-}
+func (c *Context) RequireHighlightJS()   {}
+func (c *Context) RequireSimpleMDE()    {}
+func (c *Context) RequireSimpleMDECDE() {}
+func (c *Context) RequireAutosize()     {}
+func (c *Context) RequireDropzone()     {}
 
 func (c *Context) FormErr(names ...string) {
 	for _, name := range names {
@@ -304,7 +276,7 @@ func (c *Context) ServeFile(file string, names ...string) {
 
 func (c *Context) Error(err error, msg string) {
 	log.ErrorDepth(4, "%s: %v", msg, err)
-	if strings.HasPrefix(c.Request.URL.Path, "/api/v2") {
+	if isAPIPath(c.Request.URL.Path) {
 		c.JSON(http.StatusInternalServerError, map[string]any{
 			"error":   msg,
 			"details": err.Error(),
@@ -395,10 +367,6 @@ func Contexter(store Store) gin.HandlerFunc {
 			gctx.User, gctx.IsBasicAuth, gctx.IsTokenAuth = authenticatedUser(store, c, sess)
 			if gctx.User != nil {
 				gctx.IsLogged = true
-				gctx.Data["LoggedUser"] = gctx.User
-				gctx.Data["LoggedUserID"] = gctx.User.ID
-				gctx.Data["LoggedUserName"] = gctx.User.Name
-				gctx.Data["IsAdmin"] = gctx.User.IsAdmin
 			}
 		}
 

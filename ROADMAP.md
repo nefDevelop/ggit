@@ -104,14 +104,14 @@ Este documento describe el plan de acción paso a paso para la refactorización 
     *   [x] **Watchers y Forks:** Listados de interactuación social en repositorios.
     *   [x] **Org Intelligence:** Gestión refinada de equipos y miembros.
 *   [ ] **Fase 10.4: Herramientas de Precisión:**
-    *   [ ] **PR Creator:** Selector de ramas y preview de comparación (master...branch).
+    *   [x] **PR Creator**: Selector de ramas y preview de comparación (master...branch).
     *   [ ] **Release Suite:** Gestión de etiquetas, assets y notas de versión.
-    *   [ ] **Webhook Logs:** Historial de entregas y depuración de hooks.
+    *   [x] **Webhook Logs:** Historial de entregas y depuración de hooks.
 
 ## Fase 11: El Fin del Legacy (0 Templates)
 **Objetivo:** Desconexión total del motor de plantillas de Go.
 
-*   [x] **Audit de Plantillas:** Eliminar archivos `.tmpl` redundantes (Meta: 0 legacy templates en Admin). [COMPLETO]
+*   [x] **Audit de Plantillas:** Eliminar archivos `.tmpl` redundantes (Meta: 0 legacy templates [COMPLETO] en Admin). [COMPLETO]
 *   [x] **Modernización de Emails:** Restilo de los 7 templates de mail a MD3. [COMPLETO]
 * [x] **Admin Monitor:** Live status del servidor (Go routines, memoria, CPU) en Svelte. [COMPLETO]
 *   [x] **Finalizar API v2:** Documentación OpenAPI/Swagger completa.

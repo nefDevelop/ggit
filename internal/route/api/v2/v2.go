@@ -82,6 +82,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	explore := r.Group("/explore")
 	{
 		explore.GET("/repos", ginx.Handle(ExploreRepos))
+		explore.GET("/repos/search", ginx.Handle(SearchRepos))
 		explore.GET("/users", ginx.Handle(ExploreUsers))
 		explore.GET("/organizations", ginx.Handle(ExploreOrganizations))
 	}
@@ -130,6 +131,11 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			issueGroup.PUT("/:index", ginx.Handle(UpdateIssue))
 			issueGroup.GET("/:index/comments", ginx.Handle(GetIssueComments))
 			issueGroup.POST("/:index/comments", ginx.Handle(CreateIssueComment))
+
+			issueGroup.GET("/:index/labels", ginx.Handle(ListIssueLabels))
+			issueGroup.POST("/:index/labels", ginx.Handle(AddIssueLabels))
+			issueGroup.PUT("/:index/labels", ginx.Handle(ReplaceIssueLabels))
+			issueGroup.DELETE("/:index/labels", ginx.Handle(ClearIssueLabels))
 		}
 
 		pullGroup := repo.Group("/pulls")
@@ -165,6 +171,18 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		
 		repo.GET("/compare/*info", ginx.Handle(GetComparison))
 		
+		repo.GET("/labels", ginx.Handle(ListRepoLabels))
+		repo.POST("/labels", ginx.Handle(CreateRepoLabel))
+		repo.GET("/labels/:id", ginx.Handle(GetRepoLabel))
+		repo.PATCH("/labels/:id", ginx.Handle(UpdateRepoLabel))
+		repo.DELETE("/labels/:id", ginx.Handle(DeleteRepoLabel))
+
+		repo.GET("/milestones", ginx.Handle(ListRepoMilestones))
+		repo.POST("/milestones", ginx.Handle(CreateRepoMilestone))
+		repo.GET("/milestones/:id", ginx.Handle(GetRepoMilestone))
+		repo.PATCH("/milestones/:id", ginx.Handle(UpdateRepoMilestone))
+		repo.DELETE("/milestones/:id", ginx.Handle(DeleteRepoMilestone))
+
 		editor := repo.Group("/editor")
 		{
 			editor.POST("/edit", ginx.Handle(EditRepoFile))
@@ -185,6 +203,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settingGroup.DELETE("/hooks/:id", ginx.Handle(DeleteRepoHook))
 		}
 	}
+
+	r.POST("/markdown", ginx.Handle(RenderMarkdown))
+	r.POST("/markdown/raw", ginx.Handle(RenderMarkdownRaw))
 
 	orgs := r.Group("/orgs")
 	{

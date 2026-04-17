@@ -1,172 +1,266 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
-  import { page } from '$app/state';
-  import { goto } from '$app/navigation';
+  import BranchSelector from './BranchSelector.svelte';
 
-  let { username, reponame, initialData = null } = $props();
+  let { username, reponame, release = null, onSaved, onCancel } = $props();
 
-  let branches = $state<any[]>([]);
-  let tag_name = $state('');
-  let tag_target = $state('');
-  let title = $state('');
-  let content = $state('');
-  let is_prerelease = $state(false);
-  let is_draft = $state(false);
-
-  // Initialize state once initialData is available
-  $effect(() => {
-    if (initialData) {
-      tag_name = initialData.TagName || tag_name;
-      tag_target = initialData.Target || tag_target;
-      title = initialData.Title || title;
-      content = initialData.Note || content;
-      is_prerelease = initialData.IsPrerelease || is_prerelease;
-      is_draft = initialData.IsDraft || is_draft;
-    }
-  });
+  let title = $state(release?.title || "");
+  let tagName = $state(release?.tag_name || "");
+  let target = $state(release?.target || "master");
+  let note = $state(release?.note || "");
+  let isDraft = $state(release?.is_draft || false);
+  let isPrerelease = $state(release?.is_prerelease || false);
   
-  let loadingBranches = $state(true);
-  let submitting = $state(false);
+  let branches = $state<any[]>([]);
+  let tags = $state<any[]>([]);
+  let attachments = $state<any[]>(release?.attachments || []);
+  let uploading = $state(false);
+  let saving = $state(false);
 
-  async function fetchBranches() {
+  async function fetchData() {
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
-      if (res.ok) {
-        const data = await res.json();
-        branches = [data.default, ...data.active, ...data.stale];
-        if (!tag_target) tag_target = data.default.name;
+      const bRes = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
+      if (bRes.ok) {
+          const data = await bRes.json();
+          branches = [data.default, ...data.active, ...data.stale].map(b => ({name: b.name}));
+          if (!release) target = data.default.name;
       }
-    } finally {
-      loadingBranches = false;
+      
+      const rRes = await apiFetch(`/api/v2/${username}/${reponame}/releases`);
+      if (rRes.ok) {
+          const data = await rRes.json();
+          tags = data.releases.map((r: any) => ({name: r.tag_name}));
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
-  async function saveRelease() {
-    if (!tag_name || !tag_target) return;
-    submitting = true;
+  async function handleFileUpload(e: Event) {
+    const files = (e.target as HTMLInputElement).files;
+    if (!files || files.length === 0) return;
     
-    const url = initialData 
-      ? `/api/v2/${username}/${reponame}/releases/${initialData.ID}`
-      : `/api/v2/${username}/${reponame}/releases`;
+    uploading = true;
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      try {
+        const res = await apiFetch(`/api/v2/${username}/${reponame}/releases/attachments`, {
+          method: "POST",
+          body: formData
+        }, true); // IsFormData = true
+        
+        if (res.ok) {
+            const attachment = await res.json();
+            attachments = [...attachments, attachment];
+        }
+      } catch (e) {
+        console.error("Upload failed", e);
+      }
+    }
+    uploading = false;
+  }
+
+  function removeAttachment(uuid: string) {
+      attachments = attachments.filter(a => a.uuid !== uuid);
+  }
+
+  async function save(publish = false) {
+    if (!tagName) return;
+    saving = true;
+    const method = release ? "PATCH" : "POST";
+    const url = release ? `/api/v2/${username}/${reponame}/releases/${release.id}` : `/api/v2/${username}/${reponame}/releases`;
     
-    const method = initialData ? 'PATCH' : 'POST';
+    const body = {
+      tag_name: tagName,
+      target: target,
+      title: title,
+      content: note,
+      draft: !publish && isDraft ? "on" : "", // Legacy form compatibility if needed, but our API uses bool or string
+      prerelease: isPrerelease,
+      files: attachments.map(a => a.uuid)
+    };
 
     try {
       const res = await apiFetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tag_name,
-          target: tag_target,
-          title,
-          content,
-          prerelease: is_prerelease,
-          draft: is_draft ? "1" : "" // API expectations vary, but usually this is how it works
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
       });
-
+      
       if (res.ok) {
-        goto(`/${username}/${reponame}/releases`);
+          const savedRelease = await res.json();
+          onSaved(savedRelease);
       }
     } catch (e) {
       console.error(e);
     } finally {
-      submitting = false;
+      saving = false;
     }
   }
 
-  onMount(fetchBranches);
+  onMount(fetchData);
 </script>
 
-<div class="release-editor island tonal">
+<div class="release-editor island shadow-xl">
   <header class="editor-header">
-     <h2>{initialData ? 'Edit Release' : 'Draft a new release'}</h2>
-     <p>Tag your software versions for your users to download.</p>
+    <h3>{release ? 'Edit Release' : 'New Release'}</h3>
+    <button class="btn-icon" onclick={onCancel}>
+      <span class="material-symbols-rounded">close</span>
+    </button>
   </header>
 
-  <form onsubmit={(e) => { e.preventDefault(); saveRelease(); }}>
-    <div class="form-row">
-      <div class="field">
-        <label for="tag">Tag version</label>
-        <input id="tag" type="text" bind:value={tag_name} placeholder="e.g. v1.0.0" required disabled={!!initialData} />
+  <div class="editor-grid">
+    <div class="main-form">
+      <div class="field-row">
+        <div class="field tag-field">
+          <label for="tag-name">Tag Version</label>
+          <input id="tag-name" type="text" bind:value={tagName} placeholder="e.g. v1.0.0" disabled={!!release} />
+          <p class="help">Choose an existing tag, or create a new one on publish.</p>
+        </div>
+        
+        <div class="field target-field">
+          <BranchSelector 
+            label="Target Branch" 
+            branches={branches} 
+            bind:selected={target} 
+          />
+        </div>
       </div>
+
       <div class="field">
-        <label for="target">Target branch</label>
-        <select id="target" bind:value={tag_target} disabled={!!initialData}>
-          {#each branches as b}
-            <option value={b.name}>{b.name}</option>
-          {/each}
-        </select>
+        <label for="rel-title">Release Title</label>
+        <input id="rel-title" type="text" bind:value={title} placeholder="Release title" />
+      </div>
+
+      <div class="field">
+        <label for="rel-note">Release Notes</label>
+        <textarea id="rel-note" bind:value={note} placeholder="Describe the changes in this version..."></textarea>
+      </div>
+
+      <div class="attachments-zone">
+        <label>Binary Attachments</label>
+        <div class="upload-area" class:uploading={uploading}>
+          <span class="material-symbols-rounded">cloud_upload</span>
+          <p>Drag and drop assets here, or <strong>browse</strong></p>
+          <input type="file" multiple onchange={handleFileUpload} />
+        </div>
+
+        {#if attachments.length > 0}
+          <div class="attachment-list">
+            {#each attachments as a}
+              <div class="attachment-item island tonal">
+                <span class="material-symbols-rounded">description</span>
+                <span class="name">{a.name}</span>
+                <button class="remove-btn" onclick={() => removeAttachment(a.uuid)}>
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              </div>
+            {/each}
+          </div>
+        {/if}
       </div>
     </div>
 
-    <div class="field">
-      <label for="title">Release title</label>
-      <input id="title" type="text" bind:value={title} placeholder="Release title" />
-    </div>
-
-    <div class="field">
-      <label for="content">Describe this release</label>
-      <textarea id="content" bind:value={content} placeholder="Markdown supported..."></textarea>
-    </div>
-
-    <div class="options-row island">
-       <label class="checkbox-label">
-         <input type="checkbox" bind:checked={is_prerelease} />
-         <div class="check-text">
+    <aside class="editor-sidebar">
+      <div class="options island tonal">
+        <h4>Options</h4>
+        <label class="checkbox-row">
+          <input type="checkbox" bind:checked={isPrerelease} />
+          <div class="check-text">
             <strong>This is a pre-release</strong>
-            <span>We’ll point out that this release is not yet ready for production.</span>
-         </div>
-       </label>
-    </div>
+            <span>Inform users that this release is not ready for production.</span>
+          </div>
+        </label>
 
-    <div class="footer-actions">
-       <button type="button" class="btn btn-outline" onclick={() => goto(`/${username}/${reponame}/releases`)}>Cancel</button>
-       <div class="submit-group">
-          <label class="draft-toggle">
-            <input type="checkbox" bind:checked={is_draft} />
-            Keep as draft
+        {#if !release || (release && release.is_draft)}
+          <label class="checkbox-row">
+            <input type="checkbox" bind:checked={isDraft} />
+            <div class="check-text">
+              <strong>Save as draft</strong>
+              <span>Only you and admins will see this until published.</span>
+            </div>
           </label>
-          <button type="submit" class="btn btn-primary lg" disabled={submitting}>
-            {submitting ? 'Saving...' : initialData ? 'Update Release' : 'Publish Release'}
-          </button>
-       </div>
-    </div>
-  </form>
+        {/if}
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary lg" onclick={() => save(!isDraft)} disabled={saving}>
+          {#if saving}
+            <span class="spinner-sm"></span>
+            Saving...
+          {:else}
+            {release?.is_draft && !isDraft ? 'Publish Release' : (release ? 'Update Release' : 'Create Release')}
+          {/if}
+        </button>
+        <button class="btn btn-tonal" onclick={onCancel}>Cancel</button>
+      </div>
+    </aside>
+  </div>
 </div>
 
 <style>
-  .release-editor { display: flex; flex-direction: column; gap: 2.5rem; padding: 3rem; max-width: 900px; margin: 0 auto; box-shadow: var(--shadow-xl); }
+  .release-editor { padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem; background: var(--md3-surface-1); }
   
-  .editor-header h2 { margin: 0; font-size: 1.75rem; font-weight: 800; }
-  .editor-header p { color: var(--text-muted); margin: 0.5rem 0 0 0; }
+  .editor-header { display: flex; justify-content: space-between; align-items: center; }
+  .editor-header h3 { margin: 0; font-size: 1.5rem; font-weight: 800; }
 
-  form { display: flex; flex-direction: column; gap: 1.5rem; }
+  .editor-grid { display: grid; grid-template-columns: 1fr 350px; gap: 3rem; align-items: start; }
   
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .main-form { display: flex; flex-direction: column; gap: 1.5rem; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
-  .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .field input, .field select, .field textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; font-family: inherit; }
-  .field textarea { height: 300px; resize: vertical; }
+  .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); padding-left: 0.5rem; }
+  .field input, .field textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; outline: none; width: 100%; transition: all 0.2s; }
+  .field input:focus, .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .field textarea { height: 350px; resize: vertical; font-family: inherit; }
+  .help { font-size: 0.75rem; color: var(--text-muted); margin: 0; padding-left: 0.5rem; }
 
-  .options-row { background: rgba(255,152,0,0.05); border: 1px solid rgba(255,152,0,0.2); padding: 1.5rem; border-radius: 1rem; }
+  .attachments-zone { display: flex; flex-direction: column; gap: 1rem; }
+  .attachments-zone label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); padding-left: 0.5rem; }
   
-  .checkbox-label { display: flex; align-items: flex-start; gap: 1rem; cursor: pointer; }
-  .checkbox-label input { width: 1.25rem; height: 1.25rem; margin-top: 0.25rem; }
-  .check-text { display: flex; flex-direction: column; gap: 0.1rem; }
-  .check-text strong { font-size: 0.95rem; }
-  .check-text span { font-size: 0.85rem; color: var(--text-muted); }
-
-  .footer-actions { border-top: 1px solid var(--border-color); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; }
-  .submit-group { display: flex; align-items: center; gap: 2rem; }
-  
-  .draft-toggle { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; color: var(--text-muted); }
-  
-  @media (max-width: 600px) {
-    .form-row { grid-template-columns: 1fr; }
-    .footer-actions { flex-direction: column; gap: 1.5rem; align-items: stretch; }
-    .submit-group { flex-direction: column; align-items: center; }
+  .upload-area { 
+    position: relative; 
+    border: 2px dashed var(--border-color); 
+    border-radius: 1.5rem; 
+    padding: 2.5rem; 
+    text-align: center; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 0.5rem; 
+    color: var(--text-muted);
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.01);
   }
+  .upload-area:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.02); color: var(--text-color); }
+  .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-area span { font-size: 3rem; opacity: 0.5; }
+  .upload-area.uploading { opacity: 0.5; pointer-events: none; }
+
+  .attachment-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+  .attachment-item { padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; position: relative; }
+  .attachment-item .name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .remove-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; border-radius: 50%; transition: all 0.2s; }
+  .remove-btn:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+  .editor-sidebar { display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 1rem; }
+  .options { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  .options h4 { margin: 0; font-size: 1.1rem; }
+  
+  .checkbox-row { display: flex; gap: 1rem; cursor: pointer; transition: opacity 0.2s; }
+  .checkbox-row:hover { opacity: 0.8; }
+  .checkbox-row input { width: 1.25rem; height: 1.25rem; margin-top: 0.25rem; cursor: pointer; }
+  .check-text { display: flex; flex-direction: column; gap: 0.2rem; }
+  .check-text strong { font-size: 0.95rem; }
+  .check-text span { font-size: 0.8rem; color: var(--text-muted); }
+
+  .actions { display: flex; flex-direction: column; gap: 0.75rem; }
+  .btn.lg { height: 56px; font-weight: 800; font-size: 1rem; }
+
+  .spinner-sm { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>

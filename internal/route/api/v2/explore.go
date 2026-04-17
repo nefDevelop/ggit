@@ -44,6 +44,45 @@ func ExploreRepos(c *context.APIContext) {
 	})
 }
 
+// SearchRepos returns a list of repositories based on search criteria.
+func SearchRepos(c *context.APIContext) {
+	opts := &database.SearchRepoOptions{
+		Keyword:  c.Query("q"),
+		OwnerID:  c.QueryInt64("uid"),
+		Page:     c.QueryInt("page"),
+		PageSize: c.QueryInt("limit"),
+	}
+
+	if opts.Page <= 0 {
+		opts.Page = 1
+	}
+	if opts.PageSize <= 0 || opts.PageSize > 50 {
+		opts.PageSize = 20
+	}
+
+	repos, count, err := database.SearchRepositoryByName(opts)
+	if err != nil {
+		c.Error(err, "search repository")
+		return
+	}
+
+	if err = database.RepositoryList(repos).LoadAttributes(); err != nil {
+		c.Error(err, "load attributes")
+		return
+	}
+
+	apiRepos := make([]any, len(repos))
+	for i, r := range repos {
+		apiRepos[i] = r.APIFormat(r.Owner)
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"ok":   true,
+		"data": apiRepos,
+		"total": count,
+	})
+}
+
 // ExploreUsers returns a list of users for the explore page.
 func ExploreUsers(c *context.APIContext) {
 	page := c.QueryInt("page")

@@ -5,50 +5,71 @@
   import { goto } from '$app/navigation';
   import DiffViewer from '$lib/components/DiffViewer.svelte';
   import CommitRow from '$lib/components/CommitRow.svelte';
+  import BranchSelector from '$lib/components/BranchSelector.svelte';
 
-  let username = $derived(page.params.username);
-  let reponame = $derived(page.params.reponame);
+  const username = $derived(page.params.username);
+  const reponame = $derived(page.params.reponame);
 
-  let branches = $state<any[]>([]);
+  // State
   let baseBranch = $state('');
   let headBranch = $state('');
+  let headRepoId = $state(0);
+  let headRepoOwner = $state('');
+  let headRepoName = $state('');
+
+  let metadata = $state<any>(null);
   let comparison = $state<any>(null);
+  let loading = $state(true);
   let loadingComp = $state(false);
   
   let title = $state('');
   let content = $state('');
   let submitting = $state(false);
-
   let activeTab = $state('diff'); // 'diff' or 'commits'
 
-  async function fetchBranches() {
+  // Fetch initial comparison data
+  async function initComparison() {
+    loading = true;
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
+      // We start by comparing the default branch with itself or a suggested branch
+      // The backend will provide available branches and repositories (forks)
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/compare/master...master`);
       if (res.ok) {
-          const data = await res.json();
-          branches = [data.default, ...data.active, ...data.stale];
-          baseBranch = data.default.name;
-          // Try to find a branch that isn't the default to suggest as head
-          const other = data.active.find((b: any) => b.name !== baseBranch);
-          headBranch = other ? other.name : baseBranch;
+        metadata = await res.json();
+        baseBranch = metadata.base_branch;
+        headBranch = metadata.head_branch;
+        headRepoId = metadata.head_repo.id;
+        headRepoOwner = metadata.head_repo.owner.username;
+        headRepoName = metadata.head_repo.name;
+        
+        // If there's only one repo and we are comparing same branch, try to find another branch
+        if (metadata.is_same_repo && baseBranch === headBranch) {
+            const other = metadata.head_branches.find((b: string) => b !== baseBranch);
+            if (other) headBranch = other;
+        }
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      loading = false;
     }
   }
 
   async function fetchComparison() {
-    if (!baseBranch || !headBranch || baseBranch === headBranch) {
-      comparison = null;
-      return;
-    }
+    if (!baseBranch || !headBranch) return;
+    
     loadingComp = true;
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/compare/${baseBranch}...${headBranch}`);
+      // Format: base...headUser:headBranch
+      const headRef = headRepoOwner === username ? headBranch : `${headRepoOwner}:${headBranch}`;
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/compare/${baseBranch}...${headRef}`);
       if (res.ok) {
         comparison = await res.json();
+        // Update local metadata if branches/repos changed in the response
+        metadata.head_branches = comparison.head_branches;
+        
         // Auto-fill title if empty
-        if (!title && comparison.num_commits === 1) {
+        if (!title && comparison.num_commits > 0) {
           title = comparison.commits[0].summary;
         }
       } else {
@@ -73,7 +94,8 @@
           title,
           content,
           base_branch: baseBranch,
-          head_branch: headBranch
+          head_branch: headBranch,
+          head_repo_id: headRepoId
         })
       });
       if (res.ok) {
@@ -87,127 +109,249 @@
     }
   }
 
+  function handleHeadRepoChange(e: Event) {
+      const id = parseInt((e.target as HTMLSelectElement).value);
+      const repo = metadata.all_head_repos.find((r: any) => r.id === id);
+      if (repo) {
+          headRepoId = repo.id;
+          headRepoOwner = repo.owner.username;
+          headRepoName = repo.name;
+          // When repo changes, we should probably reset head branch to default
+          headBranch = repo.default_branch || 'master';
+      }
+  }
+
   $effect(() => {
-    if (baseBranch && headBranch) fetchComparison();
+    if (baseBranch && headBranch && headRepoId) fetchComparison();
   });
 
-  onMount(fetchBranches);
+  onMount(initComparison);
 </script>
 
 <div class="pr-creator">
-  <header class="creator-header island tonal">
-    <div class="compare-selectors">
-      <div class="selector">
-        <span class="label">Base</span>
-        <select bind:value={baseBranch}>
-          {#each branches as b}
-            <option value={b.name}>{b.name}</option>
-          {/each}
-        </select>
-      </div>
-      <span class="material-symbols-rounded arrow">arrow_back</span>
-      <div class="selector">
-        <span class="label">Compare</span>
-        <select bind:value={headBranch}>
-          {#each branches as b}
-            <option value={b.name}>{b.name}</option>
-          {/each}
-        </select>
-      </div>
+  {#if loading}
+    <div class="skeleton-header island tonal"></div>
+    <div class="workspace-grid skeleton-pulse">
+        <div class="island"></div>
+        <div class="island tonal"></div>
     </div>
-
-    {#if baseBranch === headBranch}
-      <div class="info-banner warning">
-        <span class="material-symbols-rounded">info</span>
-        Select different branches to compare.
+  {:else if metadata}
+    <header class="comparison-bar island tonal shadow-lg">
+      <div class="selector-group">
+        <div class="repo-info">
+            <span class="label">Base Repository</span>
+            <div class="repo-name">
+                <span class="material-symbols-rounded">folder</span>
+                {username}/{reponame}
+            </div>
+        </div>
+        <BranchSelector 
+            label="Base Branch" 
+            branches={metadata.base_branches.map((b: string) => ({name: b}))} 
+            bind:selected={baseBranch} 
+        />
       </div>
-    {:else if comparison}
-      <div class="info-banner success">
-        <span class="material-symbols-rounded">check_circle</span>
-        Able to merge. These branches can be automatically merged.
+
+      <div class="comparison-arrow">
+          <span class="material-symbols-rounded">arrow_back</span>
+      </div>
+
+      <div class="selector-group">
+        <div class="repo-selector">
+            <span class="label">Head Repository</span>
+            <select class="island" onchange={handleHeadRepoChange} value={headRepoId}>
+                {#each metadata.all_head_repos as repo}
+                    <option value={repo.id}>{repo.owner.username}/{repo.name}</option>
+                {/each}
+            </select>
+        </div>
+        <BranchSelector 
+            label="Compare Branch" 
+            branches={metadata.head_branches.map((b: string) => ({name: b}))} 
+            bind:selected={headBranch} 
+            icon="call_split"
+        />
+      </div>
+
+      <div class="comparison-status">
+          {#if baseBranch === headBranch && metadata.head_repo.id === metadata.base_repo.id}
+             <div class="status-chip neutral">
+                 <span class="material-symbols-rounded">info</span>
+                 Choose different branches
+             </div>
+          {:else if comparison}
+             <div class="status-chip success">
+                 <span class="material-symbols-rounded">check_circle</span>
+                 Able to merge
+             </div>
+          {:else if !loadingComp}
+             <div class="status-chip error">
+                 <span class="material-symbols-rounded">error</span>
+                 Conflict detected
+             </div>
+          {/if}
+      </div>
+    </header>
+
+    {#if comparison}
+      <div class="workspace-grid">
+        <section class="creation-details island shadow-xl">
+          <div class="form-header">
+              <h3>New Pull Request</h3>
+              <p class="text-muted">Fill in the details to submit your changes for review.</p>
+          </div>
+          
+          <div class="form-fields">
+              <div class="field">
+                <label for="pr-title">Title</label>
+                <input id="pr-title" type="text" bind:value={title} placeholder="A concise summary of changes" required />
+              </div>
+              <div class="field">
+                <label for="pr-body">Description</label>
+                <textarea id="pr-body" bind:value={content} placeholder="Explain what this PR does and why it's needed..."></textarea>
+              </div>
+          </div>
+
+          <div class="form-actions">
+              <button class="btn btn-primary lg" onclick={createPR} disabled={!title || submitting}>
+                {#if submitting}
+                    <span class="spinner-sm"></span>
+                    Creating...
+                {:else}
+                    <span class="material-symbols-rounded">merge</span>
+                    Create Pull Request
+                {/if}
+              </button>
+          </div>
+        </section>
+
+        <main class="review-panel island tonal shadow-md">
+            <nav class="panel-tabs">
+                <button class:active={activeTab === 'diff'} onclick={() => activeTab = 'diff'}>
+                    <span class="material-symbols-rounded">difference</span>
+                    Changes
+                    <span class="badge">{comparison.diff?.Files?.length || 0}</span>
+                </button>
+                <button class:active={activeTab === 'commits'} onclick={() => activeTab = 'commits'}>
+                    <span class="material-symbols-rounded">history</span>
+                    Commits
+                    <span class="badge">{comparison.num_commits}</span>
+                </button>
+            </nav>
+
+            <div class="panel-content">
+                {#if loadingComp}
+                    <div class="loading-overlay">
+                        <div class="spinner"></div>
+                        <p>Updating comparison...</p>
+                    </div>
+                {/if}
+
+                {#if activeTab === 'diff'}
+                    <div class="diff-container">
+                        <DiffViewer diff={comparison.diff} />
+                    </div>
+                {:else}
+                    <div class="commits-container">
+                        {#each comparison.commits as commit}
+                            <CommitRow {commit} minimalist={true} />
+                        {/each}
+                    </div>
+                {/if}
+            </div>
+        </main>
       </div>
     {/if}
-  </header>
-
-  {#if comparison}
-    <div class="workspace-grid">
-      <aside class="creation-form island">
-        <h3>Create Pull Request</h3>
-        <div class="field">
-          <input type="text" bind:value={title} placeholder="Title" required />
-        </div>
-        <div class="field">
-          <textarea bind:value={content} placeholder="Description (Markdown supported)"></textarea>
-        </div>
-        <button class="btn btn-primary lg" onclick={createPR} disabled={!title || submitting}>
-          {submitting ? 'Creating...' : 'Create Pull Request'}
-        </button>
-      </aside>
-
-      <main class="comparison-preview island tonal">
-        <nav class="preview-tabs">
-          <button class:active={activeTab === 'diff'} onclick={() => activeTab = 'diff'}>
-            Changes <span class="badge">{comparison.diff?.Files?.length || 0}</span>
-          </button>
-          <button class:active={activeTab === 'commits'} onclick={() => activeTab = 'commits'}>
-            Commits <span class="badge">{comparison.num_commits}</span>
-          </button>
-        </nav>
-
-        <div class="preview-content">
-          {#if loadingComp}
-            <div class="loading-overlay">
-              <div class="spinner"></div>
-            </div>
-          {:else}
-            {#if activeTab === 'diff'}
-               <DiffViewer diff={comparison.diff} />
-            {:else}
-               <div class="commit-list">
-                 {#each comparison.commits as commit}
-                   <CommitRow {commit} minimalist={true} />
-                 {/each}
-               </div>
-            {/if}
-          {/if}
-        </div>
-      </main>
-    </div>
   {/if}
 </div>
 
 <style>
-  .pr-creator { display: flex; flex-direction: column; gap: 2rem; animation: fadeIn 0.4s ease-out; }
+  .pr-creator { display: flex; flex-direction: column; gap: 2rem; }
+
+  .comparison-bar { 
+      padding: 1.5rem 2.5rem; 
+      display: flex; 
+      align-items: center; 
+      gap: 2rem; 
+      background: var(--md3-surface-1);
+      border-radius: 1.5rem;
+  }
+  .selector-group { display: flex; align-items: flex-end; gap: 1rem; flex: 1; }
+  .repo-info, .repo-selector { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+  .label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; padding-left: 0.5rem; }
   
-  .creator-header { padding: 1.5rem 2rem; display: flex; align-items: center; gap: 3rem; }
-  .compare-selectors { display: flex; align-items: center; gap: 1rem; }
-  .selector { display: flex; flex-direction: column; gap: 0.25rem; }
-  .selector .label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; }
-  .selector select { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; min-width: 150px; }
-  .arrow { opacity: 0.5; margin-top: 1rem; }
+  .repo-name { 
+      padding: 0.6rem 1rem; 
+      background: rgba(255,255,255,0.02); 
+      border: 1px solid var(--border-color); 
+      border-radius: 0.75rem; 
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-muted);
+  }
+  .repo-selector select {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 0.6rem 1rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+  }
 
-  .info-banner { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-size: 0.9rem; font-weight: 600; flex: 1; }
-  .info-banner.warning { background: rgba(234, 179, 8, 0.1); color: #eab308; }
-  .info-banner.success { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+  .comparison-arrow { display: flex; align-items: center; margin-top: 1rem; color: var(--primary-color); opacity: 0.5; }
 
-  .workspace-grid { display: grid; grid-template-columns: 400px 1fr; gap: 2rem; align-items: start; }
-  
-  .creation-form { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; box-shadow: var(--shadow-lg); }
-  .creation-form h3 { margin: 0; font-size: 1.25rem; }
-  .field input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; }
-  .field textarea { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.95rem; height: 300px; resize: none; font-family: inherit; }
-  .lg { padding: 1rem; font-weight: 700; width: 100%; }
+  .comparison-status { width: 220px; display: flex; justify-content: flex-end; }
+  .status-chip { 
+      display: flex; 
+      align-items: center; 
+      gap: 0.5rem; 
+      padding: 0.5rem 1rem; 
+      border-radius: 2rem; 
+      font-size: 0.85rem; 
+      font-weight: 700;
+  }
+  .status-chip.success { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+  .status-chip.neutral { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+  .status-chip.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-  .comparison-preview { padding: 0; overflow: hidden; display: flex; flex-direction: column; min-height: 600px; }
-  .preview-tabs { display: flex; background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--border-color); }
-  .preview-tabs button { flex: 1; padding: 1rem; border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s; }
-  .preview-tabs button.active { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); border-bottom: 2px solid var(--primary-color); }
-  .badge { font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 0.1rem 0.5rem; border-radius: 1rem; }
+  .workspace-grid { display: grid; grid-template-columns: 450px 1fr; gap: 2rem; align-items: start; animation: slideUp 0.4s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-  .preview-content { flex: 1; position: relative; }
-  .loading-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; z-index: 10; backdrop-filter: blur(2px); }
-  
-  .commit-list { display: flex; flex-direction: column; }
+  .creation-details { padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem; }
+  .form-header h3 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+  .form-header p { margin: 0.25rem 0 0; font-size: 0.95rem; }
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .form-fields { display: flex; flex-direction: column; gap: 1.5rem; }
+  .field { display: flex; flex-direction: column; gap: 0.5rem; }
+  .field label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+  .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 1rem; border-radius: 1rem; font-size: 1.1rem; width: 100%; outline: none; }
+  .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .field textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 1rem; border-radius: 1rem; font-size: 1rem; height: 350px; resize: none; width: 100%; outline: none; font-family: inherit; }
+  .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+
+  .form-actions { margin-top: 1rem; }
+  .btn.lg { height: 64px; display: flex; align-items: center; justify-content: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 800; }
+
+  .review-panel { display: flex; flex-direction: column; min-height: 800px; padding: 0; overflow: hidden; }
+  .panel-tabs { display: flex; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); }
+  .panel-tabs button { flex: 1; padding: 1.25rem; border: none; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem; font-weight: 700; transition: all 0.2s; }
+  .panel-tabs button.active { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); position: relative; }
+  .panel-tabs button.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--primary-color); }
+  .badge { background: rgba(255,255,255,0.05); padding: 0.1rem 0.6rem; border-radius: 2rem; font-size: 0.8rem; color: var(--text-color); }
+  .active .badge { background: var(--primary-color); color: var(--on-primary); }
+
+  .panel-content { flex: 1; position: relative; }
+  .loading-overlay { position: absolute; inset: 0; background: rgba(var(--md3-surface-rgb), 0.7); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; z-index: 10; backdrop-filter: blur(4px); }
+  .loading-overlay p { font-weight: 700; color: var(--primary-color); }
+
+  .diff-container, .commits-container { padding: 1rem; }
+
+  .skeleton-header { height: 100px; }
+  .skeleton-pulse { opacity: 0.5; pointer-events: none; }
+  .spinner-sm { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>

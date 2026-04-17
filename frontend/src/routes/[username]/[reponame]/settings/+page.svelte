@@ -2,6 +2,7 @@
   import { getContext } from 'svelte';
   import RepoSettingsGeneral from '$lib/components/RepoSettingsGeneral.svelte';
   import RepoSettingsCollaboration from '$lib/components/RepoSettingsCollaboration.svelte';
+  import RepoSettingsWebhooks from '$lib/components/RepoSettingsWebhooks.svelte';
 
   const repo: any = getContext('repo');
   let activeTab = $state('general');
@@ -22,22 +23,14 @@
     <h3 class="sidebar-title">Repository Settings</h3>
     <nav class="settings-nav">
       {#each tabs as tab}
-        {#if tab.id !== 'webhooks'}
-          <button 
-            class="nav-item" 
-            class:active={activeTab === tab.id}
-            onclick={() => activeTab = tab.id}
-          >
-            <span class="material-symbols-rounded">{tab.icon}</span>
-            {tab.label}
-          </button>
-        {:else}
-          <div class="nav-item disabled" title="Webhooks coming soon">
-             <span class="material-symbols-rounded">{tab.icon}</span>
-             {tab.label}
-             <span class="badge">Soon</span>
-          </div>
-        {/if}
+        <button 
+          class="nav-item" 
+          class:active={activeTab === tab.id}
+          onclick={() => activeTab = tab.id}
+        >
+          <span class="material-symbols-rounded">{tab.icon}</span>
+          {tab.label}
+        </button>
       {/each}
     </nav>
   </aside>
@@ -47,6 +40,8 @@
       <RepoSettingsGeneral />
     {:else if activeTab === 'collaboration'}
         <RepoSettingsCollaboration />
+    {:else if activeTab === 'webhooks'}
+        <RepoSettingsWebhooks />
     {/if}
   </main>
 </div>

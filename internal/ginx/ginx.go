@@ -139,29 +139,30 @@ func setupStatic(r *Engine) {
 
 	if osx.IsDir(customPublic) {
 		serveStatic("/public", customPublic)
-		// Also serve common dirs at root for legacy templates
-		for _, dir := range []string{"js", "css", "img", "fonts", "plugins", "vendor", "assets"} {
-			if osx.IsDir(filepath.Join(customPublic, dir)) {
-				serveStatic("/"+dir, filepath.Join(customPublic, dir))
-			}
+		if osx.IsDir(filepath.Join(customPublic, "img")) {
+			serveStatic("/img", filepath.Join(customPublic, "img"))
 		}
 	} else if conf.Server.LoadAssetsFromDisk {
 		publicDir := filepath.Join(conf.WorkDir(), "public")
 		serveStatic("/public", publicDir)
-		for _, dir := range []string{"js", "css", "img", "fonts", "plugins", "vendor", "assets"} {
-			serveStatic("/"+dir, filepath.Join(publicDir, dir))
-		}
+		serveStatic("/img", filepath.Join(publicDir, "img"))
 	} else {
 		serveStaticFS("/public", http.FS(public.Files))
-		// For FS, we manually handle root-level assets by sub-mounting each dir
-		for _, dir := range []string{"js", "css", "img", "fonts", "plugins", "vendor", "assets"} {
-			sub, err := fs.Sub(public.Files, dir)
-			if err == nil {
-				serveStaticFS("/"+dir, http.FS(sub))
-			}
+		sub, err := fs.Sub(public.Files, "img")
+		if err == nil {
+			serveStaticFS("/img", http.FS(sub))
 		}
 	}
 
 	r.Static(conf.UsersAvatarPathPrefix, conf.Picture.AvatarUploadPath)
 	r.Static(database.RepoAvatarURLPrefix, conf.Picture.RepositoryAvatarUploadPath)
+	
+	// Svelte Build Static Files
+	svelteBuildDir := filepath.Join(conf.WorkDir(), "frontend/build")
+	r.Static("/_app", filepath.Join(svelteBuildDir, "_app"))
+}
+
+// ServeSPA serves the Svelte frontend entry point (index.html).
+func ServeSPA(c *gin.Context) {
+	c.File(filepath.Join(conf.WorkDir(), "frontend/build/index.html"))
 }

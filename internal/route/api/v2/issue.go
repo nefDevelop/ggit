@@ -19,9 +19,14 @@ func ListIssues(c *context.APIContext) {
 	}
 
 	opts := &database.IssuesOptions{
-		RepoID: c.Repo.Repository.ID,
-		IsPull: isPullList,
-		Page:   page,
+		RepoID:      c.Repo.Repository.ID,
+		IsPull:      isPullList,
+		Page:        page,
+		Labels:      c.Query("labels"),
+		MilestoneID: c.QueryInt64("milestone_id"),
+		AssigneeID:  c.QueryInt64("assignee_id"),
+		PosterID:    c.QueryInt64("poster_id"),
+		SortType:    c.Query("sort"),
 	}
 
 	state := c.Query("state")
