@@ -1,13 +1,15 @@
 <script lang="ts">
   import ExploreRepos from './ExploreRepos.svelte';
   import ExploreUsers from './ExploreUsers.svelte';
+  import ExploreOrganizations from './ExploreOrganizations.svelte';
 
   let activeTab = $state('repos');
   let searchQuery = $state('');
 
   const tabs = [
     { id: 'repos', label: 'Repositories', icon: 'account_tree' },
-    { id: 'users', label: 'Users', icon: 'person_search' }
+    { id: 'users', label: 'Users', icon: 'person_search' },
+    { id: 'organizations', label: 'Organizations', icon: 'corporate_fare' }
   ];
 </script>
 
@@ -22,7 +24,7 @@
       <input 
         type="text" 
         bind:value={searchQuery} 
-        placeholder="Search repositories or users..." 
+        placeholder="Search repositories, users or organizations..." 
         oninput={() => {}} 
       />
     </div>
@@ -46,6 +48,8 @@
       <ExploreRepos q={searchQuery} />
     {:else if activeTab === 'users'}
       <ExploreUsers q={searchQuery} />
+    {:else if activeTab === 'organizations'}
+      <ExploreOrganizations q={searchQuery} />
     {/if}
   </main>
 </div>

@@ -81,6 +81,53 @@ func DeleteOrg(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 
+// ListOrgMembers returns all members of the organization.
+func ListOrgMembers(c *context.APIContext) {
+	orgName := c.Params("org")
+	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	if err != nil {
+		c.NotFoundOrError(err, "get organization")
+		return
+	}
+
+	members, err := database.GetOrgUsersByOrgID(org.ID)
+	if err != nil {
+		c.Error(err, "list members")
+		return
+	}
+
+	c.JSON(http.StatusOK, members)
+}
+
+// RemoveOrgMember removes a user from the organization.
+func RemoveOrgMember(c *context.APIContext) {
+	orgName := c.Params("org")
+	userName := c.Params("username")
+
+	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	if err != nil {
+		c.NotFoundOrError(err, "get organization")
+		return
+	}
+
+	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
+	if err != nil {
+		c.NotFoundOrError(err, "get user")
+		return
+	}
+
+	if err := database.RemoveOrgUser(org.ID, u.ID); err != nil {
+		if database.IsErrLastOrgOwner(err) {
+			c.StatusError(http.StatusUnprocessableEntity, "Cannot remove the last owner.", err)
+		} else {
+			c.Error(err, "remove organization user")
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
 // ListOrgTeams returns all teams of the organization.
 func ListOrgTeams(c *context.APIContext) {
 	orgName := c.Params("org")

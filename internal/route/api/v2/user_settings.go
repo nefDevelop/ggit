@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/cockroachdb/errors"
+	"github.com/pquerna/otp"
+	"github.com/pquerna/otp/totp"
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
@@ -15,6 +17,19 @@ import (
 	userroute "gogs.io/gogs/internal/route/user"
 	"gogs.io/gogs/internal/userx"
 )
+
+type TwoFactorStatus struct {
+	Enabled bool `json:"enabled"`
+}
+
+type TwoFactorEnrollment struct {
+	Secret string `json:"secret"`
+	QRCode string `json:"qr_code"`
+}
+
+type ConfirmTwoFactorPayload struct {
+	Passcode string `json:"passcode" binding:"required"`
+}
 
 type EditProfile struct {
 	Name            string `json:"name" binding:"max=35"`
@@ -461,5 +476,150 @@ func DeleteUserAccount(c *context.APIContext) {
 	log.Trace("Account deleted: %s", c.User.Name)
 	c.JSON(http.StatusOK, map[string]any{
 		"status": "ok",
+	})
+}
+
+// GetTwoFactorStatus returns whether 2FA is enabled for the current user.
+func GetTwoFactorStatus(c *context.APIContext) {
+	enabled := database.Handle.TwoFactors().IsEnabled(c.Req.Context(), c.User.ID)
+	c.JSON(http.StatusOK, TwoFactorStatus{Enabled: enabled})
+}
+
+// EnableTwoFactor initiates the 2FA enrollment process.
+func EnableTwoFactor(c *context.APIContext) {
+	if database.Handle.TwoFactors().IsEnabled(c.Req.Context(), c.User.ID) {
+		c.StatusError(http.StatusConflict, "Two-factor authentication is already enabled.", nil)
+		return
+	}
+
+	key, err := totp.Generate(totp.GenerateOpts{
+		Issuer:      conf.App.BrandName,
+		AccountName: c.User.Email,
+	})
+	if err != nil {
+		c.Error(err, "generate TOTP")
+		return
+	}
+
+	img, err := key.Image(240, 240)
+	if err != nil {
+		c.Error(err, "generate image")
+		return
+	}
+
+	var buf bytes.Buffer
+	if err = png.Encode(&buf, img); err != nil {
+		c.Error(err, "encode image")
+		return
+	}
+
+	qrCode := "data:image/png;base64," + base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	// Store secret in cache for confirmation (similar to legacy session)
+	if err := c.Cache.Put(userx.TwoFactorCacheKey(c.User.ID, "enrollment"), key.Secret(), 600); err != nil {
+		c.Error(err, "store 2FA secret in cache")
+		return
+	}
+
+	c.JSON(http.StatusOK, TwoFactorEnrollment{
+		Secret: key.Secret(),
+		QRCode: qrCode,
+	})
+}
+
+// ConfirmTwoFactor completes the 2FA enrollment process.
+func ConfirmTwoFactor(c *context.APIContext) {
+	var f ConfirmTwoFactorPayload
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	secret, ok := c.Cache.Get(userx.TwoFactorCacheKey(c.User.ID, "enrollment")).(string)
+	if !ok || secret == "" {
+		c.StatusError(http.StatusBadRequest, "Two-factor enrollment session expired or not found.", nil)
+		return
+	}
+
+	if !totp.Validate(f.Passcode, secret) {
+		c.StatusError(http.StatusBadRequest, "Invalid passcode.", nil)
+		return
+	}
+
+	if err := database.Handle.TwoFactors().Create(c.Req.Context(), c.User.ID, conf.Security.SecretKey, secret); err != nil {
+		c.Error(err, "create two factor")
+		return
+	}
+
+	c.Cache.Delete(userx.TwoFactorCacheKey(c.User.ID, "enrollment"))
+
+	recoveryCodes, err := database.GetRecoveryCodesByUserID(c.User.ID)
+	if err != nil {
+		c.Error(err, "get recovery codes")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status":         "ok",
+		"recovery_codes": recoveryCodes,
+	})
+}
+
+// DisableTwoFactor disables 2FA for the current user.
+func DisableTwoFactor(c *context.APIContext) {
+	if !database.Handle.TwoFactors().IsEnabled(c.Req.Context(), c.User.ID) {
+		c.StatusError(http.StatusConflict, "Two-factor authentication is not enabled.", nil)
+		return
+	}
+
+	if err := database.DeleteTwoFactor(c.User.ID); err != nil {
+		c.Error(err, "delete two factor")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+	})
+}
+
+// GetTwoFactorRecoveryCodes returns recovery codes for the current user.
+func GetTwoFactorRecoveryCodes(c *context.APIContext) {
+	if !database.Handle.TwoFactors().IsEnabled(c.Req.Context(), c.User.ID) {
+		c.StatusError(http.StatusForbidden, "Two-factor authentication is not enabled.", nil)
+		return
+	}
+
+	recoveryCodes, err := database.GetRecoveryCodesByUserID(c.User.ID)
+	if err != nil {
+		c.Error(err, "get recovery codes")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"recovery_codes": recoveryCodes,
+	})
+}
+
+// RegenerateTwoFactorRecoveryCodes generates new recovery codes.
+func RegenerateTwoFactorRecoveryCodes(c *context.APIContext) {
+	if !database.Handle.TwoFactors().IsEnabled(c.Req.Context(), c.User.ID) {
+		c.StatusError(http.StatusForbidden, "Two-factor authentication is not enabled.", nil)
+		return
+	}
+
+	if err := database.RegenerateRecoveryCodes(c.User.ID); err != nil {
+		c.Error(err, "regenerate recovery codes")
+		return
+	}
+
+	recoveryCodes, err := database.GetRecoveryCodesByUserID(c.User.ID)
+	if err != nil {
+		c.Error(err, "get recovery codes")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status":         "ok",
+		"recovery_codes": recoveryCodes,
 	})
 }

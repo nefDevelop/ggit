@@ -3,16 +3,22 @@
   import ThemeSelector from './ThemeSelector.svelte';
   import SettingsProfile from './SettingsProfile.svelte';
   import SettingsSecurity from './SettingsSecurity.svelte';
+  import SettingsEmails from './SettingsEmails.svelte';
   import SettingsKeys from './SettingsKeys.svelte';
   import SettingsTokens from './SettingsTokens.svelte';
+  import SettingsRepositories from './SettingsRepositories.svelte';
+  import SettingsOrganizations from './SettingsOrganizations.svelte';
 
   let activeTab = $state('profile');
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: 'person' },
+    { id: 'emails', label: 'Emails', icon: 'mail' },
     { id: 'security', label: 'Security', icon: 'security' },
     { id: 'keys', label: 'SSH Keys', icon: 'key' },
-    { id: 'tokens', label: 'Access Tokens', icon: 'token' }
+    { id: 'tokens', label: 'Access Tokens', icon: 'token' },
+    { id: 'repos', label: 'Repositories', icon: 'book' },
+    { id: 'orgs', label: 'Organizations', icon: 'corporate_fare' }
   ];
 </script>
 
@@ -38,12 +44,18 @@
       <SettingsProfile />
     {:else if activeTab === 'appearance'}
       <ThemeSelector />
+    {:else if activeTab === 'emails'}
+      <SettingsEmails />
     {:else if activeTab === 'security'}
       <SettingsSecurity />
     {:else if activeTab === 'keys'}
       <SettingsKeys />
     {:else if activeTab === 'tokens'}
       <SettingsTokens />
+    {:else if activeTab === 'repos'}
+      <SettingsRepositories />
+    {:else if activeTab === 'orgs'}
+      <SettingsOrganizations />
     {/if}
   </main>
 </div>

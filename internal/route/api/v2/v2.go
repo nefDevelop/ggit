@@ -42,6 +42,13 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.DELETE("/emails", ginx.Handle(DeleteUserEmail))
 			settings.PUT("/emails/primary", ginx.Handle(MarkEmailPrimary))
 
+			settings.GET("/security/two_factor", ginx.Handle(GetTwoFactorStatus))
+			settings.POST("/security/two_factor/enable", ginx.Handle(EnableTwoFactor))
+			settings.POST("/security/two_factor/confirm", ginx.Handle(ConfirmTwoFactor))
+			settings.DELETE("/security/two_factor", ginx.Handle(DisableTwoFactor))
+			settings.GET("/security/two_factor/recovery_codes", ginx.Handle(GetTwoFactorRecoveryCodes))
+			settings.POST("/security/two_factor/recovery_codes", ginx.Handle(RegenerateTwoFactorRecoveryCodes))
+
 			settings.GET("/ssh_keys", ginx.Handle(GetUserSSHKeys))
 			settings.POST("/ssh_keys", ginx.Handle(AddUserSSHKey))
 			settings.DELETE("/ssh_keys/:id", ginx.Handle(DeleteUserSSHKey))
@@ -184,6 +191,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		orgs.GET("/:org", ginx.Handle(GetOrg))
 		orgs.PATCH("/:org", ginx.Handle(UpdateOrg))
 		orgs.DELETE("/:org", ginx.Handle(DeleteOrg))
+		orgs.GET("/:org/members", ginx.Handle(ListOrgMembers))
+		orgs.DELETE("/:org/members/:username", ginx.Handle(RemoveOrgMember))
 
 		orgs.GET("/:org/teams", ginx.Handle(ListOrgTeams))
 		orgs.POST("/:org/teams", ginx.Handle(CreateOrgTeam))

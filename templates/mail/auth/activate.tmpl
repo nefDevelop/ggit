@@ -1,15 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{{.Username}}, please activate your account</title>
-</head>
+{{template "common/header" .}}
+	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Hi {{.Username}},</p>
+	<p>Thanks for registering at <b>{{AppName}}</b>! We're excited to have you on board.</p>
+	<p>Please click the button below to verify your email address and activate your account. This link will remain active for <b>{{.ActiveCodeLives}} hours</b>.</p>
+	
+	<div style="text-align: center;">
+		<a href="{{AppURL}}user/activate?code={{.Code}}" class="btn-capsule">Activate Account</a>
+	</div>
 
-<body>
-	<p>Hi <b>{{.Username}}</b>, thanks for registering at {{AppName}}!</p>
-	<p>Please click the following link to verify your e-mail address within <b>{{.ActiveCodeLives}} hours</b>:</p>
-	<p><a href="{{AppURL}}user/activate?code={{.Code}}">{{AppURL}}user/activate?code={{.Code}}</a></p>
-	<p>Not working? Try copying and pasting it to your browser.</p>
-	<p>© {{Year}} <a target="_blank" rel="noopener noreferrer" href="{{AppURL}}">{{AppName}}</a></p>
-</body>
-</html>
+	<p style="font-size: 14px; color: #7a7a7a;">
+		Not working? Try copying and pasting the following link into your browser:
+	</p>
+	<div class="code-block">
+		{{AppURL}}user/activate?code={{.Code}}
+	</div>
+{{template "common/footer" .}}

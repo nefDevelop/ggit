@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import OrgTeams from './OrgTeams.svelte';
+  import OrgMembers from './OrgMembers.svelte';
 
   let { orgName } = $props();
   
@@ -100,9 +101,7 @@
       {:else if activeTab === 'teams'}
         <OrgTeams {orgName} />
       {:else if activeTab === 'members'}
-        <div class="members-grid">
-          <p>Members list coming soon...</p>
-        </div>
+        <OrgMembers {orgName} />
       {/if}
     </main>
   </div>

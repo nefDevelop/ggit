@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{{.Username}}, welcome to {{AppName}}</title>
-</head>
+{{template "common/header" .}}
+	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Welcome, {{.Username}}!</p>
+	<p>This is your registration confirmation for <b>{{AppName}}</b>. Your account has been successfully created.</p>
+	<p>You can now log in using your username: <code>{{.Username}}</code>.</p>
+	
+	<div style="text-align: center;">
+		<a href="{{AppURL}}user/login" class="btn-capsule">Login to your account</a>
+	</div>
 
-<body>
-	<p>Hi <b>{{.Username}}</b>, this is your registration confirmation email for {{AppName}}!</p>
-	<p>You can now login via username: {{.Username}}.</p>
-	<p><a href="{{AppURL}}user/login">{{AppURL}}user/login</a></p>
-	<p>© {{Year}} <a target="_blank" rel="noopener noreferrer" href="{{AppURL}}">{{AppName}}</a></p>
-</body>
-</html>
+	<p style="font-size: 14px; color: #7a7a7a;">
+		We're glad to have you with us! If you have any questions, feel free to reach out to the site administrator.
+	</p>
+{{template "common/footer" .}}
