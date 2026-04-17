@@ -1,4 +1,5 @@
   import { onMount } from 'svelte';
+  import { apiFetch } from '$lib/api';
   
   let oldPassword = $state('');
   let newPassword = $state('');
@@ -25,7 +26,7 @@
     message = '';
     isError = false;
     try {
-      const res = await fetch('/api/v2/user/settings/password', {
+      const res = await apiFetch('/api/v2/user/settings/password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -54,7 +55,7 @@
 
   async function fetch2FAStatus() {
     try {
-      const res = await fetch('/api/v2/user/settings/security/two_factor');
+      const res = await apiFetch('/api/v2/user/settings/security/two_factor');
       if (res.ok) {
         const data = await res.json();
         twoFactorEnabled = data.enabled;
@@ -66,7 +67,7 @@
 
   async function initiate2FA() {
     try {
-      const res = await fetch('/api/v2/user/settings/security/two_factor/enable', { method: 'POST' });
+      const res = await apiFetch('/api/v2/user/settings/security/two_factor/enable', { method: 'POST' });
       if (res.ok) {
         enrollment = await res.json();
       }
@@ -77,7 +78,7 @@
 
   async function confirm2FA() {
     try {
-      const res = await fetch('/api/v2/user/settings/security/two_factor/confirm', {
+      const res = await apiFetch('/api/v2/user/settings/security/two_factor/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ passcode })
@@ -99,7 +100,7 @@
   async function disable2FA() {
     if (!confirm('Are you sure you want to disable 2FA? This will make your account less secure.')) return;
     try {
-      const res = await fetch('/api/v2/user/settings/security/two_factor', { method: 'DELETE' });
+      const res = await apiFetch('/api/v2/user/settings/security/two_factor', { method: 'DELETE' });
       if (res.ok) {
         twoFactorEnabled = false;
         showRecovery = false;
@@ -194,7 +195,7 @@
           <p>You have two-factor authentication enabled via an authenticator app.</p>
           <div class="actions">
              <button class="btn btn-outline" onclick={async () => {
-                const res = await fetch('/api/v2/user/settings/security/two_factor/recovery_codes');
+                const res = await apiFetch('/api/v2/user/settings/security/two_factor/recovery_codes');
                 if (res.ok) {
                    const data = await res.json();
                    recoveryCodes = data.recovery_codes;

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import AdminUserEditor from './AdminUserEditor.svelte';
   
@@ -11,7 +12,7 @@
     loading = true;
     editingUserId = null;
     try {
-      const res = await fetch(`/api/v2/admin/users?page=${page}`);
+      const res = await apiFetch(`/api/v2/admin/users?page=${page}`);
       if (res.ok) {
         users = await res.json();
       }
@@ -24,7 +25,7 @@
 
   async function toggleAdmin(user: any) {
     try {
-      const res = await fetch(`/api/v2/admin/users/${user.id}`, {
+      const res = await apiFetch(`/api/v2/admin/users/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ admin: !user.is_admin })
@@ -38,7 +39,7 @@
   async function deleteUser(id: number) {
     if (!confirm('Are you sure you want to delete this user? This action is IRREVERSIBLE.')) return;
     try {
-      const res = await fetch(`/api/v2/admin/users/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/admin/users/${id}`, { method: 'DELETE' });
       if (res.ok) fetchUsers();
     } catch (e) {
       console.error(e);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount, setContext } from 'svelte';
   import GlobalSearch from '$lib/components/GlobalSearch.svelte';
@@ -19,7 +20,7 @@
     error = '';
     try {
       // We use the view endpoint for the root to get the repository object AND stats
-      const repoRes = await fetch(`/api/v2/${username}/${reponame}/view/`);
+      const repoRes = await apiFetch(`/api/v2/${username}/${reponame}/view/`);
       
       if (repoRes.ok) {
         const res = await repoRes.json();

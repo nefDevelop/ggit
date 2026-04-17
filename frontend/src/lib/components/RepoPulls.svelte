@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   
   const repo: any = getContext('repo');
@@ -11,7 +12,7 @@
     loading = true;
     error = '';
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls?state=${stateFilter}`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls?state=${stateFilter}`);
       if (res.ok) {
         pulls = await res.json();
       } else {

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { apiFetch } from '$lib/api';
   
   let emails = $state<any[]>([]);
   let newEmail = $state('');
@@ -11,7 +12,7 @@
   async function fetchEmails() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/user/settings/emails');
+      const res = await apiFetch('/api/v2/user/settings/emails');
       if (res.ok) {
         emails = await res.json();
       }
@@ -27,7 +28,7 @@
     saving = true;
     message = '';
     try {
-      const res = await fetch('/api/v2/user/settings/emails', {
+      const res = await apiFetch('/api/v2/user/settings/emails', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: newEmail })
@@ -52,7 +53,7 @@
   async function deleteEmail(email: string) {
     if (!confirm(`Are you sure you want to delete ${email}?`)) return;
     try {
-      const res = await fetch('/api/v2/user/settings/emails', {
+      const res = await apiFetch('/api/v2/user/settings/emails', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -67,7 +68,7 @@
 
   async function makePrimary(email: string) {
     try {
-      const res = await fetch('/api/v2/user/settings/emails/primary', {
+      const res = await apiFetch('/api/v2/user/settings/emails/primary', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

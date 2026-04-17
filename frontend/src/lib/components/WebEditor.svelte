@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import CommitPanel from './CommitPanel.svelte';
   
@@ -17,7 +18,7 @@
     loading = true;
     try {
       // Reusing repository raw view logic or similar
-      const res = await fetch(`/${username}/${reponame}/raw/${branch}/${treePath}`);
+      const res = await apiFetch(`/${username}/${reponame}/raw/${branch}/${treePath}`);
       if (res.ok) content = await res.text();
     } catch (e) {
       console.error(e);
@@ -29,7 +30,7 @@
   async function handleCommit(commitData: any) {
     isSaving = true;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/editor/edit`, {
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/editor/edit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

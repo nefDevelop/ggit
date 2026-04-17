@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount, getContext } from 'svelte';
   import { getLanguageColor } from '$lib/utils/languages';
@@ -15,7 +16,7 @@
     loading = true;
     error = '';
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/view/${path}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${path}`);
       if (res.ok) {
         repoData = await res.json();
       } else {

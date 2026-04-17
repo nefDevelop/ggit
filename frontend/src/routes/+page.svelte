@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import DashboardView from '$lib/components/DashboardView.svelte';
 
@@ -10,7 +11,7 @@
     if (authState.isAuthenticated) return;
     
     try {
-      const res = await fetch('/api/v1/repos/search');
+      const res = await apiFetch('/api/v1/repos/search');
       if (res.ok) {
         serverInfo.status = 'Online';
       } else {

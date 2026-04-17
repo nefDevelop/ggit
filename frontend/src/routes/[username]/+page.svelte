@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import RepoRow from '$lib/components/RepoRow.svelte';
@@ -13,7 +14,7 @@
 
   async function fetchProfile() {
     try {
-      const res = await fetch(`/api/v2/users/${username}`);
+      const res = await apiFetch(`/api/v2/users/${username}`);
       if (res.ok) {
         user = await res.json();
       } else {
@@ -28,7 +29,7 @@
     loading = true;
     activeTab = tab;
     try {
-      const res = await fetch(`/api/v2/users/${username}/${tab}`);
+      const res = await apiFetch(`/api/v2/users/${username}/${tab}`);
       if (res.ok) {
         data = await res.json();
       } else {

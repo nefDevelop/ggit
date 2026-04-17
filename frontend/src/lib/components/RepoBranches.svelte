@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let { username, reponame } = $props();
@@ -9,7 +10,7 @@
   async function fetchBranches() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/branches`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
       if (res.ok) data = await res.json();
     } catch (e) {
       console.error(e);
@@ -21,7 +22,7 @@
   async function deleteBranch(name: string) {
     if (!confirm(`Are you sure you want to delete branch "${name}"?`)) return;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/branches/${name}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/branches/${name}`, { method: 'DELETE' });
       if (res.ok) fetchBranches();
     } catch (e) {
       console.error(e);

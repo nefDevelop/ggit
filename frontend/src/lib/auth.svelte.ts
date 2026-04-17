@@ -1,3 +1,4 @@
+import { apiFetch } from "$lib/api";
 export const authState = $state({
 	user: null as any,
 	isAuthenticated: false,
@@ -6,7 +7,7 @@ export const authState = $state({
 
 export async function checkAuth() {
 	try {
-		const res = await fetch('/api/v2/user/check');
+		const res = await apiFetch('/api/v2/user/check');
 		if (res.ok) {
 			const json = await res.json();
 			if (json.status === 'ok' && json.user) {

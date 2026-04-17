@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let orgs = $state<any[]>([]);
@@ -8,7 +9,7 @@
   async function fetchOrgs() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/admin/orgs?page=${page}`);
+      const res = await apiFetch(`/api/v2/admin/orgs?page=${page}`);
       if (res.ok) {
         orgs = await res.json();
       }

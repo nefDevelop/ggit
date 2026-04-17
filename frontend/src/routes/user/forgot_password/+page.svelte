@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
 
   let email = $state('');
@@ -19,7 +20,7 @@
     message = '';
 
     try {
-      const res = await fetch('/api/v2/user/forgot_password', {
+      const res = await apiFetch('/api/v2/user/forgot_password', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

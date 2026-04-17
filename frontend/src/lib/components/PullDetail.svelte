@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import DiffViewer from '$lib/components/DiffViewer.svelte';
   
@@ -22,8 +23,8 @@
     error = '';
     try {
       const [pullRes, diffRes] = await Promise.all([
-        fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}`),
-        fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/diff`)
+        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}`),
+        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/diff`)
       ]);
 
       if (pullRes.ok) pull = await pullRes.json();

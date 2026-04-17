@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { authState } from '$lib/auth.svelte';
@@ -30,7 +31,7 @@
     errorMsg = '';
     
     try {
-      const res = await fetch('/api/v2/user/activate', {
+      const res = await apiFetch('/api/v2/user/activate', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

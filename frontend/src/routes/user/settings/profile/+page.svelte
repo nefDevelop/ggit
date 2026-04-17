@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { authState } from '$lib/auth.svelte';
   import ThemeSelector from '$lib/components/ThemeSelector.svelte';
@@ -25,7 +26,7 @@
 
   async function fetchProfile() {
     try {
-      const res = await fetch('/api/v2/user/settings/profile');
+      const res = await apiFetch('/api/v2/user/settings/profile');
       if (res.ok) {
         profile = await res.json();
       }
@@ -41,7 +42,7 @@
     message = '';
     error = '';
     try {
-      const res = await fetch('/api/v2/user/settings/profile', {
+      const res = await apiFetch('/api/v2/user/settings/profile', {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

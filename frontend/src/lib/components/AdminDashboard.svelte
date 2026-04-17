@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let stats = $state<any>(null);
@@ -7,7 +8,7 @@
   async function fetchStats() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/admin/stats');
+      const res = await apiFetch('/api/v2/admin/stats');
       if (res.ok) {
         stats = await res.json();
       } else {

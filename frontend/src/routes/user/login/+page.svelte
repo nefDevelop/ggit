@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
 
   let username = $state('');
@@ -19,7 +20,7 @@
     errorMsg = '';
 
     try {
-      const res = await fetch('/api/v2/user/login', {
+      const res = await apiFetch('/api/v2/user/login', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

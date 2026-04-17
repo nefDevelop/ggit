@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let keys = $state<any[]>([]);
@@ -10,7 +11,7 @@
   async function fetchKeys() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/user/settings/ssh_keys');
+      const res = await apiFetch('/api/v2/user/settings/ssh_keys');
       if (res.ok) keys = await res.json();
     } catch (e) {
       console.error(e);
@@ -23,7 +24,7 @@
     if (!newKeyTitle || !newKeyContent) return;
     submitting = true;
     try {
-      const res = await fetch('/api/v2/user/settings/ssh_keys', {
+      const res = await apiFetch('/api/v2/user/settings/ssh_keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newKeyTitle, content: newKeyContent })
@@ -44,7 +45,7 @@
   async function deleteKey(id: number) {
     if (!confirm('Are you sure you want to delete this key?')) return;
     try {
-      const res = await fetch(`/api/v2/user/settings/ssh_keys/${id}`, {
+      const res = await apiFetch(`/api/v2/user/settings/ssh_keys/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

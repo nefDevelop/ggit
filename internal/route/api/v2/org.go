@@ -90,7 +90,7 @@ func ListOrgMembers(c *context.APIContext) {
 		return
 	}
 
-	members, err := database.GetOrgUsersByOrgID(org.ID)
+	members, err := database.GetOrgUsersByOrgID(org.ID, 0)
 	if err != nil {
 		c.Error(err, "list members")
 		return

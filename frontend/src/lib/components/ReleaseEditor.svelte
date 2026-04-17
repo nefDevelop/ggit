@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -30,7 +31,7 @@
 
   async function fetchBranches() {
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/branches`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
       if (res.ok) {
         const data = await res.json();
         branches = [data.default, ...data.active, ...data.stale];
@@ -52,7 +53,7 @@
     const method = initialData ? 'PATCH' : 'POST';
 
     try {
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

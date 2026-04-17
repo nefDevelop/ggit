@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { goto } from '$app/navigation';
   
@@ -12,7 +13,7 @@
   async function fetchSettings() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`);
       if (res.ok) settings = await res.json();
     } catch (e) {
       console.error(e);
@@ -25,7 +26,7 @@
     saving = true;
     message = '';
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
@@ -44,7 +45,7 @@
   async function deleteRepo() {
     if (deleteConfirm !== settings.name) return;
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: deleteConfirm })

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let { userId = null, onSave, onCancel } = $props<{
@@ -24,7 +25,7 @@
     if (!userId) return;
     loading = true;
     try {
-      const res = await fetch(`/api/v2/admin/users/${userId}`);
+      const res = await apiFetch(`/api/v2/admin/users/${userId}`);
       if (res.ok) {
         const data = await res.json();
         user = {
@@ -55,7 +56,7 @@
     if (userId) delete payload.username; // Cannot change username in this view typically
 
     try {
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

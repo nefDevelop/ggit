@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   
   const repo: any = getContext('repo');
@@ -11,7 +12,7 @@
   async function fetchCollaborators() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators`);
       if (res.ok) collaborators = await res.json();
     } catch (e) {
       console.error(e);
@@ -25,7 +26,7 @@
     submitting = true;
     message = '';
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators/${newCollaborator}`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators/${newCollaborator}`, {
         method: 'POST'
       });
       if (res.ok) {
@@ -45,7 +46,7 @@
   async function removeCollaborator(username: string) {
     if (!confirm(`Remove ${username} as collaborator?`)) return;
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators/${username}`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators/${username}`, {
         method: 'DELETE'
       });
       if (res.ok) {

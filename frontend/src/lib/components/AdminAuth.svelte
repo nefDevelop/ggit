@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let sources = $state<any[]>([]);
@@ -9,7 +10,7 @@
   async function fetchAuths() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/admin/auths`);
+      const res = await apiFetch(`/api/v2/admin/auths`);
       if (res.ok) {
         sources = await res.json();
       }
@@ -23,7 +24,7 @@
   async function deleteAuth(id: number) {
     if (!confirm('Are you sure you want to delete this login source?')) return;
     try {
-      const res = await fetch(`/api/v2/admin/auths/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/admin/auths/${id}`, { method: 'DELETE' });
       if (res.ok) fetchAuths();
     } catch (e) {
       console.error(e);

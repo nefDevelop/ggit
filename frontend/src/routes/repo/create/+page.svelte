@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import { goto } from '$app/navigation';
 
@@ -21,7 +22,7 @@
     errorMsg = '';
     
     try {
-      const res = await fetch('/api/v2/user/repos', {
+      const res = await apiFetch('/api/v2/user/repos', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

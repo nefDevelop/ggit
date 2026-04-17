@@ -1,11 +1,13 @@
 package v2
 
 import (
+	"bytes"
+	"encoding/base64"
+	"image/png"
 	"mime/multipart"
 	"net/http"
 
 	"github.com/cockroachdb/errors"
-	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	log "unknwon.dev/clog/v2"
 

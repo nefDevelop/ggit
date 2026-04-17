@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let config = $state<any>(null);
@@ -7,7 +8,7 @@
   async function fetchConfig() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/admin/config');
+      const res = await apiFetch('/api/v2/admin/config');
       if (res.ok) config = await res.json();
     } catch (e) {
       console.error(e);
@@ -35,7 +36,7 @@
     sendingTest = true;
     testMsg = { text: '', type: '' };
     try {
-      const res = await fetch('/api/v2/admin/config/test_email', {
+      const res = await apiFetch('/api/v2/admin/config/test_email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: testEmail })

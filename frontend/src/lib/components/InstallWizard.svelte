@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let settings = $state<any>(null);
@@ -9,7 +10,7 @@
 
   async function fetchSettings() {
     try {
-      const res = await fetch('/api/v2/install/settings');
+      const res = await apiFetch('/api/v2/install/settings');
       if (res.ok) {
         const data = await res.json();
         settings = data;
@@ -24,7 +25,7 @@
     submitting = true;
     error = '';
     try {
-      const res = await fetch('/api/v2/install', {
+      const res = await apiFetch('/api/v2/install', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)

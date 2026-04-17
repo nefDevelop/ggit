@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import RepoRow from './RepoRow.svelte';
+  import { apiFetch } from '$lib/api';
   
   let repos = $state<any[]>([]);
   let loading = $state(true);
@@ -8,7 +9,7 @@
   async function fetchRepos() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/user/settings/repos');
+      const res = await apiFetch('/api/v2/user/settings/repos');
       if (res.ok) {
         repos = await res.json();
       }
@@ -22,7 +23,7 @@
   async function leaveRepo(id: number, name: string) {
     if (!confirm(`Are you sure you want to leave the collaboration in ${name}?`)) return;
     try {
-      const res = await fetch(`/api/v2/user/settings/repos/${id}`, {
+      const res = await apiFetch(`/api/v2/user/settings/repos/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

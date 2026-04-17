@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let tokens = $state<any[]>([]);
@@ -10,7 +11,7 @@
   async function fetchTokens() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/user/settings/tokens');
+      const res = await apiFetch('/api/v2/user/settings/tokens');
       if (res.ok) tokens = await res.json();
     } catch (e) {
       console.error(e);
@@ -23,7 +24,7 @@
     if (!newTokenName) return;
     submitting = true;
     try {
-      const res = await fetch('/api/v2/user/settings/tokens', {
+      const res = await apiFetch('/api/v2/user/settings/tokens', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newTokenName })
@@ -44,7 +45,7 @@
   async function deleteToken(id: number) {
     if (!confirm('Are you sure you want to delete this token?')) return;
     try {
-      const res = await fetch(`/api/v2/user/settings/tokens/${id}`, {
+      const res = await apiFetch(`/api/v2/user/settings/tokens/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

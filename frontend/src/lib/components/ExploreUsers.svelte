@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let { q = '' } = $props();
@@ -11,7 +12,7 @@
   async function fetchUsers() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/explore/users?q=${encodeURIComponent(q)}&page=${page}`);
+      const res = await apiFetch(`/api/v2/explore/users?q=${encodeURIComponent(q)}&page=${page}`);
       if (res.ok) {
         const data = await res.json();
         users = data.users || [];

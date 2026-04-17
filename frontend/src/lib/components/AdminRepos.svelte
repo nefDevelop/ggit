@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let repos = $state<any[]>([]);
@@ -8,7 +9,7 @@
   async function fetchRepos() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/admin/repos?page=${page}`);
+      const res = await apiFetch(`/api/v2/admin/repos?page=${page}`);
       if (res.ok) {
         repos = await res.json();
       }
@@ -25,7 +26,7 @@
     }
 
     try {
-      const res = await fetch(`/api/v2/admin/repos/${id}`, {
+      const res = await apiFetch(`/api/v2/admin/repos/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

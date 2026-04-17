@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { 
     FileText as Description, 
@@ -31,10 +32,10 @@
     loading = true;
     error = '';
     try {
-      const listRes = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki`);
+      const listRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki`);
       if (listRes.ok) wikiPages = await listRes.json();
       
-      const pageRes = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`);
+      const pageRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`);
       if (pageRes.ok) {
         currentPage = await pageRes.json();
         editContent = currentPage.content;
@@ -55,7 +56,7 @@
 
   async function fetchHistory() {
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}/history`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}/history`);
       if (res.ok) history = await res.json();
     } catch (e) {
       console.error('Failed to load history');
@@ -70,7 +71,7 @@
         `/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}` :
         `/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki`;
 
-      const res = await fetch(endpoint, {
+      const res = await apiFetch(endpoint, {
         method: mode === 'edit' ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -97,7 +98,7 @@
   async function handleDelete() {
     if (!confirm('Are you sure you want to delete this page?')) return;
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`, {
         method: 'DELETE'
       });
       if (res.ok) {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let { authId = null, onSave, onCancel } = $props<{
@@ -75,7 +76,7 @@
     if (!authId) return;
     loading = true;
     try {
-      const res = await fetch(`/api/v2/admin/auths/${authId}`);
+      const res = await apiFetch(`/api/v2/admin/auths/${authId}`);
       if (res.ok) {
         const data = await res.json();
         name = data.name;
@@ -106,7 +107,7 @@
     };
 
     try {
-      const res = await fetch(url, {
+      const res = await apiFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

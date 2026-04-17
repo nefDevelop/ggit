@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import { page } from '$app/state';
 
@@ -32,7 +33,7 @@
   }
 
   async function handleLogout() {
-    await fetch('/api/v2/user/logout', { 
+    await apiFetch('/api/v2/user/logout', { 
       method: 'POST',
       headers: { 'X-Csrf-Token': getCsrfToken() }
     });

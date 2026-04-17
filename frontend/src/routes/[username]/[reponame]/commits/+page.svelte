@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount } from 'svelte';
 
@@ -13,7 +14,7 @@
     loading = true;
     error = '';
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/commits`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/commits`);
       if (res.ok) {
         commitsData = await res.json();
       } else {

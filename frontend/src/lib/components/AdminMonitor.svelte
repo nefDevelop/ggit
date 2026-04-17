@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let monitorData = $state<any>(null);
@@ -7,7 +8,7 @@
   async function fetchMonitor() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/admin/monitor');
+      const res = await apiFetch('/api/v2/admin/monitor');
       if (res.ok) monitorData = await res.json();
     } catch (e) {
       console.error(e);

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { apiFetch } from '$lib/api';
   
   let { orgName } = $props();
   
@@ -10,7 +11,7 @@
   async function fetchMembers() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}/members`);
+      const res = await apiFetch(`/api/v2/orgs/${orgName}/members`);
       if (res.ok) {
         members = await res.json();
       } else {
@@ -27,7 +28,7 @@
   async function removeMember(username: string) {
     if (!confirm(`Are you sure you want to remove ${username} from the organization?`)) return;
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}/members/${username}`, {
+      const res = await apiFetch(`/api/v2/orgs/${orgName}/members/${username}`, {
         method: 'DELETE'
       });
       if (res.ok) {

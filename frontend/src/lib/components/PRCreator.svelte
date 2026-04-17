@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -22,7 +23,7 @@
 
   async function fetchBranches() {
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/branches`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
       if (res.ok) {
           const data = await res.json();
           branches = [data.default, ...data.active, ...data.stale];
@@ -43,7 +44,7 @@
     }
     loadingComp = true;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/compare/${baseBranch}...${headBranch}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/compare/${baseBranch}...${headBranch}`);
       if (res.ok) {
         comparison = await res.json();
         // Auto-fill title if empty
@@ -65,7 +66,7 @@
     if (!title) return;
     submitting = true;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/pulls`, {
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/pulls`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

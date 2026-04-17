@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let orgs = $state<any[]>([]);
@@ -7,7 +8,7 @@
   async function fetchOrgs() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/user/settings/orgs');
+      const res = await apiFetch('/api/v2/user/settings/orgs');
       if (res.ok) {
         orgs = await res.json();
       }
@@ -21,7 +22,7 @@
   async function leaveOrg(id: number, name: string) {
     if (!confirm(`Are you sure you want to leave the organization ${name}?`)) return;
     try {
-      const res = await fetch(`/api/v2/user/settings/orgs/${id}`, {
+      const res = await apiFetch(`/api/v2/user/settings/orgs/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {

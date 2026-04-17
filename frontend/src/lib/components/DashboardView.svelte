@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import { onMount } from 'svelte';
   import RepoRow from './RepoRow.svelte';
@@ -50,8 +51,8 @@
   async function loadDashboard() {
     try {
       const [dataRes, feedsRes] = await Promise.all([
-        fetch('/api/v2/user/dashboard/data'),
-        fetch('/api/v2/user/dashboard/feeds')
+        apiFetch('/api/v2/user/dashboard/data'),
+        apiFetch('/api/v2/user/dashboard/feeds')
       ]);
       if (dataRes.ok) {
         data = await dataRes.json();

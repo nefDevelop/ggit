@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
 
@@ -19,7 +20,7 @@
 
   async function fetchStats() {
     try {
-      const res = await fetch('/api/v2/admin/stats');
+      const res = await apiFetch('/api/v2/admin/stats');
       if (res.ok) {
         stats = await res.json();
       }
@@ -36,7 +37,7 @@
     feedback = null;
     
     try {
-      const res = await fetch('/api/v2/admin/operations', {
+      const res = await apiFetch('/api/v2/admin/operations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ op: opId })

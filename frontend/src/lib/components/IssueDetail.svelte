@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   
   let { index } = $props();
@@ -17,8 +18,8 @@
     error = '';
     try {
       const [issueRes, commentsRes] = await Promise.all([
-        fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}`),
-        fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`)
+        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}`),
+        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`)
       ]);
 
       if (issueRes.ok && commentsRes.ok) {
@@ -38,7 +39,7 @@
     if (!newCommentBody.trim()) return;
     submitting = true;
     try {
-      const res = await fetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body: newCommentBody })

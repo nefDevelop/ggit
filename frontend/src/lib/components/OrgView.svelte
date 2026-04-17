@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import OrgTeams from './OrgTeams.svelte';
   import OrgMembers from './OrgMembers.svelte';
+  import { apiFetch } from '$lib/api';
 
   let { orgName } = $props();
   
@@ -13,7 +14,7 @@
   async function fetchOrg() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}`);
+      const res = await apiFetch(`/api/v2/orgs/${orgName}`);
       if (res.ok) {
         org = await res.json();
         fetchRepos();
@@ -27,7 +28,7 @@
 
   async function fetchRepos() {
     try {
-      const res = await fetch(`/api/v2/user/settings/repos?uid=${org.id}`); // Reusing user repos logic
+      const res = await apiFetch(`/api/v2/user/settings/repos?uid=${org.id}`); // Reusing user repos logic
       if (res.ok) repos = await res.json();
     } catch (e) {
       console.error(e);

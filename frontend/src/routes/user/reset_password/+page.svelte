@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount } from 'svelte';
 
@@ -38,7 +39,7 @@
     successMsg = '';
 
     try {
-      const res = await fetch('/api/v2/user/reset_password', {
+      const res = await apiFetch('/api/v2/user/reset_password', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

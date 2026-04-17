@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -15,7 +16,7 @@
   async function fetchTeam() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}`);
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}`);
       if (res.ok) {
         team = await res.json();
         editForm = { 
@@ -33,7 +34,7 @@
 
   async function updateTeam() {
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}`, {
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editForm)
@@ -50,7 +51,7 @@
   async function deleteTeam() {
     if (!confirm('Are you sure you want to delete this team? This action is permanent.')) return;
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}`, { method: 'DELETE' });
       if (res.ok) {
         goto(`/org/${orgName}/teams`);
       }
@@ -62,7 +63,7 @@
   async function addMember() {
     if (!newMember) return;
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}/members/${newMember}`, { method: 'POST' });
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}/members/${newMember}`, { method: 'POST' });
       if (res.ok) {
         newMember = '';
         fetchTeam();
@@ -74,7 +75,7 @@
 
   async function removeMember(username: string) {
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}/members/${username}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}/members/${username}`, { method: 'DELETE' });
       if (res.ok) fetchTeam();
     } catch (e) {
       console.error(e);
@@ -84,7 +85,7 @@
   async function addRepo() {
     if (!newRepo) return;
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}/repos/${newRepo}`, { method: 'POST' });
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}/repos/${newRepo}`, { method: 'POST' });
       if (res.ok) {
         newRepo = '';
         fetchTeam();
@@ -96,7 +97,7 @@
 
   async function removeRepo(repoID: number) {
     try {
-      const res = await fetch(`/api/v2/orgs/teams/${teamID}/repos/${repoID}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/orgs/teams/${teamID}/repos/${repoID}`, { method: 'DELETE' });
       if (res.ok) fetchTeam();
     } catch (e) {
       console.error(e);

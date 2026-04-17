@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let notices = $state<any[]>([]);
@@ -9,7 +10,7 @@
   async function fetchNotices() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/admin/notices?page=${page}`);
+      const res = await apiFetch(`/api/v2/admin/notices?page=${page}`);
       if (res.ok) {
         const data = await res.json();
         notices = data.notices || [];
@@ -24,7 +25,7 @@
 
   async function deleteNotice(id: number) {
     try {
-      const res = await fetch(`/api/v2/admin/notices/${id}`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/admin/notices/${id}`, { method: 'DELETE' });
       if (res.ok) fetchNotices();
     } catch (e) {
       console.error(e);
@@ -34,7 +35,7 @@
   async function clearAll() {
     if (!confirm('Are you sure you want to clear ALL notices?')) return;
     try {
-      const res = await fetch(`/api/v2/admin/notices`, { method: 'DELETE' });
+      const res = await apiFetch(`/api/v2/admin/notices`, { method: 'DELETE' });
       if (res.ok) fetchNotices();
     } catch (e) {
       console.error(e);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   
   let profile = $state<any>({});
@@ -9,7 +10,7 @@
   async function fetchProfile() {
     loading = true;
     try {
-      const res = await fetch('/api/v2/user/settings/profile');
+      const res = await apiFetch('/api/v2/user/settings/profile');
       if (res.ok) profile = await res.json();
     } catch (e) {
       console.error(e);
@@ -22,7 +23,7 @@
     saving = true;
     message = '';
     try {
-      const res = await fetch('/api/v2/user/settings/profile', {
+      const res = await apiFetch('/api/v2/user/settings/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile)

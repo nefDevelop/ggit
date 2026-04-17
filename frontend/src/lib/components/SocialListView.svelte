@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import UserRow from '$lib/components/UserRow.svelte';
@@ -22,7 +23,7 @@
   async function fetchData() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/${type}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/${type}`);
       if (res.ok) {
         data = await res.json();
       } else {

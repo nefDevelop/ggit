@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { apiFetch } from '$lib/api';
   
   let { orgName } = $props();
   
@@ -11,7 +12,7 @@
   async function fetchTeams() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}/teams`);
+      const res = await apiFetch(`/api/v2/orgs/${orgName}/teams`);
       if (res.ok) teams = await res.json();
     } catch (e) {
       console.error(e);
@@ -23,7 +24,7 @@
   async function createTeam() {
     if (!newTeam.name) return;
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}/teams`, {
+      const res = await apiFetch(`/api/v2/orgs/${orgName}/teams`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newTeam)

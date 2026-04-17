@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
     import { onMount } from 'svelte';
     import { authState } from '$lib/auth.svelte';
     import { Globe, Lock, Shield, Info, ArrowUpRight, Save, Database, User, Users } from 'lucide-svelte';
@@ -27,7 +28,7 @@
 
     async function fetchOrganizations() {
         try {
-            const res = await fetch('/api/v2/user/settings/orgs');
+            const res = await apiFetch('/api/v2/user/settings/orgs');
             if (res.ok) {
                 organizations = await res.json();
             }
@@ -42,7 +43,7 @@
         success = false;
 
         try {
-            const res = await fetch('/api/v2/user/repos/migrate', {
+            const res = await apiFetch('/api/v2/user/repos/migrate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(form)

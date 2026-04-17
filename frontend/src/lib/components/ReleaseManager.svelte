@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
 
@@ -11,7 +12,7 @@
   async function fetchReleases() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/${username}/${reponame}/releases`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/releases`);
       if (res.ok) releases = await res.json();
     } catch (e) {
       console.error(e);

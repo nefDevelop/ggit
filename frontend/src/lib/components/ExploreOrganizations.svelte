@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let { q = '' } = $props();
@@ -9,7 +10,7 @@
   async function fetchOrgs() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/explore/organizations?q=${encodeURIComponent(q)}`);
+      const res = await apiFetch(`/api/v2/explore/organizations?q=${encodeURIComponent(q)}`);
       if (res.ok) {
         const data = await res.json();
         orgs = data.organizations || [];

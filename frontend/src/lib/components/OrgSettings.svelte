@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   
   let { orgName } = $props();
@@ -11,7 +12,7 @@
   async function fetchOrg() {
     loading = true;
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}`);
+      const res = await apiFetch(`/api/v2/orgs/${orgName}`);
       if (res.ok) org = await res.json();
     } catch (e) {
       console.error(e);
@@ -24,7 +25,7 @@
     saving = true;
     message = '';
     try {
-      const res = await fetch(`/api/v2/orgs/${orgName}`, {
+      const res = await apiFetch(`/api/v2/orgs/${orgName}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(org)
