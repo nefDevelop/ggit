@@ -47,6 +47,10 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	// Git HTTP
 	repoHTTP := r.Group("/:username/:reponame", repo.HTTPContexter(repo.NewStore()))
 	{
+		// LFS
+		lfs.RegisterRoutes(repoHTTP.Group("/info/lfs"))
+		lfs.RegisterRoutes(repoHTTP.Group("/.git/info/lfs"))
+
 		repoHTTP.POST("/git-upload-pack", repo.HTTP)
 		repoHTTP.POST("/git-receive-pack", repo.HTTP)
 		repoHTTP.GET("/info/refs", repo.HTTP)
@@ -55,13 +59,13 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 
 		gitSuffix := repoHTTP.Group("/.git")
 		{
-			gitSuffix.Any("/*action", repo.HTTP)
+			gitSuffix.POST("/git-upload-pack", repo.HTTP)
+			gitSuffix.POST("/git-receive-pack", repo.HTTP)
+			gitSuffix.GET("/info/refs", repo.HTTP)
+			gitSuffix.GET("/HEAD", repo.HTTP)
+			gitSuffix.GET("/objects/*path", repo.HTTP)
 		}
 	}
-
-	// LFS
-	lfs.RegisterRoutes(r.Group("/:username/:reponame/info/lfs"))
-	lfs.RegisterRoutes(r.Group("/:username/:reponame/.git/info/lfs"))
 
 	// API v1
 	v1Group := r.Group("/api", context.APIContexter())
