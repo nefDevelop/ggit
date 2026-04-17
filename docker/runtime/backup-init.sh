@@ -140,5 +140,5 @@ if [ -z "${RETENTION_EXPRESSION}" ]; then
 fi
 
 # Backup rotator cron will run every 5 minutes
-add_backup_cronjob "${CRONTAB_USER}" "*/5 * * * *" "/app/gogs/docker/runtime/backup-rotator.sh" "'${BACKUP_PATH}' '${RETENTION_EXPRESSION}'"
-add_backup_cronjob "${CRONTAB_USER}" "$(parse_generate_cron_expression)" "/app/gogs/docker/runtime/backup-job.sh" "'${BACKUP_PATH}'"
+add_backup_cronjob "${CRONTAB_USER}" "*/5 * * * *" "/app/ggit/docker/runtime/backup-rotator.sh" "'${BACKUP_PATH}' '${RETENTION_EXPRESSION}'"
+add_backup_cronjob "${CRONTAB_USER}" "$(parse_generate_cron_expression)" "/app/ggit/docker/runtime/backup-job.sh" "'${BACKUP_PATH}'"

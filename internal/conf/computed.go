@@ -50,11 +50,11 @@ var (
 )
 
 // WorkDir returns the absolute path of work directory. It reads the value of environment
-// variable GOGS_WORK_DIR. When not set, it uses the directory where the application's
+// variable GGIT_WORK_DIR. When not set, it uses the directory where the application's
 // binary is located.
 func WorkDir() string {
 	workDirOnce.Do(func() {
-		workDir = os.Getenv("GOGS_WORK_DIR")
+		workDir = os.Getenv("GGIT_WORK_DIR")
 		if workDir != "" {
 			return
 		}
@@ -71,11 +71,11 @@ var (
 )
 
 // CustomDir returns the absolute path of the custom directory that contains local overrides.
-// It reads the value of environment variable GOGS_CUSTOM. When not set, it uses the work
+// It reads the value of environment variable GGIT_CUSTOM. When not set, it uses the work
 // directory returned by WorkDir function.
 func CustomDir() string {
 	customDirOnce.Do(func() {
-		customDir = os.Getenv("GOGS_CUSTOM")
+		customDir = os.Getenv("GGIT_CUSTOM")
 		if customDir != "" {
 			return
 		}

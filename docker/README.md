@@ -49,7 +49,7 @@ Directory `/var/gogs` keeps Git repositories and Gogs data:
 
 #### Custom directory
 
-The "custom" directory may not be obvious in Docker environment. The `/var/gogs/gogs` (in the host) and `/data/gogs` (in the container) is already the "custom" directory and you do not need to create another layer but directly edit corresponding files under this directory.
+The "custom" directory may not be obvious in Docker environment. The `/var/gogs/gogs` (in the host) and `/data/ggit` (in the container) is already the "custom" directory and you do not need to create another layer but directly edit corresponding files under this directory.
 
 #### Using Docker volumes
 
@@ -115,7 +115,7 @@ This container has some options available via environment variables, these optio
       See: [Backup System](#backup-system)
 - **BACKUP_ARG_CONFIG**:
   - <u>Possible value:</u>
-      `/app/gogs/example/custom/config`
+      `/app/ggit/example/custom/config`
   - <u>Default:</u>
       `null`
   - <u>Action:</u>

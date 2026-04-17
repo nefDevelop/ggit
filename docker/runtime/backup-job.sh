@@ -5,7 +5,7 @@ execute_backup_job() {
 	BACKUP_ARG_CONFIG="${BACKUP_ARG_CONFIG:-}"
 	BACKUP_ARG_EXCLUDE_REPOS="${BACKUP_ARG_EXCLUDE_REPOS:-}"
 	BACKUP_EXTRA_ARGS="${BACKUP_EXTRA_ARGS:-}"
-	cd "/app/gogs" || exit 1
+	cd "/app/ggit" || exit 1
 
 	BACKUP_ARGS="--target=${BACKUP_ARG_PATH}"
 

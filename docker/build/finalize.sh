@@ -24,7 +24,7 @@ adduser -G git -H -D -g 'Gogs Git User' git -h /data/git -s /bin/bash && usermod
 echo "export GOGS_CUSTOM=${GOGS_CUSTOM}" >> /etc/profile
 
 # Final cleaning
-rm -rf /app/gogs/build
-rm -rf /app/gogs/docker/build
-rm /app/gogs/docker/nsswitch.conf
-rm /app/gogs/docker/README.md
+rm -rf /app/ggit/build
+rm -rf /app/ggit/docker/build
+rm /app/ggit/docker/nsswitch.conf
+rm /app/ggit/docker/README.md

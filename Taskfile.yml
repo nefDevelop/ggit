@@ -11,7 +11,7 @@ tasks:
     desc: Build the binary and start the web server
     deps: [build]
     cmds:
-      - .bin/gogs web
+      - .bin/ggit web
 
   build:
     desc: Build the binary
@@ -22,7 +22,7 @@ tasks:
           -X "{{.PKG_PATH}}.BuildCommit={{.BUILD_COMMIT}}"
         '
         -tags '{{.TAGS}}'
-        -trimpath -o .bin/gogs{{.BINARY_EXT}} ./cmd/gogs
+        -trimpath -o .bin/ggit{{.BINARY_EXT}} ./cmd/ggit
     vars:
       PKG_PATH: gogs.io/gogs/internal/conf
       BUILD_TIME:
@@ -31,7 +31,7 @@ tasks:
         sh: git rev-parse HEAD
     sources:
       - go.mod
-      - cmd/gogs/*.go
+      - cmd/ggit/*.go
       - internal/**/*.go
       - conf/**/*
       - public/**/*
@@ -62,7 +62,7 @@ tasks:
   less:
     desc: Generate CSS from LESS files
     cmds:
-      - lessc --clean-css --source-map "public/less/gogs.less" public/css/gogs.min.css
+      - lessc --clean-css --source-map "public/less/ggit.less" public/css/ggit.min.css
 
   fixme:
     desc: Show all occurrences of "FIXME"
@@ -83,7 +83,7 @@ tasks:
     desc: Drop the test database
     cmds:
       - |
-        for dbname in $(psql -Xc "copy (select datname from pg_database where datname like 'gogs-%') to stdout"); do
+        for dbname in $(psql -Xc "copy (select datname from pg_database where datname like 'ggit-%') to stdout"); do
           dropdb "$dbname"
           echo "dropped $dbname"
         done

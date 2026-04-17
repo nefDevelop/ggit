@@ -9,7 +9,7 @@ create_socat_links() {
         elif echo "$USED_PORT" | grep -E "(^|:)$PORT($|:)" > /dev/null; then
             echo "init:socat  | Can't bind linked container ${NAME} to localhost, port ${PORT} already in use" 1>&2
         else
-            SERV_FOLDER=/app/gogs/docker/s6/SOCAT_${NAME}_${PORT}
+            SERV_FOLDER=/app/ggit/docker/s6/SOCAT_${NAME}_${PORT}
             mkdir -p "${SERV_FOLDER}"
             CMD="socat -ls TCP4-LISTEN:${PORT},fork,reuseaddr TCP4:${ADDR}:${PORT}"
             # shellcheck disable=SC2039,SC3037
@@ -26,8 +26,8 @@ EOT
 cleanup() {
     # Cleanup SOCAT services and s6 event folder
     # On start and on shutdown in case container has been killed
-    rm -rf "$(find /app/gogs/docker/s6/ -name 'event')"
-    rm -rf /app/gogs/docker/s6/SOCAT_*
+    rm -rf "$(find /app/ggit/docker/s6/ -name 'event')"
+    rm -rf /app/ggit/docker/s6/SOCAT_*
 }
 
 create_volume_subfolder() {
@@ -39,7 +39,7 @@ create_volume_subfolder() {
     fi
 
     # Create VOLUME subfolder
-    for f in /data/gogs/data /data/gogs/conf /data/gogs/log /data/git /data/ssh; do
+    for f in /data/ggit/data /data/ggit/conf /data/ggit/log /data/git /data/ssh; do
         if ! test -d $f; then
             gosu "$USER" mkdir -p $f
         fi
@@ -68,16 +68,16 @@ fi
 CROND=$(echo "$RUN_CROND" | tr '[:upper:]' '[:lower:]')
 if [ "$CROND" = "true" ] || [ "$CROND" = "1" ]; then
     echo "init:crond  | Cron Daemon (crond) will be run as requested by s6" 1>&2
-    rm -f /app/gogs/docker/s6/crond/down
-    /bin/sh /app/gogs/docker/runtime/backup-init.sh "${PUID}"
+    rm -f /app/ggit/docker/s6/crond/down
+    /bin/sh /app/ggit/docker/runtime/backup-init.sh "${PUID}"
 else
     # Tell s6 not to run the crond service
-    touch /app/gogs/docker/s6/crond/down
+    touch /app/ggit/docker/s6/crond/down
 fi
 
 # Exec CMD or S6 by default if nothing present
 if [ $# -gt 0 ];then
     exec "$@"
 else
-    exec /usr/bin/s6-svscan /app/gogs/docker/s6/
+    exec /usr/bin/s6-svscan /app/ggit/docker/s6/
 fi
