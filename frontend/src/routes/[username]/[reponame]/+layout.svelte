@@ -51,6 +51,7 @@
     currentPath.includes('/commits') ? 'commits' :
     currentPath.includes('/issues') ? 'issues' :
     currentPath.includes('/pulls') ? 'pulls' :
+    currentPath.includes('/wiki') ? 'wiki' :
     currentPath.includes('/branches') ? 'branches' : 'code'
   );
 
@@ -142,8 +143,12 @@
         </a>
         <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
           <span class="material-symbols-rounded">merge</span>
-          <span class="tab-count">0</span>
+          <span class="tab-count">{repoData.open_pulls_count || 0}</span>
           <span class="tab-label">PRs</span>
+        </a>
+        <a href="/{username}/{reponame}/wiki" class="tab" class:active={activeTab === 'wiki'}>
+          <span class="material-symbols-rounded">book</span>
+          <span class="tab-label">Wiki</span>
         </a>
       </nav>
 

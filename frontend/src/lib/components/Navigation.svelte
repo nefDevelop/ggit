@@ -19,6 +19,7 @@
     { name: 'Authentication', icon: 'lock', path: '/admin/auth' },
     { name: 'Configuration', icon: 'settings', path: '/admin/config' },
     { name: 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
+    { name: 'Maintenance', icon: 'build', path: '/admin/maintenance' },
     { name: 'Notices', icon: 'notifications', path: '/admin/notices' }
   ];
 

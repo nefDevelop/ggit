@@ -3,6 +3,8 @@
   
   let sources = $state<any[]>([]);
   let loading = $state(true);
+  let showEditor = $state(false);
+  let editingAuthId = $state<number | null>(null);
 
   async function fetchAuths() {
     loading = true;
@@ -28,8 +30,33 @@
     }
   }
 
+  function handleSave() {
+    showEditor = false;
+    editingAuthId = null;
+    fetchAuths();
+  }
+
+  function handleCancel() {
+    showEditor = false;
+    editingAuthId = null;
+  }
+
+  function startEdit(id: number) {
+    editingAuthId = id;
+    showEditor = true;
+  }
+
+  function startCreate() {
+    editingAuthId = null;
+    showEditor = true;
+  }
+
   onMount(fetchAuths);
 </script>
+
+{#if showEditor}
+  <AdminAuthEditor id={editingAuthId} onSave={handleSave} onCancel={handleCancel} />
+{/if}
 
 <div class="admin-auth island tonal">
   <header class="section-header">
@@ -73,7 +100,7 @@
               </td>
               <td>{new Date(auth.created_at).toLocaleDateString()}</td>
               <td class="actions">
-                <button class="icon-btn" title="Edit"><span class="material-symbols-rounded">settings</span></button>
+                <button class="icon-btn" onclick={() => startEdit(auth.id)} title="Edit"><span class="material-symbols-rounded">settings</span></button>
                 <button class="icon-btn danger" onclick={() => deleteAuth(auth.id)} title="Delete"><span class="material-symbols-rounded">delete</span></button>
               </td>
             </tr>
@@ -108,6 +135,7 @@
   .icon-btn.danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
   .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+  .hidden { display: none; }
   .skeleton-bar { height: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 </style>

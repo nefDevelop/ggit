@@ -19,6 +19,26 @@
     }
   }
 
+  async function deleteRepo(id: number, name: string) {
+    if (!confirm(`Are you sure you want to delete repository "${name}"? This action cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/v2/admin/repos/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        repos = repos.filter(r => r.id !== id);
+      } else {
+        alert('Failed to delete repository.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error connecting to server.');
+    }
+  }
+
   onMount(fetchRepos);
 </script>
 
@@ -70,7 +90,9 @@
               </td>
               <td class="actions">
                 <a href="/{repo.owner?.username}/{repo.name}" class="icon-btn" title="View"><span class="material-symbols-rounded">visibility</span></a>
-                <button class="icon-btn danger" title="Delete"><span class="material-symbols-rounded">delete</span></button>
+                <button class="icon-btn danger" title="Delete" onclick={() => deleteRepo(repo.id, repo.name)}>
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
               </td>
             </tr>
           {/each}

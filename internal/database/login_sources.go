@@ -224,6 +224,47 @@ func (s *LoginSourcesStore) Create(ctx context.Context, opts CreateLoginSourceOp
 	return source, s.db.WithContext(ctx).Create(source).Error
 }
 
+type UpdateLoginSourceOptions struct {
+	Name      *string
+	Activated *bool
+	Default   *bool
+	Config    any
+}
+
+// Update updates fields for the given login source.
+func (s *LoginSourcesStore) Update(ctx context.Context, id int64, opts UpdateLoginSourceOptions) error {
+	updates := map[string]any{
+		"updated_unix": s.db.NowFunc().Unix(),
+	}
+
+	if opts.Name != nil {
+		updates["name"] = *opts.Name
+	}
+	if opts.Activated != nil {
+		updates["is_actived"] = *opts.Activated
+	}
+	if opts.Default != nil {
+		updates["is_default"] = *opts.Default
+	}
+	if opts.Config != nil {
+		data, err := json.Marshal(opts.Config)
+		if err != nil {
+			return errors.Wrap(err, "marshal config")
+		}
+		updates["cfg"] = string(data)
+	}
+
+	err := s.db.WithContext(ctx).Model(new(LoginSource)).Where("id = ?", id).Updates(updates).Error
+	if err != nil {
+		return err
+	}
+
+	if opts.Default != nil && *opts.Default {
+		return s.ResetNonDefault(ctx, &LoginSource{ID: id})
+	}
+	return nil
+}
+
 // Count returns the total number of login sources.
 func (s *LoginSourcesStore) Count(ctx context.Context) int64 {
 	var count int64

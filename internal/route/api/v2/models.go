@@ -131,3 +131,43 @@ func ToNoticeResponse(n *database.Notice) *NoticeResponse {
 		CreatedAt:   n.CreatedUnix,
 	}
 }
+
+// SystemStatusResponse represents the system health statistics in the API v2.
+type SystemStatusResponse struct {
+	Uptime       string `json:"uptime"`
+	NumGoroutine int    `json:"num_goroutine"`
+
+	// General statistics.
+	MemAllocated string `json:"mem_allocated"`
+	MemTotal     string `json:"mem_total"`
+	MemSys       string `json:"mem_sys"`
+	Lookups      uint64 `json:"lookups"`
+	MemMallocs   uint64 `json:"mem_mallocs"`
+	MemFrees     uint64 `json:"mem_frees"`
+
+	// Main allocation heap statistics.
+	HeapAlloc    string `json:"heap_alloc"`
+	HeapSys      string `json:"heap_sys"`
+	HeapIdle     string `json:"heap_idle"`
+	HeapInuse    string `json:"heap_inuse"`
+	HeapReleased string `json:"heap_released"`
+	HeapObjects  uint64 `json:"heap_objects"`
+
+	// Low-level fixed-size structure allocator statistics.
+	StackInuse  string `json:"stack_inuse"`
+	StackSys    string `json:"stack_sys"`
+	MSpanInuse  string `json:"mspan_inuse"`
+	MSpanSys    string `json:"mspan_sys"`
+	MCacheInuse string `json:"mcache_inuse"`
+	MCacheSys   string `json:"mcache_sys"`
+	BuckHashSys string `json:"buck_hash_sys"`
+	GCSys       string `json:"gc_sys"`
+	OtherSys    string `json:"other_sys"`
+
+	// Garbage collector statistics.
+	NextGC       string `json:"next_gc"`
+	LastGC       string `json:"last_gc"`
+	PauseTotalNs string `json:"pause_total_ns"`
+	PauseNs      string `json:"pause_ns"`
+	NumGC        uint32 `json:"num_gc"`
+}

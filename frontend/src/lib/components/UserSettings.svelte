@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import ThemeSelector from './ThemeSelector.svelte';
   import SettingsProfile from './SettingsProfile.svelte';
   import SettingsSecurity from './SettingsSecurity.svelte';
   import SettingsKeys from './SettingsKeys.svelte';
@@ -116,10 +117,6 @@
   .settings-content {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-  }
-</style>
-flex-direction: column;
     gap: 2rem;
   }
 </style>

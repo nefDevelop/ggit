@@ -42,9 +42,9 @@
 		<h1 class="error-title">{details.title}</h1>
 		<p class="error-desc">{details.desc}</p>
 
-		{#if $page.error?.stack}
+		{#if ($page.error as any)?.stack}
 			<div class="error-stack">
-				<pre><code>{$page.error.stack}</code></pre>
+				<pre><code>{($page.error as any).stack}</code></pre>
 			</div>
 		{/if}
 

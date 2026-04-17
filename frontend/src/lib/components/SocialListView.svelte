@@ -13,7 +13,7 @@
   let loading = $state(true);
   let error = $state('');
 
-  const titles = {
+  const titles: Record<'watchers' | 'stars' | 'forks', string> = {
     watchers: 'Observadores',
     stars: 'Estrellas',
     forks: 'Forks'
@@ -44,7 +44,7 @@
         <span class="material-symbols-rounded">
             {type === 'watchers' ? 'visibility' : type === 'stars' ? 'star' : 'fork_left'}
         </span>
-        <h2>{titles[type]}</h2>
+        <h2>{titles[type as 'watchers' | 'stars' | 'forks']}</h2>
     </div>
     <div class="meta">
         {data.length} {data.length === 1 ? 'elemento' : 'elementos'}

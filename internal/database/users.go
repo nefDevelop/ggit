@@ -239,14 +239,15 @@ func (s *UsersStore) Count(ctx context.Context) int64 {
 }
 
 type CreateUserOptions struct {
-	FullName    string
-	Password    string
-	LoginSource int64
-	LoginName   string
-	Location    string
-	Website     string
-	Activated   bool
-	Admin       bool
+	FullName      string
+	Password      string
+	LoginSource   int64
+	LoginName     string
+	Location      string
+	Website       string
+	Activated     bool
+	Admin         bool
+	ProhibitLogin bool
 }
 
 type ErrUserAlreadyExist struct {

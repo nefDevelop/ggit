@@ -153,6 +153,20 @@ func (c *Context) FormInt64(name string) int64 {
 }
 
 func (c *Context) HTML(status int, name string) {
+	// Fallback mechanism for Zero Template architecture
+	defer func() {
+		if r := recover(); r != nil {
+			// If HTML rendering fails (e.g. no renderer), fallback to JSON for errors or PlainText
+			if status >= 400 {
+				c.JSON(status, map[string]any{
+					"error": name,
+					"data":  c.Data,
+				})
+			} else {
+				c.String(status, "Template rendering failed/disabled: %s", name)
+			}
+		}
+	}()
 	c.Context.HTML(status, name, c.Data)
 }
 
@@ -183,6 +197,10 @@ func (c *Context) RenderWithErr(msg string, status int, tpl string, form any) {
 }
 
 func (c *Context) NotFound() {
+	if strings.HasPrefix(c.Request.URL.Path, "/api/v2") {
+		c.JSON(http.StatusNotFound, map[string]any{"error": "Resource not found"})
+		return
+	}
 	c.HTML(http.StatusNotFound, "status/404")
 }
 
@@ -286,16 +304,29 @@ func (c *Context) ServeFile(file string, names ...string) {
 
 func (c *Context) Error(err error, msg string) {
 	log.ErrorDepth(4, "%s: %v", msg, err)
+	if strings.HasPrefix(c.Request.URL.Path, "/api/v2") {
+		c.JSON(http.StatusInternalServerError, map[string]any{
+			"error":   msg,
+			"details": err.Error(),
+		})
+		return
+	}
 	c.HTML(http.StatusInternalServerError, "status/500")
 }
 
 func (c *Context) Errorf(err error, format string, args ...any) {
-	log.ErrorDepth(4, format, args...)
-	c.Error(err, fmt.Sprintf(format, args...))
+	msg := fmt.Sprintf(format, args...)
+	log.ErrorDepth(4, "%s: %v", msg, err)
+	c.Error(err, msg)
 }
 
 func (c *Context) StatusErrorf(status int, format string, args ...any) {
-	log.ErrorDepth(4, format, args...)
+	msg := fmt.Sprintf(format, args...)
+	log.ErrorDepth(4, "%s", msg)
+	if strings.HasPrefix(c.Request.URL.Path, "/api/v2") {
+		c.JSON(status, map[string]any{"error": msg})
+		return
+	}
 	c.HTML(status, "status/500")
 }
 

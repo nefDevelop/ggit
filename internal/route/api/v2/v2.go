@@ -82,6 +82,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	admin := r.Group("/admin", context.Toggle(&context.ToggleOptions{SignInRequired: true, AdminRequired: true}))
 	{
 		admin.GET("/stats", ginx.Handle(GetAdminStats))
+		admin.POST("/operations", ginx.Handle(RunAdminOperation))
 		admin.GET("/config", ginx.Handle(GetAdminConfig))
 		admin.POST("/config/test_email", ginx.Handle(SendAdminTestEmail))
 		admin.GET("/monitor", ginx.Handle(GetAdminMonitor))
@@ -93,8 +94,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.DELETE("/users/:id", ginx.Handle(DeleteAdminUser))
 
 		admin.GET("/repos", ginx.Handle(GetAdminRepos))
+		admin.DELETE("/repos/:id", ginx.Handle(DeleteAdminRepo))
 		admin.GET("/orgs", ginx.Handle(GetAdminOrgs))
-
 		admin.GET("/auths", ginx.Handle(GetAdminAuths))
 		admin.POST("/auths", ginx.Handle(CreateAdminAuth))
 		admin.GET("/auths/:id", ginx.Handle(GetAdminAuth))

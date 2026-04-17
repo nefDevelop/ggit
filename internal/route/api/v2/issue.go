@@ -52,7 +52,7 @@ func CreateIssue(c *context.APIContext) {
 		return
 	}
 
-	newIssue := &database.Issue{
+	issue := &database.Issue{
 		RepoID:      c.Repo.Repository.ID,
 		PosterID:    c.User.ID,
 		Poster:      c.User,
@@ -62,12 +62,16 @@ func CreateIssue(c *context.APIContext) {
 		AssigneeID:  f.AssigneeID,
 	}
 
-	apiIssue := newIssue.APIFormat()
-	apiIssue.BodyHTML = string(markup.Render(markup.TypeMarkdown, newIssue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
+	if err := issueservice.Issues.CreateIssue(c.Req.Context(), c.Repo.Repository, issue, f); err != nil {
+		c.Error(err, "create issue")
+		return
+	}
+
+	apiIssue := issue.APIFormat()
+	apiIssue.BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
 
 	c.JSON(http.StatusCreated, apiIssue)
 }
-
 // GetIssue returns a single issue by its index.
 func GetIssue(c *context.APIContext) {
 	idx := c.ParamsInt64("index")

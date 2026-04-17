@@ -1,15 +1,15 @@
 <script lang="ts">
   import { onMount, getContext } from 'svelte';
   import { 
-    Description, 
+    FileText as Description, 
     Edit, 
     History as HistoryIcon, 
-    Add, 
+    Plus as Add, 
     Save, 
-    Close, 
-    Delete,
-    ArrowBack,
-    MoreVert
+    X as Close, 
+    Trash2 as Delete,
+    ArrowLeft as ArrowBack,
+    MoreVertical as MoreVert
   } from 'lucide-svelte';
   
   let { path = 'Home' } = $props();
@@ -135,7 +135,7 @@
   });
 
   const formatDate = (ts: number) => new Date(ts * 1000).toLocaleDateString('es-ES', {
-    member: 'short', day: 'numeric', month: 'short', year: 'numeric'
+    day: 'numeric', month: 'short', year: 'numeric'
   });
 </script>
 

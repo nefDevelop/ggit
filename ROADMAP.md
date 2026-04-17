@@ -113,7 +113,7 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 
 *   [ ] **Audit de Plantillas:** Eliminar archivos `.tmpl` redundantes (Meta: 0 legacy templates).
 *   [ ] **Modernización de Emails:** Restilo de los 7 templates de mail a MD3 o sistema moderno.
-*   [ ] **Admin Monitor:** Live status del servidor (Go routines, memoria, CPU) en Svelte.
+* [x] **Admin Monitor:** Live status del servidor (Go routines, memoria, CPU) en Svelte. [COMPLETO]
 *   [x] **Finalizar API v2:** Documentación OpenAPI/Swagger completa.
 
 *   [ ] **Component Library (M3 Expressive):**

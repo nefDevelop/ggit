@@ -26,9 +26,10 @@ type Repository struct {
 	Website       string                `json:"website"`
 	Stars         int                   `json:"stars_count"`
 	Forks         int                   `json:"forks_count"`
-	Watchers      int                   `json:"watchers_count"`
-	OpenIssues    int                   `json:"open_issues_count"`
-	DefaultBranch string                `json:"default_branch"`
+	Watchers        int                   `json:"watchers_count"`
+	OpenIssuesCount int                   `json:"open_issues_count"`
+	OpenPullsCount  int                   `json:"open_pulls_count"`
+	DefaultBranch   string                `json:"default_branch"`
 	Language      string                `json:"language"`
 	Languages     map[string]int64      `json:"languages"`
 	Created       time.Time             `json:"created_at"`

@@ -1,20 +1,131 @@
 package v2
 
 import (
+	"fmt"
 	"net/http"
+	"runtime"
+	"time"
 
+	"gogs.io/gogs/internal/auth"
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/cron"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/email"
 	"gogs.io/gogs/internal/process"
+	"gogs.io/gogs/internal/tool"
 )
 
-// GetAdminStats returns global statistics.
+var initTime = time.Now()
+
+// GetAdminStats returns global statistics and system status.
 func GetAdminStats(c *context.APIContext) {
 	stats := database.GetStatistic(c.Req.Context())
-	c.JSON(http.StatusOK, stats)
+
+	m := new(runtime.MemStats)
+	runtime.ReadMemStats(m)
+
+	sysStatus := SystemStatusResponse{
+		Uptime:       tool.TimeSincePro(initTime),
+		NumGoroutine: runtime.NumGoroutine(),
+
+		MemAllocated: tool.FileSize(int64(m.Alloc)),
+		MemTotal:     tool.FileSize(int64(m.TotalAlloc)),
+		MemSys:       tool.FileSize(int64(m.Sys)),
+		Lookups:      m.Lookups,
+		MemMallocs:   m.Mallocs,
+		MemFrees:     m.Frees,
+
+		HeapAlloc:    tool.FileSize(int64(m.HeapAlloc)),
+		HeapSys:      tool.FileSize(int64(m.HeapSys)),
+		HeapIdle:     tool.FileSize(int64(m.HeapIdle)),
+		HeapInuse:    tool.FileSize(int64(m.HeapInuse)),
+		HeapReleased: tool.FileSize(int64(m.HeapReleased)),
+		HeapObjects:  m.HeapObjects,
+
+		StackInuse:  tool.FileSize(int64(m.StackInuse)),
+		StackSys:    tool.FileSize(int64(m.StackSys)),
+		MSpanInuse:  tool.FileSize(int64(m.MSpanInuse)),
+		MSpanSys:    tool.FileSize(int64(m.MSpanSys)),
+		MCacheInuse: tool.FileSize(int64(m.MCacheInuse)),
+		MCacheSys:   tool.FileSize(int64(m.MCacheSys)),
+		BuckHashSys: tool.FileSize(int64(m.BuckHashSys)),
+		GCSys:       tool.FileSize(int64(m.GCSys)),
+		OtherSys:    tool.FileSize(int64(m.OtherSys)),
+
+		NextGC:       tool.FileSize(int64(m.NextGC)),
+		LastGC:       fmt.Sprintf("%.1fs", float64(time.Now().UnixNano()-int64(m.LastGC))/1000/1000/1000),
+		PauseTotalNs: fmt.Sprintf("%.1fs", float64(m.PauseTotalNs)/1000/1000/1000),
+		PauseNs:      fmt.Sprintf("%.3fs", float64(m.PauseNs[(m.NumGC+255)%256])/1000/1000/1000),
+		NumGC:        m.NumGC,
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"data":   stats,
+		"system": sysStatus,
+	})
+}
+
+type AdminOperation int
+
+const (
+	CleanInactivateUser AdminOperation = iota + 1
+	CleanRepoArchives
+	CleanMissingRepos
+	GitGCRepos
+	SyncSSHAuthorizedKey
+	SyncRepositoryHooks
+	ReinitMissingRepository
+)
+
+// RunAdminOperation executes an administrative maintenance operation.
+func RunAdminOperation(c *context.APIContext) {
+	var f struct {
+		Op int `json:"op" binding:"Required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	var err error
+	var successKey string
+	switch AdminOperation(f.Op) {
+	case CleanInactivateUser:
+		successKey = "admin.dashboard.delete_inactivate_accounts_success"
+		err = database.Handle.Users().DeleteInactivated()
+	case CleanRepoArchives:
+		successKey = "admin.dashboard.delete_repo_archives_success"
+		err = database.DeleteRepositoryArchives()
+	case CleanMissingRepos:
+		successKey = "admin.dashboard.delete_missing_repos_success"
+		err = database.DeleteMissingRepositories()
+	case GitGCRepos:
+		successKey = "admin.dashboard.git_gc_repos_success"
+		err = database.GitGcRepos()
+	case SyncSSHAuthorizedKey:
+		successKey = "admin.dashboard.resync_all_sshkeys_success"
+		err = database.RewriteAuthorizedKeys()
+	case SyncRepositoryHooks:
+		successKey = "admin.dashboard.resync_all_hooks_success"
+		err = database.SyncRepositoryHooks()
+	case ReinitMissingRepository:
+		successKey = "admin.dashboard.reinit_missing_repos_success"
+		err = database.ReinitMissingRepositories()
+	default:
+		c.ErrorStatus(http.StatusBadRequest, fmt.Errorf("Unknown operation ID: %d", f.Op))
+		return
+	}
+
+	if err != nil {
+		c.Error(err, "run admin operation")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+		"msg":    successKey,
+	})
 }
 
 // GetAdminConfig returns the current application configuration.
@@ -90,12 +201,15 @@ func GetAdminUsers(c *context.APIContext) {
 // CreateAdminUser creates a new user account.
 func CreateAdminUser(c *context.APIContext) {
 	var f struct {
-		Username  string `json:"username" binding:"Required"`
-		Email     string `json:"email" binding:"Required;Email;MaxSize(254)"`
-		Password  string `json:"password" binding:"Required;MaxSize(255)"`
-		FullName  string `json:"full_name"`
-		Activated bool   `json:"activated"`
-		Admin     bool   `json:"admin"`
+		Username      string `json:"username" binding:"Required"`
+		Email         string `json:"email" binding:"Required;Email;MaxSize(254)"`
+		Password      string `json:"password" binding:"Required;MaxSize(255)"`
+		FullName      string `json:"full_name"`
+		Website       string `json:"website"`
+		Location      string `json:"location"`
+		Activated     bool   `json:"activated"`
+		Admin         bool   `json:"admin"`
+		ProhibitLogin bool   `json:"prohibit_login"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -103,10 +217,13 @@ func CreateAdminUser(c *context.APIContext) {
 	}
 
 	user, err := database.Handle.Users().Create(c.Req.Context(), f.Username, f.Email, database.CreateUserOptions{
-		Password:  f.Password,
-		FullName:  f.FullName,
-		Activated: f.Activated,
-		Admin:     f.Admin,
+		Password:      f.Password,
+		FullName:      f.FullName,
+		Website:       f.Website,
+		Location:      f.Location,
+		Activated:     f.Activated,
+		Admin:         f.Admin,
+		ProhibitLogin: f.ProhibitLogin,
 	})
 	if err != nil {
 		c.Error(err, "create user")
@@ -166,6 +283,23 @@ func GetAdminOrgs(c *context.APIContext) {
 		resp[i] = ToOrganizationResponse(o, owner)
 	}
 	c.JSON(http.StatusOK, resp)
+}
+
+// DeleteAdminRepo deletes a repository administratively.
+func DeleteAdminRepo(c *context.APIContext) {
+	repoID := c.ParamsInt64("id")
+	repo, err := database.GetRepositoryByID(repoID)
+	if err != nil {
+		c.Error(err, "get repository")
+		return
+	}
+
+	if err := database.DeleteRepository(repo.OwnerID, repo.ID); err != nil {
+		c.Error(err, "delete repository")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 
 // UpdateAdminUser updates a user's information administratively.
@@ -229,20 +363,36 @@ func GetAdminAuths(c *context.APIContext) {
 }
 
 // CreateAdminAuth creates a new login source.
+// CreateAdminAuth creates a new authentication source.
 func CreateAdminAuth(c *context.APIContext) {
-	var opts database.CreateLoginSourceOptions
-	if err := c.ShouldBindJSON(&opts); err != nil {
+	var f struct {
+		Type      int    `json:"type" binding:"Required"`
+		Name      string `json:"name" binding:"Required"`
+		Activated bool   `json:"activated"`
+		Default   bool   `json:"default"`
+		Config    any    `json:"config" binding:"Required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
 
-	source, err := database.Handle.LoginSources().Create(c.Req.Context(), opts)
+	source, err := database.Handle.LoginSources().Create(c.Req.Context(), database.CreateLoginSourceOptions{
+		Type:      auth.Type(f.Type),
+		Name:      f.Name,
+		Activated: f.Activated,
+		Default:   f.Default,
+		Config:    f.Config,
+	})
 	if err != nil {
 		c.Error(err, "create login source")
 		return
 	}
 
-	c.JSON(http.StatusCreated, source)
+	c.JSON(http.StatusCreated, map[string]any{
+		"status": "ok",
+		"id":     source.ID,
+	})
 }
 
 // GetAdminAuth returns a login source's information.
@@ -256,14 +406,33 @@ func GetAdminAuth(c *context.APIContext) {
 	c.JSON(http.StatusOK, ToAuthSourceResponse(source))
 }
 
-// UpdateAdminAuth updates a login source's information.
+// UpdateAdminAuth updates an existing authentication source.
 func UpdateAdminAuth(c *context.APIContext) {
-	_ = c.ParamsInt64("id")
-	// For now, Gogs/Ggit doesn't have a generic Update method for all source types in the store easily exposed.
-	// But I can implement it by getting and saving.
-	// Actually, let's keep it simple and just implement GET and DELETE for now if UPDATE is complex.
-	// Wait, I should check if there is an Update method.
-	c.JSON(http.StatusNotImplemented, map[string]string{"error": "Updating auth sources via API is coming soon."})
+	id := c.ParamsInt64("id")
+	var f struct {
+		Name      *string `json:"name"`
+		Activated *bool   `json:"activated"`
+		Default   *bool   `json:"default"`
+		Config    any     `json:"config"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	opts := database.UpdateLoginSourceOptions{
+		Name:      f.Name,
+		Activated: f.Activated,
+		Default:   f.Default,
+		Config:    f.Config,
+	}
+
+	if err := database.Handle.LoginSources().Update(c.Req.Context(), id, opts); err != nil {
+		c.Error(err, "update login source")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 
 // DeleteAdminAuth deletes a login source.

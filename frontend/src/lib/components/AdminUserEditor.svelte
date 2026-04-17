@@ -105,6 +105,19 @@
           <label for="full_name">Full Name</label>
           <input id="full_name" type="text" bind:value={user.full_name} />
         </div>
+        <div class="field">
+          <label for="website">Website</label>
+          <input id="website" type="url" bind:value={user.website} placeholder="https://..." />
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <input id="location" type="text" bind:value={user.location} placeholder="City, Country" />
+        </div>
+        <div class="field">
+          <label for="max_repo">Max Repositories</label>
+          <input id="max_repo" type="number" bind:value={user.max_repo_creation} min="-1" />
+          <small>-1 means system default</small>
+        </div>
       </div>
 
       <div class="checkbox-group">
@@ -115,6 +128,10 @@
         <label class="checkbox">
           <input type="checkbox" bind:checked={user.admin} />
           <span>Administrator Privileges</span>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" bind:checked={user.prohibit_login} />
+          <span class="warning-text">Prohibit Login</span>
         </label>
       </div>
 
@@ -148,6 +165,7 @@
   .checkbox { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; }
   
   .error-msg { color: #ef4444; font-size: 0.85rem; font-weight: 700; }
+  .warning-text { color: #f59e0b; font-weight: 700; }
   
   .actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
 </style>
