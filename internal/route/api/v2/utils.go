@@ -27,7 +27,9 @@ func RenderMarkdown(c *context.APIContext) {
 	}
 
 	rendered := markup.Markdown([]byte(f.Text), f.Context, nil)
-	c.Data(http.StatusOK, "text/html", rendered)
+	c.Writer.Header().Set("Content-Type", "text/html")
+	c.Writer.WriteHeader(http.StatusOK)
+	_, _ = c.Writer.Write(rendered)
 }
 
 // MarkdownRaw renders raw markdown text to HTML.
@@ -38,5 +40,7 @@ func RenderMarkdownRaw(c *context.APIContext) {
 		return
 	}
 	rendered := markup.SanitizeBytes(markup.RawMarkdown(body, ""))
-	c.Data(http.StatusOK, "text/html", rendered)
+	c.Writer.Header().Set("Content-Type", "text/html")
+	c.Writer.WriteHeader(http.StatusOK)
+	_, _ = c.Writer.Write(rendered)
 }

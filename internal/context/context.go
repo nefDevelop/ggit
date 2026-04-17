@@ -68,16 +68,6 @@ func (f *Flash) Success(msg string, args ...any) { f.SuccessMsg = fmt.Sprintf(ms
 func (f *Flash) Info(msg string, args ...any)    { f.InfoMsg = fmt.Sprintf(msg, args...) }
 func (f *Flash) Warning(msg string, args ...any) { f.WarningMsg = fmt.Sprintf(msg, args...) }
 
-// RawTitle sets the "Title" field in template data.
-func (c *Context) RawTitle(title string) {
-	c.Data["Title"] = title
-}
-
-// Title localizes the "Title" field in template data.
-func (c *Context) Title(locale string) {
-	c.RawTitle(c.Tr(locale))
-}
-
 // Tr returns the localized string for given key.
 func (c *Context) Tr(key string, args ...any) string {
 	if c.Locale != nil {
@@ -91,11 +81,6 @@ func (c *Context) Language() string {
 		return c.Locale.Language()
 	}
 	return "en-US"
-}
-
-// PageIs sets "PageIsxxx" field in template data.
-func (c *Context) PageIs(name string) {
-	c.Data["PageIs"+name] = true
 }
 
 // UserID returns ID of current logged user.
@@ -193,6 +178,14 @@ func (c *Context) NotFound() {
 func (c *Context) QueryBool(name string) bool {
 	v := c.Query(name)
 	return v == "true" || v == "1" || v == "on"
+}
+
+func (c *Context) Title(name string) {
+	c.Data["Title"] = c.Tr(name)
+}
+
+func (c *Context) PageIs(name string) {
+	c.Data["PageIs"+name] = true
 }
 
 func (c *Context) RequireHighlightJS()   {}

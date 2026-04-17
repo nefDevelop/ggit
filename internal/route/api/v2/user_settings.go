@@ -16,7 +16,6 @@ import (
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/email"
 	"gogs.io/gogs/internal/form"
-	userroute "gogs.io/gogs/internal/route/user"
 	"gogs.io/gogs/internal/userx"
 )
 
@@ -360,15 +359,32 @@ func UpdateUserAvatar(c *context.APIContext) {
 		}
 	}
 
-	// Map to legacy form for the existing helper
-	legacyForm := form.Avatar{
-		Source:   f.Source,
-		Avatar:   f.Avatar,
-		Gravatar: f.Gravatar,
-	}
-	if err := userroute.UpdateAvatarSetting(c.Context, legacyForm, c.User); err != nil {
-		c.StatusError(http.StatusInternalServerError, err.Error(), err)
-		return
+	if f.Source == form.AvatarLookup {
+		if err := database.Handle.Users().Update(c.Req.Context(), c.User.ID, database.UpdateUserOptions{
+			AvatarEmail: &f.Gravatar,
+		}); err != nil {
+			c.StatusError(http.StatusInternalServerError, "Update avatar email failed", err)
+			return
+		}
+	} else if f.Avatar != nil {
+		content, err := f.Avatar.Open()
+		if err != nil {
+			c.StatusError(http.StatusInternalServerError, "Open avatar file failed", err)
+			return
+		}
+		defer func() { _ = content.Close() }()
+
+		data := make([]byte, f.Avatar.Size)
+		_, err = content.Read(data)
+		if err != nil {
+			c.StatusError(http.StatusInternalServerError, "Read avatar file failed", err)
+			return
+		}
+
+		if err := database.Handle.Users().UseCustomAvatar(c.Req.Context(), c.User.ID, data); err != nil {
+			c.StatusError(http.StatusInternalServerError, "Use custom avatar failed", err)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, map[string]any{

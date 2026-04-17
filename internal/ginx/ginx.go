@@ -14,7 +14,6 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/route/repo"
 	"gogs.io/gogs/public"
 	"io/fs"
 )
@@ -70,9 +69,6 @@ func Handle(h any) gin.HandlerFunc {
 			case "*context.ParamsUser":
 				pu, _ := c.Get("paramsUser")
 				inputs[i] = reflect.ValueOf(pu)
-			case reflect.TypeOf((*repo.OrgRepoContext)(nil)).String():
-				orc, _ := c.Get("orgRepoContext")
-				inputs[i] = reflect.ValueOf(orc)
 			default:
 				// If it's a pointer to a struct, try to bind it (legacy binding)
 				if argType.Kind() == reflect.Ptr && argType.Elem().Kind() == reflect.Struct {

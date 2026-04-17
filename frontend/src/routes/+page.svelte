@@ -11,7 +11,7 @@
     if (authState.isAuthenticated) return;
     
     try {
-      const res = await apiFetch('/api/v1/repos/search');
+      const res = await apiFetch('/api/v2/explore/search');
       if (res.ok) {
         serverInfo.status = 'Online';
       } else {

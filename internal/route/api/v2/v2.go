@@ -83,6 +83,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	{
 		explore.GET("/repos", ginx.Handle(ExploreRepos))
 		explore.GET("/repos/search", ginx.Handle(SearchRepos))
+		explore.GET("/search", ginx.Handle(SearchRepos))
 		explore.GET("/users", ginx.Handle(ExploreUsers))
 		explore.GET("/organizations", ginx.Handle(ExploreOrganizations))
 	}

@@ -112,7 +112,8 @@ func ListIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.GetLabels(); err != nil {
+	issue.Labels, err = database.GetLabelsByIssueID(issue.ID)
+	if err != nil {
 		c.Error(err, "get labels")
 		return
 	}
@@ -140,7 +141,13 @@ func AddIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.AddLabels(c.User, f.Labels); err != nil {
+	labels, err := database.GetLabelsInRepoByIDs(c.Repo.Repository.ID, f.Labels)
+	if err != nil {
+		c.Error(err, "get labels in repo by IDs")
+		return
+	}
+
+	if err = issue.AddLabels(c.User, labels); err != nil {
 		c.Error(err, "add labels")
 		return
 	}
@@ -164,7 +171,13 @@ func ReplaceIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.ReplaceLabels(f.Labels); err != nil {
+	labels, err := database.GetLabelsInRepoByIDs(c.Repo.Repository.ID, f.Labels)
+	if err != nil {
+		c.Error(err, "get labels in repo by IDs")
+		return
+	}
+
+	if err = issue.ReplaceLabels(labels); err != nil {
 		c.Error(err, "replace labels")
 		return
 	}
@@ -180,7 +193,7 @@ func ClearIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.ClearLabels(); err != nil {
+	if err = issue.ClearLabels(c.User); err != nil {
 		c.Error(err, "clear labels")
 		return
 	}

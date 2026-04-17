@@ -39,6 +39,7 @@ func ExploreRepos(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
+		"ok":    true,
 		"repos": apiRepos,
 		"total": count,
 	})
@@ -77,8 +78,9 @@ func SearchRepos(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"ok":   true,
-		"data": apiRepos,
+		"ok":    true,
+		"data":  apiRepos,
+		"repos": apiRepos, // For consistency with ExploreRepos
 		"total": count,
 	})
 }
@@ -117,6 +119,7 @@ func ExploreUsers(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
+		"ok":    true,
 		"users": apiUsers,
 		"total": count,
 	})
@@ -156,6 +159,7 @@ func ExploreOrganizations(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
+		"ok":            true,
 		"organizations": apiOrgs,
 		"total":         count,
 	})
