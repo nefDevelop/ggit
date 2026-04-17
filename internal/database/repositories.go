@@ -452,3 +452,16 @@ func (s *RepositoriesStore) ListForks(ctx context.Context, repoID int64, page, p
 		Find(&repos).
 		Error
 }
+
+// ListStarred returns a list of repositories starred by the given user.
+func (s *RepositoriesStore) ListStarred(ctx context.Context, userID int64, page, pageSize int) ([]*Repository, error) {
+	repos := make([]*Repository, 0, pageSize)
+	return repos, s.db.WithContext(ctx).
+		Table("repository").
+		Joins("JOIN star ON star.repo_id = repository.id").
+		Where("star.uid = ?", userID).
+		Limit(pageSize).Offset((page - 1) * pageSize).
+		Order("star.id DESC").
+		Find(&repos).
+		Error
+}

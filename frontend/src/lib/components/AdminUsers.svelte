@@ -1,12 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import AdminUserEditor from './AdminUserEditor.svelte';
   
   let users = $state<any[]>([]);
   let loading = $state(true);
   let page = $state(1);
+  let editingUserId = $state<number | null | 'new'>(null);
 
   async function fetchUsers() {
     loading = true;
+    editingUserId = null;
     try {
       const res = await fetch(`/api/v2/admin/users?page=${page}`);
       if (res.ok) {
@@ -51,8 +54,18 @@
       <span class="material-symbols-rounded">group</span>
       <h2>User Management</h2>
     </div>
-    <button class="btn btn-primary">New User</button>
+    <button class="btn btn-primary" onclick={() => editingUserId = 'new'}>New User</button>
   </header>
+
+  {#if editingUserId}
+    <div class="editor-overlay">
+       <AdminUserEditor 
+         userId={editingUserId === 'new' ? null : editingUserId} 
+         onSave={fetchUsers} 
+         onCancel={() => editingUserId = null} 
+       />
+    </div>
+  {/if}
 
   <div class="table-container">
     <table class="modern-table">
@@ -98,8 +111,12 @@
                 </button>
               </td>
               <td class="actions">
-                <button class="icon-btn" title="Edit"><span class="material-symbols-rounded">edit</span></button>
-                <button class="icon-btn danger" title="Delete" onclick={() => deleteUser(user.id)}><span class="material-symbols-rounded">delete</span></button>
+                <button class="icon-btn" title="Edit" onclick={() => editingUserId = user.id}>
+                  <span class="material-symbols-rounded">edit</span>
+                </button>
+                <button class="icon-btn danger" title="Delete" onclick={() => deleteUser(user.id)}>
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
               </td>
             </tr>
           {/each}
@@ -139,4 +156,7 @@
 
   .skeleton-bar { height: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
+
+  .editor-overlay { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem; animation: slideDown 0.3s ease-out; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 </style>

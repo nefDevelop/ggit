@@ -6,12 +6,24 @@
   let { username, reponame, initialData = null } = $props();
 
   let branches = $state<any[]>([]);
-  let tag_name = $state(initialData?.TagName || '');
-  let tag_target = $state(initialData?.Target || '');
-  let title = $state(initialData?.Title || '');
-  let content = $state(initialData?.Note || '');
-  let is_prerelease = $state(initialData?.IsPrerelease || false);
-  let is_draft = $state(initialData?.IsDraft || false);
+  let tag_name = $state('');
+  let tag_target = $state('');
+  let title = $state('');
+  let content = $state('');
+  let is_prerelease = $state(false);
+  let is_draft = $state(false);
+
+  // Initialize state once initialData is available
+  $effect(() => {
+    if (initialData) {
+      tag_name = initialData.TagName || tag_name;
+      tag_target = initialData.Target || tag_target;
+      title = initialData.Title || title;
+      content = initialData.Note || content;
+      is_prerelease = initialData.IsPrerelease || is_prerelease;
+      is_draft = initialData.IsDraft || is_draft;
+    }
+  });
   
   let loadingBranches = $state(true);
   let submitting = $state(false);

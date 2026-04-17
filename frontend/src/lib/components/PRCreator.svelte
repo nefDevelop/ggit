@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import DiffViewer from '$lib/components/DiffViewer.svelte';
-  import CommitPanel from '$lib/components/CommitPanel.svelte';
+  import CommitRow from '$lib/components/CommitRow.svelte';
 
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
@@ -164,7 +164,7 @@
             {:else}
                <div class="commit-list">
                  {#each comparison.commits as commit}
-                   <CommitPanel {commit} minimalist={true} />
+                   <CommitRow {commit} minimalist={true} />
                  {/each}
                </div>
             {/if}

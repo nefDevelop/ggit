@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import RepoCard from './RepoCard.svelte'; // Assuming it exists or similar
   import OrgTeams from './OrgTeams.svelte';
 
   let { orgName } = $props();

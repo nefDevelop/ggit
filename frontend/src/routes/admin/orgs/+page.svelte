@@ -3,17 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Organization Oversight · Admin · ggit</title>
+  <title>Organizations · Admin · Ggit</title>
 </svelte:head>
 
-<div class="page-container">
-  <AdminOrgs />
-</div>
-
-<style>
-  .page-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-</style>
+<AdminOrgs />

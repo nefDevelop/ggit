@@ -59,6 +59,19 @@ func (org *User) TeamsHaveAccessToRepo(repoID int64, mode AccessMode) ([]*Team, 
 	return GetTeamsHaveAccessToRepo(org.ID, repoID, mode)
 }
 
+// GetOrgOwner returns the first owner of the organization.
+func (org *User) GetOrgOwner() (*User, error) {
+	ou := new(OrgUser)
+	has, err := x.Where("org_id = ?", org.ID).And("is_owner = ?", true).Asc("id").Get(ou)
+	if err != nil {
+		return nil, err
+	}
+	if !has {
+		return nil, errors.New("organization has no owner")
+	}
+	return Handle.Users().GetByID(context.TODO(), ou.UID)
+}
+
 // GetMembers returns all members of organization.
 func (org *User) GetMembers(limit int) error {
 	ous, err := GetOrgUsersByOrgID(org.ID, limit)

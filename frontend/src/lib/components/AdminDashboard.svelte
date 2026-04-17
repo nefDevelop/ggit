@@ -8,9 +8,14 @@
     loading = true;
     try {
       const res = await fetch('/api/v2/admin/stats');
-      if (res.ok) stats = await res.json();
+      if (res.ok) {
+        stats = await res.json();
+      } else {
+        stats = null;
+      }
     } catch (e) {
       console.error(e);
+      stats = null;
     } finally {
       loading = false;
     }
@@ -90,6 +95,18 @@
         </div>
       </div>
     </div>
+  {:else}
+    <div class="error-zone island tonal">
+       <span class="material-symbols-rounded">lock</span>
+       <div class="error-content">
+          <h3>Access Denied or API Error</h3>
+          <p>We couldn't retrieve the system statistics. Please verify you're logged in as an administrator.</p>
+          <div class="error-actions">
+             <button class="btn btn-primary" onclick={fetchStats}>Retry Connection</button>
+             <a href="/user/login" class="btn btn-outline">Go to Login</a>
+          </div>
+       </div>
+    </div>
   {/if}
 </div>
 
@@ -136,6 +153,20 @@
     font-weight: 800;
     color: var(--text-color);
   }
+
+  .error-zone {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 3rem;
+    background: rgba(var(--primary-rgb), 0.05);
+    border: 1px dashed rgba(var(--primary-rgb), 0.2);
+  }
+
+  .error-zone span { font-size: 4rem; color: var(--primary-color); opacity: 0.5; }
+  .error-content h3 { margin: 0 0 0.5rem 0; font-size: 1.5rem; }
+  .error-content p { margin: 0 0 1.5rem 0; color: var(--text-muted); max-width: 400px; }
+  .error-actions { display: flex; gap: 1rem; }
 
   .skeleton {
     height: 100px;

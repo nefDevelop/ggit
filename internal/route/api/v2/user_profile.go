@@ -2,7 +2,6 @@ package v2
 
 import (
 	"net/http"
-	"strings"
 
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
@@ -29,7 +28,11 @@ func GetUserPublicRepositories(c *context.APIContext) {
 		return
 	}
 
-	repos, err := database.GetUserRepositories(user.ID, true)
+	repos, err := database.GetUserRepositories(&database.UserRepoOptions{
+		UserID:   user.ID,
+		Private:  c.IsLogged && (c.User.ID == user.ID || c.User.IsAdmin),
+		PageSize: 50,
+	})
 	if err != nil {
 		c.Error(err, "get user repositories")
 		return
@@ -51,7 +54,7 @@ func GetUserStars(c *context.APIContext) {
 		return
 	}
 
-	repos, err := database.GetStarredRepos(user.ID)
+	repos, err := database.Handle.Repositories().ListStarred(c.Req.Context(), user.ID, 1, 50)
 	if err != nil {
 		c.Error(err, "get starred repositories")
 		return

@@ -83,14 +83,7 @@ func Login(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, map[string]any{
 		"status": "ok",
-		"user": map[string]any{
-			"id":       u.ID,
-			"username": u.Name,
-			"email":    u.Email,
-			"avatar":   u.AvatarURL(),
-			"is_admin": u.IsAdmin,
-			"disable_news_feed": u.DisableNewsFeed,
-		},
+		"user":   ToUserResponse(u),
 	})
 }
 
@@ -102,14 +95,7 @@ func CheckAuth(c *context.APIContext) {
 	}
 	c.JSON(http.StatusOK, map[string]any{
 		"status": "ok",
-		"user": map[string]any{
-			"id":       c.User.ID,
-			"username": c.User.Name,
-			"email":    c.User.Email,
-			"avatar":   c.User.AvatarURL(),
-			"is_admin": c.User.IsAdmin,
-			"disable_news_feed": c.User.DisableNewsFeed,
-		},
+		"user":   ToUserResponse(c.User),
 	})
 }
 

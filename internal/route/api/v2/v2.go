@@ -77,8 +77,12 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	{
 		admin.GET("/stats", ginx.Handle(GetAdminStats))
 		admin.GET("/config", ginx.Handle(GetAdminConfig))
+		admin.POST("/config/test_email", ginx.Handle(SendAdminTestEmail))
+		admin.GET("/monitor", ginx.Handle(GetAdminMonitor))
 		
 		admin.GET("/users", ginx.Handle(GetAdminUsers))
+		admin.POST("/users", ginx.Handle(CreateAdminUser))
+		admin.GET("/users/:id", ginx.Handle(GetAdminUser))
 		admin.PATCH("/users/:id", ginx.Handle(UpdateAdminUser))
 		admin.DELETE("/users/:id", ginx.Handle(DeleteAdminUser))
 
@@ -86,6 +90,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/orgs", ginx.Handle(GetAdminOrgs))
 
 		admin.GET("/auths", ginx.Handle(GetAdminAuths))
+		admin.POST("/auths", ginx.Handle(CreateAdminAuth))
+		admin.GET("/auths/:id", ginx.Handle(GetAdminAuth))
+		admin.PATCH("/auths/:id", ginx.Handle(UpdateAdminAuth))
 		admin.DELETE("/auths/:id", ginx.Handle(DeleteAdminAuth))
 
 		admin.GET("/notices", ginx.Handle(GetAdminNotices))
@@ -96,7 +103,6 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	repo := r.Group("/:username/:reponame", context.RepoAssignment(), context.RepoRef())
 	{
 		repo.GET("/view/*path", ginx.Handle(GetRepoView))
-		repo.GET("/pulls", ginx.Handle(ListPullRequests))
 		repo.GET("/commits/*path", ginx.Handle(GetRepoCommits))
 		repo.GET("/watchers", ginx.Handle(GetRepoWatchers))
 		repo.GET("/stars", ginx.Handle(GetRepoStars))

@@ -315,6 +315,15 @@ func (s *UsersStore) Create(ctx context.Context, username, email string, opts Cr
 		return nil, err
 	}
 
+	isAdmin := opts.Admin
+	isActivated := opts.Activated
+
+	// The first user created must be an administrator and activated
+	if s.Count(ctx) == 0 {
+		isAdmin = true
+		isActivated = true
+	}
+
 	user := &User{
 		LowerName:       strings.ToLower(username),
 		Name:            username,
@@ -326,8 +335,8 @@ func (s *UsersStore) Create(ctx context.Context, username, email string, opts Cr
 		Location:        opts.Location,
 		Website:         opts.Website,
 		MaxRepoCreation: -1,
-		IsActive:        opts.Activated,
-		IsAdmin:         opts.Admin,
+		IsActive:        isActivated,
+		IsAdmin:         isAdmin,
 		Avatar:          cryptox.MD5(email), // Gravatar URL uses the MD5 hash of the email, see https://en.gravatar.com/site/implement/hash/
 		AvatarEmail:     email,
 	}

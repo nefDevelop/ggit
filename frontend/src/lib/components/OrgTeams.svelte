@@ -50,8 +50,20 @@
   </header>
 
   {#if showModal}
-    <div class="modal-backdrop" onclick={() => showModal = false}>
-      <div class="modal-content island tonal" onclick={(e) => e.stopPropagation()}>
+    <div 
+      class="modal-backdrop" 
+      role="button" 
+      tabindex="-1"
+      onclick={() => showModal = false} 
+      onkeydown={(e) => e.key === 'Escape' && (showModal = false)}
+    >
+      <div 
+        class="modal-content island tonal" 
+        role="dialog" 
+        aria-modal="true"
+        onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.stopPropagation()}
+      >
         <header>
           <h3>Create New Team</h3>
           <p>Teams allow you to group members and assign permissions to repositories.</p>

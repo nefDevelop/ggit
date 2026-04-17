@@ -22,8 +22,36 @@
     { key: 'database', label: 'Database' },
     { key: 'security', label: 'Security' },
     { key: 'repository', label: 'Repository' },
-    { key: 'git', label: 'Git' }
+    { key: 'git', label: 'Git' },
+    { key: 'email', label: 'Email' }
   ];
+
+  let testEmail = $state('');
+  let sendingTest = $state(false);
+  let testMsg = $state({ text: '', type: '' });
+
+  async function sendTestEmail() {
+    if (!testEmail) return;
+    sendingTest = true;
+    testMsg = { text: '', type: '' };
+    try {
+      const res = await fetch('/api/v2/admin/config/test_email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: testEmail })
+      });
+      if (res.ok) {
+        testMsg = { text: 'Test email successfully sent!', type: 'success' };
+      } else {
+        const data = await res.json();
+        testMsg = { text: data.error || 'Failed to send test email.', type: 'error' };
+      }
+    } catch (e) {
+      testMsg = { text: 'A network error occurred.', type: 'error' };
+    } finally {
+      sendingTest = false;
+    }
+  }
 
   onMount(fetchConfig);
 </script>
@@ -51,6 +79,22 @@
           </div>
         </div>
       {/each}
+
+      <div class="config-card island tonal test-email-section">
+        <h3 class="card-title">Test Email Configuration</h3>
+        <div class="test-email-content">
+          <p>Send a test email to ensure your SMTP settings are correct.</p>
+          <div class="input-group">
+            <input type="email" placeholder="target@example.com" bind:value={testEmail} />
+            <button class="btn btn-primary" onclick={sendTestEmail} disabled={sendingTest || !testEmail}>
+              {sendingTest ? 'Sending...' : 'Send Test Mail'}
+            </button>
+          </div>
+          {#if testMsg.text}
+            <p class="status-msg" class:error={testMsg.type === 'error'}>{testMsg.text}</p>
+          {/if}
+        </div>
+      </div>
     </div>
   {/if}
 </div>
@@ -72,4 +116,11 @@
 
   .skeleton-config { height: 600px; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+  .test-email-content { padding: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+  .test-email-content p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+  .input-group { display: flex; gap: 1rem; max-width: 500px; }
+  .input-group input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.6rem 1rem; border-radius: 0.5rem; }
+  .status-msg { font-size: 0.85rem; font-weight: 700; color: #10b981; }
+  .status-msg.error { color: #ef4444; }
 </style>

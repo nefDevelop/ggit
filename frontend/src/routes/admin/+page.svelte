@@ -1,19 +1,11 @@
 <script lang="ts">
-  import AdminView from '$lib/components/AdminView.svelte';
+  import { onMount } from 'svelte';
+  
+  onMount(() => {
+    window.location.href = '/admin/users';
+  });
 </script>
 
-<svelte:head>
-  <title>Administration · Ggit</title>
-</svelte:head>
-
-<div class="page-container">
-  <AdminView />
+<div class="redirecting">
+  <p>Loading Admin Panel...</p>
 </div>
-
-<style>
-  .page-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-</style>

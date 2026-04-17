@@ -5,10 +5,24 @@
   const navItems = $derived([
     { name: 'Dashboard', icon: 'grid_view', path: '/dashboard' },
     { name: 'Explore', icon: 'search', path: '/explore/repos' },
-    { name: 'Organizations', icon: 'corporate_fare', path: '/explore/users' }, // Shortcut to org list or similar
-    ...(authState.user?.is_admin ? [{ name: 'Admin Panel', icon: 'security', path: '/admin/dashboard' }] : []),
+    { name: 'Organizations', icon: 'corporate_fare', path: '/explore/users' },
+    ...(authState.user?.is_admin ? [
+      { name: 'Admin Panel', icon: 'security', path: '/admin/users', isParent: true }
+    ] : []),
     { name: 'Settings', icon: 'settings', path: '/user/settings/profile' },
   ]);
+
+  const adminSubItems = [
+    { name: 'Users', icon: 'person', path: '/admin/users' },
+    { name: 'Repositories', icon: 'book', path: '/admin/repos' },
+    { name: 'Organizations', icon: 'corporate_fare', path: '/admin/orgs' },
+    { name: 'Authentication', icon: 'lock', path: '/admin/auth' },
+    { name: 'Configuration', icon: 'settings', path: '/admin/config' },
+    { name: 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
+    { name: 'Notices', icon: 'notifications', path: '/admin/notices' }
+  ];
+
+  const isAdminPath = $derived(page.url.pathname.startsWith('/admin'));
 
   function getCsrfToken() {
     if (typeof document === 'undefined') return '';
@@ -45,11 +59,26 @@
       <a 
         href={item.path} 
         class="nav-item" 
-        class:active={page.url.pathname === item.path}
+        class:active={page.url.pathname === item.path || (item.isParent && isAdminPath)}
       >
         <span class="material-symbols-rounded">{item.icon}</span>
         <span class="item-label">{item.name}</span>
       </a>
+
+      {#if item.isParent && isAdminPath}
+        <div class="sub-nav-links">
+          {#each adminSubItems as sub}
+            <a 
+              href={sub.path} 
+              class="sub-nav-item" 
+              class:active={page.url.pathname === sub.path}
+            >
+              <span class="material-symbols-rounded">{sub.icon}</span>
+              <span class="item-label">{sub.name}</span>
+            </a>
+          {/each}
+        </div>
+      {/if}
     {/each}
   </div>
 
@@ -165,6 +194,44 @@
 
   .nav-item.active .material-symbols-rounded {
     font-variation-settings: 'FILL' 1;
+  }
+
+  /* SUB NAV */
+  .sub-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 2rem;
+    margin: 0.25rem 0;
+    border-left: 1px solid var(--border-color);
+    margin-left: 2rem;
+  }
+
+  .sub-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.65rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .sub-nav-item:hover {
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .sub-nav-item.active {
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.08);
+  }
+
+  .sub-nav-item .material-symbols-rounded {
+    font-size: 1.1rem;
   }
 
   /* BRAND SECTION BOTTOM */

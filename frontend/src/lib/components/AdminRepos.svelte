@@ -95,7 +95,7 @@
 
   .repo-cell { display: flex; flex-direction: column; gap: 0.1rem; }
   .repo-name { font-size: 1rem; color: #fff; font-weight: 700; }
-  .repo-desc { font-size: 0.8rem; opacity: 0.6; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .repo-desc { font-size: 0.8rem; opacity: 0.6; display: -webkit-box; -webkit-line-clamp: 1; line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
 
   .status-badge { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; background: rgba(34, 197, 94, 0.1); color: #22c55e; }
   .status-badge.private { background: rgba(239, 68, 68, 0.1); color: #ef4444; }

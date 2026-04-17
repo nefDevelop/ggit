@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gogs/git-module"
+
 	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/gitx"
 )
 
@@ -36,7 +37,7 @@ func GetComparison(c *context.APIContext) {
 	// Get Diff
 	diff, err := gitx.RepoDiff(c.Repo.GitRepo,
 		meta.MergeBase, 500, 5000, 500,
-		gitx.DiffOptions{Base: baseBranch}, // simplified
+		git.DiffOptions{Base: baseBranch}, // simplified
 	)
 	if err != nil {
 		c.Error(err, "get diff")

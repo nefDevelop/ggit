@@ -3,17 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>User Management · Admin · ggit</title>
+  <title>User Management · Admin · Ggit</title>
 </svelte:head>
 
-<div class="page-container">
-  <AdminUsers />
-</div>
-
-<style>
-  .page-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-</style>
+<AdminUsers />

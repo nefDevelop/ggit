@@ -33,7 +33,7 @@
     <div class="skeletons">
       {#each Array(6) as _}
         <div class="skeleton-org island"></div>
-      {#/each}
+      {/each}
     </div>
   {:else if orgs.length > 0}
     <div class="orgs-grid">
@@ -87,7 +87,7 @@
   .org-name { font-size: 1.2rem; font-weight: 800; color: #fff; }
   .org-username { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
   
-  .org-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0.5rem 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .org-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0.5rem 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
   .org-meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
   .meta-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; opacity: 0.8; }

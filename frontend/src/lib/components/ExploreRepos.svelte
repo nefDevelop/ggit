@@ -89,7 +89,7 @@
   .owner { opacity: 0.6; font-weight: 400; }
   .name { font-weight: 800; color: #fff; }
 
-  .repo-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .repo-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
   .repo-stats { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
   .stat { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; }

@@ -6,6 +6,7 @@
   import AdminAuths from './AdminAuths.svelte';
   import AdminConfig from './AdminConfig.svelte';
   import AdminNotices from './AdminNotices.svelte';
+  import AdminMonitor from './AdminMonitor.svelte';
 
   let activeTab = $state('dashboard');
 
@@ -15,6 +16,7 @@
     { id: 'repos', label: 'Repositories', icon: 'book' },
     { id: 'auths', label: 'Authentication', icon: 'security' },
     { id: 'config', label: 'Configuration', icon: 'settings' },
+    { id: 'monitor', label: 'Monitor', icon: 'monitoring' },
     { id: 'notices', label: 'System Notices', icon: 'notifications' }
   ];
 </script>
@@ -47,6 +49,8 @@
       <AdminAuths />
     {:else if activeTab === 'config'}
       <AdminConfig />
+    {:else if activeTab === 'monitor'}
+      <AdminMonitor />
     {:else if activeTab === 'notices'}
       <AdminNotices />
     {/if}

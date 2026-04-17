@@ -3,17 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Login Sources · Admin · ggit</title>
+  <title>Login Sources · Admin · Ggit</title>
 </svelte:head>
 
-<div class="page-container">
-  <AdminAuth />
-</div>
-
-<style>
-  .page-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-</style>
+<AdminAuth />
