@@ -1,17 +1,17 @@
-.packager
-.packager/**
-scripts
-scripts/**
-.github/
-.github/**
-.dockerignore
-*.yml
-*.md
-.editorconfig
-.gitignore
-Dockerfile*
-/gogs
-/ggit
-/schemadoc
-
-!Taskfile.yml
+# .packager
+# .packager/**
+# scripts
+# scripts/**
+# .github/
+# .github/**
+# .dockerignore
+# *.yml
+# *.md
+# .editorconfig
+# .gitignore
+# Dockerfile*
+# /ggit
+# /schemadoc
+# !cmd/gogs
+# !cmd/gogs/**
+# !Taskfile.yml
