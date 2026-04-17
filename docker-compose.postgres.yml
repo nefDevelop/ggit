@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: gogs
+      POSTGRES_PASSWORD: gogs_password
+      POSTGRES_DB: gogs
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - ggit-network
+
+  ggit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+      - "10022:22"
+    volumes:
+      - ./data/ggit:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SOCAT_LINK=false
+    depends_on:
+      - db
+    networks:
+      - ggit-network
+
+networks:
+  ggit-network:
+    driver: bridge
+
+volumes:
+  postgres:
+  ggit:

@@ -1,0 +1,21 @@
+services:
+  ggit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+      - "10022:22"
+    volumes:
+      - ./data/ggit:/data
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SOCAT_LINK=false
+    networks:
+      - ggit-network
+
+networks:
+  ggit-network:
+    driver: bridge
