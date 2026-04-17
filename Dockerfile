@@ -9,7 +9,7 @@ WORKDIR /gogs.io/gogs
 COPY . .
 
 RUN ./docker/build/install-task.sh
-RUN ls -laR cmd
+RUN ls -la
 RUN TAGS="cert pam" task build
 
 FROM alpine:3.23
