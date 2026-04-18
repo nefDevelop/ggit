@@ -154,8 +154,10 @@ git push -u origin main</code></pre>
                           <span class="material-symbols-rounded">edit</span>
                         </a>
                       {/if}
-                      <button class="tool-btn">Raw</button>
-                      <button class="tool-btn"><span class="material-symbols-rounded">download</span></button>
+                      <a href="/api/v2/{username}/{reponame}/raw/{repoData.branch}/{path}" target="_blank" class="tool-btn">Raw</a>
+                      <a href="/api/v2/{username}/{reponame}/media/{repoData.branch}/{path}" class="tool-btn" download>
+                        <span class="material-symbols-rounded">download</span>
+                      </a>
                     </div>
                 </div>
                 <div class="code-box">

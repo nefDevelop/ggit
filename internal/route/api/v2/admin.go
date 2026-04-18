@@ -17,6 +17,26 @@ import (
 	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
+// GetAdminAuditLog returns all actions from the system (for admins).
+func GetAdminAuditLog(c *context.APIContext) {
+	page := c.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	actions, err := database.Handle.Actions().ListAuditLog(c.Context(), page)
+	if err != nil {
+		c.Error(err, "list audit log")
+		return
+	}
+
+	resp := make([]*apiv2types.AuditLogResponse, len(actions))
+	for i := range actions {
+		resp[i] = ToAuditLogResponse(actions[i])
+	}
+	c.JSONSuccess(resp)
+}
+
 var initTime = time.Now()
 
 // GetAdminStats returns global statistics and system status.
@@ -77,6 +97,8 @@ const (
 	SyncSSHAuthorizedKey
 	SyncRepositoryHooks
 	ReinitMissingRepository
+	SyncRepositoryUpdate
+	SyncGitFsck
 )
 
 // RunAdminOperation executes an administrative maintenance operation.
@@ -113,6 +135,12 @@ func RunAdminOperation(c *context.APIContext) {
 	case ReinitMissingRepository:
 		successKey = "admin.dashboard.reinit_missing_repos_success"
 		err = database.ReinitMissingRepositories()
+	case SyncRepositoryUpdate:
+		successKey = "admin.dashboard.resync_all_stats_success"
+		database.CheckRepoStats()
+	case SyncGitFsck:
+		successKey = "admin.dashboard.git_fsck_success"
+		database.GitFsck()
 	default:
 		c.ErrorStatus(http.StatusBadRequest, fmt.Errorf("Unknown operation ID: %d", f.Op))
 		return

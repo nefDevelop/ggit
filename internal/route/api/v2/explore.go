@@ -16,8 +16,12 @@ func ExploreRepos(c *context.APIContext) {
 	}
 
 	keyword := c.Query("q")
+	language := c.Query("lang")
+	topics := c.QueryStrings("topic")
 	repos, count, err := database.SearchRepositoryByName(&database.SearchRepoOptions{
 		Keyword:  keyword,
+		Language: language,
+		Topics:   topics,
 		UserID:   c.UserID(),
 		OrderBy:  "updated_unix DESC",
 		Page:     page,
@@ -30,6 +34,11 @@ func ExploreRepos(c *context.APIContext) {
 
 	if err = database.RepositoryList(repos).LoadAttributes(); err != nil {
 		c.Error(err, "load attributes")
+		return
+	}
+
+	if err = database.RepositoryList(repos).LoadTopics(c.Req.Context()); err != nil {
+		c.Error(err, "load topics")
 		return
 	}
 
@@ -50,6 +59,7 @@ func SearchRepos(c *context.APIContext) {
 	opts := &database.SearchRepoOptions{
 		Keyword:  c.Query("q"),
 		OwnerID:  c.QueryInt64("uid"),
+		Topics:   c.QueryStrings("topic"),
 		Page:     c.QueryInt("page"),
 		PageSize: c.QueryInt("limit"),
 	}
@@ -69,6 +79,11 @@ func SearchRepos(c *context.APIContext) {
 
 	if err = database.RepositoryList(repos).LoadAttributes(); err != nil {
 		c.Error(err, "load attributes")
+		return
+	}
+
+	if err = database.RepositoryList(repos).LoadTopics(c.Req.Context()); err != nil {
+		c.Error(err, "load topics")
 		return
 	}
 
@@ -162,5 +177,19 @@ func ExploreOrganizations(c *context.APIContext) {
 		"ok":            true,
 		"organizations": apiOrgs,
 		"total":         count,
+	})
+}
+
+// ExploreTopics returns a list of popular topics.
+func ExploreTopics(c *context.APIContext) {
+	topics, err := database.Handle.Repositories().ListPopularTopics(c.Req.Context(), 20)
+	if err != nil {
+		c.Error(err, "list popular topics")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"ok":     true,
+		"topics": topics,
 	})
 }

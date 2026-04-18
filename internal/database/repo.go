@@ -230,6 +230,43 @@ type Repository struct {
 	CreatedUnix int64
 	Updated     time.Time `xorm:"-" gorm:"-" json:"-"`
 	UpdatedUnix int64
+	Topics      []string `xorm:"-" gorm:"-" json:"-"`
+}
+
+func (repos RepositoryList) LoadTopics(ctx context.Context) error {
+	if len(repos) == 0 {
+		return nil
+	}
+
+	repoIDs := make([]int64, len(repos))
+	for i := range repos {
+		repoIDs[i] = repos[i].ID
+	}
+
+	type repoTopic struct {
+		RepoID int64
+		Name   string
+	}
+	var results []repoTopic
+	err := x.Table("topic").
+		Select("repo_topic.repo_id, topic.name").
+		Join("INNER", "repo_topic", "repo_topic.topic_id = topic.id").
+		In("repo_topic.repo_id", repoIDs).
+		Find(&results)
+	if err != nil {
+		return errors.Wrap(err, "find repo topics")
+	}
+
+	topicMap := make(map[int64][]string)
+	for _, rt := range results {
+		topicMap[rt.RepoID] = append(topicMap[rt.RepoID], rt.Name)
+	}
+
+	for _, repo := range repos {
+		repo.Topics = topicMap[repo.ID]
+	}
+
+	return nil
 }
 
 func (r *Repository) BeforeInsert() {
@@ -1869,6 +1906,8 @@ type SearchRepoOptions struct {
 	Private  bool // Include private repositories in results
 	Page     int
 	PageSize int // Can be smaller than or equal to setting.ExplorePagingNum
+	Language string
+	Topics   []string
 }
 
 // SearchRepositoryByName takes keyword and part of repository name to search,
@@ -1895,8 +1934,16 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, count
 		if len(opts.Keyword) > 0 {
 			sess.And("repo.lower_name LIKE ? OR repo.description LIKE ?", "%"+strings.ToLower(opts.Keyword)+"%", "%"+strings.ToLower(opts.Keyword)+"%")
 		}
+		if len(opts.Language) > 0 {
+			sess.And("repo.primary_language = ?", opts.Language)
+		}
 		if opts.OwnerID > 0 {
 			sess.And("repo.owner_id = ?", opts.OwnerID)
+		}
+		if len(opts.Topics) > 0 {
+			sess.Join("INNER", "repo_topic", "repo_topic.repo_id = repo.id").
+				Join("INNER", "topic", "topic.id = repo_topic.topic_id").
+				In("topic.name", opts.Topics)
 		}
 	}
 

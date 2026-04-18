@@ -17,6 +17,8 @@
     { id: 5, name: 'Resync SSH Keys', icon: 'key', color: '#f59e0b', desc: 'Rewrite the ".ssh/authorized_keys" file with Ggit keys.' },
     { id: 6, name: 'Resync Repository Hooks', icon: 'link', color: '#3b82f6', desc: 'Resync all Git hooks across all repositories.' },
     { id: 7, name: 'Reinitialize Missing Repos', icon: 'restart_alt', color: '#ec4899', desc: 'Reinitialize Git files for missing records.' },
+    { id: 8, name: 'Resync Repository Stats', icon: 'query_stats', color: '#06b6d4', desc: 'Update repository sizes, issues and other system-wide counters.' },
+    { id: 9, name: 'Git Health Check (FSCK)', icon: 'health_and_safety', color: '#f97316', desc: 'Run "git fsck" to verify object integrity across all repositories.' },
   ];
 
   async function fetchStats() {

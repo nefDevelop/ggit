@@ -1,7 +1,7 @@
 package v2
 
 import (
-
+	"path"
 
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/route/api/v2/types"
@@ -37,6 +37,7 @@ func ToRepositoryResponse(r *database.Repository) *types.RepositoryResponse {
 		NumWatches:  r.NumWatches,
 		IsPrivate:   r.IsPrivate,
 		CreatedAt:   r.CreatedUnix,
+		Topics:      r.Topics,
 	}
 }
 
@@ -79,6 +80,7 @@ func ToNoticeResponse(n *database.Notice) *types.NoticeResponse {
 		CreatedAt:   n.CreatedUnix,
 	}
 }
+
 func ToDeployKeyResponse(key *database.DeployKey) *types.RepositoryDeployKeyResponse {
 	if key == nil {
 		return nil
@@ -90,5 +92,71 @@ func ToDeployKeyResponse(key *database.DeployKey) *types.RepositoryDeployKeyResp
 		Title:     key.Name,
 		CreatedAt: key.Created,
 		ReadOnly:  key.Mode <= database.AccessModeRead,
+	}
+}
+
+func ToAuditLogResponse(a *database.Action) *types.AuditLogResponse {
+	if a == nil {
+		return nil
+	}
+
+	opName := "Unknown"
+	switch database.ActionType(a.OpType) {
+	case database.ActionCreateRepo:
+		opName = "Create Repository"
+	case database.ActionRenameRepo:
+		opName = "Rename Repository"
+	case database.ActionStarRepo:
+		opName = "Star Repository"
+	case database.ActionWatchRepo:
+		opName = "Watch Repository"
+	case database.ActionCommitRepo:
+		opName = "Push Commits"
+	case database.ActionCreateIssue:
+		opName = "Create Issue"
+	case database.ActionCreatePullRequest:
+		opName = "Create Pull Request"
+	case database.ActionTransferRepo:
+		opName = "Transfer Repository"
+	case database.ActionPushTag:
+		opName = "Push Tag"
+	case database.ActionCommentIssue:
+		opName = "Comment Issue"
+	case database.ActionMergePullRequest:
+		opName = "Merge Pull Request"
+	case database.ActionCloseIssue:
+		opName = "Close Issue"
+	case database.ActionReopenIssue:
+		opName = "Reopen Issue"
+	case database.ActionClosePullRequest:
+		opName = "Close Pull Request"
+	case database.ActionReopenPullRequest:
+		opName = "Reopen Pull Request"
+	case database.ActionCreateBranch:
+		opName = "Create Branch"
+	case database.ActionDeleteBranch:
+		opName = "Delete Branch"
+	case database.ActionDeleteTag:
+		opName = "Delete Tag"
+	case database.ActionForkRepo:
+		opName = "Fork Repository"
+	case database.ActionMirrorSyncPush:
+		opName = "Mirror Sync Push"
+	case database.ActionMirrorSyncCreate:
+		opName = "Mirror Sync Create"
+	case database.ActionMirrorSyncDelete:
+		opName = "Mirror Sync Delete"
+	}
+
+	return &types.AuditLogResponse{
+		ID:        a.ID,
+		OpType:    int(a.OpType),
+		OpName:    opName,
+		ActorID:   a.ActUserID,
+		ActorName: a.ActUserName,
+		RepoID:    a.RepoID,
+		RepoPath:  path.Join(a.RepoUserName, a.RepoName),
+		Content:   a.Content,
+		CreatedAt: a.CreatedUnix,
 	}
 }

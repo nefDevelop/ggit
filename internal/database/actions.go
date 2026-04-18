@@ -118,6 +118,22 @@ func (s *ActionsStore) ListByUser(ctx context.Context, userID, actorID, afterID 
 	return actions, s.listByUser(ctx, userID, actorID, afterID, isProfile).Find(&actions).Error
 }
 
+// ListAuditLog returns all actions for the audit log. It only returns one copy per action
+// by filtering where user_id == act_user_id.
+func (s *ActionsStore) ListAuditLog(ctx context.Context, page int) ([]*Action, error) {
+	if page <= 0 {
+		page = 1
+	}
+	actions := make([]*Action, 0, conf.UI.Admin.NoticePagingNum)
+	return actions, s.db.WithContext(ctx).
+		Where("user_id = act_user_id").
+		Limit(conf.UI.Admin.NoticePagingNum).
+		Offset((page - 1) * conf.UI.Admin.NoticePagingNum).
+		Order("id DESC").
+		Find(&actions).Error
+}
+
+
 // notifyWatchers creates rows in action table for watchers who are able to see the action.
 func (s *ActionsStore) notifyWatchers(ctx context.Context, act *Action) error {
 	watches, err := newReposStore(s.db).ListWatches(ctx, act.RepoID)

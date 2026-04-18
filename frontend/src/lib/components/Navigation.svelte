@@ -22,6 +22,7 @@
     { name: i18n.t('common.config') || 'Configuration', icon: 'settings', path: '/admin/config' },
     { name: i18n.t('common.monitor') || 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
     { name: i18n.t('common.maintenance') || 'Maintenance', icon: 'build', path: '/admin/maintenance' },
+    { name: i18n.t('common.audit_log') || 'Audit Log', icon: 'history_edu', path: '/admin/audit_log' },
     { name: i18n.t('common.notices') || 'Notices', icon: 'notifications', path: '/admin/notices' }
   ]);
 

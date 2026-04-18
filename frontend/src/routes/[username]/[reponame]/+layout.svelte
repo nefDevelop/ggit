@@ -111,6 +111,18 @@
                   <button class="copy-btn" onclick={() => copyCloneUrl(repoData.clone_url)}>
                     <span class="material-symbols-rounded">content_copy</span>
                   </button>
+                <div class="archive-section">
+                  <span class="dropdown-header">Download Source</span>
+                  <div class="archive-grid">
+                    <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-btn tonal">
+                      <span class="material-symbols-rounded">zip_box</span>
+                      <span>ZIP</span>
+                    </a>
+                    <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-btn tonal">
+                      <span class="material-symbols-rounded">package</span>
+                      <span>TAR.GZ</span>
+                    </a>
+                  </div>
                 </div>
               </div>
             {/if}
@@ -196,6 +208,13 @@
   .clone-option { display: flex; align-items: center; gap: 0.75rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem; }
   .clone-option code { flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; opacity: 0.7; }
   .copy-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; }
+
+  .archive-section { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); }
+  .dropdown-header { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
+  .archive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .archive-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem; border-radius: 0.75rem; text-decoration: none; color: var(--text-color); font-size: 0.85rem; font-weight: 600; transition: all 0.2s; }
+  .archive-btn:hover { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); transform: translateY(-2px); }
+  .archive-btn span { font-size: 1.25rem; }
 
   /* Row 3: Rich Tabs */
   .rich-tabs {

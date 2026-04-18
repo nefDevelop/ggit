@@ -65,6 +65,7 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		UpdatedAt:     r.UpdatedUnix,
 		Permissions:   opt.Permission,
 		Parent:        opt.Parent,
+		Topics:        r.Topics,
 	}
 }
 

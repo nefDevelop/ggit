@@ -51,6 +51,7 @@ type RepositoryResponse struct {
 	UpdatedAt     int64                 `json:"updated_at"`
 	Permissions   *RepositoryPermission `json:"permissions,omitempty"`
 	Parent        *RepositoryResponse   `json:"parent,omitempty"`
+	Topics        []string              `json:"topics"`
 }
 
 // RepositoryBranchResponse represents a branch in a repository.
@@ -228,6 +229,18 @@ type NoticeResponse struct {
 	Type        string `json:"type"`
 	Description string `json:"description"`
 	CreatedAt   int64  `json:"created_at"`
+}
+// AuditLogResponse represents a system action/audit log entry in the API v2.
+type AuditLogResponse struct {
+	ID        int64  `json:"id"`
+	OpType    int    `json:"op_type"`
+	OpName    string `json:"op_name"`
+	ActorID   int64  `json:"actor_id"`
+	ActorName string `json:"actor_name"`
+	RepoID    int64  `json:"repo_id"`
+	RepoPath  string `json:"repo_path"`
+	Content   string `json:"content"`
+	CreatedAt int64  `json:"created_at"`
 }
 
 // SystemStatusResponse represents the system health statistics in the API v2.

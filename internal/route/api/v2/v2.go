@@ -87,6 +87,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		explore.GET("/search", ginx.Handle(SearchRepos))
 		explore.GET("/users", ginx.Handle(ExploreUsers))
 		explore.GET("/organizations", ginx.Handle(ExploreOrganizations))
+		explore.GET("/topics", ginx.Handle(ExploreTopics))
 	}
 
 	admin := r.Group("/admin", context.Toggle(&context.ToggleOptions{SignInRequired: true, AdminRequired: true}))
@@ -115,6 +116,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/notices", ginx.Handle(GetAdminNotices))
 		admin.DELETE("/notices/:id", ginx.Handle(DeleteAdminNotice))
 		admin.DELETE("/notices", ginx.Handle(ClearAdminNotices))
+
+		admin.GET("/audit-log", ginx.Handle(GetAdminAuditLog))
 	}
 
 	repo := r.Group("/:username/:reponame", context.RepoAssignment(), context.RepoRef())
@@ -170,6 +173,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 		repo.GET("/branches", ginx.Handle(ListRepoBranches))
 		repo.DELETE("/branches/:branch", ginx.Handle(DeleteRepoBranch))
+
+		repo.GET("/archive/*name", ginx.Handle(GetRepoArchive))
+		repo.GET("/raw/:ref/*path", ginx.Handle(GetRepoRawFile))
+		repo.GET("/media/:ref/*path", ginx.Handle(GetRepoMediaFile))
 		
 		repo.GET("/compare/*info", ginx.Handle(GetComparison))
 		

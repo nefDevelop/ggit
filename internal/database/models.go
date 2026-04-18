@@ -59,6 +59,7 @@ func init() {
 		new(Mirror), new(Release), new(Webhook), new(HookTask),
 		new(ProtectBranch), new(ProtectBranchWhitelist),
 		new(Team), new(OrgUser), new(TeamUser), new(TeamRepo),
+		new(Topic), new(RepoTopic),
 	)
 
 	gonicNames := []string{"SSL"}

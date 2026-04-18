@@ -46,6 +46,7 @@ var Tables = []any{
 	new(Follow),
 	new(LFSObject), new(LoginSource),
 	new(Notice),
+	new(Topic), new(RepoTopic),
 }
 
 // NewConnection returns a new database connection with the given logger.
