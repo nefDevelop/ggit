@@ -720,12 +720,9 @@ func (s *UsersStore) GetByEmail(ctx context.Context, email string) (*User, error
 	*/
 	user := new(User)
 	err := s.db.WithContext(ctx).
-		Joins(dbx.Quote("LEFT JOIN email_address ON email_address.uid = %s.id", "user"), true).
+		Joins(dbx.Quote("LEFT JOIN email_address ON email_address.uid = %s.id", "user")).
 		Where(dbx.Quote("%s.type = ?", "user"), UserTypeIndividual).
-		Where(s.db.
-			Where(dbx.Quote("%[1]s.email = ? AND %[1]s.is_active = ?", "user"), email, true).
-			Or("email_address.email = ? AND email_address.is_activated = ?", email, true),
-		).
+		Where(dbx.Quote("(%[1]s.email = ? AND %[1]s.is_active = ?) OR (email_address.email = ? AND email_address.is_activated = ?)", "user"), email, true, email, true).
 		First(&user).
 		Error
 	if err != nil {

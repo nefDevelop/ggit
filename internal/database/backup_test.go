@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"github.com/cockroachdb/errors"
 	"github.com/stretchr/testify/require"
@@ -162,14 +161,14 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			OID:       "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
 			Size:      100,
 			Storage:   lfsx.StorageLocal,
-			Created:   time.Unix(1588568886, 0).UTC(),
+			CreatedUnix: 1588568886,
 		},
 		&LFSObject{
 			RepoID:    2,
 			OID:       "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
 			Size:      100,
 			Storage:   lfsx.StorageLocal,
-			Created:   time.Unix(1588568886, 0).UTC(),
+			CreatedUnix: 1588568886,
 		},
 
 		&LoginSource{

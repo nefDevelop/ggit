@@ -741,6 +741,10 @@ func usersGetByEmail(t *testing.T, ctx context.Context, s *UsersStore) {
 		alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
 		require.NoError(t, err)
 
+		// Force user to be unactivated for test (because the first user created is auto-activated)
+		err = s.db.Model(&User{}).Where("id", alice.ID).UpdateColumn("is_active", false).Error
+		require.NoError(t, err)
+
 		_, err = s.GetByEmail(ctx, alice.Email)
 		wantErr := ErrUserNotExist{args: errx.Args{"email": alice.Email}}
 		assert.Equal(t, wantErr, err)
@@ -832,6 +836,11 @@ func usersGetByKeyID(t *testing.T, ctx context.Context, s *UsersStore) {
 func usersGetMailableEmailsByUsernames(t *testing.T, ctx context.Context, s *UsersStore) {
 	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
 	require.NoError(t, err)
+
+	// Force user to be unactivated for test (because the first user created is auto-activated)
+	err = s.db.Model(&User{}).Where("id", alice.ID).UpdateColumn("is_active", false).Error
+	require.NoError(t, err)
+
 	bob, err := s.Create(ctx, "bob", "bob@example.com", CreateUserOptions{Activated: true})
 	require.NoError(t, err)
 	_, err = s.Create(ctx, "cindy", "cindy@example.com", CreateUserOptions{Activated: true})
@@ -1181,6 +1190,11 @@ func usersAddEmail(t *testing.T, ctx context.Context, s *UsersStore) {
 	t.Run("multiple users can add the same unverified email", func(t *testing.T) {
 		alice, err := s.Create(ctx, "alice", "unverified@example.com", CreateUserOptions{})
 		require.NoError(t, err)
+
+		// Force user to be unactivated for test
+		err = s.db.Model(&User{}).Where("id", alice.ID).UpdateColumn("is_active", false).Error
+		require.NoError(t, err)
+
 		err = s.AddEmail(ctx, alice.ID+1, "unverified@example.com", false)
 		require.NoError(t, err)
 	})
@@ -1283,6 +1297,11 @@ func usersMarkEmailActivated(t *testing.T, ctx context.Context, s *UsersStore) {
 func usersMarkEmailPrimary(t *testing.T, ctx context.Context, s *UsersStore) {
 	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
 	require.NoError(t, err)
+
+	// Force user to be unactivated for test
+	err = s.db.Model(&User{}).Where("id", alice.ID).UpdateColumn("is_active", false).Error
+	require.NoError(t, err)
+
 	err = s.AddEmail(ctx, alice.ID, "alice2@example.com", false)
 	require.NoError(t, err)
 

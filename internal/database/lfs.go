@@ -15,7 +15,7 @@ import (
 // LFSObject represents an LFS object.
 type LFSObject struct {
 	ID    int64  `gorm:"primaryKey"`
-	OID   lfsx.OID `xorm:"UNIQUE(s) INDEX" gorm:"uniqueIndex:lfs_object_oid_repo_unique;index;not null"`
+	OID   lfsx.OID `xorm:"UNIQUE(s) INDEX" gorm:"column:oid;uniqueIndex:lfs_object_oid_repo_unique;index;not null"`
 	Size  int64  `xorm:"NOT NULL" gorm:"not null"`
 	RepoID      int64        `xorm:"UNIQUE(s)" gorm:"uniqueIndex:lfs_object_oid_repo_unique;not null"`
 	Storage     lfsx.Storage `xorm:"NOT NULL" gorm:"not null"`
