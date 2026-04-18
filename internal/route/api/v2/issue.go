@@ -6,7 +6,7 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/markup"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	issueservice "gogs.io/gogs/internal/services/issue"
 )
 
@@ -40,7 +40,7 @@ func ListIssues(c *context.APIContext) {
 		return
 	}
 
-	apiIssues := make([]*apiv1types.Issue, len(issues))
+	apiIssues := make([]*apiv2types.IssueResponse, len(issues))
 	for i, issue := range issues {
 		apiIssues[i] = issue.APIFormat()
 		apiIssues[i].BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
@@ -156,7 +156,7 @@ func GetIssueComments(c *context.APIContext) {
 		return
 	}
 
-	apiComments := make([]*apiv1types.IssueComment, len(comments))
+	apiComments := make([]*apiv2types.IssueCommentResponse, len(comments))
 	for i, comment := range comments {
 		apiComments[i] = comment.APIFormat()
 		apiComments[i].BodyHTML = string(markup.Render(markup.TypeMarkdown, comment.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))

@@ -18,9 +18,9 @@ import (
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/lazyregexp"
 	"gogs.io/gogs/internal/repox"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/strx"
-	"gogs.io/gogs/internal/testx"
+
 	"gogs.io/gogs/internal/tool"
 )
 
@@ -230,7 +230,7 @@ func (s *ActionsStore) MirrorSyncPush(ctx context.Context, opts MirrorSyncPushOp
 	err = PrepareWebhooks(
 		opts.Repo,
 		HookEventTypePush,
-		&apiv1types.WebhookPushPayload{
+		&apiv2types.WebhookPushPayload{
 			Ref:        opts.RefName,
 			Before:     opts.OldCommitID,
 			After:      opts.NewCommitID,
@@ -397,7 +397,7 @@ func updateCommitReferencesToIssues(doer *User, repo *Repository, commits []*Pus
 				continue
 			}
 
-			if err = issue.ChangeStatus(doer, repo, true); err != nil {
+			if err = issue.ChangeStatus(context.TODO(), doer, repo, true); err != nil {
 				return err
 			}
 		}
@@ -437,7 +437,7 @@ func updateCommitReferencesToIssues(doer *User, repo *Repository, commits []*Pus
 				continue
 			}
 
-			if err = issue.ChangeStatus(doer, repo, false); err != nil {
+			if err = issue.ChangeStatus(context.TODO(), doer, repo, false); err != nil {
 				return err
 			}
 		}
@@ -496,10 +496,10 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 		err = PrepareWebhooks(
 			opts.Repo,
 			HookEventTypeDelete,
-			&apiv1types.WebhookDeletePayload{
+			&apiv2types.WebhookDeletePayload{
 				Ref:        refName,
 				RefType:    "branch",
-				PusherType: apiv1types.WebhookPusherTypeUser,
+				PusherType: apiv2types.WebhookPusherTypeUser,
 				Repo:       apiRepo,
 				Sender:     apiPusher,
 			},
@@ -540,7 +540,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 		err = PrepareWebhooks(
 			opts.Repo,
 			HookEventTypeCreate,
-			&apiv1types.WebhookCreatePayload{
+			&apiv2types.WebhookCreatePayload{
 				Ref:           refName,
 				RefType:       "branch",
 				DefaultBranch: opts.Repo.DefaultBranch,
@@ -573,7 +573,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 	err = PrepareWebhooks(
 		opts.Repo,
 		HookEventTypePush,
-		&apiv1types.WebhookPushPayload{
+		&apiv2types.WebhookPushPayload{
 			Ref:        opts.RefFullName,
 			Before:     opts.OldCommitID,
 			After:      opts.NewCommitID,
@@ -635,10 +635,10 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts PushTagOptions) error {
 		err = PrepareWebhooks(
 			opts.Repo,
 			HookEventTypeDelete,
-			&apiv1types.WebhookDeletePayload{
+			&apiv2types.WebhookDeletePayload{
 				Ref:        refName,
 				RefType:    "tag",
-				PusherType: apiv1types.WebhookPusherTypeUser,
+				PusherType: apiv2types.WebhookPusherTypeUser,
 				Repo:       apiRepo,
 				Sender:     apiPusher,
 			},
@@ -658,7 +658,7 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts PushTagOptions) error {
 	err = PrepareWebhooks(
 		opts.Repo,
 		HookEventTypeCreate,
-		&apiv1types.WebhookCreatePayload{
+		&apiv2types.WebhookCreatePayload{
 			Ref:           refName,
 			RefType:       "tag",
 			Sha:           opts.NewCommitID,
@@ -848,66 +848,22 @@ func NewPushCommits() *PushCommits {
 	}
 }
 
-func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore *UsersStore, repoPath, repoURL string) ([]*apiv1types.WebhookPayloadCommit, error) {
-	// NOTE: We cache query results in case there are many commits in a single push.
-	usernameByEmail := make(map[string]string)
-	getUsernameByEmail := func(email string) (string, error) {
-		username, ok := usernameByEmail[email]
-		if ok {
-			return username, nil
-		}
-
-		user, err := usersStore.GetByEmail(ctx, email)
-		if err != nil {
-			if IsErrUserNotExist(err) {
-				usernameByEmail[email] = ""
-				return "", nil
-			}
-			return "", err
-		}
-
-		usernameByEmail[email] = user.Name
-		return user.Name, nil
-	}
-
-	commits := make([]*apiv1types.WebhookPayloadCommit, len(pcs.Commits))
-	for i, commit := range pcs.Commits {
-		authorUsername, err := getUsernameByEmail(commit.AuthorEmail)
-		if err != nil {
-			return nil, errors.Wrap(err, "get author username")
-		}
-
-		committerUsername, err := getUsernameByEmail(commit.CommitterEmail)
-		if err != nil {
-			return nil, errors.Wrap(err, "get committer username")
-		}
-
-		nameStatus := &git.NameStatus{}
-		if !testx.InTest {
-			nameStatus, err = git.ShowNameStatus(repoPath, commit.Sha1)
-			if err != nil {
-				return nil, errors.Wrapf(err, "show name status [commit_sha1: %s]", commit.Sha1)
-			}
-		}
-
-		commits[i] = &apiv1types.WebhookPayloadCommit{
-			ID:      commit.Sha1,
-			Message: commit.Message,
-			URL:     fmt.Sprintf("%s/commit/%s", repoURL, commit.Sha1),
-			Author: &apiv1types.WebhookPayloadUser{
-				Name:     commit.AuthorName,
-				Email:    commit.AuthorEmail,
-				UserName: authorUsername,
+func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore *UsersStore, repoPath, repoURL string) ([]*apiv2types.WebhookPayloadCommit, error) {
+	commits := make([]*apiv2types.WebhookPayloadCommit, len(pcs.Commits))
+	for i := range pcs.Commits {
+		commits[i] = &apiv2types.WebhookPayloadCommit{
+			ID:      pcs.Commits[i].Sha1,
+			Message: pcs.Commits[i].Message,
+			URL:     repoURL + "/commit/" + pcs.Commits[i].Sha1,
+			Author: &apiv2types.WebhookPayloadUser{
+				Name: pcs.Commits[i].AuthorName,
+				Email: pcs.Commits[i].AuthorEmail,
 			},
-			Committer: &apiv1types.WebhookPayloadUser{
-				Name:     commit.CommitterName,
-				Email:    commit.CommitterEmail,
-				UserName: committerUsername,
+			Committer: &apiv2types.WebhookPayloadUser{
+				Name: pcs.Commits[i].CommitterName,
+				Email: pcs.Commits[i].CommitterEmail,
 			},
-			Added:     nameStatus.Added,
-			Removed:   nameStatus.Removed,
-			Modified:  nameStatus.Modified,
-			Timestamp: commit.Timestamp,
+			Timestamp: pcs.Commits[i].Timestamp,
 		}
 	}
 	return commits, nil

@@ -1,0 +1,113 @@
+<script lang="ts">
+  import { fade, fly } from 'svelte/transition';
+
+  interface Props {
+    show: boolean;
+    title: string;
+    children?: any;
+    onclose: () => void;
+  }
+
+  let { show, title, children, onclose }: Props = $props();
+
+  function handleKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && show) onclose();
+  }
+</script>
+
+<svelte:window onkeydown={handleKeydown} />
+
+{#if show}
+  <!-- BACKDROP -->
+  <div 
+    class="modal-backdrop" 
+    onclick={onclose} 
+    transition:fade={{ duration: 200 }}
+    aria-hidden="true"
+  ></div>
+
+  <!-- MODAL CONTENT -->
+  <div 
+    class="modal-wrapper"
+    transition:fly={{ y: 20, duration: 300 }}
+  >
+    <div class="modal-card island tonal">
+      <header class="modal-header">
+        <h3>{title}</h3>
+        <button class="close-btn" onclick={onclose}>
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </header>
+      <div class="modal-body">
+        {@render children?.()}
+      </div>
+    </div>
+  </div>
+{/if}
+
+<style>
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+  }
+
+  .modal-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 1001;
+    pointer-events: none;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-width: 600px;
+    max-height: 80vh;
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 800; }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+  .close-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+  .modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-color);
+  }
+</style>

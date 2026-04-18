@@ -37,8 +37,8 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 *   [x] Implement new CSRF middleware with Gin
 *   [x] Resolve `repo` package compilation and naming conflicts
 *   [x] Port remaining route packages (`admin`, `user`, etc.)
-*   [ ] Finalize API v2 specification
-*   [ ] **Migración a API v2 (Endpoints JSON):**
+*   [x] Finalize API v2 specification
+*   [x] **Migración a API v2 (Endpoints JSON):**
     *   Definir la estructura de paquetes en `internal/route/api/v2`.
     *   **✅ Completados:**
         *   [x] `POST /api/v2/user/login` (Login local)
@@ -63,18 +63,18 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 ## Fase 4: Nuevo Frontend con SvelteKit (Largo Plazo)
 **Objetivo:** Reemplazar el antiguo SSR basado en plantillas Go por una Single Page Application (SPA) o aplicación SvelteKit ultra-rápida y moderna.
 
-*   [ ] **Inicializar proyecto SvelteKit:**
+*   [x] **Inicializar proyecto SvelteKit:**
     *   [x] Initialize SvelteKit project in `frontend/`
     *   [x] Configure Vite proxy for Gin backend
     *   [x] Implement base design system with Vanilla CSS
-*   [ ] **Configuración de Proxy y API:**
+*   [x] **Configuración de Proxy y API:**
     *   [x] Implement `internal/ginx/csrf.go` (Gin-compatible CSRF)
     *   [x] Refactor `internal/context/context.go` to wrap `*gin.Context`
     *   [x] Stabilize `internal/route/repo` package (Resolved `stdctx` vs `gcontext` conflicts)
     *   [x] Update `cmd/web.go` to use Gin router
 *   [x] **Implementar Autenticación y Estado Global:**
     *   Conectar el frontend con los endpoints de login/registro de Gin (manejo de JWT o cookies seguras).
-*   [ ] **Migración Progresiva de Pantallas:**
+*   [x] **Migración Progresiva de Pantallas:**
     *   [x] **Login/Registro:** Flujos de autenticación fluidos. [COMPLETO]
     *   [x] **Dashboard:** Vista de islas con repositorios y feeds de actividad. [COMPLETO]
     *   [x] **Technical Audit Log:** Refactorizar el Feed de actividad hacia eventos técnicos (Pushes/Merges) con opción de desactivarlo en Settings. [COMPLETO]
@@ -88,8 +88,8 @@ Este documento describe el plan de acción paso a paso para la refactorización 
 
 ## Fase 9: Sistema de Diseño y Pulido (Paralelo)
 **Objetivo:** Garantizar que Ggit se sienta como una aplicación premium de 2026.
-    *   [ ] Micro-animaciones en botones y transiciones de página.
-    *   [ ] Refinado de sombras
+    *   [x] Micro-animaciones en botones y transiciones de página.
+    *   [x] Refinado de sombras
     *   [x] Soporte avanzado para temas (Deep Night / Solarized, Ayu, Monokai, Nord).
 
 ## Fase 10: Limpieza de Legacy y Consistencia UX
@@ -103,21 +103,38 @@ Este documento describe el plan de acción paso a paso para la refactorización 
     *   [x] **Perfiles Pro:** Pestañas de Stars, Followers, Following y actividad extendida.
     *   [x] **Watchers y Forks:** Listados de interactuación social en repositorios.
     *   [x] **Org Intelligence:** Gestión refinada de equipos y miembros.
-*   [ ] **Fase 10.4: Herramientas de Precisión:**
+*   [x] **Fase 10.4: Herramientas de Precisión:**
     *   [x] **PR Creator**: Selector de ramas y preview de comparación (master...branch).
-    *   [ ] **Release Suite:** Gestión de etiquetas, assets y notas de versión.
+    *   [x] **Release Suite:** Gestión de etiquetas, assets y notas de versión.
     *   [x] **Webhook Logs:** Historial de entregas y depuración de hooks.
 
-## Fase 11: El Fin del Legacy (0 Templates)
+*   [x] **Fase 11: El Fin del Legacy (0 Templates)**
 **Objetivo:** Desconexión total del motor de plantillas de Go.
 
 *   [x] **Audit de Plantillas:** Eliminar archivos `.tmpl` redundantes (Meta: 0 legacy templates [COMPLETO] en Admin). [COMPLETO]
 *   [x] **Modernización de Emails:** Restilo de los 7 templates de mail a MD3. [COMPLETO]
 * [x] **Admin Monitor:** Live status del servidor (Go routines, memoria, CPU) en Svelte. [COMPLETO]
-*   [x] **Finalizar API v2:** Documentación OpenAPI/Swagger completa.
+*   [x] **Finalizar API v2:** Documentación OpenAPI/Swagger completa. [COMPLETO]
 
 *   [ ] **Component Library (M3 Expressive):**
     *   Crear una librería interna de Svelte para Botones, Inputs, Modals y Toasts con el nuevo sistema de colores y elevaciones.
-*   [ ] **Micro-interacciones:**
+*   [x] **Micro-interacciones:**
     *   Añadir transiciones suaves entre rutas, esqueletos de carga (skeleton loaders) y feedback háptico visual.
 
+## Fase 12: Brechas de Migración y Refinado Final
+**Objetivo:** Alcanzar la paridad total con Gogs eliminando el código legacy y completando las herramientas de precisión.
+
+*   [x] **Sistema de Internacionalización (I18n):**
+    *   Implementar motor de traducciones en Svelte (soporte para JSON locales).
+    *   Migrar textos hardcoded a claves de traducción.
+*   [x] **Gestión Completa de Mirrors:**
+    *   Añadir controles de intervalo de sincronización en Settings.
+    *   Botón de sincronización forzada ("Sync Now") en la UI.
+*   [x] **Herramientas de Admin Avanzadas:**
+    *   Panel de mantenimiento (Limpieza de archivos huérfanos, REINDEX).
+    *   Gestión de avisos del sistema (System Notices).
+*   [x] **Depuración de API v1:**
+    *   [x] Auditar puntos finales de `v1` para asegurar paridad en `v2`. [COMPLETO]
+    *   [x] Desactivar/Eliminar `internal/route/api/v1` una vez confirmada la migración. [COMPLETO]
+*   [x] **Deploy Keys de Repositorio:**
+    *   Añadir gestión de claves SSH específicas para repositorios (Solo lectura/Lectura-Escritura).

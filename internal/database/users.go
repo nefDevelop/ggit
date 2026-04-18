@@ -22,7 +22,7 @@ import (
 	"gogs.io/gogs/internal/markup"
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/repox"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/strx"
 	"gogs.io/gogs/internal/tool"
 	"gogs.io/gogs/internal/userx"
@@ -1315,14 +1315,16 @@ func (u *User) IsOrganization() bool {
 }
 
 // APIFormat returns the API format of a user.
-func (u *User) APIFormat() *apiv1types.User {
-	return &apiv1types.User{
-		ID:        u.ID,
-		UserName:  u.Name,
-		Login:     u.Name,
-		FullName:  u.FullName,
-		Email:     u.Email,
-		AvatarURL: u.AvatarURL(),
+func (u *User) APIFormat() *apiv2types.UserResponse {
+	return &apiv2types.UserResponse{
+		ID:              u.ID,
+		Username:        u.Name,
+		FullName:        u.FullName,
+		Email:           u.Email,
+		AvatarURL:       u.AvatarURL(),
+		IsAdmin:         u.IsAdmin,
+		DisableNewsFeed: u.DisableNewsFeed,
+		CreatedAt:       u.CreatedUnix,
 	}
 }
 

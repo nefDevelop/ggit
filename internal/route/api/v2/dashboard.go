@@ -6,15 +6,15 @@ import (
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 // DashboardData represents the consolidated data for the user dashboard.
 type DashboardData struct {
-	Repositories     []*types.Repository `json:"repositories"`
-	Collaborative    []*types.Repository `json:"collaborative"`
-	Mirrors          []*types.Repository `json:"mirrors"`
-	OrganizationList []*types.User       `json:"organizations"`
+	Repositories     []*apiv2types.RepositoryResponse `json:"repositories"`
+	Collaborative    []*apiv2types.RepositoryResponse `json:"collaborative"`
+	Mirrors          []*apiv2types.RepositoryResponse `json:"mirrors"`
+	OrganizationList []*apiv2types.UserResponse       `json:"organizations"`
 }
 
 // GetDashboardData returns the initial data needed for the dashboard.
@@ -34,7 +34,7 @@ func GetDashboardData(c *context.APIContext) {
 		c.Error(err, "get user repositories")
 		return
 	}
-	apiRepos := make([]*types.Repository, len(repos))
+	apiRepos := make([]*apiv2types.RepositoryResponse, len(repos))
 	for i, r := range repos {
 		apiRepos[i] = r.APIFormat(ctxUser)
 	}
@@ -46,7 +46,7 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 	_ = database.RepositoryList(collaborative).LoadAttributes()
-	apiCollaborative := make([]*types.Repository, len(collaborative))
+	apiCollaborative := make([]*apiv2types.RepositoryResponse, len(collaborative))
 	for i, r := range collaborative {
 		apiCollaborative[i] = r.APIFormat(r.MustOwner())
 	}
@@ -58,7 +58,7 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 	_ = database.MirrorRepositoryList(mirrors).LoadAttributes()
-	apiMirrors := make([]*types.Repository, len(mirrors))
+	apiMirrors := make([]*apiv2types.RepositoryResponse, len(mirrors))
 	for i, r := range mirrors {
 		apiMirrors[i] = r.APIFormat(r.MustOwner())
 	}
@@ -75,7 +75,7 @@ func GetDashboardData(c *context.APIContext) {
 		c.Error(err, "list organizations")
 		return
 	}
-	apiOrgs := make([]*types.User, len(orgs))
+	apiOrgs := make([]*apiv2types.UserResponse, len(orgs))
 	for i, o := range orgs {
 		apiOrgs[i] = o.APIFormat()
 	}

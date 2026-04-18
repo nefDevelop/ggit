@@ -18,6 +18,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	r.Use(context.APIContexter())
 	
 	r.GET("/install/settings", ginx.Handle(GetInstallSettings))
+	r.GET("/i18n/:lang", ginx.Handle(GetI18nStrings))
 
 	user := r.Group("/user")
 	{
@@ -202,6 +203,11 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 			settingGroup.GET("/hooks", ginx.Handle(GetRepoHooks))
 			settingGroup.DELETE("/hooks/:id", ginx.Handle(DeleteRepoHook))
+			settingGroup.POST("/mirror/sync", ginx.Handle(SyncMirrorRepo))
+
+			settingGroup.GET("/keys", ginx.Handle(ListRepoDeployKeys))
+			settingGroup.POST("/keys", ginx.Handle(AddRepoDeployKey))
+			settingGroup.DELETE("/keys/:id", ginx.Handle(DeleteRepoDeployKey))
 		}
 	}
 

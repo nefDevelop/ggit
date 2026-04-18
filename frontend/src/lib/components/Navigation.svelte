@@ -1,30 +1,36 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
+  import { i18n } from '$lib/i18n.svelte';
   import { page } from '$app/state';
 
   const navItems = $derived([
-    { name: 'Dashboard', icon: 'grid_view', path: '/dashboard' },
-    { name: 'Explore', icon: 'search', path: '/explore/repos' },
-    { name: 'Organizations', icon: 'corporate_fare', path: '/explore/users' },
+    { name: i18n.t('dashboard'), icon: 'grid_view', path: '/dashboard' },
+    { name: i18n.t('explore'), icon: 'search', path: '/explore/repos' },
+    { name: i18n.t('organization'), icon: 'corporate_fare', path: '/explore/users' },
     ...(authState.user?.is_admin ? [
-      { name: 'Admin Panel', icon: 'security', path: '/admin/users', isParent: true }
+      { name: i18n.t('admin_panel'), icon: 'security', path: '/admin/users', isParent: true }
     ] : []),
-    { name: 'Settings', icon: 'settings', path: '/user/settings/profile' },
+    { name: i18n.t('settings'), icon: 'settings', path: '/user/settings/profile' },
   ]);
 
-  const adminSubItems = [
-    { name: 'Users', icon: 'person', path: '/admin/users' },
-    { name: 'Repositories', icon: 'book', path: '/admin/repos' },
-    { name: 'Organizations', icon: 'corporate_fare', path: '/admin/orgs' },
-    { name: 'Authentication', icon: 'lock', path: '/admin/auth' },
-    { name: 'Configuration', icon: 'settings', path: '/admin/config' },
-    { name: 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
-    { name: 'Maintenance', icon: 'build', path: '/admin/maintenance' },
-    { name: 'Notices', icon: 'notifications', path: '/admin/notices' }
-  ];
+  const adminSubItems = $derived([
+    { name: i18n.t('common.users') || 'Users', icon: 'person', path: '/admin/users' },
+    { name: i18n.t('common.repositories') || 'Repositories', icon: 'book', path: '/admin/repos' },
+    { name: i18n.t('common.organizations') || 'Organizations', icon: 'corporate_fare', path: '/admin/orgs' },
+    { name: i18n.t('common.auths') || 'Authentication', icon: 'lock', path: '/admin/auth' },
+    { name: i18n.t('common.config') || 'Configuration', icon: 'settings', path: '/admin/config' },
+    { name: i18n.t('common.monitor') || 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
+    { name: i18n.t('common.maintenance') || 'Maintenance', icon: 'build', path: '/admin/maintenance' },
+    { name: i18n.t('common.notices') || 'Notices', icon: 'notifications', path: '/admin/notices' }
+  ]);
 
   const isAdminPath = $derived(page.url.pathname.startsWith('/admin'));
+
+  function toggleLanguage() {
+    const next = i18n.locale === 'en-US' ? 'es-ES' : 'en-US';
+    i18n.setLocale(next);
+  }
 
   function getCsrfToken() {
     if (typeof document === 'undefined') return '';
@@ -86,7 +92,10 @@
 
   <!-- BRAND AT BOTTOM -->
   <div class="brand-section-bottom">
-    <div class="logo-circle-flat">G</div>
+    <button class="lang-toggle-btn" onclick={toggleLanguage} title="Change Language">
+        <span class="material-symbols-rounded">language</span>
+        <span class="lang-text">{i18n.locale === 'en-US' ? 'EN' : 'ES'}</span>
+    </button>
     <div class="brand-info">
         <span class="brand-name">Ggit</span>
         <span class="version">v2026.4.0</span>
@@ -260,6 +269,22 @@
     font-weight: 900;
     font-size: 1rem;
   }
+
+  .lang-toggle-btn {
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+  }
+  .lang-toggle-btn:hover { background: var(--surface-variant-hover); border-color: var(--primary-color); }
+  .lang-toggle-btn .material-symbols-rounded { font-size: 1.1rem; }
+  .lang-text { font-size: 0.75rem; font-weight: 800; }
 
   .brand-info { display: flex; flex-direction: column; }
   .brand-name { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; line-height: 1; }

@@ -13,7 +13,7 @@ import (
 
 	"gogs.io/gogs/internal/errx"
 	"gogs.io/gogs/internal/markup"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 // CommentType defines whether a comment is just a simple comment, an action (like close) or a reference.
@@ -135,14 +135,14 @@ func (c *Comment) HTMLURL() string {
 
 // This method assumes following fields have been assigned with valid values:
 // Required - Poster, Issue
-func (c *Comment) APIFormat() *apiv1types.IssueComment {
-	return &apiv1types.IssueComment{
-		ID:      c.ID,
-		HTMLURL: c.HTMLURL(),
-		Poster:  c.Poster.APIFormat(),
-		Body:    c.Content,
-		Created: c.Created,
-		Updated: c.Updated,
+func (c *Comment) APIFormat() *apiv2types.IssueCommentResponse {
+	return &apiv2types.IssueCommentResponse{
+		ID:        c.ID,
+		HTMLURL:   c.HTMLURL(),
+		Poster:    c.Poster.APIFormat(),
+		Body:      c.Content,
+		CreatedAt: c.Created,
+		UpdatedAt: c.Updated,
 	}
 }
 
@@ -346,8 +346,8 @@ func CreateIssueComment(doer *User, repo *Repository, issue *Issue, content stri
 	}
 
 	comment.Issue = issue
-	if err = PrepareWebhooks(repo, HookEventTypeIssueComment, &apiv1types.WebhookIssueCommentPayload{
-		Action:     apiv1types.WebhookIssueCommentCreated,
+	if err = PrepareWebhooks(repo, HookEventTypeIssueComment, &apiv2types.WebhookIssueCommentPayload{
+		Action:     apiv2types.WebhookIssueCommentCreated,
 		Issue:      issue.APIFormat(),
 		Comment:    comment.APIFormat(),
 		Repository: repo.APIFormatLegacy(nil),
@@ -482,12 +482,12 @@ func UpdateComment(doer *User, c *Comment, oldContent string) (err error) {
 
 	if err = c.Issue.LoadAttributes(); err != nil {
 		log.Error("Issue.LoadAttributes [issue_id: %d]: %v", c.IssueID, err)
-	} else if err = PrepareWebhooks(c.Issue.Repo, HookEventTypeIssueComment, &apiv1types.WebhookIssueCommentPayload{
-		Action:  apiv1types.WebhookIssueCommentEdited,
+	} else if err = PrepareWebhooks(c.Issue.Repo, HookEventTypeIssueComment, &apiv2types.WebhookIssueCommentPayload{
+		Action:  apiv2types.WebhookIssueCommentEdited,
 		Issue:   c.Issue.APIFormat(),
 		Comment: c.APIFormat(),
-		Changes: &apiv1types.WebhookChangesPayload{
-			Body: &apiv1types.WebhookChangesFromPayload{
+		Changes: &apiv2types.WebhookChangesPayload{
+			Body: &apiv2types.WebhookChangesFromPayload{
 				From: oldContent,
 			},
 		},
@@ -537,8 +537,8 @@ func DeleteCommentByID(doer *User, id int64) error {
 
 	if err = comment.Issue.LoadAttributes(); err != nil {
 		log.Error("Issue.LoadAttributes [issue_id: %d]: %v", comment.IssueID, err)
-	} else if err = PrepareWebhooks(comment.Issue.Repo, HookEventTypeIssueComment, &apiv1types.WebhookIssueCommentPayload{
-		Action:     apiv1types.WebhookIssueCommentDeleted,
+	} else if err = PrepareWebhooks(comment.Issue.Repo, HookEventTypeIssueComment, &apiv2types.WebhookIssueCommentPayload{
+		Action:     apiv2types.WebhookIssueCommentDeleted,
 		Issue:      comment.Issue.APIFormat(),
 		Comment:    comment.APIFormat(),
 		Repository: comment.Issue.Repo.APIFormatLegacy(nil),

@@ -36,7 +36,7 @@ import (
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/process"
 	"gogs.io/gogs/internal/repox"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/semverx"
 	"gogs.io/gogs/internal/strx"
 	"gogs.io/gogs/internal/sync"
@@ -381,37 +381,39 @@ func (r *Repository) DeleteAvatar() error {
 // Arguments that are allowed to be nil: permission
 //
 // Deprecated: Use APIFormat instead.
-func (r *Repository) APIFormatLegacy(permission *apiv1types.RepositoryPermission, user ...*User) *apiv1types.Repository {
-	cloneLink := r.CloneLink()
-	apiRepo := &apiv1types.Repository{
-		ID:            r.ID,
-		Owner:         r.Owner.APIFormat(),
-		Name:          r.Name,
-		FullName:      r.FullName(),
-		Description:   r.Description,
-		Private:       r.IsPrivate,
-		Fork:          r.IsFork,
-		Empty:         r.IsBare,
-		Mirror:        r.IsMirror,
-		Size:          r.Size,
-		HTMLURL:       r.HTMLURL(),
-		SSHURL:        cloneLink.SSH,
-		CloneURL:      cloneLink.HTTPS,
-		Website:       r.Website,
-		Stars:         r.NumStars,
-		Forks:         r.NumForks,
-		Watchers:        r.NumWatches,
-		OpenIssuesCount: r.NumOpenIssues,
-		OpenPullsCount:  r.NumOpenPulls,
-		DefaultBranch:   r.DefaultBranch,
-		Created:       r.Created,
-		Updated:       r.Updated,
-		Permissions:   permission,
-		// Reserved for go-gogs-client change
-		//		AvatarUrl:     r.AvatarLink(),
+func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission, user ...*User) *apiv2types.RepositoryResponse {
+	apiRepo := &apiv2types.RepositoryResponse{
+		ID:          r.ID,
+		Owner:       r.Owner.APIFormat(),
+		Name:        r.Name,
+		Description: r.Description,
+		IsPrivate:   r.IsPrivate,
+		NumStars:    r.NumStars,
+		NumForks:    r.NumForks,
+		NumWatches:  r.NumWatches,
+		CreatedAt:   r.CreatedUnix,
+		UpdatedAt:   r.UpdatedUnix,
+		Permissions: permission,
+	}
+	if permission == nil {
+		p := &apiv2types.RepositoryPermission{Pull: true}
+		if len(user) != 0 {
+			p.Admin = user[0].IsAdmin
+			accessMode := Handle.Permissions().AccessMode(
+				context.TODO(),
+				user[0].ID,
+				r.ID,
+				AccessModeOptions{
+					OwnerID: r.OwnerID,
+					Private: r.IsPrivate,
+				},
+			)
+			p.Push = accessMode >= AccessModeWrite
+		}
+		permission = p
 	}
 	if r.IsFork {
-		p := &apiv1types.RepositoryPermission{Pull: true}
+		p := &apiv2types.RepositoryPermission{Pull: true}
 		if len(user) != 0 {
 			accessMode := Handle.Permissions().AccessMode(
 				context.TODO(),
@@ -425,7 +427,7 @@ func (r *Repository) APIFormatLegacy(permission *apiv1types.RepositoryPermission
 			p.Admin = accessMode >= AccessModeAdmin
 			p.Push = accessMode >= AccessModeWrite
 		}
-		apiRepo.Parent = r.BaseRepo.APIFormatLegacy(p)
+		apiRepo.Parent = r.BaseRepo.APIFormatLegacy(nil, user...)
 	}
 	return apiRepo
 }
@@ -2605,7 +2607,7 @@ func ForkRepository(doer, owner *User, baseRepo *Repository, name, desc string) 
 	if err = repo.UpdateSize(); err != nil {
 		log.Error("UpdateSize [repo_id: %d]: %v", repo.ID, err)
 	}
-	if err = PrepareWebhooks(baseRepo, HookEventTypeFork, &apiv1types.WebhookForkPayload{
+	if err = PrepareWebhooks(baseRepo, HookEventTypeFork, &apiv2types.WebhookForkPayload{
 		Forkee: repo.APIFormatLegacy(nil),
 		Repo:   baseRepo.APIFormatLegacy(nil),
 		Sender: doer.APIFormat(),

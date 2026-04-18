@@ -4,7 +4,7 @@ import (
 	"github.com/cockroachdb/errors"
 	log "unknwon.dev/clog/v2"
 
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 // Collaboration represent the relation between an individual and a repository.
@@ -87,10 +87,10 @@ type Collaborator struct {
 	Collaboration *Collaboration
 }
 
-func (c *Collaborator) APIFormat() *apiv1types.RepositoryCollaborator {
-	return &apiv1types.RepositoryCollaborator{
-		User: c.User.APIFormat(),
-		Permissions: apiv1types.RepositoryPermission{
+func (c *Collaborator) APIFormat() *apiv2types.RepositoryCollaboratorResponse {
+	return &apiv2types.RepositoryCollaboratorResponse{
+		UserResponse: c.User.APIFormat(),
+		Permissions: apiv2types.RepositoryPermission{
 			Admin: c.Collaboration.Mode >= AccessModeAdmin,
 			Push:  c.Collaboration.Mode >= AccessModeWrite,
 			Pull:  c.Collaboration.Mode >= AccessModeRead,

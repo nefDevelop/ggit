@@ -1,28 +1,17 @@
 package v2
 
 import (
-	"time"
+
 
 	"gogs.io/gogs/internal/database"
+	"gogs.io/gogs/internal/route/api/v2/types"
 )
 
-// UserResponse represents a user in the API v2.
-type UserResponse struct {
-	ID              int64  `json:"id"`
-	Username        string `json:"username"`
-	FullName        string `json:"full_name"`
-	Email           string `json:"email"`
-	AvatarURL       string `json:"avatar_url"`
-	IsAdmin         bool   `json:"is_admin"`
-	DisableNewsFeed bool   `json:"disable_news_feed"`
-	CreatedAt       int64  `json:"created_at"`
-}
-
-func ToUserResponse(u *database.User) *UserResponse {
+func ToUserResponse(u *database.User) *types.UserResponse {
 	if u == nil {
 		return nil
 	}
-	return &UserResponse{
+	return &types.UserResponse{
 		ID:              u.ID,
 		Username:        u.Name,
 		FullName:        u.FullName,
@@ -34,24 +23,11 @@ func ToUserResponse(u *database.User) *UserResponse {
 	}
 }
 
-// RepositoryResponse represents a repository in the API v2.
-type RepositoryResponse struct {
-	ID          int64         `json:"id"`
-	Name        string        `json:"name"`
-	Description string        `json:"description"`
-	Owner       *UserResponse `json:"owner"`
-	NumStars    int           `json:"num_stars"`
-	NumForks    int           `json:"num_forks"`
-	NumWatches  int           `json:"num_watches"`
-	IsPrivate   bool          `json:"is_private"`
-	CreatedAt   int64         `json:"created_at"`
-}
-
-func ToRepositoryResponse(r *database.Repository) *RepositoryResponse {
+func ToRepositoryResponse(r *database.Repository) *types.RepositoryResponse {
 	if r == nil {
 		return nil
 	}
-	return &RepositoryResponse{
+	return &types.RepositoryResponse{
 		ID:          r.ID,
 		Name:        r.Name,
 		Description: r.Description,
@@ -64,22 +40,11 @@ func ToRepositoryResponse(r *database.Repository) *RepositoryResponse {
 	}
 }
 
-// OrganizationResponse represents an organization in the API v2.
-type OrganizationResponse struct {
-	ID          int64         `json:"id"`
-	Username    string        `json:"username"`
-	FullName    string        `json:"full_name"`
-	Description string        `json:"description"`
-	Owner       *UserResponse `json:"owner"`
-	NumTeams    int           `json:"num_teams"`
-	NumMembers  int           `json:"num_members"`
-}
-
-func ToOrganizationResponse(o *database.User, owner *database.User) *OrganizationResponse {
+func ToOrganizationResponse(o *database.User, owner *database.User) *types.OrganizationResponse {
 	if o == nil {
 		return nil
 	}
-	return &OrganizationResponse{
+	return &types.OrganizationResponse{
 		ID:          o.ID,
 		Username:    o.Name,
 		FullName:    o.FullName,
@@ -90,20 +55,11 @@ func ToOrganizationResponse(o *database.User, owner *database.User) *Organizatio
 	}
 }
 
-// AuthSourceResponse represents a login source in the API v2.
-type AuthSourceResponse struct {
-	ID          int64     `json:"id"`
-	Name        string    `json:"name"`
-	TypeName    string    `json:"type_name"`
-	IsActivated bool      `json:"is_activated"`
-	CreatedAt   time.Time `json:"created_at"`
-}
-
-func ToAuthSourceResponse(s *database.LoginSource) *AuthSourceResponse {
+func ToAuthSourceResponse(s *database.LoginSource) *types.AuthSourceResponse {
 	if s == nil {
 		return nil
 	}
-	return &AuthSourceResponse{
+	return &types.AuthSourceResponse{
 		ID:          s.ID,
 		Name:        s.Name,
 		TypeName:    s.TypeName(),
@@ -112,62 +68,27 @@ func ToAuthSourceResponse(s *database.LoginSource) *AuthSourceResponse {
 	}
 }
 
-// NoticeResponse represents a system notice in the API v2.
-type NoticeResponse struct {
-	ID          int64  `json:"id"`
-	Type        string `json:"type"`
-	Description string `json:"description"`
-	CreatedAt   int64  `json:"created_at"`
-}
-
-func ToNoticeResponse(n *database.Notice) *NoticeResponse {
+func ToNoticeResponse(n *database.Notice) *types.NoticeResponse {
 	if n == nil {
 		return nil
 	}
-	return &NoticeResponse{
+	return &types.NoticeResponse{
 		ID:          n.ID,
 		Type:        n.Type.TrStr(),
 		Description: n.Description,
 		CreatedAt:   n.CreatedUnix,
 	}
 }
-
-// SystemStatusResponse represents the system health statistics in the API v2.
-type SystemStatusResponse struct {
-	Uptime       string `json:"uptime"`
-	NumGoroutine int    `json:"num_goroutine"`
-
-	// General statistics.
-	MemAllocated string `json:"mem_allocated"`
-	MemTotal     string `json:"mem_total"`
-	MemSys       string `json:"mem_sys"`
-	Lookups      uint64 `json:"lookups"`
-	MemMallocs   uint64 `json:"mem_mallocs"`
-	MemFrees     uint64 `json:"mem_frees"`
-
-	// Main allocation heap statistics.
-	HeapAlloc    string `json:"heap_alloc"`
-	HeapSys      string `json:"heap_sys"`
-	HeapIdle     string `json:"heap_idle"`
-	HeapInuse    string `json:"heap_inuse"`
-	HeapReleased string `json:"heap_released"`
-	HeapObjects  uint64 `json:"heap_objects"`
-
-	// Low-level fixed-size structure allocator statistics.
-	StackInuse  string `json:"stack_inuse"`
-	StackSys    string `json:"stack_sys"`
-	MSpanInuse  string `json:"mspan_inuse"`
-	MSpanSys    string `json:"mspan_sys"`
-	MCacheInuse string `json:"mcache_inuse"`
-	MCacheSys   string `json:"mcache_sys"`
-	BuckHashSys string `json:"buck_hash_sys"`
-	GCSys       string `json:"gc_sys"`
-	OtherSys    string `json:"other_sys"`
-
-	// Garbage collector statistics.
-	NextGC       string `json:"next_gc"`
-	LastGC       string `json:"last_gc"`
-	PauseTotalNs string `json:"pause_total_ns"`
-	PauseNs      string `json:"pause_ns"`
-	NumGC        uint32 `json:"num_gc"`
+func ToDeployKeyResponse(key *database.DeployKey) *types.RepositoryDeployKeyResponse {
+	if key == nil {
+		return nil
+	}
+	return &types.RepositoryDeployKeyResponse{
+		ID:        key.ID,
+		Key:       key.Content,
+		URL:       "", // Not used in frontend yet
+		Title:     key.Name,
+		CreatedAt: key.Created,
+		ReadOnly:  key.Mode <= database.AccessModeRead,
+	}
 }

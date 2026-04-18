@@ -6,16 +6,16 @@ import (
 
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
-func toIssueMilestone(m *database.Milestone) *types.IssueMilestone {
-	state := types.IssueStateOpen
+func toIssueMilestone(m *database.Milestone) *apiv2types.IssueMilestoneResponse {
+	state := apiv2types.IssueStateOpen
 	if m.IsClosed {
-		state = types.IssueStateClosed
+		state = apiv2types.IssueStateClosed
 	}
 
-	return &types.IssueMilestone{
+	return &apiv2types.IssueMilestoneResponse{
 		ID:           m.ID,
 		Title:        m.Name,
 		Description:  m.Content,
@@ -34,7 +34,7 @@ func ListRepoMilestones(c *context.APIContext) {
 		return
 	}
 
-	apiMilestones := make([]*types.IssueMilestone, len(milestones))
+	apiMilestones := make([]*apiv2types.IssueMilestoneResponse, len(milestones))
 	for i := range milestones {
 		apiMilestones[i] = toIssueMilestone(milestones[i])
 	}
@@ -112,7 +112,7 @@ func UpdateRepoMilestone(c *context.APIContext) {
 	}
 
 	if f.State != nil {
-		if err = milestone.ChangeStatus(types.IssueStateClosed == types.IssueStateType(*f.State)); err != nil {
+		if err = milestone.ChangeStatus(apiv2types.IssueStateClosed == apiv2types.IssueStateType(*f.State)); err != nil {
 			c.Error(err, "change status")
 			return
 		}

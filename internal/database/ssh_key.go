@@ -568,7 +568,8 @@ type DeployKey struct {
 	RepoID      int64 `xorm:"UNIQUE(s) INDEX"`
 	Name        string
 	Fingerprint string
-	Content     string `xorm:"-" json:"-" gorm:"-"`
+	Content     string     `xorm:"-" json:"-" gorm:"-"`
+	Mode        AccessMode `xorm:"NOT NULL DEFAULT 2" gorm:"not null;default:2"`
 
 	Created           time.Time `xorm:"-" json:"-" gorm:"-"`
 	CreatedUnix       int64
@@ -627,7 +628,7 @@ func checkDeployKey(e Engine, keyID, repoID int64, name string) error {
 }
 
 // addDeployKey adds new key-repo relation.
-func addDeployKey(e *xorm.Session, keyID, repoID int64, name, fingerprint string) (*DeployKey, error) {
+func addDeployKey(e *xorm.Session, keyID, repoID int64, name, fingerprint string, mode AccessMode) (*DeployKey, error) {
 	if err := checkDeployKey(e, keyID, repoID, name); err != nil {
 		return nil, err
 	}
@@ -637,6 +638,7 @@ func addDeployKey(e *xorm.Session, keyID, repoID int64, name, fingerprint string
 		RepoID:      repoID,
 		Name:        name,
 		Fingerprint: fingerprint,
+		Mode:        mode,
 	}
 	_, err := e.Insert(key)
 	return key, err
@@ -649,14 +651,14 @@ func HasDeployKey(keyID, repoID int64) bool {
 }
 
 // AddDeployKey add new deploy key to database and authorized_keys file.
-func AddDeployKey(repoID int64, name, content string) (*DeployKey, error) {
+func AddDeployKey(repoID int64, name, content string, mode AccessMode) (*DeployKey, error) {
 	if err := checkKeyContent(content); err != nil {
 		return nil, err
 	}
 
 	pkey := &PublicKey{
 		Content: content,
-		Mode:    AccessModeRead,
+		Mode:    mode,
 		Type:    KeyTypeDeploy,
 	}
 	has, err := x.Get(pkey)
@@ -677,7 +679,7 @@ func AddDeployKey(repoID int64, name, content string) (*DeployKey, error) {
 		}
 	}
 
-	key, err := addDeployKey(sess, pkey.ID, repoID, name, pkey.Fingerprint)
+	key, err := addDeployKey(sess, pkey.ID, repoID, name, pkey.Fingerprint, mode)
 	if err != nil {
 		return nil, errors.Newf("addDeployKey: %v", err)
 	}

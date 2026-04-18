@@ -1,11 +1,17 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { fade, fly } from 'svelte/transition';
+  import Modal from './Modal.svelte';
   
   let notices = $state<any[]>([]);
   let total = $state(0);
   let loading = $state(true);
   let page = $state(1);
+  const pageSize = 50;
+
+  let selectedNotice = $state<any>(null);
+  let showModal = $state(false);
 
   async function fetchNotices() {
     loading = true;
@@ -24,6 +30,7 @@
   }
 
   async function deleteNotice(id: number) {
+    if (!confirm('Delete this notice?')) return;
     try {
       const res = await apiFetch(`/api/v2/admin/notices/${id}`, { method: 'DELETE' });
       if (res.ok) fetchNotices();
@@ -42,90 +49,171 @@
     }
   }
 
+  function openDetail(notice: any) {
+    selectedNotice = notice;
+    showModal = true;
+  }
+
+  const totalPages = $derived(Math.ceil(total / pageSize));
+
   onMount(fetchNotices);
+
+  $effect(() => {
+    if (page) fetchNotices();
+  });
 </script>
 
-<div class="admin-notices island tonal">
-  <header class="section-header">
-    <div class="title">
-      <span class="material-symbols-rounded">notifications_active</span>
-      <h2>System Notices</h2>
+<div class="notices-view" in:fly={{ y: 20, duration: 500 }}>
+  <header class="admin-header">
+    <div class="title-group">
+      <h1>System Notices</h1>
+      <p>System alerts, errors, and background task logs.</p>
     </div>
-    <div class="actions">
-       <button class="btn btn-outline" onclick={fetchNotices}>Refresh</button>
-       <button class="btn btn-danger" onclick={clearAll}>Clear All</button>
+    <div class="header-actions">
+       <button class="btn btn-outline" onclick={fetchNotices}>
+         <span class="material-symbols-rounded">refresh</span>
+         Refresh
+       </button>
+       <button class="btn btn-danger" onclick={clearAll}>
+         <span class="material-symbols-rounded">delete_sweep</span>
+         Clear All
+       </button>
     </div>
   </header>
 
-  <div class="table-container">
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#if loading}
-          {#each Array(5) as _}
-            <tr class="skeleton-row">
-              <td colspan="5"><div class="skeleton-bar"></div></td>
-            </tr>
-          {/each}
-        {:else if notices.length === 0}
-           <tr><td colspan="5" class="empty">No system notices found.</td></tr>
-        {:else}
-          {#each notices as notice}
-            <tr>
-              <td>{notice.id}</td>
-              <td><span class="type-badge">{notice.type_name}</span></td>
-              <td class="desc-cell">{notice.description}</td>
-              <td>{new Date(notice.created_at).toLocaleDateString()}</td>
-              <td class="actions">
-                <button class="icon-btn danger" onclick={() => deleteNotice(notice.id)} title="Delete"><span class="material-symbols-rounded">delete</span></button>
-              </td>
-            </tr>
-          {/each}
-        {/if}
-      </tbody>
-    </table>
+  <div class="admin-notices island tonal">
+    <div class="table-container">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th class="col-id">ID</th>
+            <th class="col-type">Type</th>
+            <th class="col-desc">Description</th>
+            <th class="col-date">Date</th>
+            <th class="col-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#if loading}
+            {#each Array(5) as _}
+              <tr class="skeleton-row">
+                <td colspan="5"><div class="skeleton-bar"></div></td>
+              </tr>
+            {/each}
+          {:else if notices.length === 0}
+             <tr><td colspan="5" class="empty-state">No system notices found.</td></tr>
+          {:else}
+            {#each notices as notice}
+              <tr class="notice-row" onclick={() => openDetail(notice)}>
+                <td><span class="id-tag">{notice.id}</span></td>
+                <td><span class="type-badge tier-{notice.type}">{notice.type_name}</span></td>
+                <td class="desc-cell">
+                  <div class="desc-content">{notice.description}</div>
+                </td>
+                <td class="date-cell">{new Date(notice.created_at).toLocaleString()}</td>
+                <td class="actions-cell" onclick={(e) => e.stopPropagation()}>
+                  <button class="icon-btn danger" onclick={() => deleteNotice(notice.id)} title="Delete">
+                    <span class="material-symbols-rounded">delete</span>
+                  </button>
+                </td>
+              </tr>
+            {/each}
+          {/if}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PAGINATION -->
+    {#if total > pageSize}
+      <footer class="pagination-footer">
+        <span class="page-info">Showing {notices.length} of {total} notices</span>
+        <div class="pagination-controls">
+          <button 
+            class="btn-nav" 
+            disabled={page === 1} 
+            onclick={() => page--}
+          >
+            <span class="material-symbols-rounded">chevron_left</span>
+          </button>
+          <span class="current-page">Page {page} of {totalPages}</span>
+          <button 
+            class="btn-nav" 
+            disabled={page >= totalPages} 
+            onclick={() => page++}
+          >
+            <span class="material-symbols-rounded">chevron_right</span>
+          </button>
+        </div>
+      </footer>
+    {/if}
   </div>
 </div>
 
+<!-- DETAIL MODAL -->
+<Modal show={showModal} title="Notice Details" onclose={() => showModal = false}>
+  {#if selectedNotice}
+    <div class="notice-detail">
+      <div class="detail-header">
+        <span class="type-badge tier-{selectedNotice.type} big">{selectedNotice.type_name}</span>
+        <span class="detail-date">{new Date(selectedNotice.created_at).toLocaleString()}</span>
+      </div>
+      <div class="detail-body">
+        <h4>Content</h4>
+        <pre class="detail-text">{selectedNotice.description}</pre>
+      </div>
+    </div>
+  {/if}
+</Modal>
+
 <style>
-  .admin-notices { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: var(--shadow-xl); }
+  .notices-view { display: flex; flex-direction: column; gap: 2.5rem; }
+
+  .admin-header { display: flex; justify-content: space-between; align-items: flex-end; }
+  .admin-header h1 { margin: 0; font-size: 2.5rem; font-weight: 900; }
+  .admin-header p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
+  .header-actions { display: flex; gap: 1rem; }
+
+  .admin-notices { padding: 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
   
-  .section-header { display: flex; justify-content: space-between; align-items: center; }
-  .title { display: flex; align-items: center; gap: 0.75rem; }
-  .title span { font-size: 1.75rem; color: var(--primary-color); }
-  .title h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+  .table-container { width: 100%; overflow-x: auto; }
+  .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .modern-table th { background: rgba(255,255,255,0.01); padding: 1.25rem 1.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+  .modern-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
 
-  .actions { display: flex; gap: 1rem; }
+  .notice-row { cursor: pointer; transition: background 0.2s; }
+  .notice-row:hover { background: rgba(255,255,255,0.03); }
 
-  .table-container { overflow-x: auto; }
-  .modern-table { width: 100%; border-collapse: collapse; text-align: left; table-layout: fixed; }
-  .modern-table th { padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
-  .modern-table td { padding: 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem; vertical-align: middle; }
-
-  th:nth-child(1) { width: 50px; }
-  th:nth-child(2) { width: 120px; }
-  th:nth-child(3) { width: 1fr; }
-  th:nth-child(4) { width: 150px; }
-  th:nth-child(5) { width: 80px; }
-
-  .type-badge { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
+  .id-tag { color: var(--text-muted); font-family: var(--font-mono); font-size: 0.85rem; }
   
-  .desc-cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); }
+  .type-badge { padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
+  .type-badge.tier-1 { background: rgba(59, 130, 246, 0.1); color: #3b82f6; } /* info */
+  .type-badge.tier-2 { background: rgba(245, 158, 11, 0.1); color: #f59e0b; } /* warning */
+  .type-badge.tier-3 { background: rgba(239, 68, 68, 0.1); color: #ef4444; } /* error */
+  .type-badge.big { font-size: 0.9rem; padding: 0.5rem 1rem; }
 
-  .actions { display: flex; gap: 0.5rem; }
-  .icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; border-radius: 0.5rem; transition: all 0.2s; }
+  .desc-cell { max-width: 400px; }
+  .desc-content { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; color: #ddd; font-family: var(--font-mono); }
+  
+  .date-cell { white-space: nowrap; font-size: 0.85rem; color: var(--text-muted); }
+
+  .icon-btn { background: transparent; border: none; color: var(--text-muted); padding: 0.5rem; border-radius: 50%; cursor: pointer; transition: all 0.2s; }
   .icon-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-  .icon-btn.danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  .icon-btn.danger:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
 
-  .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
-  .skeleton-bar { height: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
+  .pagination-footer { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: rgba(0,0,0,0.2); }
+  .page-info { font-size: 0.85rem; color: var(--text-muted); }
+  .pagination-controls { display: flex; align-items: center; gap: 1rem; }
+  .btn-nav { background: var(--surface-variant); border: 1px solid var(--border-color); color: white; padding: 0.4rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; }
+  .btn-nav:hover:not(:disabled) { transform: scale(1.1); background: var(--primary-color); }
+  .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+  .current-page { font-size: 0.9rem; font-weight: 600; }
+
+  /* DETAIL MODAL STYLES */
+  .notice-detail { display: flex; flex-direction: column; gap: 2rem; }
+  .detail-header { display: flex; justify-content: space-between; align-items: center; }
+  .detail-date { font-size: 0.9rem; color: var(--text-muted); }
+  .detail-body h4 { margin: 0 0 1rem 0; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
+  .detail-text { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; border: 1px solid var(--border-color); margin: 0; color: #6ee7b7; }
+
+  .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); font-style: italic; }
 </style>

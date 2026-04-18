@@ -14,7 +14,7 @@ import (
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/errx"
 	"gogs.io/gogs/internal/markup"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/tool"
 )
 
@@ -171,33 +171,33 @@ func (issue *Issue) HTMLURL() string {
 }
 
 // State returns string representation of issue status.
-func (issue *Issue) State() apiv1types.IssueStateType {
+func (issue *Issue) State() apiv2types.IssueStateType {
 	if issue.IsClosed {
-		return apiv1types.IssueStateClosed
+		return apiv2types.IssueStateClosed
 	}
-	return apiv1types.IssueStateOpen
+	return apiv2types.IssueStateOpen
 }
 
 // This method assumes some fields assigned with values:
 // Required - Poster, Labels,
 // Optional - Milestone, Assignee, PullRequest
-func (issue *Issue) APIFormat() *apiv1types.Issue {
-	apiLabels := make([]*apiv1types.IssueLabel, len(issue.Labels))
+func (issue *Issue) APIFormat() *apiv2types.IssueResponse {
+	apiLabels := make([]*apiv2types.IssueLabelResponse, len(issue.Labels))
 	for i := range issue.Labels {
 		apiLabels[i] = issue.Labels[i].APIFormat()
 	}
 
-	apiIssue := &apiv1types.Issue{
-		ID:       issue.ID,
-		Index:    issue.Index,
-		Poster:   issue.Poster.APIFormat(),
-		Title:    issue.Title,
-		Body:     issue.Content,
-		Labels:   apiLabels,
-		State:    issue.State(),
-		Comments: issue.NumComments,
-		Created:  issue.Created,
-		Updated:  issue.Updated,
+	apiIssue := &apiv2types.IssueResponse{
+		ID:        issue.ID,
+		Index:     issue.Index,
+		Poster:    issue.Poster.APIFormat(),
+		Title:     issue.Title,
+		Body:      issue.Content,
+		Labels:    apiLabels,
+		State:     issue.State(),
+		Comments:  issue.NumComments,
+		CreatedAt: issue.Created,
+		UpdatedAt: issue.Updated,
 	}
 
 	if issue.Milestone != nil {
@@ -207,11 +207,11 @@ func (issue *Issue) APIFormat() *apiv1types.Issue {
 		apiIssue.Assignee = issue.Assignee.APIFormat()
 	}
 	if issue.IsPull {
-		apiIssue.PullRequest = &apiv1types.PullRequestMeta{
+		apiIssue.PullRequest = &apiv2types.PullRequestMetaResponse{
 			HasMerged: issue.PullRequest.HasMerged,
 		}
 		if issue.PullRequest.HasMerged {
-			apiIssue.PullRequest.Merged = &issue.PullRequest.Merged
+			apiIssue.PullRequest.MergedAt = &issue.PullRequest.Merged
 		}
 	}
 
@@ -245,16 +245,16 @@ func (issue *Issue) sendLabelUpdatedWebhook(doer *User) {
 			log.Error("LoadIssue: %v", err)
 			return
 		}
-		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-			Action:      apiv1types.WebhookIssueLabelUpdated,
+		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+			Action:      apiv2types.WebhookIssueLabelUpdated,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
 			Repository:  issue.Repo.APIFormatLegacy(nil),
 			Sender:      doer.APIFormat(),
 		})
 	} else {
-		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
-			Action:     apiv1types.WebhookIssueLabelUpdated,
+		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv2types.WebhookIssuesPayload{
+			Action:     apiv2types.WebhookIssueLabelUpdated,
 			Index:      issue.Index,
 			Issue:      issue.APIFormat(),
 			Repository: issue.Repo.APIFormatLegacy(nil),
@@ -271,7 +271,7 @@ func (issue *Issue) addLabel(e *xorm.Session, label *Label) error {
 }
 
 // AddLabel adds a new label to the issue.
-func (issue *Issue) AddLabel(doer *User, label *Label) error {
+func (issue *Issue) AddLabel(ctx context.Context, doer *User, label *Label) error {
 	if err := NewIssueLabel(issue, label); err != nil {
 		return err
 	}
@@ -285,7 +285,7 @@ func (issue *Issue) addLabels(e *xorm.Session, labels []*Label) error {
 }
 
 // AddLabels adds a list of new labels to the issue.
-func (issue *Issue) AddLabels(doer *User, labels []*Label) error {
+func (issue *Issue) AddLabels(ctx context.Context, doer *User, labels []*Label) error {
 	if err := NewIssueLabels(issue, labels); err != nil {
 		return err
 	}
@@ -311,7 +311,7 @@ func (issue *Issue) removeLabel(e *xorm.Session, label *Label) error {
 }
 
 // RemoveLabel removes a label from issue by given ID.
-func (issue *Issue) RemoveLabel(doer *User, label *Label) error {
+func (issue *Issue) RemoveLabel(ctx context.Context, doer *User, label *Label) error {
 	if err := DeleteIssueLabel(issue, label); err != nil {
 		return err
 	}
@@ -358,16 +358,16 @@ func (issue *Issue) ClearLabels(doer *User) (err error) {
 			log.Error("LoadIssue: %v", err)
 			return err
 		}
-		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-			Action:      apiv1types.WebhookIssueLabelCleared,
+		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+			Action:      apiv2types.WebhookIssueLabelCleared,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
 			Repository:  issue.Repo.APIFormatLegacy(nil),
 			Sender:      doer.APIFormat(),
 		})
 	} else {
-		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
-			Action:     apiv1types.WebhookIssueLabelCleared,
+		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv2types.WebhookIssuesPayload{
+			Action:     apiv2types.WebhookIssueLabelCleared,
 			Index:      issue.Index,
 			Issue:      issue.APIFormat(),
 			Repository: issue.Repo.APIFormatLegacy(nil),
@@ -382,7 +382,7 @@ func (issue *Issue) ClearLabels(doer *User) (err error) {
 }
 
 // ReplaceLabels removes all current labels and add new labels to the issue.
-func (issue *Issue) ReplaceLabels(labels []*Label) (err error) {
+func (issue *Issue) ReplaceLabels(ctx context.Context, labels []*Label) (err error) {
 	sess := x.NewSession()
 	defer sess.Close()
 	if err = sess.Begin(); err != nil {
@@ -468,7 +468,7 @@ func (issue *Issue) changeStatus(e *xorm.Session, doer *User, repo *Repository, 
 }
 
 // ChangeStatus changes issue status to open or closed.
-func (issue *Issue) ChangeStatus(doer *User, repo *Repository, isClosed bool) (err error) {
+func (issue *Issue) ChangeStatus(ctx context.Context, doer *User, repo *Repository, isClosed bool) (err error) {
 	sess := x.NewSession()
 	defer sess.Close()
 	if err = sess.Begin(); err != nil {
@@ -485,30 +485,31 @@ func (issue *Issue) ChangeStatus(doer *User, repo *Repository, isClosed bool) (e
 
 	if issue.IsPull {
 		// Merge pull request calls issue.changeStatus so we need to handle separately.
-		issue.PullRequest.Issue = issue
-		apiPullRequest := &apiv1types.WebhookPullRequestPayload{
+		apiPullRequest := &apiv2types.WebhookPullRequestPayload{
+			Action:      apiv2types.WebhookIssueAssigned,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
 			Repository:  repo.APIFormatLegacy(nil),
 			Sender:      doer.APIFormat(),
 		}
 		if isClosed {
-			apiPullRequest.Action = apiv1types.WebhookIssueClosed
+			apiPullRequest.Action = apiv2types.WebhookIssueClosed
 		} else {
-			apiPullRequest.Action = apiv1types.WebhookIssueReopened
+			apiPullRequest.Action = apiv2types.WebhookIssueReopened
 		}
 		err = PrepareWebhooks(repo, HookEventTypePullRequest, apiPullRequest)
 	} else {
-		apiIssues := &apiv1types.WebhookIssuesPayload{
+		apiIssues := &apiv2types.WebhookIssuesPayload{
+			Action:     apiv2types.WebhookIssueAssigned,
 			Index:      issue.Index,
 			Issue:      issue.APIFormat(),
 			Repository: repo.APIFormatLegacy(nil),
 			Sender:     doer.APIFormat(),
 		}
 		if isClosed {
-			apiIssues.Action = apiv1types.WebhookIssueClosed
+			apiIssues.Action = apiv2types.WebhookIssueClosed
 		} else {
-			apiIssues.Action = apiv1types.WebhookIssueReopened
+			apiIssues.Action = apiv2types.WebhookIssueReopened
 		}
 		err = PrepareWebhooks(repo, HookEventTypeIssues, apiIssues)
 	}
@@ -519,7 +520,7 @@ func (issue *Issue) ChangeStatus(doer *User, repo *Repository, isClosed bool) (e
 	return nil
 }
 
-func (issue *Issue) ChangeTitle(doer *User, title string) (err error) {
+func (issue *Issue) ChangeTitle(ctx context.Context, doer *User, title string) (err error) {
 	oldTitle := issue.Title
 	issue.Title = title
 	if err = UpdateIssueCols(issue, "name"); err != nil {
@@ -528,12 +529,12 @@ func (issue *Issue) ChangeTitle(doer *User, title string) (err error) {
 
 	if issue.IsPull {
 		issue.PullRequest.Issue = issue
-		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-			Action:      apiv1types.WebhookIssueEdited,
+		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+			Action:      apiv2types.WebhookIssueEdited,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
-			Changes: &apiv1types.WebhookChangesPayload{
-				Title: &apiv1types.WebhookChangesFromPayload{
+			Changes: &apiv2types.WebhookChangesPayload{
+				Title: &apiv2types.WebhookChangesFromPayload{
 					From: oldTitle,
 				},
 			},
@@ -541,12 +542,12 @@ func (issue *Issue) ChangeTitle(doer *User, title string) (err error) {
 			Sender:     doer.APIFormat(),
 		})
 	} else {
-		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
-			Action: apiv1types.WebhookIssueEdited,
+		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv2types.WebhookIssuesPayload{
+			Action: apiv2types.WebhookIssueEdited,
 			Index:  issue.Index,
 			Issue:  issue.APIFormat(),
-			Changes: &apiv1types.WebhookChangesPayload{
-				Title: &apiv1types.WebhookChangesFromPayload{
+			Changes: &apiv2types.WebhookChangesPayload{
+				Title: &apiv2types.WebhookChangesFromPayload{
 					From: oldTitle,
 				},
 			},
@@ -561,7 +562,7 @@ func (issue *Issue) ChangeTitle(doer *User, title string) (err error) {
 	return nil
 }
 
-func (issue *Issue) ChangeContent(doer *User, content string) (err error) {
+func (issue *Issue) ChangeContent(ctx context.Context, doer *User, content string) (err error) {
 	oldContent := issue.Content
 	issue.Content = content
 	if err = UpdateIssueCols(issue, "content"); err != nil {
@@ -570,12 +571,12 @@ func (issue *Issue) ChangeContent(doer *User, content string) (err error) {
 
 	if issue.IsPull {
 		issue.PullRequest.Issue = issue
-		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-			Action:      apiv1types.WebhookIssueEdited,
+		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+			Action:      apiv2types.WebhookIssueEdited,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
-			Changes: &apiv1types.WebhookChangesPayload{
-				Body: &apiv1types.WebhookChangesFromPayload{
+			Changes: &apiv2types.WebhookChangesPayload{
+				Body: &apiv2types.WebhookChangesFromPayload{
 					From: oldContent,
 				},
 			},
@@ -583,12 +584,12 @@ func (issue *Issue) ChangeContent(doer *User, content string) (err error) {
 			Sender:     doer.APIFormat(),
 		})
 	} else {
-		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
-			Action: apiv1types.WebhookIssueEdited,
+		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv2types.WebhookIssuesPayload{
+			Action: apiv2types.WebhookIssueEdited,
 			Index:  issue.Index,
 			Issue:  issue.APIFormat(),
-			Changes: &apiv1types.WebhookChangesPayload{
-				Body: &apiv1types.WebhookChangesFromPayload{
+			Changes: &apiv2types.WebhookChangesPayload{
+				Body: &apiv2types.WebhookChangesFromPayload{
 					From: oldContent,
 				},
 			},
@@ -603,7 +604,7 @@ func (issue *Issue) ChangeContent(doer *User, content string) (err error) {
 	return nil
 }
 
-func (issue *Issue) ChangeAssignee(doer *User, assigneeID int64) (err error) {
+func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID int64) (err error) {
 	issue.AssigneeID = assigneeID
 	if err = UpdateIssueUserByAssignee(issue); err != nil {
 		return errors.Newf("UpdateIssueUserByAssignee: %v", err)
@@ -618,30 +619,27 @@ func (issue *Issue) ChangeAssignee(doer *User, assigneeID int64) (err error) {
 	// Error not nil here means user does not exist, which is remove assignee.
 	isRemoveAssignee := err != nil
 	if issue.IsPull {
-		issue.PullRequest.Issue = issue
-		apiPullRequest := &apiv1types.WebhookPullRequestPayload{
+		apiPullRequest := &apiv2types.WebhookPullRequestPayload{
+			Action:      apiv2types.WebhookIssueAssigned,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
 			Repository:  issue.Repo.APIFormatLegacy(nil),
 			Sender:      doer.APIFormat(),
 		}
 		if isRemoveAssignee {
-			apiPullRequest.Action = apiv1types.WebhookIssueUnassigned
-		} else {
-			apiPullRequest.Action = apiv1types.WebhookIssueAssigned
+			apiPullRequest.Action = apiv2types.WebhookIssueUnassigned
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, apiPullRequest)
 	} else {
-		apiIssues := &apiv1types.WebhookIssuesPayload{
+		apiIssues := &apiv2types.WebhookIssuesPayload{
+			Action:     apiv2types.WebhookIssueAssigned,
 			Index:      issue.Index,
 			Issue:      issue.APIFormat(),
 			Repository: issue.Repo.APIFormatLegacy(nil),
 			Sender:     doer.APIFormat(),
 		}
 		if isRemoveAssignee {
-			apiIssues.Action = apiv1types.WebhookIssueUnassigned
-		} else {
-			apiIssues.Action = apiv1types.WebhookIssueAssigned
+			apiIssues.Action = apiv2types.WebhookIssueUnassigned
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, apiIssues)
 	}

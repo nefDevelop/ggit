@@ -14,6 +14,7 @@ import (
 	"gogs.io/gogs/internal/email"
 	"gogs.io/gogs/internal/process"
 	"gogs.io/gogs/internal/tool"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 var initTime = time.Now()
@@ -25,7 +26,7 @@ func GetAdminStats(c *context.APIContext) {
 	m := new(runtime.MemStats)
 	runtime.ReadMemStats(m)
 
-	sysStatus := SystemStatusResponse{
+	sysStatus := apiv2types.SystemStatusResponse{
 		Uptime:       tool.TimeSincePro(initTime),
 		NumGoroutine: runtime.NumGoroutine(),
 
@@ -191,7 +192,7 @@ func GetAdminUsers(c *context.APIContext) {
 		return
 	}
 
-	resp := make([]*UserResponse, len(users))
+	resp := make([]*apiv2types.UserResponse, len(users))
 	for i, u := range users {
 		resp[i] = ToUserResponse(u)
 	}
@@ -257,7 +258,7 @@ func GetAdminRepos(c *context.APIContext) {
 		return
 	}
 
-	resp := make([]*RepositoryResponse, len(repos))
+	resp := make([]*apiv2types.RepositoryResponse, len(repos))
 	for i, r := range repos {
 		resp[i] = ToRepositoryResponse(r)
 	}
@@ -277,7 +278,7 @@ func GetAdminOrgs(c *context.APIContext) {
 		return
 	}
 
-	resp := make([]*OrganizationResponse, len(orgs))
+	resp := make([]*apiv2types.OrganizationResponse, len(orgs))
 	for i, o := range orgs {
 		owner, _ := o.GetOrgOwner()
 		resp[i] = ToOrganizationResponse(o, owner)
@@ -355,7 +356,7 @@ func GetAdminAuths(c *context.APIContext) {
 		return
 	}
 
-	resp := make([]*AuthSourceResponse, len(sources))
+	resp := make([]*apiv2types.AuthSourceResponse, len(sources))
 	for i, s := range sources {
 		resp[i] = ToAuthSourceResponse(s)
 	}
@@ -458,7 +459,7 @@ func GetAdminNotices(c *context.APIContext) {
 		return
 	}
 
-	resp := make([]*NoticeResponse, len(notices))
+	resp := make([]*apiv2types.NoticeResponse, len(notices))
 	for i, n := range notices {
 		resp[i] = ToNoticeResponse(n)
 	}

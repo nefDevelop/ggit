@@ -12,7 +12,7 @@ import (
 
 	"gogs.io/gogs/internal/errx"
 	"gogs.io/gogs/internal/lazyregexp"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/tool"
 )
 
@@ -62,11 +62,11 @@ type Label struct {
 	IsChecked       bool `xorm:"-" json:"-" gorm:"-"`
 }
 
-func (l *Label) APIFormat() *apiv1types.IssueLabel {
-	return &apiv1types.IssueLabel{
+func (l *Label) APIFormat() *apiv2types.IssueLabelResponse {
+	return &apiv2types.IssueLabelResponse{
 		ID:    l.ID,
 		Name:  l.Name,
-		Color: strings.TrimLeft(l.Color, "#"),
+		Color: l.Color,
 	}
 }
 

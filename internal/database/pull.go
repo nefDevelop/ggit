@@ -18,7 +18,7 @@ import (
 	"gogs.io/gogs/internal/errx"
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/process"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/sync"
 )
 
@@ -127,29 +127,25 @@ func (pr *PullRequest) LoadIssue() (err error) {
 // This method assumes following fields have been assigned with valid values:
 // Required - Issue, BaseRepo
 // Optional - HeadRepo, Merger
-func (pr *PullRequest) APIFormat() *apiv1types.PullRequest {
+func (pr *PullRequest) APIFormat() *apiv2types.PullRequestResponse {
 	// In case of head repo has been deleted.
-	var apiHeadRepo *apiv1types.Repository
-	if pr.HeadRepo == nil {
-		apiHeadRepo = &apiv1types.Repository{
-			Name: "deleted",
-		}
-	} else {
+	var apiHeadRepo *apiv2types.RepositoryResponse
+	if pr.HeadRepo != nil {
 		apiHeadRepo = pr.HeadRepo.APIFormatLegacy(nil)
 	}
 
-	apiIssue := pr.Issue.APIFormat()
-	apiPullRequest := &apiv1types.PullRequest{
+	if pr.Issue == nil {
+		_ = pr.LoadIssue()
+	}
+
+	res := &apiv2types.PullRequestResponse{
 		ID:         pr.ID,
 		Index:      pr.Index,
-		Poster:     apiIssue.Poster,
-		Title:      apiIssue.Title,
-		Body:       apiIssue.Body,
-		Labels:     apiIssue.Labels,
-		Milestone:  apiIssue.Milestone,
-		Assignee:   apiIssue.Assignee,
-		State:      apiIssue.State,
-		Comments:   apiIssue.Comments,
+		Poster:     pr.Issue.Poster.APIFormat(),
+		Title:      pr.Issue.Title,
+		Body:       pr.Issue.Content,
+		State:      pr.Issue.State(),
+		Comments:   pr.Issue.NumComments,
 		HeadBranch: pr.HeadBranch,
 		HeadRepo:   apiHeadRepo,
 		BaseBranch: pr.BaseBranch,
@@ -160,15 +156,15 @@ func (pr *PullRequest) APIFormat() *apiv1types.PullRequest {
 
 	if pr.Status != PullRequestStatusChecking {
 		mergeable := pr.Status != PullRequestStatusConflict
-		apiPullRequest.Mergeable = &mergeable
+		res.Mergeable = &mergeable
 	}
 	if pr.HasMerged {
-		apiPullRequest.Merged = &pr.Merged
-		apiPullRequest.MergedCommitID = &pr.MergedCommitID
-		apiPullRequest.MergedBy = pr.Merger.APIFormat()
+		res.MergedAt = &pr.Merged
+		res.MergedCommitID = &pr.MergedCommitID
+		res.MergedBy = pr.Merger.APIFormat()
 	}
 
-	return apiPullRequest
+	return res
 }
 
 // IsChecking returns true if this pull request is still checking conflict.
@@ -341,8 +337,8 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 		log.Error("LoadAttributes: %v", err)
 		return nil
 	}
-	if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-		Action:      apiv1types.WebhookIssueClosed,
+	if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+		Action:      apiv2types.WebhookIssueClosed,
 		Index:       pr.Index,
 		PullRequest: pr.APIFormat(),
 		Repository:  pr.Issue.Repo.APIFormatLegacy(nil),
@@ -376,7 +372,7 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 		return nil
 	}
 
-	p := &apiv1types.WebhookPushPayload{
+	p := &apiv2types.WebhookPushPayload{
 		Ref:        git.RefsHeads + pr.BaseBranch,
 		Before:     pr.MergeBase,
 		After:      mergeCommit.ID.String(),
@@ -760,8 +756,8 @@ func AddTestPullRequestTask(doer *User, repoID int64, branch string, isSync bool
 					log.Error("LoadAttributes: %v", err)
 					continue
 				}
-				if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-					Action:      apiv1types.WebhookIssueSynchronized,
+				if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+					Action:      apiv2types.WebhookIssueSynchronized,
 					Index:       pr.Issue.Index,
 					PullRequest: pr.Issue.PullRequest.APIFormat(),
 					Repository:  pr.Issue.Repo.APIFormatLegacy(nil),

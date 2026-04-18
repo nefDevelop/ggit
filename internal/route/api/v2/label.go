@@ -5,11 +5,11 @@ import (
 
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
-func toIssueLabel(l *database.Label) *types.IssueLabel {
-	return &types.IssueLabel{
+func toIssueLabel(l *database.Label) *apiv2types.IssueLabelResponse {
+	return &apiv2types.IssueLabelResponse{
 		ID:    l.ID,
 		Name:  l.Name,
 		Color: l.Color,
@@ -24,7 +24,7 @@ func ListRepoLabels(c *context.APIContext) {
 		return
 	}
 
-	apiLabels := make([]*types.IssueLabel, len(labels))
+	apiLabels := make([]*apiv2types.IssueLabelResponse, len(labels))
 	for i := range labels {
 		apiLabels[i] = toIssueLabel(labels[i])
 	}
@@ -118,7 +118,7 @@ func ListIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	apiLabels := make([]*types.IssueLabel, len(issue.Labels))
+	apiLabels := make([]*apiv2types.IssueLabelResponse, len(issue.Labels))
 	for i := range issue.Labels {
 		apiLabels[i] = toIssueLabel(issue.Labels[i])
 	}
@@ -147,7 +147,7 @@ func AddIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.AddLabels(c.User, labels); err != nil {
+	if err = issue.AddLabels(c.Req.Context(), c.User, labels); err != nil {
 		c.Error(err, "add labels")
 		return
 	}
@@ -177,7 +177,7 @@ func ReplaceIssueLabels(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.ReplaceLabels(labels); err != nil {
+	if err = issue.ReplaceLabels(c.Req.Context(), labels); err != nil {
 		c.Error(err, "replace labels")
 		return
 	}

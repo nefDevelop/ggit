@@ -11,7 +11,7 @@ import (
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/errx"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 // Milestone represents a milestone of repository.
@@ -72,33 +72,27 @@ func (m *Milestone) AfterSet(colName string, _ xorm.Cell) {
 }
 
 // State returns string representation of milestone status.
-func (m *Milestone) State() apiv1types.IssueStateType {
+func (m *Milestone) State() apiv2types.IssueStateType {
 	if m.IsClosed {
-		return apiv1types.IssueStateClosed
+		return apiv2types.IssueStateClosed
 	}
-	return apiv1types.IssueStateOpen
+	return apiv2types.IssueStateOpen
 }
 
 func (m *Milestone) ChangeStatus(isClosed bool) error {
 	return ChangeMilestoneStatus(m, isClosed)
 }
 
-func (m *Milestone) APIFormat() *apiv1types.IssueMilestone {
-	apiMilestone := &apiv1types.IssueMilestone{
+func (m *Milestone) APIFormat() *apiv2types.IssueMilestoneResponse {
+	return &apiv2types.IssueMilestoneResponse{
 		ID:           m.ID,
-		State:        m.State(),
 		Title:        m.Name,
 		Description:  m.Content,
+		State:        m.State(),
 		OpenIssues:   m.NumOpenIssues,
 		ClosedIssues: m.NumClosedIssues,
+		Deadline:     &m.Deadline,
 	}
-	if m.IsClosed {
-		apiMilestone.Closed = &m.ClosedDate
-	}
-	if m.Deadline.Year() < 9999 {
-		apiMilestone.Deadline = &m.Deadline
-	}
-	return apiMilestone
 }
 
 func (m *Milestone) CountIssues(isClosed, includePulls bool) int64 {
@@ -343,11 +337,11 @@ func ChangeMilestoneAssign(doer *User, issue *Issue, oldMilestoneID int64) (err 
 		return errors.Newf("commit: %v", err)
 	}
 
-	var hookAction apiv1types.WebhookIssueAction
+	var hookAction apiv2types.WebhookIssueAction
 	if issue.MilestoneID > 0 {
-		hookAction = apiv1types.WebhookIssueMilestoned
+		hookAction = apiv2types.WebhookIssueMilestoned
 	} else {
-		hookAction = apiv1types.WebhookIssueDemilestoned
+		hookAction = apiv2types.WebhookIssueDemilestoned
 	}
 
 	if issue.IsPull {
@@ -356,7 +350,7 @@ func ChangeMilestoneAssign(doer *User, issue *Issue, oldMilestoneID int64) (err 
 			log.Error("LoadIssue: %v", err)
 			return err
 		}
-		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
+		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
 			Action:      hookAction,
 			Index:       issue.Index,
 			PullRequest: issue.PullRequest.APIFormat(),
@@ -364,7 +358,7 @@ func ChangeMilestoneAssign(doer *User, issue *Issue, oldMilestoneID int64) (err 
 			Sender:      doer.APIFormat(),
 		})
 	} else {
-		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
+		err = PrepareWebhooks(issue.Repo, HookEventTypeIssues, &apiv2types.WebhookIssuesPayload{
 			Action:     hookAction,
 			Index:      issue.Index,
 			Issue:      issue.APIFormat(),

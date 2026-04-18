@@ -20,7 +20,6 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/ginx"
 	"gogs.io/gogs/internal/route"
-	apiv1 "gogs.io/gogs/internal/route/api/v1"
 	apiv2 "gogs.io/gogs/internal/route/api/v2"
 	"gogs.io/gogs/internal/route/lfs"
 	"gogs.io/gogs/internal/route/repo"
@@ -66,10 +65,6 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 			gitSuffix.GET("/objects/*path", repo.HTTP)
 		}
 	}
-
-	// API v1
-	v1Group := r.Group("/api", context.APIContexter())
-	apiv1.RegisterRoutes(v1Group)
 
 	// API v2
 	v2Group := r.Group("/api/v2", context.APIContexter())

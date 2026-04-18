@@ -11,8 +11,8 @@ import (
 	"gorm.io/gorm"
 
 	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/repox"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 // BeforeCreate implements the GORM create hook.
@@ -37,12 +37,12 @@ func (r *Repository) AfterFind(_ *gorm.DB) error {
 }
 
 type RepositoryAPIFormatOptions struct {
-	Permission *apiv1types.RepositoryPermission
-	Parent     *apiv1types.Repository
+	Permission *apiv2types.RepositoryPermission
+	Parent     *apiv2types.RepositoryResponse
 }
 
 // APIFormat returns the API format of a repository.
-func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) *apiv1types.Repository {
+func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) *apiv2types.RepositoryResponse {
 	var opt RepositoryAPIFormatOptions
 	if len(opts) > 0 {
 		opt = opts[0]
@@ -53,34 +53,18 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		_ = json.Unmarshal([]byte(r.Languages), &langs)
 	}
 
-	cloneLink := repox.NewCloneLink(owner.Name, r.Name, false)
-	return &apiv1types.Repository{
+	return &apiv2types.RepositoryResponse{
 		ID:            r.ID,
 		Owner:         owner.APIFormat(),
 		Name:          r.Name,
-		FullName:      owner.Name + "/" + r.Name,
 		Description:   r.Description,
-		Private:       r.IsPrivate,
-		Fork:          r.IsFork,
-		Parent:        opt.Parent,
-		Empty:         r.IsBare,
-		Mirror:        r.IsMirror,
-		Size:          r.Size,
-		HTMLURL:       repox.HTMLURL(owner.Name, r.Name),
-		SSHURL:        cloneLink.SSH,
-		CloneURL:      cloneLink.HTTPS,
-		Website:       r.Website,
-		Stars:         r.NumStars,
-		Forks:         r.NumForks,
-		Watchers:        r.NumWatches,
-		OpenIssuesCount: r.NumOpenIssues,
-		OpenPullsCount:  r.NumOpenPulls,
-		DefaultBranch:   r.DefaultBranch,
-		Language:      r.PrimaryLanguage,
-		Languages:     langs,
-		Created:       r.Created,
-		Updated:       r.Updated,
+		IsPrivate:     r.IsPrivate,
+		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
+		DefaultBranch: r.DefaultBranch,
+		CreatedAt:     r.CreatedUnix,
+		UpdatedAt:     r.UpdatedUnix,
 		Permissions:   opt.Permission,
+		Parent:        opt.Parent,
 	}
 }
 

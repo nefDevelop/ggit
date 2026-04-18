@@ -7,7 +7,7 @@ import (
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/database"
-	apiv1types "gogs.io/gogs/internal/route/api/v1/types"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 )
 
 // IssueService define las operaciones de negocio para issues y pull requests.
@@ -54,8 +54,8 @@ func (s *issueService) CreateIssue(ctx context.Context, repo *database.Repositor
 		log.Error("MailParticipants: %v", err)
 	}
 
-	if err = database.PrepareWebhooks(repo, database.HookEventTypeIssues, &apiv1types.WebhookIssuesPayload{
-		Action:     apiv1types.WebhookIssueOpened,
+	if err = database.PrepareWebhooks(repo, database.HookEventTypeIssues, &apiv2types.WebhookIssuesPayload{
+		Action:     apiv2types.WebhookIssueOpened,
 		Index:      issue.Index,
 		Issue:      issue.APIFormat(),
 		Repository: repo.APIFormatLegacy(nil),
@@ -91,8 +91,8 @@ func (s *issueService) CreatePullRequest(ctx context.Context, repo *database.Rep
 		log.Error("MailParticipants: %v", err)
 	}
 
-	if err = database.PrepareWebhooks(repo, database.HookEventTypePullRequest, &apiv1types.WebhookPullRequestPayload{
-		Action:      apiv1types.WebhookIssueOpened,
+	if err = database.PrepareWebhooks(repo, database.HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
+		Action:      apiv2types.WebhookIssueOpened,
 		Index:       pull.Index,
 		PullRequest: pr.APIFormat(),
 		Repository:  repo.APIFormatLegacy(nil),
