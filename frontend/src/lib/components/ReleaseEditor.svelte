@@ -12,10 +12,9 @@
   let isDraft = $state(release?.is_draft || false);
   let isPrerelease = $state(release?.is_prerelease || false);
   
-  let branches = $state<any[]>([]);
-  let tags = $state<any[]>([]);
-  let attachments = $state<any[]>(release?.attachments || []);
-  let uploading = $state(false);
+  let branches = $state([] as any[]);
+  let tags = $state([] as any[]);
+  let attachments = $state((release?.attachments || []) as any[]);  let uploading = $state(false);
   let saving = $state(false);
 
   async function fetchData() {

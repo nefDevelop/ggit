@@ -1,3 +1,4 @@
+<script lang="ts">
   import { onMount } from 'svelte';
   import { apiFetch } from '$lib/api';
   
@@ -10,11 +11,10 @@
 
   // 2FA State
   let twoFactorEnabled = $state(false);
-  let enrollment = $state<any>(null);
+  let enrollment = $state(null as any);
   let passcode = $state('');
-  let recoveryCodes = $state<string[]>([]);
+  let recoveryCodes = $state([] as string[]);
   let showRecovery = $state(false);
-
   async function updatePassword() {
     if (newPassword !== repeatPassword) {
       message = 'Passwords do not match.';

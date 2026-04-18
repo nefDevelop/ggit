@@ -12,13 +12,28 @@ import (
 	"gogs.io/gogs/internal/lfsx"
 )
 
-// LFSObject is the relation between an LFS object and a repository.
+// LFSObject represents an LFS object.
 type LFSObject struct {
-	RepoID    int64        `gorm:"primaryKey;auto_increment:false"`
-	OID       lfsx.OID     `gorm:"primaryKey;column:oid"`
-	Size      int64        `gorm:"not null"`
-	Storage   lfsx.Storage `gorm:"not null"`
-	CreatedAt time.Time    `gorm:"not null"`
+	ID    int64  `gorm:"primaryKey"`
+	OID   lfsx.OID `xorm:"UNIQUE(s) INDEX" gorm:"uniqueIndex:lfs_object_oid_repo_unique;index;not null"`
+	Size  int64  `xorm:"NOT NULL" gorm:"not null"`
+	RepoID      int64        `xorm:"UNIQUE(s)" gorm:"uniqueIndex:lfs_object_oid_repo_unique;not null"`
+	Storage     lfsx.Storage `xorm:"NOT NULL" gorm:"not null"`
+	Created     time.Time    `xorm:"-" json:"-" gorm:"-"`
+	CreatedUnix int64
+}
+
+// BeforeCreate implements the GORM create hook.
+func (o *LFSObject) BeforeCreate(tx *gorm.DB) error {
+	if o.CreatedUnix == 0 {
+		o.CreatedUnix = tx.NowFunc().Unix()
+	}
+	return nil
+}
+// AfterFind implements the GORM query hook.
+func (o *LFSObject) AfterFind(_ *gorm.DB) error {
+	o.Created = time.Unix(o.CreatedUnix, 0).Local()
+	return nil
 }
 
 // LFSStore is the storage layer for LFS objects.

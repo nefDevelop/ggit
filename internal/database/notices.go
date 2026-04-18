@@ -69,12 +69,12 @@ func (t NoticeType) TrStr() string {
 	return "admin.notices.type_" + strconv.Itoa(int(t))
 }
 
-// Notice represents a system notice for admin.
+// Notice represents a system notice.
 type Notice struct {
-	ID          int64 `gorm:"primaryKey"`
-	Type        NoticeType
-	Description string    `xorm:"TEXT" gorm:"type:TEXT"`
-	Created     time.Time `xorm:"-" gorm:"-" json:"-"`
+	ID          int64      `gorm:"primaryKey"`
+	Type        NoticeType `gorm:"not null"`
+	Description string     `xorm:"TEXT" gorm:"type:TEXT"`
+	Created     time.Time  `xorm:"-" json:"-" gorm:"-"`
 	CreatedUnix int64
 }
 
@@ -87,7 +87,7 @@ func (n *Notice) BeforeCreate(tx *gorm.DB) error {
 }
 
 // AfterFind implements the GORM query hook.
-func (n *Notice) AfterFind(*gorm.DB) error {
+func (n *Notice) AfterFind(_ *gorm.DB) error {
 	n.Created = time.Unix(n.CreatedUnix, 0).Local()
 	return nil
 }

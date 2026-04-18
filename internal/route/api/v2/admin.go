@@ -24,7 +24,7 @@ func GetAdminAuditLog(c *context.APIContext) {
 		page = 1
 	}
 
-	actions, err := database.Handle.Actions().ListAuditLog(c.Context(), page)
+	actions, err := database.Handle.Actions().ListAuditLog(c.Req.Context(), page)
 	if err != nil {
 		c.Error(err, "list audit log")
 		return

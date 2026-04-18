@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/gogs/git-module"
+	"gorm.io/gorm"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/cryptox"
@@ -398,9 +399,9 @@ func (r *Repository) DeleteRepoFile(doer *User, opts DeleteRepoFileOptions) (err
 
 // Upload represent a uploaded file to a repo to be deleted when moved
 type Upload struct {
-	ID   int64
-	UUID string `xorm:"uuid UNIQUE"`
-	Name string
+	ID   int64  `gorm:"primaryKey"`
+	UUID string `xorm:"uuid UNIQUE" gorm:"unique;not null"`
+	Name string `gorm:"not null"`
 }
 
 // UploadLocalPath returns where uploads is stored in local file system based on given UUID.
@@ -443,7 +444,7 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 		return nil, errors.Newf("copy: %v", err)
 	}
 
-	if _, err := x.Insert(upload); err != nil {
+	if err = Handle.db.Create(upload).Error; err != nil {
 		return nil, err
 	}
 
@@ -451,12 +452,13 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 }
 
 func GetUploadByUUID(uuid string) (*Upload, error) {
-	upload := &Upload{UUID: uuid}
-	has, err := x.Get(upload)
+	upload := new(Upload)
+	err := Handle.db.Where("uuid = ?", uuid).First(upload).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUploadNotExist{0, uuid}
+		}
 		return nil, err
-	} else if !has {
-		return nil, ErrUploadNotExist{0, uuid}
 	}
 	return upload, nil
 }
@@ -468,7 +470,8 @@ func GetUploadsByUUIDs(uuids []string) ([]*Upload, error) {
 
 	// Silently drop invalid uuids.
 	uploads := make([]*Upload, 0, len(uuids))
-	return uploads, x.In("uuid", uuids).Find(&uploads)
+	err := Handle.db.Where("uuid IN (?)", uuids).Find(&uploads).Error
+	return uploads, err
 }
 
 func DeleteUploads(uploads ...*Upload) (err error) {
@@ -476,32 +479,28 @@ func DeleteUploads(uploads ...*Upload) (err error) {
 		return nil
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
-	}
-
-	ids := make([]int64, len(uploads))
-	for i := range uploads {
-		ids[i] = uploads[i].ID
-	}
-	if _, err = sess.In("id", ids).Delete(new(Upload)); err != nil {
-		return errors.Newf("delete uploads: %v", err)
-	}
-
-	for _, upload := range uploads {
-		localPath := upload.LocalPath()
-		if !osx.IsFile(localPath) {
-			continue
+	err = Handle.db.Transaction(func(tx *gorm.DB) error {
+		ids := make([]int64, len(uploads))
+		for i := range uploads {
+			ids[i] = uploads[i].ID
+		}
+		if err = tx.Where("id IN (?)", ids).Delete(new(Upload)).Error; err != nil {
+			return errors.Newf("delete uploads: %v", err)
 		}
 
-		if err := os.Remove(localPath); err != nil {
-			return errors.Newf("remove upload: %v", err)
-		}
-	}
+		for _, upload := range uploads {
+			localPath := upload.LocalPath()
+			if !osx.IsFile(localPath) {
+				continue
+			}
 
-	return sess.Commit()
+			if err := os.Remove(localPath); err != nil {
+				return errors.Newf("remove upload: %v", err)
+			}
+		}
+		return nil
+	})
+	return err
 }
 
 func DeleteUpload(u *Upload) error {

@@ -111,8 +111,8 @@
                   <button class="copy-btn" onclick={() => copyCloneUrl(repoData.clone_url)}>
                     <span class="material-symbols-rounded">content_copy</span>
                   </button>
-                <div class="archive-section">
-                  <span class="dropdown-header">Download Source</span>
+                  </div>
+                  <div class="archive-section">                  <span class="dropdown-header">Download Source</span>
                   <div class="archive-grid">
                     <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-btn tonal">
                       <span class="material-symbols-rounded">zip_box</span>

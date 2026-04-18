@@ -8,18 +8,34 @@ import (
 	"gorm.io/gorm"
 )
 
-// Topic represents a keyword assigned to a repository.
+// Topic represents a repository topic.
 type Topic struct {
-	ID         int64  `gorm:"primaryKey"`
-	Name       string `xorm:"UNIQUE" gorm:"unique;not null"`
-	UsageCount int    `xorm:"-" gorm:"-"`
+	ID          int64  `gorm:"primaryKey"`
+	Name        string `xorm:"UNIQUE" gorm:"unique;not null"`
+	NumRepos    int
+	CreatedUnix int64
+	UpdatedUnix int64
 }
 
-// RepoTopic represents the relation between a repository and a topic.
+// BeforeCreate implements the GORM create hook.
+func (t *Topic) BeforeCreate(tx *gorm.DB) error {
+	if t.CreatedUnix == 0 {
+		t.CreatedUnix = tx.NowFunc().Unix()
+		t.UpdatedUnix = t.CreatedUnix
+	}
+	return nil
+}
+
+// BeforeUpdate implements the GORM update hook.
+func (t *Topic) BeforeUpdate(tx *gorm.DB) error {
+	t.UpdatedUnix = tx.NowFunc().Unix()
+	return nil
+}
+
+// RepoTopic represents a repository and its topic.
 type RepoTopic struct {
-	ID      int64 `gorm:"primaryKey"`
-	RepoID  int64 `xorm:"UNIQUE(s) INDEX" gorm:"uniqueIndex:repo_topic_unique;index"`
-	TopicID int64 `xorm:"UNIQUE(s) INDEX" gorm:"uniqueIndex:repo_topic_unique;index"`
+	TopicID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:repo_topic_unique;not null"`
+	RepoID  int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:repo_topic_unique;not null"`
 }
 
 // GetTopicsByRepoID returns all topics associated with the given repository.

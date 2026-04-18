@@ -6,8 +6,7 @@ import (
 	"strings"
 
 	"github.com/cockroachdb/errors"
-	"xorm.io/builder"
-	"xorm.io/xorm"
+	"gorm.io/gorm"
 
 	"gogs.io/gogs/internal/errx"
 	"gogs.io/gogs/internal/repox"
@@ -26,32 +25,32 @@ func (org *User) IsOrgMember(uid int64) bool {
 	return org.IsOrganization() && IsOrganizationMember(org.ID, uid)
 }
 
-func (org *User) getTeam(e Engine, name string) (*Team, error) {
-	return getTeamOfOrgByName(e, org.ID, name)
+func (org *User) getTeam(tx *gorm.DB, name string) (*Team, error) {
+	return getTeamOfOrgByName(tx, org.ID, name)
 }
 
 // GetTeamOfOrgByName returns named team of organization.
 func (org *User) GetTeam(name string) (*Team, error) {
-	return org.getTeam(x, name)
+	return org.getTeam(Handle.db, name)
 }
 
-func (org *User) getOwnerTeam(e Engine) (*Team, error) {
-	return org.getTeam(e, ownerTeamName)
+func (org *User) getOwnerTeam(tx *gorm.DB) (*Team, error) {
+	return org.getTeam(tx, ownerTeamName)
 }
 
 // GetOwnerTeam returns owner team of organization.
 func (org *User) GetOwnerTeam() (*Team, error) {
-	return org.getOwnerTeam(x)
+	return org.getOwnerTeam(Handle.db)
 }
 
-func (org *User) getTeams(e Engine) (err error) {
-	org.Teams, err = getTeamsByOrgID(e, org.ID)
+func (org *User) getTeams(tx *gorm.DB) (err error) {
+	org.Teams, err = getTeamsByOrgID(tx, org.ID)
 	return err
 }
 
 // GetTeams returns all teams that belong to organization.
 func (org *User) GetTeams() error {
-	return org.getTeams(x)
+	return org.getTeams(Handle.db)
 }
 
 // TeamsHaveAccessToRepo returns all teams that have given access level to the repository.
@@ -62,12 +61,12 @@ func (org *User) TeamsHaveAccessToRepo(repoID int64, mode AccessMode) ([]*Team, 
 // GetOrgOwner returns the first owner of the organization.
 func (org *User) GetOrgOwner() (*User, error) {
 	ou := new(OrgUser)
-	has, err := x.Where("org_id = ?", org.ID).And("is_owner = ?", true).Asc("id").Get(ou)
+	err := Handle.db.Where("org_id = ? AND is_owner = ?", org.ID, true).Order("id ASC").First(ou).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("organization has no owner")
+		}
 		return nil, err
-	}
-	if !has {
-		return nil, errors.New("organization has no owner")
 	}
 	return Handle.Users().GetByID(context.TODO(), ou.UID)
 }
@@ -99,13 +98,13 @@ func (org *User) RemoveMember(uid int64) error {
 	return RemoveOrgUser(org.ID, uid)
 }
 
-func (org *User) removeOrgRepo(e Engine, repoID int64) error {
-	return removeOrgRepo(e, org.ID, repoID)
+func (org *User) removeOrgRepo(tx *gorm.DB, repoID int64) error {
+	return removeOrgRepo(tx, org.ID, repoID)
 }
 
 // RemoveOrgRepo removes all team-repository relations of organization.
 func (org *User) RemoveOrgRepo(repoID int64) error {
-	return org.removeOrgRepo(x, repoID)
+	return org.removeOrgRepo(Handle.db, repoID)
 }
 
 // CreateOrganization creates record of a new organization.
@@ -134,52 +133,48 @@ func CreateOrganization(org, owner *User) (err error) {
 	org.NumTeams = 1
 	org.NumMembers = 1
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
-	}
+	return Handle.db.Transaction(func(tx *gorm.DB) error {
+		if err = tx.Create(org).Error; err != nil {
+			return errors.Newf("insert organization: %v", err)
+		}
+		_ = userx.GenerateRandomAvatar(org.ID, org.Name, org.Email)
 
-	if _, err = sess.Insert(org); err != nil {
-		return errors.Newf("insert organization: %v", err)
-	}
-	_ = userx.GenerateRandomAvatar(org.ID, org.Name, org.Email)
+		// Add initial creator to organization and owner team.
+		if err = tx.Create(&OrgUser{
+			UID:      owner.ID,
+			OrgID:    org.ID,
+			IsOwner:  true,
+			NumTeams: 1,
+		}).Error; err != nil {
+			return errors.Newf("insert org-user relation: %v", err)
+		}
 
-	// Add initial creator to organization and owner team.
-	if _, err = sess.Insert(&OrgUser{
-		UID:      owner.ID,
-		OrgID:    org.ID,
-		IsOwner:  true,
-		NumTeams: 1,
-	}); err != nil {
-		return errors.Newf("insert org-user relation: %v", err)
-	}
+		// Create default owner team.
+		t := &Team{
+			OrgID:      org.ID,
+			LowerName:  strings.ToLower(ownerTeamName),
+			Name:       ownerTeamName,
+			Authorize:  AccessModeOwner,
+			NumMembers: 1,
+		}
+		if err = tx.Create(t).Error; err != nil {
+			return errors.Newf("insert owner team: %v", err)
+		}
 
-	// Create default owner team.
-	t := &Team{
-		OrgID:      org.ID,
-		LowerName:  strings.ToLower(ownerTeamName),
-		Name:       ownerTeamName,
-		Authorize:  AccessModeOwner,
-		NumMembers: 1,
-	}
-	if _, err = sess.Insert(t); err != nil {
-		return errors.Newf("insert owner team: %v", err)
-	}
+		if err = tx.Create(&TeamUser{
+			UID:    owner.ID,
+			OrgID:  org.ID,
+			TeamID: t.ID,
+		}).Error; err != nil {
+			return errors.Newf("insert team-user relation: %v", err)
+		}
 
-	if _, err = sess.Insert(&TeamUser{
-		UID:    owner.ID,
-		OrgID:  org.ID,
-		TeamID: t.ID,
-	}); err != nil {
-		return errors.Newf("insert team-user relation: %v", err)
-	}
+		if err = os.MkdirAll(repox.UserPath(org.Name), os.ModePerm); err != nil {
+			return errors.Newf("create directory: %v", err)
+		}
 
-	if err = os.MkdirAll(repox.UserPath(org.Name), os.ModePerm); err != nil {
-		return errors.Newf("create directory: %v", err)
-	}
-
-	return sess.Commit()
+		return nil
+	})
 }
 
 // GetOrgByName returns organization by given name.
@@ -187,35 +182,34 @@ func GetOrgByName(name string) (*User, error) {
 	if name == "" {
 		return nil, ErrOrgNotExist
 	}
-	u := &User{
-		LowerName: strings.ToLower(name),
-		Type:      UserTypeOrganization,
-	}
-	has, err := x.Get(u)
+	u := new(User)
+	err := Handle.db.Where("lower_name = ? AND type = ?", strings.ToLower(name), UserTypeOrganization).First(u).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrOrgNotExist
+		}
 		return nil, err
-	} else if !has {
-		return nil, ErrOrgNotExist
 	}
 	return u, nil
 }
 
 // CountOrganizations returns number of organizations.
 func CountOrganizations() int64 {
-	count, _ := x.Where("type=1").Count(new(User))
+	var count int64
+	Handle.db.Model(new(User)).Where("type = ?", UserTypeOrganization).Count(&count)
 	return count
 }
 
 // Organizations returns number of organizations in given page.
 func Organizations(page, pageSize int) ([]*User, error) {
 	orgs := make([]*User, 0, pageSize)
-	return orgs, x.Limit(pageSize, (page-1)*pageSize).Where("type=1").Asc("id").Find(&orgs)
+	return orgs, Handle.db.Limit(pageSize).Offset((page-1)*pageSize).Where("type = ?", UserTypeOrganization).Order("id ASC").Find(&orgs).Error
 }
 
 // deleteBeans deletes all given beans, beans should contain delete conditions.
-func deleteBeans(e Engine, beans ...any) (err error) {
+func deleteBeans(tx *gorm.DB, beans ...any) (err error) {
 	for i := range beans {
-		if _, err = e.Delete(beans[i]); err != nil {
+		if err = tx.Delete(beans[i]).Error; err != nil {
 			return err
 		}
 	}
@@ -229,20 +223,16 @@ func DeleteOrganization(org *User) error {
 		return err
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
-	}
-
-	if err = deleteBeans(sess,
-		&Team{OrgID: org.ID},
-		&OrgUser{OrgID: org.ID},
-		&TeamUser{OrgID: org.ID},
-	); err != nil {
-		return errors.Newf("deleteBeans: %v", err)
-	}
-	return sess.Commit()
+	return Handle.db.Transaction(func(tx *gorm.DB) error {
+		if err = deleteBeans(tx,
+			&Team{OrgID: org.ID},
+			&OrgUser{OrgID: org.ID},
+			&TeamUser{OrgID: org.ID},
+		); err != nil {
+			return errors.Newf("deleteBeans: %v", err)
+		}
+		return nil
+	})
 }
 
 // ________                ____ ___
@@ -262,86 +252,90 @@ type OrgUser struct {
 	NumTeams int   `gorm:"not null;default:0"`
 }
 
-// IsOrganizationOwner returns true if given user is in the owner team.
+// IsOrganizationOwner returns true if given user is in the owner team of given organization.
 func IsOrganizationOwner(orgID, userID int64) bool {
-	has, _ := x.Where("is_owner = ?", true).And("uid = ?", userID).And("org_id = ?", orgID).Get(new(OrgUser))
-	return has
+	var count int64
+	Handle.db.Model(new(OrgUser)).Where("org_id = ? AND uid = ? AND is_owner = ?", orgID, userID, true).Count(&count)
+	return count > 0
 }
 
 // IsOrganizationMember returns true if given user is member of organization.
 func IsOrganizationMember(orgID, uid int64) bool {
-	has, _ := x.Where("uid=?", uid).And("org_id=?", orgID).Get(new(OrgUser))
-	return has
+	var count int64
+	Handle.db.Model(new(OrgUser)).Where("org_id = ? AND uid = ?", orgID, uid).Count(&count)
+	return count > 0
 }
 
-// IsPublicMembership returns true if given user public his/her membership.
+// IsPublicMembership returns true if given user has public membership of organization.
 func IsPublicMembership(orgID, uid int64) bool {
-	has, _ := x.Where("uid=?", uid).And("org_id=?", orgID).And("is_public=?", true).Get(new(OrgUser))
-	return has
+	var count int64
+	Handle.db.Model(new(OrgUser)).Where("org_id = ? AND uid = ? AND is_public = ?", orgID, uid, true).Count(&count)
+	return count > 0
 }
 
-func getOrgsByUserID(sess *xorm.Session, userID int64, showAll bool) ([]*User, error) {
+func getOrgsByUserID(tx *gorm.DB, userID int64, showAll bool) ([]*User, error) {
 	orgs := make([]*User, 0, 10)
+	query := tx.Table("user").
+		Joins("JOIN org_user ON user.id = org_user.org_id").
+		Where("org_user.uid = ?", userID)
 	if !showAll {
-		sess.And("`org_user`.is_public=?", true)
+		query = query.Where("org_user.is_public = ?", true)
 	}
-	return orgs, sess.And("`org_user`.uid=?", userID).
-		Join("INNER", "`org_user`", "`org_user`.org_id=`user`.id").Find(&orgs)
+	return orgs, query.Order("user.id ASC").Find(&orgs).Error
 }
 
-// GetOrgsByUserID returns a list of organizations that the given user ID
-// has joined.
+// GetOrgsByUserID returns a list of organizations that the given user ID has joined.
 func GetOrgsByUserID(userID int64, showAll bool) ([]*User, error) {
-	return getOrgsByUserID(x.NewSession(), userID, showAll)
+	return getOrgsByUserID(Handle.db, userID, showAll)
 }
 
-func getOwnedOrgsByUserID(sess *xorm.Session, userID int64) ([]*User, error) {
-	orgs := make([]*User, 0, 10)
-	return orgs, sess.Where("`org_user`.uid=?", userID).And("`org_user`.is_owner=?", true).
-		Join("INNER", "`org_user`", "`org_user`.org_id=`user`.id").Find(&orgs)
-}
 
 // GetOwnedOrgsByUserID returns a list of organizations are owned by given user ID.
 func GetOwnedOrgsByUserID(userID int64) ([]*User, error) {
-	sess := x.NewSession()
-	return getOwnedOrgsByUserID(sess, userID)
+	return getOwnedOrgsByUserID(Handle.db, userID)
+}
+
+func getOwnedOrgsByUserID(tx *gorm.DB, userID int64) ([]*User, error) {
+	orgs := make([]*User, 0, 10)
+	return orgs, tx.Table("user").
+		Joins("JOIN org_user ON user.id = org_user.org_id").
+		Where("org_user.uid = ? AND org_user.is_owner = ?", userID, true).
+		Order("user.id ASC").Find(&orgs).Error
 }
 
 // GetOwnedOrganizationsByUserIDDesc returns a list of organizations are owned by
 // given user ID, ordered descending by the given condition.
 func GetOwnedOrgsByUserIDDesc(userID int64, desc string) ([]*User, error) {
-	sess := x.NewSession()
-	return getOwnedOrgsByUserID(sess.Desc(desc), userID)
+	return getOwnedOrgsByUserID(Handle.db.Order(desc+" DESC"), userID)
 }
 
-func getOrgUsersByOrgID(e Engine, orgID int64, limit int) ([]*OrgUser, error) {
+func getOrgUsersByOrgID(tx *gorm.DB, orgID int64, limit int) ([]*OrgUser, error) {
 	orgUsers := make([]*OrgUser, 0, 10)
-
-	sess := e.Where("org_id=?", orgID)
+	query := tx.Where("org_id = ?", orgID)
 	if limit > 0 {
-		sess = sess.Limit(limit)
+		query = query.Limit(limit)
 	}
-	return orgUsers, sess.Find(&orgUsers)
+	return orgUsers, query.Find(&orgUsers).Error
 }
 
 // GetOrgUsersByOrgID returns all organization-user relations by organization ID.
 func GetOrgUsersByOrgID(orgID int64, limit int) ([]*OrgUser, error) {
-	return getOrgUsersByOrgID(x, orgID, limit)
+	return getOrgUsersByOrgID(Handle.db, orgID, limit)
 }
 
 // ChangeOrgUserStatus changes public or private membership status.
 func ChangeOrgUserStatus(orgID, uid int64, public bool) error {
 	ou := new(OrgUser)
-	has, err := x.Where("uid=?", uid).And("org_id=?", orgID).Get(ou)
+	err := Handle.db.Where("uid = ? AND org_id = ?", uid, orgID).First(ou).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
 		return err
-	} else if !has {
-		return nil
 	}
 
 	ou.IsPublic = public
-	_, err = x.ID(ou.ID).AllCols().Update(ou)
-	return err
+	return Handle.db.Model(ou).Update("is_public", public).Error
 }
 
 // AddOrgUser adds new user to given organization.
@@ -350,35 +344,28 @@ func AddOrgUser(orgID, uid int64) error {
 		return nil
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err := sess.Begin(); err != nil {
-		return err
-	}
+	return Handle.db.Transaction(func(tx *gorm.DB) error {
+		ou := &OrgUser{
+			UID:   uid,
+			OrgID: orgID,
+		}
 
-	ou := &OrgUser{
-		UID:   uid,
-		OrgID: orgID,
-	}
-
-	if _, err := sess.Insert(ou); err != nil {
-		return err
-	} else if _, err = sess.Exec("UPDATE `user` SET num_members = num_members + 1 WHERE id = ?", orgID); err != nil {
-		return err
-	}
-
-	return sess.Commit()
+		if err := tx.Create(ou).Error; err != nil {
+			return err
+		}
+		return tx.Model(new(User)).Where("id = ?", orgID).Update("num_members", gorm.Expr("num_members + 1")).Error
+	})
 }
 
 // RemoveOrgUser removes user from given organization.
 func RemoveOrgUser(orgID, userID int64) error {
 	ou := new(OrgUser)
-
-	has, err := x.Where("uid=?", userID).And("org_id=?", orgID).Get(ou)
+	err := Handle.db.Where("uid = ? AND org_id = ?", userID, orgID).First(ou).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
 		return errors.Newf("get org-user: %v", err)
-	} else if !has {
-		return nil
 	}
 
 	user, err := Handle.Users().GetByID(context.TODO(), userID)
@@ -407,71 +394,67 @@ func RemoveOrgUser(orgID, userID int64) error {
 		}
 	}
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err := sess.Begin(); err != nil {
-		return err
-	}
-
-	if _, err := sess.ID(ou.ID).Delete(ou); err != nil {
-		return err
-	} else if _, err = sess.Exec("UPDATE `user` SET num_members=num_members-1 WHERE id=?", orgID); err != nil {
-		return err
-	}
-
-	// Delete all repository accesses and unwatch them.
-	repoIDs := make([]int64, 0, len(repos))
-	for i := range repos {
-		repoIDs = append(repoIDs, repos[i].ID)
-		if err = watchRepo(sess, user.ID, repos[i].ID, false); err != nil {
+	return Handle.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(ou).Error; err != nil {
 			return err
 		}
-	}
-
-	if len(repoIDs) > 0 {
-		if _, err = sess.Where("user_id = ?", user.ID).In("repo_id", repoIDs).Delete(new(Access)); err != nil {
+		if err = tx.Model(new(User)).Where("id = ?", orgID).Update("num_members", gorm.Expr("num_members - 1")).Error; err != nil {
 			return err
 		}
-	}
 
-	// Delete member in his/her teams.
-	teams, err := getUserTeams(sess, org.ID, user.ID)
-	if err != nil {
-		return err
-	}
-	for _, t := range teams {
-		if err = removeTeamMember(sess, org.ID, t.ID, user.ID); err != nil {
+		// Delete all repository accesses and unwatch them.
+		repoIDs := make([]int64, 0, len(repos))
+		for i := range repos {
+			repoIDs = append(repoIDs, repos[i].ID)
+			if err = watchRepo(tx, user.ID, repos[i].ID, false); err != nil {
+				return err
+			}
+		}
+
+		if len(repoIDs) > 0 {
+			if err = tx.Where("user_id = ? AND repo_id IN (?)", user.ID, repoIDs).Delete(new(Access)).Error; err != nil {
+				return err
+			}
+		}
+
+		// Delete member from his/her teams.
+		teams, err := getUserTeams(tx, org.ID, user.ID)
+		if err != nil {
 			return err
 		}
-	}
+		for _, t := range teams {
+			if err = removeTeamMember(tx, org.ID, t.ID, user.ID); err != nil {
+				return err
+			}
+		}
 
-	return sess.Commit()
+		return nil
+	})
 }
 
-func removeOrgRepo(e Engine, orgID, repoID int64) error {
-	_, err := e.Delete(&TeamRepo{
-		OrgID:  orgID,
-		RepoID: repoID,
-	})
-	return err
+func removeOrgRepo(tx *gorm.DB, orgID, repoID int64) error {
+	return tx.Where("org_id = ? AND repo_id = ?", orgID, repoID).Delete(new(TeamRepo)).Error
 }
 
 // RemoveOrgRepo removes all team-repository relations of given organization.
 func RemoveOrgRepo(orgID, repoID int64) error {
-	return removeOrgRepo(x, orgID, repoID)
+	return removeOrgRepo(Handle.db, orgID, repoID)
 }
 
-func (org *User) getUserTeams(e Engine, userID int64, cols ...string) ([]*Team, error) {
+func (org *User) getUserTeams(tx *gorm.DB, userID int64, cols ...string) ([]*Team, error) {
 	teams := make([]*Team, 0, org.NumTeams)
-	return teams, e.Where("team_user.org_id = ?", org.ID).
-		And("team_user.uid = ?", userID).
-		Join("INNER", "team_user", "team_user.team_id = team.id").
-		Cols(cols...).Find(&teams)
+	query := tx.Table("team").
+		Joins("JOIN team_user ON team.id = team_user.team_id").
+		Where("team_user.org_id = ? AND team_user.uid = ?", org.ID, userID)
+	if len(cols) > 0 {
+		query = query.Select(cols)
+	}
+	return teams, query.Find(&teams).Error
 }
 
 // GetUserTeamIDs returns of all team IDs of the organization that user is member of.
 func (org *User) GetUserTeamIDs(userID int64) ([]int64, error) {
-	teams, err := org.getUserTeams(x, userID, "team.id")
+	teams, err := org.getUserTeams(Handle.db, userID, "team.id")
 	if err != nil {
 		return nil, errors.Newf("getUserTeams [%d]: %v", userID, err)
 	}
@@ -486,7 +469,7 @@ func (org *User) GetUserTeamIDs(userID int64) ([]int64, error) {
 // GetTeams returns all teams that belong to organization,
 // and that the user has joined.
 func (org *User) GetUserTeams(userID int64) ([]*Team, error) {
-	return org.getUserTeams(x, userID)
+	return org.getUserTeams(Handle.db, userID)
 }
 
 // GetUserRepositories returns a range of repositories in organization which the user has access to,
@@ -497,39 +480,34 @@ func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repos
 		return nil, 0, errors.Newf("GetUserTeamIDs: %v", err)
 	}
 	if len(teamIDs) == 0 {
-		// user has no team but "IN ()" is invalid SQL
-		teamIDs = []int64{-1} // there is no team with id=-1
+		teamIDs = []int64{-1}
 	}
 
 	var teamRepoIDs []int64
-	if err = x.Table("team_repo").In("team_id", teamIDs).Distinct("repo_id").Find(&teamRepoIDs); err != nil {
+	if err = Handle.db.Table("team_repo").Where("team_id IN (?)", teamIDs).Distinct("repo_id").Pluck("repo_id", &teamRepoIDs).Error; err != nil {
 		return nil, 0, errors.Newf("get team repository IDs: %v", err)
 	}
 	if len(teamRepoIDs) == 0 {
-		// team has no repo but "IN ()" is invalid SQL
-		teamRepoIDs = []int64{-1} // there is no repo with id=-1
+		teamRepoIDs = []int64{-1}
 	}
 
 	if page <= 0 {
 		page = 1
 	}
 	repos := make([]*Repository, 0, pageSize)
-	if err = x.Where("owner_id = ?", org.ID).
-		And(builder.Or(
-			builder.And(builder.Expr("is_private = ?", false), builder.Expr("is_unlisted = ?", false)),
-			builder.In("id", teamRepoIDs))).
-		Desc("updated_unix").
-		Limit(pageSize, (page-1)*pageSize).
-		Find(&repos); err != nil {
+	query := Handle.db.Where("owner_id = ?", org.ID).
+		Where("(is_private = ? AND is_unlisted = ?) OR id IN (?)", false, false, teamRepoIDs).
+		Order("updated_unix DESC").
+		Limit(pageSize).Offset((page - 1) * pageSize)
+
+	if err = query.Find(&repos).Error; err != nil {
 		return nil, 0, errors.Newf("get user repositories: %v", err)
 	}
 
-	repoCount, err := x.Where("owner_id = ?", org.ID).
-		And(builder.Or(
-			builder.Expr("is_private = ?", false),
-			builder.In("id", teamRepoIDs))).
-		Count(new(Repository))
-	if err != nil {
+	var repoCount int64
+	if err = Handle.db.Model(new(Repository)).Where("owner_id = ?", org.ID).
+		Where("is_private = ? OR id IN (?)", false, teamRepoIDs).
+		Count(&repoCount).Error; err != nil {
 		return nil, 0, errors.Newf("count user repositories: %v", err)
 	}
 
@@ -547,22 +525,19 @@ func (org *User) GetUserMirrorRepositories(userID int64) ([]*Repository, error) 
 	}
 
 	var teamRepoIDs []int64
-	err = x.Table("team_repo").In("team_id", teamIDs).Distinct("repo_id").Find(&teamRepoIDs)
-	if err != nil {
+	if err = Handle.db.Table("team_repo").Where("team_id IN (?)", teamIDs).Distinct("repo_id").Pluck("repo_id", &teamRepoIDs).Error; err != nil {
 		return nil, errors.Newf("get team repository ids: %v", err)
 	}
 	if len(teamRepoIDs) == 0 {
-		// team has no repo but "IN ()" is invalid SQL
-		teamRepoIDs = []int64{-1} // there is no repo with id=-1
+		teamRepoIDs = []int64{-1}
 	}
 
 	repos := make([]*Repository, 0, 10)
-	if err = x.Where("owner_id = ?", org.ID).
-		And("is_private = ?", false).
-		Or(builder.In("id", teamRepoIDs)).
-		And("is_mirror = ?", true). // Don't move up because it's an independent condition
-		Desc("updated_unix").
-		Find(&repos); err != nil {
+	err = Handle.db.Where("owner_id = ?", org.ID).
+		Where("(is_private = ? OR id IN (?)) AND is_mirror = ?", false, teamRepoIDs, true).
+		Order("updated_unix DESC").
+		Find(&repos).Error
+	if err != nil {
 		return nil, errors.Newf("get user repositories: %v", err)
 	}
 	return repos, nil

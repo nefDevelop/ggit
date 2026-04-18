@@ -9,11 +9,10 @@
   let contentType = $state(hook?.content_type || 'json');
   let secret = $state(hook?.secret || '');
   let active = $state(hook ? hook.active : true);
-  
-  let events = $state<string[]>(hook?.events || ['push']);
-  
-  let submitting = $state(false);
-  let error = $state('');
+
+  let events = $state((hook?.events || ['push']) as string[]);
+
+  let submitting = $state(false);  let error = $state('');
 
   const availableEvents = [
     { id: 'push', label: 'Push Events', desc: 'Any git push to the repository.' },

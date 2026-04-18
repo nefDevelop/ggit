@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
-	"xorm.io/xorm"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
@@ -18,20 +18,20 @@ import (
 
 // Release represents a release of repository.
 type Release struct {
-	ID               int64
-	RepoID           int64
+	ID               int64 `gorm:"primaryKey"`
+	RepoID           int64 `gorm:"index"`
 	Repo             *Repository `xorm:"-" json:"-" gorm:"-"`
-	PublisherID      int64
-	Publisher        *User `xorm:"-" json:"-" gorm:"-"`
-	TagName          string
-	LowerTagName     string
-	Target           string
+	PublisherID      int64       `gorm:"index"`
+	Publisher        *User       `xorm:"-" json:"-" gorm:"-"`
+	TagName          string      `gorm:"not null"`
+	LowerTagName     string      `gorm:"index;not null"`
+	Target           string      `gorm:"not null"`
 	Title            string
-	Sha1             string `xorm:"VARCHAR(40)"`
+	Sha1             string `xorm:"VARCHAR(40)" gorm:"type:VARCHAR(40)"`
 	NumCommits       int64
 	NumCommitsBehind int64  `xorm:"-" json:"-" gorm:"-"`
-	Note             string `xorm:"TEXT"`
-	IsDraft          bool   `xorm:"NOT NULL DEFAULT false"`
+	Note             string `xorm:"TEXT" gorm:"type:TEXT"`
+	IsDraft          bool   `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:false"`
 	IsPrerelease     bool
 
 	Created     time.Time `xorm:"-" json:"-" gorm:"-"`
@@ -40,29 +40,30 @@ type Release struct {
 	Attachments []*Attachment `xorm:"-" json:"-" gorm:"-"`
 }
 
-func (r *Release) BeforeInsert() {
+// BeforeCreate implements the GORM create hook.
+func (r *Release) BeforeCreate(tx *gorm.DB) error {
 	if r.CreatedUnix == 0 {
-		r.CreatedUnix = time.Now().Unix()
+		r.CreatedUnix = tx.NowFunc().Unix()
 	}
+	return nil
 }
 
-func (r *Release) AfterSet(colName string, _ xorm.Cell) {
-	switch colName {
-	case "created_unix":
-		r.Created = time.Unix(r.CreatedUnix, 0).Local()
-	}
+// AfterFind implements the GORM query hook.
+func (r *Release) AfterFind(_ *gorm.DB) error {
+	r.Created = time.Unix(r.CreatedUnix, 0).Local()
+	return nil
 }
 
-func (r *Release) loadAttributes(e Engine) (err error) {
+func (r *Release) loadAttributes(tx *gorm.DB) (err error) {
 	if r.Repo == nil {
-		r.Repo, err = getRepositoryByID(e, r.RepoID)
+		r.Repo, err = getRepositoryByID(tx, r.RepoID)
 		if err != nil {
 			return errors.Newf("getRepositoryByID [repo_id: %d]: %v", r.RepoID, err)
 		}
 	}
 
 	if r.Publisher == nil {
-		r.Publisher, err = getUserByID(e, r.PublisherID)
+		r.Publisher, err = getUserByID(tx, r.PublisherID)
 		if err != nil {
 			if IsErrUserNotExist(err) {
 				r.PublisherID = -1
@@ -74,7 +75,7 @@ func (r *Release) loadAttributes(e Engine) (err error) {
 	}
 
 	if r.Attachments == nil {
-		r.Attachments, err = getAttachmentsByReleaseID(e, r.ID)
+		r.Attachments, err = getAttachmentsByReleaseID(tx, r.ID)
 		if err != nil {
 			return errors.Newf("getAttachmentsByReleaseID [%d]: %v", r.ID, err)
 		}
@@ -84,7 +85,7 @@ func (r *Release) loadAttributes(e Engine) (err error) {
 }
 
 func (r *Release) LoadAttributes() error {
-	return r.loadAttributes(x)
+	return r.loadAttributes(Handle.db)
 }
 
 // This method assumes some fields assigned with values:
@@ -109,7 +110,9 @@ func IsReleaseExist(repoID int64, tagName string) (bool, error) {
 		return false, nil
 	}
 
-	return x.Get(&Release{RepoID: repoID, LowerTagName: strings.ToLower(tagName)})
+	var count int64
+	err := Handle.db.Model(new(Release)).Where("repo_id = ? AND lower_tag_name = ?", repoID, strings.ToLower(tagName)).Count(&count).Error
+	return count > 0, err
 }
 
 func createTag(gitRepo *git.Repository, r *Release) error {
@@ -170,24 +173,20 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 	}
 	r.LowerTagName = strings.ToLower(r.TagName)
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
-	}
-
-	if _, err = sess.Insert(r); err != nil {
-		return errors.Newf("insert: %v", err)
-	}
-
-	if len(uuids) > 0 {
-		if _, err = sess.In("uuid", uuids).Cols("release_id").Update(&Attachment{ReleaseID: r.ID}); err != nil {
-			return errors.Newf("link attachments: %v", err)
+	err = Handle.db.Transaction(func(tx *gorm.DB) error {
+		if err = tx.Create(r).Error; err != nil {
+			return errors.Newf("insert: %v", err)
 		}
-	}
 
-	if err = sess.Commit(); err != nil {
-		return errors.Newf("commit: %v", err)
+		if len(uuids) > 0 {
+			if err = tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID).Error; err != nil {
+				return errors.Newf("link attachments: %v", err)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
 
 	// Only send webhook when actually published, skip drafts
@@ -223,15 +222,12 @@ func (ErrReleaseNotExist) NotFound() bool {
 
 // GetRelease returns release by given ID.
 func GetRelease(repoID int64, tagName string) (*Release, error) {
-	isExist, err := IsReleaseExist(repoID, tagName)
+	r := new(Release)
+	err := Handle.db.Where("repo_id = ? AND lower_tag_name = ?", repoID, strings.ToLower(tagName)).First(r).Error
 	if err != nil {
-		return nil, err
-	} else if !isExist {
-		return nil, ErrReleaseNotExist{args: map[string]any{"tag": tagName}}
-	}
-
-	r := &Release{RepoID: repoID, LowerTagName: strings.ToLower(tagName)}
-	if _, err = x.Get(r); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrReleaseNotExist{args: map[string]any{"tag": tagName}}
+		}
 		return nil, errors.Newf("get: %v", err)
 	}
 
@@ -241,11 +237,12 @@ func GetRelease(repoID int64, tagName string) (*Release, error) {
 // GetReleaseByID returns release with given ID.
 func GetReleaseByID(id int64) (*Release, error) {
 	r := new(Release)
-	has, err := x.ID(id).Get(r)
+	err := Handle.db.Where("id = ?", id).First(r).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrReleaseNotExist{args: map[string]any{"releaseID": id}}
+		}
 		return nil, err
-	} else if !has {
-		return nil, ErrReleaseNotExist{args: map[string]any{"releaseID": id}}
 	}
 
 	return r, r.LoadAttributes()
@@ -255,24 +252,27 @@ func GetReleaseByID(id int64) (*Release, error) {
 // If matches is not empty, only published releases in matches will be returned.
 // In any case, drafts won't be returned by this function.
 func GetPublishedReleasesByRepoID(repoID int64, matches ...string) ([]*Release, error) {
-	sess := x.Where("repo_id = ?", repoID).And("is_draft = ?", false).Desc("created_unix")
-	if len(matches) > 0 {
-		sess.In("tag_name", matches)
-	}
 	releases := make([]*Release, 0, 5)
-	return releases, sess.Find(&releases, new(Release))
+	query := Handle.db.Where("repo_id = ? AND is_draft = ?", repoID, false).Order("created_unix DESC")
+	if len(matches) > 0 {
+		query = query.Where("tag_name IN (?)", matches)
+	}
+	err := query.Find(&releases).Error
+	return releases, err
 }
 
 // GetReleasesByRepoID returns a list of all releases (including drafts) of given repository.
 func GetReleasesByRepoID(repoID int64) ([]*Release, error) {
 	releases := make([]*Release, 0)
-	return releases, x.Where("repo_id = ?", repoID).Find(&releases)
+	err := Handle.db.Where("repo_id = ?", repoID).Find(&releases).Error
+	return releases, err
 }
 
 // GetDraftReleasesByRepoID returns all draft releases of repository.
 func GetDraftReleasesByRepoID(repoID int64) ([]*Release, error) {
 	releases := make([]*Release, 0)
-	return releases, x.Where("repo_id = ?", repoID).And("is_draft = ?", true).Find(&releases)
+	err := Handle.db.Where("repo_id = ? AND is_draft = ?", repoID, true).Find(&releases).Error
+	return releases, err
 }
 
 type ReleaseSorter struct {
@@ -309,29 +309,23 @@ func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bo
 
 	r.PublisherID = doer.ID
 
-	sess := x.NewSession()
-	defer sess.Close()
-	if err = sess.Begin(); err != nil {
-		return err
-	}
-	if _, err = sess.ID(r.ID).AllCols().Update(r); err != nil {
-		return errors.Newf("Update: %v", err)
-	}
-
-	// Unlink all current attachments and link back later if still valid
-	if _, err = sess.Exec("UPDATE attachment SET release_id = 0 WHERE release_id = ?", r.ID); err != nil {
-		return errors.Newf("unlink current attachments: %v", err)
-	}
-
-	if len(uuids) > 0 {
-		if _, err = sess.In("uuid", uuids).Cols("release_id").Update(&Attachment{ReleaseID: r.ID}); err != nil {
-			return errors.Newf("link attachments: %v", err)
+	return Handle.db.Transaction(func(tx *gorm.DB) error {
+		if err = tx.Model(r).Updates(r).Error; err != nil {
+			return errors.Newf("Update: %v", err)
 		}
-	}
 
-	if err = sess.Commit(); err != nil {
-		return errors.Newf("commit: %v", err)
-	}
+		// Unlink all current attachments and link back later if still valid
+		if err = tx.Model(new(Attachment)).Where("release_id = ?", r.ID).Update("release_id", 0).Error; err != nil {
+			return errors.Newf("unlink current attachments: %v", err)
+		}
+
+		if len(uuids) > 0 {
+			if err = tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID).Error; err != nil {
+				return errors.Newf("link attachments: %v", err)
+			}
+		}
+		return nil
+	})
 
 	if !isPublish {
 		return nil
@@ -367,7 +361,7 @@ func DeleteReleaseOfRepoByID(repoID, id int64) error {
 		return errors.Newf("delete tag: %v", err)
 	}
 
-	if _, err = x.ID(rel.ID).Delete(new(Release)); err != nil {
+	if err = Handle.db.Where("id = ?", rel.ID).Delete(new(Release)).Error; err != nil {
 		return errors.Newf("delete: %v", err)
 	}
 

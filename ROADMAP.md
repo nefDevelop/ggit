@@ -1,6 +1,4 @@
-# Roadmap: Modernización de Ggit a Stack Moderno (Go/Gin + Svelte)
-
-Este documento describe el plan de acción paso a paso para la refactorización arquitectónica y modernización del repositorio, pasando de una arquitectura tradicional renderizada en el servidor (SSR con Macaron y Templates HTML) a una arquitectura moderna (API REST con Gin y Frontend reactivo con Svelte), además de incorporar nuevas funcionalidades de análisis de código.
+# Roadmap: Modernización  (Go/Gin + Svelte)
 
 ## Fase 1: Análisis de Código y Funcionalidades Base (Corto Plazo)
 **Objetivo:** Familiarizarse con el motor de Git interno (`internal/gitx`) y añadir valor inmediato sin romper la arquitectura actual.
@@ -81,8 +79,8 @@ Este documento describe el plan de acción paso a paso para la refactorización 
     *   [x] **Vista de Repositorio:** Navegador de archivos, visor de código (Chroma) e historial de commits. [COMPLETO]
     *   [x] **Colaboración:** Interfaz de Issues, Pull Requests y Wiki. [COMPLETO]
     *   [x] **Ajustes:** Panel de Configuración de Usuario y Repositorio. [COMPLETO]
-    *   [x] **Discovery & Exploration Suite** (Explore Repos/Users/Orgs) - **ZERO TEMPLATE**
-    *   [x] **Users and Organizations Suite** (Profiles, Dashboards, Settings, Teams, Members) - **ZERO TEMPLATE**
+    *   [x] **Discovery & Exploration Suite** (Explore Repos/Users/Orgs/Topics). [COMPLETO]
+    *   [x] **Users and Organizations Suite** (Profiles, Dashboards, Settings, Teams, Members). [COMPLETO]
     *   [x] **Administración:** Panel de Control Global para administradores. [COMPLETO]
     *   [x] **Avanzado de Repo:** Releases, etiquetas, visor de ramas y editor web. [COMPLETO]
 
@@ -138,3 +136,30 @@ Este documento describe el plan de acción paso a paso para la refactorización 
     *   [x] Desactivar/Eliminar `internal/route/api/v1` una vez confirmada la migración. [COMPLETO]
 *   [x] **Deploy Keys de Repositorio:**
     *   Añadir gestión de claves SSH específicas para repositorios (Solo lectura/Lectura-Escritura).
+*   [ ] **Web File Management (CRUD):** 
+    - Implementar creación de nuevos archivos directamente desde la interfaz.
+    - Soporte para subida de archivos (Drag & Drop).
+    - Opción de eliminar archivos y carpetas.
+
+## Fase 13: Inteligencia y Visualización (Próximo)
+**Objetivo:** Transformar Ggit de una herramienta de gestión a una plataforma de insights profundos.
+
+*   [ ] **Repository Insights:**
+    - Generación de gráficos de actividad (Commit Frequency) en SVG/Svelte.
+    - Listado dinámico de contribuidores con estadísticas de impacto.
+*   [ ] **Advanced Discovery:**
+    - Integración de filtros de tópicos y lenguajes en la búsqueda global (`GlobalSearch`).
+    - Sugerencias inteligentes de búsqueda basadas en el contexto.
+
+## Fase 14: Desconexión Total y Rebranding
+**Objetivo:** Eliminar cualquier rastro técnico de Gogs y consolidar la identidad de Ggit.
+
+*   [ ] **Unificación de Persistencia (XORM -> GORM):**
+    - Migrar el 100% de los modelos restantes a GORM para eliminar la dependencia de XORM.
+*   [ ] **Limpieza de Dependencias:**
+    - Eliminar rastros de Macaron (`inject`, `binding`) del `go.mod` mediante refactorización de servicios.
+*   [ ] **Refactor de Nomenclatura:**
+    - Actualizar `gogs.io/gogs` a `ggit.io/ggit` (o similar) en todo el core.
+    - Cambiar rutas por defecto (`gogs-repositories` -> `ggit-repositories`) en la configuración.
+*   [ ] **Zero Legacy Templates (Emails):**
+    - Migrar los templates de correo restantes a un sistema de renderizado más moderno o desacoplado.

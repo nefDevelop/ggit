@@ -41,12 +41,24 @@ func newLogWriter() (logger.Writer, error) {
 //
 // ⚠️ WARNING: This list is meant to be read-only.
 var Tables = []any{
-	new(Access), new(AccessToken), new(Action),
+	new(Access), new(AccessToken), new(Action), new(Attachment),
+	new(Collaboration), new(Comment),
+	new(DeployKey),
 	new(EmailAddress),
 	new(Follow),
-	new(LFSObject), new(LoginSource),
+	new(HookTask),
+	new(Issue), new(IssueLabel), new(IssueUser),
+	new(Label), new(LFSObject), new(LoginSource),
+	new(Milestone), new(Mirror),
 	new(Notice),
-	new(Topic), new(RepoTopic),
+	new(OrgUser),
+	new(ProtectBranch), new(ProtectBranchWhitelist), new(PublicKey), new(PullRequest),
+	new(Release), new(Repository), new(RepoTopic),
+	new(Star),
+	new(Team), new(TeamRepo), new(TeamUser), new(Topic), new(TwoFactor), new(TwoFactorRecoveryCode),
+	new(Upload), new(User),
+	new(Version),
+	new(Watch),
 }
 
 // NewConnection returns a new database connection with the given logger.
@@ -123,6 +135,10 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 	Handle = &DB{db: db}
 	return db, nil
 }
+
+// Engine is a type alias for *gorm.DB to maintain compatibility with legacy
+// function signatures that were using the XORM Engine interface.
+type Engine = *gorm.DB
 
 // DB is the database handler for the storage layer.
 type DB struct {
