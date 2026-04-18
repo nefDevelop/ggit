@@ -41,6 +41,7 @@ func CSRF() gin.HandlerFunc {
 
 		// Provide token to SPA/Frontend via a non-HttpOnly cookie
 		if c.Request.Method == http.MethodGet {
+			// Set cookie with explicit domain if possible, and Path=/
 			c.SetCookie("XSRF-TOKEN", token, 86400, "/", "", false, false)
 		}
 
@@ -55,6 +56,8 @@ func CSRF() gin.HandlerFunc {
 				c.Next()
 				return
 			}
+
+			log.Trace("CSRF Check Path: %s", c.Request.URL.Path)
 
 			sentToken := c.PostForm("_csrf")
 			if sentToken == "" {

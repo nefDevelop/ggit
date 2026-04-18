@@ -6,19 +6,19 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'http://127.0.0.1:3000',
+				target: 'http://localhost:3000',
 				changeOrigin: true
 			},
 			'/install': {
-				target: 'http://127.0.0.1:3000',
+				target: 'http://localhost:3000',
 				changeOrigin: true
 			},
 			'/avatars': {
-				target: 'http://127.0.0.1:3000',
+				target: 'http://localhost:3000',
 				changeOrigin: true
 			},
 			'/repo-avatars': {
-				target: 'http://127.0.0.1:3000',
+				target: 'http://localhost:3000',
 				changeOrigin: true
 			},
 		}

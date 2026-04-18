@@ -21,18 +21,18 @@ dev: clean-ports
 
 # Compila y corre el backend
 backend: build
-	@echo "Arrancando Backend Go en http://127.0.0.1:3000 ..."
+	@echo "Arrancando Backend Go en http://localhost:3000 ..."
 	./gogs web -p 3000
 
 # Corre el frontend de Svelte
 frontend:
-	@echo "Arrancando Frontend Svelte en http://127.0.0.1:5555 ..."
+	@echo "Arrancando Frontend Svelte en http://localhost:5555 ..."
 	@cd frontend && npm run dev -- --port 5555
 
 # Compila el binario
 build:
 	@echo "Compilando Gogs..."
-	@go build -o gogs ./cmd/gogs
+	@go build -o gogs ./cmd/ggit
 
 # Instalación de dependencias
 install:

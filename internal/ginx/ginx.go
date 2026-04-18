@@ -37,6 +37,14 @@ func New() *Engine {
 	}
 
 	store := cookie.NewStore([]byte(conf.Security.SecretKey))
+	store.Options(sessions.Options{
+		Path:     "/",
+		Domain:   "", // "" significa el dominio actual (localhost)
+		MaxAge:   86400,
+		Secure:   false,
+		HttpOnly: true,
+		SameSite: 0, // 0 = Default (Lax en navegadores modernos, pero dejamos que el navegador decida)
+	})
 	r.Use(sessions.Sessions("gogs_session", store))
 	r.Use(context.Contexter(context.NewStore()))
 	r.Use(CSRF())
