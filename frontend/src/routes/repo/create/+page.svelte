@@ -408,6 +408,24 @@
   .vm-info span { font-size: 0.85rem; color: var(--text-muted); }
   .dot { position: absolute; top: 1rem; right: 1rem; color: var(--primary-color); }
 
+  @media (max-width: 600px) {
+    .visibility-selector {
+      grid-template-columns: 1fr;
+    }
+    .vm-option {
+      padding: 1rem;
+    }
+    .hero-header {
+      padding: 2rem 1rem;
+    }
+    .hero-header h1 {
+      font-size: 1.8rem;
+    }
+    .form-section {
+      padding: 1.25rem !important;
+    }
+  }
+
   /* FANCY CHECKBOX */
   .fancy-checkbox {
     display: flex;

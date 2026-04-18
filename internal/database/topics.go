@@ -92,7 +92,7 @@ func (s *RepositoriesStore) ListPopularTopics(ctx context.Context, limit int) ([
 	var topics []*Topic
 	err := s.db.WithContext(ctx).
 		Table("topic").
-		Select("topic.*, COUNT(repo_topic.id) as usage_count").
+		Select("topic.*, COUNT(repo_topic.repo_id) as usage_count").
 		Joins("LEFT JOIN repo_topic ON repo_topic.topic_id = topic.id").
 		Group("topic.id").
 		Order("usage_count DESC").

@@ -304,7 +304,7 @@
   .version { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); }
 
   /* Mobile stays similar but at bottom */
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     .navigation-bar {
         width: 100vw;
         height: 70px;
@@ -316,10 +316,14 @@
         background: var(--md3-surface-container);
         border-top: 1px solid var(--border-color);
         align-items: center;
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(70px + env(safe-area-inset-bottom));
     }
-    .user-section-top, .brand-section-bottom, .item-label { display: none; }
+    .user-section-top, .brand-section-bottom, .item-label, .appearance-btn span:not(.material-symbols-rounded) { display: none; }
     .nav-links { flex-direction: row; width: 100%; justify-content: space-around; }
     .nav-item { padding: 0.5rem; }
+    .theme-trigger-section { padding: 0; margin: 0; }
+    .appearance-btn { width: auto; padding: 0.5rem; }
   }
 
   /* Theme Button Styles */

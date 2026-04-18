@@ -223,6 +223,16 @@
     border-bottom: 1px solid var(--border-color);
   }
 
+  @media (max-width: 1024px) {
+    .island-header-search {
+      padding: 1.5rem 1rem;
+      gap: 1rem;
+    }
+    .island-body {
+      padding: 1rem;
+    }
+  }
+
   .header-tools {
     display: flex;
     justify-content: space-between;
@@ -303,5 +313,8 @@
   .org-name { font-weight: 600; font-size: 0.9rem; }
 
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
-  @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 1024px) { 
+    .dashboard-grid { grid-template-columns: 1fr !important; } 
+    .hero-header { padding: 1.5rem 1rem; }
+  }
 </style>
