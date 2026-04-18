@@ -201,15 +201,26 @@
   .repos-island, .activity-island {
     display: flex;
     flex-direction: column;
-    height: 100%; /* Fill the fose */
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  .repos-island {
+    height: 100%;
+  }
+
+  .activity-island {
+    max-height: 40vh;
+    overflow-y: auto;
   }
 
   .island-header-search {
-    padding: 1.5rem 1.5rem 1rem;
+    padding: 2rem 1.5rem 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    background: rgba(255,255,255,0.02);
+    background: var(--surface-variant);
+    border-bottom: 1px solid var(--border-color);
   }
 
   .header-tools {
@@ -258,12 +269,19 @@
     padding: 1.5rem;
   }
 
+  .repos-island, .activity-island {
+    box-shadow: none !important;
+    border: 1px solid var(--border-color);
+    background: transparent !important;
+  }
+
   .repo-group-flat {
     display: flex;
     flex-direction: column;
-    background: rgba(0,0,0,0.2);
-    border-radius: 1rem;
+    background: var(--surface-variant);
+    border-radius: 1.25rem;
     overflow: hidden;
+    border: 1px solid var(--border-color);
   }
 
   .group-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); padding: 0 0.5rem 0.5rem; display: block; }

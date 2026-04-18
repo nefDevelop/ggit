@@ -25,8 +25,7 @@
       const res = await apiFetch('/api/v2/user/repos', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'X-Csrf-Token': getCsrfToken()
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           name,
@@ -50,318 +49,450 @@
   }
 </script>
 
-<div class="create-container">
-  <div class="island create-island">
-    <header class="create-header">
-      <div class="icon-circle">
-        <span class="material-symbols-rounded">add_box</span>
+<div class="create-wrapper">
+  <!-- HERO HEADER -->
+  <header class="hero-header">
+    <div class="hero-content">
+      <div class="icon-badge">
+        <span class="material-symbols-rounded">rocket_launch</span>
       </div>
-      <div class="title-stack">
-        <h1>Create New Repository</h1>
-        <p class="text-muted">A repository contains all your project's files and revision history.</p>
+      <div>
+        <h1>Nuevos Horizontes</h1>
+        <p>Estás a un paso de comenzar tu próximo gran proyecto.</p>
       </div>
-    </header>
+    </div>
+  </header>
 
-    <form class="create-form" onsubmit={handleSubmit}>
+  <main class="create-grid">
+    <!-- LEFT COLUMN: TIPS -->
+    <aside class="guidance-aside">
+      <div class="tip-card">
+        <span class="material-symbols-rounded icon-accent">lightbulb</span>
+        <h3>Consejo de Oro</h3>
+        <p>Los nombres cortos y descriptivos funcionan mejor. Usa guiones para separar palabras.</p>
+      </div>
+      
+      <div class="process-steps">
+        <div class="step active">
+          <div class="step-num">1</div>
+          <div class="step-text">Identidad del proyecto</div>
+        </div>
+        <div class="step" class:active={name.length > 0}>
+          <div class="step-num">2</div>
+          <div class="step-text">Privacidad y Acceso</div>
+        </div>
+        <div class="step" class:active={isPrivate}>
+          <div class="step-num">3</div>
+          <div class="step-text">Configuración Inicial</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT COLUMN: FORM -->
+    <form class="create-form-content" onsubmit={handleSubmit}>
       {#if errorMsg}
-        <div class="error-box">{errorMsg}</div>
+        <div class="error-toast">
+          <span class="material-symbols-rounded">error</span>
+          {errorMsg}
+        </div>
       {/if}
 
-      <div class="form-group">
-        <label for="repo-name">Repository Name <span class="required">*</span></label>
-        <input 
-          type="text" 
-          id="repo-name" 
-          bind:value={name} 
-          placeholder="e.g. awesome-project"
-          maxlength="100"
-          required
-        />
-        <p class="field-hint">Great repository names are short and memorable.</p>
-      </div>
-
-      <div class="form-group">
-        <label for="repo-desc">Description <span class="optional">(optional)</span></label>
-        <textarea 
-          id="repo-desc" 
-          bind:value={description} 
-          placeholder="What is this project about?"
-        ></textarea>
-      </div>
-
-      <div class="options-grid">
-        <label class="option-card" class:selected={!isPrivate}>
-          <input type="radio" name="visibility" bind:group={isPrivate} value={false} />
-          <div class="option-icon">
-            <span class="material-symbols-rounded">public</span>
+      <section class="form-section island">
+        <div class="section-header">
+          <span class="material-symbols-rounded">id_card</span>
+          <h2>Información Básica</h2>
+        </div>
+        
+        <div class="input-field">
+          <label for="repo-name">Nombre del Repositorio</label>
+          <div class="input-wrapper">
+            <span class="prefix">{authState.user?.username} /</span>
+            <input 
+              type="text" 
+              id="repo-name" 
+              bind:value={name} 
+              placeholder="mi-proyecto-increible"
+              required
+            />
           </div>
-          <div class="option-text">
-            <strong>Public</strong>
-            <p>Anyone on the internet can see this repository.</p>
-          </div>
-          {#if !isPrivate}
-            <span class="material-symbols-rounded check-icon">check_circle</span>
-          {/if}
-        </label>
+        </div>
 
-        <label class="option-card" class:selected={isPrivate}>
-          <input type="radio" name="visibility" bind:group={isPrivate} value={true} />
-          <div class="option-icon">
-            <span class="material-symbols-rounded">lock</span>
-          </div>
-          <div class="option-text">
-            <strong>Private</strong>
-            <p>Only you and people you choose can see this repo.</p>
-          </div>
-          {#if isPrivate}
-            <span class="material-symbols-rounded check-icon">check_circle</span>
-          {/if}
-        </label>
-      </div>
+        <div class="input-field">
+          <label for="repo-desc">Descripción <span class="optional">(opcional)</span></label>
+          <textarea 
+            id="repo-desc" 
+            bind:value={description} 
+            placeholder="¿De qué trata este repositorio?"
+          ></textarea>
+        </div>
+      </section>
 
-      <div class="checkbox-group island-mini">
-        <label class="checkbox-label">
+      <section class="form-section island">
+        <div class="section-header">
+          <span class="material-symbols-rounded">visibility</span>
+          <h2>Visibilidad</h2>
+        </div>
+        
+        <div class="visibility-selector">
+          <label class="vm-option" class:selected={!isPrivate}>
+            <input type="radio" bind:group={isPrivate} value={false} />
+            <span class="material-symbols-rounded vm-icon">public</span>
+            <div class="vm-info">
+              <strong>Público</strong>
+              <span>Visible para todos en el servidor.</span>
+            </div>
+            {#if !isPrivate}<span class="material-symbols-rounded dot">check_circle</span>{/if}
+          </label>
+
+          <label class="vm-option" class:selected={isPrivate}>
+            <input type="radio" bind:group={isPrivate} value={true} />
+            <span class="material-symbols-rounded vm-icon">lock</span>
+            <div class="vm-info">
+              <strong>Privado</strong>
+              <span>Solo tú y tus colaboradores.</span>
+            </div>
+            {#if isPrivate}<span class="material-symbols-rounded dot">check_circle</span>{/if}
+          </label>
+        </div>
+      </section>
+
+      <section class="form-section island">
+        <div class="section-header">
+          <span class="material-symbols-rounded">settings</span>
+          <h2>Inicialización</h2>
+        </div>
+        
+        <label class="fancy-checkbox">
           <input type="checkbox" bind:checked={autoInit} />
-          <div class="checkbox-text">
-            <strong>Initialize this repository with a README</strong>
-            <p>This allows you to immediately clone the repository to your computer.</p>
+          <div class="check-box"></div>
+          <div class="check-text">
+            <strong>Generar README.md automático</strong>
+            <span>Crea un archivo de presentación para poder clonar el repo de inmediato.</span>
           </div>
         </label>
-      </div>
+      </section>
 
-      <div class="form-footer">
-        <a href="/dashboard" class="btn btn-tonal">Cancel</a>
-        <button type="submit" class="btn primary-btn" disabled={loading || !name}>
+      <div class="form-actions">
+        <button type="button" class="btn-text" onclick={() => goto('/dashboard')}>Cancelar</button>
+        <button type="submit" class="btn-hero" disabled={loading || !name}>
           {#if loading}
             <span class="material-symbols-rounded spin">sync</span>
-            Creating...
+            Despegando...
           {:else}
-            Create Repository
+            <span class="material-symbols-rounded">rocket_launch</span>
+            Crear Repositorio
           {/if}
         </button>
       </div>
     </form>
-  </div>
+  </main>
 </div>
 
 <style>
-  .create-container {
-    max-width: 800px;
+  .create-wrapper {
+    max-width: 1100px;
     margin: 0 auto;
-    padding-top: 2rem;
+    animation: fadeIn 0.4s ease-out;
   }
 
-  .create-island {
-    padding: 3rem;
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  .create-header {
+  /* HERO HEADER */
+  .hero-header {
+    background: var(--surface-variant);
+    margin: -1.5rem -1.5rem 2rem -1.5rem;
+    padding: 3rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .hero-content {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
-  .icon-circle {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(135deg, var(--primary-color), #7aa9f7);
+  .icon-badge {
+    width: 80px;
+    height: 80px;
+    background: var(--primary-color);
     color: var(--on-primary);
-    border-radius: 1.5rem;
+    border-radius: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 16px rgba(168, 199, 250, 0.2);
+    box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3);
   }
 
-  .icon-circle span {
-    font-size: 32px;
-  }
+  .icon-badge span { font-size: 40px; }
 
-  .title-stack h1 {
-    font-size: 2rem;
-    font-weight: 800;
+  .hero-header h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
     margin: 0;
-    letter-spacing: -0.04em;
+    background: linear-gradient(to right, var(--text-primary), var(--primary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  .title-stack p {
-    margin: 0.5rem 0 0 0;
+  .hero-header p {
     font-size: 1.1rem;
-    opacity: 0.8;
+    color: var(--text-muted);
+    margin: 0.5rem 0 0 0;
   }
 
-  .create-form {
+  /* GRID */
+  .create-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 3rem;
+    padding-bottom: 5rem;
+  }
+
+  /* ASIDE */
+  .guidance-aside {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
 
-  .form-group {
+  .tip-card {
+    background: var(--surface-variant);
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+  }
+
+  .tip-card h3 { font-size: 1rem; margin: 0.5rem 0; color: var(--text-primary); }
+  .tip-card p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+  .icon-accent { color: var(--primary-color); }
+
+  .process-steps {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  label {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-
-  .required { color: #f87171; }
-  .optional { font-weight: 400; opacity: 0.6; }
-
-  input[type="text"], textarea {
-    background-color: var(--md3-surface-2);
-    border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    padding: 1rem;
-    color: var(--text-color);
-    font-size: 1rem;
-    transition: all 0.2s;
-  }
-
-  input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background-color: var(--md3-surface-3);
-    box-shadow: 0 0 0 4px rgba(168, 199, 250, 0.1);
-  }
-
-  textarea {
-    min-height: 100px;
-    resize: vertical;
-  }
-
-  .field-hint {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin: 0;
-  }
-
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
+    padding-left: 1rem;
   }
 
-  .option-card {
-    position: relative;
-    border: 1px solid var(--border-color);
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-    cursor: pointer;
+  .step {
     display: flex;
+    align-items: center;
     gap: 1rem;
-    transition: all 0.2s;
-    background: var(--md3-surface-1);
+    opacity: 0.4;
+    transition: all 0.3s;
   }
 
-  .option-card:hover {
-    background: var(--md3-surface-2);
-  }
+  .step.active { opacity: 1; }
 
-  .option-card.selected {
-    border-color: var(--primary-color);
-    background: rgba(168, 199, 250, 0.05);
-  }
-
-  .option-card input {
-    display: none;
-  }
-
-  .option-icon {
-    color: var(--primary-color);
-  }
-
-  .option-text strong {
-    display: block;
-    font-size: 1.1rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .option-text p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .check-icon {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    color: var(--primary-color);
-    font-size: 20px;
-  }
-
-  .island-mini {
-    background: var(--md3-surface-1);
-    border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    padding: 1.25rem;
-  }
-
-  .checkbox-label {
-    display: flex;
-    gap: 1rem;
-    cursor: pointer;
-    align-items: flex-start;
-  }
-
-  .checkbox-label input {
-    margin-top: 0.25rem;
-    transform: scale(1.2);
-  }
-
-  .checkbox-text strong {
-    display: block;
-    margin-bottom: 0.25rem;
-  }
-
-  .checkbox-text p {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .form-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-  }
-
-  .primary-btn {
-    min-width: 200px;
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--surface-variant);
+    color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 800;
   }
 
-  .error-box {
-    background: rgba(239, 68, 68, 0.1);
-    color: #f87171;
-    padding: 1rem;
+  .step.active .step-num { background: var(--primary-color); color: var(--on-primary); }
+  .step-text { font-size: 0.9rem; font-weight: 600; }
+
+  /* FORM SECTION */
+  .form-section {
+    margin-bottom: 2rem !important;
+    padding: 2rem !important;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .input-field label { font-weight: 700; font-size: 0.95rem; color: var(--text-secondary); }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
     border-radius: 1rem;
-    border: 1px solid rgba(239, 68, 68, 0.2);
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .input-wrapper:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .prefix {
+    background: rgba(0,0,0,0.05);
+    padding: 1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .input-wrapper input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
     font-weight: 600;
   }
 
-  .spin {
-    animation: rotate 2s linear infinite;
+  textarea {
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    min-height: 120px;
+    color: var(--text-color);
+    font-family: inherit;
+    resize: vertical;
   }
 
-  @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  /* VISIBILITY SELECTOR */
+  .visibility-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
   }
 
-  @media (max-width: 600px) {
-    .options-grid {
-      grid-template-columns: 1fr;
-    }
+  .vm-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    border-radius: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .vm-option:hover { background: var(--surface-variant-hover); transform: translateY(-2px); }
+  .vm-option.selected { border-color: var(--primary-color); background: var(--primary-surface); }
+  .vm-option input { display: none; }
+  
+  .vm-icon { font-size: 2rem; color: var(--primary-color); }
+  .vm-info { display: flex; flex-direction: column; }
+  .vm-info strong { font-size: 1.1rem; color: var(--text-primary); }
+  .vm-info span { font-size: 0.85rem; color: var(--text-muted); }
+  .dot { position: absolute; top: 1rem; right: 1rem; color: var(--primary-color); }
+
+  /* FANCY CHECKBOX */
+  .fancy-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    cursor: pointer;
+  }
+
+  .fancy-checkbox input { display: none; }
+  .check-box {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .fancy-checkbox input:checked + .check-box {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .check-text strong { display: block; font-size: 1rem; color: var(--text-primary); }
+  .check-text span { font-size: 0.85rem; color: var(--text-muted); }
+
+  /* ACTIONS */
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .btn-text {
+    background: none;
+    border: none;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+
+  .btn-hero {
+    background: var(--primary-color);
+    color: var(--on-primary);
+    padding: 1rem 2.5rem;
+    border-radius: 3rem;
+    border: none;
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(var(--primary-rgb), 0.2);
+    transition: all 0.2s;
+  }
+
+  .btn-hero:hover:not(:disabled) {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(var(--primary-rgb), 0.3);
+  }
+
+  .btn-hero:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .error-toast {
+    background: #fee2e2;
+    color: #ef4444;
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 700;
+  }
+
+  .spin { animation: spin 1s infinite linear; }
+  @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
+
+  @media (max-width: 900px) {
+    .create-grid { grid-template-columns: 1fr; }
+    .guidance-aside { display: none; }
+    .hero-header { padding: 2rem 1rem; }
+    .hero-header h1 { font-size: 1.75rem; }
   }
 </style>

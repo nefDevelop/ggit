@@ -23,10 +23,10 @@
   --primary-color: #0b57d0;
   --on-primary: #ffffff;
   
-  --bg-color: #f8f9fa;
+  --bg-color: #f0f2f5; /* Sidebar más oscura/neutra */
   --md3-surface-container: #ffffff;
-  --md3-surface-2: #f0f4f8;
-  --md3-surface-3: #e9ecef;
+  --md3-surface-2: #f8f9fa;
+  --md3-surface-3: #f1f3f4;
   
   --primary: #0b57d0;
   --primary-container: #d3e3fd;
@@ -55,7 +55,7 @@
   --surface-variant-hover: rgba(0, 0, 0, 0.08);
 
   --island-bg: var(--md3-surface-container);
-  --main-content-bg: #f1f3f4;
+  --main-content-bg: #ffffff; /* Área principal puramente blanca para contraste máximo */
   --main-content-border: rgba(0,0,0,0.05);
 }
 
@@ -392,6 +392,86 @@
 }
 
 /* ==========================================================================
+   THEME: EXPRESSIVE (Material Design 3)
+   ========================================================================== */
+
+/* Expressive Light */
+[data-theme="expressive"][data-color-scheme="light"] {
+  --primary-color: #6750a4;
+  --on-primary: #ffffff;
+  
+  --bg-color: #f3e9f7; /* Fondo lavanda muy sutil para la barra lateral */
+  --md3-surface-container: #ffffff;
+  --md3-surface-2: #f3edf7;
+  --md3-surface-3: #e6e0e9;
+  
+  --primary: #6750a4;
+  --primary-container: #eaddff;
+  --on-primary-container: #21005d;
+
+  --secondary: #954a5d;
+  --on-secondary: #ffffff;
+
+  --tertiary: #386a1f;
+  --on-tertiary: #ffffff;
+
+  --text-primary: #1d1b20;
+  --text-secondary: #49454f;
+  --text-tertiary: #79747e;
+  
+  --text-color: var(--text-primary);
+  --text-muted: var(--text-tertiary);
+  
+  --border-color: rgba(103, 80, 164, 0.1);
+  --surface-variant: #e7e0eb;
+  --surface-variant-hover: #dcd3e1;
+
+  --island-bg: var(--md3-surface-container);
+  --main-content-bg: #ffffff; /* Contenido principal brillante e impecable */
+  --main-content-border: rgba(103, 80, 164, 0.1);
+}
+
+/* Expressive Dark */
+[data-theme="expressive"][data-color-scheme="dark"] {
+  --primary-color: #d0bcff;
+  --on-primary: #381e72;
+  
+  --bg-color: #141218;
+  --md3-surface-container: #1d1b20;
+  --md3-surface-2: #2b2930;
+  --md3-surface-3: #332f37;
+  
+  --primary: #d0bcff;
+  --primary-container: #4f378b;
+  --on-primary-container: #eaddff;
+
+  --secondary: #ffd9e2;
+  --on-secondary: #5b112b;
+
+  --tertiary: #b8f397;
+  --on-tertiary: #113800;
+
+  --text-primary: #e6e1e5;
+  --text-secondary: #cac4d0;
+  --text-tertiary: #938f99;
+  
+  --text-color: var(--text-primary);
+  --text-muted: var(--text-tertiary);
+  
+  --border-color: rgba(208, 188, 255, 0.1);
+  --surface-variant: #49454f;
+  --surface-variant-hover: #5a5561;
+
+  --island-bg: var(--md3-surface-container);
+  --main-content-bg: #1c1b1f;
+  --main-content-border: rgba(255, 255, 255, 0.03);
+
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 8px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.6);
+}
+
+/* ==========================================================================
    GLOBAL STYLES
    ========================================================================== */
 
@@ -421,22 +501,82 @@ html, body {
 #main-content {
   grid-column: 2;
   background-color: var(--main-content-bg);
-  margin: 0.5rem 0.5rem 0.5rem 0; 
-  border-radius: 2rem;
+  margin: 0.75rem 0.75rem 0.75rem 0; 
+  border-radius: 2.5rem; /* Esquinas más suaves y pronunciadas */
   box-shadow: var(--inner-shadow);
-  padding: 1rem; 
+  padding: 1.5rem; 
   overflow-y: auto;
   position: relative;
   border: 1px solid var(--main-content-border);
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  
+  /* Evitar clipping extraño en las esquinas */
+  scrollbar-gutter: stable;
 }
 
+/* Mejora de las tarjetas (islands) para mayor diferenciación */
 .island {
   background-color: var(--island-bg);
-  border: none;
-  border-radius: 1.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 1.75rem;
   box-shadow: var(--island-shadow);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.island:hover {
+  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px);
+  border-color: var(--primary-color);
+}
+
+h1, h2, h3, h4 {
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  letter-spacing: -0.02em;
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+  margin-left: 1rem;
+}
+
+.island-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.island-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary-color);
 }
 
 .btn {

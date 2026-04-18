@@ -3,6 +3,9 @@
   import { authState } from '$lib/auth.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import { page } from '$app/state';
+  import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
+
+  let showThemePanel = $state(false);
 
   const navItems = $derived([
     { name: i18n.t('dashboard'), icon: 'grid_view', path: '/dashboard' },
@@ -41,8 +44,7 @@
 
   async function handleLogout() {
     await apiFetch('/api/v2/user/logout', { 
-      method: 'POST',
-      headers: { 'X-Csrf-Token': getCsrfToken() }
+      method: 'POST'
     });
     window.location.href = '/user/login';
   }
@@ -91,6 +93,14 @@
     {/each}
   </div>
 
+  <!-- THEME SELECTOR -->
+  <div class="theme-trigger-section">
+    <button class="appearance-btn" onclick={() => showThemePanel = !showThemePanel}>
+      <span class="material-symbols-rounded">palette</span>
+      <span class="item-label">Apariencia</span>
+    </button>
+  </div>
+
   <!-- BRAND AT BOTTOM -->
   <div class="brand-section-bottom">
     <button class="lang-toggle-btn" onclick={toggleLanguage} title="Change Language">
@@ -103,6 +113,8 @@
     </div>
   </div>
 </nav>
+
+<ThemeSwitch bind:show={showThemePanel} />
 
 <style>
   .navigation-bar {
@@ -308,5 +320,36 @@
     .user-section-top, .brand-section-bottom, .item-label { display: none; }
     .nav-links { flex-direction: row; width: 100%; justify-content: space-around; }
     .nav-item { padding: 0.5rem; }
+  }
+
+  /* Theme Button Styles */
+  .theme-trigger-section {
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .appearance-btn {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 1rem;
+    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .appearance-btn:hover {
+    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  .appearance-btn span.material-symbols-rounded {
+    color: var(--primary-color);
   }
 </style>
