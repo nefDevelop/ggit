@@ -51,10 +51,10 @@ func lfsCreateObject(t *testing.T, ctx context.Context, s *LFSStore) {
 	err := s.CreateObject(ctx, repoID, oid, 12, lfsx.StorageLocal)
 	require.NoError(t, err)
 
-	// Get it back and check the CreatedAt field
+	// Get it back and check the Created field
 	object, err := s.GetObjectByOID(ctx, repoID, oid)
 	require.NoError(t, err)
-	assert.Equal(t, s.db.NowFunc().Format(time.RFC3339), object.CreatedAt.UTC().Format(time.RFC3339))
+	assert.Equal(t, s.db.NowFunc().Format(time.RFC3339), object.Created.UTC().Format(time.RFC3339))
 
 	// Try to create second LFS object with same oid should fail
 	err = s.CreateObject(ctx, repoID, oid, 12, lfsx.StorageLocal)

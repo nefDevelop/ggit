@@ -1672,7 +1672,7 @@ func DeleteRepository(ownerID, repoID int64) error {
 	}
 
 	attachmentPaths := make([]string, 0, 10)
-	return Handle.db.Transaction(func(tx *gorm.DB) error {
+	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if org.IsOrganization() {
 			if err = org.getTeams(tx); err != nil {
 				return err
@@ -1773,6 +1773,9 @@ func DeleteRepository(ownerID, repoID int64) error {
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 
 	// Remove repository files.
 	repoPath := repo.RepoPath()

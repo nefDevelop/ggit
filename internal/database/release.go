@@ -309,7 +309,7 @@ func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bo
 
 	r.PublisherID = doer.ID
 
-	return Handle.db.Transaction(func(tx *gorm.DB) error {
+	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(r).Updates(r).Error; err != nil {
 			return errors.Newf("Update: %v", err)
 		}
@@ -326,6 +326,9 @@ func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bo
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
 
 	if !isPublish {
 		return nil
