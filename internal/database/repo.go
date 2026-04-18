@@ -277,6 +277,12 @@ func (r *Repository) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+// BeforeUpdate implements the GORM update hook.
+func (r *Repository) BeforeUpdate(tx *gorm.DB) error {
+	r.UpdatedUnix = tx.NowFunc().Unix()
+	return nil
+}
+
 // AfterFind implements the GORM query hook.
 func (r *Repository) AfterFind(_ *gorm.DB) error {
 	if r.DefaultBranch == "" {
@@ -336,7 +342,11 @@ func (r *Repository) CanGuestViewIssues() bool {
 // MustOwner always returns a valid *User object to avoid conceptually impossible error handling.
 // It creates a fake object that contains error details when error occurs.
 func (r *Repository) MustOwner() *User {
-	return r.mustOwner(Handle.db)
+	var tx *gorm.DB
+	if Handle != nil {
+		tx = Handle.db
+	}
+	return r.mustOwner(tx)
 }
 
 func (r *Repository) FullName() string {
@@ -474,7 +484,11 @@ func (r *Repository) getOwner(tx *gorm.DB) (err error) {
 }
 
 func (r *Repository) GetOwner() error {
-	return r.getOwner(Handle.db)
+	var tx *gorm.DB
+	if Handle != nil {
+		tx = Handle.db
+	}
+	return r.getOwner(tx)
 }
 
 func (r *Repository) mustOwner(tx *gorm.DB) *User {

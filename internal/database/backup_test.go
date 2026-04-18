@@ -27,18 +27,23 @@ func TestDumpAndImport(t *testing.T) {
 	}
 	t.Parallel()
 
-	const wantTables = 8
-	if len(Tables) != wantTables {
-		t.Fatalf("New table has added (want %d got %d), please add new tests for the table and update this check", wantTables, len(Tables))
+	backupTables := []any{
+		new(Access), new(AccessToken), new(Action), new(EmailAddress),
+		new(Follow), new(LFSObject), new(LoginSource), new(Notice),
 	}
 
-	db := dbtest.NewDB(t, "dumpAndImport", Tables...)
+	const wantTables = 8
+	if len(backupTables) != wantTables {
+		t.Fatalf("New table has added (want %d got %d), please add new tests for the table and update this check", wantTables, len(backupTables))
+	}
+
+	db := dbtest.NewDB(t, "dumpAndImport", backupTables...)
 	setupDBToDump(t, db)
-	dumpTables(t, db)
-	importTables(t, db)
+	dumpTables(t, backupTables, db)
+	importTables(t, backupTables, db)
 
 	// Dump and assert golden again to make sure data aren't changed.
-	dumpTables(t, db)
+	dumpTables(t, backupTables, db)
 }
 
 func setupDBToDump(t *testing.T, db *gorm.DB) {
@@ -200,10 +205,10 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 	}
 }
 
-func dumpTables(t *testing.T, db *gorm.DB) {
+func dumpTables(t *testing.T, backupTables []any, db *gorm.DB) {
 	ctx := context.Background()
 
-	for _, table := range Tables {
+	for _, table := range backupTables {
 		tableName := getTableType(table)
 
 		var buf bytes.Buffer
@@ -217,10 +222,10 @@ func dumpTables(t *testing.T, db *gorm.DB) {
 	}
 }
 
-func importTables(t *testing.T, db *gorm.DB) {
+func importTables(t *testing.T, backupTables []any, db *gorm.DB) {
 	ctx := context.Background()
 
-	for _, table := range Tables {
+	for _, table := range backupTables {
 		tableName := getTableType(table)
 
 		err := func() error {

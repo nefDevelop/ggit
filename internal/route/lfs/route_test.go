@@ -46,7 +46,9 @@ func TestAuthenticate(t *testing.T) {
 				return mockStore
 			},
 			expStatusCode: http.StatusBadRequest,
-			expHeader:     http.Header{},
+			expHeader: http.Header{
+				"Content-Type": []string{"text/plain; charset=utf-8"},
+			},
 			expBody:       "Users with 2FA enabled are not allowed to authenticate via username and password.",
 		},
 		{

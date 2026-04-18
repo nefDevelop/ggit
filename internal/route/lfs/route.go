@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
@@ -67,7 +66,8 @@ func authenticate(store Store) gin.HandlerFunc {
 		}
 
 		if err == nil && store.IsTwoFactorEnabled(c.Request.Context(), user.ID) {
-			_ = c.AbortWithError(http.StatusBadRequest, errors.New("Users with 2FA enabled are not allowed to authenticate via username and password."))
+			c.String(http.StatusBadRequest, "Users with 2FA enabled are not allowed to authenticate via username and password.")
+			c.Abort()
 			return
 		}
 

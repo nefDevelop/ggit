@@ -76,7 +76,7 @@ func (ErrLFSObjectNotExist) NotFound() bool {
 // ErrLFSObjectNotExist when not found.
 func (s *LFSStore) GetObjectByOID(ctx context.Context, repoID int64, oid lfsx.OID) (*LFSObject, error) {
 	object := new(LFSObject)
-	err := s.db.WithContext(ctx).Where("repo_id = ? AND oid = ?", repoID, oid).First(object).Error
+	err := s.db.WithContext(ctx).Where("repo_id = ? AND oid = ?", repoID, string(oid)).First(object).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrLFSObjectNotExist{args: errx.Args{"repoID": repoID, "oid": oid}}
@@ -93,8 +93,13 @@ func (s *LFSStore) GetObjectsByOIDs(ctx context.Context, repoID int64, oids ...l
 		return []*LFSObject{}, nil
 	}
 
+	strOIDs := make([]string, len(oids))
+	for i, oid := range oids {
+		strOIDs[i] = string(oid)
+	}
+
 	objects := make([]*LFSObject, 0, len(oids))
-	err := s.db.WithContext(ctx).Where("repo_id = ? AND oid IN (?)", repoID, oids).Find(&objects).Error
+	err := s.db.WithContext(ctx).Where("repo_id = ? AND oid IN (?)", repoID, strOIDs).Find(&objects).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}

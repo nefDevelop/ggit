@@ -663,16 +663,28 @@ func prepareWebhooks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv2
 
 // PrepareWebhooks adds all active webhooks to task queue.
 func PrepareWebhooks(repo *Repository, event HookEventType, p apiv2types.WebhookPayloader) error {
-	return prepareWebhooks(Handle.db, repo, event, p)
+	var tx *gorm.DB
+	if Handle != nil {
+		tx = Handle.db
+	} else {
+		return nil
+	}
+	return prepareWebhooks(tx, repo, event, p)
 }
 
 // TestWebhook adds the test webhook matches the ID to task queue.
 func TestWebhook(repo *Repository, event HookEventType, p apiv2types.WebhookPayloader, webhookID int64) error {
+	var tx *gorm.DB
+	if Handle != nil {
+		tx = Handle.db
+	} else {
+		return nil
+	}
 	webhook, err := GetWebhookOfRepoByID(repo.ID, webhookID)
 	if err != nil {
 		return errors.Newf("GetWebhookOfRepoByID [repo_id: %d, id: %d]: %v", repo.ID, webhookID, err)
 	}
-	return prepareHookTasks(Handle.db, repo, event, p, []*Webhook{webhook})
+	return prepareHookTasks(tx, repo, event, p, []*Webhook{webhook})
 }
 
 func (t *HookTask) deliver() {

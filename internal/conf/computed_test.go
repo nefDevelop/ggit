@@ -48,7 +48,7 @@ func TestWorkDir(t *testing.T) {
 		env  string
 		want string
 	}{
-		{env: "GOGS_WORK_DIR=/tmp", want: "/tmp"},
+		{env: "GGIT_WORK_DIR=/tmp", want: "/tmp"},
 		{env: "", want: WorkDir()},
 	}
 	for _, test := range tests {
@@ -76,7 +76,7 @@ func TestCustomDir(t *testing.T) {
 		env  string
 		want string
 	}{
-		{env: "GOGS_CUSTOM=/tmp", want: "/tmp"},
+		{env: "GGIT_CUSTOM=/tmp", want: "/tmp"},
 		{env: "", want: CustomDir()},
 	}
 	for _, test := range tests {
