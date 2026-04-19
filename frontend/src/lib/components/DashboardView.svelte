@@ -81,22 +81,24 @@
 <div class="dashboard-grid" style:grid-template-columns={authState.user?.disable_news_feed ? '1fr' : '1.5fr 1fr'}>
     <section class="repos-island island">
         <header class="island-header-search">
-            <GlobalSearch />
-            <div class="header-tools">
-                <div class="title-and-view">
-                    <h2 class="section-label">Repositories</h2>
-                    <div class="view-controls">
-                        <button class="view-btn {viewMode === 'temporal' ? 'active' : ''}" onclick={() => viewMode = 'temporal'}>
-                            <span class="material-symbols-rounded">schedule</span>
-                        </button>
-                        <button class="view-btn {viewMode === 'list' ? 'active' : ''}" onclick={() => viewMode = 'list'}>
-                            <span class="material-symbols-rounded">list</span>
-                        </button>
-                    </div>
+            <div class="search-and-new-button-group"> 
+                <div class="search-wrapper">
+                    <GlobalSearch />
                 </div>
                 <a class="btn btn-sm" href="/repo/create">
                     <span class="material-symbols-rounded">add</span> New
                 </a>
+            </div>
+            <div class="title-and-view">
+                <h2 class="section-label">Repositories</h2>
+                <div class="view-controls">
+                    <button class="view-btn {viewMode === 'temporal' ? 'active' : ''}" onclick={() => viewMode = 'temporal'}>
+                        <span class="material-symbols-rounded">schedule</span>
+                    </button>
+                    <button class="view-btn {viewMode === 'list' ? 'active' : ''}" onclick={() => viewMode = 'list'}>
+                        <span class="material-symbols-rounded">list</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -107,10 +109,9 @@
                 </div>
             {:else if allRepos.length === 0}
                 <div class="empty-state">
-                    <span class="material-symbols-rounded" style="font-size: 3rem; opacity: 0.1;">folder_open</span>
+                    <span class="material-symbols-rounded empty-icon">folder_open</span>
                     <h3>Ready for your first project</h3>
-                    <br/>
-                    <a class="btn" href="/repo/create">Create Repository</a>
+                    <p>Create a new repository to get started.</p>
                 </div>
             {:else}
                 <div class="repo-list-container">
@@ -201,7 +202,7 @@
   .repos-island, .activity-island {
     display: flex;
     flex-direction: column;
-    padding: 0 !important;
+    padding: 0; /* Removed !important, adjust specificity if needed */
     overflow: hidden;
   }
 
@@ -221,6 +222,23 @@
     gap: 1.25rem;
     background: var(--surface-variant);
     border-bottom: 1px solid var(--border-color);
+    box-sizing: border-box;
+  }
+
+  .search-and-new-button-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .search-wrapper {
+    flex: 1;
+    min-width: 0; /* Previene que el buscador rompa el layout de flexbox */
+  }
+
+  .search-and-new-button-group .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   @media (max-width: 1024px) {
@@ -242,7 +260,7 @@
   .title-and-view {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    justify-content: space-between;
   }
 
   .section-label {
@@ -254,7 +272,11 @@
     margin: 0;
   }
 
-  .island-body { padding: 1.5rem; }
+  .island-body { 
+    padding: 1.5rem; 
+    flex: 1;
+    overflow-y: auto; /* Evita que el contenido se salga por debajo de la isla */
+  }
 
   .view-controls {
     display: flex;
@@ -280,9 +302,9 @@
   }
 
   .repos-island, .activity-island {
-    box-shadow: none !important;
+    box-shadow: none; /* Removed !important, adjust specificity if needed */
     border: 1px solid var(--border-color);
-    background: transparent !important;
+    background: transparent; /* Removed !important, adjust specificity if needed */
   }
 
   .repo-group-flat {
@@ -301,6 +323,36 @@
   .feed-user { font-weight: 700; color: var(--text-color); }
   .feed-time { color: var(--text-muted); font-size: 0.75rem; }
 
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 250px;
+    text-align: center;
+  }
+
+  .empty-state.mini {
+    min-height: 100px;
+  }
+
+  .empty-state .empty-icon {
+    font-size: 4rem;
+    opacity: 0.15;
+    margin-bottom: 1rem;
+  }
+
+  .empty-state h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
   .skeleton-line { height: 64px; background: var(--md3-surface-3); border-radius: 0.75rem; margin-bottom: 0.5rem; animation: pulse 1.5s infinite; }
   .skeleton-feed { height: 40px; background: var(--md3-surface-3); border-radius: 0.5rem; margin-bottom: 1rem; animation: pulse 1.5s infinite; }
 
@@ -314,7 +366,7 @@
 
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
   @media (max-width: 1024px) { 
-    .dashboard-grid { grid-template-columns: 1fr !important; } 
-    .hero-header { padding: 1.5rem 1rem; }
+    .dashboard-grid { grid-template-columns: 1fr; } /* Removed !important, adjust specificity if needed */
+    /* .hero-header is not used in the template, removed */
   }
 </style>

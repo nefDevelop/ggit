@@ -29,7 +29,7 @@ var webCommand = cli.Command{
 	Name:  "web",
 	Usage: "Start Gogs web server",
 	Flags: []cli.Flag{
-		stringFlag("port, p", "3000", "Temporary port number to prevent conflict"),
+		stringFlag("port, p", "3005", "Temporary port number to prevent conflict"),
 		stringFlag("config, c", "", "Custom configuration file path"),
 	},
 	Action: runWeb,
@@ -39,6 +39,10 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	err := route.GlobalInit(configFromLineage(cmd))
 	if err != nil {
 		log.Fatal("Failed to initialize application: %v", err)
+	}
+
+	if cmd.IsSet("port") {
+		conf.Server.HTTPPort = cmd.String("port")
 	}
 
 	r := ginx.New()

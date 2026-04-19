@@ -25,7 +25,8 @@
       const res = await apiFetch('/api/v2/user/repos', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Csrf-Token': getCsrfToken()
         },
         body: JSON.stringify({
           name,
@@ -53,12 +54,9 @@
   <!-- HERO HEADER -->
   <header class="hero-header">
     <div class="hero-content">
-      <div class="icon-badge">
-        <span class="material-symbols-rounded">rocket_launch</span>
-      </div>
       <div>
-        <h1>Nuevos Horizontes</h1>
-        <p>Estás a un paso de comenzar tu próximo gran proyecto.</p>
+        <h1>Crear repositorio</h1>
+        <p>Un repositorio contiene todos los archivos de tu proyecto, incluyendo el historial de revisiones.</p>
       </div>
     </div>
   </header>
@@ -112,6 +110,10 @@
               id="repo-name" 
               bind:value={name} 
               placeholder="mi-proyecto-increible"
+            pattern="[a-zA-Z0-9_\-\.]+"
+            title="Solo letras, números, guiones y puntos"
+            disabled={loading}
+            autofocus
               required
             />
           </div>
@@ -123,6 +125,7 @@
             id="repo-desc" 
             bind:value={description} 
             placeholder="¿De qué trata este repositorio?"
+          disabled={loading}
           ></textarea>
         </div>
       </section>
@@ -134,8 +137,8 @@
         </div>
         
         <div class="visibility-selector">
-          <label class="vm-option" class:selected={!isPrivate}>
-            <input type="radio" bind:group={isPrivate} value={false} />
+          <label class="vm-option" class:selected={!isPrivate} class:disabled={loading}>
+            <input type="radio" bind:group={isPrivate} value={false} disabled={loading} />
             <span class="material-symbols-rounded vm-icon">public</span>
             <div class="vm-info">
               <strong>Público</strong>
@@ -144,8 +147,8 @@
             {#if !isPrivate}<span class="material-symbols-rounded dot">check_circle</span>{/if}
           </label>
 
-          <label class="vm-option" class:selected={isPrivate}>
-            <input type="radio" bind:group={isPrivate} value={true} />
+          <label class="vm-option" class:selected={isPrivate} class:disabled={loading}>
+            <input type="radio" bind:group={isPrivate} value={true} disabled={loading} />
             <span class="material-symbols-rounded vm-icon">lock</span>
             <div class="vm-info">
               <strong>Privado</strong>
@@ -162,9 +165,11 @@
           <h2>Inicialización</h2>
         </div>
         
-        <label class="fancy-checkbox">
-          <input type="checkbox" bind:checked={autoInit} />
-          <div class="check-box"></div>
+        <label class="fancy-checkbox" class:disabled={loading}>
+          <input type="checkbox" bind:checked={autoInit} disabled={loading} />
+          <div class="check-box">
+            <span class="material-symbols-rounded check-icon">check</span>
+          </div>
           <div class="check-text">
             <strong>Generar README.md automático</strong>
             <span>Crea un archivo de presentación para poder clonar el repo de inmediato.</span>
@@ -203,32 +208,24 @@
   /* HERO HEADER */
   .hero-header {
     background: var(--surface-variant);
-    margin: -1.5rem -1.5rem 2rem -1.5rem;
-    padding: 3rem 2rem;
     border-bottom: 1px solid var(--border-color);
+    padding: 3rem 1.5rem; /* Reducido para que no ocupe tanto espacio vertical */
+    
+    /* Truco moderno para expandir el fondo a pantalla completa (Full Bleed) */
+    margin-top: -1.5rem;
+    margin-bottom: 3rem;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
 
   .hero-content {
     display: flex;
     align-items: center;
     gap: 2rem;
-    max-width: 1000px;
+    max-width: 1100px; /* Lo alineamos perfectamente con el grid del formulario */
     margin: 0 auto;
+    padding: 0 1.5rem; /* Protege el contenido de tocar los bordes en móvil */
   }
-
-  .icon-badge {
-    width: 80px;
-    height: 80px;
-    background: var(--primary-color);
-    color: var(--on-primary);
-    border-radius: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3);
-  }
-
-  .icon-badge span { font-size: 40px; }
 
   .hero-header h1 {
     font-size: 2.5rem;
@@ -250,6 +247,8 @@
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 3rem;
+    max-width: 800px; /* Centramos el formulario para que se vea bien al quitar la columna */
+    margin: 0 auto;
     padding-bottom: 5rem;
   }
 
@@ -376,6 +375,18 @@
     color: var(--text-color);
     font-family: inherit;
     resize: vertical;
+    transition: all 0.2s;
+  }
+
+  textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+    outline: none;
+  }
+  
+  textarea:disabled, input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   /* VISIBILITY SELECTOR */
@@ -401,6 +412,7 @@
   .vm-option:hover { background: var(--surface-variant-hover); transform: translateY(-2px); }
   .vm-option.selected { border-color: var(--primary-color); background: var(--primary-surface); }
   .vm-option input { display: none; }
+  .vm-option.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
   
   .vm-icon { font-size: 2rem; color: var(--primary-color); }
   .vm-info { display: flex; flex-direction: column; }
@@ -435,18 +447,36 @@
     cursor: pointer;
   }
 
+  .fancy-checkbox.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
   .fancy-checkbox input { display: none; }
+  
   .check-box {
     width: 24px;
     height: 24px;
     border: 2px solid var(--border-color);
     border-radius: 6px;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .check-icon {
+    font-size: 16px;
+    color: var(--on-primary);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .fancy-checkbox input:checked + .check-box {
     background: var(--primary-color);
     border-color: var(--primary-color);
+  }
+
+  .fancy-checkbox input:checked + .check-box .check-icon {
+    opacity: 1;
+    transform: scale(1);
   }
 
   .check-text strong { display: block; font-size: 1rem; color: var(--text-primary); }
@@ -502,6 +532,14 @@
     align-items: center;
     gap: 1rem;
     font-weight: 700;
+    animation: shake 0.4s ease-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
   }
 
   .spin { animation: spin 1s infinite linear; }
