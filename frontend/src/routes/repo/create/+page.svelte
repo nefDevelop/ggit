@@ -62,30 +62,6 @@
   </header>
 
   <main class="create-grid">
-    <!-- LEFT COLUMN: TIPS -->
-    <aside class="guidance-aside">
-      <div class="tip-card">
-        <span class="material-symbols-rounded icon-accent">lightbulb</span>
-        <h3>Consejo de Oro</h3>
-        <p>Los nombres cortos y descriptivos funcionan mejor. Usa guiones para separar palabras.</p>
-      </div>
-      
-      <div class="process-steps">
-        <div class="step active">
-          <div class="step-num">1</div>
-          <div class="step-text">Identidad del proyecto</div>
-        </div>
-        <div class="step" class:active={name.length > 0}>
-          <div class="step-num">2</div>
-          <div class="step-text">Privacidad y Acceso</div>
-        </div>
-        <div class="step" class:active={isPrivate}>
-          <div class="step-num">3</div>
-          <div class="step-text">Configuración Inicial</div>
-        </div>
-      </div>
-    </aside>
-
     <!-- RIGHT COLUMN: FORM -->
     <form class="create-form-content" onsubmit={handleSubmit}>
       {#if errorMsg}
@@ -244,64 +220,10 @@
 
   /* GRID */
   .create-grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 3rem;
     max-width: 800px; /* Centramos el formulario para que se vea bien al quitar la columna */
     margin: 0 auto;
     padding-bottom: 5rem;
   }
-
-  /* ASIDE */
-  .guidance-aside {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .tip-card {
-    background: var(--surface-variant);
-    padding: 1.5rem;
-    border-radius: 1.5rem;
-    border-left: 4px solid var(--primary-color);
-  }
-
-  .tip-card h3 { font-size: 1rem; margin: 0.5rem 0; color: var(--text-primary); }
-  .tip-card p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
-  .icon-accent { color: var(--primary-color); }
-
-  .process-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-left: 1rem;
-  }
-
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    opacity: 0.4;
-    transition: all 0.3s;
-  }
-
-  .step.active { opacity: 1; }
-
-  .step-num {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--surface-variant);
-    color: var(--text-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-    font-weight: 800;
-  }
-
-  .step.active .step-num { background: var(--primary-color); color: var(--on-primary); }
-  .step-text { font-size: 0.9rem; font-weight: 600; }
 
   /* FORM SECTION */
   .form-section {
@@ -546,8 +468,6 @@
   @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
 
   @media (max-width: 900px) {
-    .create-grid { grid-template-columns: 1fr; }
-    .guidance-aside { display: none; }
     .hero-header { padding: 2rem 1rem; }
     .hero-header h1 { font-size: 1.75rem; }
   }
