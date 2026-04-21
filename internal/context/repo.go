@@ -237,7 +237,6 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 		gctx.Data["DisableSSH"] = conf.SSH.Disabled
 		gctx.Data["DisableHTTP"] = conf.Repository.DisableHTTPGit
 		gctx.Data["CloneLink"] = repo.CloneLink()
-		gctx.Data["WikiCloneLink"] = repo.WikiCloneLink()
 
 		if gctx.IsLogged {
 			gctx.Data["IsWatchingRepo"] = database.IsWatching(gctx.User.ID, repo.ID)

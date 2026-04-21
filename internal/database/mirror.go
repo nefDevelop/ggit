@@ -216,7 +216,6 @@ func parseRemoteUpdateOutput(output string) []*mirrorSyncResult {
 // runSync returns true if sync finished without error.
 func (m *Mirror) runSync() ([]*mirrorSyncResult, bool) {
 	repoPath := m.Repo.RepoPath()
-	wikiPath := m.Repo.WikiPath()
 	timeout := time.Duration(conf.Git.Timeout.Mirror) * time.Second
 
 	// Do a fast-fail testing against on repository URL to ensure it is accessible under
@@ -252,23 +251,6 @@ func (m *Mirror) runSync() ([]*mirrorSyncResult, bool) {
 
 	if err := m.Repo.UpdateSize(); err != nil {
 		log.Error("UpdateSize [repo_id: %d]: %v", m.Repo.ID, err)
-	}
-
-	if m.Repo.HasWiki() {
-		// Even if wiki sync failed, we still want results from the main repository
-		if _, stderr, err := process.ExecDir(
-			timeout, wikiPath, fmt.Sprintf("Mirror.runSync: %s", wikiPath),
-			"git", "remote", "update", "--prune"); err != nil {
-			const fmtStr = "Failed to update mirror wiki repository %q: %s"
-			log.Error(fmtStr, wikiPath, stderr)
-			if err = Handle.Notices().Create(
-				context.TODO(),
-				NoticeTypeRepository,
-				fmt.Sprintf(fmtStr, wikiPath, stderr),
-			); err != nil {
-				log.Error("CreateRepositoryNotice: %v", err)
-			}
-		}
 	}
 
 	return parseRemoteUpdateOutput(output), true

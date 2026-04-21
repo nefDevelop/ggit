@@ -539,13 +539,8 @@ func (r *Repository) ComposeMetas() map[string]string {
 	return r.ExternalMetas
 }
 
-// DeleteWiki removes the actual and local copy of repository wiki.
-func (r *Repository) DeleteWiki() {
-	wikiPaths := []string{r.WikiPath(), r.LocalWikiPath()}
-	for _, wikiPath := range wikiPaths {
-		RemoveAllWithNotice("Delete repository wiki", wikiPath)
-	}
-}
+// DeleteWiki is a no-op as the physical wiki system has been removed.
+func (r *Repository) DeleteWiki() {}
 
 // getUsersWithAccesMode returns users that have at least given access mode to the repository.
 func (r *Repository) getUsersWithAccesMode(tx *gorm.DB, mode AccessMode) (_ []*User, err error) {
@@ -794,11 +789,8 @@ func IsRepositoryExist(u *User, repoName string) (bool, error) {
 }
 
 // Deprecated: Use repox.NewCloneLink instead.
-func (r *Repository) cloneLink(isWiki bool) *repox.CloneLink {
+func (r *Repository) cloneLink() *repox.CloneLink {
 	repoName := r.Name
-	if isWiki {
-		repoName += ".wiki"
-	}
 
 	r.Owner = r.MustOwner()
 	cl := new(repox.CloneLink)
@@ -815,7 +807,7 @@ func (r *Repository) cloneLink(isWiki bool) *repox.CloneLink {
 //
 // Deprecated: Use repox.NewCloneLink instead.
 func (r *Repository) CloneLink() (cl *repox.CloneLink) {
-	return r.cloneLink(false)
+	return r.cloneLink()
 }
 
 type MigrateRepoOptions struct {
@@ -860,7 +852,6 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 	}
 
 	repoPath := RepoPath(owner.Name, opts.Name)
-	wikiPath := WikiPath(owner.Name, opts.Name)
 
 	if owner.IsOrganization() {
 		t, err := owner.GetOwnerTeam()
@@ -881,19 +872,6 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		Timeout: migrateTimeout,
 	}); err != nil {
 		return repo, errors.Newf("clone: %v", err)
-	}
-
-	wikiRemotePath := wikiRemoteURL(opts.RemoteAddr)
-	if len(wikiRemotePath) > 0 {
-		RemoveAllWithNotice("Repository wiki path erase before creation", wikiPath)
-		if err = git.Clone(wikiRemotePath, wikiPath, git.CloneOptions{
-			Mirror:  true,
-			Quiet:   true,
-			Timeout: migrateTimeout,
-		}); err != nil {
-			log.Error("Failed to clone wiki: %v", err)
-			RemoveAllWithNotice("Delete repository wiki for initialization failure", wikiPath)
-		}
 	}
 
 	// Check if repository is empty.
@@ -956,25 +934,15 @@ func cleanUpMigrateGitConfig(configPath string) error {
 	return nil
 }
 
-// Finish migrating repository and/or wiki with things that don't need to be done for mirrors.
+// Finish migrating repository with things that don't need to be done for mirrors.
 func CleanUpMigrateInfo(repo *Repository) (*Repository, error) {
 	repoPath := repo.RepoPath()
 	if err := repox.CreateDelegateHooks(repoPath); err != nil {
 		return repo, errors.Newf("createDelegateHooks: %v", err)
 	}
-	if repo.HasWiki() {
-		if err := repox.CreateDelegateHooks(repo.WikiPath()); err != nil {
-			return repo, errors.Newf("createDelegateHooks.(wiki): %v", err)
-		}
-	}
 
 	if err := cleanUpMigrateGitConfig(repo.GitConfigPath()); err != nil {
 		return repo, errors.Newf("cleanUpMigrateGitConfig: %v", err)
-	}
-	if repo.HasWiki() {
-		if err := cleanUpMigrateGitConfig(path.Join(repo.WikiPath(), "config")); err != nil {
-			return repo, errors.Newf("cleanUpMigrateGitConfig.(wiki): %v", err)
-		}
 	}
 
 	return repo, UpdateRepository(repo, false)
@@ -1520,15 +1488,6 @@ func TransferOwnership(doer *User, newOwnerName string, repo *Repository) error 
 
 		deleteRepoLocalCopy(repo.ID)
 
-		// Rename remote wiki repository to new path and delete local copy.
-		wikiPath := WikiPath(owner.Name, repo.Name)
-		if osx.Exist(wikiPath) {
-			RemoveAllWithNotice("Delete repository wiki local copy", repo.LocalWikiPath())
-			if err = os.Rename(wikiPath, WikiPath(newOwner.Name, repo.Name)); err != nil {
-				return errors.Newf("rename repository wiki: %v", err)
-			}
-		}
-
 		return nil
 	})
 }
@@ -1562,14 +1521,6 @@ func ChangeRepositoryName(u *User, oldRepoName, newRepoName string) (err error) 
 	// Change repository directory name
 	if err = os.Rename(repo.RepoPath(), RepoPath(u.Name, newRepoName)); err != nil {
 		return errors.Newf("rename repository directory: %v", err)
-	}
-
-	wikiPath := repo.WikiPath()
-	if osx.Exist(wikiPath) {
-		if err = os.Rename(wikiPath, WikiPath(u.Name, newRepoName)); err != nil {
-			return errors.Newf("rename repository wiki: %v", err)
-		}
-		RemoveAllWithNotice("Delete repository wiki local copy", repo.LocalWikiPath())
 	}
 
 	deleteRepoLocalCopy(repo.ID)
@@ -2133,11 +2084,6 @@ func SyncRepositoryHooks() error {
 		if !repo.IsBare {
 			if err := repox.CreateDelegateHooks(repo.RepoPath()); err != nil {
 				return err
-			}
-			if repo.HasWiki() {
-				if err := repox.CreateDelegateHooks(repo.WikiPath()); err != nil {
-					return err
-				}
 			}
 		}
 	}
