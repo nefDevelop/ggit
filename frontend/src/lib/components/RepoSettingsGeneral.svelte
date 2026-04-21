@@ -156,7 +156,7 @@
 </div>
 
 {#if settings.is_mirror}
-<div class="settings-card island mirror-card">
+<div class="settings-card island island-interactive mirror-card">
   <header class="card-header">
     <h3 class="card-title">Mirror Settings</h3>
   </header>
@@ -198,7 +198,7 @@
 </div>
 {/if}
 
-<div class="settings-card island danger">
+<div class="settings-card island island-interactive danger">
   <header class="card-header">
     <h3 class="card-title red">Danger Zone</h3>
   </header>

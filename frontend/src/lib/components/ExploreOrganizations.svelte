@@ -33,13 +33,13 @@
   {#if loading && orgs.length === 0}
     <div class="skeletons">
       {#each Array(6) as _}
-        <div class="skeleton-org island"></div>
+        <div class="skeleton-org"></div>
       {/each}
     </div>
   {:else if orgs.length > 0}
     <div class="orgs-grid">
       {#each orgs as org}
-        <a href="/org/{org.username}" class="org-card island tonal hover-lift">
+        <a href="/org/{org.username}" class="org-card tonal hover-lift">
           <img src={org.avatar_url} alt="" class="org-avatar" />
           <div class="org-info">
             <header>
@@ -68,7 +68,7 @@
       {/each}
     </div>
   {:else}
-    <div class="empty-state island tonal">
+    <div class="empty-state tonal">
       <span class="material-symbols-rounded">corporate_fare</span>
       <h3>No organizations found</h3>
       <p>Try searching for a different organization name.</p>
@@ -77,29 +77,47 @@
 </div>
 
 <style>
-  .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-  .org-card { display: flex; gap: 1.5rem; padding: 1.75rem; text-decoration: none; color: inherit; align-items: flex-start; border: 1px solid var(--md-sys-color-outline-variant); height: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  .org-card:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; grid-auto-rows: min-content; }
+  .org-card { 
+    display: flex; 
+    gap: 1.25rem; 
+    padding: 1.5rem; 
+    text-decoration: none; 
+    color: inherit; 
+    align-items: flex-start; 
+    border: 1px solid var(--md-sys-color-outline-variant); 
+    border-radius: 2rem;
+    background: var(--md-sys-color-surface-container-low);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); 
+    position: relative;
+  }
+  .org-card:hover { 
+    border-color: var(--primary-color); 
+    background: var(--md-sys-color-surface-container);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
+  }
 
-  .org-avatar { width: 72px; height: 72px; border-radius: 16px; box-shadow: var(--shadow-md); background: #111; }
+  .org-avatar { width: 64px; height: 64px; border-radius: 12px; box-shadow: var(--shadow-sm); transition: all 0.3s; border: 1px solid var(--md-sys-color-outline-variant); }
+  .org-card:hover .org-avatar { border-color: var(--primary-color); transform: scale(1.05); }
   
-  .org-info { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+  .org-info { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
   .org-info header { display: flex; flex-direction: column; }
-  .org-name { font-size: 1.2rem; font-weight: 800; color: #fff; }
-  .org-username { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+  .org-name { font-size: 1.05rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
+  .org-username { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; opacity: 0.7; }
   
-  .org-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0.5rem 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .org-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; opacity: 0.8; }
 
-  .org-meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.5rem; }
-  .meta-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; opacity: 0.8; }
-  .meta-item span { font-size: 1rem; color: var(--primary-color); }
+  .org-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.4rem; }
+  .meta-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; opacity: 0.6; }
+  .meta-item span { font-size: 0.9rem; color: var(--primary-color); }
 
   .empty-state { padding: 5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-state span { font-size: 4rem; color: var(--primary-color); opacity: 0.3; }
   .empty-state h3 { margin: 0; }
   .empty-state p { color: var(--text-muted); }
 
-  .skeletons { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-  .skeleton-org { height: 140px; animation: pulse 1.5s infinite; }
+  .skeletons { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+  .skeleton-org { height: 130px; border-radius: 1rem; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container); }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.5; } 100% { opacity: 0.3; } }
 </style>

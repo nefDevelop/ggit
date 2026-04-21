@@ -127,7 +127,7 @@
     height: 100vh;
     box-sizing: border-box;
     z-index: 1000;
-    /* No borders, no islands, just flat integration with background */
+    /* No borders, no island island-interactives, just flat integration with background */
   }
 
   /* USER PROFILE SUMMARY */

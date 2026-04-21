@@ -57,7 +57,7 @@
 </script>
 
 <div class="web-editor-container">
-  <header class="editor-toolbar island tonal">
+  <header class="editor-toolbar island island-interactive tonal">
     <div class="toolbar-left">
       <span class="material-symbols-rounded">description</span>
       <div class="file-path">
@@ -72,7 +72,7 @@
     </div>
   </header>
 
-  <main class="editor-main island">
+  <main class="editor-main island island-interactive">
     {#if loading}
       <div class="loader">Loading file...</div>
     {:else}

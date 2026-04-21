@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import RepoRow from './RepoRow.svelte';
   import GlobalSearch from './GlobalSearch.svelte';
+  import ViewHeader from './ui/ViewHeader.svelte';
 
   let data = $state<{
     repositories: any[],
@@ -97,31 +98,20 @@
 <div class="dashboard-grid full-width">
     <!-- Repositories List -->
     <div class="dashboard-main-content">
-        <header class="content-controls dashboard-header-transparent">
-            <div class="search-and-action-row">
-                <div class="search-flex">
-                    <GlobalSearch />
-                </div>
-                
+        <ViewHeader 
+            bind:activeTab={viewMode}
+            tabs={[
+                { id: 'temporal', label: 'Activity', icon: 'schedule' },
+                { id: 'list', label: 'Alphabetical', icon: 'list' }
+            ]}
+        >
+            {#snippet actions()}
                 <a class="btn-action-primary" href="/repo/create">
                     <span class="material-symbols-rounded">add</span>
                     <span>New Project</span>
                 </a>
-            </div>
-
-            <div class="view-mode-selector-row">
-                <div class="view-mode-selector">
-                    <button class="tab-pill" class:active={viewMode === 'temporal'} onclick={() => viewMode = 'temporal'}>
-                        <span class="material-symbols-rounded mini">schedule</span>
-                        Activity
-                    </button>
-                    <button class="tab-pill" class:active={viewMode === 'list'} onclick={() => viewMode = 'list'}>
-                        <span class="material-symbols-rounded mini">list</span>
-                        Alphabetical
-                    </button>
-                </div>
-            </div>
-        </header>
+            {/snippet}
+        </ViewHeader>
 
         <div class="repository-stream">
             {#if loading}
@@ -168,47 +158,6 @@
     display: flex; 
     flex-direction: column; 
   }
-
-  .dashboard-header-transparent {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    padding: 0 1.5rem 2rem;
-  }
-
-  .search-and-action-row {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1.5rem 0 0.5rem;
-  }
-
-  .search-flex {
-    flex: 1;
-  }
-
-  .view-mode-selector-row {
-    display: flex;
-    align-items: center;
-  }
-
-  .view-mode-selector { display: flex; gap: 0.5rem; }
-  .tab-pill { 
-    background: transparent; 
-    border: 1px solid var(--md-sys-color-outline-variant); 
-    padding: 0.5rem 1rem; 
-    border-radius: 2rem; 
-    color: var(--text-muted); 
-    font-weight: 700; 
-    font-size: 0.85rem; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    gap: 0.5rem; 
-    transition: all 0.2s;
-  }
-  .tab-pill.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
-  .tab-pill .mini { font-size: 1.1rem; }
 
   .repository-stream {
     padding: 0 1.5rem 4rem;

@@ -64,17 +64,17 @@
 
 <div class="workspace-shell">
   {#if loading}
-    <div class="skeleton-master island"></div>
+    <div class="skeleton-master tonal"></div>
   {:else if error}
-    <div class="island error-island">
+    <div class="tonal error-tonal">
       <span class="material-symbols-rounded">error</span>
       <p>{error}</p>
       <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
     </div>
   {:else if repoData}
-    <div class="master-island island">
+    <div class="master-tonal tonal">
       <div class="repo-header-region">
-        <div class="island-search-bar">
+        <div class="tonal-search-bar">
           <GlobalSearch />
         </div>
 
@@ -102,7 +102,7 @@
                 Clone
               </button>
               {#if showCloneDropdown}
-                <div class="clone-dropdown island shadow-lg">
+                <div class="clone-dropdown tonal shadow-lg">
                   <div class="clone-option">
                     <span class="label">HTTPS</span>
                     <code class="url">{repoData.clone_url}</code>
@@ -188,9 +188,9 @@
 
 <style>
   .workspace-shell { height: 100%; width: 100%; display: flex; flex-direction: column; }
-  .master-island { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .master-tonal { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-  .island-search-bar { padding: 1.5rem 1.5rem 0.75rem; background: rgba(255,255,255,0.01); }
+  .tonal-search-bar { padding: 1.5rem 1.5rem 0.75rem; background: rgba(255,255,255,0.01); }
 
   .repo-identity-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; }
   .breadcrumb-nav { display: flex; align-items: center; gap: 0.5rem; }
@@ -236,5 +236,5 @@
   .master-body { flex: 1; overflow-y: auto; padding: 2rem; background: var(--bg-color); }
   .skeleton-master { flex: 1; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
-  .error-island { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: #f87171; }
+  .error-tonal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: #f87171; }
 </style>

@@ -31,7 +31,7 @@
     class="modal-wrapper"
     transition:fly={{ y: 20, duration: 300 }}
   >
-    <div class="modal-card island tonal">
+    <div class="modal-card island island-interactive tonal">
       <header class="modal-header">
         <h3>{title}</h3>
         <button class="close-btn" onclick={onclose}>

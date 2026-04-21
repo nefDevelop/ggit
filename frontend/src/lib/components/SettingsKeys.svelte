@@ -59,7 +59,7 @@
   onMount(fetchKeys);
 </script>
 
-<div class="settings-card island">
+<div class="settings-card island island-interactive">
   <header class="card-header">
     <h3 class="card-title">SSH Keys</h3>
   </header>
@@ -69,7 +69,7 @@
 
     <div class="keys-list">
       {#each keys as key}
-        <div class="key-row island tonal">
+        <div class="key-row island island-interactive tonal">
           <div class="key-icon">
             <span class="material-symbols-rounded">vpn_key</span>
           </div>

@@ -43,7 +43,7 @@
   onMount(fetchRepos);
 </script>
 
-<div class="admin-repos island tonal">
+<div class="admin-repos island island-interactive tonal">
   <header class="section-header">
     <div class="title">
       <span class="material-symbols-rounded">database</span>

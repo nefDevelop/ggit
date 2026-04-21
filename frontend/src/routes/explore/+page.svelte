@@ -6,14 +6,7 @@
   <title>Explore · Ggit</title>
 </svelte:head>
 
-<div class="page-container">
-  <ExploreView />
-</div>
+<ExploreView />
 
 <style>
-  .page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
 </style>

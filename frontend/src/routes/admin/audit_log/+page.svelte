@@ -62,13 +62,13 @@
 </div>
 
 {#if error}
-  <div class="error-card island">
+  <div class="error-card admin-card">
     <span class="material-symbols-rounded">warning</span>
     <p>{error}</p>
   </div>
 {/if}
 
-<div class="audit-table-container island shadow-sm">
+<div class="audit-table-container admin-card shadow-sm">
   <table class="audit-table">
     <thead>
       <tr>
@@ -208,6 +208,6 @@
     color: var(--md3-on-secondary-container);
   }
 
-  .island { padding: 2rem; background: var(--md3-surface-container); border-radius: 1.5rem; }
+  .admin-card { padding: 2rem; background: var(--md3-surface-container); border-radius: 1.5rem; }
   .error-card { display: flex; align-items: center; gap: 1rem; color: #f87171; border: 1px solid rgba(248, 113, 113, 0.2); margin-bottom: 2rem; }
 </style>

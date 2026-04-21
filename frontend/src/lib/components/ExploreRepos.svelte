@@ -66,59 +66,18 @@
 </script>
 
 <div class="explore-repos-layout">
-  <!-- SIDEBAR -->
-  <aside class="lang-sidebar island tonal">
-    <h3 class="sidebar-title">Languages</h3>
-    <div class="lang-list">
-        {#each languages as lang}
-            <button 
-                class="lang-item" 
-                class:active={selectedLang === lang.value}
-                onclick={() => selectedLang = lang.value}
-            >
-                <span class="lang-dot" style="opacity: {selectedLang === lang.value ? 1 : 0.4}"></span>
-                {lang.name}
-            </button>
-        {/each}
-    </div>
-
-    {#if popularTopics.length > 0}
-      <h3 class="sidebar-title" style="margin-top: 2.5rem;">Topics</h3>
-      <div class="lang-list">
-          <button 
-              class="lang-item" 
-              class:active={selectedTopic === ''}
-              onclick={() => selectedTopic = ''}
-          >
-              <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: 0.5;">tag</span>
-              Clear Tópicos
-          </button>
-          {#each popularTopics as topic}
-              <button 
-                  class="lang-item" 
-                  class:active={selectedTopic === topic.Name}
-                  onclick={() => selectedTopic = topic.Name}
-              >
-                  <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: {selectedTopic === topic.Name ? 1 : 0.4}">tag</span>
-                  {topic.Name}
-              </button>
-          {/each}
-      </div>
-    {/if}
-  </aside>
-
   <!-- MAIN LIST -->
   <div class="explore-repos-main">
     {#if loading && repos.length === 0}
       <div class="skeleton-grid">
         {#each Array(6) as _}
-          <div class="skeleton-card island"></div>
+          <div class="skeleton-card"></div>
         {/each}
       </div>
     {:else if repos.length > 0}
       <div class="repos-grid">
         {#each repos as repo}
-          <a href="/{repo.owner?.username || 'unknown'}/{repo.name}" class="repo-card island tonal hover-lift">
+          <a href="/{repo.owner?.username || 'unknown'}/{repo.name}" class="repo-card tonal hover-lift">
             <div class="repo-header">
               <span class="material-symbols-rounded repo-icon">
                 {repo.private ? 'lock' : repo.fork ? 'fork_right' : 'book'}
@@ -157,61 +116,168 @@
         {/each}
       </div>
     {:else}
-      <div class="empty-state island tonal">
+      <div class="empty-state tonal">
         <span class="material-symbols-rounded">search_off</span>
         <h3>No repositories found</h3>
         <p>Try searching for something else or changing filters.</p>
       </div>
     {/if}
   </div>
+
+  <!-- SIDEBAR (RIGHT) -->
+  <aside class="lang-sidebar tonal">
+    <h3 class="sidebar-title">Languages</h3>
+    <div class="lang-list">
+        {#each languages as lang}
+            <button 
+                class="lang-item" 
+                class:active={selectedLang === lang.value}
+                onclick={() => selectedLang = lang.value}
+            >
+                <span class="lang-dot" style="opacity: {selectedLang === lang.value ? 1 : 0.4}"></span>
+                {lang.name}
+            </button>
+        {/each}
+    </div>
+
+    {#if popularTopics.length > 0}
+      <h3 class="sidebar-title" style="margin-top: 2.5rem;">Topics</h3>
+      <div class="lang-list">
+          <button 
+              class="lang-item" 
+              class:active={selectedTopic === ''}
+              onclick={() => selectedTopic = ''}
+          >
+              <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: 0.5;">tag</span>
+              Clear Tópicos
+          </button>
+          {#each popularTopics as topic}
+              <button 
+                  class="lang-item" 
+                  class:active={selectedTopic === topic.Name}
+                  onclick={() => selectedTopic = topic.Name}
+              >
+                  <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: {selectedTopic === topic.Name ? 1 : 0.4}">tag</span>
+                  {topic.Name}
+              </button>
+          {/each}
+      </div>
+    {/if}
+  </aside>
 </div>
 
 <style>
-  .explore-repos-layout { display: grid; grid-template-columns: 240px 1fr; gap: 2rem; align-items: start; }
+  .explore-repos-layout { display: grid; grid-template-columns: 1fr 220px; gap: 3rem; align-items: start; }
 
   /* SIDEBAR */
-  .lang-sidebar { padding: 1.5rem; position: sticky; top: 2rem; }
-  .sidebar-title { margin: 0 0 1.5rem 0; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-  .lang-list { display: flex; flex-direction: column; gap: 0.25rem; }
-  .lang-item { background: transparent; border: none; padding: 0.75rem 1rem; border-radius: 0.75rem; text-align: left; color: var(--text-muted); font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; }
-  .lang-item:hover { background: rgba(255, 255, 255, 0.03); color: var(--text-color); }
-  .lang-item.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); }
+  .lang-sidebar { padding: 0.5rem; position: sticky; top: 2rem; }
+  .sidebar-title { 
+    margin: 0 0 1rem 0.75rem; 
+    font-size: 0.7rem; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    letter-spacing: 0.15em; 
+    color: var(--text-muted); 
+    opacity: 0.5;
+  }
+  .lang-list { display: flex; flex-direction: column; gap: 0.1rem; }
+  .lang-item { 
+    background: transparent; 
+    border: none; 
+    padding: 0.6rem 0.75rem; 
+    border-radius: 0.5rem; 
+    text-align: left; 
+    color: var(--text-muted); 
+    font-weight: 600; 
+    font-size: 0.85rem; 
+    cursor: pointer; 
+    transition: all 0.2s; 
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
+  }
+  .lang-item:hover { background: var(--md-sys-color-surface-container-low); color: var(--text-color); }
+  .lang-item.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); font-weight: 800; }
 
   /* MAIN */
-  .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
-  .repo-card { display: flex; flex-direction: column; gap: 1rem; padding: 2rem; text-decoration: none; color: inherit; height: 100%; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-  .repo-card:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; grid-auto-rows: min-content; }
+  .repo-card { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem; 
+    padding: 1.75rem; 
+    text-decoration: none; 
+    color: inherit; 
+    border: 1px solid var(--md-sys-color-outline-variant); 
+    border-radius: 2rem;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--md-sys-color-surface-container-low);
+    position: relative;
+  }
+  .repo-card:hover { 
+    border-color: var(--primary-color); 
+    background: var(--md-sys-color-surface-container);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
+  }
 
-  .repo-header { display: flex; align-items: center; gap: 1rem; }
-  .repo-icon { font-size: 1.75rem; color: var(--primary-color); opacity: 0.8; }
-  .repo-names { font-size: 1.25rem; font-weight: 500; }
-  .owner { opacity: 0.6; font-weight: 400; }
-  .name { font-weight: 800; color: #fff; }
+  .repo-header { display: flex; align-items: center; gap: 0.75rem; }
+  .repo-icon { font-size: 1.5rem; color: var(--primary-color); opacity: 0.8; }
+  .repo-names { font-size: 1.1rem; font-weight: 500; }
+  .owner { opacity: 0.6; font-weight: 400; font-size: 0.9em; }
+  .name { font-weight: 700; color: var(--md-sys-color-on-surface); }
 
-  .repo-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .repo-desc { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    margin: 0; 
+    line-height: 1.5; 
+    flex: 1; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+    opacity: 0.8;
+  }
 
-  .repo-stats { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
-  .stat { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; }
-  .stat span { font-size: 1.1rem; color: var(--primary-color); }
-  .lang-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
-  .updated { margin-left: auto; opacity: 0.4; font-size: 0.75rem; }
+  .repo-stats { 
+    display: flex; 
+    align-items: center; 
+    gap: 1.25rem; 
+    font-size: 0.75rem; 
+    color: var(--text-muted); 
+    margin-top: 0.75rem; 
+    padding-top: 1rem; 
+    border-top: 1px solid var(--md-sys-color-outline-variant); 
+  }
+  .stat { display: flex; align-items: center; gap: 0.3rem; font-weight: 700; opacity: 0.7; }
+  .stat span { font-size: 1rem; color: var(--primary-color); }
+  .lang-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary-color); }
+  .updated { margin-left: auto; opacity: 0.4; font-size: 0.7rem; font-weight: 600; }
+
+  .repo-topics { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+  .topic-badge { 
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--text-muted); 
+    padding: 0.15rem 0.5rem; 
+    border-radius: 0.5rem; 
+    font-size: 0.65rem; 
+    font-weight: 700; 
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.2s;
+  }
+  .repo-card:hover .topic-badge { border-color: rgba(var(--primary-rgb), 0.3); color: var(--primary-color); }
 
   .empty-state { padding: 5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-state span { font-size: 4rem; color: var(--primary-color); opacity: 0.3; }
-  .empty-state h3 { margin: 0; }
-  .empty-state p { color: var(--text-muted); }
-
-  .repo-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-  .topic-badge { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.2rem 0.6rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 800; border: 1px solid rgba(var(--primary-rgb), 0.2); }
-  .topic-badge:hover { background: rgba(var(--primary-rgb), 0.2); }
-
-  .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
-  .skeleton-card { height: 180px; animation: pulse 1.5s infinite; }
+  
+  .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1rem; }
+  .skeleton-card { height: 160px; border-radius: 1rem; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container); }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.5; } 100% { opacity: 0.3; } }
 
   @media (max-width: 900px) {
-    .explore-repos-layout { grid-template-columns: 1fr; }
-    .lang-sidebar { position: static; overflow-x: auto; }
-    .lang-list { flex-direction: row; }
+    .explore-repos-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+    .lang-sidebar { position: static; }
+    .lang-list { flex-direction: row; flex-wrap: wrap; }
   }
 </style>

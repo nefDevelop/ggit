@@ -84,7 +84,7 @@
   onMount(fetchEmails);
 </script>
 
-<div class="settings-card island">
+<div class="settings-card island island-interactive">
   <header class="card-header">
     <h3 class="card-title">Manage Email Addresses</h3>
     <p class="card-desc">Your primary email address will be used for notifications and security alerts.</p>

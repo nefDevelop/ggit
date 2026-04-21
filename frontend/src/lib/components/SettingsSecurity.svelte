@@ -116,7 +116,7 @@
 </script>
 
 <div class="settings-stack">
-  <div class="settings-card island">
+  <div class="settings-card island island-interactive">
     <header class="card-header">
       <h3 class="card-title">Security & Password</h3>
     </header>
@@ -148,7 +148,7 @@
     </form>
   </div>
 
-  <div class="settings-card island {twoFactorEnabled ? 'tonal-success' : 'tonal-warning'}">
+  <div class="settings-card island island-interactive {twoFactorEnabled ? 'tonal-success' : 'tonal-warning'}">
     <header class="card-header">
       <div class="header-with-badge">
         <h3 class="card-title">Two-Factor Authentication</h3>
@@ -161,7 +161,7 @@
 
     <div class="card-body">
       {#if showRecovery}
-        <div class="recovery-box island">
+        <div class="recovery-box island island-interactive">
           <h4>Success! 2FA is enabled.</h4>
           <p>Please save these recovery codes in a safe place. You can use them to log in if you lose access to your device.</p>
           <div class="recovery-codes">
@@ -172,7 +172,7 @@
           <button class="btn btn-tonal" onclick={() => showRecovery = false}>I've saved them</button>
         </div>
       {:else if enrollment}
-        <div class="enrollment-flow island">
+        <div class="enrollment-flow island island-interactive">
           <div class="qr-section">
             <img src={enrollment.qr_code} alt="QR Code" class="qr-image" />
             <div class="secret-text">

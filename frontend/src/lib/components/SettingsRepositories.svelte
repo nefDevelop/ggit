@@ -37,7 +37,7 @@
   onMount(fetchRepos);
 </script>
 
-<div class="settings-card island">
+<div class="settings-card island island-interactive">
   <header class="card-header">
     <h3 class="card-title">Repositories</h3>
     <p class="card-desc">List of repositories you own or collaborate in.</p>

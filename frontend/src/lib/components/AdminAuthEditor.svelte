@@ -128,7 +128,7 @@
   onMount(fetchAuth);
 </script>
 
-<div class="auth-editor island tonal">
+<div class="auth-editor island island-interactive tonal">
   <header>
     <h3>{authId ? 'Edit Auth Source' : 'New Authentication Source'}</h3>
     <p>Configure how Ggit delegates user authentication to external systems.</p>

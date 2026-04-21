@@ -21,7 +21,7 @@
 </svelte:head>
 
 <div class="settings-container">
-  <aside class="settings-sidebar island">
+  <aside class="settings-sidebar tonal">
     <h3 class="sidebar-title">Repository Settings</h3>
     <nav class="settings-nav">
       {#each tabs as tab}

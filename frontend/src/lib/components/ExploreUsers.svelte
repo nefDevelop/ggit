@@ -42,13 +42,13 @@
   {#if loading && users.length === 0}
     <div class="skeleton-list">
       {#each Array(6) as _}
-        <div class="skeleton-row island"></div>
+        <div class="skeleton-row"></div>
       {/each}
     </div>
   {:else if users.length > 0}
     <div class="users-list">
       {#each users as user}
-        <a href="/{user.username}" class="user-card island tonal hover-lift">
+        <a href="/{user.username}" class="user-card tonal hover-lift">
           <img src={user.avatar_url} alt={user.username} class="avatar" />
           <div class="user-info">
             <strong class="username">{user.username}</strong>
@@ -77,22 +77,42 @@
 </div>
 
 <style>
-  .users-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-  .user-card { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem; text-decoration: none; color: inherit; border: 1px solid var(--md-sys-color-outline-variant); }
+  .explore-users { padding: 1rem 0; }
+  .users-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; grid-auto-rows: min-content; }
+  .user-card { 
+    display: flex; 
+    align-items: center; 
+    gap: 1rem; 
+    padding: 1.25rem; 
+    text-decoration: none; 
+    color: inherit; 
+    border: 1px solid var(--md-sys-color-outline-variant); 
+    border-radius: 2rem;
+    background: var(--md-sys-color-surface-container-low);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .user-card:hover { 
+    transform: translateX(6px);
+    border-color: var(--primary-color);
+    background: var(--md-sys-color-surface-container);
+    box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
+  }
   
-  .avatar { width: 48px; height: 48px; border-radius: 50%; background: #222; }
+  .avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--md-sys-color-outline-variant); transition: all 0.3s; }
+  .user-card:hover .avatar { border-color: var(--primary-color); transform: rotate(5deg); }
   
-  .user-info { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
-  .username { font-size: 1.1rem; font-weight: 700; color: var(--primary-color); }
-  .full-name { font-size: 0.85rem; color: var(--text-muted); }
+  .user-info { flex: 1; display: flex; flex-direction: column; gap: 0.05rem; }
+  .username { font-size: 1rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
+  .full-name { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
 
-  .user-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
-  .user-meta span { font-size: 0.9rem; }
+  .user-meta { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: var(--text-muted); opacity: 0.6; font-weight: 600; }
+  .user-meta span { font-size: 0.85rem; color: var(--primary-color); }
 
   .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); }
   .empty-state span { font-size: 4rem; opacity: 0.2; }
   
-  .skeleton-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-  .skeleton-row { height: 80px; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+  .skeleton-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .skeleton-row { height: 80px; border-radius: 1rem; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container); }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.5; } }
 </style>

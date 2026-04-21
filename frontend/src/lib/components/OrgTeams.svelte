@@ -59,7 +59,7 @@
       onkeydown={(e) => e.key === 'Escape' && (showModal = false)}
     >
       <div 
-        class="modal-content island tonal" 
+        class="modal-content island island-interactive tonal" 
         role="dialog" 
         aria-modal="true"
         onclick={(e) => e.stopPropagation()}
@@ -97,7 +97,7 @@
 
   <div class="teams-grid">
     {#each teams as team}
-      <div class="team-card island tonal hover-lift">
+      <div class="team-card island island-interactive tonal hover-lift">
         <header class="team-header">
            <div class="team-title">
              <strong>{team.Name}</strong>

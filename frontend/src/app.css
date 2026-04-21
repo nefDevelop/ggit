@@ -1224,7 +1224,7 @@ html, body {
   border-bottom: none;
 }
 
-#main-content .island:hover {
+#main-content .island-interactive:hover {
   background-color: var(--bg-interactive);
 }
 

@@ -38,7 +38,7 @@
 </script>
 
 <div class="diff-viewer">
-  <div class="diff-stats island">
+  <div class="diff-stats island island-interactive">
     <div class="stat-item">
         <Layers size={18} />
         <b>{diff?.Files?.length || 0}</b> archivos cambiados
@@ -55,7 +55,7 @@
 
   <div class="diff-files">
     {#each diff?.Files || [] as file}
-      <div class="diff-file island" class:collapsed={collapsedFiles[file.Name]}>
+      <div class="diff-file island island-interactive" class:collapsed={collapsedFiles[file.Name]}>
         <header class="file-header" onclick={() => toggleFile(file.Name)}>
           <div class="header-left">
             <button class="collapse-btn">

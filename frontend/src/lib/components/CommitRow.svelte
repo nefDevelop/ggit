@@ -18,7 +18,7 @@
   }
 </script>
 
-<div class="commit-row island tonal hover-lift" class:minimalist>
+<div class="commit-row island island-interactive tonal hover-lift" class:minimalist>
   <div class="commit-avatar">
     {commit.author?.name?.[0] || 'U'}
   </div>

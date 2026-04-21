@@ -184,14 +184,14 @@
   </header>
 
   {#if loading}
-    <div class="island skeleton-island">
+    <div class="skeleton-island tonal">
       <div class="skeleton-line"></div>
       <div class="skeleton-line"></div>
       <div class="skeleton-line"></div>
     </div>
   {:else}
     <div class="settings-grid">
-      <section class="settings-section island profile-main-card">
+      <section class="settings-section tonal profile-main-card">
         <div class="profile-layout">
           <div class="avatar-column">
             <div class="avatar-container">
@@ -286,7 +286,7 @@
         {/if}
       </section>
 
-      <section class="settings-section island preferences-card">
+      <section class="settings-section tonal preferences-card">
         <h2 class="section-title">Dashboard Preferences</h2>
         
         <div class="toggle-group">

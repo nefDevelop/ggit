@@ -75,9 +75,9 @@
 
 <div class="issue-detail-view">
   {#if loading}
-    <div class="skeleton-detail island"></div>
+    <div class="skeleton-detail island island-interactive"></div>
   {:else if error}
-    <div class="error-msg island">{error}</div>
+    <div class="error-msg island island-interactive">{error}</div>
   {:else if issue}
     <header class="issue-main-header">
       <div class="issue-title-row">

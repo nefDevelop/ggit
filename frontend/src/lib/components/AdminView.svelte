@@ -22,7 +22,7 @@
 </script>
 
 <div class="admin-container">
-  <aside class="admin-sidebar island">
+  <aside class="admin-sidebar island island-interactive">
     <h3 class="sidebar-title">Server Administration</h3>
     <nav class="admin-nav">
       {#each tabs as tab}

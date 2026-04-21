@@ -59,7 +59,7 @@
   <AdminAuthEditor id={editingAuthId} onSave={handleSave} onCancel={handleCancel} />
 {/if}
 
-<div class="admin-auth island tonal">
+<div class="admin-auth island island-interactive tonal">
   <header class="section-header">
     <div class="title">
       <span class="material-symbols-rounded">vpn_key</span>

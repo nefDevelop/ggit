@@ -26,7 +26,7 @@
 </script>
 
 <div class="settings-container">
-  <aside class="settings-sidebar island">
+  <aside class="settings-sidebar island island-interactive">
     <h3 class="sidebar-title">User Settings</h3>
     <nav class="settings-nav">
       {#each tabs as tab}

@@ -130,13 +130,13 @@
 
 <div class="pr-creator">
   {#if loading}
-    <div class="skeleton-header island tonal"></div>
+    <div class="skeleton-header island island-interactive tonal"></div>
     <div class="workspace-grid skeleton-pulse">
-        <div class="island"></div>
-        <div class="island tonal"></div>
+        <div class="island island-interactive"></div>
+        <div class="island island-interactive tonal"></div>
     </div>
   {:else if metadata}
-    <header class="comparison-bar island tonal shadow-lg">
+    <header class="comparison-bar island island-interactive tonal shadow-lg">
       <div class="selector-group">
         <div class="repo-info">
             <span class="label">Base Repository</span>
@@ -159,7 +159,7 @@
       <div class="selector-group">
         <div class="repo-selector">
             <span class="label">Head Repository</span>
-            <select class="island" onchange={handleHeadRepoChange} value={headRepoId}>
+            <select class="island island-interactive" onchange={handleHeadRepoChange} value={headRepoId}>
                 {#each metadata.all_head_repos as repo}
                     <option value={repo.id}>{repo.owner.username}/{repo.name}</option>
                 {/each}
@@ -195,7 +195,7 @@
 
     {#if comparison}
       <div class="workspace-grid">
-        <section class="creation-details island shadow-xl">
+        <section class="creation-details island island-interactive shadow-xl">
           <div class="form-header">
               <h3>New Pull Request</h3>
               <p class="text-muted">Fill in the details to submit your changes for review.</p>
@@ -225,7 +225,7 @@
           </div>
         </section>
 
-        <main class="review-panel island tonal shadow-md">
+        <main class="review-panel island island-interactive tonal shadow-md">
             <nav class="panel-tabs">
                 <button class:active={activeTab === 'diff'} onclick={() => activeTab = 'diff'}>
                     <span class="material-symbols-rounded">difference</span>

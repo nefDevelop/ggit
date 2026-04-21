@@ -7,7 +7,7 @@
   let newBranchName = $state('');
 </script>
 
-<div class="commit-panel island tonal">
+<div class="commit-panel island island-interactive tonal">
   <div class="commit-header">
     <span class="material-symbols-rounded">commit</span>
     <h3>Commit changes</h3>

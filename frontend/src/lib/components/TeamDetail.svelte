@@ -108,10 +108,10 @@
 </script>
 
 {#if loading}
-  <div class="skeleton-detail island tonal"></div>
+  <div class="skeleton-detail island island-interactive tonal"></div>
 {:else if team}
   <div class="team-detail-view">
-    <header class="detail-header island tonal">
+    <header class="detail-header island island-interactive tonal">
       <div class="title-group">
         <a href="/org/{orgName}/teams" class="back-link">
           <span class="material-symbols-rounded">arrow_back</span>
@@ -145,7 +145,7 @@
     </header>
 
     {#if editing}
-      <div class="edit-settings island">
+      <div class="edit-settings island island-interactive">
         <div class="field">
           <label for="perm">Team Permission Level</label>
           <select id="perm" bind:value={editForm.Permission}>
@@ -160,7 +160,7 @@
 
     <div class="management-grid">
       <!-- Members Section -->
-      <section class="management-card island">
+      <section class="management-card island island-interactive">
         <header class="card-header">
            <div class="header-title">
              <span class="material-symbols-rounded">group</span>
@@ -197,7 +197,7 @@
       </section>
 
       <!-- Repositories Section -->
-      <section class="management-card island">
+      <section class="management-card island island-interactive">
         <header class="card-header">
            <div class="header-title">
              <span class="material-symbols-rounded">book</span>

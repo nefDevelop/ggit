@@ -34,61 +34,61 @@
   {#if loading}
     <div class="stats-grid">
       {#each Array(8) as _}
-        <div class="stat-card island skeleton"></div>
+        <div class="stat-card island island-interactive skeleton"></div>
       {/each}
     </div>
   {:else if stats}
     <div class="stats-grid">
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">group</span>
         <div class="stat-content">
           <span class="label">Users</span>
           <span class="value">{stats.Counter.User}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">corporate_fare</span>
         <div class="stat-content">
           <span class="label">Organizations</span>
           <span class="value">{stats.Counter.Org}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">vpn_key</span>
         <div class="stat-content">
           <span class="label">Public Keys</span>
           <span class="value">{stats.Counter.PublicKey}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">book</span>
         <div class="stat-content">
           <span class="label">Repositories</span>
           <span class="value">{stats.Counter.Repo}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">star</span>
         <div class="stat-content">
           <span class="label">Stars</span>
           <span class="value">{stats.Counter.Star}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">visibility</span>
         <div class="stat-content">
           <span class="label">Watches</span>
           <span class="value">{stats.Counter.Watch}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">merge_type</span>
         <div class="stat-content">
           <span class="label">Attachments</span>
           <span class="value">{stats.Counter.Attachment}</span>
         </div>
       </div>
-      <div class="stat-card island tonal">
+      <div class="stat-card island island-interactive tonal">
         <span class="material-symbols-rounded icon">notifications</span>
         <div class="stat-content">
           <span class="label">Notices</span>
@@ -97,7 +97,7 @@
       </div>
     </div>
   {:else}
-    <div class="error-zone island tonal">
+    <div class="error-zone island island-interactive tonal">
        <span class="material-symbols-rounded">lock</span>
        <div class="error-content">
           <h3>Access Denied or API Error</h3>

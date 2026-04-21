@@ -100,7 +100,7 @@
         </div>
       {/if}
 
-      <section class="form-section island">
+      <section class="form-section tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">id_card</span>
           <h2>Información Básica</h2>
@@ -135,7 +135,7 @@
         </div>
       </section>
 
-      <section class="form-section island">
+      <section class="form-section tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">visibility</span>
           <h2>Visibilidad</h2>
@@ -164,7 +164,7 @@
         </div>
       </section>
 
-      <section class="form-section island">
+      <section class="form-section tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">settings</span>
           <h2>Inicialización</h2>

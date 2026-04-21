@@ -55,7 +55,7 @@
       {/each}
     </div>
   {:else if error}
-    <div class="island error-island">
+    <div class="tonal error-tonal">
       <span class="material-symbols-rounded">error</span>
       <p>{error}</p>
       <button class="btn btn-tonal" onclick={fetchCommits}>Retry</button>
@@ -227,7 +227,7 @@
     opacity: 0.3;
   }
 
-  .error-island {
+  .error-tonal {
     padding: 3rem;
     text-align: center;
   }

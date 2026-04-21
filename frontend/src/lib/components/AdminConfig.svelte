@@ -68,7 +68,7 @@
   {:else if config}
     <div class="config-sections">
       {#each sections as section}
-        <div class="config-card island">
+        <div class="config-card island island-interactive">
           <h3 class="card-title">{section.label}</h3>
           <div class="config-grid">
             {#each Object.entries(config[section.key] || {}) as [label, value]}
@@ -81,7 +81,7 @@
         </div>
       {/each}
 
-      <div class="config-card island tonal test-email-section">
+      <div class="config-card island island-interactive tonal test-email-section">
         <h3 class="card-title">Test Email Configuration</h3>
         <div class="test-email-content">
           <p>Send a test email to ensure your SMTP settings are correct.</p>

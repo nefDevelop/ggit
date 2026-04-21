@@ -103,7 +103,7 @@
   onMount(fetchData);
 </script>
 
-<div class="release-editor island shadow-xl">
+<div class="release-editor island island-interactive shadow-xl">
   <header class="editor-header">
     <h3>{release ? 'Edit Release' : 'New Release'}</h3>
     <button class="btn-icon" onclick={onCancel}>
@@ -150,7 +150,7 @@
         {#if attachments.length > 0}
           <div class="attachment-list">
             {#each attachments as a}
-              <div class="attachment-item island tonal">
+              <div class="attachment-item island island-interactive tonal">
                 <span class="material-symbols-rounded">description</span>
                 <span class="name">{a.name}</span>
                 <button class="remove-btn" onclick={() => removeAttachment(a.uuid)}>
@@ -164,7 +164,7 @@
     </div>
 
     <aside class="editor-sidebar">
-      <div class="options island tonal">
+      <div class="options island island-interactive tonal">
         <h4>Options</h4>
         <label class="checkbox-row">
           <input type="checkbox" bind:checked={isPrerelease} />

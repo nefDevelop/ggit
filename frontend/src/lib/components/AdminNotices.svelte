@@ -81,7 +81,7 @@
     </div>
   </header>
 
-  <div class="admin-notices island tonal">
+  <div class="admin-notices island island-interactive tonal">
     <div class="table-container">
       <table class="modern-table">
         <thead>

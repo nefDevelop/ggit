@@ -48,7 +48,7 @@
 
   <div class="auth-grid">
     {#each sources as source}
-      <div class="auth-card island tonal">
+      <div class="auth-card island island-interactive tonal">
         <div class="card-top">
           <div class="type-icon">
             <span class="material-symbols-rounded">
@@ -73,7 +73,7 @@
   </div>
 
   {#if !loading && sources.length === 0}
-    <div class="empty-state island">
+    <div class="empty-state island island-interactive">
       <span class="material-symbols-rounded">no_encryption</span>
       <h3>No authentication sources</h3>
       <p>Configure LDAP or SMTP to allow external user authentication.</p>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import Button from './ui/Button.svelte';
   import { 
     FileText as Description, 
     Edit, 
@@ -145,10 +146,9 @@
     <!-- Sidebar -->
     <aside class="wiki-sidebar">
       <div class="sidebar-header-minimal">
-        <button class="btn-new-full" onclick={startNew}>
-          <span class="material-symbols-rounded">add</span>
+        <Button class="w-full" onclick={startNew} icon="add">
           New Page
-        </button>
+        </Button>
       </div>
       
       <nav class="wiki-nav">
@@ -301,8 +301,8 @@
     width: 36px;
     height: 36px;
     border-radius: 10px;
-    background: var(--primary-container);
-    color: var(--on-primary-container);
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
     border: none;
     cursor: pointer;
     display: flex;
@@ -313,7 +313,7 @@
 
   .btn-new:hover {
     transform: scale(1.05);
-    background: var(--primary);
+    background: var(--md-sys-color-primary);
     color: white;
   }
 
@@ -336,13 +336,13 @@
   }
 
   .nav-item:hover {
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     color: var(--md-sys-color-on-surface);
   }
 
   .nav-item.active {
-    background: var(--primary-container);
-    color: var(--primary);
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-primary);
     font-weight: 600;
   }
 
@@ -374,7 +374,7 @@
     font-weight: 700;
     background: transparent;
     border: none;
-    border-bottom: 2px solid var(--primary);
+    border-bottom: 2px solid var(--md-sys-color-primary);
     color: var(--md-sys-color-on-surface);
     width: 100%;
     outline: none;
@@ -387,7 +387,7 @@
   }
 
   .tab-group {
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     padding: 0.25rem;
     border-radius: 100px;
     display: flex;
@@ -406,8 +406,8 @@
   }
 
   .tab-btn.active {
-    background: var(--island-bg);
-    color: var(--primary);
+    background: var(--md-sys-color-surface-container);
+    color: var(--md-sys-color-primary);
     box-shadow: var(--shadow-sm);
   }
 
@@ -421,7 +421,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     color: var(--md-sys-color-on-surface);
     border: none;
     padding: 0.5rem 1rem;
@@ -440,7 +440,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--primary);
+    background: var(--md-sys-color-primary);
     color: white;
     border: none;
     padding: 0.5rem 1.25rem;
@@ -456,7 +456,7 @@
   }
 
   .btn-danger-icon {
-    color: var(--error);
+    color: var(--md-sys-color-error);
     background: transparent;
     border: none;
     cursor: pointer;
@@ -466,7 +466,7 @@
   }
 
   .btn-danger-icon:hover {
-    background: rgba(var(--error-rgb), 0.1);
+    background: color-mix(in srgb, var(--md-sys-color-error) 10%, transparent);
   }
 
   .wiki-body {
@@ -485,7 +485,7 @@
   .wiki-editor {
     flex: 1;
     min-height: 400px;
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: 16px;
     padding: 1.5rem;
@@ -509,7 +509,7 @@
   }
 
   .commit-msg-box input {
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: 10px;
     padding: 0.75rem 1rem;
@@ -536,8 +536,8 @@
     top: 5px;
     width: 12px;
     height: 12px;
-    background: var(--primary);
-    border: 3px solid var(--island-bg);
+    background: var(--md-sys-color-primary);
+    border: 3px solid var(--md-sys-color-surface-container);
     border-radius: 50%;
   }
 
@@ -553,7 +553,7 @@
   }
 
   .hash {
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     padding: 0.1rem 0.4rem;
     border-radius: 4px;
     font-family: monospace;
@@ -563,7 +563,7 @@
   .skeleton-header {
     height: 40px;
     width: 300px;
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     border-radius: 8px;
     margin-bottom: 2rem;
     animation: pulse 1.5s infinite;
@@ -571,7 +571,7 @@
 
   .skeleton-body {
     height: 300px;
-    background: var(--surface-variant);
+    background: var(--md-sys-color-surface-variant);
     border-radius: 12px;
     animation: pulse 1.5s infinite;
   }
@@ -601,4 +601,6 @@
         justify-content: space-between;
     }
   }
+
+  .w-full { width: 100%; }
 </style>

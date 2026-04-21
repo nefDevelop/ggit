@@ -46,7 +46,7 @@
       {/each}
     </div>
   {:else if releases.length === 0}
-    <div class="empty-state island tonal">
+    <div class="empty-state island island-interactive tonal">
       <span class="material-symbols-rounded">new_releases</span>
       <h3>No releases yet</h3>
       <p>Releases provide a way to package software and provide binary assets to your users.</p>
@@ -54,7 +54,7 @@
   {:else}
     <div class="release-list">
       {#each releases as rel}
-        <article class="release-card island hover-lift" class:draft={rel.IsDraft}>
+        <article class="release-card island island-interactive hover-lift" class:draft={rel.IsDraft}>
           <div class="release-meta">
             <div class="tag-status">
               <span class="tag-badge">

@@ -67,6 +67,11 @@ type PageMeta struct {
 
 // GetWikiPage returns the content of a single wiki page.
 func GetWikiPage(c *context.APIContext) {
+	if !c.Repo.Repository.HasWiki() {
+		c.NotFound()
+		return
+	}
+
 	pageURL := c.Params("page")
 	if pageURL == "" {
 		pageURL = "Home"
@@ -131,6 +136,11 @@ func CreateWikiPage(c *context.APIContext) {
 
 // UpdateWikiPage updates an existing wiki page.
 func UpdateWikiPage(c *context.APIContext) {
+	if !c.Repo.Repository.HasWiki() {
+		c.NotFound()
+		return
+	}
+
 	pageURL := c.Params("page")
 	oldTitle := database.ToWikiPageName(pageURL)
 
@@ -153,6 +163,11 @@ func UpdateWikiPage(c *context.APIContext) {
 
 // DeleteWikiPage deletes a wiki page.
 func DeleteWikiPage(c *context.APIContext) {
+	if !c.Repo.Repository.HasWiki() {
+		c.NotFound()
+		return
+	}
+
 	pageURL := c.Params("page")
 	if pageURL == "" {
 		pageURL = "Home"
@@ -170,6 +185,11 @@ func DeleteWikiPage(c *context.APIContext) {
 }
 // GetWikiPageHistory returns the commit history of a single wiki page.
 func GetWikiPageHistory(c *context.APIContext) {
+	if !c.Repo.Repository.HasWiki() {
+		c.NotFound()
+		return
+	}
+
 	pageURL := c.Params("page")
 	if pageURL == "" {
 		pageURL = "Home"

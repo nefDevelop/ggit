@@ -50,9 +50,9 @@
 
 <div class="profile-page">
   {#if error && !user}
-    <div class="error-msg island">{error}</div>
+    <div class="error-msg tonal">{error}</div>
   {:else if user}
-    <header class="profile-header island">
+    <header class="profile-header tonal">
       <img src={user.avatar_url} alt={user.username} class="avatar" />
       <div class="info">
         <div class="title-row">
@@ -87,11 +87,11 @@
       {#if loading}
         <div class="loading-grid">
             {#each Array(3) as _}
-                <div class="skeleton island"></div>
+                <div class="skeleton tonal"></div>
             {/each}
         </div>
       {:else if data.length === 0}
-        <div class="empty-state island">
+        <div class="empty-state tonal">
           <span class="material-symbols-rounded">sentiment_dissatisfied</span>
           <p>No hay elementos para mostrar en esta sección.</p>
         </div>

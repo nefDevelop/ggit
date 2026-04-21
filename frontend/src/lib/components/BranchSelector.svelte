@@ -22,14 +22,14 @@
     <span class="selector-label">{label}</span>
   {/if}
   <div class="selector-control">
-    <button class="selector-trigger island tonal" onclick={() => isOpen = !isOpen}>
+    <button class="selector-trigger island island-interactive tonal" onclick={() => isOpen = !isOpen}>
       <span class="material-symbols-rounded">{icon}</span>
       <span class="current-name">{selected || 'Select branch...'}</span>
       <span class="material-symbols-rounded expand">expand_more</span>
     </button>
 
     {#if isOpen}
-      <div class="selector-dropdown island shadow-xl">
+      <div class="selector-dropdown island island-interactive shadow-xl">
         <div class="search-box">
           <span class="material-symbols-rounded">search</span>
           <input 

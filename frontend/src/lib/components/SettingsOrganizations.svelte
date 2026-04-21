@@ -39,7 +39,7 @@
   onMount(fetchOrgs);
 </script>
 
-<div class="settings-card island">
+<div class="settings-card island island-interactive">
   <header class="card-header">
     <h3 class="card-title">Organizations</h3>
     <p class="card-desc">Organizations you are a member of.</p>
@@ -58,7 +58,7 @@
     {:else}
       <div class="org-list">
         {#each orgs as org}
-          <div class="org-item island tonal">
+          <div class="org-item island island-interactive tonal">
              <div class="org-main">
                 <img src={org.avatar_url} alt="" class="org-avatar" />
                 <div class="org-info">

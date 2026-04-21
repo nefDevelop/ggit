@@ -77,7 +77,7 @@
   onMount(fetchUser);
 </script>
 
-<div class="user-editor island tonal">
+<div class="user-editor island island-interactive tonal">
   <header>
     <h3>{userId ? 'Edit User' : 'Create New User'}</h3>
     <p>{userId ? `Modifying account: ${user.username}` : 'Add a new member to the platform.'}</p>

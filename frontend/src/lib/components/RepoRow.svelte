@@ -123,9 +123,9 @@
 
   .repo-row:hover {
     background: var(--md3-surface-3);
-    transform: scale(1.01) translateX(8px);
-    border-radius: 1rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: scale(1.005) translateX(4px);
+    border-radius: 2rem;
+    box-shadow: 0 10px 20px -10px rgba(0,0,0,0.15);
     z-index: 10;
   }
 

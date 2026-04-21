@@ -20,7 +20,11 @@
   let avatarCacheBuster = $state(Date.now());
 
   // DiceBear Logic
-  const dicebearStyles = ['avataaars', 'bottts', 'pixel-art', 'lorelei-neutral', 'micah', 'open-peeps', 'notionists'];
+  const dicebearStyles = [
+    'adventurer', 'adventurer-neutral', 'avataaars', 'avataaars-neutral', 
+    'bottts', 'bottts-neutral', 'icons', 'lorelei', 'lorelei-neutral', 
+    'micah', 'open-peeps', 'notionists', 'pixel-art', 'shapes', 'thumbs'
+  ];
   let currentDicebearStyle = $state('avataaars');
   let dicebearSeed = $state('');
   let showDiceBear = $state(false);
@@ -127,7 +131,7 @@
   onMount(fetchProfile);
 </script>
 
-<div class="profile-modular-card island">
+<div class="profile-modular-card island island-interactive">
   <div class="profile-layout">
     <!-- AVATAR COLUMN -->
     <div class="avatar-sidebar">

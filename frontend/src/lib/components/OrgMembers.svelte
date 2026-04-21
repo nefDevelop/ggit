@@ -59,19 +59,19 @@
         {#each Array(4) as _}<div class="skeleton-org"></div>{/each}
       </div>
     {:else if error}
-      <div class="error-state island tonal-error">
+      <div class="error-state island island-interactive tonal-error">
         <span class="material-symbols-rounded">error</span>
         <p>{error}</p>
       </div>
     {:else if members.length === 0}
-      <div class="empty-state island tonal">
+      <div class="empty-state island island-interactive tonal">
         <span class="material-symbols-rounded">person_off</span>
         <p>This organization has no members yet.</p>
       </div>
     {:else}
       <div class="members-grid">
         {#each members as member}
-          <div class="member-card island tonal hover-lift">
+          <div class="member-card island island-interactive tonal hover-lift">
              <div class="member-main">
                 <img src={member.avatar_url} alt="" class="member-avatar" />
                 <div class="member-info">

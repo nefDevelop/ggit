@@ -78,7 +78,7 @@
       <p>{i18n.t('admin.dashboard.maintenance_desc') || 'Maintain your instance running at peak performance.'}</p>
     </div>
     {#if stats?.system?.uptime}
-      <div class="uptime-widget island">
+      <div class="uptime-widget island island-interactive">
         <span class="material-symbols-rounded">schedule</span>
         <div class="uptime-info">
           <span class="label">Uptime</span>
@@ -91,13 +91,13 @@
   {#if loading}
     <div class="skeleton-grid">
       {#each Array(3) as _}
-        <div class="skeleton-card island"></div>
+        <div class="skeleton-card island island-interactive"></div>
       {/each}
     </div>
   {:else if stats}
     <!-- STATS OVERVIEW -->
     <div class="stats-overview">
-      <div class="stat-card island tonal" style="--accent: #3b82f6">
+      <div class="stat-card island island-interactive tonal" style="--accent: #3b82f6">
         <div class="stat-main">
           <span class="material-symbols-rounded icon">memory</span>
           <div class="stat-content">
@@ -107,7 +107,7 @@
         </div>
         <div class="stat-footer">Sys: {stats.system.mem_sys}</div>
       </div>
-      <div class="stat-card island tonal" style="--accent: #10b981">
+      <div class="stat-card island island-interactive tonal" style="--accent: #10b981">
         <div class="stat-main">
           <span class="material-symbols-rounded icon">account_tree</span>
           <div class="stat-content">
@@ -117,7 +117,7 @@
         </div>
         <div class="stat-footer">Active processes</div>
       </div>
-      <div class="stat-card island tonal" style="--accent: #f59e0b">
+      <div class="stat-card island island-interactive tonal" style="--accent: #f59e0b">
         <div class="stat-main">
           <span class="material-symbols-rounded icon">history</span>
           <div class="stat-content">
@@ -135,7 +135,7 @@
         <h2 class="section-title">Core Operations</h2>
         <div class="ops-grid">
           {#each operations as op}
-            <div class="op-card island tonal">
+            <div class="op-card island island-interactive tonal">
               <div class="op-icon" style="background: {op.color}20; color: {op.color}">
                 <span class="material-symbols-rounded">{op.icon}</span>
               </div>
@@ -162,7 +162,7 @@
 
       <!-- ACTIVITY LOG / CONSOLE -->
       <aside class="activity-section">
-        <div class="island console">
+        <div class="island island-interactive console">
           <header class="console-header">
             <h3>Activity Log</h3>
             <button class="btn-clear" onclick={() => activityLog = []}>Clear</button>

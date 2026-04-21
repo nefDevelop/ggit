@@ -42,7 +42,7 @@
   <div class="skeleton-org"></div>
 {:else if org}
   <div class="org-layout">
-    <header class="org-header island tonal">
+    <header class="org-header island island-interactive tonal">
       <img src={org.avatar_url} alt={org.username} class="org-avatar" />
       <div class="org-info">
         <h1>{org.full_name || org.username}</h1>
@@ -93,7 +93,7 @@
         <div class="repos-grid">
           {#each repos as repo}
             <!-- Assuming a generic repo card style -->
-            <div class="repo-card island tonal hover-lift">
+            <div class="repo-card island island-interactive tonal hover-lift">
                <strong>{repo.name}</strong>
                <p>{repo.description || ''}</p>
             </div>

@@ -94,16 +94,16 @@
 
   {#if loading}
     <div class="skeleton-list">
-      <div class="skeleton-item island tonal"></div>
-      <div class="skeleton-item island tonal"></div>
+      <div class="skeleton-item island island-interactive tonal"></div>
+      <div class="skeleton-item island island-interactive tonal"></div>
     </div>
   {:else if error}
-    <div class="error-banner island">
+    <div class="error-banner island island-interactive">
        <span class="material-symbols-rounded">error</span>
        {error}
     </div>
   {:else if keys.length === 0}
-    <div class="empty-state island tonal">
+    <div class="empty-state island island-interactive tonal">
       <span class="material-symbols-rounded size-xl">vpn_key</span>
       <h3>No Deploy Keys</h3>
       <p>You haven't configured any deploy keys for this repository yet.</p>
@@ -112,7 +112,7 @@
   {:else}
     <div class="keys-list">
       {#each keys as key}
-        <div class="key-item island tonal">
+        <div class="key-item island island-interactive tonal">
           <div class="key-icon-box">
              <span class="material-symbols-rounded">key</span>
           </div>
@@ -161,7 +161,7 @@
               bind:value={newKey.title} 
               placeholder="e.g. CI Server" 
               required
-              class="island tonal"
+              class="island island-interactive tonal"
             />
           </div>
 
@@ -173,7 +173,7 @@
               placeholder="ssh-rsa AAAAB3Nza..." 
               required
               rows="5"
-              class="island tonal"
+              class="island island-interactive tonal"
             ></textarea>
           </div>
 
