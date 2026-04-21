@@ -1,0 +1,55 @@
+import { browser } from '$app/environment';
+
+export interface UserPreferences {
+  repoTabs: {
+    pr: boolean;
+    issue: boolean;
+    wiki: boolean;
+    branch: boolean;
+    commits: boolean;
+  };
+}
+
+const DEFAULT_PREFERENCES: UserPreferences = {
+  repoTabs: {
+    pr: true,
+    issue: true,
+    wiki: true,
+    branch: true,
+    commits: true,
+  }
+};
+
+function createPreferences() {
+  let initial = DEFAULT_PREFERENCES;
+  if (browser) {
+    const saved = localStorage.getItem('ggit_user_preferences');
+    if (saved) {
+      try {
+        initial = { ...DEFAULT_PREFERENCES, ...JSON.parse(saved) };
+      } catch (e) {
+        console.error('Failed to parse preferences', e);
+      }
+    }
+  }
+
+  let prefs = $state<UserPreferences>(initial);
+
+  return {
+    get current() { return prefs; },
+    update(newPrefs: Partial<UserPreferences>) {
+      prefs = { ...prefs, ...newPrefs };
+      if (browser) {
+        localStorage.setItem('ggit_user_preferences', JSON.stringify(prefs));
+      }
+    },
+    toggleRepoTab(tab: keyof UserPreferences['repoTabs']) {
+      prefs.repoTabs[tab] = !prefs.repoTabs[tab];
+      if (browser) {
+        localStorage.setItem('ggit_user_preferences', JSON.stringify(prefs));
+      }
+    }
+  };
+}
+
+export const userPrefs = createPreferences();

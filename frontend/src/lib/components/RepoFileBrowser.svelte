@@ -269,32 +269,51 @@ git push -u origin main</code></pre>
   .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; }
 
   /* Content */
-  .content-view { background: rgba(0,0,0,0.1); border-radius: 0.5rem; overflow: hidden; }
+  .content-view { 
+    background: var(--bg-color); 
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem; 
+    overflow: hidden; 
+    box-shadow: var(--shadow-sm);
+  }
   .file-table { width: 100%; border-collapse: collapse; }
-  .file-row { border-bottom: 1px solid rgba(255,255,255,0.02); }
-  .file-row td { padding: 0.6rem 1rem; }
+  .file-row { border-bottom: 1px solid var(--border-color); }
+  .file-row:last-child { border-bottom: none; }
+  .file-row td { padding: 0.75rem 1rem; }
+  .file-row:hover { background: var(--surface-variant); }
+
   .name-cell { display: flex; align-items: center; gap: 0.75rem; min-width: 250px; }
-  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 500; }
-  .icon-tree { color: #facc15; font-size: 1.2rem; }
-  .icon-blob { color: var(--text-muted); font-size: 1.2rem; }
+  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+  .icon-tree { color: #facc15; font-size: 1.25rem; }
+  .icon-blob { color: var(--text-muted); font-size: 1.25rem; }
   .msg-cell { font-size: 0.85rem; color: var(--text-muted); opacity: 0.6; }
-  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.4; }
+  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; }
 
   /* Viewer */
-  .file-header { background: var(--md3-surface-3); padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; }
-  .file-meta { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-  .tool-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.2rem 0.6rem; border-radius: 0.4rem; cursor: pointer; font-size: 0.8rem; }
-  .code-box { background: #0d1117; }
-  .code-grid { display: grid; grid-template-columns: 45px 1fr; }
-  .ln-col { border-right: 1px solid rgba(255,255,255,0.05); padding: 1rem 0; text-align: right; }
-  .ln-col span { display: block; font-family: monospace; font-size: 0.75rem; color: var(--text-muted); opacity: 0.3; padding-right: 0.75rem; line-height: 1.5; }
-  .code-pre { margin: 0; padding: 1rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.5; color: #e6edf3; }
+  .file-header { 
+    background: var(--surface-variant); 
+    padding: 0.75rem 1rem; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.95rem; color: var(--text-color); }
+  .tool-btn { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.35rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+  .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+  .code-box { background: #010409; }
+  .code-grid { display: grid; grid-template-columns: 50px 1fr; }
+  .ln-col { border-right: 1px solid rgba(255,255,255,0.08); padding: 1.25rem 0; text-align: right; background: rgba(255,255,255,0.01); }
+  .ln-col span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.25; padding-right: 1rem; line-height: 1.5; }
+  .code-pre { margin: 0; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.5; color: #e6edf3; }
+  .line { white-space: pre-wrap; }
 
   /* Readme */
-  .readme-section { margin-top: 1.5rem; background: rgba(255,255,255,0.01); border-radius: 0.5rem; overflow: hidden; }
-  .readme-header { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); }
-  .readme-header.small { padding: 0.5rem 1rem; background: var(--md3-surface-3); border-top: 1px solid var(--border-color); }
-  .readme-content { padding: 2rem; }
+  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 1rem; overflow: hidden; }
+  .readme-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); background: var(--surface-variant); }
+  .readme-header.small { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border-color); }
+  .readme-content { padding: 2.5rem; }
 
   /* Sidebar */
   .side-column { display: flex; flex-direction: column; gap: 2.5rem; }

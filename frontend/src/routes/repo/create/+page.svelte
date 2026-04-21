@@ -155,7 +155,7 @@
 
       <div class="form-actions">
         <button type="button" class="btn-text" onclick={() => goto('/dashboard')}>Cancelar</button>
-        <button type="submit" class="btn-hero" disabled={loading || !name}>
+        <button type="submit" class="btn-action-primary" disabled={loading || !name}>
           {#if loading}
             <span class="material-symbols-rounded spin">sync</span>
             Despegando...
@@ -445,8 +445,8 @@
   .btn-hero:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .error-toast {
-    background: #fee2e2;
-    color: #ef4444;
+    background: var(--error-container);
+    color: var(--on-error-container);
     padding: 1rem 1.5rem;
     border-radius: 1rem;
     margin-bottom: 2rem;
@@ -454,6 +454,7 @@
     align-items: center;
     gap: 1rem;
     font-weight: 700;
+    box-shadow: var(--shadow-sm);
     animation: shake 0.4s ease-out;
   }
 

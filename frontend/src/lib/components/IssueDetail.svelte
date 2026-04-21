@@ -194,8 +194,8 @@
   .issue-title-row h1 { margin: 0; font-size: 2rem; font-weight: 800; }
   .index-tag { color: var(--text-muted); font-weight: 400; }
   
-  .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 2rem; color: #fff; font-weight: 700; background: #10b981; }
-  .status-pill.closed { background: #ef4444; }
+  .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.25rem; border-radius: 2rem; color: var(--on-primary); font-weight: 700; background: var(--success); font-size: 0.9rem; }
+  .status-pill.closed { background: var(--error); }
   .issue-subtitle { color: var(--text-muted); font-size: 0.95rem; }
 
   .issue-layout { display: grid; grid-template-columns: 1fr 280px; gap: 3rem; }

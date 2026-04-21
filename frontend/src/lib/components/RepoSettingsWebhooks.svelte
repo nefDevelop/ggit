@@ -68,7 +68,7 @@
   onMount(fetchWebhooks);
 </script>
 
-<div class="webhooks-manager">
+<div class="settings-view-flat">
   <div class="header-action-minimal">
     <button class="btn-action-primary" onclick={handleAdd}>
       <span class="material-symbols-rounded">add</span>
@@ -78,20 +78,15 @@
 
   {#if loading}
     <div class="skeleton-list">
-      <div class="skeleton-item island tonal"></div>
-      <div class="skeleton-item island tonal"></div>
+      <div class="skeleton-row tonal"></div>
+      <div class="skeleton-row tonal"></div>
     </div>
   {:else if error}
-    <div class="error-banner island">
-       <span class="material-symbols-rounded">error</span>
-       {error}
-    </div>
+    <div class="error-msg">{error}</div>
   {:else if webhooks.length === 0}
-    <div class="empty-state island tonal">
-      <span class="material-symbols-rounded size-xl">webhook</span>
-      <h3>No Webhooks Defined</h3>
-      <p>You haven't configured any webhooks for this repository yet.</p>
-      <button class="btn btn-tonal" onclick={handleAdd}>Create your first webhook</button>
+    <div class="empty-state-flat">
+      <span class="material-symbols-rounded">webhook</span>
+      <p>No webhooks configured for this repository.</p>
     </div>
   {:else}
     <div class="hooks-list-flat">
@@ -155,46 +150,40 @@
 </div>
 
 <style>
-  .webhooks-manager { display: flex; flex-direction: column; gap: 2rem; animation: fadeIn 0.3s ease-out; }
+  .settings-view-flat { display: flex; flex-direction: column; gap: 2rem; padding: 1rem; animation: fadeIn 0.3s ease-out; }
   
-  .section-header { display: flex; justify-content: space-between; align-items: flex-start; }
-  .header-content h2 { margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 800; }
-  .header-content p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+  .header-action-minimal { display: flex; justify-content: flex-end; }
 
-  .webhooks-list { display: flex; flex-direction: column; gap: 1rem; }
-  .hook-item { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; transition: transform 0.2s, background 0.2s; }
-  .hook-item:hover { transform: translateX(5px); background: rgba(255,255,255,0.03); }
-
-  .hook-main { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
-  .hook-type-badge { background: var(--primary-color); color: var(--on-primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 4px; }
-  .hook-url { font-size: 0.95rem; opacity: 0.9; }
-
-  .hook-meta { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); }
-  .status-badge { display: flex; align-items: center; gap: 0.4rem; font-weight: 600; }
-  .status-badge span { font-size: 1.1rem; }
-  .status-badge.success { color: #4ade80; }
-  .status-badge.failure { color: #f87171; }
+  .hooks-list-flat { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 1rem; overflow: hidden; }
   
-  .hook-events { position: relative; padding-left: 1.5rem; }
-  .hook-events::before { content: '•'; position: absolute; left: 0.5rem; }
+  .hook-row-flat { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+  .hook-row-flat:last-child { border-bottom: none; }
+  .hook-row-flat:hover { background: var(--surface-variant); }
 
-  .hook-actions { display: flex; gap: 0.5rem; }
-  .btn-icon { background: transparent; border: none; color: var(--text-muted); padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; display: flex; }
-  .btn-icon:hover { background: rgba(255,255,255,0.05); color: var(--text-color); }
-  .btn-icon.delete:hover { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+  .hook-core { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 0; }
+  .hook-url-row { display: flex; align-items: center; gap: 1rem; }
+  .type-badge { background: var(--primary-color); color: var(--on-primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.05em; }
+  .url-code { font-size: 0.9rem; opacity: 0.9; font-family: 'JetBrains Mono', monospace; }
 
-  .empty-state { padding: 4rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
-  .empty-state .size-xl { font-size: 4rem; opacity: 0.2; }
-  .empty-state h3 { margin: 1rem 0 0 0; }
-  .empty-state p { color: var(--text-muted); max-width: 400px; margin-bottom: 1rem; }
+  .hook-status-meta { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); }
+  .status-indicator { display: flex; align-items: center; }
+  .status-indicator .success { color: var(--success); }
+  .status-indicator .failure { color: var(--error); }
+  .status-indicator .neutral { color: var(--text-muted); opacity: 0.5; }
+  
+  .events-summary { opacity: 0.7; }
 
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-  .modal-content { background: var(--md3-surface-1); border-radius: 1.5rem; border: 1px solid var(--border-color); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-2xl); }
-  .modal-content.logs-modal { max-width: 1000px; }
+  .hook-row-actions { display: flex; gap: 0.5rem; }
 
-  .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }
-  .skeleton-item { height: 80px; width: 100%; animation: pulse 1.5s infinite; }
+  .empty-state-flat { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .empty-state-flat span { font-size: 3rem; }
+
+  .skeleton-row { height: 80px; width: 100%; border-bottom: 1px solid var(--border-color); animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
   
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .modal-content { background: var(--md3-surface-1); border-radius: 1.5rem; border: 1px solid var(--border-color); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl); }
+  .modal-content.logs-modal { max-width: 1000px; }
+
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>

@@ -32,7 +32,7 @@
   });
 
   function getStatusColor(issue: any) {
-    return issue.is_closed ? '#f87171' : '#10b981';
+    return issue.is_closed ? 'var(--error)' : 'var(--success)';
   }
 </script>
 
@@ -40,7 +40,7 @@
   <div class="issues-header-minimal">
     <div class="filter-pill-bar">
       <button 
-        class="pill-btn" 
+        class="tab-pill" 
         class:active={stateFilter === 'open'} 
         onclick={() => stateFilter = 'open'}
       >
@@ -48,7 +48,7 @@
         {repo.data?.open_issues_count || 0} Open
       </button>
       <button 
-        class="pill-btn" 
+        class="tab-pill" 
         class:active={stateFilter === 'closed'} 
         onclick={() => stateFilter = 'closed'}
       >
@@ -57,9 +57,9 @@
       </button>
     </div>
     
-    <a href="./issues/new" class="btn-new-issue">
+    <a href="./issues/new" class="btn-action-primary">
       <span class="material-symbols-rounded">add</span>
-      New
+      New Issue
     </a>
   </div>
 
@@ -125,65 +125,29 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .issues-header {
+  .issues-header-minimal {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .filter-bar {
+  .filter-pill-bar {
     display: flex;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--surface-variant);
     padding: 0.25rem;
-    border-radius: 0.75rem;
-  }
-
-  .filter-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-  }
-
-  .filter-btn:hover {
-    color: var(--text-color);
-    background: rgba(255, 255, 255, 0.05);
-  }
-
-  .filter-btn.active {
-    color: var(--text-color);
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .issues-list {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    border-radius: 2rem;
   }
 
   .issue-row {
     display: flex;
-    padding: 1rem 1.5rem;
-    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    gap: 1.25rem;
     border-bottom: 1px solid var(--border-color);
     transition: background 0.2s;
   }
-
-  .issue-row:last-child {
-    border-bottom: none;
-  }
-
   .issue-row:hover {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--surface-variant);
   }
 
   .issue-icon {
@@ -210,19 +174,18 @@
     color: var(--text-color);
     text-decoration: none;
   }
-
   .issue-title:hover {
     color: var(--primary-color);
   }
 
   .label-tag {
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.7rem;
+    font-weight: 800;
     padding: 0.1rem 0.6rem;
-    border-radius: 2rem;
+    border-radius: 4px;
     color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255,255,255,0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .issue-meta {
@@ -239,10 +202,6 @@
     color: var(--text-muted);
   }
 
-  .issue-comments-count span {
-    font-size: 1.1rem;
-  }
-
   .loading-state, .empty-state {
     display: flex;
     flex-direction: column;
@@ -253,15 +212,10 @@
     text-align: center;
   }
 
-  .empty-state span {
-    font-size: 3rem;
-    opacity: 0.3;
-  }
-
   .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid rgba(255,255,255,0.1);
+    border: 3px solid var(--border-color);
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s infinite linear;
@@ -272,10 +226,10 @@
   }
 
   .error-msg {
-    color: #f87171;
+    color: var(--error);
     padding: 2rem;
     text-align: center;
-    background: rgba(248, 113, 113, 0.1);
+    background: var(--error-container);
     border-radius: 1rem;
   }
 </style>

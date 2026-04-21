@@ -14,7 +14,7 @@
     ...(authState.user?.is_admin ? [
       { name: i18n.t('admin_panel'), icon: 'security', path: '/admin/users', isParent: true }
     ] : []),
-    { name: i18n.t('settings'), icon: 'settings', path: '/user/settings/profile' },
+    { name: i18n.t('settings'), icon: 'settings', path: '/user/settings' },
   ]);
 
   const adminSubItems = $derived([

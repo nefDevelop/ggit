@@ -102,17 +102,17 @@
                 <div class="search-box">
                     <GlobalSearch />
                 </div>
-                <a class="btn-new-repo" href="/repo/create">
+                <a class="btn-action-primary" href="/repo/create">
                     <span class="material-symbols-rounded">add</span>
                     <span>New Project</span>
                 </a>
             </div>
             <div class="view-mode-selector">
-                <button class="selector-btn" class:active={viewMode === 'temporal'} onclick={() => viewMode = 'temporal'}>
+                <button class="tab-pill" class:active={viewMode === 'temporal'} onclick={() => viewMode = 'temporal'}>
                     <span class="material-symbols-rounded mini">schedule</span>
                     Activity
                 </button>
-                <button class="selector-btn" class:active={viewMode === 'list'} onclick={() => viewMode = 'list'}>
+                <button class="tab-pill" class:active={viewMode === 'list'} onclick={() => viewMode = 'list'}>
                     <span class="material-symbols-rounded mini">list</span>
                     Alphabetical
                 </button>
@@ -178,22 +178,22 @@
   .search-row { display: flex; gap: 1rem; align-items: center; }
   .search-box { flex: 1; }
 
-  .btn-new-repo { 
-    background: var(--primary-color); 
-    color: var(--on-primary); 
-    text-decoration: none; 
-    padding: 0.75rem 1.5rem; 
-    border-radius: 0.75rem; 
-    display: flex; 
-    align-items: center; 
-    gap: 0.75rem; 
-    font-weight: 800; 
-    transition: all 0.2s;
+  .error-toast {
+    background: var(--error-container);
+    color: var(--on-error-container);
+    padding: 1rem 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+    animation: shake 0.4s ease-out;
   }
-  .btn-new-repo:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3); }
 
   .view-mode-selector { display: flex; gap: 0.5rem; }
-  .selector-btn { 
+  .tab-pill { 
     background: transparent; 
     border: 1px solid var(--border-color); 
     padding: 0.5rem 1rem; 

@@ -40,32 +40,36 @@
   }
 </script>
 
-<div class="settings-card island mt-4">
-  <header class="card-header">
-    <h3 class="card-title">Appearance</h3>
-    <p class="card-desc">Customize the look and feel of your workspace.</p>
+<div class="appearance-modular-view">
+  <header class="section-header-modern">
+    <div class="header-info">
+      <h3>Appearance</h3>
+      <p>Customize the look and feel of your workspace.</p>
+    </div>
   </header>
   
-  <div class="theme-options">
+  <div class="appearance-content">
     <div class="option-group">
-      <h4>Color Mode</h4>
-      <div class="button-row">
+      <h4 class="group-title">Color Mode</h4>
+      <div class="scheme-grid">
         {#each schemes as scheme}
           <button 
             type="button" 
-            class="selector-btn" 
+            class="scheme-btn" 
             class:active={currentScheme === scheme.id}
             onclick={() => applyScheme(scheme.id)}
           >
             <span class="material-symbols-rounded">{scheme.icon}</span>
-            {scheme.name}
+            <div class="label-box">
+              <span class="name">{scheme.name}</span>
+            </div>
           </button>
         {/each}
       </div>
     </div>
 
     <div class="option-group">
-      <h4>Accent Theme</h4>
+      <h4 class="group-title">Accent Theme</h4>
       <div class="theme-grid">
         {#each themes as theme}
           <button 
@@ -75,7 +79,7 @@
             onclick={() => applyTheme(theme.id)}
           >
             <div class="color-preview" style="background-color: {theme.color};"></div>
-            <span>{theme.name}</span>
+            <span class="theme-name">{theme.name}</span>
           </button>
         {/each}
       </div>
@@ -84,41 +88,51 @@
 </div>
 
 <style>
-  .settings-card { display: flex; flex-direction: column; margin-top: 2rem; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
-  .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
-  .card-desc { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem; }
+  .appearance-modular-view { display: flex; flex-direction: column; gap: 2.5rem; }
+  
+  .section-header-modern { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .section-header-modern h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
+  .section-header-modern p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
 
-  .theme-options { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+  .appearance-content { display: flex; flex-direction: column; gap: 3rem; }
 
-  .option-group h4 { margin: 0 0 1rem 0; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+  .option-group { display: flex; flex-direction: column; gap: 1.25rem; }
+  .group-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 0.5rem; }
 
-  .button-row { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .selector-btn {
-    display: flex; align-items: center; gap: 0.5rem;
+  /* Scheme Selector */
+  .scheme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .scheme-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
     background: var(--surface-variant);
-    border: 2px solid transparent;
-    color: var(--text-color);
-    padding: 0.75rem 1.25rem;
-    border-radius: 1rem;
-    font-weight: 600; font-family: inherit;
-    cursor: pointer; transition: all 0.2s ease;
-  }
-  .selector-btn:hover { background: var(--surface-variant-hover); }
-  .selector-btn.active { background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary-color); color: var(--primary-color); }
-  .selector-btn .material-symbols-rounded { font-size: 1.25rem; }
-
-  .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
-  .theme-card {
-    display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
-    background: var(--surface-variant);
-    border: 2px solid transparent;
-    padding: 1.25rem 1rem;
+    border: 1px solid var(--border-color);
+    padding: 2rem;
     border-radius: 1.25rem;
-    cursor: pointer; transition: all 0.2s ease; color: var(--text-color); font-weight: 600; font-family: inherit;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-muted);
   }
-  .theme-card:hover { background: var(--surface-variant-hover); transform: translateY(-2px); }
+  .scheme-btn:hover { background: rgba(255,255,255,0.02); transform: translateY(-3px); }
+  .scheme-btn.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); color: var(--primary-color); box-shadow: var(--shadow-md); }
+  .scheme-btn .material-symbols-rounded { font-size: 1.75rem; }
+  .scheme-btn .name { font-weight: 700; font-size: 0.9rem; }
+
+  /* Theme Grid */
+  .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.5rem; }
+  .theme-card {
+    display: flex; align-items: center; gap: 1.25rem;
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    cursor: pointer; transition: all 0.2s; color: var(--text-color);
+  }
+  .theme-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.02); }
   .theme-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
   
-  .color-preview { width: 3rem; height: 3rem; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.1); }
+  .color-preview { width: 2.5rem; height: 2.5rem; border-radius: 1rem; flex-shrink: 0; box-shadow: var(--shadow-sm); border: 2px solid rgba(255,255,255,0.1); }
+  .theme-name { font-weight: 700; font-size: 0.9rem; }
+
+  @media (max-width: 600px) {
+    .scheme-grid { grid-template-columns: 1fr; }
+    .theme-grid { grid-template-columns: 1fr; }
+  }
 </style>

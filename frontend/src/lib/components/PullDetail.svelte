@@ -65,12 +65,12 @@
     </header>
 
     <nav class="pull-tabs-bar">
-      <button class="nav-tab" class:active={activeView === 'conversation'} onclick={() => activeView = 'conversation'}>
-        <span class="material-symbols-rounded">chat</span>
+      <button class="tab-pill" class:active={activeView === 'conversation'} onclick={() => activeView = 'conversation'}>
+        <span class="material-symbols-rounded mini">chat</span>
         {activeView === 'conversation' ? 'Conversation' : ''}
       </button>
-      <button class="nav-tab" class:active={activeView === 'files'} onclick={() => activeView = 'files'}>
-        <span class="material-symbols-rounded">diff</span>
+      <button class="tab-pill" class:active={activeView === 'files'} onclick={() => activeView = 'files'}>
+        <span class="material-symbols-rounded mini">diff</span>
         {activeView === 'files' ? 'Files' : ''}
         <span class="count">{diff?.Files?.length || 0}</span>
       </button>
@@ -105,8 +105,8 @@
   .title-row h1 { margin: 0; font-size: 1.75rem; font-weight: 800; }
   .index { color: var(--text-muted); font-weight: 400; }
   
-  .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.25rem; border-radius: 2rem; background: var(--success-color, #10b981); color: white; font-weight: 700; font-size: 0.9rem; }
-  .status-pill.merged { background: var(--primary-color); }
+  .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.25rem; border-radius: 2rem; background: var(--success); color: var(--on-primary); font-weight: 700; font-size: 0.9rem; }
+  .status-pill.merged { background: var(--primary); }
   
   .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
   .subtitle code { background: var(--surface-variant); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); }

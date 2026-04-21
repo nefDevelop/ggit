@@ -93,7 +93,7 @@
   </div>
 
   <div class="actions-info">
-    <button class="action-btn copy-btn" onclick={() => copyToClipboard(repo.clone_url)} title="Copy Clone URL">
+    <button class="btn-icon-minimal" onclick={() => copyToClipboard(repo.clone_url)} title="Copy Clone URL">
       <span class="material-symbols-rounded">{copied ? 'check' : 'content_copy'}</span>
     </button>
     <span class="time">{timeAgo(repo.updated_at)}</span>

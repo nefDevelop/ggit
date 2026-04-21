@@ -8,11 +8,14 @@
   import SettingsTokens from './SettingsTokens.svelte';
   import SettingsRepositories from './SettingsRepositories.svelte';
   import SettingsOrganizations from './SettingsOrganizations.svelte';
+  import SettingsMyGgit from './SettingsMyGgit.svelte';
 
   let activeTab = $state('profile');
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: 'person' },
+    { id: 'myggit', label: 'My Ggit', icon: 'grid_view' },
+    { id: 'appearance', label: 'Appearance', icon: 'palette' },
     { id: 'emails', label: 'Emails', icon: 'mail' },
     { id: 'security', label: 'Security', icon: 'security' },
     { id: 'keys', label: 'SSH Keys', icon: 'key' },
@@ -35,6 +38,9 @@
           <span class="material-symbols-rounded">{tab.icon}</span>
           {tab.label}
         </button>
+      {#each [] as _}
+        <!-- spacer -->
+      {/each}
       {/each}
     </nav>
   </aside>
@@ -42,6 +48,8 @@
   <main class="settings-content">
     {#if activeTab === 'profile'}
       <SettingsProfile />
+    {:else if activeTab === 'myggit'}
+      <SettingsMyGgit />
     {:else if activeTab === 'appearance'}
       <ThemeSelector />
     {:else if activeTab === 'emails'}

@@ -2,12 +2,11 @@
   import { page } from '$app/state';
   import { onMount } from 'svelte';
 
-  let username = $derived(page.params.username);
-  let reponame = $derived(page.params.reponame);
-  let isRepoContext = $derived(!!reponame);
+  const reponame = $derived(page.params.reponame);
+  const isRepoContext = $derived(!!reponame);
 
   let query = $state('');
-  let searchInput: HTMLInputElement;
+  let searchInput = $state<HTMLInputElement | null>(null);
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === '/' && document.activeElement?.tagName !== 'INPUT') {
@@ -21,7 +20,6 @@
     return () => window.removeEventListener('keydown', handleKeydown);
   });
 
-  // Emite un evento global que las páginas pueden escuchar
   $effect(() => {
      window.dispatchEvent(new CustomEvent('ggit:search', { detail: query }));
   });
