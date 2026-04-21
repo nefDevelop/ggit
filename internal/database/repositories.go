@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
@@ -35,12 +36,13 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		ID:            r.ID,
 		Owner:         owner.APIFormat(),
 		Name:          r.Name,
+		FullName:      owner.Name + "/" + r.Name,
 		Description:   r.Description,
 		IsPrivate:     r.IsPrivate,
 		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
 		DefaultBranch: r.DefaultBranch,
-		CreatedAt:     r.CreatedUnix,
-		UpdatedAt:     r.UpdatedUnix,
+		CreatedAt:     time.Unix(r.CreatedUnix, 0),
+		UpdatedAt:     time.Unix(r.UpdatedUnix, 0),
 		Permissions:   opt.Permission,
 		Parent:        opt.Parent,
 		Topics:        r.Topics,
@@ -80,6 +82,7 @@ type CreateRepoOptions struct {
 	EnablePulls   bool
 	Fork          bool
 	ForkID        int64
+	CreatedAt     time.Time
 }
 
 // Create creates a new repository record in the database. It returns
@@ -117,6 +120,10 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 		EnablePulls:   opts.EnablePulls,
 		IsFork:        opts.Fork,
 		ForkID:        opts.ForkID,
+	}
+	if !opts.CreatedAt.IsZero() {
+		repo.CreatedUnix = opts.CreatedAt.Unix()
+		repo.UpdatedUnix = repo.CreatedUnix
 	}
 	return repo, s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err = tx.Create(repo).Error

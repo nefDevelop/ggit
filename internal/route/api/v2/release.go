@@ -2,6 +2,7 @@ package v2
 
 import (
 	"net/http"
+	"time"
 
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
@@ -64,6 +65,12 @@ func CreateRelease(c *context.APIContext) {
 		Note:         f.Content,
 		IsDraft:      len(f.Draft) > 0,
 		IsPrerelease: f.Prerelease,
+	}
+
+	if f.CreatedAt != "" {
+		if t, err := time.Parse(time.RFC3339, f.CreatedAt); err == nil {
+			rel.CreatedUnix = t.Unix()
+		}
 	}
 
 	if err := database.NewRelease(c.Repo.GitRepo, rel, f.Files); err != nil {

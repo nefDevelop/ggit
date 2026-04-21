@@ -66,6 +66,10 @@ func CreateIssue(c *context.APIContext) {
 		MilestoneID: f.MilestoneID,
 		AssigneeID:  f.AssigneeID,
 	}
+	if !f.CreatedAt.IsZero() {
+		issue.CreatedUnix = f.CreatedAt.Unix()
+		issue.UpdatedUnix = issue.CreatedUnix
+	}
 
 	if err := issueservice.Issues.CreateIssue(c.Req.Context(), c.Repo.Repository, issue, f); err != nil {
 		c.Error(err, "create issue")

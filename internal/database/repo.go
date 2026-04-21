@@ -428,13 +428,14 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 		ID:          r.ID,
 		Owner:       r.Owner.APIFormat(),
 		Name:        r.Name,
+		FullName:    r.Owner.Name + "/" + r.Name,
 		Description: r.Description,
 		IsPrivate:   r.IsPrivate,
 		NumStars:    r.NumStars,
 		NumForks:    r.NumForks,
 		NumWatches:  r.NumWatches,
-		CreatedAt:   r.CreatedUnix,
-		UpdatedAt:   r.UpdatedUnix,
+		CreatedAt:   time.Unix(r.CreatedUnix, 0),
+		UpdatedAt:   time.Unix(r.UpdatedUnix, 0),
 		Permissions: permission,
 	}
 	if permission == nil {

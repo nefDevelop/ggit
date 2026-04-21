@@ -2,6 +2,7 @@ package v2
 
 import (
 	"path"
+	"time"
 
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/route/api/v2/types"
@@ -19,7 +20,7 @@ func ToUserResponse(u *database.User) *types.UserResponse {
 		AvatarURL:       u.AvatarURL(),
 		IsAdmin:         u.IsAdmin,
 		DisableNewsFeed: u.DisableNewsFeed,
-		CreatedAt:       u.CreatedUnix,
+		CreatedAt:       time.Unix(u.CreatedUnix, 0),
 	}
 }
 
@@ -36,7 +37,7 @@ func ToRepositoryResponse(r *database.Repository) *types.RepositoryResponse {
 		NumForks:    r.NumForks,
 		NumWatches:  r.NumWatches,
 		IsPrivate:   r.IsPrivate,
-		CreatedAt:   r.CreatedUnix,
+		CreatedAt:   time.Unix(r.CreatedUnix, 0),
 		Topics:      r.Topics,
 	}
 }
@@ -77,7 +78,7 @@ func ToNoticeResponse(n *database.Notice) *types.NoticeResponse {
 		ID:          n.ID,
 		Type:        n.Type.TrStr(),
 		Description: n.Description,
-		CreatedAt:   n.CreatedUnix,
+		CreatedAt:   time.Unix(n.CreatedUnix, 0),
 	}
 }
 
@@ -157,6 +158,6 @@ func ToAuditLogResponse(a *database.Action) *types.AuditLogResponse {
 		RepoID:    a.RepoID,
 		RepoPath:  path.Join(a.RepoUserName, a.RepoName),
 		Content:   a.Content,
-		CreatedAt: a.CreatedUnix,
+		CreatedAt: time.Unix(a.CreatedUnix, 0),
 	}
 }

@@ -399,6 +399,7 @@ type PictureOpts struct {
 	GravatarSource             string
 	DisableGravatar            bool
 	EnableFederatedAvatar      bool
+	EnableDicebearAvatar       bool
 
 	// Derived from other static values
 	LibravatarService *libravatar.Libravatar `ini:"-"` // Initialized client for federated avatar.

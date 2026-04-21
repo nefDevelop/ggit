@@ -727,21 +727,21 @@ const (
 // Action is a user operation to a repository. It implements template.Actioner
 // interface to be able to use it in template rendering.
 type Action struct {
-	ID           int64 `gorm:"primaryKey"`
-	UserID       int64 `gorm:"index"` // Receiver user ID
-	OpType       ActionType
-	ActUserID    int64  // Doer user ID
-	ActUserName  string // Doer user name
-	ActAvatar    string `xorm:"-" gorm:"-" json:"-"`
-	RepoID       int64  `xorm:"INDEX" gorm:"index"`
-	RepoUserName string
-	RepoName     string
-	RefName      string
-	IsPrivate    bool   `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
-	Content      string `xorm:"TEXT"`
+	ID           int64      `gorm:"primaryKey" json:"id"`
+	UserID       int64      `gorm:"index" json:"user_id"` // Receiver user ID
+	OpType       ActionType `json:"op_type"`
+	ActUserID    int64      `json:"act_user_id"`  // Doer user ID
+	ActUserName  string     `json:"act_user_name"` // Doer user name
+	ActAvatar    string     `xorm:"-" gorm:"-" json:"act_avatar"`
+	RepoID       int64      `xorm:"INDEX" gorm:"index" json:"repo_id"`
+	RepoUserName string     `json:"repo_user_name"`
+	RepoName     string     `json:"repo_name"`
+	RefName      string     `json:"ref_name"`
+	IsPrivate    bool       `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE" json:"is_private"`
+	Content      string     `xorm:"TEXT" json:"content"`
 
-	Created     time.Time `xorm:"-" gorm:"-" json:"-"`
-	CreatedUnix int64
+	Created     time.Time `xorm:"-" gorm:"-" json:"created_at"`
+	CreatedUnix int64     `json:"created_unix"`
 }
 
 // BeforeCreate implements the GORM create hook.

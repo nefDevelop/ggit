@@ -16,7 +16,7 @@ type UserResponse struct {
 	AvatarURL       string `json:"avatar_url"`
 	IsAdmin         bool   `json:"is_admin"`
 	DisableNewsFeed bool   `json:"disable_news_feed"`
-	CreatedAt       int64  `json:"created_at"`
+	CreatedAt       time.Time `json:"created_at"`
 }
 
 // UserEmailResponse represents an email address of a user.
@@ -39,6 +39,7 @@ type UserAccessTokenResponse struct {
 type RepositoryResponse struct {
 	ID          int64         `json:"id"`
 	Name        string        `json:"name"`
+	FullName    string        `json:"full_name"`
 	Description string        `json:"description"`
 	Owner       *UserResponse `json:"owner"`
 	NumStars    int           `json:"num_stars"`
@@ -47,8 +48,8 @@ type RepositoryResponse struct {
 	IsPrivate     bool                  `json:"is_private"`
 	HTMLURL       string                `json:"html_url"`
 	DefaultBranch string                `json:"default_branch"`
-	CreatedAt     int64                 `json:"created_at"`
-	UpdatedAt     int64                 `json:"updated_at"`
+	CreatedAt     time.Time             `json:"created_at"`
+	UpdatedAt     time.Time             `json:"updated_at"`
 	Permissions   *RepositoryPermission `json:"permissions,omitempty"`
 	Parent        *RepositoryResponse   `json:"parent,omitempty"`
 	Topics        []string              `json:"topics"`
@@ -187,6 +188,8 @@ type PullRequestResponse struct {
 	Assignee       *UserResponse       `json:"assignee"`
 	State          IssueStateType      `json:"state"`
 	Comments       int                 `json:"comments"`
+	CreatedAt      time.Time           `json:"created_at"`
+	UpdatedAt      time.Time           `json:"updated_at"`
 	HeadBranch     string              `json:"head_branch"`
 	HeadRepo       *RepositoryResponse `json:"head_repo"`
 	BaseBranch     string              `json:"base_branch"`
@@ -225,22 +228,22 @@ type AuthSourceResponse struct {
 
 // NoticeResponse represents a system notice in the API v2.
 type NoticeResponse struct {
-	ID          int64  `json:"id"`
-	Type        string `json:"type"`
-	Description string `json:"description"`
-	CreatedAt   int64  `json:"created_at"`
+	ID          int64     `json:"id"`
+	Type        string    `json:"type"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 // AuditLogResponse represents a system action/audit log entry in the API v2.
 type AuditLogResponse struct {
-	ID        int64  `json:"id"`
-	OpType    int    `json:"op_type"`
-	OpName    string `json:"op_name"`
-	ActorID   int64  `json:"actor_id"`
-	ActorName string `json:"actor_name"`
-	RepoID    int64  `json:"repo_id"`
-	RepoPath  string `json:"repo_path"`
-	Content   string `json:"content"`
-	CreatedAt int64  `json:"created_at"`
+	ID        int64     `json:"id"`
+	OpType    int       `json:"op_type"`
+	OpName    string    `json:"op_name"`
+	ActorID   int64     `json:"actor_id"`
+	ActorName string    `json:"actor_name"`
+	RepoID    int64     `json:"repo_id"`
+	RepoPath  string    `json:"repo_path"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // SystemStatusResponse represents the system health statistics in the API v2.

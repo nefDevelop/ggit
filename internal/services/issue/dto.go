@@ -13,7 +13,8 @@ type CreateIssueOptions struct {
 	MilestoneID int64
 	AssigneeID  int64
 	LabelIDs    []int64
-	Attachments []string // UUIDs de adjuntos
+	Attachments []string  // UUIDs de adjuntos
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 // CreatePullRequestOptions contiene los datos necesarios para crear un pull request.

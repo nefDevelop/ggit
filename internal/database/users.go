@@ -1321,7 +1321,7 @@ func (u *User) APIFormat() *apiv2types.UserResponse {
 		AvatarURL:       u.AvatarURL(),
 		IsAdmin:         u.IsAdmin,
 		DisableNewsFeed: u.DisableNewsFeed,
-		CreatedAt:       u.CreatedUnix,
+		CreatedAt:       time.Unix(u.CreatedUnix, 0),
 	}
 }
 

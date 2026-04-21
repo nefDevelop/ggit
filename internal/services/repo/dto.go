@@ -1,5 +1,7 @@
 package repo
 
+import "time"
+
 type CreateOptions struct {
 	Name        string
 	Description string
@@ -9,4 +11,5 @@ type CreateOptions struct {
 	IsPrivate   bool
 	IsUnlisted  bool
 	AutoInit    bool
+	CreatedAt   time.Time
 }

@@ -56,17 +56,40 @@
       ]);
       if (dataRes.ok) {
         data = await dataRes.json();
-        console.log("Dashboard Data Loaded:", data);
       }
       if (feedsRes.ok) {
         const feedsData = await feedsRes.json();
         feeds = feedsData.feeds;
-        console.log("Dashboard Feeds Loaded:", feeds.length);
       }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
     } finally {
       loading = false;
+    }
+  }
+
+  function formatAction(act: any) {
+    try {
+      switch (act.op_type) {
+        case 1: 
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">add_box</span> <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
+        case 5: // ActionCommitRepo
+          const pushData = JSON.parse(act.content);
+          return `
+            <div class="action-summary">
+              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len}</span>
+              <span class="action-pill"><span class="material-symbols-rounded mini">fork_right</span> ${act.ref_name}</span>
+              <span class="action-at">@</span>
+              <a href="/${act.repo_user_name}/${act.repo_name}" class="repo-link">${act.repo_name}</a>
+            </div>
+          `;
+        case 11: // ActionMergePullRequest
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">call_merge</span> merged into <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
+        default:
+          return act.content || 'activity';
+      }
+    } catch (e) {
+      return act.content;
     }
   }
 
@@ -172,15 +195,28 @@
                 {:else if feeds.length === 0}
                     <div class="empty-state mini"><p class="text-muted">No activity.</p></div>
                 {:else}
-                    <div class="feed-list">
+                    <div class="feed-list timeline">
                     {#each feeds as act}
                         <div class="feed-item">
-                        <img src={act.act_avatar} alt="" class="feed-avatar" />
-                        <div class="feed-content">
-                            <span class="feed-user">{act.act_user_name}</span>
-                            <span class="feed-action">{@html act.content}</span>
-                            <span class="feed-time">{new Date(act.created_unix * 1000).toLocaleDateString()}</span>
-                        </div>
+                            <div class="feed-marker">
+                                <img src={act.act_avatar} alt="" class="feed-avatar" />
+                                <div class="action-icon-badge {act.op_type === 5 ? 'push' : 'create'}">
+                                    <span class="material-symbols-rounded">
+                                        {act.op_type === 5 ? 'commit' : 
+                                         act.op_type === 1 ? 'add_box' : 
+                                         act.op_type === 11 ? 'call_merge' : 'star'}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="feed-content">
+                                <div class="feed-header">
+                                    <span class="feed-user">{act.act_user_name}</span>
+                                    <span class="feed-time">{new Date(act.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div class="feed-action-body">
+                                    {@html formatAction(act)}
+                                </div>
+                            </div>
                         </div>
                     {/each}
                     </div>
@@ -317,11 +353,111 @@
   }
 
   .group-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); padding: 0 0.5rem 0.5rem; display: block; }
-  .feed-list { display: flex; flex-direction: column; gap: 1.25rem; }
-  .feed-item { display: flex; gap: 1rem; font-size: 0.85rem; }
-  .feed-avatar { width: 32px; height: 32px; border-radius: 50%; opacity: 0.8; }
-  .feed-user { font-weight: 700; color: var(--text-color); }
-  .feed-time { color: var(--text-muted); font-size: 0.75rem; }
+  .feed-list { display: flex; flex-direction: column; gap: 1.5rem; position: relative; }
+  
+  .feed-item { 
+    display: flex; 
+    gap: 1.25rem; 
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Vertical line for the timeline */
+  .feed-list.timeline::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: var(--border-color);
+    opacity: 0.5;
+  }
+
+  .feed-marker {
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .feed-avatar { 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    border: 2px solid var(--surface-variant);
+    background: var(--surface-variant);
+  }
+
+  .action-icon-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--primary-color);
+    color: white;
+    border: 2px solid var(--md3-surface-1);
+  }
+
+  .action-icon-badge span { font-size: 10px; font-weight: bold; }
+  .action-icon-badge.push { background: #4CAF50; }
+  .action-icon-badge.create { background: #2196F3; }
+
+  .feed-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+  .feed-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .feed-user { font-size: 0.85rem; font-weight: 700; color: var(--text-color); }
+  .feed-time { color: var(--text-muted); font-size: 0.7rem; font-weight: 500; opacity: 0.6; }
+  
+  .feed-action-body { 
+    font-size: 0.85rem; 
+    line-height: 1.4; 
+    color: var(--text-muted);
+  }
+
+  .action-summary { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .action-pill { background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 700; color: var(--text-color); border: 1px solid var(--border-color); }
+  .action-pill .mini { font-size: 0.9rem; color: var(--primary-color); }
+  .action-at { opacity: 0.4; font-size: 0.8rem; }
+  .repo-link { font-weight: 800; color: var(--text-color) !important; }
+
+  .feed-action-body :global(a) {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .feed-action-body :global(a:hover) {
+    text-decoration: underline;
+  }
+
+  .feed-action-body :global(.branch) { 
+    font-family: 'Roboto Mono', monospace;
+    background: var(--md3-surface-3); 
+    padding: 0.1rem 0.4rem; 
+    border-radius: 6px; 
+    font-size: 0.75rem; 
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    font-weight: 700;
+  }
+
+  /* Timeline hover effect */
+  .feed-item:hover .feed-avatar {
+    transform: scale(1.1);
+    border-color: var(--primary-color);
+  }
+
+  .feed-item:hover .feed-user {
+    color: var(--primary-color);
+  }
+
+  .feed-header {
+    margin-bottom: 2px;
+  }
 
   .empty-state {
     display: flex;

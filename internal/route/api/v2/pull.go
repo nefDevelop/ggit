@@ -2,12 +2,14 @@ package v2
 
 import (
 	"net/http"
-
 	"os"
+	"time"
+
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/gitx"
+	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	issueservice "gogs.io/gogs/internal/services/issue"
 )
 
@@ -35,11 +37,13 @@ func ListPullRequests(c *context.APIContext) {
 		return
 	}
 
-	for _, issue := range issues {
+	apiPullRequests := make([]*apiv2types.PullRequestResponse, len(issues))
+	for i, issue := range issues {
 		_ = issue.LoadAttributes()
+		apiPullRequests[i] = issue.PullRequest.APIFormat()
 	}
 
-	c.JSON(http.StatusOK, issues)
+	c.JSON(http.StatusOK, apiPullRequests)
 }
 
 // GetPullRequest returns a single pull request by its index.
@@ -61,7 +65,7 @@ func GetPullRequest(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, issue)
+	c.JSON(http.StatusOK, issue.PullRequest.APIFormat())
 }
 
 // MergePullRequest merges a pull request.
@@ -144,10 +148,11 @@ func GetPullRequestDiff(c *context.APIContext) {
 // CreatePullRequest creates a new pull request.
 func CreatePullRequest(c *context.APIContext) {
 	var f struct {
-		Title      string `json:"title" binding:"required"`
-		Content    string `json:"content"`
-		BaseBranch string `json:"base_branch" binding:"required"`
-		HeadBranch string `json:"head_branch" binding:"required"`
+		Title      string    `json:"title" binding:"required"`
+		Content    string    `json:"content"`
+		BaseBranch string    `json:"base_branch" binding:"required"`
+		HeadBranch string    `json:"head_branch" binding:"required"`
+		CreatedAt  time.Time `json:"created_at"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -191,6 +196,10 @@ func CreatePullRequest(c *context.APIContext) {
 		IsPull:   true,
 		Content:  f.Content,
 	}
+	if !f.CreatedAt.IsZero() {
+		pullIssue.CreatedUnix = f.CreatedAt.Unix()
+		pullIssue.UpdatedUnix = pullIssue.CreatedUnix
+	}
 	pullRequest := &database.PullRequest{
 		HeadRepoID:   repo.ID,
 		BaseRepoID:   repo.ID,
@@ -205,10 +214,11 @@ func CreatePullRequest(c *context.APIContext) {
 
 	if err := issueservice.Issues.CreatePullRequest(c.Req.Context(), repo, pullIssue, pullRequest, issueservice.CreatePullRequestOptions{
 		CreateIssueOptions: issueservice.CreateIssueOptions{
-			RepoID:   repo.ID,
-			PosterID: c.User.ID,
-			Title:    f.Title,
-			Content:  f.Content,
+			RepoID:    repo.ID,
+			PosterID:  c.User.ID,
+			Title:     f.Title,
+			Content:   f.Content,
+			CreatedAt: f.CreatedAt,
 		},
 		HeadRepoID: repo.ID,
 		BaseRepoID: repo.ID,

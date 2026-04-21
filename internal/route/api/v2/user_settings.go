@@ -68,6 +68,9 @@ func GetUserProfileSettings(c *context.APIContext) {
 		"website":   c.User.Website,
 		"location":  c.User.Location,
 		"disable_news_feed": c.User.DisableNewsFeed,
+		"enable_dicebear_avatar": conf.Picture.EnableDicebearAvatar,
+		"avatar_url": c.User.AvatarURL(),
+		"use_custom_avatar": c.User.UseCustomAvatar,
 	})
 }
 

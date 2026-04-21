@@ -150,6 +150,8 @@ func (pr *PullRequest) APIFormat() *apiv2types.PullRequestResponse {
 		BaseRepo:   pr.BaseRepo.APIFormatLegacy(nil),
 		HTMLURL:    pr.Issue.HTMLURL(),
 		HasMerged:  pr.HasMerged,
+		CreatedAt:  pr.Issue.Created,
+		UpdatedAt:  pr.Issue.Updated,
 	}
 
 	if pr.Status != PullRequestStatusChecking {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	stdcontext "context"
 	"net/http"
+	"time"
 
 	"github.com/go-enry/go-enry/v2"
 	"github.com/gogs/git-module"
@@ -19,13 +20,14 @@ import (
 // CreateRepo creates a new repository for the authenticated user.
 func CreateRepo(c *context.APIContext) {
 	var f struct {
-		Name        string `json:"name" binding:"required,max=100"`
-		Description string `json:"description" binding:"max=255"`
-		Private     bool   `json:"private"`
-		AutoInit    bool   `json:"auto_init"`
-		Gitignores  string `json:"gitignores"`
-		License     string `json:"license"`
-		Readme      string `json:"readme"`
+		Name        string    `json:"name" binding:"required,max=100"`
+		Description string    `json:"description" binding:"max=255"`
+		Private     bool      `json:"private"`
+		AutoInit    bool      `json:"auto_init"`
+		Gitignores  string    `json:"gitignores"`
+		License     string    `json:"license"`
+		Readme      string    `json:"readme"`
+		CreatedAt   time.Time `json:"created_at"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -40,6 +42,7 @@ func CreateRepo(c *context.APIContext) {
 		Gitignores:  f.Gitignores,
 		License:     f.License,
 		Readme:      f.Readme,
+		CreatedAt:   f.CreatedAt,
 	})
 	if err != nil {
 		c.Error(err, "create repository")

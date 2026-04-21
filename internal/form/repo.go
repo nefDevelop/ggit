@@ -302,6 +302,7 @@ type NewRelease struct {
 	Draft      string
 	Prerelease bool
 	Files      []string
+	CreatedAt  string `json:"created_at"`
 }
 
 func (f *NewRelease) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
@@ -332,6 +333,7 @@ type NewWiki struct {
 	Title    string `binding:"Required"`
 	Content  string `binding:"Required"`
 	Message  string
+	CreatedAt string `json:"created_at"`
 }
 
 // FIXME: use code generation to generate this method.
@@ -354,6 +356,7 @@ type EditRepoFile struct {
 	CommitChoice  string `binding:"Required;MaxSize(50)"`
 	NewBranchName string `binding:"AlphaDashDotSlash;MaxSize(100)"`
 	LastCommit    string
+	CreatedAt     string `json:"created_at"`
 }
 
 func (f *EditRepoFile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
