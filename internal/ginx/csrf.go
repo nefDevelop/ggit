@@ -31,7 +31,7 @@ func CSRF() gin.HandlerFunc {
 			_ = sess.Save()
 		}
 
-		// Inject into Gogs context data if it exists
+		// Inject into Ggit context data if it exists
 		gctx, exists := c.Get("context")
 		if exists {
 			ctx := gctx.(*context.Context)

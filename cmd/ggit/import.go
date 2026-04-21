@@ -19,8 +19,8 @@ import (
 var (
 	importCommand = cli.Command{
 		Name:  "import",
-		Usage: "Import portable data as local Gogs data",
-		Description: `Allow user import data from other Gogs installations to local instance
+		Usage: "Import portable data as local Ggit data",
+		Description: `Allow user import data from other Ggit installations to local instance
 without manually hacking the data files`,
 		Commands: []*cli.Command{
 			&subcmdImportLocale,

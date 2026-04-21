@@ -47,7 +47,7 @@
         if (data.requires_email_activation) {
           successMsg = 'Account created! Please check your email to activate your account.';
         } else {
-          // Gogs doesn't auto-login after sign up, it redirects to login (or we can just redirect)
+          // Ggit doesn't auto-login after sign up, it redirects to login (or we can just redirect)
           successMsg = 'Account created successfully! Redirecting to login...';
           setTimeout(() => {
             window.location.href = '/user/login';

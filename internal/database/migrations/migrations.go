@@ -96,8 +96,8 @@ func Migrate(db *gorm.DB) error {
 
 	if minDBVersion > current.Version {
 		log.Fatal(`
-Hi there, thank you for using Gogs for so long!
-However, Gogs has stopped supporting auto-migration from your previously installed version.
+Hi there, thank you for using Ggit for so long!
+However, Ggit has stopped supporting auto-migration from your previously installed version.
 But the good news is, it's very easy to fix this problem!
 You can migrate your older database using a previous release, then you can upgrade to the newest version.
 

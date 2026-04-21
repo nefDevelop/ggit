@@ -5,7 +5,7 @@
 ###  "start" (call at start entware),
 ###  "stop" (call before stop entware),
 ###
-### Note the additional requirements for gogs on ddwrt: shadow user, group, sudo, daemonize
+### Note the additional requirements for ggit on ddwrt: shadow user, group, sudo, daemonize
 
 # pid so we know we're running
 PIDFILE="/opt/var/run/gogs.pid"
@@ -14,7 +14,7 @@ USER="gogs"
 # go paths
 GOROOT="/opt/bin/go"
 GOPATH="/opt/go"
-# gogs binary location
+# ggit binary location
 GOGSBIN="$GOPATH/src/github.com/gogs/gogs/gogs"
 # in case you need to see logs for this daemonized gog
 DAEMONIZE_LOG="/tmp/gogs.daemon.log"

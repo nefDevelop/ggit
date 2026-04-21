@@ -14,7 +14,7 @@ Navigate to **Settings > moonlanding** in any repository (`/:username/:reponame/
 
 Gogs currently supports three webhook payload formats:
 
-- **Gogs**: Native Gogs JSON payload format with full event details.
+- **Gogs**: Native Ggit JSON payload format with full event details.
 - **Slack**: Slack-compatible payload format for posting to Slack channels.
 - **Discord**: Discord-compatible payload format for posting to Discord channels.
 
@@ -22,19 +22,19 @@ Gogs currently supports three webhook payload formats:
 
 Every webhook delivery includes the following HTTP headers:
 
-| Header | Description | Example |
-|---|---|---|
-| `X-Gogs-Delivery` | A unique UUID identifying this delivery. | `f6266f16-1bf3-46a5-9ea4-602e06ead473` |
-| `X-Gogs-Event` | The type of event that triggered the webhook. | `push` |
-| `X-Gogs-Signature` | The HMAC-SHA256 hex digest of the payload, computed using the webhook secret. Use this to verify that the payload was sent by Gogs. | `1921679ed627...` |
+| Header             | Description                                                                                                                         | Example                                |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `X-Gogs-Delivery`  | A unique UUID identifying this delivery.                                                                                            | `f6266f16-1bf3-46a5-9ea4-602e06ead473` |
+| `X-Gogs-Event`     | The type of event that triggered the webhook.                                                                                       | `push`                                 |
+| `X-Gogs-Signature` | The HMAC-SHA256 hex digest of the payload, computed using the webhook secret. Use this to verify that the payload was sent by Gogs. | `1921679ed627...`                      |
 
 <Tip>
-  Always verify the `X-Gogs-Signature` header in your webhook receiver to ensure the request genuinely originated from your Gogs instance.
+  Always verify the `X-Gogs-Signature` header in your webhook receiver to ensure the request genuinely originated from your Ggit instance.
 </Tip>
 
 ## Example payload
 
-The following is an example of the event information and JSON payload sent by Gogs for a **push** event:
+The following is an example of the event information and JSON payload sent by Ggit for a **push** event:
 
 **Request headers:**
 
@@ -118,13 +118,13 @@ X-Gogs-Signature: 1921679ed6274399b6514721056337f6913b6ff1cb35a24d340e983745d637
 
 ### Payload fields
 
-| Field | Description |
-|---|---|
-| `ref` | The full Git reference that was pushed to (e.g., `refs/heads/main`). |
-| `before` | The SHA of the commit at the head of the branch before the push. |
-| `after` | The SHA of the commit at the head of the branch after the push. |
-| `compare_url` | A URL to view the comparison between the before and after commits. |
-| `commits` | An array of commit objects included in the push. |
-| `repository` | The full repository object with metadata. |
-| `pusher` | The user who performed the push. |
-| `sender` | The user who triggered the event. |
+| Field         | Description                                                          |
+| ------------- | -------------------------------------------------------------------- |
+| `ref`         | The full Git reference that was pushed to (e.g., `refs/heads/main`). |
+| `before`      | The SHA of the commit at the head of the branch before the push.     |
+| `after`       | The SHA of the commit at the head of the branch after the push.      |
+| `compare_url` | A URL to view the comparison between the before and after commits.   |
+| `commits`     | An array of commit objects included in the push.                     |
+| `repository`  | The full repository object with metadata.                            |
+| `pusher`      | The user who performed the push.                                     |
+| `sender`      | The user who triggered the event.                                    |

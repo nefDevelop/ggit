@@ -187,7 +187,7 @@ func Init(customConf string) error {
 	if Security.InstallLock {
 		currentUser, match := CheckRunUser(App.RunUser)
 		if !match {
-			return errors.Newf("user configured to run Gogs is %q, but the current user is %q", App.RunUser, currentUser)
+			return errors.Newf("user configured to run Ggit is %q, but the current user is %q", App.RunUser, currentUser)
 		}
 	}
 

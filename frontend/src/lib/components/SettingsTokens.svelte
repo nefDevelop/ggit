@@ -35,7 +35,7 @@
       });
       if (res.ok) {
         const token = await res.json();
-        generatedToken = token.sha1; // Gogs returns the clear token once
+        generatedToken = token.sha1; // Ggit returns the clear token once
         tokens = [token, ...tokens];
         newTokenName = '';
       }

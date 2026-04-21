@@ -3,7 +3,7 @@
   "info": {
     "title": "Gogs API",
     "version": "v1",
-    "description": "RESTful API for interacting with your Gogs instance. Follows a format similar to the GitHub REST API v3."
+    "description": "RESTful API for interacting with your Ggit instance. Follows a format similar to the GitHub REST API v3."
   },
   "servers": [
     {
@@ -58,9 +58,7 @@
       "get": {
         "operationId": "searchRepos",
         "summary": "Search repositories",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -130,9 +128,7 @@
       "get": {
         "operationId": "listYourRepos",
         "summary": "List your repositories",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -152,9 +148,7 @@
       "post": {
         "operationId": "createRepo",
         "summary": "Create a repository",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "201": {
             "description": "Created",
@@ -202,9 +196,7 @@
                     "default": "Default"
                   }
                 },
-                "required": [
-                  "name"
-                ]
+                "required": ["name"]
               }
             }
           }
@@ -215,9 +207,7 @@
       "get": {
         "operationId": "listUserRepos",
         "summary": "List user repositories",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -253,9 +243,7 @@
       "get": {
         "operationId": "listOrgRepos",
         "summary": "List organization repositories",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -291,9 +279,7 @@
       "post": {
         "operationId": "createOrgRepo",
         "summary": "Create a repository in an organization",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "201": {
             "description": "Created",
@@ -355,9 +341,7 @@
                     "default": "Default"
                   }
                 },
-                "required": [
-                  "name"
-                ]
+                "required": ["name"]
               }
             }
           }
@@ -369,9 +353,7 @@
       "post": {
         "operationId": "migrateRepo",
         "summary": "Migrate a repository",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "201": {
             "description": "Created",
@@ -421,11 +403,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "clone_addr",
-                  "uid",
-                  "repo_name"
-                ]
+                "required": ["clone_addr", "uid", "repo_name"]
               }
             }
           }
@@ -436,9 +414,7 @@
       "get": {
         "operationId": "getRepo",
         "summary": "Get a repository",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -478,9 +454,7 @@
       "delete": {
         "operationId": "deleteRepo",
         "summary": "Delete a repository",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -516,9 +490,7 @@
       "patch": {
         "operationId": "editIssueTracker",
         "summary": "Edit issue tracker settings",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "204": {
             "description": "Settings updated successfully."
@@ -571,10 +543,7 @@
                   },
                   "tracker_issue_style": {
                     "type": "string",
-                    "enum": [
-                      "numeric",
-                      "alphanumeric"
-                    ]
+                    "enum": ["numeric", "alphanumeric"]
                   }
                 }
               }
@@ -587,9 +556,7 @@
       "post": {
         "operationId": "mirrorSync",
         "summary": "Mirror sync",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "202": {
             "description": "Mirror sync has been queued."
@@ -628,9 +595,7 @@
       "get": {
         "operationId": "listBranches",
         "summary": "List branches",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -675,9 +640,7 @@
       "get": {
         "operationId": "getBranch",
         "summary": "Get a branch",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -728,9 +691,7 @@
       "get": {
         "operationId": "getCommit",
         "summary": "Get a single commit",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -782,9 +743,7 @@
       "get": {
         "operationId": "getRawContent",
         "summary": "Download raw content",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Raw file content",
@@ -844,9 +803,7 @@
       "get": {
         "operationId": "downloadArchive",
         "summary": "Download archive",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Archive file",
@@ -898,9 +855,7 @@
       "get": {
         "operationId": "getContents",
         "summary": "Get contents",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "responses": {
           "200": {
             "description": "Success",
@@ -960,9 +915,7 @@
         "operationId": "putContents",
         "summary": "Create or update a file",
         "description": "Creates or updates a file in the repository. The content must be base64 encoded.",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "parameters": [
           {
             "name": "owner",
@@ -1012,10 +965,7 @@
                     "description": "Branch to commit to. Defaults to the repository's default branch."
                   }
                 },
-                "required": [
-                  "message",
-                  "content"
-                ]
+                "required": ["message", "content"]
               }
             }
           }
@@ -1052,9 +1002,7 @@
       "get": {
         "operationId": "listCollaborators",
         "summary": "List collaborators",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1099,9 +1047,7 @@
       "put": {
         "operationId": "addCollaborator",
         "summary": "Add a collaborator",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "204": {
             "description": "Collaborator has been added."
@@ -1151,11 +1097,7 @@
                 "properties": {
                   "permission": {
                     "type": "string",
-                    "enum": [
-                      "read",
-                      "write",
-                      "admin"
-                    ],
+                    "enum": ["read", "write", "admin"],
                     "default": "write"
                   }
                 }
@@ -1167,9 +1109,7 @@
       "delete": {
         "operationId": "removeCollaborator",
         "summary": "Remove a collaborator",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -1212,9 +1152,7 @@
         "operationId": "isCollaborator",
         "summary": "Check if a user is a collaborator",
         "description": "Returns 204 if the user is a collaborator, 404 if not.",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "parameters": [
           {
             "name": "owner",
@@ -1261,9 +1199,7 @@
       "get": {
         "operationId": "listDeployKeys",
         "summary": "List deploy keys",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1306,9 +1242,7 @@
       "post": {
         "operationId": "createDeployKey",
         "summary": "Add a deploy key",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "201": {
             "description": "Created",
@@ -1361,10 +1295,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "title",
-                  "key"
-                ]
+                "required": ["title", "key"]
               }
             }
           }
@@ -1375,9 +1306,7 @@
       "get": {
         "operationId": "getDeployKey",
         "summary": "Get a deploy key",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1426,9 +1355,7 @@
       "delete": {
         "operationId": "removeDeployKey",
         "summary": "Remove a deploy key",
-        "tags": [
-          "Collaborators and Deploy Keys"
-        ],
+        "tags": ["Collaborators and Deploy Keys"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -1472,9 +1399,7 @@
       "get": {
         "operationId": "listReleases",
         "summary": "List releases",
-        "tags": [
-          "Releases"
-        ],
+        "tags": ["Releases"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1519,9 +1444,7 @@
       "get": {
         "operationId": "listHooks",
         "summary": "List hooks",
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1564,9 +1487,7 @@
       "post": {
         "operationId": "createHook",
         "summary": "Create a hook",
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "responses": {
           "201": {
             "description": "Created",
@@ -1614,12 +1535,7 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "gogs",
-                      "slack",
-                      "discord",
-                      "dingtalk"
-                    ]
+                    "enum": ["gogs", "slack", "discord", "dingtalk"]
                   },
                   "config": {
                     "type": "object",
@@ -1629,38 +1545,27 @@
                       },
                       "content_type": {
                         "type": "string",
-                        "enum": [
-                          "json",
-                          "form"
-                        ]
+                        "enum": ["json", "form"]
                       },
                       "secret": {
                         "type": "string"
                       }
                     },
-                    "required": [
-                      "url",
-                      "content_type"
-                    ]
+                    "required": ["url", "content_type"]
                   },
                   "events": {
                     "type": "array",
                     "items": {
                       "type": "string"
                     },
-                    "default": [
-                      "push"
-                    ]
+                    "default": ["push"]
                   },
                   "active": {
                     "type": "boolean",
                     "default": false
                   }
                 },
-                "required": [
-                  "type",
-                  "config"
-                ]
+                "required": ["type", "config"]
               }
             }
           }
@@ -1671,9 +1576,7 @@
       "patch": {
         "operationId": "editHook",
         "summary": "Edit a hook",
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1752,9 +1655,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "config"
-                ]
+                "required": ["config"]
               }
             }
           }
@@ -1763,9 +1664,7 @@
       "delete": {
         "operationId": "deleteHook",
         "summary": "Delete a hook",
-        "tags": [
-          "Webhooks"
-        ],
+        "tags": ["Webhooks"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -1809,9 +1708,7 @@
       "get": {
         "operationId": "listIssues",
         "summary": "List issues for a repository",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1855,9 +1752,7 @@
       "post": {
         "operationId": "createIssue",
         "summary": "Create an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "201": {
             "description": "Created",
@@ -1926,9 +1821,7 @@
                     "default": false
                   }
                 },
-                "required": [
-                  "title"
-                ]
+                "required": ["title"]
               }
             }
           }
@@ -1939,9 +1832,7 @@
       "get": {
         "operationId": "getIssue",
         "summary": "Get a single issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -1990,9 +1881,7 @@
       "patch": {
         "operationId": "editIssue",
         "summary": "Edit an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2061,10 +1950,7 @@
                   },
                   "state": {
                     "type": "string",
-                    "enum": [
-                      "open",
-                      "closed"
-                    ]
+                    "enum": ["open", "closed"]
                   }
                 }
               }
@@ -2077,9 +1963,7 @@
       "get": {
         "operationId": "listIssueComments",
         "summary": "List comments on an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2140,9 +2024,7 @@
       "post": {
         "operationId": "createComment",
         "summary": "Create a comment",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "201": {
             "description": "Created",
@@ -2201,9 +2083,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "body"
-                ]
+                "required": ["body"]
               }
             }
           }
@@ -2214,9 +2094,7 @@
       "get": {
         "operationId": "listRepoComments",
         "summary": "List comments in a repository",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2270,9 +2148,7 @@
       "patch": {
         "operationId": "editComment",
         "summary": "Edit a comment",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2340,9 +2216,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "body"
-                ]
+                "required": ["body"]
               }
             }
           }
@@ -2351,9 +2225,7 @@
       "delete": {
         "operationId": "deleteComment",
         "summary": "Delete a comment",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -2406,9 +2278,7 @@
       "get": {
         "operationId": "listLabels",
         "summary": "List all labels for a repository",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2451,9 +2321,7 @@
       "post": {
         "operationId": "createLabel",
         "summary": "Create a label",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "201": {
             "description": "Created",
@@ -2507,10 +2375,7 @@
                     "description": "Hex color code with leading #"
                   }
                 },
-                "required": [
-                  "name",
-                  "color"
-                ]
+                "required": ["name", "color"]
               }
             }
           }
@@ -2521,9 +2386,7 @@
       "get": {
         "operationId": "getLabel",
         "summary": "Get a single label",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2572,9 +2435,7 @@
       "patch": {
         "operationId": "updateLabel",
         "summary": "Update a label",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2644,9 +2505,7 @@
       "delete": {
         "operationId": "deleteLabel",
         "summary": "Delete a label",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -2690,9 +2549,7 @@
       "get": {
         "operationId": "listIssueLabels",
         "summary": "List labels on an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2744,9 +2601,7 @@
       "post": {
         "operationId": "addIssueLabels",
         "summary": "Add labels to an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2811,9 +2666,7 @@
                     }
                   }
                 },
-                "required": [
-                  "labels"
-                ]
+                "required": ["labels"]
               }
             }
           }
@@ -2822,9 +2675,7 @@
       "put": {
         "operationId": "replaceIssueLabels",
         "summary": "Replace all labels for an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -2889,9 +2740,7 @@
                     }
                   }
                 },
-                "required": [
-                  "labels"
-                ]
+                "required": ["labels"]
               }
             }
           }
@@ -2900,9 +2749,7 @@
       "delete": {
         "operationId": "removeAllIssueLabels",
         "summary": "Remove all labels from an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -2946,9 +2793,7 @@
       "delete": {
         "operationId": "removeIssueLabel",
         "summary": "Remove a label from an issue",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -3001,9 +2846,7 @@
       "get": {
         "operationId": "listMilestones",
         "summary": "List milestones for a repository",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3046,9 +2889,7 @@
       "post": {
         "operationId": "createMilestone",
         "summary": "Create a milestone",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "201": {
             "description": "Created",
@@ -3105,9 +2946,7 @@
                     "format": "date-time"
                   }
                 },
-                "required": [
-                  "title"
-                ]
+                "required": ["title"]
               }
             }
           }
@@ -3118,9 +2957,7 @@
       "get": {
         "operationId": "getMilestone",
         "summary": "Get a single milestone",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3169,9 +3006,7 @@
       "patch": {
         "operationId": "editMilestone",
         "summary": "Edit a milestone",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3238,10 +3073,7 @@
                   },
                   "state": {
                     "type": "string",
-                    "enum": [
-                      "open",
-                      "closed"
-                    ]
+                    "enum": ["open", "closed"]
                   }
                 }
               }
@@ -3252,9 +3084,7 @@
       "delete": {
         "operationId": "deleteMilestone",
         "summary": "Delete a milestone",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -3299,9 +3129,7 @@
       "get": {
         "operationId": "searchUsers",
         "summary": "Search for users",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3353,9 +3181,7 @@
       "get": {
         "operationId": "getUser",
         "summary": "Get a single user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3388,9 +3214,7 @@
       "get": {
         "operationId": "getAuthenticatedUser",
         "summary": "Get the authenticated user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3409,9 +3233,7 @@
       "get": {
         "operationId": "listAccessTokens",
         "summary": "List access tokens",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3451,9 +3273,7 @@
       "post": {
         "operationId": "createAccessToken",
         "summary": "Create an access token",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "201": {
             "description": "Created",
@@ -3494,9 +3314,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "name"
-                ]
+                "required": ["name"]
               }
             }
           }
@@ -3513,9 +3331,7 @@
       "get": {
         "operationId": "listEmails",
         "summary": "List email addresses",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3535,9 +3351,7 @@
       "post": {
         "operationId": "addEmails",
         "summary": "Add email addresses",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3571,9 +3385,7 @@
                     }
                   }
                 },
-                "required": [
-                  "emails"
-                ]
+                "required": ["emails"]
               }
             }
           }
@@ -3582,9 +3394,7 @@
       "delete": {
         "operationId": "deleteEmails",
         "summary": "Delete email addresses",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -3605,9 +3415,7 @@
                     }
                   }
                 },
-                "required": [
-                  "emails"
-                ]
+                "required": ["emails"]
               }
             }
           }
@@ -3618,9 +3426,7 @@
       "get": {
         "operationId": "listUserFollowers",
         "summary": "List followers of a user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3656,9 +3462,7 @@
       "get": {
         "operationId": "listMyFollowers",
         "summary": "List your followers",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3680,9 +3484,7 @@
       "get": {
         "operationId": "listUserFollowing",
         "summary": "List users followed by a user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3718,9 +3520,7 @@
       "get": {
         "operationId": "listMyFollowing",
         "summary": "List who you are following",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3742,9 +3542,7 @@
       "get": {
         "operationId": "checkFollowing",
         "summary": "Check if you follow a user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "204": {
             "description": "The user is being followed."
@@ -3768,9 +3566,7 @@
       "put": {
         "operationId": "followUser",
         "summary": "Follow a user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "204": {
             "description": "Successfully followed the user."
@@ -3797,9 +3593,7 @@
       "delete": {
         "operationId": "unfollowUser",
         "summary": "Unfollow a user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -3825,9 +3619,7 @@
       "get": {
         "operationId": "checkUserFollowing",
         "summary": "Check if a user follows another",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "204": {
             "description": "The user is being followed."
@@ -3862,9 +3654,7 @@
       "get": {
         "operationId": "listUserKeys",
         "summary": "List public keys for a user",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3900,9 +3690,7 @@
       "get": {
         "operationId": "getPublicKey",
         "summary": "Get a single public key",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3933,9 +3721,7 @@
       "delete": {
         "operationId": "deletePublicKey",
         "summary": "Delete a public key",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -3961,9 +3747,7 @@
       "get": {
         "operationId": "listMyKeys",
         "summary": "List your public keys",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "200": {
             "description": "Success",
@@ -3983,9 +3767,7 @@
       "post": {
         "operationId": "createPublicKey",
         "summary": "Create a public key",
-        "tags": [
-          "Users"
-        ],
+        "tags": ["Users"],
         "responses": {
           "201": {
             "description": "Created",
@@ -4015,10 +3797,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "title",
-                  "key"
-                ]
+                "required": ["title", "key"]
               }
             }
           }
@@ -4029,9 +3808,7 @@
       "get": {
         "operationId": "listMyOrgs",
         "summary": "List your organizations",
-        "tags": [
-          "Organizations"
-        ],
+        "tags": ["Organizations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4052,9 +3829,7 @@
         "operationId": "createMyOrg",
         "summary": "Create an organization",
         "description": "Creates an organization for the authenticated user.",
-        "tags": [
-          "Organizations"
-        ],
+        "tags": ["Organizations"],
         "requestBody": {
           "required": true,
           "content": {
@@ -4078,9 +3853,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "username"
-                ]
+                "required": ["username"]
               }
             }
           }
@@ -4106,9 +3879,7 @@
       "get": {
         "operationId": "listUserOrgs",
         "summary": "List user organizations",
-        "tags": [
-          "Organizations"
-        ],
+        "tags": ["Organizations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4144,9 +3915,7 @@
       "get": {
         "operationId": "getOrg",
         "summary": "Get an organization",
-        "tags": [
-          "Organizations"
-        ],
+        "tags": ["Organizations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4177,9 +3946,7 @@
       "patch": {
         "operationId": "editOrg",
         "summary": "Edit an organization",
-        "tags": [
-          "Organizations"
-        ],
+        "tags": ["Organizations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4239,9 +4006,7 @@
       "get": {
         "operationId": "listOrgTeams",
         "summary": "List teams of an organization",
-        "tags": [
-          "Organizations"
-        ],
+        "tags": ["Organizations"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4277,9 +4042,7 @@
       "post": {
         "operationId": "adminCreateUser",
         "summary": "Create a new user",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "201": {
             "description": "Created",
@@ -4325,10 +4088,7 @@
                     "type": "boolean"
                   }
                 },
-                "required": [
-                  "username",
-                  "email"
-                ]
+                "required": ["username", "email"]
               }
             }
           }
@@ -4340,9 +4100,7 @@
       "patch": {
         "operationId": "adminEditUser",
         "summary": "Edit an existing user",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4418,9 +4176,7 @@
                     "description": "Maximum number of repositories the user can create. -1 means no limit."
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -4430,9 +4186,7 @@
       "delete": {
         "operationId": "adminDeleteUser",
         "summary": "Delete a user",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -4459,9 +4213,7 @@
       "post": {
         "operationId": "adminCreateUserKey",
         "summary": "Create a public key for a user",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "201": {
             "description": "Created",
@@ -4505,10 +4257,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "title",
-                  "key"
-                ]
+                "required": ["title", "key"]
               }
             }
           }
@@ -4520,9 +4269,7 @@
       "post": {
         "operationId": "adminCreateRepo",
         "summary": "Create a repository for a user",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "201": {
             "description": "Created",
@@ -4584,9 +4331,7 @@
                     "default": "Default"
                   }
                 },
-                "required": [
-                  "name"
-                ]
+                "required": ["name"]
               }
             }
           }
@@ -4598,9 +4343,7 @@
       "post": {
         "operationId": "adminCreateOrg",
         "summary": "Create an organization",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "201": {
             "description": "Created",
@@ -4653,9 +4396,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "username"
-                ]
+                "required": ["username"]
               }
             }
           }
@@ -4667,9 +4408,7 @@
       "post": {
         "operationId": "adminCreateTeam",
         "summary": "Create a team",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "201": {
             "description": "Created",
@@ -4714,17 +4453,11 @@
                   },
                   "permission": {
                     "type": "string",
-                    "enum": [
-                      "read",
-                      "write",
-                      "admin"
-                    ],
+                    "enum": ["read", "write", "admin"],
                     "default": "read"
                   }
                 },
-                "required": [
-                  "name"
-                ]
+                "required": ["name"]
               }
             }
           }
@@ -4736,9 +4469,7 @@
       "get": {
         "operationId": "adminListTeamMembers",
         "summary": "List all members of a team",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "200": {
             "description": "Success",
@@ -4775,9 +4506,7 @@
       "put": {
         "operationId": "adminAddTeamMember",
         "summary": "Add team membership",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "204": {
             "description": "Team membership has been updated."
@@ -4814,9 +4543,7 @@
       "delete": {
         "operationId": "adminRemoveTeamMember",
         "summary": "Remove team membership",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -4852,9 +4579,7 @@
       "put": {
         "operationId": "adminAddTeamRepo",
         "summary": "Add or update team repository",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "204": {
             "description": "Team repository has been updated."
@@ -4891,9 +4616,7 @@
       "delete": {
         "operationId": "adminRemoveTeamRepo",
         "summary": "Remove team repository",
-        "tags": [
-          "Administration"
-        ],
+        "tags": ["Administration"],
         "responses": {
           "204": {
             "description": "The resource has been successfully deleted."
@@ -4929,9 +4652,7 @@
       "post": {
         "operationId": "renderMarkdown",
         "summary": "Render a Markdown document",
-        "tags": [
-          "Miscellaneous"
-        ],
+        "tags": ["Miscellaneous"],
         "responses": {
           "200": {
             "description": "Rendered HTML",
@@ -4962,9 +4683,7 @@
                     "description": "Repository context URL"
                   }
                 },
-                "required": [
-                  "text"
-                ]
+                "required": ["text"]
               }
             }
           }
@@ -4975,9 +4694,7 @@
       "post": {
         "operationId": "renderMarkdownRaw",
         "summary": "Render a Markdown document in raw mode",
-        "tags": [
-          "Miscellaneous"
-        ],
+        "tags": ["Miscellaneous"],
         "responses": {
           "200": {
             "description": "Rendered HTML",
@@ -5010,9 +4727,7 @@
       "get": {
         "operationId": "getTree",
         "summary": "Get a tree",
-        "tags": [
-          "Miscellaneous"
-        ],
+        "tags": ["Miscellaneous"],
         "responses": {
           "200": {
             "description": "Success",
@@ -5063,9 +4778,7 @@
       "get": {
         "operationId": "listForks",
         "summary": "List forks",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "parameters": [
           {
             "name": "owner",
@@ -5110,9 +4823,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "List tags",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "parameters": [
           {
             "name": "owner",
@@ -5158,9 +4869,7 @@
         "operationId": "getAllCommits",
         "summary": "List all commits",
         "description": "Returns commits from the HEAD of the default branch.",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "parameters": [
           {
             "name": "owner",
@@ -5215,9 +4924,7 @@
       "patch": {
         "operationId": "editWiki",
         "summary": "Edit wiki settings",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "parameters": [
           {
             "name": "owner",
@@ -5284,9 +4991,7 @@
         "operationId": "getEditorconfig",
         "summary": "Get editorconfig definition",
         "description": "Returns the editorconfig definition for the given filename in the repository.",
-        "tags": [
-          "Repositories"
-        ],
+        "tags": ["Repositories"],
         "parameters": [
           {
             "name": "owner",
@@ -5338,9 +5043,7 @@
         "operationId": "getGitBlob",
         "summary": "Get a git blob",
         "description": "Returns the content of a git blob object, base64 encoded.",
-        "tags": [
-          "Miscellaneous"
-        ],
+        "tags": ["Miscellaneous"],
         "parameters": [
           {
             "name": "owner",
@@ -5392,9 +5095,7 @@
         "operationId": "listUserIssues",
         "summary": "List issues assigned to the authenticated user",
         "description": "Lists issues across all repositories assigned to the authenticated user. Also available at `GET /issues`.",
-        "tags": [
-          "Issues"
-        ],
+        "tags": ["Issues"],
         "parameters": [
           {
             "name": "page",
@@ -5411,10 +5112,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "enum": [
-                "open",
-                "closed"
-              ],
+              "enum": ["open", "closed"],
               "default": "open"
             },
             "description": "Filter by state"
@@ -5742,10 +5440,7 @@
           },
           "state": {
             "type": "string",
-            "enum": [
-              "open",
-              "closed"
-            ]
+            "enum": ["open", "closed"]
           },
           "title": {
             "type": "string"
@@ -5837,10 +5532,7 @@
           },
           "state": {
             "type": "string",
-            "enum": [
-              "open",
-              "closed"
-            ]
+            "enum": ["open", "closed"]
           },
           "title": {
             "type": "string"
@@ -5874,12 +5566,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "gogs",
-              "slack",
-              "discord",
-              "dingtalk"
-            ]
+            "enum": ["gogs", "slack", "discord", "dingtalk"]
           },
           "events": {
             "type": "array",
@@ -6047,12 +5734,7 @@
           },
           "permission": {
             "type": "string",
-            "enum": [
-              "read",
-              "write",
-              "admin",
-              "owner"
-            ]
+            "enum": ["read", "write", "admin", "owner"]
           }
         }
       },
@@ -6061,12 +5743,7 @@
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "file",
-              "dir",
-              "symlink",
-              "submodule"
-            ]
+            "enum": ["file", "dir", "symlink", "submodule"]
           },
           "encoding": {
             "type": "string"

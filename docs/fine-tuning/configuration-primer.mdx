@@ -16,7 +16,8 @@ Gogs reads configuration from two sources, in order:
 This separation means binary users can upgrade without losing their settings, and source installers benefit from `custom/` being in `.gitignore`.
 
 <Tip>
-  The embedded [`conf/app.ini`](https://github.com/gogs/gogs/blob/main/conf/app.ini) contains every available option with detailed inline comments. Use it as your canonical reference.
+  The embedded [`conf/app.ini`](https://github.com/gogs/gogs/blob/main/conf/app.ini) contains every available option with detailed inline
+  comments. Use it as your canonical reference.
 </Tip>
 
 ### Overriding a value
@@ -44,11 +45,13 @@ PASSWORD = ${DATABASE_PASSWORD}
 ```
 
 <Warning>
-  If a password or value contains special characters (like backticks or `#`), wrap it in backticks, e.g., <code>PASSWORD = \`p@ss#word!\`</code>.
+  If a password or value contains special characters (like backticks or `#`), wrap it in backticks, e.g.,{" "}
+  <code>PASSWORD = \`p@ss#word!\`</code>.
 </Warning>
 
 <Tip>
-  Gogs uses [go-ini/ini](https://ini.unknwon.io/) as the configuration library, please refer to its documentation for the full syntax specification including multi-line values, key/value separators, and section handling.
+  Ggit uses [go-ini/ini](https://ini.unknwon.io/) as the configuration library, please refer to its documentation for the full syntax
+  specification including multi-line values, key/value separators, and section handling.
 </Tip>
 
 ## The `custom/` directory
@@ -59,16 +62,16 @@ The `custom/` directory is Gogs' extension point. It sits alongside the binary b
 
 Run `gogs web --help` to see the custom directory path in the output. You can also override it:
 
-| Method | Example |
-|--------|---------|
-| Default | The `custom/` subdirectory next to the binary |
-| Environment variable | `GOGS_CUSTOM=/etc/gogs` |
+| Method               | Example                                       |
+| -------------------- | --------------------------------------------- |
+| Default              | The `custom/` subdirectory next to the binary |
+| Environment variable | `GOGS_CUSTOM=/etc/gogs`                       |
 
 The work directory (parent of `custom/`) can also be overridden with `GOGS_WORK_DIR`.
 
 ### Specifying a custom config path
 
-Every Gogs subcommand accepts `-c, --config` to point to a configuration file at a non-default location:
+Every Ggit subcommand accepts `-c, --config` to point to a configuration file at a non-default location:
 
 ```bash
 gogs web --config /etc/gogs/app.ini
@@ -93,18 +96,18 @@ custom/
 └── robots.txt               # Search engine crawling rules
 ```
 
-All of these are optional. Gogs falls back to embedded defaults when a custom file does not exist.
+All of these are optional. Ggit falls back to embedded defaults when a custom file does not exist.
 
 ## Repository templates
 
 Gogs ships with embedded templates used when creating new repositories:
 
 | Template type | Embedded location |
-|---------------|-------------------|
-| `.gitignore` | `conf/gitignore/` |
-| License | `conf/license/` |
-| README | `conf/readme/` |
-| Issue labels | `conf/label/` |
+| ------------- | ----------------- |
+| `.gitignore`  | `conf/gitignore/` |
+| License       | `conf/license/`   |
+| README        | `conf/readme/`    |
+| Issue labels  | `conf/label/`     |
 
 You can add your own by placing files in the corresponding `custom/conf/` subdirectory. Custom files take priority over embedded ones with the same name, so you can also override built-in templates.
 
@@ -128,4 +131,4 @@ You can override any of Gogs' HTML templates or static assets by mirroring the f
 
 ## Loading assets from disk
 
-By default, Gogs serves templates, locale files, and public assets from the binary's embedded data. If you set `LOAD_ASSETS_FROM_DISK = true` in `[server]`, Gogs will load them from the work directory instead. This is mainly useful during development.
+By default, Ggit serves templates, locale files, and public assets from the binary's embedded data. If you set `LOAD_ASSETS_FROM_DISK = true` in `[server]`, Ggit will load them from the work directory instead. This is mainly useful during development.

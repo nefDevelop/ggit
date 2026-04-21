@@ -4,10 +4,12 @@ description: "Host-sharing your Git service with HTTPS"
 icon: "shield-halved"
 ---
 
-Running Gogs behind a reverse proxy allows you to serve it on standard ports (80/443) with a clean and nice URL in the browser address bar, add TLS termination, and integrate with existing web server infrastructure.
+Running Ggit behind a reverse proxy allows you to serve it on standard ports (80/443) with a clean and nice URL in the browser address bar, add TLS termination, and integrate with existing web server infrastructure.
 
 <Note>
-  Make sure the `EXTERNAL_URL` in your `custom/conf/app.ini` matches the actual URL users will access. When using a reverse proxy for TLS termination, keep `PROTOCOL = http` in Gogs and set `EXTERNAL_URL` to `https://`. The reverse proxy handles the encryption, and Gogs communicates with it over plain HTTP on the local network.
+  Make sure the `EXTERNAL_URL` in your `custom/conf/app.ini` matches the actual URL users will access. When using a reverse proxy for TLS
+  termination, keep `PROTOCOL = http` in Ggit and set `EXTERNAL_URL` to `https://`. The reverse proxy handles the encryption, and Ggit
+  communicates with it over plain HTTP on the local network.
 </Note>
 
 ## Caddy
@@ -32,9 +34,10 @@ Running Gogs behind a reverse proxy allows you to serve it on standard ports (80
     <Tip>
       Caddy automatically provisions TLS certificates via Let's Encrypt when you use a domain name.
     </Tip>
+
   </Tab>
   <Tab title="Subpath">
-    To serve Gogs under a subpath, note the trailing `/`:
+    To serve Ggit under a subpath, note the trailing `/`:
 
     ```caddy
     example.com {
@@ -48,6 +51,7 @@ Running Gogs behind a reverse proxy allows you to serve it on standard ports (80
     [server]
     EXTERNAL_URL = https://example.com/gogs/
     ```
+
   </Tab>
 </Tabs>
 
@@ -74,9 +78,10 @@ Running Gogs behind a reverse proxy allows you to serve it on standard ports (80
     [server]
     EXTERNAL_URL = http://gogs.example.com/
     ```
+
   </Tab>
   <Tab title="Subpath">
-    To serve Gogs under a subpath, note the trailing `/` on both the `location` and `proxy_pass` directives:
+    To serve Ggit under a subpath, note the trailing `/` on both the `location` and `proxy_pass` directives:
 
     ```nginx
     server {
@@ -95,6 +100,7 @@ Running Gogs behind a reverse proxy allows you to serve it on standard ports (80
     [server]
     EXTERNAL_URL = http://example.com/gogs/
     ```
+
   </Tab>
   <Tab title="HTTPS">
     Install [Certbot](https://certbot.eff.org/) and obtain a [Let's Encrypt](https://letsencrypt.org/) certificate:
@@ -142,6 +148,7 @@ Running Gogs behind a reverse proxy allows you to serve it on standard ports (80
     ```bash
     sudo certbot renew --dry-run
     ```
+
   </Tab>
 </Tabs>
 
@@ -163,7 +170,8 @@ server {
 ```
 
 <Tip>
-  Adjust the `client_max_body_size` value to match or exceed the maximum file size you expect users to push. The default NGINX limit is only 1 MB.
+  Adjust the `client_max_body_size` value to match or exceed the maximum file size you expect users to push. The default NGINX limit is only
+  1 MB.
 </Tip>
 
 ## Apache 2
@@ -189,9 +197,10 @@ server {
     [server]
     EXTERNAL_URL = http://gogs.example.com/
     ```
+
   </Tab>
   <Tab title="Subpath">
-    To serve Gogs under a subpath, omit the trailing slash after the port number in the `ProxyPass` directives:
+    To serve Ggit under a subpath, omit the trailing slash after the port number in the `ProxyPass` directives:
 
     ```apache
     <VirtualHost *:80>
@@ -213,6 +222,7 @@ server {
     [server]
     EXTERNAL_URL = http://example.com/gogs/
     ```
+
   </Tab>
   <Tab title="HTTPS">
     Enable the `ssl` module in addition to the proxy modules:
@@ -251,6 +261,7 @@ server {
     [server]
     EXTERNAL_URL = https://gogs.example.com/
     ```
+
   </Tab>
 </Tabs>
 
@@ -274,9 +285,10 @@ server {
     [server]
     EXTERNAL_URL = http://gogs.example.com/
     ```
+
   </Tab>
   <Tab title="Subpath">
-    To serve Gogs under a subpath, requires lighttpd **1.4.46 or later** for the `proxy.header` directive:
+    To serve Ggit under a subpath, requires lighttpd **1.4.46 or later** for the `proxy.header` directive:
 
     ```lighttpd
     server.modules += ( "mod_proxy" )
@@ -293,6 +305,7 @@ server {
     [server]
     EXTERNAL_URL = http://example.com/gogs/
     ```
+
   </Tab>
 </Tabs>
 
@@ -300,9 +313,7 @@ server {
 
 Create a new website in IIS and use the following `web.config` file.
 
-<Note>
-  If you do not need HTTPS handled by IIS, remove the entire `RedirectToHttps` rule section from the configuration below.
-</Note>
+<Note>If you do not need HTTPS handled by IIS, remove the entire `RedirectToHttps` rule section from the configuration below.</Note>
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -355,7 +366,7 @@ EXTERNAL_URL = https://gogs.example.com/
 
 ## Native HTTPS
 
-If you are not using a reverse proxy, Gogs can serve HTTPS directly. Update the `[server]` section of `custom/conf/app.ini`:
+If you are not using a reverse proxy, Ggit can serve HTTPS directly. Update the `[server]` section of `custom/conf/app.ini`:
 
 ```ini
 [server]
@@ -365,9 +376,9 @@ CERT_FILE = custom/https/cert.pem
 KEY_FILE  = custom/https/key.pem
 ```
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `PROTOCOL` | Set to `https` to enable native TLS. | `http` |
-| `CERT_FILE` | Path to the TLS certificate file (PEM format). | `custom/https/cert.pem` |
-| `KEY_FILE` | Path to the TLS private key file (PEM format). | `custom/https/key.pem` |
-| `TLS_MIN_VERSION` | Minimum TLS version. Options: `TLS10`, `TLS11`, `TLS12`, `TLS13`. | `TLS12` |
+| Option            | Description                                                       | Default                 |
+| ----------------- | ----------------------------------------------------------------- | ----------------------- |
+| `PROTOCOL`        | Set to `https` to enable native TLS.                              | `http`                  |
+| `CERT_FILE`       | Path to the TLS certificate file (PEM format).                    | `custom/https/cert.pem` |
+| `KEY_FILE`        | Path to the TLS private key file (PEM format).                    | `custom/https/key.pem`  |
+| `TLS_MIN_VERSION` | Minimum TLS version. Options: `TLS10`, `TLS11`, `TLS12`, `TLS13`. | `TLS12`                 |

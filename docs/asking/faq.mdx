@@ -4,7 +4,7 @@ description: "Frequently asked questions about using and administering Gogs"
 icon: "circle-question"
 ---
 
-Answers to common questions about Gogs configuration, administration, and usage.
+Answers to common questions about Ggit configuration, administration, and usage.
 
 ## Deployment
 
@@ -13,13 +13,14 @@ Answers to common questions about Gogs configuration, administration, and usage.
     You can change the listening port on the first run by passing the `-port` flag:
 
     ```bash
-    gogs web -port 3001
+    ggit web -port 3001
     ```
 
     This flag also updates the port number shown on the install page, so pick the port you intend to keep using.
+
   </Accordion>
 
-  <Accordion title="How do I run Gogs in offline mode or on an intranet?">
+  <Accordion title="How do I run Ggit in offline mode or on an intranet?">
     Set the `OFFLINE_MODE` option to `true` in the `[server]` section of your `custom/conf/app.ini`:
 
     ```ini
@@ -28,16 +29,18 @@ Answers to common questions about Gogs configuration, administration, and usage.
     ```
 
     This disables external network calls such as CDN resource loading and Gravatar avatar fetching.
+
   </Accordion>
 
   <Accordion title="How do I make a custom robots.txt?">
-    Create a file named `robots.txt` in the `custom` directory at the root of your Gogs installation:
+    Create a file named `robots.txt` in the `custom` directory at the root of your Ggit installation:
 
     ```
     custom/robots.txt
     ```
 
-    Gogs will serve this file automatically at `/robots.txt`.
+    Ggit will serve this file automatically at `/robots.txt`.
+
   </Accordion>
 </AccordionGroup>
 
@@ -48,6 +51,7 @@ Answers to common questions about Gogs configuration, administration, and usage.
     The first user to register (with `ID = 1`) is automatically granted administrator privileges. No email confirmation is required for this account, even if email confirmation is enabled.
 
     Once logged in, the administrator can promote other users by navigating to **Admin Panel** > **Users** and editing user accounts. A user who registers through the initial install page is also made an administrator.
+
   </Accordion>
 
   <Accordion title="How do I reset a forgotten administrator password?">
@@ -58,14 +62,15 @@ Answers to common questions about Gogs configuration, administration, and usage.
        ```bash
        su git
        cd /home/git/gogs
-       gogs admin create-user --name tmpuser --password tmppassword --admin --email tmp@example.com
+       ggit admin create-user --name tmpuser --password tmppassword --admin --email tmp@example.com
        ```
 
     2. **Start Gogs** again, then log in as `tmpuser` in your browser. Navigate to **Admin Panel** > **Users**, click **Edit** next to the original administrator account, and set a new password.
 
     3. **Clean up** by logging out, logging back in as the original administrator with the new password, then deleting the `tmpuser` account from **Admin Panel** > **Users**.
 
-    It is safest to stop Gogs before creating the temporary user via the command line, then start it again afterward.
+    It is safest to stop Ggit before creating the temporary user via the command line, then start it again afterward.
+
   </Accordion>
 </AccordionGroup>
 
@@ -76,6 +81,7 @@ Answers to common questions about Gogs configuration, administration, and usage.
     **Git hooks permission is a high-level privilege** that can allow arbitrary code execution on the server. Only grant it to users you fully trust.
 
     To enable or disable this permission, go to the **Admin Panel** > **Users**, select the user, and toggle the Git hooks permission in their account settings (`/admin/users/:userid`).
+
   </Accordion>
 </AccordionGroup>
 
@@ -89,5 +95,6 @@ Answers to common questions about Gogs configuration, administration, and usage.
 
     1. Edit the wiki on the upstream repository that is being mirrored.
     2. Convert the mirror to a regular repository under **Settings** > **Danger Zone** if you no longer need it to be a mirror.
+
   </Accordion>
 </AccordionGroup>

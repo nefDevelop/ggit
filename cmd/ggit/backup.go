@@ -24,7 +24,7 @@ var backupCommand = cli.Command{
 	Name:  "backup",
 	Usage: "Backup files and database",
 	Description: `Backup dumps and compresses all related files and database into zip file,
-which can be used for migrating Gogs to another server. The output format is meant to be
+which can be used for migrating Ggit to another server. The output format is meant to be
 portable among all supported database engines.`,
 	Action: runBackup,
 	Flags: []cli.Flag{

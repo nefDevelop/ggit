@@ -137,8 +137,8 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 
 	sshCmd := os.Getenv("SSH_ORIGINAL_COMMAND")
 	if sshCmd == "" {
-		println("Hi there, You've successfully authenticated, but Gogs does not provide shell access.")
-		println("If this is unexpected, please log in with password and setup Gogs under another user.")
+		println("Hi there, You've successfully authenticated, but Ggit does not provide shell access.")
+		println("If this is unexpected, please log in with password and setup Ggit under another user.")
 		return nil
 	}
 
@@ -221,7 +221,7 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 		// Check if the key can access to the repository in case of it is a deploy key (a deploy keys != user key).
 		// A deploy key doesn't represent a signed in user, so in a site with Auth.RequireSignInView enabled,
 		// we should give read access only in repositories where this deploy key is in use. In other cases,
-		// a server or system using an active deploy key can get read access to all repositories on a Gogs instance.
+		// a server or system using an active deploy key can get read access to all repositories on a Ggit instance.
 		if key.IsDeployKey() && conf.Auth.RequireSigninView {
 			checkDeployKey(key, repo)
 		}

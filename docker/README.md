@@ -7,8 +7,9 @@
 
 > [!IMPORTANT]
 > Image versions:
->  - Every released version has its own tag , e.g., `gogs/gogs:0.13.4`, and a tag points to the latest patch of the minor version, e.g., `gogs/gogs:0.13`.
->  - The `latest` tag is the image version built from the latest `main` branch.
+>
+> - Every released version has its own tag , e.g., `gogs/gogs:0.13.4`, and a tag points to the latest patch of the minor version, e.g., `gogs/gogs:0.13`.
+> - The `latest` tag is the image version built from the latest `main` branch.
 
 ![Docker pulls](https://img.shields.io/docker/pulls/gogs/gogs?logo=docker&style=for-the-badge)
 
@@ -31,11 +32,11 @@ $ docker run --name=gogs -p 10022:22 -p 10880:3000 -v /var/gogs:/data gogs/gogs
 $ docker start gogs
 ```
 
-> [!NOTE] It is important to map the SSH service from the container to the host and set the appropriate SSH Port and URI settings when setting up Gogs for the first time. To access and clone Git repositories with the above configuration you would use: `git clone ssh://git@hostname:10022/username/myrepo.git` for example.
+> [!NOTE] It is important to map the SSH service from the container to the host and set the appropriate SSH Port and URI settings when setting up Ggit for the first time. To access and clone Git repositories with the above configuration you would use: `git clone ssh://git@hostname:10022/username/myrepo.git` for example.
 
 Files will be store in local path `/var/gogs` in my case.
 
-Directory `/var/gogs` keeps Git repositories and Gogs data:
+Directory `/var/gogs` keeps Git repositories and Ggit data:
 
     /var/gogs
     |-- git
@@ -65,13 +66,13 @@ $ docker run --name=gogs -p 10022:22 -p 10880:3000 -v gogs-data:/data gogs/gogs
 
 ### Application
 
-Most of the settings are obvious and easy to understand, but there are some settings can be confusing by running Gogs inside Docker:
+Most of the settings are obvious and easy to understand, but there are some settings can be confusing by running Ggit inside Docker:
 
 - **Repository Root Path**: keep it as default value `/home/git/gogs-repositories` because `start.sh` already made a symbolic link for you.
 - **Run User**: keep it as default value `git` because `build/finalize.sh` already setup a user with name `git`.
-- **Domain**: fill in with Docker container IP (e.g. `192.168.99.100`). But if you want to access your Gogs instance from a different physical machine, please fill in with the hostname or IP address of the Docker host machine.
+- **Domain**: fill in with Docker container IP (e.g. `192.168.99.100`). But if you want to access your Ggit instance from a different physical machine, please fill in with the hostname or IP address of the Docker host machine.
 - **SSH Port**: Use the exposed port from Docker container. For example, your SSH server listens on `22` inside Docker, **but** you expose it by `10022:22`, then use `10022` for this value. **Builtin SSH server is not recommended inside Docker Container**
-- **HTTP Port**: Use port you want Gogs to listen on inside Docker container. For example, your Gogs listens on `3000` inside Docker, **and** you expose it by `10880:3000`, but you still use `3000` for this value.
+- **HTTP Port**: Use port you want Ggit to listen on inside Docker container. For example, your Ggit listens on `3000` inside Docker, **and** you expose it by `10880:3000`, but you still use `3000` for this value.
 - **Application URL**: Use combination of **Domain** and **exposed HTTP Port** values (e.g. `http://192.168.99.100:10880/`).
 
 Full documentation of application settings can be found [here](https://github.com/gogs/gogs/blob/main/conf/app.ini).
@@ -82,61 +83,61 @@ This container has some options available via environment variables, these optio
 
 - **SOCAT_LINK**:
   - <u>Possible value:</u>
-      `true`, `false`, `1`, `0`
+    `true`, `false`, `1`, `0`
   - <u>Default:</u>
-      `true`
+    `true`
   - <u>Action:</u>
-      Bind linked docker container to localhost socket using socat.
-      Any exported port from a linked container will be binded to the matching port on localhost.
+    Bind linked docker container to localhost socket using socat.
+    Any exported port from a linked container will be binded to the matching port on localhost.
   - <u>Disclaimer:</u>
-      As this option rely on the environment variable created by docker when a container is linked, this option should be deactivated in managed environment such as Rancher or Kubernetes (set to `0` or `false`)
+    As this option rely on the environment variable created by docker when a container is linked, this option should be deactivated in managed environment such as Rancher or Kubernetes (set to `0` or `false`)
 - **RUN_CROND**:
   - <u>Possible value:</u>
-      `true`, `false`, `1`, `0`
+    `true`, `false`, `1`, `0`
   - <u>Default:</u>
-      `false`
+    `false`
   - <u>Action:</u>
-      Request crond to be run inside the container. Its default configuration will periodically run all scripts from `/etc/periodic/${period}` but custom crontabs can be added to `/var/spool/cron/crontabs/`.
+    Request crond to be run inside the container. Its default configuration will periodically run all scripts from `/etc/periodic/${period}` but custom crontabs can be added to `/var/spool/cron/crontabs/`.
 - **BACKUP_INTERVAL**:
   - <u>Possible value:</u>
-      `3h`, `7d`, `3M`
+    `3h`, `7d`, `3M`
   - <u>Default:</u>
-      `null`
+    `null`
   - <u>Action:</u>
-      In combination with `RUN_CROND` set to `true`, enables backup system.\
-      See: [Backup System](#backup-system)
+    In combination with `RUN_CROND` set to `true`, enables backup system.\
+     See: [Backup System](#backup-system)
 - **BACKUP_RETENTION**:
   - <u>Possible value:</u>
-      `360m`, `7d`, `...m/d`
+    `360m`, `7d`, `...m/d`
   - <u>Default:</u>
-      `7d`
+    `7d`
   - <u>Action:</u>
-      Used by backup system. Backups older than specified in expression are deleted periodically.\
-      See: [Backup System](#backup-system)
+    Used by backup system. Backups older than specified in expression are deleted periodically.\
+     See: [Backup System](#backup-system)
 - **BACKUP_ARG_CONFIG**:
   - <u>Possible value:</u>
-      `/app/ggit/example/custom/config`
+    `/app/ggit/example/custom/config`
   - <u>Default:</u>
-      `null`
+    `null`
   - <u>Action:</u>
-      Used by backup system. If defined, supplies `--config` argument to `gogs backup`.\
-      See: [Backup System](#backup-system)
+    Used by backup system. If defined, supplies `--config` argument to `gogs backup`.\
+     See: [Backup System](#backup-system)
 - **BACKUP_ARG_EXCLUDE_REPOS**:
   - <u>Possible value:</u>
-      `test-repo1`, `test-repo2`
+    `test-repo1`, `test-repo2`
   - <u>Default:</u>
-      `null`
+    `null`
   - <u>Action:</u>
-      Used by backup system. If defined, supplies `--exclude-repos` argument to `gogs backup`.\
-      See: [Backup System](#backup-system)
+    Used by backup system. If defined, supplies `--exclude-repos` argument to `gogs backup`.\
+     See: [Backup System](#backup-system)
 - **BACKUP_EXTRA_ARGS**:
   - <u>Possible value:</u>
-      `--verbose --exclude-mirror-repos`
+    `--verbose --exclude-mirror-repos`
   - <u>Default:</u>
-      `null`
+    `null`
   - <u>Action:</u>
-      Used by backup system. If defined, append content to arguments to `gogs backup`.\
-      See: [Backup System](#backup-system)
+    Used by backup system. If defined, append content to arguments to `gogs backup`.\
+     See: [Backup System](#backup-system)
 
 ## Backup system
 
@@ -150,7 +151,7 @@ Automated backups with retention policy:
 > [!CAUTION]
 > Make sure you have volumed data to somewhere outside Docker container!
 
-Steps to upgrade Gogs with Docker:
+Steps to upgrade Ggit with Docker:
 
 - `docker pull gogs/gogs`
 - `docker stop gogs`
@@ -163,4 +164,4 @@ Steps to upgrade Gogs with Docker:
 
 ## Useful links
 
-- [Share port 22 between Gogs inside Docker & the local system](http://www.ateijelo.com/blog/2016/07/09/share-port-22-between-docker-gogs-ssh-and-local-system)
+- [Share port 22 between Ggit inside Docker & the local system](http://www.ateijelo.com/blog/2016/07/09/share-port-22-between-docker-gogs-ssh-and-local-system)

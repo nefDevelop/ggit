@@ -1,4 +1,4 @@
-# Welcome to Gogs contributing guide
+# Welcome to Ggit contributing guide
 
 Thank you for investing your time in contributing to our projects!
 

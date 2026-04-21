@@ -1,10 +1,10 @@
 ---
 title: "Run as service"
-description: "Configure Gogs to start automatically as a system service on Linux, macOS, and Windows"
+description: "Configure Ggit to start automatically as a system service on Linux, macOS, and Windows"
 icon: "server"
 ---
 
-Running Gogs as a system service ensures it starts automatically on boot and restarts if it crashes. Choose the init system or service manager that matches your operating system.
+Running Ggit as a system service ensures it starts automatically on boot and restarts if it crashes. Choose the init system or service manager that matches your operating system.
 
 ## Linux
 
@@ -12,7 +12,7 @@ Running Gogs as a system service ensures it starts automatically on boot and res
   <Tab title="Systemd">
     Systemd is the default init system on most modern Linux distributions (Ubuntu 16.04+, Debian 8+, CentOS 7+, Fedora, Arch Linux, etc.).
 
-    Gogs ships with a [systemd service template](https://github.com/gogs/gogs/blob/main/scripts/systemd/gogs.service) at `scripts/systemd/gogs.service` in the installation directory.
+    Ggit ships with a [systemd service template](https://github.com/gogs/gogs/blob/main/scripts/systemd/gogs.service) at `scripts/systemd/gogs.service` in the installation directory.
 
     ### 1. Customize the service file
 
@@ -57,12 +57,12 @@ Running Gogs as a system service ensures it starts automatically on boot and res
 
     Update the following values to match your environment:
     - `User` and `Group` -- the system user running Gogs
-    - `WorkingDirectory` -- the Gogs installation directory
-    - `ExecStart` -- the full path to the Gogs binary
-    - `Environment` -- ensure `USER` and `HOME` match the Gogs user
+    - `WorkingDirectory` -- the Ggit installation directory
+    - `ExecStart` -- the full path to the Ggit binary
+    - `Environment` -- ensure `USER` and `HOME` match the Ggit user
 
     <Tip>
-      If you use MySQL/MariaDB, PostgreSQL, Redis, or Memcached, the `After=` lines ensure Gogs starts after those services. Uncomment or add lines as needed for your database.
+      If you use MySQL/MariaDB, PostgreSQL, Redis, or Memcached, the `After=` lines ensure Ggit starts after those services. Uncomment or add lines as needed for your database.
     </Tip>
 
     ### 2. Enable and start the service
@@ -76,7 +76,7 @@ Running Gogs as a system service ensures it starts automatically on boot and res
 
     ```bash
     # Check status
-    sudo systemctl status gogs -l
+    sudo systemctl status ggit -l
 
     # View logs
     sudo journalctl -b -u gogs
@@ -85,9 +85,10 @@ Running Gogs as a system service ensures it starts automatically on boot and res
     <Note>
       If you have repositories with a large number of files and encounter HTTP 500 errors, uncomment the `LimitMEMLOCK=infinity` and `LimitNOFILE=65535` directives in the service file.
     </Note>
+
   </Tab>
   <Tab title="init.d (Debian/Ubuntu)">
-    For Debian-based systems that do not use systemd, Gogs provides an init.d script at `scripts/init/debian/gogs`.
+    For Debian-based systems that do not use systemd, Ggit provides an init.d script at `scripts/init/debian/gogs`.
 
     ### 1. Copy and customize the script
 
@@ -106,7 +107,7 @@ Running Gogs as a system service ensures it starts automatically on boot and res
     USER=git
     ```
 
-    If you run Gogs alongside Nginx and PostgreSQL, update the init dependencies at the top of the script:
+    If you run Ggit alongside Nginx and PostgreSQL, update the init dependencies at the top of the script:
 
     ```bash
     # Required-Start:    $syslog $network $local_fs nginx postgresql
@@ -116,20 +117,21 @@ Running Gogs as a system service ensures it starts automatically on boot and res
     ### 2. Register and start the service
 
     ```bash
-    sudo update-rc.d gogs defaults 30 70
-    sudo service gogs start
+    sudo update-rc.d ggit defaults 30 70
+    sudo service ggit start
     ```
 
     ### 3. Verify
 
-    Visit your Gogs URL in a browser to confirm it is running. You can also check:
+    Visit your Ggit URL in a browser to confirm it is running. You can also check:
 
     ```bash
-    sudo service gogs status
+    sudo service ggit status
     ```
+
   </Tab>
   <Tab title="init.d (CentOS/RHEL)">
-    For CentOS/RHEL systems, Gogs provides an init.d script at `scripts/init/centos/gogs`.
+    For CentOS/RHEL systems, Ggit provides an init.d script at `scripts/init/centos/gogs`.
 
     ### 1. Copy and customize the script
 
@@ -156,15 +158,16 @@ Running Gogs as a system service ensures it starts automatically on boot and res
     ### 2. Register and start the service
 
     ```bash
-    sudo chkconfig gogs on
-    sudo service gogs start
+    sudo chkconfig ggit on
+    sudo service ggit start
     ```
 
     ### 3. Verify
 
     ```bash
-    sudo service gogs status
+    sudo service ggit status
     ```
+
   </Tab>
   <Tab title="OpenRC (Gentoo)">
     For Gentoo and other distributions using OpenRC, create a service script at `/etc/init.d/gogs`:
@@ -190,21 +193,22 @@ Running Gogs as a system service ensures it starts automatically on boot and res
 
     ```bash
     sudo chmod +x /etc/init.d/gogs
-    sudo rc-update add gogs default
-    sudo rc-service gogs start
+    sudo rc-update add ggit default
+    sudo rc-service ggit start
     ```
+
   </Tab>
 </Tabs>
 
 ## Windows
 
-On Windows, Gogs can run as a native Windows service using either the builtin `minwinsvc` support or the third-party NSSM tool.
+On Windows, Ggit can run as a native Windows service using either the builtin `minwinsvc` support or the third-party NSSM tool.
 
 <Tabs>
   <Tab title="Builtin (sc.exe)">
-    Gogs binaries built with the `minwinsvc` tag (release archive name that contains `mws`) support running as a native Windows service.
+    Ggit binaries built with the `minwinsvc` tag (release archive name that contains `mws`) support running as a native Windows service.
 
-    ### 1. Configure Gogs for Windows
+    ### 1. Configure Ggit for Windows
 
     Edit `C:\gogs\custom\conf\app.ini`:
 
@@ -235,7 +239,7 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
     Open Notepad as Administrator and edit `C:\Windows\System32\drivers\etc\hosts`:
 
     ```text
-    # Gogs local HTTPd
+    # Ggit local HTTPd
     127.0.1.1        gogs
     ```
 
@@ -244,7 +248,7 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
     Open a command prompt as Administrator:
 
     ```cmd
-    sc create gogs start= auto binPath= "\"C:\gogs\gogs.exe\" web --config \"C:\gogs\custom\conf\app.ini\""
+    sc create ggit start= auto binPath= "\"C:\gogs\gogs.exe\" web --config \"C:\gogs\custom\conf\app.ini\""
     ```
 
     <Warning>
@@ -260,8 +264,8 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
     You should see:
 
     ```text
-    The gogs service is starting.
-    The gogs service was started successfully.
+    The ggit service is starting.
+    The ggit service was started successfully.
     ```
 
     <Warning>
@@ -277,6 +281,7 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
 
       Use forward slashes (`/`) in paths to avoid escape character issues.
     </Warning>
+
   </Tab>
   <Tab title="NSSM">
     [NSSM (Non-Sucking Service Manager)](https://nssm.cc/) provides more control over service configuration and automatic restart behavior.
@@ -285,7 +290,7 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
 
     Download [nssm.exe](https://nssm.cc/download) for your architecture (32-bit or 64-bit) and place it in a directory on your `PATH`.
 
-    ### 2. Install the Gogs service
+    ### 2. Install the Ggit service
 
     Open a command prompt as Administrator:
 
@@ -338,7 +343,7 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
     gogs: START: The operation completed successfully.
     ```
 
-    Verify by checking `C:\gogs\log\gogs-nssm.txt` for Gogs startup output, ending with lines like:
+    Verify by checking `C:\gogs\log\gogs-nssm.txt` for Ggit startup output, ending with lines like:
 
     ```text
     [I] Run Mode: Production
@@ -351,6 +356,7 @@ On Windows, Gogs can run as a native Windows service using either the builtin `m
     nssm restart gogs
     ```
 
-    NSSM will automatically attempt to restart Gogs if it crashes.
+    NSSM will automatically attempt to restart Ggit if it crashes.
+
   </Tab>
 </Tabs>

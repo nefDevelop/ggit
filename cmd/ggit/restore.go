@@ -22,7 +22,7 @@ var restoreCommand = cli.Command{
 	Name:  "restore",
 	Usage: "Restore files and database from backup",
 	Description: `Restore imports all related files and database from a backup archive.
-The backup version must lower or equal to current Gogs version. You can also import
+The backup version must lower or equal to current Ggit version. You can also import
 backup from other database engines, which is useful for database migrating.
 
 If corresponding files or database tables are not presented in the archive, they will
@@ -75,7 +75,7 @@ func runRestore(ctx context.Context, cmd *cli.Command) error {
 	}
 	backupVersion := metadata.Section("").Key("GOGS_VERSION").MustString("999.0")
 	if semverx.Compare(conf.App.Version, "<", backupVersion) {
-		log.Fatal("Current Gogs version is lower than backup version: %s < %s", conf.App.Version, backupVersion)
+		log.Fatal("Current Ggit version is lower than backup version: %s < %s", conf.App.Version, backupVersion)
 	}
 	formatVersion := metadata.Section("").Key("VERSION").MustInt()
 	if formatVersion == 0 {

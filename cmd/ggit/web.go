@@ -27,7 +27,7 @@ import (
 
 var webCommand = cli.Command{
 	Name:  "web",
-	Usage: "Start Gogs web server",
+	Usage: "Start Ggit web server",
 	Flags: []cli.Flag{
 		stringFlag("port, p", "3005", "Temporary port number to prevent conflict"),
 		stringFlag("config, c", "", "Custom configuration file path"),

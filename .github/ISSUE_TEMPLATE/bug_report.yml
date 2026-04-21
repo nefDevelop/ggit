@@ -6,18 +6,18 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-        
+
         - Please use English :)
         - For questions, ask in [Discussions](https://github.com/gogs/gogs/discussions).
         - Before you file an issue read the [Contributing guide](https://github.com/gogs/gogs/blob/main/.github/CONTRIBUTING.md).
         - Check to make sure someone hasn't already opened a similar [issue](https://github.com/gogs/gogs/issues).
   - type: input
     attributes:
-      label: Gogs version
+      label: Ggit version
       description: |
-        Please specify the exact Gogs version you're reporting for, e.g. "0.12.3". You can find the version information in the admin dashboard (`/admin`).
-        
-        _Note that "gogs/gogs:latest" is not a Gogs version, it does not mean anything._
+        Please specify the exact Ggit version you're reporting for, e.g. "0.12.3". You can find the version information in the admin dashboard (`/admin`).
+
+        _Note that "gogs/gogs:latest" is not a Ggit version, it does not mean anything._
     validations:
       required: true
   - type: textarea
@@ -27,7 +27,7 @@ body:
         Please specify the exact Git version you're using of both server and client. You can find the version information by running `git version`.
       value: |
         - Server: 
-        - Client: 
+        - Client:
     validations:
       required: true
   - type: input
@@ -67,7 +67,7 @@ body:
       label: Additional context
       description: |
         Links? References? Suggestions? Anything that will give us more context about the issue you are encountering!
-        
+
         Please include any error logs found in the `log/gogs.log` file. Otherwise, we probably won't be able to help you much.
 
         Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.

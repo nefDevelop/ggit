@@ -16,13 +16,14 @@ LANGS = en-US,zh-CN,zh-HK,de-DE,fr-FR,nl-NL,lv-LV,ru-RU,ja-JP,es-ES,pt-BR,pl-PL,
 NAMES = English,简体中文,繁體中文,Deutsch,Français,Nederlands,Latviešu,Русский,日本語,Español,Português do Brasil,Polski,български,Italiano
 ```
 
-| Option | Description |
-|---|---|
+| Option  | Description                                                                                |
+| ------- | ------------------------------------------------------------------------------------------ |
 | `LANGS` | A comma-separated list of locale codes to enable. Each entry corresponds to a locale file. |
-| `NAMES` | A comma-separated list of display names for each language, in the same order as `LANGS`. |
+| `NAMES` | A comma-separated list of display names for each language, in the same order as `LANGS`.   |
 
 <Tip>
-  To restrict the available languages, simply remove entries from both `LANGS` and `NAMES`. Make sure the two lists remain in the same order and have the same number of entries.
+  To restrict the available languages, simply remove entries from both `LANGS` and `NAMES`. Make sure the two lists remain in the same order
+  and have the same number of entries.
 </Tip>
 
 ## Contributing translations
@@ -30,19 +31,14 @@ NAMES = English,简体中文,繁體中文,Deutsch,Français,Nederlands,Latviešu
 Translations are managed through Crowdin. To contribute:
 
 <Steps>
-  <Step title="Sign up">
-    Create an account on the [Gogs Crowdin project](https://crowdin.gogs.io/).
-  </Step>
-  <Step title="Translate">
-    Browse the available strings and fill in untranslated entries for your language.
-  </Step>
-  <Step title="Review">
-    Review existing translations and suggest improvements where needed.
-  </Step>
+  <Step title="Sign up">Create an account on the [Gogs Crowdin project](https://crowdin.gogs.io/).</Step>
+  <Step title="Translate">Browse the available strings and fill in untranslated entries for your language.</Step>
+  <Step title="Review">Review existing translations and suggest improvements where needed.</Step>
 </Steps>
 
 <Info>
-  When translating, focus on conveying the meaning rather than producing a literal word-for-word translation. It is more important that the translation reads naturally in your language than that it matches the exact words of the English version.
+  When translating, focus on conveying the meaning rather than producing a literal word-for-word translation. It is more important that the
+  translation reads naturally in your language than that it matches the exact words of the English version.
 </Info>
 
 ### Making corrections
@@ -50,6 +46,7 @@ Translations are managed through Crowdin. To contribute:
 If you find an incorrectly translated string, you can search for it efficiently on [Crowdin](https://crowdin.gogs.io/) by using its **key name** rather than the translated text.
 
 For example:
+
 - To fix the translation for "Home", search for the key `home` instead of searching for the word "Home".
 - For keys under a section, search using the format `section:key_name`, such as `home:uname_holder`.
 
@@ -61,7 +58,7 @@ If you want to test your translation without making changes to your Git history,
 custom/conf/locale/<file>
 ```
 
-Then restart Gogs to load the updated translations.
+Then restart Ggit to load the updated translations.
 
 ## Custom locale files
 
@@ -71,8 +68,9 @@ If you are not satisfied with the official translation for your language, you ca
 custom/conf/locale/locale_<lang>.ini
 ```
 
-For example, to override specific English strings, create `custom/conf/locale/locale_en-US.ini` and add only the keys you want to change. Restart Gogs to apply the changes.
+For example, to override specific English strings, create `custom/conf/locale/locale_en-US.ini` and add only the keys you want to change. Restart Ggit to apply the changes.
 
 <Note>
-  Custom locale files only need to contain the keys you want to override, not the entire locale file. Unspecified keys will fall back to the official translation.
+  Custom locale files only need to contain the keys you want to override, not the entire locale file. Unspecified keys will fall back to the
+  official translation.
 </Note>

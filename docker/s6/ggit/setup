@@ -16,7 +16,7 @@ cd /app/ggit || exit 1
 ln -sfn /data/ggit/log  ./log
 ln -sfn /data/ggit/data ./data
 
-# Backward Compatibility with Gogs Container v0.6.15
+# Backward Compatibility with Ggit Container v0.6.15
 ln -sfn /data/git /home/git
 
 chmod 0755 /data /data/ggit ~git/

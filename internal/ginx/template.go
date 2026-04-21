@@ -17,7 +17,7 @@ import (
 func SetupTemplates(r *gin.Engine) {
 	fmt.Printf("[DEBUG] SetupTemplates: Initializing on %p\n", r)
 	// 1. Gather all template functions
-	funcMap := internalTmpl.FuncMap()[0] // Gogs returns a slice, we take the first map
+	funcMap := internalTmpl.FuncMap()[0] // Ggit returns a slice, we take the first map
 
 	// 2. Load templates from directory
 	// In Gogs, templates are in WorkDir + "/templates" and can be overridden by CustomDir + "/templates"
@@ -38,7 +38,7 @@ func SetupTemplates(r *gin.Engine) {
 		}
 
 		// Template name should be "repo/home" for "repo/home.tmpl"
-		// Gogs uses "/" as separator even on Windows for template names
+		// Ggit uses "/" as separator even on Windows for template names
 		name := filepath.ToSlash(strings.TrimSuffix(rel, ".tmpl"))
 
 		b, err := os.ReadFile(path)

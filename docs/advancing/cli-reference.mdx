@@ -1,6 +1,6 @@
 ---
 title: "CLI reference"
-description: "Discover all the commands available in the gogs binary"
+description: "Discover all the commands available in the ggit binary"
 icon: "terminal"
 ---
 
@@ -8,9 +8,7 @@ Most people know `gogs web` for starting the server, but the `gogs` binary ships
 
 Run `gogs --help` at any time to see the full list of available commands, and `gogs <command> --help` for details on a specific command.
 
-<Tip>
-  Every command accepts a `--config` (`-c`) flag to specify a custom configuration file path. The default is `custom/conf/app.ini`.
-</Tip>
+<Tip>Every command accepts a `--config` (`-c`) flag to specify a custom configuration file path. The default is `custom/conf/app.ini`.</Tip>
 
 ## Starting the server
 
@@ -28,20 +26,18 @@ gogs admin <subcommand>
 
 The `admin` command lets you perform maintenance tasks without going through the web interface. Available subcommands include:
 
-| Subcommand | Purpose |
-|---|---|
-| `create-user` | Create a new user account (with optional `--admin` flag). |
-| `delete-inactive-users` | Remove user accounts that were never activated. |
-| `delete-repository-archives` | Clean up generated repository archive files. |
+| Subcommand                    | Purpose                                                                     |
+| ----------------------------- | --------------------------------------------------------------------------- |
+| `create-user`                 | Create a new user account (with optional `--admin` flag).                   |
+| `delete-inactive-users`       | Remove user accounts that were never activated.                             |
+| `delete-repository-archives`  | Clean up generated repository archive files.                                |
 | `delete-missing-repositories` | Remove database records for repositories whose Git data is missing on disk. |
-| `collect-garbage` | Run `git gc` across all repositories. |
-| `rewrite-authorized-keys` | Regenerate the SSH `authorized_keys` file from the database. |
-| `resync-hooks` | Re-write Git server-side hooks for all repositories. |
-| `reinit-missing-repositories` | Re-initialize bare Git repositories that are missing on disk. |
+| `collect-garbage`             | Run `git gc` across all repositories.                                       |
+| `rewrite-authorized-keys`     | Regenerate the SSH `authorized_keys` file from the database.                |
+| `resync-hooks`                | Re-write Git server-side hooks for all repositories.                        |
+| `reinit-missing-repositories` | Re-initialize bare Git repositories that are missing on disk.               |
 
-<Warning>
-  `rewrite-authorized-keys` replaces the entire `authorized_keys` file. Any non-Gogs keys in that file will be lost.
-</Warning>
+<Warning>`rewrite-authorized-keys` replaces the entire `authorized_keys` file. Any non-Gogs keys in that file will be lost.</Warning>
 
 ## Importing data
 
@@ -49,7 +45,7 @@ The `admin` command lets you perform maintenance tasks without going through the
 gogs import locale --source <dir> --target <dir>
 ```
 
-The `import` command helps you bring portable data from other Gogs installations into your local instance. Currently the only subcommand is `locale`, which merges locale files from a source directory into a target directory.
+The `import` command helps you bring portable data from other Ggit installations into your local instance. Currently the only subcommand is `locale`, which merges locale files from a source directory into a target directory.
 
 ## Backup and restore
 
@@ -58,10 +54,10 @@ gogs backup
 gogs restore --from <archive>
 ```
 
-`backup` dumps the database, repositories, and related files into a single zip archive. `restore` imports everything back from an archive, which is useful for migrating Gogs to another server or switching database engines.
+`backup` dumps the database, repositories, and related files into a single zip archive. `restore` imports everything back from an archive, which is useful for migrating Ggit to another server or switching database engines.
 
 Both commands support `--database-only` and `--exclude-repos` flags to narrow the scope. `backup` additionally supports `--exclude-mirror-repos` and `--target` to control where the archive is saved.
 
 ## Internal commands
 
-The `serv` and `hook` commands are used internally by the SSH and Git subsystems. You generally do not need to invoke them directly, but they are the reason Gogs can handle SSH authentication and server-side Git hooks without any external tooling.
+The `serv` and `hook` commands are used internally by the SSH and Git subsystems. You generally do not need to invoke them directly, but they are the reason Ggit can handle SSH authentication and server-side Git hooks without any external tooling.

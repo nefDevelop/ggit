@@ -4,7 +4,7 @@
 help:
 	@echo "Comandos disponibles:"
 	@echo "  make dev       - Ejecuta backend y frontend en paralelo"
-	@echo "  make backend   - Compila y ejecuta el servidor Gogs (puerto 3005)"
+	@echo "  make backend   - Compila y ejecuta el servidor Ggit (puerto 3005)"
 	@echo "  make frontend  - Ejecuta el servidor de desarrollo Svelte (puerto 5173)"
 	@echo "  make build     - Compila el binario de Gogs"
 	@echo "  make rebuild   - Fuerza una recompilación completa desde cero"
@@ -17,7 +17,7 @@ clean-ports:
 
 # Ejecuta ambos en paralelo usando el operador & de shell
 dev: clean-ports
-	@echo "Iniciando Gogs Modernized (Desarrollo)..."
+	@echo "Iniciando Ggit Modernized (Desarrollo)..."
 	@make -j 2 backend frontend
 
 # Compila y corre el backend
@@ -33,12 +33,12 @@ frontend:
 # Compila el binario
 build:
 	@echo "Compilando Gogs..."
-	@go build -v -ldflags="-s -w" -o gogs ./cmd/ggit
+	@go build -v -ldflags="-s -w" -o ggit ./cmd/ggit
 
 # Fuerza la recompilación ignorando la caché
 rebuild:
 	@echo "Forzando recompilación completa..."
-	@go build -a -v -ldflags="-s -w" -o gogs ./cmd/ggit
+	@go build -a -v -ldflags="-s -w" -o ggit ./cmd/ggit
 
 # Instalación de dependencias
 install:

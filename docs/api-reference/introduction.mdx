@@ -1,22 +1,18 @@
 ---
 title: "Introduction"
 sidebarTitle: "Introduction"
-description: "Overview of the Gogs API including authentication, pagination, and schema"
+description: "Overview of the Ggit API including authentication, pagination, and schema"
 ---
 
-The Gogs API provides a RESTful interface for interacting with your Gogs instance programmatically. It aims to follow a format similar to the [GitHub REST API v3](https://developer.github.com/v3/).
+The Ggit API provides a RESTful interface for interacting with your Ggit instance programmatically. It aims to follow a format similar to the [GitHub REST API v3](https://developer.github.com/v3/).
 
-<Info>
-  The API is bundled with every Gogs installation. No additional setup is required.
-</Info>
+<Info>The API is bundled with every Ggit installation. No additional setup is required.</Info>
 
-<Warning>
-  The API is still in its early stages. Content and endpoints are subject to change.
-</Warning>
+<Warning>The API is still in its early stages. Content and endpoints are subject to change.</Warning>
 
 ## Current version
 
-All Gogs APIs are under **v1** using the request path prefix `/api/v1`.
+All Ggit APIs are under **v1** using the request path prefix `/api/v1`.
 
 ```
 https://gogs.example.com/api/v1
@@ -40,7 +36,7 @@ YYYY-MM-DDTHH:MM:SSZ
 
 ## Authentication
 
-There are two ways to authenticate through the Gogs API. Requests that require authentication will return `404 Not Found` instead of `403 Forbidden` in some places. This is to prevent the accidental leakage of private resources to unauthorized users.
+There are two ways to authenticate through the Ggit API. Requests that require authentication will return `404 Not Found` instead of `403 Forbidden` in some places. This is to prevent the accidental leakage of private resources to unauthorized users.
 
 <Tabs>
   <Tab title="Basic authentication">
@@ -53,6 +49,7 @@ There are two ways to authenticate through the Gogs API. Requests that require a
     <Warning>
       Basic authentication should only be used to generate access tokens. Do not use it for regular API requests.
     </Warning>
+
   </Tab>
   <Tab title="Access token">
     Personal access tokens must be sent via the `Authorization` request header.
@@ -60,6 +57,7 @@ There are two ways to authenticate through the Gogs API. Requests that require a
     ```bash
     curl -H "Authorization: token {YOUR_ACCESS_TOKEN}" https://gogs.example.com/api/v1/user/repos
     ```
+
   </Tab>
 </Tabs>
 
@@ -84,21 +82,19 @@ Link: <https://gogs.example.com/api/v1/repos/alice/hello/issues?page=3>; rel="ne
 
 The possible `rel` values are:
 
-| Name | Description |
-|---|---|
-| `next` | The link relation for the immediate next page of results. |
-| `last` | The link relation for the last page of results. |
-| `first` | The link relation for the first page of results. |
-| `prev` | The link relation for the immediate previous page of results. |
+| Name    | Description                                                   |
+| ------- | ------------------------------------------------------------- |
+| `next`  | The link relation for the immediate next page of results.     |
+| `last`  | The link relation for the last page of results.               |
+| `first` | The link relation for the first page of results.              |
+| `prev`  | The link relation for the immediate previous page of results. |
 
-<Tip>
-  Always use the Link header values to navigate between pages rather than constructing URLs manually.
-</Tip>
+<Tip>Always use the Link header values to navigate between pages rather than constructing URLs manually.</Tip>
 
 ## SDKs
 
 The following best-effort-maintained SDKs are available:
 
-| Language | Repository |
-|---|---|
-| Go | [gogs/go-gogs-client](https://github.com/gogs/go-gogs-client) |
+| Language | Repository                                                    |
+| -------- | ------------------------------------------------------------- |
+| Go       | [gogs/go-gogs-client](https://github.com/gogs/go-gogs-client) |

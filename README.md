@@ -6,7 +6,7 @@
 
 ## 🔮 Vision
 
-The Gogs (`/gɑgz/`) project aims to build a simple, stable and extensible self-hosted Git service that can be set up in the most painless way. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, macOS, Windows and ARM-based systems.
+The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-hosted Git service that can be set up in the most painless way. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, macOS, Windows and ARM-based systems.
 
 ## 📡 Overview
 
@@ -43,7 +43,7 @@ The Gogs (`/gɑgz/`) project aims to build a simple, stable and extensible self-
 ## 💻 Browser support
 
 - Please see [Semantic UI](https://github.com/Semantic-Org/Semantic-UI#browser-support) for specific versions of supported browsers.
-- The smallest resolution officially supported is **1024*768**, however the UI may still look right in smaller resolutions, but no promises or fixes.
+- The smallest resolution officially supported is **1024\*768**, however the UI may still look right in smaller resolutions, but no promises or fixes.
 
 ## 📜 Installation
 
@@ -58,14 +58,14 @@ Please follow [the guide in our documentation](https://gogs.io/getting-started/i
 ### Tutorials
 
 - [Private Git Web Portal in Raspberry PI With Gogs](https://peppe8o.com/private-git-web-portal-in-raspberry-pi-with-gogs/)
-- [How To Set Up Gogs on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-gogs-on-ubuntu-14-04)
+- [How To Set Up Ggit on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-gogs-on-ubuntu-14-04)
 - [Run your own GitHub-like service with the help of Docker](https://blog.hypriot.com/post/run-your-own-github-like-service-with-docker/)
-- [Dockerized Gogs git server and alpine postgres in 20 minutes or less](https://garthwaite.org/docker-gogs.html)
+- [Dockerized Ggit git server and alpine postgres in 20 minutes or less](https://garthwaite.org/docker-gogs.html)
 - [Host Your Own Private GitHub with Gogs](https://eladnava.com/host-your-own-private-github-with-gogs-io/)
-- [使用 Gogs 搭建自己的 Git 服务器](https://blog.mynook.info/post/host-your-own-git-server-using-gogs/) (Chinese)
+- [使用 Ggit 搭建自己的 Git 服务器](https://blog.mynook.info/post/host-your-own-git-server-using-gogs/) (Chinese)
 - [阿里云上 Ubuntu 14.04 64 位安装 Gogs](https://my.oschina.net/luyao/blog/375654) (Chinese)
-- [Installing Gogs on FreeBSD](https://www.codejam.info/2015/03/installing-gogs-on-freebsd.html)
-- [How to install Gogs on a Linux Server (DigitalOcean)](https://www.youtube.com/watch?v=deSfX0gqefE)
+- [Installing Ggit on FreeBSD](https://www.codejam.info/2015/03/installing-gogs-on-freebsd.html)
+- [How to install Ggit on a Linux Server (DigitalOcean)](https://www.youtube.com/watch?v=deSfX0gqefE)
 
 ## 📦 Software, service and product support
 

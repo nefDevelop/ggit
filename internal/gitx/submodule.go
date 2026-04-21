@@ -15,7 +15,7 @@ var scpSyntax = lazyregexp.New(`^([a-zA-Z0-9_]+@)?([a-zA-Z0-9._-]+):(.*)$`)
 // InferSubmoduleURL returns the inferred external URL of the submodule at best effort.
 // The `baseURL` should be the URL of the current repository. If the submodule URL looks
 // like a relative path, it assumes that the submodule is another repository on the same
-// Gogs instance by appending it to the `baseURL` with the commit.
+// Ggit instance by appending it to the `baseURL` with the commit.
 func InferSubmoduleURL(baseURL string, mod *git.Submodule) string {
 	if !strings.HasSuffix(baseURL, "/") {
 		baseURL += "/"

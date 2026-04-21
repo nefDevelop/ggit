@@ -17,7 +17,7 @@ var (
 	adminCommand = cli.Command{
 		Name:  "admin",
 		Usage: "Perform admin operations on command line",
-		Description: `Allow using internal logic of Gogs without hacking into the source code
+		Description: `Allow using internal logic of Ggit without hacking into the source code
 to make automatic initialization process more smoothly`,
 		Commands: []*cli.Command{
 			&subcmdCreateUser,
