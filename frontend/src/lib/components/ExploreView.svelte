@@ -61,12 +61,12 @@
   .header-content h1 { font-size: 2.5rem; font-weight: 800; margin: 0; background: linear-gradient(135deg, var(--primary-color), #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .subtitle { color: var(--text-muted); font-size: 1.1rem; max-width: 500px; margin: 0.5rem auto 0; }
 
-  .search-island { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.5rem; width: 100%; max-width: 600px; border-radius: 2rem; border: 1px solid var(--border-color); }
+  .search-island { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.5rem; width: 100%; max-width: 600px; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .search-island input { flex: 1; background: transparent; border: none; font-size: 1.1rem; color: var(--text-color); font-family: inherit; }
   .search-island input:focus { outline: none; }
   .search-icon { color: var(--text-muted); font-size: 1.5rem; }
 
-  .explore-nav { display: flex; justify-content: center; gap: 1rem; border-bottom: 1px solid var(--border-color); }
+  .explore-nav { display: flex; justify-content: center; gap: 1rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .explore-tab { background: transparent; border: none; padding: 1rem 1.5rem; color: var(--text-muted); font-weight: 700; font-size: 1.05rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; position: relative; transition: all 0.2s; }
   .explore-tab:hover { color: var(--text-color); }
   .explore-tab.active { color: var(--primary-color); }

@@ -2,6 +2,9 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import ReleaseEditor from './ReleaseEditor.svelte';
+  import Button from './ui/Button.svelte';
+  import Card from './ui/Card.svelte';
+  import Badge from './ui/Badge.svelte';
   
   let { username, reponame } = $props();
   
@@ -86,21 +89,25 @@
   {/if}
 
   <header class="section-actions-minimal">
-     <button class="btn-action-primary" onclick={handleAdd}>
-       <span class="material-symbols-rounded">add_circle</span>
+     <Button onclick={handleAdd} icon="add_circle">
        Draft Release
-     </button>
+     </Button>
   </header>
 
   {#if loading && releases.length === 0}
-    <div class="skeleton-list"></div>
+    <div class="skeleton-list">
+      {#each Array(3) as _}
+        <div class="skeleton-item"></div>
+      {/each}
+    </div>
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
     <div class="empty-releases">
-      <span class="material-symbols-rounded">sell</span>
-      <p>No releases yet. Start tagging your milestones.</p>
-      <button class="btn-action-primary" onclick={handleAdd}>Create Release</button>
+      <span class="material-symbols-rounded icon">sell</span>
+      <h3>No releases yet</h3>
+      <p>Start tagging your milestones.</p>
+      <Button onclick={handleAdd} icon="rocket_launch">Create Release</Button>
     </div>
   {:else}
     <div class="releases-timeline">
@@ -108,19 +115,19 @@
         <div class="release-item" class:is-draft={release.is_draft}>
           <div class="release-marker"></div>
           
-          <div class="release-card-flat">
+          <Card class="release-card" hover={true} padding="none">
             <header class="release-card-header">
                <div class="header-main-info">
                  <div class="title-row-flat">
                    <h3>{release.title || release.tag_name}</h3>
                    <div class="badge-row">
                      {#if release.is_draft}
-                       <span class="badge draft">Draft</span>
+                       <Badge variant="neutral">Draft</Badge>
                      {:else if release.is_prerelease}
-                       <span class="badge pre">Pre-release</span>
+                       <Badge variant="warning">Pre-release</Badge>
                      {/if}
                      {#if release === releases.find(r => !r.is_draft && !r.is_prerelease)}
-                       <span class="badge latest">Latest</span>
+                       <Badge variant="success">Latest</Badge>
                      {/if}
                    </div>
                  </div>
@@ -145,12 +152,8 @@
 
                {#if release.id}
                  <div class="header-actions">
-                   <button class="btn-icon" onclick={() => handleEdit(release)} title="Edit Release">
-                     <span class="material-symbols-rounded">edit</span>
-                   </button>
-                   <button class="btn-icon delete" onclick={() => handleDelete(release.id)} title="Delete Release">
-                     <span class="material-symbols-rounded">delete</span>
-                   </button>
+                   <Button variant="ghost" size="sm" icon="edit" onclick={() => handleEdit(release)} />
+                   <Button variant="ghost" size="sm" icon="delete" class="danger-icon" onclick={() => handleDelete(release.id)} />
                  </div>
                {/if}
             </header>
@@ -165,7 +168,7 @@
               </div>
 
               <div class="release-side">
-                <div class="assets-box island tonal surface-2">
+                <Card padding="sm" class="assets-box">
                    <h4>Assets</h4>
                    <div class="asset-links">
                      {#if release.attachments && release.attachments.length > 0}
@@ -185,7 +188,7 @@
                        <span class="name">Source code (tar.gz)</span>
                      </a>
                    </div>
-                </div>
+                </Card>
                 
                 {#if release.publisher}
                   <div class="publisher-info">
@@ -198,21 +201,19 @@
                 {/if}
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       {/each}
     </div>
 
     {#if hasNext || hasPrevious}
       <div class="pagination">
-        <button class="btn btn-tonal" onclick={() => fetchReleases("")} disabled={loading || !hasPrevious}>
-          <span class="material-symbols-rounded">first_page</span>
+        <Button variant="secondary" onclick={() => fetchReleases("")} disabled={loading || !hasPrevious} icon="first_page">
           Newest
-        </button>
-        <button class="btn btn-primary" onclick={() => fetchReleases(nextAfter)} disabled={loading || !hasNext}>
+        </Button>
+        <Button onclick={() => fetchReleases(nextAfter)} disabled={loading || !hasNext} icon="navigate_next">
           Older releases
-          <span class="material-symbols-rounded">navigate_next</span>
-        </button>
+        </Button>
       </div>
     {/if}
   {/if}
@@ -221,77 +222,63 @@
 <style>
   .repo-releases { display: flex; flex-direction: column; gap: 3rem; min-height: 400px; padding: 1rem; }
   
-  .editor-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 4rem; overflow-y: auto; }
+  .editor-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 4rem; overflow-y: auto; }
 
-  .section-actions { display: flex; justify-content: space-between; align-items: flex-start; }
-  .header-info h3 { margin: 0; font-size: 1.75rem; font-weight: 800; }
-  .header-info p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1rem; }
-  .btn.lg { height: 56px; padding: 0 1.5rem; gap: 0.75rem; border-radius: 1.25rem; font-weight: 800; }
+  .section-actions-minimal { display: flex; justify-content: flex-end; }
 
-  .empty-state { text-align: center; padding: 6rem 2rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; color: var(--text-muted); border-radius: 2rem; }
-  .icon-blob { width: 120px; height: 120px; background: rgba(var(--primary-rgb), 0.1); border-radius: 40%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-  .empty-state span { font-size: 4rem; color: var(--primary-color); }
-  .empty-state h3 { margin: 0; font-size: 1.5rem; color: var(--text-color); }
+  .empty-releases { text-align: center; padding: 6rem 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
+  .empty-releases .icon { font-size: 4rem; color: var(--md-sys-color-surface-variant); margin-bottom: 1rem; }
+  .empty-releases h3 { margin: 0; font-size: 1.5rem; color: var(--md-sys-color-on-surface); }
 
   .releases-timeline { display: flex; flex-direction: column; position: relative; padding-left: 2.5rem; gap: 1rem; }
-  .releases-timeline::before { content: ''; position: absolute; left: 0; top: 1rem; bottom: 1rem; width: 4px; background: var(--md3-surface-5); border-radius: 2px; }
+  .releases-timeline::before { content: ''; position: absolute; left: 0; top: 1rem; bottom: 1rem; width: 4px; background: var(--md-sys-color-surface-variant); border-radius: 2px; }
   
   .release-item { position: relative; padding-bottom: 2rem; transition: transform 0.2s; }
   .release-item.is-draft { opacity: 0.8; }
-  .release-marker { position: absolute; left: -2.85rem; top: 2rem; width: 14px; height: 14px; border-radius: 50%; background: var(--md3-surface-5); border: 4px solid var(--bg-color); z-index: 1; transition: all 0.3s; }
-  .release-item:hover .release-marker { background: var(--primary-color); transform: scale(1.2); }
+  .release-marker { position: absolute; left: -2.85rem; top: 2rem; width: 14px; height: 14px; border-radius: 50%; background: var(--md-sys-color-outline-variant); border: 4px solid var(--md-sys-color-background); z-index: 1; transition: all 0.3s; }
+  .release-item:hover .release-marker { background: var(--md-sys-color-primary); transform: scale(1.2); }
 
-  .release-card { padding: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid transparent; transition: all 0.3s; }
-  .release-card:hover { border-color: var(--primary-color); background: var(--md3-surface-2); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+  .release-card-header { padding: 2rem; display: flex; justify-content: space-between; align-items: flex-start; background: var(--md-sys-color-background); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   
-  .release-header { padding: 2rem; display: flex; justify-content: space-between; align-items: flex-start; background: rgba(255,255,255,0.02); }
-  .header-main { display: flex; flex-direction: column; gap: 1rem; }
+  .title-row-flat { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .title-row-flat h3 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; color: var(--md-sys-color-on-surface); }
   
-  .title-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-  .title-row h2 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
-  
-  .badges { display: flex; gap: 0.5rem; }
-  .badge { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 0.3rem 0.8rem; border-radius: 0.5rem; }
-  .badge.latest { background: #10b981; color: #fff; box-shadow: 0 0 16px rgba(16, 185, 129, 0.3); }
-  .badge.pre { background: #f59e0b; color: #fff; }
-  .badge.draft { background: var(--md3-surface-5); color: var(--text-muted); }
+  .badge-row { display: flex; gap: 0.5rem; }
 
-  .meta-row { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .meta-row { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem; }
   .meta-row span { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 600; }
   .meta-row .material-symbols-rounded { font-size: 1.25rem; opacity: 0.7; }
-  .meta-row .tag.clickable { color: var(--primary-color); cursor: pointer; }
+  .meta-row .tag.clickable { color: var(--md-sys-color-primary); cursor: pointer; }
   .meta-row .tag.clickable:hover { text-decoration: underline; }
 
-  .header-actions { display: flex; gap: 0.5rem; }
-  .btn-icon.delete:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  .header-actions { display: flex; gap: 0.25rem; }
+  :global(.danger-icon:hover) { color: var(--color-danger) !important; }
 
-  .release-body { padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 3rem; border-top: 1px solid var(--border-color); }
+  .release-body { padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 3rem; }
   
-  .release-content { font-size: 1.05rem; line-height: 1.8; color: var(--text-color); white-space: pre-wrap; }
-  .empty-note { opacity: 0.4; }
+  .release-content { font-size: 1.05rem; line-height: 1.8; color: var(--md-sys-color-on-surface); white-space: pre-wrap; }
+  .empty-note { opacity: 0.5; }
 
   .release-side { display: flex; flex-direction: column; gap: 2rem; }
   
-  .assets-box { padding: 1.5rem; border-radius: 1.25rem; }
+  .assets-box { background: var(--md-sys-color-background) !important; }
   .assets-box h4 { margin: 0 0 1rem 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; font-weight: 800; }
   .asset-links { display: flex; flex-direction: column; gap: 0.25rem; }
-  .asset-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--primary-color); font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 0.75rem; transition: all 0.2s; }
-  .asset-item:hover { background: rgba(var(--primary-rgb), 0.1); transform: translateX(4px); }
+  .asset-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--md-sys-color-primary); font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 0.75rem; transition: all 0.2s; }
+  .asset-item:hover { background: var(--md-sys-color-primary-container); transform: translateX(4px); }
   .asset-item.source { color: var(--text-muted); font-weight: 600; }
   .asset-item span { font-size: 1.4rem; opacity: 0.8; }
 
   .publisher-info { display: flex; flex-direction: column; gap: 0.75rem; padding-left: 0.5rem; }
   .publisher-info span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
-  .user-chip { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; color: var(--text-color); text-decoration: none; }
-  .user-chip img { width: 28px; height: 28px; border-radius: 50%; background: var(--md3-surface-5); }
+  .user-chip { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; color: var(--md-sys-color-on-surface); text-decoration: none; }
+  .user-chip img { width: 28px; height: 28px; border-radius: 50%; background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); }
 
   .pagination { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
   
-  .error-state { text-align: center; padding: 4rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: #ef4444; }
-  .error-state span { font-size: 3rem; }
+  .error-msg { text-align: center; padding: 4rem; color: var(--color-danger); }
 
-  .skeleton-timeline { display: flex; flex-direction: column; gap: 1.5rem; padding-left: 2.5rem; }
-  .skeleton-item { height: 250px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }
+  .skeleton-item { height: 250px; border-radius: 1.5rem; background: var(--md-sys-color-surface-variant); animation: pulse 1.5s infinite; margin-bottom: 2rem; }
   @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.7; } }
 
   @media (max-width: 1100px) {
@@ -299,3 +286,4 @@
     .editor-overlay { padding: 1rem; }
   }
 </style>
+

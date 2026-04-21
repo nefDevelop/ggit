@@ -154,9 +154,9 @@
   
   .header-action-minimal { display: flex; justify-content: flex-end; }
 
-  .hooks-list-flat { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 1rem; overflow: hidden; }
+  .hooks-list-flat { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
   
-  .hook-row-flat { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+  .hook-row-flat { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); transition: background 0.2s; }
   .hook-row-flat:last-child { border-bottom: none; }
   .hook-row-flat:hover { background: var(--surface-variant); }
 
@@ -178,11 +178,11 @@
   .empty-state-flat { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-state-flat span { font-size: 3rem; }
 
-  .skeleton-row { height: 80px; width: 100%; border-bottom: 1px solid var(--border-color); animation: pulse 1.5s infinite; }
+  .skeleton-row { height: 80px; width: 100%; border-bottom: 1px solid var(--md-sys-color-outline-variant); animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
   
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-  .modal-content { background: var(--md3-surface-1); border-radius: 1.5rem; border: 1px solid var(--border-color); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl); }
+  .modal-content { background: var(--md3-surface-1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl); }
   .modal-content.logs-modal { max-width: 1000px; }
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

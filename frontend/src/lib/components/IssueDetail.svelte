@@ -189,7 +189,7 @@
 <style>
   .issue-detail-view { display: flex; flex-direction: column; gap: 2rem; }
 
-  .issue-main-header { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .issue-main-header { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
   .issue-title-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
   .issue-title-row h1 { margin: 0; font-size: 2rem; font-weight: 800; }
   .index-tag { color: var(--text-muted); font-weight: 400; }
@@ -211,17 +211,17 @@
   .item-card-flat { 
     flex: 1; 
     min-width: 0; 
-    border: 1px solid var(--border-color); 
+    border: 1px solid var(--md-sys-color-outline-variant); 
     background: var(--bg-color); 
     border-radius: 1rem; 
     overflow: hidden; 
   }
-  .item-header { padding: 0.75rem 1.25rem; background: var(--surface-variant); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); }
+  .item-header { padding: 0.75rem 1.25rem; background: var(--surface-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); font-size: 0.85rem; color: var(--text-muted); }
   .item-body { padding: 1.25rem; line-height: 1.6; }
 
   .timeline-divider { height: 1px; }
 
-  .new-comment-item textarea { width: 100%; min-height: 120px; background: transparent; border: none; padding: 1.25rem; color: var(--text-color); font-family: inherit; font-size: 1rem; resize: vertical; border-bottom: 1px solid var(--border-color); outline: none; }
+  .new-comment-item textarea { width: 100%; min-height: 120px; background: transparent; border: none; padding: 1.25rem; color: var(--text-color); font-family: inherit; font-size: 1rem; resize: vertical; border-bottom: 1px solid var(--md-sys-color-outline-variant); outline: none; }
   .comment-actions { padding: 0.75rem 1.25rem; display: flex; justify-content: flex-end; }
   
   .btn-action-primary { background: var(--primary-color); color: var(--on-primary); border: none; padding: 0.5rem 1.25rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
@@ -229,7 +229,7 @@
   .btn-action-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .sidebar { display: flex; flex-direction: column; gap: 2rem; }
-  .side-item { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .side-item { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
   .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 1rem; }
   .user-pill { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 0.9rem; }
   

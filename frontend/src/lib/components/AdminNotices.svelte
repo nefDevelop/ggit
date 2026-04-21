@@ -177,7 +177,7 @@
   
   .table-container { width: 100%; overflow-x: auto; }
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { background: rgba(255,255,255,0.01); padding: 1.25rem 1.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
+  .modern-table th { background: rgba(255,255,255,0.01); padding: 1.25rem 1.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .modern-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.02); vertical-align: middle; }
 
   .notice-row { cursor: pointer; transition: background 0.2s; }
@@ -203,7 +203,7 @@
   .pagination-footer { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; background: rgba(0,0,0,0.2); }
   .page-info { font-size: 0.85rem; color: var(--text-muted); }
   .pagination-controls { display: flex; align-items: center; gap: 1rem; }
-  .btn-nav { background: var(--surface-variant); border: 1px solid var(--border-color); color: white; padding: 0.4rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; }
+  .btn-nav { background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); color: white; padding: 0.4rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; }
   .btn-nav:hover:not(:disabled) { transform: scale(1.1); background: var(--primary-color); }
   .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
   .current-page { font-size: 0.9rem; font-weight: 600; }
@@ -213,7 +213,7 @@
   .detail-header { display: flex; justify-content: space-between; align-items: center; }
   .detail-date { font-size: 0.9rem; color: var(--text-muted); }
   .detail-body h4 { margin: 0 0 1rem 0; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-  .detail-text { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; border: 1px solid var(--border-color); margin: 0; color: #6ee7b7; }
+  .detail-text { background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; border: 1px solid var(--md-sys-color-outline-variant); margin: 0; color: #6ee7b7; }
 
   .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); font-style: italic; }
 </style>

@@ -290,16 +290,16 @@
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
-  .field input, .field select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.95rem; transition: all 0.2s; }
+  .field input, .field select { background: rgba(0,0,0,0.3); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.95rem; transition: all 0.2s; }
   .field input:focus { border-color: var(--primary-color); background: rgba(0,0,0,0.4); outline: none; }
   
   .checkbox-group { display: flex; gap: 2rem; margin: 0.5rem 0; }
   .checkbox { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; font-size: 0.95rem; font-weight: 500; }
   .checkbox input { width: 1.25rem; height: 1.25rem; accent-color: var(--primary-color); }
 
-  .divider { height: 1px; background: var(--border-color); margin: 0.5rem 0; opacity: 0.5; }
+  .divider { height: 1px; background: var(--md-sys-color-outline-variant); margin: 0.5rem 0; opacity: 0.5; }
 
-  .config-section { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 1rem; border: 1px dashed var(--border-color); }
+  .config-section { background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 1rem; border: 1px dashed var(--md-sys-color-outline-variant); }
 
   .error-msg { color: #ef4444; font-size: 0.9rem; font-weight: 700; background: rgba(239, 68, 68, 0.1); padding: 0.75rem 1rem; border-radius: 0.5rem; border-left: 4px solid #ef4444; }
   

@@ -179,7 +179,7 @@
 
   /* MAIN */
   .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1.5rem; }
-  .repo-card { display: flex; flex-direction: column; gap: 1rem; padding: 2rem; text-decoration: none; color: inherit; height: 100%; border: 1px solid var(--border-color); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .repo-card { display: flex; flex-direction: column; gap: 1rem; padding: 2rem; text-decoration: none; color: inherit; height: 100%; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
   .repo-card:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .repo-header { display: flex; align-items: center; gap: 1rem; }
@@ -190,7 +190,7 @@
 
   .repo-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.6; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
-  .repo-stats { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+  .repo-stats { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .stat { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; }
   .stat span { font-size: 1.1rem; color: var(--primary-color); }
   .lang-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }

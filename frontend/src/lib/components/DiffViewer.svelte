@@ -119,11 +119,11 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   .stat-item b {
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
   }
 
   .stat-item.success b { color: var(--success); }
@@ -137,7 +137,7 @@
 
   .diff-file {
     overflow: hidden;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     transition: all 0.2s;
   }
 
@@ -177,7 +177,7 @@
   .file-name {
     font-weight: 600;
     font-size: 0.95rem;
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
     font-family: 'JetBrains Mono', monospace;
   }
 
@@ -212,7 +212,7 @@
     color: var(--text-tertiary);
     background: rgba(255,255,255,0.02);
     user-select: none;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .line-sign {

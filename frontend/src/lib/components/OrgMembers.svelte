@@ -93,7 +93,7 @@
 
 <style>
   .org-members { display: flex; flex-direction: column; gap: 1.5rem; }
-  .header-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+  .header-actions { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1rem; }
   
   .section-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin: 0; }
 

@@ -132,7 +132,7 @@
   
   .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
   
-  .team-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; border: 1px solid var(--border-color); }
+  .team-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   
   .team-title { display: flex; align-items: center; justify-content: space-between; }
   .team-title strong { font-size: 1.1rem; }
@@ -142,7 +142,7 @@
 
   .team-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0.5rem 0 0 0; line-height: 1.4; }
 
-  .team-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+  .team-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   
   .team-stats { display: flex; gap: 1rem; }
   .team-stats .item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); }
@@ -182,7 +182,7 @@
   .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
   .field input, .field textarea, .field select {
     background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
     color: #fff;

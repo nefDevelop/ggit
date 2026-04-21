@@ -139,7 +139,7 @@
     width: 120px;
     border-radius: 2px;
     overflow: hidden;
-    background: rgba(0,0,0,0.2);
+    background: var(--md-sys-color-surface-variant);
     margin: 0.1rem 0;
   }
   .lang-segment { height: 100%; }

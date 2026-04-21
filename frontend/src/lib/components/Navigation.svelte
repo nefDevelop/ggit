@@ -246,7 +246,7 @@
     gap: 0.25rem;
     padding-left: 2rem;
     margin: 0.25rem 0;
-    border-left: 1px solid var(--border-color);
+    border-left: 1px solid var(--md-sys-color-outline-variant);
     margin-left: 2rem;
   }
 
@@ -304,7 +304,7 @@
 
   .lang-toggle-btn {
     background: var(--surface-variant);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     color: var(--text-color);
     padding: 0.4rem 0.6rem;
     border-radius: 0.75rem;
@@ -334,7 +334,7 @@
         z-index: 1000;
         padding: 0 1rem;
         background: var(--bg-color);
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--md-sys-color-outline-variant);
         align-items: center;
         padding-bottom: env(safe-area-inset-bottom);
         height: calc(70px + env(safe-area-inset-bottom));

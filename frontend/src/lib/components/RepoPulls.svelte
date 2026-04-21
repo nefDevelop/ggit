@@ -167,7 +167,7 @@
     display: flex;
     padding: 1rem 1.5rem;
     gap: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .pull-row:last-child {

@@ -108,7 +108,7 @@
 
   .config-sections { display: flex; flex-direction: column; gap: 2rem; }
   .config-card { padding: 0; overflow: hidden; }
-  .card-title { padding: 1rem 2rem; margin: 0; font-size: 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); }
+  .card-title { padding: 1rem 2rem; margin: 0; font-size: 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   .config-grid { padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .config-item { display: flex; flex-direction: column; gap: 0.2rem; }
@@ -121,7 +121,7 @@
   .test-email-content { padding: 2rem; display: flex; flex-direction: column; gap: 1rem; }
   .test-email-content p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
   .input-group { display: flex; gap: 1rem; max-width: 500px; }
-  .input-group input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.6rem 1rem; border-radius: 0.5rem; }
-  .status-msg { font-size: 0.85rem; font-weight: 700; color: #10b981; }
-  .status-msg.error { color: #ef4444; }
+  .input-group input { flex: 1; background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.6rem 1rem; border-radius: 0.5rem; }
+  .status-msg { font-size: 0.85rem; font-weight: 700; color: var(--color-success); }
+  .status-msg.error { color: var(--color-danger); }
 </style>

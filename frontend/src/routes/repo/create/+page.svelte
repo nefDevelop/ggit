@@ -7,8 +7,34 @@
   let description = $state('');
   let isPrivate = $state(false);
   let autoInit = $state(true);
+
+  let gitignores = $state<string[]>([]);
+  let licenses = $state<string[]>([]);
+  let readmes = $state<string[]>([]);
+  
+  let selectedGitignore = $state('');
+  let selectedLicense = $state('');
+  let selectedReadme = $state('Default');
+  
   let errorMsg = $state('');
   let loading = $state(false);
+
+  async function loadTemplates() {
+    try {
+      const res = await apiFetch('/api/v2/repo/templates');
+      if (res.ok) {
+        const data = await res.json();
+        gitignores = data.gitignores || [];
+        licenses = data.licenses || [];
+        readmes = data.readmes || [];
+      }
+    } catch (e) {
+      console.error("Failed to load templates", e);
+    }
+  }
+
+  import { onMount } from 'svelte';
+  onMount(loadTemplates);
 
   function getCsrfToken() {
     if (typeof document === 'undefined') return '';
@@ -32,7 +58,10 @@
           name,
           description,
           private: isPrivate,
-          auto_init: autoInit
+          auto_init: autoInit,
+          gitignores: selectedGitignore,
+          license: selectedLicense,
+          readme: selectedReadme
         })
       });
       
@@ -63,7 +92,7 @@
 
   <main class="create-grid">
     <!-- RIGHT COLUMN: FORM -->
-    <form class="create-form-content" onsubmit={handleSubmit}>
+    <form class="create-form-content" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       {#if errorMsg}
         <div class="error-toast">
           <span class="material-symbols-rounded">error</span>
@@ -151,6 +180,39 @@
             <span>Crea un archivo de presentación para poder clonar el repo de inmediato.</span>
           </div>
         </label>
+
+        {#if autoInit}
+          <div class="init-details">
+            <div class="input-field">
+              <label for="gitignore">.gitignore</label>
+              <select id="gitignore" bind:value={selectedGitignore} disabled={loading}>
+                <option value="">Ninguno</option>
+                {#each gitignores as g}
+                  <option value={g}>{g}</option>
+                {/each}
+              </select>
+            </div>
+
+            <div class="input-field">
+              <label for="license">Licencia</label>
+              <select id="license" bind:value={selectedLicense} disabled={loading}>
+                <option value="">Ninguna</option>
+                {#each licenses as l}
+                  <option value={l}>{l}</option>
+                {/each}
+              </select>
+            </div>
+
+            <div class="input-field">
+              <label for="readme">Plantilla README</label>
+              <select id="readme" bind:value={selectedReadme} disabled={loading}>
+                {#each readmes as r}
+                  <option value={r}>{r}</option>
+                {/each}
+              </select>
+            </div>
+          </div>
+        {/if}
       </section>
 
       <div class="form-actions">
@@ -171,8 +233,7 @@
 
 <style>
   .create-wrapper {
-    max-width: 1100px;
-    margin: 0 auto;
+    width: 100%;
     animation: fadeIn 0.4s ease-out;
   }
 
@@ -181,26 +242,18 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* HERO HEADER */
   .hero-header {
     background: var(--surface-variant);
     border-bottom: 1px solid var(--border-color);
-    padding: 3rem 1.5rem; /* Reducido para que no ocupe tanto espacio vertical */
-    
-    /* Truco moderno para expandir el fondo a pantalla completa (Full Bleed) */
-    margin-top: -1.5rem;
+    padding: 3.5rem 2rem;
     margin-bottom: 3rem;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
   }
 
   .hero-content {
     display: flex;
     align-items: center;
     gap: 2rem;
-    max-width: 1100px; /* Lo alineamos perfectamente con el grid del formulario */
-    margin: 0 auto;
-    padding: 0 1.5rem; /* Protege el contenido de tocar los bordes en móvil */
+    padding: 0 2rem;
   }
 
   .hero-header h1 {
@@ -306,9 +359,54 @@
     outline: none;
   }
   
-  textarea:disabled, input:disabled {
+  textarea:disabled, input:disabled, select:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  select {
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 -960 960 960' width='24'%3E%3Cpath d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+  }
+
+  select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1);
+    outline: none;
+  }
+
+  .init-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .init-details .input-field:last-child {
+    grid-column: span 2;
+  }
+
+  @media (max-width: 600px) {
+    .init-details {
+      grid-template-columns: 1fr;
+    }
+    .init-details .input-field:last-child {
+      grid-column: span 1;
+    }
   }
 
   /* VISIBILITY SELECTOR */

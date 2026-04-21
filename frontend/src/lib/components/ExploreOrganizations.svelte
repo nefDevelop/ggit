@@ -78,7 +78,7 @@
 
 <style>
   .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-  .org-card { display: flex; gap: 1.5rem; padding: 1.75rem; text-decoration: none; color: inherit; align-items: flex-start; border: 1px solid var(--border-color); height: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .org-card { display: flex; gap: 1.5rem; padding: 1.75rem; text-decoration: none; color: inherit; align-items: flex-start; border: 1px solid var(--md-sys-color-outline-variant); height: 100%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
   .org-card:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .org-avatar { width: 72px; height: 72px; border-radius: 16px; box-shadow: var(--shadow-md); background: #111; }

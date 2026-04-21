@@ -87,7 +87,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 800; }
@@ -101,7 +101,7 @@
     border-radius: 50%;
     transition: all 0.2s;
   }
-  .close-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .close-btn:hover { background: var(--md-sys-color-surface-variant); color: #fff; }
 
   .modal-body {
     padding: 2rem;

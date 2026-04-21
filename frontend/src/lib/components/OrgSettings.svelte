@@ -102,7 +102,7 @@
 
 <style>
   .org-settings { display: flex; flex-direction: column; overflow: hidden; margin-bottom: 2rem; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
+  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
   .card-title.red { color: #ef4444; }
 
@@ -111,11 +111,11 @@
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .form-group label { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); padding-left: 0.25rem; }
   
-  input, textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 1rem; transition: all 0.2s; }
+  input, textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 1rem; transition: all 0.2s; }
   textarea { min-height: 80px; }
   input:focus, textarea:focus { outline: none; border-color: var(--primary-color); background: rgba(0,0,0,0.4); }
 
-  .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); }
+  .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .status-msg { font-size: 0.9rem; color: #10b981; }
 
   .danger { border: 1px solid rgba(239, 68, 68, 0.2); }

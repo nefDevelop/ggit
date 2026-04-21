@@ -143,7 +143,7 @@
     display: flex;
     padding: 1.25rem 1.5rem;
     gap: 1.25rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
     transition: background 0.2s;
   }
   .issue-row:hover {
@@ -215,7 +215,7 @@
   .spinner {
     width: 32px;
     height: 32px;
-    border: 3px solid var(--border-color);
+    border: 3px solid var(--md-sys-color-outline-variant);
     border-top-color: var(--primary-color);
     border-radius: 50%;
     animation: spin 1s infinite linear;

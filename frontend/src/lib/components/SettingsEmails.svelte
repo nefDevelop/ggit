@@ -148,7 +148,7 @@
 
 <style>
   .settings-card { display: flex; flex-direction: column; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
+  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
   .card-desc { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
 
@@ -158,7 +158,7 @@
     justify-content: space-between; 
     align-items: center; 
     padding: 1.5rem 2rem; 
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
     transition: background 0.2s;
   }
   .email-item:hover { background: rgba(255,255,255,0.02); }
@@ -180,7 +180,7 @@
   .input-group input { 
     flex: 1; 
     background: rgba(0,0,0,0.2); 
-    border: 1px solid var(--border-color); 
+    border: 1px solid var(--md-sys-color-outline-variant); 
     padding: 0.75rem 1rem; 
     border-radius: 0.75rem; 
     color: var(--text-color);
@@ -193,7 +193,7 @@
   .status-msg.error { color: #ef4444; }
 
   .skeleton-list { display: flex; flex-direction: column; }
-  .skeleton-item { height: 80px; width: 100%; animation: pulse 1.5s infinite; border-bottom: 1px solid var(--border-color); }
+  .skeleton-item { height: 80px; width: 100%; animation: pulse 1.5s infinite; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
   .btn-ghost.error { color: #ef4444; }

@@ -160,7 +160,7 @@
   
   .field { display: flex; flex-direction: column; gap: 0.4rem; }
   .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-  .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.6rem 0.8rem; border-radius: 0.5rem; }
+  .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.6rem 0.8rem; border-radius: 0.5rem; }
   
   .checkbox-group { display: flex; gap: 2rem; }
   .checkbox { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; }

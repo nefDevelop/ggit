@@ -95,12 +95,12 @@
   .subtitle { color: var(--text-muted); margin: 0.25rem 0 0 0; }
 
   .card { padding: 0; overflow: hidden; }
-  .card-title { padding: 1rem 2rem; margin: 0; font-size: 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); }
+  .card-title { padding: 1rem 2rem; margin: 0; font-size: 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   .table-wrapper { overflow-x: auto; }
   .data-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .data-table th { padding: 1rem 2rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
-  .data-table td { padding: 1rem 2rem; border-bottom: 1px solid var(--border-color); font-size: 0.95rem; }
+  .data-table th { padding: 1rem 2rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .data-table td { padding: 1rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); font-size: 0.95rem; }
   .data-table tr:last-child td { border-bottom: none; }
 
   code { font-family: monospace; background: rgba(255,255,255,0.05); padding: 0.2rem 0.4rem; border-radius: 0.4rem; font-size: 0.85rem; }

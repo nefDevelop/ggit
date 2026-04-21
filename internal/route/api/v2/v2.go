@@ -19,6 +19,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	
 	r.GET("/install/settings", ginx.Handle(GetInstallSettings))
 	r.GET("/i18n/:lang", ginx.Handle(GetI18nStrings))
+	r.GET("/repo/templates", ginx.Handle(GetRepoTemplates))
 
 	user := r.Group("/user")
 	{

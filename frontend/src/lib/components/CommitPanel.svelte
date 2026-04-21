@@ -66,7 +66,7 @@
 </div>
 
 <style>
-  .commit-panel { display: flex; flex-direction: column; gap: 1.5rem; max-width: 600px; padding: 2rem; border: 1px solid var(--border-color); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+  .commit-panel { display: flex; flex-direction: column; gap: 1.5rem; max-width: 600px; padding: 2rem; border: 1px solid var(--md-sys-color-outline-variant); box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
   
   .commit-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
   .commit-header h3 { margin: 0; font-size: 1.25rem; }
@@ -74,7 +74,7 @@
 
   .commit-body { display: flex; flex-direction: column; gap: 1.25rem; }
   
-  input[type="text"], textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 0.75rem 1rem; color: #fff; font-family: inherit; font-size: 0.95rem; }
+  input[type="text"], textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 0.75rem; padding: 0.75rem 1rem; color: #fff; font-family: inherit; font-size: 0.95rem; }
   textarea { min-height: 100px; resize: vertical; }
   input:focus, textarea:focus { border-color: var(--primary-color); outline: none; background: rgba(0,0,0,0.4); }
 
@@ -89,5 +89,5 @@
 
   .inline-input { margin-top: 0.5rem; width: 100%; border-style: dashed; }
 
-  .commit-footer { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+  .commit-footer { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 </style>

@@ -104,7 +104,7 @@
   .repo-name { color: var(--text-muted); }
   .path { font-weight: 800; color: var(--primary-color); }
 
-  .editor-main { flex: 1; padding: 0; overflow: hidden; display: flex; border: 1px solid var(--border-color); }
+  .editor-main { flex: 1; padding: 0; overflow: hidden; display: flex; border: 1px solid var(--md-sys-color-outline-variant); }
   textarea { flex: 1; background: #0d1117; color: #e6edf3; border: none; padding: 2rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 1rem; line-height: 1.6; resize: none; overflow-y: auto; outline: none; }
   
   .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; animation: fadeIn 0.2s ease-out; }

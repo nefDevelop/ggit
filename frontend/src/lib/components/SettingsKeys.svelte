@@ -111,7 +111,7 @@
 
 <style>
   .settings-card { display: flex; flex-direction: column; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
+  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
   
   .card-body { padding: 2rem; }
@@ -125,20 +125,20 @@
   .key-info code { font-size: 0.75rem; background: rgba(0,0,0,0.3); padding: 0.1rem 0.4rem; border-radius: 4px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .key-meta { font-size: 0.75rem; color: var(--text-muted); opacity: 0.5; }
 
-  .divider { border: 0; border-top: 1px solid var(--border-color); margin: 2rem 0; }
+  .divider { border: 0; border-top: 1px solid var(--md-sys-color-outline-variant); margin: 2rem 0; }
 
   .add-key-form { display: flex; flex-direction: column; gap: 1.5rem; }
   .add-key-form h4 { margin: 0; font-size: 1.1rem; }
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .form-group label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
   
-  input, textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; }
+  input, textarea { background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; }
   textarea { min-height: 120px; font-family: monospace; font-size: 0.9rem; }
   input:focus, textarea:focus { outline: none; border-color: var(--primary-color); background: rgba(0,0,0,0.4); }
 
   .form-actions { display: flex; justify-content: flex-end; }
-  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); border: 2px dashed var(--border-color); border-radius: 1rem; }
+  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 1rem; }
   
-  .btn-danger-text { color: #ef4444; }
-  .btn-danger-text:hover { background: rgba(239, 68, 68, 0.1); }
+  .btn-danger-text { color: var(--color-danger); }
+  .btn-danger-text:hover { background: var(--color-danger); }
 </style>

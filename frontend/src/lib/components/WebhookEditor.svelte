@@ -170,7 +170,7 @@
 <style>
   .webhook-editor { display: flex; flex-direction: column; }
   
-  .modal-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+  .modal-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .title-zone { display: flex; align-items: center; gap: 0.75rem; }
   .title-zone span { color: var(--primary-color); }
   .title-zone h3 { margin: 0; font-size: 1.25rem; font-weight: 700; }
@@ -182,7 +182,7 @@
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .field input, .field select { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; width: 100%; transition: border-color 0.2s; }
+  .field input, .field select { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; width: 100%; transition: border-color 0.2s; }
   .field input:focus { border-color: var(--primary-color); outline: none; }
   
   .helper { margin: 0; font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; }
@@ -191,7 +191,7 @@
   .events-picker label { font-size: 0.9rem; font-weight: 600; }
   
   .events-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .event-card { display: flex; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 1rem; cursor: pointer; transition: all 0.2s; }
+  .event-card { display: flex; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; cursor: pointer; transition: all 0.2s; }
   .event-card:hover { background: rgba(255,255,255,0.05); }
   .event-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
   .event-card input { margin-top: 0.2rem; }
@@ -207,7 +207,7 @@
 
   .error-msg { color: #f87171; font-weight: 600; font-size: 0.9rem; }
 
-  .modal-footer { padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid var(--border-color); background: rgba(0,0,0,0.1); }
+  .modal-footer { padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.1); }
   .spacer { flex: 1; }
   
   .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }

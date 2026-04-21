@@ -100,7 +100,7 @@
 <style>
   .pull-detail-view { display: flex; flex-direction: column; gap: 2rem; }
   
-  .pull-detail-header { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .pull-detail-header { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
   .title-row { display: flex; align-items: center; gap: 1.5rem; }
   .title-row h1 { margin: 0; font-size: 1.75rem; font-weight: 800; }
   .index { color: var(--text-muted); font-weight: 400; }
@@ -111,7 +111,7 @@
   .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
   .subtitle code { background: var(--surface-variant); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); }
 
-  .pull-tabs-bar { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+  .pull-tabs-bar { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1rem; }
   .nav-tab { background: transparent; border: none; padding: 0.85rem 1.25rem; color: var(--text-muted); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s; position: relative; }
   .nav-tab:hover { color: var(--text-color); background: var(--surface-variant); }
   .nav-tab.active { color: var(--primary-color); }
@@ -119,13 +119,13 @@
   .nav-tab .count { font-size: 0.7rem; background: var(--surface-2); padding: 2px 6px; border-radius: 10px; opacity: 0.7; }
 
   .timeline-item-flat { 
-    border: 1px solid var(--border-color); 
+    border: 1px solid var(--md-sys-color-outline-variant); 
     background: var(--bg-color); 
     border-radius: 1rem; 
     overflow: hidden; 
     margin-bottom: 2rem;
   }
-  .item-header { padding: 0.75rem 1.5rem; background: var(--surface-variant); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); }
+  .item-header { padding: 0.75rem 1.5rem; background: var(--surface-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); font-size: 0.85rem; color: var(--text-muted); }
   .item-body { padding: 1.5rem; line-height: 1.6; }
 
   .coming-soon { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }

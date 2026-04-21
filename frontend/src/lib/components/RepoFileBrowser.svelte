@@ -271,13 +271,13 @@ git push -u origin main</code></pre>
   /* Content */
   .content-view { 
     background: var(--bg-color); 
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: 0.75rem; 
     overflow: hidden; 
     box-shadow: var(--shadow-sm);
   }
   .file-table { width: 100%; border-collapse: collapse; }
-  .file-row { border-bottom: 1px solid var(--border-color); }
+  .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .file-row:last-child { border-bottom: none; }
   .file-row td { padding: 0.75rem 1rem; }
   .file-row:hover { background: var(--surface-variant); }
@@ -296,10 +296,10 @@ git push -u origin main</code></pre>
     display: flex; 
     justify-content: space-between; 
     align-items: center;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
   .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.95rem; color: var(--text-color); }
-  .tool-btn { background: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-muted); padding: 0.35rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+  .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.35rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
   .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
   .code-box { background: #010409; }
@@ -310,9 +310,9 @@ git push -u origin main</code></pre>
   .line { white-space: pre-wrap; }
 
   /* Readme */
-  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 1rem; overflow: hidden; }
-  .readme-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); background: var(--surface-variant); }
-  .readme-header.small { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border-color); }
+  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
+  .readme-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); background: var(--surface-variant); }
+  .readme-header.small { padding: 0.75rem 1.25rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .readme-content { padding: 2.5rem; }
 
   /* Sidebar */
@@ -339,6 +339,6 @@ git push -u origin main</code></pre>
 
   /* Markdown Body Overrides */
   :global(.markdown-body) { color: var(--text-color); }
-  :global(.markdown-body h1, .markdown-body h2) { border-bottom: 1px solid var(--border-color); padding-bottom: 0.3em; }
+  :global(.markdown-body h1, .markdown-body h2) { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 0.3em; }
   :global(.markdown-body pre) { background-color: rgba(0,0,0,0.3); border-radius: 6px; padding: 16px; }
 </style>

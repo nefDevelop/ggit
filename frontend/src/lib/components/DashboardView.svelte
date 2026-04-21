@@ -97,25 +97,29 @@
 <div class="dashboard-grid full-width">
     <!-- Repositories List -->
     <div class="dashboard-main-content">
-        <header class="content-controls">
-            <div class="search-row"> 
-                <div class="search-box">
+        <header class="content-controls dashboard-header-transparent">
+            <div class="search-and-action-row">
+                <div class="search-flex">
                     <GlobalSearch />
                 </div>
+                
                 <a class="btn-action-primary" href="/repo/create">
                     <span class="material-symbols-rounded">add</span>
                     <span>New Project</span>
                 </a>
             </div>
-            <div class="view-mode-selector">
-                <button class="tab-pill" class:active={viewMode === 'temporal'} onclick={() => viewMode = 'temporal'}>
-                    <span class="material-symbols-rounded mini">schedule</span>
-                    Activity
-                </button>
-                <button class="tab-pill" class:active={viewMode === 'list'} onclick={() => viewMode = 'list'}>
-                    <span class="material-symbols-rounded mini">list</span>
-                    Alphabetical
-                </button>
+
+            <div class="view-mode-selector-row">
+                <div class="view-mode-selector">
+                    <button class="tab-pill" class:active={viewMode === 'temporal'} onclick={() => viewMode = 'temporal'}>
+                        <span class="material-symbols-rounded mini">schedule</span>
+                        Activity
+                    </button>
+                    <button class="tab-pill" class:active={viewMode === 'list'} onclick={() => viewMode = 'list'}>
+                        <span class="material-symbols-rounded mini">list</span>
+                        Alphabetical
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -136,9 +140,9 @@
                     {#each groupedRepos().recent || [] as repo}
                         <RepoRow {repo} />
                     {/each}
-                    {#if groupedRepos().older?.length > 0}
+                    {#if (groupedRepos().older?.length ?? 0) > 0}
                         <div class="divider-text">Older Projects</div>
-                        {#each groupedRepos().older as repo}
+                        {#each groupedRepos().older || [] as repo}
                             <RepoRow {repo} isOlder={true} />
                         {/each}
                     {/if}
@@ -158,44 +162,40 @@
     display: flex; 
     flex-direction: column; 
     height: 100%; 
-    padding: 1rem;
   }
 
   .dashboard-main-content { 
     display: flex; 
     flex-direction: column; 
-    gap: 2rem;
   }
 
-  .content-controls { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 1.5rem; 
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border-color);
+  .dashboard-header-transparent {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 0 1.5rem 2rem;
   }
 
-  .search-row { display: flex; gap: 1rem; align-items: center; }
-  .search-box { flex: 1; }
-
-  .error-toast {
-    background: var(--error-container);
-    color: var(--on-error-container);
-    padding: 1rem 1.5rem;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
+  .search-and-action-row {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    font-weight: 700;
-    box-shadow: var(--shadow-sm);
-    animation: shake 0.4s ease-out;
+    gap: 1.5rem;
+    padding: 1.5rem 0 0.5rem;
+  }
+
+  .search-flex {
+    flex: 1;
+  }
+
+  .view-mode-selector-row {
+    display: flex;
+    align-items: center;
   }
 
   .view-mode-selector { display: flex; gap: 0.5rem; }
   .tab-pill { 
     background: transparent; 
-    border: 1px solid var(--border-color); 
+    border: 1px solid var(--md-sys-color-outline-variant); 
     padding: 0.5rem 1rem; 
     border-radius: 2rem; 
     color: var(--text-muted); 
@@ -207,14 +207,18 @@
     gap: 0.5rem; 
     transition: all 0.2s;
   }
-  .selector-btn.active { background: var(--primary-color); color: var(--on-primary); border-color: var(--primary-color); }
-  .selector-btn .mini { font-size: 1.1rem; }
+  .tab-pill.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  .tab-pill .mini { font-size: 1.1rem; }
+
+  .repository-stream {
+    padding: 0 1.5rem 4rem;
+  }
 
   .flat-repo-list { 
     display: flex; 
     flex-direction: column; 
     background: var(--bg-color); 
-    border: 1px solid var(--border-color); 
+    border: 1px solid var(--md-sys-color-outline-variant); 
     border-radius: 1rem; 
     overflow: hidden; 
   }
@@ -227,14 +231,14 @@
     color: var(--text-muted); 
     letter-spacing: 0.1em; 
     background: var(--surface-variant);
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .empty-dashboard { padding: 6rem 2rem; text-align: center; color: var(--text-muted); }
   .empty-dashboard span { font-size: 4rem; opacity: 0.3; margin-bottom: 1rem; }
 
-  .skeleton-list { display: flex; flex-direction: column; gap: 1px; background: var(--border-color); border-radius: 1rem; overflow: hidden; }
+  .skeleton-list { display: flex; flex-direction: column; gap: 1px; background: var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
   .skeleton-row { height: 80px; background: var(--bg-color); animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 </style>

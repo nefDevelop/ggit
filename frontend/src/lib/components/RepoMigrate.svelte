@@ -254,11 +254,11 @@
         font-size: 2rem;
         font-weight: 600;
         margin: 0;
-        color: var(--text-primary);
+        color: var(--md-sys-color-on-surface);
     }
 
     .header-text p {
-        color: var(--text-secondary);
+        color: var(--md-sys-color-on-surface-variant);
         margin: 0.25rem 0 0 0;
     }
 
@@ -270,7 +270,7 @@
 
     .form-section {
         background: var(--island-bg);
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--md-sys-color-outline-variant);
         border-radius: 24px;
         padding: 2rem;
         box-shadow: var(--shadow-sm);
@@ -287,7 +287,7 @@
     .section-title h2 {
         font-size: 1.25rem;
         margin: 0;
-        color: var(--text-primary);
+        color: var(--md-sys-color-on-surface);
     }
 
     .input-group {
@@ -300,16 +300,16 @@
     .input-group label {
         font-size: 0.9rem;
         font-weight: 500;
-        color: var(--text-secondary);
+        color: var(--md-sys-color-on-surface-variant);
         padding-left: 0.25rem;
     }
 
     input[type="text"], input[type="password"], textarea, select {
         background: var(--surface-variant);
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--md-sys-color-outline-variant);
         border-radius: 12px;
         padding: 0.75rem 1rem;
-        color: var(--text-primary);
+        color: var(--md-sys-color-on-surface);
         font-size: 1rem;
         transition: all 0.2s;
     }
@@ -328,7 +328,7 @@
     .auth-optional {
         margin-top: 1rem;
         padding-top: 1.5rem;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--md-sys-color-outline-variant);
     }
 
     .auth-toggle {
@@ -336,7 +336,7 @@
         align-items: center;
         gap: 0.5rem;
         font-size: 0.9rem;
-        color: var(--text-secondary);
+        color: var(--md-sys-color-on-surface-variant);
         margin-bottom: 1rem;
     }
 
@@ -375,13 +375,13 @@
     .checkbox-content .label {
         display: block;
         font-weight: 500;
-        color: var(--text-primary);
+        color: var(--md-sys-color-on-surface);
     }
 
     .checkbox-content .desc {
         display: block;
         font-size: 0.85rem;
-        color: var(--text-secondary);
+        color: var(--md-sys-color-on-surface-variant);
     }
 
     .actions {
@@ -420,8 +420,8 @@
 
     .btn-cancel {
         background: transparent;
-        border: 1px solid var(--border-color);
-        color: var(--text-secondary);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        color: var(--md-sys-color-on-surface-variant);
         border-radius: 16px;
         padding: 0 2rem;
         font-weight: 500;

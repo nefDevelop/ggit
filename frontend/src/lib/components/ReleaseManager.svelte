@@ -122,10 +122,10 @@
 
   .release-list { display: flex; flex-direction: column; gap: 2.5rem; }
 
-  .release-card { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; padding: 0; overflow: hidden; border: 1px solid var(--border-color); }
+  .release-card { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; padding: 0; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   .release-card.draft { border-style: dashed; opacity: 0.8; }
 
-  .release-meta { padding: 2rem; background: rgba(0,0,0,0.1); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 1rem; }
+  .release-meta { padding: 2rem; background: rgba(0,0,0,0.1); border-right: 1px solid var(--md-sys-color-outline-variant); display: flex; flex-direction: column; gap: 1rem; }
   .tag-status { display: flex; flex-direction: column; gap: 0.75rem; }
   .tag-badge { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; color: var(--primary-color); font-size: 0.95rem; }
   .tag-badge span { font-size: 1.1rem; }
@@ -144,7 +144,7 @@
   .commit-info { display: flex; align-items: center; gap: 0.4rem; color: var(--text-muted); font-size: 0.85rem; }
   .commit-info code { background: rgba(255,255,255,0.03); padding: 0.2rem 0.4rem; border-radius: 4px; }
 
-  .release-assets { margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+  .release-assets { margin-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 1.5rem; }
   .release-assets h4 { margin: 0 0 1rem 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
   
   .asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.75rem; }
@@ -164,6 +164,6 @@
 
   @media (max-width: 800px) {
     .release-card { grid-template-columns: 1fr; }
-    .release-meta { border-right: none; border-bottom: 1px solid var(--border-color); flex-direction: row; justify-content: space-between; align-items: center; }
+    .release-meta { border-right: none; border-bottom: 1px solid var(--md-sys-color-outline-variant); flex-direction: row; justify-content: space-between; align-items: center; }
   }
 </style>

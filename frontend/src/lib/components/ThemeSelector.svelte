@@ -90,7 +90,7 @@
 <style>
   .appearance-modular-view { display: flex; flex-direction: column; gap: 2.5rem; }
   
-  .section-header-modern { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .section-header-modern { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
   .section-header-modern h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
   .section-header-modern p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
 
@@ -104,14 +104,14 @@
   .scheme-btn {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
     background: var(--surface-variant);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     padding: 2rem;
     border-radius: 1.25rem;
     cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--text-muted);
   }
   .scheme-btn:hover { background: rgba(255,255,255,0.02); transform: translateY(-3px); }
-  .scheme-btn.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); color: var(--primary-color); box-shadow: var(--shadow-md); }
+  .scheme-btn.active { border-color: var(--primary-color); background: var(--md-sys-color-primary-container); color: var(--primary-color); box-shadow: var(--shadow-md); }
   .scheme-btn .material-symbols-rounded { font-size: 1.75rem; }
   .scheme-btn .name { font-weight: 700; font-size: 0.9rem; }
 
@@ -120,13 +120,13 @@
   .theme-card {
     display: flex; align-items: center; gap: 1.25rem;
     background: var(--surface-variant);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     padding: 1.25rem;
     border-radius: 1.25rem;
     cursor: pointer; transition: all 0.2s; color: var(--text-color);
   }
   .theme-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.02); }
-  .theme-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .theme-card.active { border-color: var(--primary-color); background: var(--md-sys-color-primary-container); }
   
   .color-preview { width: 2.5rem; height: 2.5rem; border-radius: 1rem; flex-shrink: 0; box-shadow: var(--shadow-sm); border: 2px solid rgba(255,255,255,0.1); }
   .theme-name { font-weight: 700; font-size: 0.9rem; }

@@ -95,7 +95,7 @@
     padding: 1.5rem;
     z-index: 1000;
     box-shadow: var(--shadow-xl);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .panel-header {
@@ -108,7 +108,7 @@
   .panel-header h3 {
     margin: 0;
     font-size: 1.1rem;
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
   }
 
   .close-btn {
@@ -150,7 +150,7 @@
     border-radius: 8px;
     border: none;
     background: none;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -176,7 +176,7 @@
     border-radius: 12px;
     border: 1px solid transparent;
     background: var(--surface-variant);
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
     cursor: pointer;
     transition: all 0.2s;
     text-align: left;

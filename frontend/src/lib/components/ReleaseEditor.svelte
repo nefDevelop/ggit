@@ -213,8 +213,8 @@
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); padding-left: 0.5rem; }
-  .field input, .field textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; outline: none; width: 100%; transition: all 0.2s; }
-  .field input:focus, .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .field input, .field textarea { background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; outline: none; width: 100%; transition: all 0.2s; }
+  .field input:focus, .field textarea:focus { border-color: var(--primary-color); background: var(--md-sys-color-primary-container); }
   .field textarea { height: 350px; resize: vertical; font-family: inherit; }
   .help { font-size: 0.75rem; color: var(--text-muted); margin: 0; padding-left: 0.5rem; }
 
@@ -223,7 +223,7 @@
   
   .upload-area { 
     position: relative; 
-    border: 2px dashed var(--border-color); 
+    border: 2px dashed var(--md-sys-color-outline-variant); 
     border-radius: 1.5rem; 
     padding: 2.5rem; 
     text-align: center; 
@@ -244,7 +244,7 @@
   .attachment-item { padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; position: relative; }
   .attachment-item .name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .remove-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; border-radius: 50%; transition: all 0.2s; }
-  .remove-btn:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  .remove-btn:hover { background: var(--color-danger); color: var(--color-danger); }
 
   .editor-sidebar { display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 1rem; }
   .options { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }

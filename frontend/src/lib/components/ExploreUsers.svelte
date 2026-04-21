@@ -78,7 +78,7 @@
 
 <style>
   .users-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-  .user-card { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem; text-decoration: none; color: inherit; border: 1px solid var(--border-color); }
+  .user-card { display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem; text-decoration: none; color: inherit; border: 1px solid var(--md-sys-color-outline-variant); }
   
   .avatar { width: 48px; height: 48px; border-radius: 50%; background: #222; }
   

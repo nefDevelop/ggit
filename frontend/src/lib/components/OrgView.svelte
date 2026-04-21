@@ -123,7 +123,7 @@
   .meta-item.link { color: var(--primary-color); text-decoration: none; }
   .meta-item span { font-size: 1.2rem; }
 
-  .org-nav { display: flex; gap: 2rem; border-bottom: 1px solid var(--border-color); padding: 0 1rem; }
+  .org-nav { display: flex; gap: 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding: 0 1rem; }
   .org-nav button { background: transparent; border: none; padding: 1rem 0.5rem; color: var(--text-muted); font-weight: 800; display: flex; align-items: center; gap: 0.75rem; cursor: pointer; position: relative; transition: all 0.2s; }
   .org-nav button:hover { color: var(--text-color); }
   .org-nav button.active { color: var(--primary-color); }
@@ -132,7 +132,7 @@
   .count { background: rgba(255,255,255,0.05); padding: 0.1rem 0.5rem; border-radius: 1rem; font-size: 0.75rem; }
 
   .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-  .repo-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; border: 1px solid var(--border-color); }
+  .repo-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
 
   .skeleton-org { height: 600px; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }

@@ -1,0 +1,60 @@
+<script lang="ts">
+  let { 
+    class: className = '',
+    children,
+    padding = 'md',
+    hover = false,
+    variant = 'container' // lowest, low, container, high, highest
+  } = $props();
+
+  const paddings = {
+    none: 'p-0',
+    sm: 'p-sm',
+    md: 'p-md',
+    lg: 'p-lg'
+  };
+
+  const variants = {
+    lowest: 'bg-lowest',
+    low: 'bg-low',
+    container: 'bg-container',
+    high: 'bg-high',
+    highest: 'bg-highest'
+  };
+</script>
+
+<div class="card {paddings[padding]} {variants[variant]} {hover ? 'hoverable' : ''} {className}">
+  {#if children}
+    {@render children()}
+  {/if}
+</div>
+
+<style>
+  .card {
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--md-sys-color-on-surface);
+  }
+
+  .bg-lowest { background: var(--md-sys-color-surface-container-lowest); }
+  .bg-low { background: var(--md-sys-color-surface-container-low); }
+  .bg-container { background: var(--md-sys-color-surface-container); }
+  .bg-high { background: var(--md-sys-color-surface-container-high); }
+  .bg-highest { background: var(--md-sys-color-surface-container-highest); }
+
+  .hoverable:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface-container-high);
+  }
+
+  .p-0 { padding: 0; }
+  .p-sm { padding: 1rem; }
+  .p-md { padding: 1.5rem; }
+  .p-lg { padding: 2.5rem; }
+</style>
+

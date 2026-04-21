@@ -2,6 +2,9 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import AdminUserEditor from './AdminUserEditor.svelte';
+  import Button from './ui/Button.svelte';
+  import Card from './ui/Card.svelte';
+  import Badge from './ui/Badge.svelte';
   
   let users = $state<any[]>([]);
   let loading = $state(true);
@@ -49,13 +52,13 @@
   onMount(fetchUsers);
 </script>
 
-<div class="admin-users island tonal">
+<Card class="admin-users">
   <header class="section-header">
     <div class="title">
       <span class="material-symbols-rounded">group</span>
       <h2>User Management</h2>
     </div>
-    <button class="btn btn-primary" onclick={() => editingUserId = 'new'}>New User</button>
+    <Button onclick={() => editingUserId = 'new'} icon="person_add">New User</Button>
   </header>
 
   {#if editingUserId}
@@ -103,21 +106,17 @@
               <td>{user.email}</td>
               <td>{new Date(user.created_at).toLocaleDateString()}</td>
               <td>
-                <button 
-                   class="badge-btn" 
-                   class:admin={user.is_admin} 
+                <Button 
+                   size="sm"
+                   variant={user.is_admin ? 'primary' : 'secondary'}
                    onclick={() => toggleAdmin(user)}
                 >
                   {user.is_admin ? 'Admin' : 'User'}
-                </button>
+                </Button>
               </td>
               <td class="actions">
-                <button class="icon-btn" title="Edit" onclick={() => editingUserId = user.id}>
-                  <span class="material-symbols-rounded">edit</span>
-                </button>
-                <button class="icon-btn danger" title="Delete" onclick={() => deleteUser(user.id)}>
-                  <span class="material-symbols-rounded">delete</span>
-                </button>
+                <Button variant="ghost" size="sm" icon="edit" onclick={() => editingUserId = user.id} />
+                <Button variant="ghost" size="sm" icon="delete" class="danger-icon" onclick={() => deleteUser(user.id)} />
               </td>
             </tr>
           {/each}
@@ -125,39 +124,34 @@
       </tbody>
     </table>
   </div>
-</div>
+</Card>
 
 <style>
-  .admin-users { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: var(--shadow-lg); }
+  .admin-users { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
   
   .section-header { display: flex; justify-content: space-between; align-items: center; }
   .title { display: flex; align-items: center; gap: 0.75rem; }
-  .title span { font-size: 1.75rem; color: var(--primary-color); }
+  .title span { font-size: 1.75rem; color: var(--md-sys-color-primary); }
   .title h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
 
   .table-container { overflow-x: auto; }
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
-  .modern-table td { padding: 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem; }
+  .modern-table th { padding: 1rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
+  .modern-table td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--md-sys-color-surface-variant); font-size: 0.95rem; }
 
   .user-cell { display: flex; align-items: center; gap: 1rem; }
-  .small-avatar { width: 32px; height: 32px; border-radius: 50%; background: #222; }
+  .small-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--md-sys-color-background); border: 1px solid var(--md-sys-color-outline-variant); }
   .names { display: flex; flex-direction: column; }
-  .names strong { color: #fff; line-height: 1.2; }
+  .names strong { color: var(--md-sys-color-on-surface); line-height: 1.2; }
   .names span { font-size: 0.8rem; color: var(--text-muted); }
 
-  .badge-btn { border: none; padding: 0.25rem 0.75rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: all 0.2s; background: rgba(255,255,255,0.05); color: var(--text-muted); }
-  .badge-btn.admin { background: rgba(var(--primary-rgb), 0.15); color: var(--primary-color); }
-  .badge-btn:hover { background: rgba(255,255,255,0.1); }
+  .actions { display: flex; gap: 0.25rem; }
+  :global(.danger-icon:hover) { color: var(--color-danger) !important; }
 
-  .actions { display: flex; gap: 0.5rem; }
-  .icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; border-radius: 0.5rem; transition: all 0.2s; }
-  .icon-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-  .icon-btn.danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
-
-  .skeleton-bar { height: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
+  .skeleton-bar { height: 1.5rem; background: var(--md-sys-color-surface-variant); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 
-  .editor-overlay { margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem; animation: slideDown 0.3s ease-out; }
+  .editor-overlay { margin-bottom: 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 2rem; animation: slideDown 0.3s ease-out; }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 </style>
+

@@ -107,7 +107,7 @@
 <style>
   .settings-section { display: flex; flex-direction: column; gap: 2.5rem; }
   
-  .section-header-modern { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .section-header-modern { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
   .section-header-modern h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
   .section-header-modern p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
 
@@ -115,9 +115,9 @@
   .switches-group { display: flex; flex-direction: column; gap: 1rem; }
   .group-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 0.5rem; }
 
-  .switches-grid { display: flex; flex-direction: column; background: var(--surface-variant); border: 1px solid var(--border-color); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .switches-grid { display: flex; flex-direction: column; background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
   
-  .switch-row-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); gap: 2rem; }
+  .switch-row-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 2rem; }
   .switch-row-item:last-child { border-bottom: none; }
   .switch-row-item:hover { background: rgba(255,255,255,0.02); }
 
@@ -129,7 +129,7 @@
   /* Precision Switch Styles */
   .precision-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
   .precision-switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.1); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px; border: 1px solid var(--border-color); }
+  .slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.1); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px; border: 1px solid var(--md-sys-color-outline-variant); }
   .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: var(--text-muted); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%; }
 
   input:checked + .slider { background-color: var(--primary-color); border-color: var(--primary-color); }

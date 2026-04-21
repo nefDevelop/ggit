@@ -240,9 +240,9 @@
 
   /* Modal Styles */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-  .modal-content { background: var(--md3-surface-2); border-radius: 1.5rem; border: 1px solid var(--border-color); width: 100%; max-width: 600px; box-shadow: var(--shadow-2xl); }
+  .modal-content { background: var(--md3-surface-2); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); width: 100%; max-width: 600px; box-shadow: var(--shadow-2xl); }
   
-  .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+  .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; justify-content: space-between; align-items: center; }
   .modal-header h3 { margin: 0; }
   
   .modal-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
@@ -255,7 +255,7 @@
   .checkbox-group { padding-top: 0.5rem; }
   .checkbox-container { display: block; position: relative; padding-left: 2.5rem; cursor: pointer; font-size: 0.95rem; font-weight: 600; user-select: none; }
   .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-  .checkmark { position: absolute; top: 0; left: 0; height: 1.5rem; width: 1.5rem; background-color: var(--md3-surface-1); border: 2px solid var(--border-color); border-radius: 0.4rem; transition: all 0.2s; }
+  .checkmark { position: absolute; top: 0; left: 0; height: 1.5rem; width: 1.5rem; background-color: var(--md3-surface-1); border: 2px solid var(--md-sys-color-outline-variant); border-radius: 0.4rem; transition: all 0.2s; }
   .checkbox-container:hover input ~ .checkmark { border-color: var(--primary-color); }
   .checkbox-container input:checked ~ .checkmark { background-color: var(--primary-color); border-color: var(--primary-color); }
   .checkmark:after { content: ""; position: absolute; display: none; left: 8px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }

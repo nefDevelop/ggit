@@ -330,14 +330,14 @@
     padding: 0.6rem 0.8rem;
     border-radius: 12px;
     text-decoration: none;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
     font-size: 0.95rem;
     transition: all 0.2s;
   }
 
   .nav-item:hover {
     background: var(--surface-variant);
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
   }
 
   .nav-item.active {
@@ -355,7 +355,7 @@
 
   .wiki-content-header {
     padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -375,7 +375,7 @@
     background: transparent;
     border: none;
     border-bottom: 2px solid var(--primary);
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
     width: 100%;
     outline: none;
   }
@@ -398,7 +398,7 @@
     border-radius: 100px;
     border: none;
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -422,7 +422,7 @@
     align-items: center;
     gap: 0.5rem;
     background: var(--surface-variant);
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 12px;
@@ -433,7 +433,7 @@
 
   .btn-icon-text.variant {
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   .btn-primary {
@@ -486,12 +486,12 @@
     flex: 1;
     min-height: 400px;
     background: var(--surface-variant);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: 16px;
     padding: 1.5rem;
     font-family: 'JetBrains Mono', monospace;
     font-size: 1rem;
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
     resize: vertical;
     outline: none;
   }
@@ -505,15 +505,15 @@
   .commit-msg-box label {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   .commit-msg-box input {
     background: var(--surface-variant);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     border-radius: 10px;
     padding: 0.75rem 1rem;
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
   }
 
   /* History List */
@@ -521,7 +521,7 @@
     display: flex;
     flex-direction: column;
     padding-left: 1rem;
-    border-left: 2px solid var(--border-color);
+    border-left: 2px solid var(--md-sys-color-outline-variant);
   }
 
   .history-item {
@@ -543,13 +543,13 @@
 
   .history-msg {
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--md-sys-color-on-surface);
     margin-bottom: 0.25rem;
   }
 
   .history-meta {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: var(--md-sys-color-on-surface-variant);
   }
 
   .hash {

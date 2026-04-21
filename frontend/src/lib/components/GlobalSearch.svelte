@@ -53,7 +53,7 @@
     background: var(--md3-surface-container);
     padding: 0.6rem 1.25rem;
     border-radius: 3rem;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     transition: all 0.2s ease;
   }
 

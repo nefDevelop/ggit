@@ -211,7 +211,7 @@
   .marker-line {
     width: 2px;
     flex: 1;
-    background: var(--border-color);
+    background: var(--md-sys-color-outline-variant);
     opacity: 0.2;
     border-radius: 2px;
   }

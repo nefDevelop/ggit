@@ -78,7 +78,7 @@
 
 <style>
   .settings-card { display: flex; flex-direction: column; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
+  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
   .card-desc { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
 

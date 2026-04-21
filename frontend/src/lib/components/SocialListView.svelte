@@ -96,7 +96,7 @@
     align-items: center;
     padding: 1.5rem 2rem;
     background: var(--surface-variant);
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .title-group {
@@ -120,7 +120,7 @@
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-muted);
-    background: rgba(255,255,255,0.05);
+    background: var(--md-sys-color-surface-variant);
     padding: 0.2rem 0.75rem;
     border-radius: 20px;
   }

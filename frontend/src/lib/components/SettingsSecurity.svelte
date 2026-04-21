@@ -218,7 +218,7 @@
 <style>
   .settings-stack { display: flex; flex-direction: column; gap: 2rem; }
   .settings-card { display: flex; flex-direction: column; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
+  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
   .card-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0.5rem 0 0; }
   
@@ -235,7 +235,7 @@
   
   input {
     background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.75rem;
     color: var(--text-color);
@@ -245,7 +245,7 @@
   }
   input:focus { outline: none; border-color: var(--primary-color); background: rgba(0,0,0,0.4); }
 
-  .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); }
+  .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .status-msg { font-size: 0.9rem; color: #10b981; }
   .status-msg.error { color: #ef4444; }
 
@@ -259,7 +259,7 @@
   .qr-image { width: 180px; height: 180px; background: #fff; padding: 10px; border-radius: 1rem; }
   .secret-text code { display: block; background: #000; padding: 0.75rem; border-radius: 0.5rem; margin-top: 0.5rem; font-size: 1.1rem; color: var(--primary-color); }
 
-  .confirm-section { display: flex; flex-direction: column; gap: 1rem; border-top: 1px solid var(--border-color); pt: 1.5rem; }
+  .confirm-section { display: flex; flex-direction: column; gap: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); pt: 1.5rem; }
   .input-group { display: flex; gap: 1rem; }
   .input-group input { width: 150px; text-align: center; font-size: 1.5rem; letter-spacing: 0.2em; font-weight: 800; }
 

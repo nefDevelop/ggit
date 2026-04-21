@@ -220,7 +220,7 @@
 
 <style>
   .settings-card { display: flex; flex-direction: column; overflow: hidden; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
+  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
   .card-title.red { color: #ef4444; }
 
@@ -229,7 +229,7 @@
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .form-group label { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); padding-left: 0.25rem; }
   
-  input, textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 1rem; transition: all 0.2s; }
+  input, textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 1rem; transition: all 0.2s; }
   textarea { min-height: 80px; }
   input:focus, textarea:focus { outline: none; border-color: var(--primary-color); background: rgba(0,0,0,0.4); }
 
@@ -239,7 +239,7 @@
   .checkbox-container:hover { background: rgba(255,255,255,0.04); }
   .checkbox-container input { visibility: hidden; width: 0; height: 0; position: absolute; }
   
-  .checkmark { width: 1.25rem; height: 1.25rem; background: rgba(255,255,255,0.05); border: 2px solid var(--border-color); border-radius: 0.4rem; flex-shrink: 0; position: relative; transition: all 0.2s; margin-top: 0.2rem; }
+  .checkmark { width: 1.25rem; height: 1.25rem; background: rgba(255,255,255,0.05); border: 2px solid var(--md-sys-color-outline-variant); border-radius: 0.4rem; flex-shrink: 0; position: relative; transition: all 0.2s; margin-top: 0.2rem; }
   .checkbox-container input:checked + .checkmark { background: var(--primary-color); border-color: var(--primary-color); }
   .checkmark::after { content: 'check'; font-family: 'Material Symbols Rounded'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; opacity: 0; font-size: 0.9rem; }
   .checkbox-container input:checked + .checkmark::after { opacity: 1; }
@@ -247,7 +247,7 @@
   .checkbox-text strong { display: block; font-size: 0.95rem; margin-bottom: 0.1rem; }
   .checkbox-text p { font-size: 0.8rem; color: var(--text-muted); margin: 0; line-height: 1.2; }
 
-  .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); }
+  .form-actions { display: flex; justify-content: flex-end; align-items: center; gap: 1.5rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .status-msg { font-size: 0.9rem; color: #10b981; }
 
   .danger { margin-top: 2rem; border: 1px solid rgba(239, 68, 68, 0.2); }
@@ -265,7 +265,7 @@
 
   .mirror-card { margin-top: 2rem; }
   .mirror-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  .mirror-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.75rem; border: 1px solid var(--border-color); }
+  .mirror-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.75rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
   .meta-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
   .meta-value { font-size: 0.95rem; font-weight: 600; }

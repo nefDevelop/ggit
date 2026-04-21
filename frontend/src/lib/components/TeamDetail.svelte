@@ -245,7 +245,7 @@
   .title-group p { color: var(--text-muted); margin: 0.5rem 0 0 0; font-size: 1.1rem; }
 
   .edit-title { background: rgba(0,0,0,0.3); border: 1px solid var(--primary-color); font-size: 2.25rem; font-weight: 800; color: #fff; width: 100%; border-radius: 0.5rem; padding: 0.5rem; }
-  .edit-desc { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); font-size: 1.1rem; color: var(--text-muted); width: 100%; border-radius: 0.5rem; padding: 0.5rem; margin-top: 0.5rem; height: 80px; }
+  .edit-desc { background: rgba(0,0,0,0.3); border: 1px solid var(--md-sys-color-outline-variant); font-size: 1.1rem; color: var(--text-muted); width: 100%; border-radius: 0.5rem; padding: 0.5rem; margin-top: 0.5rem; height: 80px; }
 
   .header-actions { display: flex; gap: 1rem; }
   
@@ -255,7 +255,7 @@
   .management-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   
   .management-card { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
-  .card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; }
+  .card-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; }
   .header-title { display: flex; align-items: center; gap: 0.75rem; }
   .header-title span { color: var(--primary-color); }
   .card-header h3 { margin: 0; font-size: 1.1rem; font-weight: 700; }
@@ -264,7 +264,7 @@
   .card-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
   
   .add-form { display: flex; gap: 1rem; }
-  .add-form input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.6rem 1rem; border-radius: 0.75rem; color: #fff; font-family: inherit; }
+  .add-form input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.6rem 1rem; border-radius: 0.75rem; color: #fff; font-family: inherit; }
   
   .item-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border-radius: 0.75rem; transition: all 0.2s; }
@@ -288,7 +288,7 @@
 
   .field select {
     background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
     color: #fff;

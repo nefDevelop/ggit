@@ -109,7 +109,7 @@
   .repo-branches { display: flex; flex-direction: column; }
   
   .branch-list-container {
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--md-sys-color-outline-variant);
     background: var(--bg-color);
     border-radius: 1rem;
     overflow: hidden;
@@ -120,7 +120,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.75rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
     transition: background 0.2s;
   }
   .branch-row-item:last-child { border-bottom: none; }
@@ -137,7 +137,7 @@
     text-transform: uppercase;
     color: var(--text-muted);
     letter-spacing: 0.1em;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .branch-main-info { display: flex; align-items: center; gap: 1.25rem; }
@@ -151,7 +151,7 @@
   .badges-row { display: flex; gap: 0.5rem; }
   .badge-v2 { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em; }
   .badge-v2.primary { background: var(--primary-color); color: var(--on-primary); }
-  .badge-v2.protected { border: 1px solid var(--border-color); color: var(--text-muted); }
+  .badge-v2.protected { border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); }
 
   .branch-meta-info { display: flex; align-items: center; gap: 1.5rem; }
   .meta-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }

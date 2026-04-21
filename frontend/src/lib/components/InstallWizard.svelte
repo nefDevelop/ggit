@@ -119,9 +119,9 @@
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-  .field input, .field select { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; }
+  .field input, .field select { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; }
 
-  .card { border: 1px solid var(--border-color); padding: 1.5rem; }
+  .card { border: 1px solid var(--md-sys-color-outline-variant); padding: 1.5rem; }
   
   .error-banner { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 0.75rem; text-align: center; font-weight: 700; }
 

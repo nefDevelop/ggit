@@ -228,7 +228,7 @@
 
   /* Avatar Sidebar */
   .avatar-sidebar { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 180px; }
-  .avatar-shield { position: relative; width: 160px; height: 160px; border-radius: 4rem; overflow: hidden; background: var(--surface-variant); border: 4px solid var(--border-color); box-shadow: var(--shadow-lg); }
+  .avatar-shield { position: relative; width: 160px; height: 160px; border-radius: 4rem; overflow: hidden; background: var(--surface-variant); border: 4px solid var(--md-sys-color-outline-variant); box-shadow: var(--shadow-lg); }
   .main-avatar { width: 100%; height: 100%; object-fit: cover; }
   .avatar-actions-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; gap: 0.75rem; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px); }
   .avatar-shield:hover .avatar-actions-overlay { opacity: 1; }
@@ -247,24 +247,24 @@
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .form-group label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
-  .form-group input { background: var(--surface-variant); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); font-size: 1rem; transition: all 0.2s; }
+  .form-group input { background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); font-size: 1rem; transition: all 0.2s; }
   .form-group input:focus { border-color: var(--primary-color); outline: none; background: rgba(var(--primary-rgb), 0.05); }
   .hint { margin: 0.25rem 0 0 0; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
 
-  .form-footer { display: flex; justify-content: flex-end; align-items: center; gap: 2rem; margin-top: 1rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
+  .form-footer { display: flex; justify-content: flex-end; align-items: center; gap: 2rem; margin-top: 1rem; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .status { font-size: 0.9rem; font-weight: 600; }
   .status.success { color: var(--success); }
   .status.error { color: var(--error); }
 
   /* DiceBear Panel */
-  .dicebear-panel { background: var(--surface-variant); padding: 2rem; border-top: 1px solid var(--border-color); display: flex; gap: 3rem; align-items: center; animation: slideIn 0.4s ease-out; }
+  .dicebear-panel { background: var(--surface-variant); padding: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; gap: 3rem; align-items: center; animation: slideIn 0.4s ease-out; }
   @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   .dicebear-preview-box { position: relative; width: 120px; height: 120px; border-radius: 2rem; background: white; padding: 10px; box-shadow: var(--shadow-md); flex-shrink: 0; }
   .dicebear-preview-box img { width: 100%; height: 100%; }
   .shuffle-icon { position: absolute; bottom: -8px; right: -8px; width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); color: white; border: 2px solid white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .dicebear-controls { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
   .styles-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .style-item { padding: 0.4rem 1rem; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted); }
+  .style-item { padding: 0.4rem 1rem; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--md-sys-color-outline-variant); font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted); }
   .style-item.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
   @media (max-width: 900px) {

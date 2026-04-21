@@ -283,7 +283,7 @@
   .repo-name { 
       padding: 0.6rem 1rem; 
       background: rgba(255,255,255,0.02); 
-      border: 1px solid var(--border-color); 
+      border: 1px solid var(--md-sys-color-outline-variant); 
       border-radius: 0.75rem; 
       font-weight: 700;
       display: flex;
@@ -293,7 +293,7 @@
   }
   .repo-selector select {
       background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--md-sys-color-outline-variant);
       color: #fff;
       padding: 0.6rem 1rem;
       border-radius: 0.75rem;
@@ -328,16 +328,16 @@
   .form-fields { display: flex; flex-direction: column; gap: 1.5rem; }
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-  .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 1rem; border-radius: 1rem; font-size: 1.1rem; width: 100%; outline: none; }
+  .field input { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 1rem; border-radius: 1rem; font-size: 1.1rem; width: 100%; outline: none; }
   .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
-  .field textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: #fff; padding: 1rem; border-radius: 1rem; font-size: 1rem; height: 350px; resize: none; width: 100%; outline: none; font-family: inherit; }
+  .field textarea { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 1rem; border-radius: 1rem; font-size: 1rem; height: 350px; resize: none; width: 100%; outline: none; font-family: inherit; }
   .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .form-actions { margin-top: 1rem; }
   .btn.lg { height: 64px; display: flex; align-items: center; justify-content: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 800; }
 
   .review-panel { display: flex; flex-direction: column; min-height: 800px; padding: 0; overflow: hidden; }
-  .panel-tabs { display: flex; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-color); }
+  .panel-tabs { display: flex; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .panel-tabs button { flex: 1; padding: 1.25rem; border: none; background: transparent; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.75rem; font-weight: 700; transition: all 0.2s; }
   .panel-tabs button.active { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); position: relative; }
   .panel-tabs button.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--primary-color); }

@@ -98,9 +98,9 @@
 <style>
   .settings-view-flat { display: flex; flex-direction: column; gap: 2rem; padding: 1rem; }
 
-  .collaborator-list-modern { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 1rem; overflow: hidden; }
+  .collaborator-list-modern { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
   
-  .collab-row-flat { display: flex; align-items: center; gap: 1.25rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+  .collab-row-flat { display: flex; align-items: center; gap: 1.25rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); transition: background 0.2s; }
   .collab-row-flat:last-child { border-bottom: none; }
   .collab-row-flat:hover { background: var(--surface-variant); }
   
@@ -115,10 +115,10 @@
   .btn-danger-icon-minimal { background: transparent; border: none; color: var(--error-color, #ef4444); cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: all 0.2s; opacity: 0.4; }
   .btn-danger-icon-minimal:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
 
-  .add-section-flat { margin-top: 1rem; padding: 1.5rem; background: var(--surface-variant); border-radius: 1rem; border: 1px solid var(--border-color); }
+  .add-section-flat { margin-top: 1rem; padding: 1.5rem; background: var(--surface-variant); border-radius: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   
   .input-action-group { display: flex; gap: 1rem; }
-  .input-action-group input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); padding: 0.75rem 1.25rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 0.95rem; }
+  .input-action-group input { flex: 1; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1.25rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 0.95rem; }
   .input-action-group input:focus { outline: none; border-color: var(--primary-color); }
 
   .btn-action-primary { background: var(--primary-color); color: var(--on-primary); border: none; padding: 0 1.5rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
