@@ -14,7 +14,7 @@
     loading = true;
     error = '';
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/commits`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/commits/`);
       if (res.ok) {
         commitsData = await res.json();
       } else {
@@ -31,18 +31,19 @@
     fetchCommits();
   });
 
-  function formatDate(timestamp: number) {
-    return new Date(timestamp * 1000).toLocaleDateString(undefined, {
+  function formatDate(dateValue: any) {
+    if (!dateValue) return 'Unknown';
+    const d = typeof dateValue === 'number' ? new Date(dateValue * 1000) : new Date(dateValue);
+    return d.toLocaleDateString(undefined, {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   }
 
-  function truncateSHA(sha: string) {
-    return sha.substring(0, 7);
+  function truncateSHA(sha: any) {
+    if (!sha) return '-------';
+    return String(sha).substring(0, 7);
   }
 </script>
 
@@ -60,38 +61,46 @@
       <button class="btn btn-tonal" onclick={fetchCommits}>Retry</button>
     </div>
   {:else if commitsData}
-    <div class="commits-list island">
+    <div class="commits-list">
       {#each commitsData.commits as c}
-        <div class="commit-item">
-          <div class="commit-avatar">
-            {#if c.user?.avatar_url}
-              <img src={c.user.avatar_url} alt={c.Author.Name} />
-            {:else}
-              <div class="avatar-placeholder">
-                {c.Author.Name.charAt(0).toUpperCase()}
-              </div>
-            {/if}
+        {@const author = c.Author || c.author}
+        {@const message = c.Message || c.message}
+        {@const id = c.ID || c.id || c.sha}
+        
+        <div class="commit-row">
+          <!-- Left: User Identity -->
+          <div class="commit-avatar-cell">
+            <img 
+              src={c.user?.avatar_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${author?.Email || author?.email || id}`} 
+              alt="" 
+              class="user-avatar" 
+            />
           </div>
           
-          <div class="commit-info">
+          <!-- Middle: Message & Meta -->
+          <div class="commit-info-cell">
             <div class="commit-header">
-              <span class="commit-message">{c.Message.split('\n')[0]}</span>
-              {#if c.Message.split('\n').slice(1).join('\n').trim()}
-                <span class="material-symbols-rounded more-icon" title="View extended message">more_horiz</span>
+              <span class="commit-message">{String(message || '').split('\n')[0]}</span>
+              {#if String(message || '').split('\n').length > 1}
+                <span class="material-symbols-rounded more-icon">more_horiz</span>
               {/if}
             </div>
             
             <div class="commit-meta">
-              <span class="author-name">{c.Author.Name}</span>
-              <span class="text-muted">committed on</span>
-              <span class="commit-date">{formatDate(c.Author.When)}</span>
+              <span class="author-name">{author?.Name || author?.name || 'Anonymous'}</span>
+              <span class="text-sep">committed on</span>
+              <span class="commit-date">{formatDate(author?.When || author?.when)}</span>
             </div>
           </div>
 
-          <div class="commit-actions">
-            <code class="sha-badge">{truncateSHA(c.ID)}</code>
-            <button class="icon-btn">
-              <span class="material-symbols-rounded">code</span>
+          <!-- Right: Technical context -->
+          <div class="commit-actions-cell">
+            <div class="id-tag">
+              <span class="material-symbols-rounded mini">fingerprint</span>
+              <code class="sha-text">{truncateSHA(id)}</code>
+            </div>
+            <button class="btn-icon">
+              <span class="material-symbols-rounded">folder_zip</span>
             </button>
           </div>
         </div>
@@ -115,98 +124,76 @@
   }
 
   .commits-list {
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    border-radius: 1rem;
     overflow: hidden;
   }
 
-  .commit-item {
+  .commit-row {
     display: flex;
     align-items: center;
-    padding: 1rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     gap: 1.25rem;
     border-bottom: 1px solid var(--border-color);
     transition: background 0.2s;
   }
 
-  .commit-item:last-child {
-    border-bottom: none;
-  }
+  .commit-row:last-child { border-bottom: none; }
+  .commit-row:nth-child(even) { background: rgba(0,0,0,0.02); }
+  .commit-row:hover { background: rgba(var(--primary-rgb), 0.04); }
 
-  .commit-item:hover {
-    background-color: rgba(255, 255, 255, 0.03);
-  }
-
-  .commit-avatar img, .avatar-placeholder {
-    width: 40px;
-    height: 40px;
+  .user-avatar {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
+    display: block;
+    border: 1px solid var(--border-color);
   }
 
-  .avatar-placeholder {
-    background: var(--md3-surface-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: var(--primary-color);
-  }
-
-  .commit-info {
+  .commit-info-cell {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
     min-width: 0;
   }
 
-  .commit-header {
+  .commit-message { font-weight: 700; font-size: 0.95rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .more-icon { font-size: 1rem; color: var(--text-muted); opacity: 0.5; }
+
+  .commit-meta { font-size: 0.8rem; display: flex; gap: 0.5rem; align-items: center; color: var(--text-muted); margin-top: 2px; }
+  .author-name { font-weight: 800; color: var(--text-color); }
+  .text-sep { opacity: 0.5; font-weight: 500; }
+
+  .commit-actions-cell { display: flex; align-items: center; gap: 1rem; }
+
+  .id-tag {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 5px;
+    background: var(--surface-variant);
+    padding: 2px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    color: var(--primary-color);
   }
+  .id-tag .mini { font-size: 0.9rem; opacity: 0.7; }
+  .sha-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; }
 
-  .commit-message {
-    font-weight: 600;
-    font-size: 1.05rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .more-icon {
-    font-size: 1.2rem;
+  .btn-icon {
+    background: transparent;
+    border: none;
     color: var(--text-muted);
     cursor: pointer;
-  }
-
-  .commit-meta {
-    font-size: 0.9rem;
+    padding: 6px;
+    border-radius: 8px;
     display: flex;
-    gap: 0.4rem;
-    align-items: center;
+    transition: all 0.2s;
   }
-
-  .author-name {
-    font-weight: 700;
-    color: var(--text-color);
-  }
-
-  .commit-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .sha-badge {
-    font-family: 'JetBrains Mono', monospace;
-    background: var(--md3-surface-2);
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-  }
+  .btn-icon:hover { background: var(--surface-variant); color: var(--primary-color); }
 
   /* Skeletons */
   .skeleton-list {

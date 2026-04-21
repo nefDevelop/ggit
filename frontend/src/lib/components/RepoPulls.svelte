@@ -38,37 +38,34 @@
 </script>
 
 <div class="pulls-view">
-  <div class="pulls-header">
-    <div class="filter-bar">
+  <div class="header-minimal-row">
+    <div class="pill-filter-group">
       <button 
-        class="filter-btn" 
+        class="tab-pill" 
         class:active={stateFilter === 'open'} 
         onclick={() => stateFilter = 'open'}
       >
-        <span class="material-symbols-rounded">merge</span>
+        <span class="material-symbols-rounded mini">merge</span>
         Open
       </button>
       <button 
-        class="filter-btn" 
+        class="tab-pill" 
         class:active={stateFilter === 'closed'} 
         onclick={() => stateFilter = 'closed'}
       >
-        <span class="material-symbols-rounded">history_edu</span>
+        <span class="material-symbols-rounded mini">history_edu</span>
         Closed
       </button>
     </div>
     
-    <a href="./pulls/new" class="btn btn-primary">
+    <a href="./pulls/new" class="btn-action-primary">
       <span class="material-symbols-rounded">add</span>
-      New Pull Request
+      New
     </a>
   </div>
 
   {#if loading}
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading pull requests...</p>
-    </div>
+    <div class="skeleton-list"></div>
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if pulls.length === 0}
@@ -78,31 +75,31 @@
       <p>There are no {stateFilter} pull requests in this repository.</p>
     </div>
   {:else}
-    <div class="pulls-list island">
+    <div class="flat-list-container">
       {#each pulls as pull}
-        <div class="pull-row">
-          <div class="pull-icon" style="color: {getStatusColor(pull)}">
+        <div class="list-item-row">
+          <div class="status-indicator" style="color: {getStatusColor(pull)}">
             <span class="material-symbols-rounded">
               {pull.pull_request?.merged ? 'merge' : (pull.is_closed ? 'cancel' : 'merge')}
             </span>
           </div>
-          <div class="pull-main">
-            <div class="pull-title-row">
-              <a href="/{repo.data.owner.username}/{repo.data.name}/pulls/{pull.number}" class="pull-title">
+          <div class="item-main-content">
+            <div class="item-title-bar">
+              <a href="/{repo.data.owner.username}/{repo.data.name}/pulls/{pull.number}" class="item-title-link">
                 {pull.title}
               </a>
               {#each pull.labels || [] as label}
-                <span class="label-tag" style="background: {label.color}">
+                <span class="badge-mini" style="background: {label.color}">
                   {label.name}
                 </span>
               {/each}
             </div>
-            <div class="pull-meta">
+            <div class="item-meta-data">
               #{pull.number} opened {new Date(pull.created_at).toLocaleDateString()} by <strong>{pull.user?.username}</strong>
             </div>
           </div>
           {#if pull.comments > 0}
-            <div class="pull-comments-count">
+            <div class="item-comment-badge">
               <span class="material-symbols-rounded">chat_bubble</span>
               {pull.comments}
             </div>

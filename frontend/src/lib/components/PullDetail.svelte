@@ -45,11 +45,11 @@
 
 <div class="pull-detail-view">
   {#if loading}
-    <div class="skeleton-detail island"></div>
+    <div class="skeleton-detail"></div>
   {:else if error}
-    <div class="error-msg island">{error}</div>
+    <div class="error-msg">{error}</div>
   {:else if pull}
-    <header class="pull-header">
+    <header class="pull-detail-header">
        <div class="title-row">
          <h1>{pull.title} <span class="index">#{pull.number}</span></h1>
          <div class="status-pill" class:merged={pull.pull_request?.merged}>
@@ -60,29 +60,35 @@
          </div>
        </div>
        <div class="subtitle">
-         <strong>{pull.user?.username}</strong> wants to merge commits into <code>{pull.pull_request?.base_branch}</code> from <code>{pull.pull_request?.head_branch}</code>
+         <strong>{pull.user?.username}</strong> wants to merge into <code>{pull.pull_request?.base_branch}</code> from <code>{pull.pull_request?.head_branch}</code>
        </div>
     </header>
 
-    <nav class="pull-tabs">
-      <button class="pull-tab" class:active={activeView === 'conversation'} onclick={() => activeView = 'conversation'}>
-        Conversation
+    <nav class="pull-tabs-bar">
+      <button class="nav-tab" class:active={activeView === 'conversation'} onclick={() => activeView = 'conversation'}>
+        <span class="material-symbols-rounded">chat</span>
+        {activeView === 'conversation' ? 'Conversation' : ''}
       </button>
-      <button class="pull-tab" class:active={activeView === 'files'} onclick={() => activeView = 'files'}>
-        Files Changed <span class="count">{diff?.Files?.length || 0}</span>
+      <button class="nav-tab" class:active={activeView === 'files'} onclick={() => activeView = 'files'}>
+        <span class="material-symbols-rounded">diff</span>
+        {activeView === 'files' ? 'Files' : ''}
+        <span class="count">{diff?.Files?.length || 0}</span>
       </button>
     </nav>
 
-    <div class="pull-body">
+    <div class="pull-content-body">
       {#if activeView === 'conversation'}
-        <div class="conversation-view">
-           <div class="timeline-item island">
+        <div class="conversation-timeline">
+           <div class="timeline-item-flat">
               <div class="item-header"><strong>{pull.user?.username}</strong> commented</div>
               <div class="item-body markdown-body">
                 {pull.body}
               </div>
            </div>
-           <p class="muted center">Timeline and comments coming soon...</p>
+           <div class="coming-soon">
+             <span class="material-symbols-rounded">construction</span>
+             <p>Timeline details are being modernized...</p>
+           </div>
         </div>
       {:else if activeView === 'files'}
         <DiffViewer {diff} />
@@ -92,37 +98,41 @@
 </div>
 
 <style>
-  .pull-detail-view { display: flex; flex-direction: column; gap: 1.5rem; }
-  .pull-header { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
-  .title-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+  .pull-detail-view { display: flex; flex-direction: column; gap: 2rem; }
+  
+  .pull-detail-header { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+  .title-row { display: flex; align-items: center; gap: 1.5rem; }
   .title-row h1 { margin: 0; font-size: 1.75rem; font-weight: 800; }
   .index { color: var(--text-muted); font-weight: 400; }
   
-  .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1rem; border-radius: 2rem; background: #10b981; color: white; font-weight: 700; }
-  .status-pill.merged { background: #8b5cf6; }
-  .subtitle { color: var(--text-muted); font-size: 0.9rem; }
-  .subtitle code { background: rgba(255,255,255,0.05); padding: 0.1rem 0.3rem; border-radius: 4px; }
-
-  .pull-tabs { display: flex; gap: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
-  .pull-tab { background: transparent; border: none; padding: 0.75rem 1rem; color: var(--text-muted); font-weight: 600; cursor: pointer; position: relative; }
-  .pull-tab.active { color: var(--text-color); }
-  .pull-tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--primary-color); }
-  .pull-tab .count { background: rgba(255,255,255,0.1); padding: 0.1rem 0.4rem; border-radius: 10px; font-size: 0.75rem; margin-left: 0.5rem; }
-
-  .diff-file { margin-bottom: 2rem; overflow: hidden; }
-  .diff-file-header { padding: 0.75rem 1rem; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.5rem; }
+  .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.25rem; border-radius: 2rem; background: var(--success-color, #10b981); color: white; font-weight: 700; font-size: 0.9rem; }
+  .status-pill.merged { background: var(--primary-color); }
   
-  .diff-line { display: grid; grid-template-columns: 40px 40px 1fr; font-family: monospace; font-size: 0.85rem; line-height: 1.4; }
-  .diff-line.add { background: rgba(16, 185, 129, 0.1); }
-  .diff-line.del { background: rgba(239, 68, 68, 0.1); }
-  .diff-line pre { margin: 0; padding: 0 0.5rem; }
-  .ln { text-align: right; padding-right: 0.5rem; opacity: 0.3; border-right: 1px solid rgba(255,255,255,0.05); }
+  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+  .subtitle code { background: var(--surface-variant); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); }
 
-  .diff-section-header { padding: 0.25rem 1rem; background: rgba(255,255,255,0.01); color: var(--text-muted); font-size: 0.75rem; font-family: monospace; }
-  
-  .muted { color: var(--text-muted); opacity: 0.5; }
-  .center { text-align: center; padding: 2rem; }
+  .pull-tabs-bar { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+  .nav-tab { background: transparent; border: none; padding: 0.85rem 1.25rem; color: var(--text-muted); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s; position: relative; }
+  .nav-tab:hover { color: var(--text-color); background: var(--surface-variant); }
+  .nav-tab.active { color: var(--primary-color); }
+  .nav-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--primary-color); }
+  .nav-tab .count { font-size: 0.7rem; background: var(--surface-2); padding: 2px 6px; border-radius: 10px; opacity: 0.7; }
 
-  .skeleton-detail { height: 400px; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+  .timeline-item-flat { 
+    border: 1px solid var(--border-color); 
+    background: var(--bg-color); 
+    border-radius: 1rem; 
+    overflow: hidden; 
+    margin-bottom: 2rem;
+  }
+  .item-header { padding: 0.75rem 1.5rem; background: var(--surface-variant); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); }
+  .item-body { padding: 1.5rem; line-height: 1.6; }
+
+  .coming-soon { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .coming-soon span { font-size: 3rem; }
+
+  .skeleton-detail { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+  .error-msg { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2rem; border-radius: 1rem; text-align: center; font-weight: 700; }
 </style>

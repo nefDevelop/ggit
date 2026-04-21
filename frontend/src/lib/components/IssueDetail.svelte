@@ -101,7 +101,7 @@
           <div class="item-avatar">
             <span class="material-symbols-rounded">person</span>
           </div>
-          <div class="item-card island">
+          <div class="item-card-flat">
             <div class="item-header">
               <strong>{issue.user?.username}</strong> commented {timeAgo(issue.created_at)}
             </div>
@@ -119,7 +119,7 @@
             <div class="item-avatar">
               <span class="material-symbols-rounded">chat_bubble</span>
             </div>
-            <div class="item-card island">
+            <div class="item-card-flat">
               <div class="item-header">
                 <strong>{comment.user?.username}</strong> commented {timeAgo(comment.created_at)}
               </div>
@@ -135,7 +135,7 @@
           <div class="item-avatar pulse">
             <span class="material-symbols-rounded">add_comment</span>
           </div>
-          <div class="item-card island no-padding">
+          <div class="item-card-flat">
             <textarea 
               placeholder="Leave a comment..." 
               bind:value={newCommentBody}
@@ -143,7 +143,7 @@
             ></textarea>
             <div class="comment-actions">
               <button 
-                class="btn btn-primary" 
+                class="btn-action-primary" 
                 onclick={postComment} 
                 disabled={submitting || !newCommentBody.trim()}
               >
@@ -208,14 +208,25 @@
   .item-avatar.pulse { animation: borderPulse 2s infinite; }
   @keyframes borderPulse { 0%, 100% { border-color: transparent; } 50% { border-color: var(--primary-color); } }
 
-  .item-card { flex: 1; min-width: 0; }
-  .item-header { padding: 0.75rem 1.25rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); }
+  .item-card-flat { 
+    flex: 1; 
+    min-width: 0; 
+    border: 1px solid var(--border-color); 
+    background: var(--bg-color); 
+    border-radius: 1rem; 
+    overflow: hidden; 
+  }
+  .item-header { padding: 0.75rem 1.25rem; background: var(--surface-variant); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-muted); }
   .item-body { padding: 1.25rem; line-height: 1.6; }
 
   .timeline-divider { height: 1px; }
 
   .new-comment-item textarea { width: 100%; min-height: 120px; background: transparent; border: none; padding: 1.25rem; color: var(--text-color); font-family: inherit; font-size: 1rem; resize: vertical; border-bottom: 1px solid var(--border-color); outline: none; }
   .comment-actions { padding: 0.75rem 1.25rem; display: flex; justify-content: flex-end; }
+  
+  .btn-action-primary { background: var(--primary-color); color: var(--on-primary); border: none; padding: 0.5rem 1.25rem; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-action-primary:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); }
+  .btn-action-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .sidebar { display: flex; flex-direction: column; gap: 2rem; }
   .side-item { border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }

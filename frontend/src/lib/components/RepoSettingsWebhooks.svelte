@@ -69,16 +69,12 @@
 </script>
 
 <div class="webhooks-manager">
-  <header class="section-header">
-    <div class="header-content">
-      <h2>Webhooks</h2>
-      <p>Webhooks allow external services to be notified when certain events happen on Ggit.</p>
-    </div>
-    <button class="btn btn-primary" onclick={handleAdd}>
+  <div class="header-action-minimal">
+    <button class="btn-action-primary" onclick={handleAdd}>
       <span class="material-symbols-rounded">add</span>
-      Add Webhook
+      New Webhook
     </button>
-  </header>
+  </div>
 
   {#if loading}
     <div class="skeleton-list">
@@ -98,42 +94,35 @@
       <button class="btn btn-tonal" onclick={handleAdd}>Create your first webhook</button>
     </div>
   {:else}
-    <div class="webhooks-list">
+    <div class="hooks-list-flat">
       {#each webhooks as hook}
-        <div class="hook-item island tonal">
-          <div class="hook-info">
-            <div class="hook-main">
-              <span class="hook-type-badge">{hook.type}</span>
-              <code class="hook-url">{hook.url}</code>
+        <div class="hook-row-flat">
+          <div class="hook-core">
+            <div class="hook-url-row">
+              <span class="type-badge">{hook.type}</span>
+              <code class="url-code">{hook.url}</code>
             </div>
-            <div class="hook-meta">
-              {#if hook.last_status === 'success'}
-                <span class="status-badge success">
-                  <span class="material-symbols-rounded">check_circle</span>
-                  Last delivery successful
-                </span>
-              {:else if hook.last_status === 'failure'}
-                <span class="status-badge failure">
-                  <span class="material-symbols-rounded">error</span>
-                  Last delivery failed
-                </span>
-              {:else}
-                <span class="status-badge neutral">
-                  <span class="material-symbols-rounded">help</span>
-                  No deliveries yet
-                </span>
-              {/if}
-              <span class="hook-events">{hook.events.join(', ')}</span>
+            <div class="hook-status-meta">
+              <div class="status-indicator">
+                {#if hook.last_status === 'success'}
+                  <span class="material-symbols-rounded success">check_circle</span>
+                {:else if hook.last_status === 'failure'}
+                  <span class="material-symbols-rounded failure">error</span>
+                {:else}
+                  <span class="material-symbols-rounded neutral">help</span>
+                {/if}
+              </div>
+              <span class="events-summary">{hook.events.join(', ')}</span>
             </div>
           </div>
-          <div class="hook-actions">
-            <button class="btn-icon" onclick={() => handleLogs(hook)} title="View Logs">
+          <div class="hook-row-actions">
+            <button class="btn-icon-minimal" onclick={() => handleLogs(hook)} title="Logs">
               <span class="material-symbols-rounded">history</span>
             </button>
-            <button class="btn-icon" onclick={() => handleEdit(hook)} title="Edit">
+            <button class="btn-icon-minimal" onclick={() => handleEdit(hook)} title="Edit">
               <span class="material-symbols-rounded">edit</span>
             </button>
-            <button class="btn-icon delete" onclick={() => handleDelete(hook.id)} title="Delete">
+            <button class="btn-icon-minimal delete" onclick={() => handleDelete(hook.id)} title="Delete">
               <span class="material-symbols-rounded">delete</span>
             </button>
           </div>

@@ -37,29 +37,29 @@
 </script>
 
 <div class="issues-view">
-  <div class="issues-header">
-    <div class="filter-bar">
+  <div class="issues-header-minimal">
+    <div class="filter-pill-bar">
       <button 
-        class="filter-btn" 
+        class="pill-btn" 
         class:active={stateFilter === 'open'} 
         onclick={() => stateFilter = 'open'}
       >
-        <span class="material-symbols-rounded">error</span>
+        <span class="material-symbols-rounded mini">error</span>
         {repo.data?.open_issues_count || 0} Open
       </button>
       <button 
-        class="filter-btn" 
+        class="pill-btn" 
         class:active={stateFilter === 'closed'} 
         onclick={() => stateFilter = 'closed'}
       >
-        <span class="material-symbols-rounded">check_circle</span>
+        <span class="material-symbols-rounded mini">check_circle</span>
         {repo.data?.closed_issues_count || 0} Closed
       </button>
     </div>
     
-    <a href="./issues/new" class="btn btn-primary">
+    <a href="./issues/new" class="btn-new-issue">
       <span class="material-symbols-rounded">add</span>
-      New Issue
+      New
     </a>
   </div>
 
@@ -77,7 +77,7 @@
       <p>There are no {stateFilter} issues in this repository.</p>
     </div>
   {:else}
-    <div class="issues-list island">
+    <div class="issues-list-modern">
       {#each issues as issue}
         <div class="issue-row">
           <div class="issue-icon" style="color: {getStatusColor(issue)}">

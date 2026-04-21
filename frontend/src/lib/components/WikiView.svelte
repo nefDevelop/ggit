@@ -143,11 +143,11 @@
 <div class="wiki-container">
   <div class="wiki-grid">
     <!-- Sidebar -->
-    <aside class="wiki-sidebar island">
-      <div class="sidebar-header">
-        <h2>Wiki</h2>
-        <button class="btn-new" onclick={startNew} title="New Page">
-          <Add size={20} />
+    <aside class="wiki-sidebar">
+      <div class="sidebar-header-minimal">
+        <button class="btn-new-full" onclick={startNew}>
+          <span class="material-symbols-rounded">add</span>
+          New Page
         </button>
       </div>
       
@@ -169,7 +169,7 @@
     </aside>
 
     <!-- Content Area -->
-    <main class="wiki-main island">
+    <main class="wiki-main">
       {#if loading}
         <div class="wiki-skeleton">
             <div class="skeleton-header"></div>

@@ -95,193 +95,146 @@
 </script>
 
 <div class="dashboard-grid full-width">
-    <section class="repos-island island">
-        <header class="island-header-search">
-            <div class="search-and-new-button-group"> 
-                <div class="search-wrapper">
+    <!-- Repositories List -->
+    <div class="dashboard-main-content">
+        <header class="content-controls">
+            <div class="search-row"> 
+                <div class="search-box">
                     <GlobalSearch />
                 </div>
-                <a class="btn btn-sm" href="/repo/create">
-                    <span class="material-symbols-rounded">add</span> New
+                <a class="btn-new-repo" href="/repo/create">
+                    <span class="material-symbols-rounded">add</span>
+                    <span>New Project</span>
                 </a>
             </div>
-            <div class="title-and-view">
-                <h2 class="section-label">Repositories</h2>
-                <div class="view-controls">
-                    <button class="view-btn {viewMode === 'temporal' ? 'active' : ''}" onclick={() => viewMode = 'temporal'}>
-                        <span class="material-symbols-rounded">schedule</span>
-                    </button>
-                    <button class="view-btn {viewMode === 'list' ? 'active' : ''}" onclick={() => viewMode = 'list'}>
-                        <span class="material-symbols-rounded">list</span>
-                    </button>
-                </div>
+            <div class="view-mode-selector">
+                <button class="selector-btn" class:active={viewMode === 'temporal'} onclick={() => viewMode = 'temporal'}>
+                    <span class="material-symbols-rounded mini">schedule</span>
+                    Activity
+                </button>
+                <button class="selector-btn" class:active={viewMode === 'list'} onclick={() => viewMode = 'list'}>
+                    <span class="material-symbols-rounded mini">list</span>
+                    Alphabetical
+                </button>
             </div>
         </header>
 
-        <div class="island-body">
+        <div class="repository-stream">
             {#if loading}
-                <div class="skeletons">
-                    {#each Array(3) as _}<div class="skeleton-line"></div>{/each}
+                <div class="skeleton-list">
+                    {#each Array(5) as _}<div class="skeleton-row"></div>{/each}
                 </div>
             {:else if allRepos.length === 0}
-                <div class="empty-state">
-                    <span class="material-symbols-rounded empty-icon">folder_open</span>
-                    <h3>Ready for your first project</h3>
-                    <p>Create a new repository to get started.</p>
+                <div class="empty-dashboard">
+                    <span class="material-symbols-rounded">rocket_launch</span>
+                    <h3>Start your first project</h3>
+                    <p>No repositories found. Create one to begin your journey.</p>
                 </div>
             {:else}
-                <div class="repo-list-container">
+                <div class="flat-repo-list">
                 {#if viewMode === 'temporal'}
-                    {@const groups = groupedRepos()}
-                    {#if groups.recent && groups.recent.length > 0}
-                        <div class="group-header"><span class="group-label">Active this week</span></div>
-                        <div class="repo-group-flat">
-                            {#each groups.recent as repo}<RepoRow {repo} />{/each}
-                        </div>
-                    {/if}
-                    {#if groups.older && groups.older.length > 0}
-                        <div class="group-header" style="margin-top: 1rem;"><span class="group-label">Older</span></div>
-                        <div class="repo-group-flat">
-                            {#each groups.older as repo}<RepoRow {repo} isOlder={true} />{/each}
-                        </div>
+                    {#each groupedRepos().recent || [] as repo}
+                        <RepoRow {repo} />
+                    {/each}
+                    {#if groupedRepos().older?.length > 0}
+                        <div class="divider-text">Older Projects</div>
+                        {#each groupedRepos().older as repo}
+                            <RepoRow {repo} isOlder={true} />
+                        {/each}
                     {/if}
                 {:else}
-                    <div class="repo-group-flat">
-                        {#each groupedRepos().all || [] as repo}<RepoRow {repo} />{/each}
-                    </div>
+                    {#each groupedRepos().all || [] as repo}
+                        <RepoRow {repo} />
+                    {/each}
                 {/if}
                 </div>
             {/if}
         </div>
-    </section>
+    </div>
 </div>
 
 <style>
-  .dashboard-grid {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  .dashboard-grid { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    padding: 1rem;
   }
 
-  .repos-island {
-    height: auto;
-    min-height: min-content;
+  .dashboard-main-content { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2rem;
   }
 
-  .island-header-search {
-    padding: 2rem 1.5rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    background: var(--surface-variant);
+  .content-controls { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 1.5rem; 
+    padding-bottom: 2rem;
     border-bottom: 1px solid var(--border-color);
-    box-sizing: border-box;
   }
 
-  .search-and-new-button-group {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  .search-row { display: flex; gap: 1rem; align-items: center; }
+  .search-box { flex: 1; }
+
+  .btn-new-repo { 
+    background: var(--primary-color); 
+    color: var(--on-primary); 
+    text-decoration: none; 
+    padding: 0.75rem 1.5rem; 
+    border-radius: 0.75rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
+    font-weight: 800; 
+    transition: all 0.2s;
+  }
+  .btn-new-repo:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3); }
+
+  .view-mode-selector { display: flex; gap: 0.5rem; }
+  .selector-btn { 
+    background: transparent; 
+    border: 1px solid var(--border-color); 
+    padding: 0.5rem 1rem; 
+    border-radius: 2rem; 
+    color: var(--text-muted); 
+    font-weight: 700; 
+    font-size: 0.85rem; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    transition: all 0.2s;
+  }
+  .selector-btn.active { background: var(--primary-color); color: var(--on-primary); border-color: var(--primary-color); }
+  .selector-btn .mini { font-size: 1.1rem; }
+
+  .flat-repo-list { 
+    display: flex; 
+    flex-direction: column; 
+    background: var(--bg-color); 
+    border: 1px solid var(--border-color); 
+    border-radius: 1rem; 
+    overflow: hidden; 
   }
 
-  .search-wrapper {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .search-and-new-button-group .btn {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  @media (max-width: 1024px) {
-    .island-header-search {
-      padding: 1.5rem 1rem;
-      gap: 1rem;
-    }
-    .island-body {
-      padding: 1rem;
-    }
-  }
-
-  .title-and-view {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .section-label {
-    font-size: 0.75rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    margin: 0;
-  }
-
-  .island-body { 
-    padding: 1.5rem; 
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .view-controls {
-    display: flex;
-    background: var(--md3-surface-3);
-    padding: 2px;
-    border-radius: 0.5rem;
-  }
-
-  .view-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 0.3rem 0.6rem;
-    border-radius: 0.4rem;
-    cursor: pointer;
-    display: flex;
-  }
-  .view-btn span { font-size: 1.1rem; }
-  .view-btn.active { background: var(--md3-surface-1); color: var(--primary-color); }
-
-  .repo-group-flat {
-    display: flex;
-    flex-direction: column;
+  .divider-text { 
+    padding: 1.5rem 1.25rem 0.75rem; 
+    font-size: 0.7rem; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    color: var(--text-muted); 
+    letter-spacing: 0.1em; 
     background: var(--surface-variant);
-    border-radius: 1.25rem;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
   }
 
-  .group-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); padding: 0 0.5rem 0.5rem; display: block; }
+  .empty-dashboard { padding: 6rem 2rem; text-align: center; color: var(--text-muted); }
+  .empty-dashboard span { font-size: 4rem; opacity: 0.3; margin-bottom: 1rem; }
 
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 250px;
-    text-align: center;
-  }
-
-  .empty-state .empty-icon {
-    font-size: 4rem;
-    opacity: 0.15;
-    margin-bottom: 1rem;
-  }
-
-  .empty-state h3 {
-    margin: 0 0 0.5rem 0;
-    color: var(--text-color);
-  }
-
-  .empty-state p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-  }
-
-  .skeleton-line { height: 64px; background: var(--md3-surface-3); border-radius: 0.75rem; margin-bottom: 0.5rem; animation: pulse 1.5s infinite; }
-
-  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+  .skeleton-list { display: flex; flex-direction: column; gap: 1px; background: var(--border-color); border-radius: 1rem; overflow: hidden; }
+  .skeleton-row { height: 80px; background: var(--bg-color); animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 </style>

@@ -60,85 +60,71 @@
   onMount(fetchCollaborators);
 </script>
 
-<div class="settings-card island">
-  <header class="card-header">
-    <h3 class="card-title">Manage Collaborators</h3>
-  </header>
-  
-  <div class="card-body">
-    <p class="desc">Collaborators have read/write access to this repository.</p>
-
-    <div class="collaborator-list">
-      {#each collaborators as col}
-        <div class="col-row island tonal">
-          <img src={col.avatar_url} alt={col.username} class="avatar" />
-          <div class="col-info">
-            <strong>{col.full_name || col.username}</strong>
-            <span class="col-meta">@{col.username}</span>
-          </div>
-          <div class="perm-badge">Write</div>
-          <button class="btn btn-icon btn-danger-text" onclick={() => removeCollaborator(col.username)}>
-            <span class="material-symbols-rounded">person_remove</span>
-          </button>
+<div class="settings-view-flat">
+  <div class="collaborator-list-modern">
+    {#each collaborators as col}
+      <div class="collab-row-flat">
+        <img src={col.avatar_url} alt={col.username} class="mini-avatar" />
+        <div class="collab-info">
+          <strong>{col.full_name || col.username}</strong>
+          <span class="user-handle">@{col.username}</span>
         </div>
-      {/each}
-      {#if !loading && collaborators.length === 0}
-        <div class="empty-state">No collaborators added yet.</div>
-      {/if}
-    </div>
-
-    <hr class="divider" />
-
-    <form class="add-col-form" onsubmit={(e) => { e.preventDefault(); addCollaborator(); }}>
-      <h4>Add Collaborator</h4>
-      <div class="form-group">
-        <label for="col_name">Username</label>
-        <div class="inline-form">
-          <input type="text" id="col_name" bind:value={newCollaborator} placeholder="Enter username..." required />
-          <button type="submit" class="btn btn-primary" disabled={submitting || !newCollaborator}>
-            {submitting ? 'Adding...' : 'Add User'}
-          </button>
-        </div>
-        {#if message}
-           <span class="error-msg">{message}</span>
-        {/if}
+        <div class="permission-pill">Write</div>
+        <button class="btn-danger-icon-minimal" onclick={() => removeCollaborator(col.username)}>
+          <span class="material-symbols-rounded">person_remove</span>
+        </button>
       </div>
+    {/each}
+    {#if !loading && collaborators.length === 0}
+      <div class="empty-collabs">No collaborators added yet.</div>
+    {/if}
+  </div>
+
+  <div class="add-section-flat">
+    <form class="add-collab-form-modern" onsubmit={(e) => { e.preventDefault(); addCollaborator(); }}>
+      <div class="input-action-group">
+        <input type="text" bind:value={newCollaborator} placeholder="Add someone by username..." required />
+        <button type="submit" class="btn-action-primary" disabled={submitting || !newCollaborator}>
+          {submitting ? 'Adding...' : 'Add'}
+        </button>
+      </div>
+      {#if message}
+         <span class="status-error">{message}</span>
+      {/if}
     </form>
   </div>
 </div>
 
 <style>
-  .settings-card { display: flex; flex-direction: column; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); }
-  .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
-  
-  .card-body { padding: 2rem; }
-  .desc { color: var(--text-muted); margin-bottom: 2rem; }
+  .settings-view-flat { display: flex; flex-direction: column; gap: 2rem; padding: 1rem; }
 
-  .collaborator-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-  .col-row { display: flex; align-items: center; gap: 1.25rem; padding: 0.75rem 1.25rem; }
-  .avatar { width: 40px; height: 40px; border-radius: 50%; background: #222; }
+  .collaborator-list-modern { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 1rem; overflow: hidden; }
   
-  .col-info { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
-  .col-info strong { font-size: 0.95rem; }
-  .col-meta { font-size: 0.75rem; color: var(--text-muted); }
-
-  .perm-badge { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; }
-
-  .divider { border: 0; border-top: 1px solid var(--border-color); margin: 2rem 0; }
-
-  .add-col-form { display: flex; flex-direction: column; gap: 1rem; }
-  .add-col-form h4 { margin: 0; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .collab-row-flat { display: flex; align-items: center; gap: 1.25rem; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+  .collab-row-flat:last-child { border-bottom: none; }
+  .collab-row-flat:hover { background: var(--surface-variant); }
   
-  .inline-form { display: flex; gap: 1rem; }
-  .inline-form input { flex: 1; }
+  .mini-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); }
   
-  input { background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; }
-  input:focus { outline: none; border-color: var(--primary-color); background: rgba(0,0,0,0.4); }
+  .collab-info { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
+  .collab-info strong { font-size: 0.95rem; font-weight: 700; color: var(--text-color); }
+  .user-handle { font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
 
-  .error-msg { font-size: 0.8rem; color: #ef4444; margin-top: 0.5rem; }
-  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); border: 2px dashed var(--border-color); border-radius: 1rem; }
+  .permission-pill { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.2rem 0.75rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .btn-danger-icon-minimal { background: transparent; border: none; color: var(--error-color, #ef4444); cursor: pointer; padding: 0.5rem; border-radius: 50%; transition: all 0.2s; opacity: 0.4; }
+  .btn-danger-icon-minimal:hover { opacity: 1; background: rgba(239, 68, 68, 0.1); }
+
+  .add-section-flat { margin-top: 1rem; padding: 1.5rem; background: var(--surface-variant); border-radius: 1rem; border: 1px solid var(--border-color); }
   
-  .btn-danger-text { color: #ef4444; }
-  .btn-danger-text:hover { background: rgba(239, 68, 68, 0.1); }
+  .input-action-group { display: flex; gap: 1rem; }
+  .input-action-group input { flex: 1; background: var(--bg-color); border: 1px solid var(--border-color); padding: 0.75rem 1.25rem; border-radius: 0.75rem; color: var(--text-color); font-family: inherit; font-size: 0.95rem; }
+  .input-action-group input:focus { outline: none; border-color: var(--primary-color); }
+
+  .btn-action-primary { background: var(--primary-color); color: var(--on-primary); border: none; padding: 0 1.5rem; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-action-primary:hover:not(:disabled) { background: var(--primary-hover); transform: translateY(-1px); }
+  .btn-action-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .status-error { font-size: 0.8rem; color: #ef4444; margin-top: 0.75rem; display: block; font-weight: 600; }
+  .empty-collabs { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 0.9rem; opacity: 0.6; }
 </style>

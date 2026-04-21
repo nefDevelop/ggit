@@ -139,31 +139,31 @@
         <nav class="rich-tabs">
           <a href="/{username}/{reponame}" class="tab" class:active={activeTab === 'code'}>
             <span class="material-symbols-rounded">code</span>
-            <span class="tab-label">Code</span>
+            {#if activeTab === 'code'}<span class="tab-label">Code</span>{/if}
           </a>
           <a href="/{username}/{reponame}/commits" class="tab" class:active={activeTab === 'commits'}>
             <span class="material-symbols-rounded">history</span>
             <span class="tab-count">{gitStats.commits}</span>
-            <span class="tab-label">Commits</span>
+            {#if activeTab === 'commits'}<span class="tab-label">Commits</span>{/if}
           </a>
           <a href="/{username}/{reponame}/branches" class="tab" class:active={activeTab === 'branches'}>
             <span class="material-symbols-rounded">account_tree</span>
             <span class="tab-count">{gitStats.branches}</span>
-            <span class="tab-label">Branches</span>
+            {#if activeTab === 'branches'}<span class="tab-label">Branches</span>{/if}
           </a>
           <a href="/{username}/{reponame}/issues" class="tab" class:active={activeTab === 'issues'}>
             <span class="material-symbols-rounded">error</span>
             <span class="tab-count">{repoData.open_issues_count || 0}</span>
-            <span class="tab-label">Issues</span>
+            {#if activeTab === 'issues'}<span class="tab-label">Issues</span>{/if}
           </a>
           <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
             <span class="material-symbols-rounded">merge</span>
             <span class="tab-count">{repoData.open_pulls_count || 0}</span>
-            <span class="tab-label">PRs</span>
+            {#if activeTab === 'pulls'}<span class="tab-label">PRs</span>{/if}
           </a>
           <a href="/{username}/{reponame}/wiki" class="tab" class:active={activeTab === 'wiki'}>
             <span class="material-symbols-rounded">book</span>
-            <span class="tab-label">Wiki</span>
+            {#if activeTab === 'wiki'}<span class="tab-label">Wiki</span>{/if}
           </a>
         </nav>
       </div>

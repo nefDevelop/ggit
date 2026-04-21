@@ -117,29 +117,14 @@
     flex-direction: column;
     min-height: 0;
     position: relative;
-    background-color: var(--main-content-bg);
-    border: 1px solid var(--main-content-border);
-    border-radius: 2.5rem;
-    overflow: hidden;
-  }
-
-  .sidebar-inner::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: 2.5rem;
-    box-shadow: var(--inner-shadow);
-    pointer-events: none;
-    z-index: 100;
+    padding-top: 1rem;
   }
 
   .sidebar-header {
-    padding: 2rem 1.5rem 1rem;
+    padding: 1rem 1rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background: var(--surface-variant);
-    border-bottom: 1px solid var(--border-color);
   }
 
   .sidebar-label {

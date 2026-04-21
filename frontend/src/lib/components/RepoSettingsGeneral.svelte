@@ -87,10 +87,7 @@
   onMount(fetchSettings);
 </script>
 
-<div class="settings-card island">
-  <header class="card-header">
-    <h3 class="card-title">General Settings</h3>
-  </header>
+<div class="settings-card">
   
   {#if loading}
     <div class="skeleton-form"></div>

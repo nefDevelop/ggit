@@ -85,37 +85,22 @@
     </div>
   {/if}
 
-  <header class="section-actions">
-     <div class="header-info">
-       <h3>Versions & Releases</h3>
-       <p>History of tags and published versions.</p>
-     </div>
-     <button class="btn btn-primary lg" onclick={handleAdd}>
+  <header class="section-actions-minimal">
+     <button class="btn-action-primary" onclick={handleAdd}>
        <span class="material-symbols-rounded">add_circle</span>
-       Draft new release
+       Draft Release
      </button>
   </header>
 
   {#if loading && releases.length === 0}
-    <div class="skeleton-timeline">
-      {#each Array(3) as _}
-        <div class="skeleton-item island tonal"></div>
-      {/each}
-    </div>
+    <div class="skeleton-list"></div>
   {:else if error}
-    <div class="error-state island tonal">
-      <span class="material-symbols-rounded">error</span>
-      <p>{error}</p>
-      <button class="btn btn-tonal" onclick={() => fetchReleases()}>Retry</button>
-    </div>
+    <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
-    <div class="empty-state island tonal">
-      <div class="icon-blob">
-        <span class="material-symbols-rounded">sell</span>
-      </div>
-      <h3>No releases yet</h3>
-      <p>Start tagging your milestones to see them here.</p>
-      <button class="btn btn-primary" onclick={handleAdd}>Create your first release</button>
+    <div class="empty-releases">
+      <span class="material-symbols-rounded">sell</span>
+      <p>No releases yet. Start tagging your milestones.</p>
+      <button class="btn-action-primary" onclick={handleAdd}>Create Release</button>
     </div>
   {:else}
     <div class="releases-timeline">
@@ -123,12 +108,12 @@
         <div class="release-item" class:is-draft={release.is_draft}>
           <div class="release-marker"></div>
           
-          <div class="release-card island tonal">
-            <header class="release-header">
-               <div class="header-main">
-                 <div class="title-row">
-                   <h2>{release.title || release.tag_name}</h2>
-                   <div class="badges">
+          <div class="release-card-flat">
+            <header class="release-card-header">
+               <div class="header-main-info">
+                 <div class="title-row-flat">
+                   <h3>{release.title || release.tag_name}</h3>
+                   <div class="badge-row">
                      {#if release.is_draft}
                        <span class="badge draft">Draft</span>
                      {:else if release.is_prerelease}

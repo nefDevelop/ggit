@@ -33,117 +33,143 @@
 </script>
 
 <div class="repo-branches">
-  <header class="section-header">
-    <h2>Branches</h2>
-    <p class="subtitle">Branches are where you develop features and fix bugs.</p>
-  </header>
-
   {#if loading}
     <div class="skeleton-table"></div>
   {:else if data}
-    <!-- Default Branch -->
-    <section class="branch-section island tonal">
-      <h3 class="section-title">Default Branch</h3>
-      <div class="branch-row">
-        <div class="branch-info">
-          <span class="material-symbols-rounded icon">merge_type</span>
-          <div class="names">
-            <strong>{data.default.name}</strong>
-            <span class="desc">Default branch for the repository.</span>
-          </div>
-          {#if data.default.is_protected}
-            <span class="badge protected">Protected</span>
-          {/if}
-        </div>
-        <div class="branch-meta">
-           <span class="date">Updated {data.default.commit?.committer?.when ? new Date(data.default.commit.committer.when).toLocaleDateString() : 'Unknown'}</span>
-           <span class="btn btn-outline disabled">Delete</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Active Branches -->
-    {#if data.active.length > 0}
-      <section class="branch-section island">
-        <h3 class="section-title">Active Branches</h3>
-        {#each data.active as branch}
-          <div class="branch-row">
-            <div class="branch-info">
-              <span class="material-symbols-rounded icon">merge_type</span>
-              <div class="names">
-                <strong>{branch.name}</strong>
-                <span class="commit-msg">{branch.commit.summary}</span>
-              </div>
-              {#if branch.is_protected}
-                <span class="badge protected">Protected</span>
+    <!-- Primary Branch -->
+    <div class="branch-list-container">
+      <div class="branch-row-item primary-row">
+        <div class="branch-main-info">
+          <span class="material-symbols-rounded branch-icon-acc">stars</span>
+          <div class="branch-name-stack">
+            <span class="branch-name-text">{data.default.name}</span>
+            <div class="badges-row">
+              <span class="badge-v2 primary">Primary</span>
+              {#if data.default.is_protected}
+                <span class="badge-v2 protected">Protected</span>
               {/if}
             </div>
-            <div class="branch-meta">
-               <span class="date">{branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'Recently'}</span>
-               <button class="btn btn-danger-text" disabled={branch.is_protected} onclick={() => deleteBranch(branch.name)}>
-                 <span class="material-symbols-rounded">delete</span>
-               </button>
-            </div>
           </div>
-        {/each}
-      </section>
-    {/if}
+        </div>
+        <div class="branch-meta-info">
+           <span class="meta-label">Updated {data.default.commit?.committer?.when ? new Date(data.default.commit.committer.when).toLocaleDateString() : 'Active'}</span>
+        </div>
+      </div>
 
-    <!-- Stale Branches -->
-    {#if data.stale.length > 0}
-      <section class="branch-section island dimmed">
-        <h3 class="section-title">Stale Branches</h3>
-        {#each data.stale as branch}
-          <div class="branch-row">
-            <div class="branch-info">
-              <span class="material-symbols-rounded icon">merge_type</span>
-              <div class="names">
-                <strong>{branch.name}</strong>
-                <span class="commit-msg">{branch.commit.summary}</span>
+      <!-- Active Branches -->
+      {#if data.active.length > 0}
+        <div class="list-divider">Active Development</div>
+        {#each data.active as branch}
+          <div class="branch-row-item">
+            <div class="branch-main-info">
+              <span class="material-symbols-rounded branch-icon">fork_right</span>
+              <div class="branch-name-stack">
+                <span class="branch-name-text">{branch.name}</span>
+                {#if branch.is_protected}
+                  <span class="badge-v2 protected">Protected</span>
+                {/if}
+                <span class="commit-shorthand">{branch.commit?.summary || ''}</span>
               </div>
             </div>
-            <div class="branch-meta">
-               <span class="date">Old: {branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'N/A'}</span>
-               <button class="btn btn-danger-text" onclick={() => deleteBranch(branch.name)}>
+            <div class="branch-meta-info">
+               <span class="meta-label">{branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'Recently'}</span>
+               <button class="row-btn delete-btn" disabled={branch.is_protected} onclick={() => deleteBranch(branch.name)}>
                  <span class="material-symbols-rounded">delete</span>
                </button>
             </div>
           </div>
         {/each}
-      </section>
-    {/if}
+      {/if}
+
+      <!-- Stale Branches -->
+      {#if data.stale.length > 0}
+        <div class="list-divider">Legacy (Stale)</div>
+        {#each data.stale as branch}
+          <div class="branch-row-item stale-row">
+            <div class="branch-main-info">
+              <span class="material-symbols-rounded branch-icon">history</span>
+              <div class="branch-name-stack">
+                <span class="branch-name-text">{branch.name}</span>
+              </div>
+            </div>
+            <div class="branch-meta-info">
+               <span class="meta-label">Old: {branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'N/A'}</span>
+               <button class="row-btn delete-btn" onclick={() => deleteBranch(branch.name)}>
+                 <span class="material-symbols-rounded">delete</span>
+               </button>
+            </div>
+          </div>
+        {/each}
+      {/if}
+    </div>
   {/if}
 </div>
 
 <style>
-  .repo-branches { display: flex; flex-direction: column; gap: 2.5rem; }
+  .repo-branches { display: flex; flex-direction: column; }
   
-  .section-header h2 { margin: 0; font-size: 1.75rem; font-weight: 800; }
-  .subtitle { color: var(--text-muted); margin: 0.25rem 0 0 0; }
+  .branch-list-container {
+    border: 1px solid var(--border-color);
+    background: var(--bg-color);
+    border-radius: 1rem;
+    overflow: hidden;
+  }
 
-  .branch-section { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
-  .section-title { padding: 1.25rem 2rem; margin: 0; font-size: 1rem; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border-color); }
+  .branch-row-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.75rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+  }
+  .branch-row-item:last-child { border-bottom: none; }
+  .branch-row-item:hover { background: rgba(var(--primary-rgb), 0.04); }
 
-  .branch-row { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; border-bottom: 1px solid var(--border-color); }
-  .branch-row:last-child { border-bottom: none; }
+  .primary-row { background: rgba(var(--primary-rgb), 0.02); }
+  .stale-row { opacity: 0.6; }
 
-  .branch-info { display: flex; align-items: center; gap: 1.25rem; }
-  .icon { color: var(--primary-color); opacity: 0.6; }
+  .list-divider {
+    background: var(--surface-variant);
+    padding: 0.5rem 1.75rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .branch-main-info { display: flex; align-items: center; gap: 1.25rem; }
+  .branch-icon { font-size: 1.25rem; color: var(--text-muted); opacity: 0.5; }
+  .branch-icon-acc { font-size: 1.25rem; color: var(--primary-color); }
   
-  .names { display: flex; flex-direction: column; }
-  .names strong { font-size: 1.1rem; }
-  .desc, .commit-msg { font-size: 0.85rem; color: var(--text-muted); }
+  .branch-name-stack { display: flex; align-items: center; gap: 0.75rem; }
+  .branch-name-text { font-weight: 800; font-size: 1.05rem; color: var(--text-color); }
+  .commit-shorthand { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; font-weight: 500; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-  .badge { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.2rem 0.6rem; border-radius: 4px; margin-left: 0.5rem; }
+  .badges-row { display: flex; gap: 0.5rem; }
+  .badge-v2 { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em; }
+  .badge-v2.primary { background: var(--primary-color); color: var(--on-primary); }
+  .badge-v2.protected { border: 1px solid var(--border-color); color: var(--text-muted); }
 
-  .branch-meta { display: flex; align-items: center; gap: 2rem; }
-  .branch-meta .date { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; min-width: 100px; text-align: right; }
+  .branch-meta-info { display: flex; align-items: center; gap: 1.5rem; }
+  .meta-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
 
-  .btn-danger-text { color: #ef4444; border: none; background: transparent; cursor: pointer; padding: 0.5rem; border-radius: 0.5rem; transition: background 0.2s; }
-  .btn-danger-text:hover:not(:disabled) { background: rgba(239, 68, 68, 0.1); }
-  .btn-danger-text:disabled { opacity: 0.3; cursor: not-allowed; }
+  .row-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    display: flex;
+    transition: all 0.2s;
+  }
+  .row-btn:hover:not(:disabled) { background: var(--surface-variant); color: var(--primary-color); }
+  .delete-btn:hover:not(:disabled) { color: #ef4444; background: rgba(239,68,68,0.1); }
+  .row-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-  .dimmed { opacity: 0.6; grayscale: 0.5; }
-  .skeleton-table { height: 400px; animation: pulse 1.5s infinite; }
+  .skeleton-table { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 </style>
