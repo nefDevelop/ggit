@@ -18,15 +18,15 @@
   ]);
 
   const adminSubItems = $derived([
-    { name: i18n.t('common.users') || 'Users', icon: 'person', path: '/admin/users' },
-    { name: i18n.t('common.repositories') || 'Repositories', icon: 'book', path: '/admin/repos' },
-    { name: i18n.t('common.organizations') || 'Organizations', icon: 'corporate_fare', path: '/admin/orgs' },
-    { name: i18n.t('common.auths') || 'Authentication', icon: 'lock', path: '/admin/auth' },
-    { name: i18n.t('common.config') || 'Configuration', icon: 'settings', path: '/admin/config' },
-    { name: i18n.t('common.monitor') || 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
-    { name: i18n.t('common.maintenance') || 'Maintenance', icon: 'build', path: '/admin/maintenance' },
-    { name: i18n.t('common.audit_log') || 'Audit Log', icon: 'history_edu', path: '/admin/audit_log' },
-    { name: i18n.t('common.notices') || 'Notices', icon: 'notifications', path: '/admin/notices' }
+    { name: i18n.t('admin.users') || 'Users', icon: 'person', path: '/admin/users' },
+    { name: i18n.t('admin.repositories') || 'Repositories', icon: 'book', path: '/admin/repos' },
+    { name: i18n.t('admin.organizations') || 'Organizations', icon: 'corporate_fare', path: '/admin/orgs' },
+    { name: i18n.t('admin.auths') || 'Authentication', icon: 'lock', path: '/admin/auth' },
+    { name: i18n.t('admin.config') || 'Configuration', icon: 'settings', path: '/admin/config' },
+    { name: i18n.t('admin.monitor') || 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
+    { name: i18n.t('admin.maintenance') || 'Maintenance', icon: 'build', path: '/admin/maintenance' },
+    { name: i18n.t('admin.audit_log') || 'Audit Log', icon: 'history_edu', path: '/admin/audit_log' },
+    { name: i18n.t('admin.notices') || 'Notices', icon: 'notifications', path: '/admin/notices' }
   ]);
 
   const isAdminPath = $derived(page.url.pathname.startsWith('/admin'));
@@ -53,13 +53,15 @@
 <nav class="navigation-bar">
   <!-- USER AT TOP -->
   {#if authState.isAuthenticated}
-    <div class="user-section-top">
-      <img src={authState.user?.avatar} alt="Avatar" class="mini-avatar" />
-      <div class="user-info">
-        <span class="username">{authState.user?.username}</span>
-        <span class="user-role">Developer</span>
+    <div class="user-profile-summary">
+      <div class="avatar-ring">
+        <img src={authState.user?.avatar_url || authState.user?.avatar} alt="Avatar" class="sidebar-avatar" />
       </div>
-      <button class="logout-btn-minimal" onclick={handleLogout} title="Logout">
+      <div class="user-details">
+        <span class="full-name">{authState.user?.full_name || authState.user?.username}</span>
+        <span class="user-handle">@{authState.user?.username}</span>
+      </div>
+      <button class="minimal-logout" onclick={handleLogout} title="Logout">
         <span class="material-symbols-rounded">logout</span>
       </button>
     </div>
@@ -128,61 +130,78 @@
     /* No borders, no islands, just flat integration with background */
   }
 
-  /* USER SECTION TOP */
-  .user-section-top {
+  /* USER PROFILE SUMMARY */
+  .user-profile-summary {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    margin-bottom: 2.5rem;
-    border-radius: 1rem;
-    transition: background 0.2s;
+    gap: 1rem;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+  .user-profile-summary:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
   }
 
-  .mini-avatar {
+  .avatar-ring {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    flex-shrink: 0;
+  }
+
+  .sidebar-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 2px solid var(--border-color);
+    object-fit: cover;
+    border: 2px solid var(--bg-color);
   }
 
-  .user-info {
+  .user-details {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    min-width: 0;
   }
 
-  .username {
-    font-size: 0.95rem;
-    font-weight: 700;
+  .full-name {
+    font-size: 0.9rem;
+    font-weight: 800;
     color: var(--text-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .user-role {
-    font-size: 0.7rem;
+  .user-handle {
+    font-size: 0.75rem;
     color: var(--text-muted);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: 600;
   }
 
-  .logout-btn-minimal {
+  .minimal-logout {
     background: transparent;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 0.4rem;
+    padding: 0.5rem;
     display: flex;
-    border-radius: 50%;
+    border-radius: 0.75rem;
     transition: all 0.2s;
   }
-  .logout-btn-minimal:hover {
-    color: #f87171;
-    background: rgba(248, 113, 113, 0.1);
+  .minimal-logout:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
   }
 
   /* LINKS */
@@ -312,14 +331,16 @@
         position: fixed;
         bottom: 0;
         left: 0;
+        z-index: 1000;
         padding: 0 1rem;
-        background: var(--md3-surface-container);
+        background: var(--bg-color);
         border-top: 1px solid var(--border-color);
         align-items: center;
         padding-bottom: env(safe-area-inset-bottom);
         height: calc(70px + env(safe-area-inset-bottom));
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
     }
-    .user-section-top, .brand-section-bottom, .item-label, .appearance-btn span:not(.material-symbols-rounded) { display: none; }
+    .user-profile-summary, .brand-section-bottom, .item-label, span:not(.material-symbols-rounded) { display: none; }
     .nav-links { flex-direction: row; width: 100%; justify-content: space-around; }
     .nav-item { padding: 0.5rem; }
     .theme-trigger-section { padding: 0; margin: 0; }

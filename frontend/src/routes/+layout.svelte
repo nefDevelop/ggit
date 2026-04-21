@@ -5,6 +5,8 @@
 	import { i18n } from '$lib/i18n.svelte';
 	import { onMount } from 'svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
+	import RightSidebar from '$lib/components/RightSidebar.svelte';
+	import { page } from '$app/stores';
 
 	let { children } = $props();
 
@@ -12,6 +14,8 @@
 		checkAuth();
 		i18n.loadLocale(i18n.locale);
 	});
+
+	const isDashboard = $derived($page.url.pathname === '/' || $page.url.pathname === '/dashboard');
 </script>
 
 <svelte:head>
@@ -35,14 +39,20 @@
 	</script>
 </svelte:head>
 
-<div id="app-layout">
+<div id="app-layout" class:has-right-sidebar={authState.isAuthenticated && isDashboard}>
 	{#if authState.isAuthenticated}
         <div class="navigation-sidebar">
 		    <Navigation />
         </div>
 	{/if}
 
-	<main id="main-content">
-		{@render children()}
-	</main>
+    <div id="main-container-wrapper">
+        <main id="main-content">
+            {@render children()}
+        </main>
+    </div>
+
+    {#if authState.isAuthenticated && isDashboard}
+        <RightSidebar />
+    {/if}
 </div>

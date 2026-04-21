@@ -74,96 +74,99 @@
     </div>
   {:else if repoData}
     <div class="master-island island">
-      <!-- ROW 1: Integrated Search -->
-      <div class="island-search-bar">
-        <GlobalSearch />
-      </div>
-
-      <!-- ROW 2: Identity & Meta -->
-      <header class="repo-identity-bar">
-        <div class="breadcrumb-nav">
-          <a href="/dashboard" class="bc-home"><span class="material-symbols-rounded">grid_view</span></a>
-          <span class="bc-sep">/</span>
-          <a href="/{username}" class="bc-item">{username}</a>
-          <span class="bc-sep">/</span>
-          <h1 class="bc-item active">{reponame}</h1>
-          {#if repoData.private}<span class="lock-icon material-symbols-rounded">lock</span>{/if}
+      <!-- HEADER STRATOSPHERE -->
+      <div class="repo-header-region">
+        <!-- ROW 1: Integrated Search -->
+        <div class="island-search-bar">
+          <GlobalSearch />
         </div>
 
-        <div class="repo-meta-actions">
-          {#if repoData.license}
-            <div class="license-tag">
-              <span class="material-symbols-rounded">balance</span>
-              {repoData.license}
-            </div>
-          {/if}
-          
-          <div class="clone-zone">
-            <button class="btn btn-sm btn-primary" onclick={() => showCloneDropdown = !showCloneDropdown}>
-              <span class="material-symbols-rounded">download</span>
-              Clone
-            </button>
-            {#if showCloneDropdown}
-              <div class="clone-dropdown island shadow-lg">
-                <div class="clone-option">
-                  <span class="label">HTTPS</span>
-                  <code class="url">{repoData.clone_url}</code>
-                  <button class="copy-btn" onclick={() => copyCloneUrl(repoData.clone_url)}>
-                    <span class="material-symbols-rounded">content_copy</span>
-                  </button>
-                  </div>
-                  <div class="archive-section">                  <span class="dropdown-header">Download Source</span>
-                  <div class="archive-grid">
-                    <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-btn tonal">
-                      <span class="material-symbols-rounded">zip_box</span>
-                      <span>ZIP</span>
-                    </a>
-                    <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-btn tonal">
-                      <span class="material-symbols-rounded">package</span>
-                      <span>TAR.GZ</span>
-                    </a>
-                  </div>
-                </div>
+        <!-- ROW 2: Identity & Meta -->
+        <header class="repo-identity-bar">
+          <div class="breadcrumb-nav">
+            <a href="/dashboard" class="bc-home"><span class="material-symbols-rounded">grid_view</span></a>
+            <span class="bc-sep">/</span>
+            <a href="/{username}" class="bc-item">{username}</a>
+            <span class="bc-sep">/</span>
+            <h1 class="bc-item active">{reponame}</h1>
+            {#if repoData.private}<span class="lock-icon material-symbols-rounded">lock</span>{/if}
+          </div>
+
+          <div class="repo-meta-actions">
+            {#if repoData.license}
+              <div class="license-tag">
+                <span class="material-symbols-rounded">balance</span>
+                {repoData.license}
               </div>
             {/if}
+            
+            <div class="clone-zone">
+              <button class="btn btn-sm btn-primary" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                <span class="material-symbols-rounded">download</span>
+                Clone
+              </button>
+              {#if showCloneDropdown}
+                <div class="clone-dropdown island shadow-lg">
+                  <div class="clone-option">
+                    <span class="label">HTTPS</span>
+                    <code class="url">{repoData.clone_url}</code>
+                    <button class="copy-btn" onclick={() => copyCloneUrl(repoData.clone_url)}>
+                      <span class="material-symbols-rounded">content_copy</span>
+                    </button>
+                    </div>
+                    <div class="archive-section">                  <span class="dropdown-header">Download Source</span>
+                    <div class="archive-grid">
+                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-btn tonal">
+                        <span class="material-symbols-rounded">zip_box</span>
+                        <span>ZIP</span>
+                      </a>
+                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-btn tonal">
+                        <span class="material-symbols-rounded">package</span>
+                        <span>TAR.GZ</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              {/if}
+            </div>
+            <a href="/{username}/{reponame}/settings" class="settings-link" title="Settings">
+              <span class="material-symbols-rounded">settings</span>
+            </a>
           </div>
-          <a href="/{username}/{reponame}/settings" class="settings-link" title="Settings">
-            <span class="material-symbols-rounded">settings</span>
-          </a>
-        </div>
-      </header>
+        </header>
 
-      <!-- ROW 3: Rich Technical Tabs (Stats integrated) -->
-      <nav class="rich-tabs">
-        <a href="/{username}/{reponame}" class="tab" class:active={activeTab === 'code'}>
-          <span class="material-symbols-rounded">code</span>
-          <span class="tab-label">Code</span>
-        </a>
-        <a href="/{username}/{reponame}/commits" class="tab" class:active={activeTab === 'commits'}>
-          <span class="material-symbols-rounded">history</span>
-          <span class="tab-count">{gitStats.commits}</span>
-          <span class="tab-label">Commits</span>
-        </a>
-        <a href="/{username}/{reponame}/branches" class="tab" class:active={activeTab === 'branches'}>
-          <span class="material-symbols-rounded">account_tree</span>
-          <span class="tab-count">{gitStats.branches}</span>
-          <span class="tab-label">Branches</span>
-        </a>
-        <a href="/{username}/{reponame}/issues" class="tab" class:active={activeTab === 'issues'}>
-          <span class="material-symbols-rounded">error</span>
-          <span class="tab-count">{repoData.open_issues_count || 0}</span>
-          <span class="tab-label">Issues</span>
-        </a>
-        <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
-          <span class="material-symbols-rounded">merge</span>
-          <span class="tab-count">{repoData.open_pulls_count || 0}</span>
-          <span class="tab-label">PRs</span>
-        </a>
-        <a href="/{username}/{reponame}/wiki" class="tab" class:active={activeTab === 'wiki'}>
-          <span class="material-symbols-rounded">book</span>
-          <span class="tab-label">Wiki</span>
-        </a>
-      </nav>
+        <!-- ROW 3: Rich Technical Tabs (Stats integrated) -->
+        <nav class="rich-tabs">
+          <a href="/{username}/{reponame}" class="tab" class:active={activeTab === 'code'}>
+            <span class="material-symbols-rounded">code</span>
+            <span class="tab-label">Code</span>
+          </a>
+          <a href="/{username}/{reponame}/commits" class="tab" class:active={activeTab === 'commits'}>
+            <span class="material-symbols-rounded">history</span>
+            <span class="tab-count">{gitStats.commits}</span>
+            <span class="tab-label">Commits</span>
+          </a>
+          <a href="/{username}/{reponame}/branches" class="tab" class:active={activeTab === 'branches'}>
+            <span class="material-symbols-rounded">account_tree</span>
+            <span class="tab-count">{gitStats.branches}</span>
+            <span class="tab-label">Branches</span>
+          </a>
+          <a href="/{username}/{reponame}/issues" class="tab" class:active={activeTab === 'issues'}>
+            <span class="material-symbols-rounded">error</span>
+            <span class="tab-count">{repoData.open_issues_count || 0}</span>
+            <span class="tab-label">Issues</span>
+          </a>
+          <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
+            <span class="material-symbols-rounded">merge</span>
+            <span class="tab-count">{repoData.open_pulls_count || 0}</span>
+            <span class="tab-label">PRs</span>
+          </a>
+          <a href="/{username}/{reponame}/wiki" class="tab" class:active={activeTab === 'wiki'}>
+            <span class="material-symbols-rounded">book</span>
+            <span class="tab-label">Wiki</span>
+          </a>
+        </nav>
+      </div>
 
       <!-- MAIN CONTENT -->
       <div class="master-body">
@@ -217,12 +220,15 @@
   .archive-btn span { font-size: 1.25rem; }
 
   /* Row 3: Rich Tabs */
+  .repo-header-region {
+    background-color: var(--surface-variant);
+    border-bottom: 1px solid var(--border-color);
+  }
+
   .rich-tabs {
     display: flex;
     gap: 0.25rem;
     padding: 0 1rem;
-    border-bottom: 1px solid var(--border-color);
-    background: rgba(255,255,255,0.01);
   }
   .tab {
     display: flex;
@@ -235,16 +241,23 @@
     font-weight: 700;
     transition: all 0.2s;
     border-radius: 0.75rem 0.75rem 0 0;
+    margin-bottom: -1px; /* Align with bottom border */
   }
-  .tab:hover { color: var(--text-color); background: rgba(255,255,255,0.03); }
-  .tab.active { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); position: relative; }
-  .tab.active::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--primary-color); }
+  .tab:hover { color: var(--text-color); background: rgba(0,0,0,0.03); }
+  .tab.active { color: var(--primary-color); background: var(--bg-color); position: relative; border: 1px solid var(--border-color); border-bottom-color: var(--bg-color); }
   
-  .tab-count { font-variant-numeric: tabular-nums; background: rgba(255,255,255,0.05); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-color); }
-  .tab.active .tab-count { background: var(--primary-color); color: var(--on-primary); }
+  .tab-count { font-variant-numeric: tabular-nums; background: rgba(0,0,0,0.05); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
+  .tab.active .tab-count { background: var(--primary-container); color: var(--on-primary-container); }
   .tab-label { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
 
-  .master-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+  /* Responsive Tabs: Only show label for the active tab when space is tight */
+  @media (max-width: 800px) {
+    .tab:not(.active) .tab-label { display: none; }
+    .tab:not(.active) .tab-count { display: none; }
+    .tab { padding: 0.85rem 1rem; }
+  }
+
+  .master-body { flex: 1; overflow-y: auto; padding: 2rem; background: var(--bg-color); }
 
   .skeleton-master { flex: 1; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }

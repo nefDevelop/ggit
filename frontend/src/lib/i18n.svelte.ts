@@ -61,7 +61,8 @@ class I18nManager {
       k = parts[1];
     }
 
-    let text = this.translations[section]?.[k] || key;
+    let text = this.translations[section]?.[k];
+    if (!text) return ""; // Return empty string for falsy check in UI
 
     // Support for Go-style format verbs %s, %d, %v, %q
     let i = 0;

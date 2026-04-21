@@ -9,8 +9,8 @@
   --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
   --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
   --shadow-xl: 0 12px 32px rgba(0,0,0,0.2);
-  --inner-shadow: inset 0 2px 12px rgba(0,0,0,0.1);
-  --island-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  --inner-shadow: inset 0 2px 8px rgba(0,0,0,0.1), inset 0 10px 48px rgba(0,0,0,0.06);
+  --island-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 /* ==========================================================================
@@ -104,8 +104,8 @@
     --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
     --shadow-lg: 0 8px 16px rgba(0,0,0,0.4);
     --shadow-xl: 0 12px 32px rgba(0,0,0,0.5);
-    --inner-shadow: inset 0 2px 12px rgba(0,0,0,0.5);
-    --island-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    --inner-shadow: inset 0 2px 8px rgba(0,0,0,0.4), inset 0 10px 48px rgba(0,0,0,0.15);
+    --island-shadow: 0 4px 12px rgba(0,0,0,0.4);
   }
 }
 
@@ -153,8 +153,8 @@
   --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
   --shadow-lg: 0 8px 16px rgba(0,0,0,0.4);
   --shadow-xl: 0 12px 32px rgba(0,0,0,0.5);
-  --inner-shadow: inset 0 2px 12px rgba(0,0,0,0.5);
-  --island-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  --inner-shadow: inset 0 2px 8px rgba(0,0,0,0.4), inset 0 10px 48px rgba(0,0,0,0.15);
+  --island-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
 /* ==========================================================================
@@ -493,9 +493,23 @@ html, body {
   overflow: hidden;
 }
 
+#app-layout.has-right-sidebar {
+  grid-template-columns: 260px 1fr 320px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1300px) {
+  #app-layout, #app-layout.has-right-sidebar {
+    grid-template-columns: 260px 1fr !important;
+  }
+}
+
 @media (max-width: 1024px) {
-  #app-layout {
-    grid-template-columns: 1fr; /* Colapsamos sidebar en tablets/móviles */
+  #app-layout, #app-layout.has-right-sidebar {
+    grid-template-columns: 1fr !important;
+  }
+  .navigation-sidebar {
+    display: contents !important;
   }
 }
 
@@ -505,45 +519,101 @@ html, body {
   transition: background-color 0.3s ease;
 }
 
-#main-content {
+#main-container-wrapper {
   grid-column: 2;
-  background-color: var(--main-content-bg);
-  margin: 0.75rem 0.75rem 0.75rem 0; 
-  border-radius: 2.5rem;
-  box-shadow: var(--inner-shadow);
-  padding: 1.5rem; 
-  overflow-y: auto;
+  margin: 0.75rem 0.75rem 0.75rem 0; /* Default margin for 2 columns */
   position: relative;
+  overflow: hidden;
+  border-radius: 2.5rem;
+  background-color: var(--main-content-bg);
   border: 1px solid var(--main-content-border);
   transition: all 0.3s ease;
-  scrollbar-gutter: stable;
 }
 
-@media (max-width: 1024px) {
-  #main-content {
-    grid-column: 1;
-    margin: 0;
-    border-radius: 0;
-    padding: 1rem;
-    height: calc(100vh - 70px); /* Restamos el espacio para el dock inferior */
+#app-layout.has-right-sidebar #main-container-wrapper {
+  margin: 0.75rem 0; /* Remove side margins when sandwiched for that perfect "contour" look */
+}
+
+#main-container-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2.5rem;
+  box-shadow: var(--inner-shadow);
+  pointer-events: none;
+  z-index: 100;
+}
+
+#main-content {
+  width: 100%;
+  height: 100%;
+  padding: 0; 
+  box-sizing: border-box;
+  scrollbar-gutter: stable;
+  overflow-y: auto;
+}
+
+@media (max-width: 1300px) {
+  #app-layout.has-right-sidebar #main-container-wrapper, #main-container-wrapper {
+    margin-right: 0.75rem;
   }
 }
 
-/* Mejora de las tarjetas (islands) para mayor diferenciación */
+@media (max-width: 1024px) {
+  #main-container-wrapper, #app-layout.has-right-sidebar #main-container-wrapper {
+    grid-column: 1 !important;
+    margin: 0.5rem 0.5rem 80px 0.5rem !important;
+    border-radius: 1.5rem !important;
+  }
+  #main-container-wrapper::after {
+    border-radius: 1.5rem !important;
+  }
+  #main-content {
+    height: calc(100vh - 100px) !important;
+  }
+}
+
 .island {
   background-color: var(--island-bg);
   border: 1px solid var(--border-color);
-  border-radius: 1.75rem;
+  border-radius: 1.5rem;
   box-shadow: var(--island-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   padding: 1.5rem;
-  margin-bottom: 1rem;
 }
 
-.island:hover {
-  box-shadow: var(--shadow-xl);
-  transform: translateY(-2px);
-  border-color: var(--primary-color);
+/* Integrated islands inside the main carved area */
+#main-content .island {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+#main-content .island:last-child {
+  border-bottom: none;
+}
+
+#main-content .island:hover {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.island-header-search {
+  padding: 2.5rem 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: var(--surface-variant);
+  border-bottom: 1px solid var(--border-color);
+  box-sizing: border-box;
+}
+
+.island-body { 
+  padding: 2rem; 
+  flex: 1;
 }
 
 h1, h2, h3, h4 {

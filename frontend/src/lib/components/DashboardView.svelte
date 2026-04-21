@@ -50,16 +50,9 @@
 
   async function loadDashboard() {
     try {
-      const [dataRes, feedsRes] = await Promise.all([
-        apiFetch('/api/v2/user/dashboard/data'),
-        apiFetch('/api/v2/user/dashboard/feeds')
-      ]);
+      const dataRes = await apiFetch('/api/v2/user/dashboard/data');
       if (dataRes.ok) {
         data = await dataRes.json();
-      }
-      if (feedsRes.ok) {
-        const feedsData = await feedsRes.json();
-        feeds = feedsData.feeds;
       }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
@@ -101,7 +94,7 @@
   });
 </script>
 
-<div class="dashboard-grid" style:grid-template-columns={authState.user?.disable_news_feed ? '1fr' : '1.5fr 1fr'}>
+<div class="dashboard-grid full-width">
     <section class="repos-island island">
         <header class="island-header-search">
             <div class="search-and-new-button-group"> 
@@ -161,94 +154,18 @@
             {/if}
         </div>
     </section>
-
-    {#if !authState.user?.disable_news_feed}
-    <div class="sidebar-column">
-        <!-- Organizations Section -->
-        {#if (data.organizations || []).length > 0}
-            <section class="orgs-island island tonal">
-                <header class="simple-header">
-                    <h2 class="section-label">Organizations</h2>
-                </header>
-                <div class="island-body">
-                    <div class="org-list">
-                        {#each data.organizations as org}
-                            <a href="/org/{org.username}" class="org-item hover-lift">
-                                <img src={org.avatar_url} alt="" class="org-avatar" />
-                                <span class="org-name">{org.username}</span>
-                            </a>
-                        {/each}
-                    </div>
-                </div>
-            </section>
-        {/if}
-
-        <section class="activity-island island">
-            <header class="simple-header">
-                <h2 class="section-label">Recent Activity</h2>
-            </header>
-            <div class="island-body">
-                {#if loading}
-                    <div class="skeletons">
-                        {#each Array(5) as _}<div class="skeleton-feed"></div>{/each}
-                    </div>
-                {:else if feeds.length === 0}
-                    <div class="empty-state mini"><p class="text-muted">No activity.</p></div>
-                {:else}
-                    <div class="feed-list timeline">
-                    {#each feeds as act}
-                        <div class="feed-item">
-                            <div class="feed-marker">
-                                <img src={act.act_avatar} alt="" class="feed-avatar" />
-                                <div class="action-icon-badge {act.op_type === 5 ? 'push' : 'create'}">
-                                    <span class="material-symbols-rounded">
-                                        {act.op_type === 5 ? 'commit' : 
-                                         act.op_type === 1 ? 'add_box' : 
-                                         act.op_type === 11 ? 'call_merge' : 'star'}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="feed-content">
-                                <div class="feed-header">
-                                    <span class="feed-user">{act.act_user_name}</span>
-                                    <span class="feed-time">{new Date(act.created_at).toLocaleDateString()}</span>
-                                </div>
-                                <div class="feed-action-body">
-                                    {@html formatAction(act)}
-                                </div>
-                            </div>
-                        </div>
-                    {/each}
-                    </div>
-                {/if}
-            </div>
-        </section>
-    </div>
-    {/if}
 </div>
 
 <style>
   .dashboard-grid {
-    display: grid;
-    gap: 1.5rem;
-    align-items: stretch;
-    height: 100%;
-  }
-
-  .repos-island, .activity-island {
     display: flex;
     flex-direction: column;
-    padding: 0; /* Removed !important, adjust specificity if needed */
-    overflow: hidden;
+    height: 100%;
   }
 
   .repos-island {
-    height: 100%;
-  }
-
-  .activity-island {
-    max-height: 40vh;
-    overflow-y: auto;
+    height: auto;
+    min-height: min-content;
   }
 
   .island-header-search {
@@ -269,7 +186,7 @@
 
   .search-wrapper {
     flex: 1;
-    min-width: 0; /* Previene que el buscador rompa el layout de flexbox */
+    min-width: 0;
   }
 
   .search-and-new-button-group .btn {
@@ -285,12 +202,6 @@
     .island-body {
       padding: 1rem;
     }
-  }
-
-  .header-tools {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
 
   .title-and-view {
@@ -311,7 +222,7 @@
   .island-body { 
     padding: 1.5rem; 
     flex: 1;
-    overflow-y: auto; /* Evita que el contenido se salga por debajo de la isla */
+    overflow-y: auto;
   }
 
   .view-controls {
@@ -333,16 +244,6 @@
   .view-btn span { font-size: 1.1rem; }
   .view-btn.active { background: var(--md3-surface-1); color: var(--primary-color); }
 
-  .simple-header {
-    padding: 1.5rem;
-  }
-
-  .repos-island, .activity-island {
-    box-shadow: none; /* Removed !important, adjust specificity if needed */
-    border: 1px solid var(--border-color);
-    background: transparent; /* Removed !important, adjust specificity if needed */
-  }
-
   .repo-group-flat {
     display: flex;
     flex-direction: column;
@@ -353,111 +254,6 @@
   }
 
   .group-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary-color); padding: 0 0.5rem 0.5rem; display: block; }
-  .feed-list { display: flex; flex-direction: column; gap: 1.5rem; position: relative; }
-  
-  .feed-item { 
-    display: flex; 
-    gap: 1.25rem; 
-    position: relative;
-    padding-bottom: 0.5rem;
-  }
-
-  /* Vertical line for the timeline */
-  .feed-list.timeline::before {
-    content: '';
-    position: absolute;
-    left: 16px;
-    top: 5px;
-    bottom: 5px;
-    width: 2px;
-    background: var(--border-color);
-    opacity: 0.5;
-  }
-
-  .feed-marker {
-    position: relative;
-    z-index: 2;
-    flex-shrink: 0;
-  }
-
-  .feed-avatar { 
-    width: 32px; 
-    height: 32px; 
-    border-radius: 50%; 
-    border: 2px solid var(--surface-variant);
-    background: var(--surface-variant);
-  }
-
-  .action-icon-badge {
-    position: absolute;
-    bottom: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--primary-color);
-    color: white;
-    border: 2px solid var(--md3-surface-1);
-  }
-
-  .action-icon-badge span { font-size: 10px; font-weight: bold; }
-  .action-icon-badge.push { background: #4CAF50; }
-  .action-icon-badge.create { background: #2196F3; }
-
-  .feed-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
-  .feed-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  .feed-user { font-size: 0.85rem; font-weight: 700; color: var(--text-color); }
-  .feed-time { color: var(--text-muted); font-size: 0.7rem; font-weight: 500; opacity: 0.6; }
-  
-  .feed-action-body { 
-    font-size: 0.85rem; 
-    line-height: 1.4; 
-    color: var(--text-muted);
-  }
-
-  .action-summary { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
-  .action-pill { background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; display: flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 700; color: var(--text-color); border: 1px solid var(--border-color); }
-  .action-pill .mini { font-size: 0.9rem; color: var(--primary-color); }
-  .action-at { opacity: 0.4; font-size: 0.8rem; }
-  .repo-link { font-weight: 800; color: var(--text-color) !important; }
-
-  .feed-action-body :global(a) {
-    color: var(--primary-color);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .feed-action-body :global(a:hover) {
-    text-decoration: underline;
-  }
-
-  .feed-action-body :global(.branch) { 
-    font-family: 'Roboto Mono', monospace;
-    background: var(--md3-surface-3); 
-    padding: 0.1rem 0.4rem; 
-    border-radius: 6px; 
-    font-size: 0.75rem; 
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-    font-weight: 700;
-  }
-
-  /* Timeline hover effect */
-  .feed-item:hover .feed-avatar {
-    transform: scale(1.1);
-    border-color: var(--primary-color);
-  }
-
-  .feed-item:hover .feed-user {
-    color: var(--primary-color);
-  }
-
-  .feed-header {
-    margin-bottom: 2px;
-  }
 
   .empty-state {
     display: flex;
@@ -466,10 +262,6 @@
     justify-content: center;
     min-height: 250px;
     text-align: center;
-  }
-
-  .empty-state.mini {
-    min-height: 100px;
   }
 
   .empty-state .empty-icon {
@@ -490,19 +282,6 @@
   }
 
   .skeleton-line { height: 64px; background: var(--md3-surface-3); border-radius: 0.75rem; margin-bottom: 0.5rem; animation: pulse 1.5s infinite; }
-  .skeleton-feed { height: 40px; background: var(--md3-surface-3); border-radius: 0.5rem; margin-bottom: 1rem; animation: pulse 1.5s infinite; }
-
-  .sidebar-column { display: flex; flex-direction: column; gap: 1.5rem; }
-  .orgs-island { margin-bottom: 0; }
-  .org-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .org-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--text-color); padding: 0.5rem; border-radius: 0.75rem; transition: background 0.2s; }
-  .org-item:hover { background: rgba(255,255,255,0.05); }
-  .org-avatar { width: 24px; height: 24px; border-radius: 4px; }
-  .org-name { font-weight: 600; font-size: 0.9rem; }
 
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
-  @media (max-width: 1024px) { 
-    .dashboard-grid { grid-template-columns: 1fr; } /* Removed !important, adjust specificity if needed */
-    /* .hero-header is not used in the template, removed */
-  }
 </style>
