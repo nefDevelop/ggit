@@ -42,9 +42,13 @@ type RepositoryResponse struct {
 	FullName    string        `json:"full_name"`
 	Description string        `json:"description"`
 	Owner       *UserResponse `json:"owner"`
-	NumStars    int           `json:"num_stars"`
-	NumForks    int           `json:"num_forks"`
-	NumWatches  int           `json:"num_watches"`
+	NumStars      int                   `json:"num_stars"`
+	NumForks      int                   `json:"num_forks"`
+	NumWatches    int                   `json:"num_watches"`
+	OpenIssues    int                   `json:"open_issues_count"`
+	OpenPulls     int                   `json:"open_pulls_count"`
+	NumCommits    int64                 `json:"num_commits"`
+	NumBranches   int                   `json:"num_branches"`
 	IsPrivate     bool                  `json:"is_private"`
 	HTMLURL       string                `json:"html_url"`
 	DefaultBranch string                `json:"default_branch"`

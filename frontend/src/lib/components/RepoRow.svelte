@@ -82,13 +82,21 @@
   </div>
 
   <div class="stats-info">
-    <div class="stat-item {repo.open_issues_count > 0 ? 'active' : 'dim'}" title="Open Issues">
+    <div class="stat-item dim" title="Commits">
+      <span class="material-symbols-rounded">history</span>
+      {repo.num_commits || 0}
+    </div>
+    <div class="stat-item dim" title="Branches">
+      <span class="material-symbols-rounded">account_tree</span>
+      {repo.num_branches || 0}
+    </div>
+    <div class="stat-item {repo.open_issues_count > 0 ? 'active' : 'dim'}" title="Issues">
       <span class="material-symbols-rounded">error</span>
       {repo.open_issues_count || 0}
     </div>
-    <div class="stat-item dim" title="Pull Requests">
+    <div class="stat-item {repo.open_pulls_count > 0 ? 'active' : 'dim'}" title="Pull Requests">
       <span class="material-symbols-rounded">merge</span>
-      0
+      {repo.open_pulls_count || 0}
     </div>
   </div>
 
@@ -103,7 +111,7 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 1fr 120px 140px 140px;
+    grid-template-columns: 1fr 140px 220px 120px;
     align-items: center;
     padding: 1rem 1.25rem;
     background: transparent;
