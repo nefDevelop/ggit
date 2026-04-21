@@ -1,14 +1,16 @@
-import requests
-import sys
+import argparse
 import getpass
+import logging
+import os
+import requests
 import random
 import string
 import time
 from datetime import datetime, timedelta
 from requests.auth import HTTPBasicAuth
 from faker import Faker  # Necesitas: pip install faker
+from typing import List, Dict, Any, Optional
 
-BASE_URL = "http://localhost:3005/api/v2"
 fake = Faker()
 
 # Listas para generar contenido realista
@@ -49,6 +51,12 @@ PR_TITLES = [
 
 BUG_TYPES = ["null pointer", "off-by-one error", "race condition", "memory leak"]
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+class GgitClient:
+    """Un cliente para interactuar coa API v2 de Ggit."""
+
+
 def random_string(length=8):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
@@ -64,116 +72,118 @@ def random_date(start_date=None, end_date=None):
         end_date = datetime.now()
     return fake.date_time_between(start_date=start_date, end_date=end_date)
 
-def create_repo(auth, username, repo_name, is_private=False):
-    """Create a new repository"""
-    payload = {
-        "name": repo_name,
-        "description": fake.sentence(nb_words=10),
-        "private": is_private,
-        "auto_init": True,
-        "created_at": random_date().isoformat()
-    }
-    resp = requests.post(f"{BASE_URL}/user/repos", json=payload, auth=auth)
-    return resp.status_code == 201 or resp.status_code == 422
+class GgitClient:
+    """Un cliente para interactuar coa API v2 de Ggit."""
 
-def create_branch(auth, username, repo_name, branch_name, base_branch="main"):
-    """Create a new branch"""
-    payload = {
-        "old_ref_name": base_branch,
-        "new_ref_name": branch_name
-    }
-    resp = requests.post(f"{BASE_URL}/{username}/{repo_name}/branches", json=payload, auth=auth)
-    return resp.status_code == 201
+    def __init__(self, base_url: str, username: str, password: str):
+        self.base_url = base_url.rstrip('/')
+        self.username = username
+        self.session = requests.Session()
+        self.session.auth = HTTPBasicAuth(username, password)
 
-def create_commit(auth, username, repo_name, files, branch="main"):
-    """Create commits with multiple files"""
-    for file_info in files:
+    def _request(self, method: str, endpoint: str, **kwargs) -> requests.Response:
+        url = f"{self.base_url}/{endpoint}"
+        try:
+            resp = self.session.request(method, url, **kwargs)
+            resp.raise_for_status()
+            return resp
+        except requests.exceptions.HTTPError as e:
+            logging.error(f"HTTP Error for {method.upper()} {url}: {e.response.status_code} - {e.response.text}")
+            raise
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Request failed for {method.upper()} {url}: {e}")
+            raise
+
+    def check_auth(self):
+        self._request("get", "user/check")
+
+    def create_repo(self, repo_name: str, is_private: bool = False) -> bool:
         payload = {
-            "tree_path": file_info["path"],
-            "content": file_info["content"],
-            "commit_summary": file_info["message"],
-            "commit_description": fake.paragraph(),
-            "branch": branch,
-            "is_new_file": file_info.get("is_new", True)
+            "name": repo_name,
+            "description": fake.sentence(nb_words=10),
+            "private": is_private,
+            "auto_init": True,
+            "created_at": random_date().isoformat()
         }
-        requests.post(f"{BASE_URL}/{username}/{repo_name}/editor/edit", json=payload, auth=auth)
-        time.sleep(0.1)  # Pequeña pausa para evitar rate limiting
+        try:
+            self._request("post", "user/repos", json=payload)
+            return True
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 422: # Repo already exists
+                logging.warning(f"Repository '{repo_name}' already exists. Continuing...")
+                return True
+            return False
 
-def create_pull_request(auth, username, repo_name, title, body, head_branch, base_branch="main"):
-    """Create a pull request"""
-    payload = {
-        "title": title,
-        "body": body,
-        "head": head_branch,
-        "base": base_branch,
-        "created_at": random_date().isoformat()
-    }
-    resp = requests.post(f"{BASE_URL}/{username}/{repo_name}/pulls", json=payload, auth=auth)
-    if resp.status_code == 201:
+    def create_branch(self, repo_name: str, branch_name: str, base_branch: str = "main"):
+        payload = {"old_ref_name": base_branch, "new_ref_name": branch_name}
+        self._request("post", f"{self.username}/{repo_name}/branches", json=payload)
+
+    def create_commit(self, repo_name: str, files: List[Dict[str, Any]], branch: str = "main"):
+        for file_info in files:
+            payload = {
+                "tree_path": file_info["path"],
+                "content": file_info["content"],
+                "commit_summary": file_info["message"],
+                "commit_description": fake.paragraph(),
+                "branch": branch,
+                "is_new_file": file_info.get("is_new", True)
+            }
+            self._request("post", f"{self.username}/{repo_name}/editor/edit", json=payload)
+            time.sleep(0.1)
+
+    def create_pull_request(self, repo_name: str, title: str, body: str, head_branch: str, base_branch: str = "main") -> Optional[int]:
+        payload = {
+            "title": title, "body": body, "head": head_branch, "base": base_branch,
+            "created_at": random_date().isoformat()
+        }
+        resp = self._request("post", f"{self.username}/{repo_name}/pulls", json=payload)
         return resp.json().get("index")
-    return None
 
-def create_issue(auth, username, repo_name, title, content, labels=None):
-    """Create an issue with optional labels"""
-    payload = {
-        "title": title,
-        "content": content,
-        "created_at": random_date().isoformat()
-    }
-    if labels:
-        payload["labels"] = labels
-    
-    resp = requests.post(f"{BASE_URL}/{username}/{repo_name}/issues", json=payload, auth=auth)
-    if resp.status_code == 201:
+    def create_issue(self, repo_name: str, title: str, content: str, labels: Optional[List[str]] = None) -> Optional[int]:
+        payload = {"title": title, "content": content, "created_at": random_date().isoformat()}
+        if labels:
+            payload["labels"] = labels
+        resp = self._request("post", f"{self.username}/{repo_name}/issues", json=payload)
         return resp.json().get("index")
-    return None
 
-def add_issue_comment(auth, username, repo_name, issue_index, comment):
-    """Add comment to an issue"""
-    payload = {"body": comment}
-    requests.post(f"{BASE_URL}/{username}/{repo_name}/issues/{issue_index}/comments", 
-                 json=payload, auth=auth)
+    def add_issue_comment(self, repo_name: str, issue_index: int, comment: str):
+        payload = {"body": comment}
+        self._request("post", f"{self.username}/{repo_name}/issues/{issue_index}/comments", json=payload)
 
-def create_wiki_page(auth, username, repo_name, title, content):
-    """Create a wiki page"""
-    payload = {"title": title, "content": content}
-    requests.post(f"{BASE_URL}/{username}/{repo_name}/wiki", json=payload, auth=auth)
+    def create_wiki_page(self, repo_name: str, title: str, content: str):
+        payload = {"title": title, "content": content}
+        self._request("post", f"{self.username}/{repo_name}/wiki", json=payload)
 
-def create_release(auth, username, repo_name, tag, name, body, prerelease=False):
-    """Create a release"""
-    payload = {
-        "tag_name": tag,
-        "name": name,
-        "body": body,
-        "draft": "false",
-        "prerelease": prerelease
-    }
-    requests.post(f"{BASE_URL}/{username}/{repo_name}/releases", json=payload, auth=auth)
+    def create_release(self, repo_name: str, tag: str, name: str, body: str, prerelease: bool = False):
+        payload = {
+            "tag_name": tag, "name": name, "body": body,
+            "draft": "false", "prerelease": prerelease
+        }
+        self._request("post", f"{self.username}/{repo_name}/releases", json=payload)
 
-def add_collaborator(auth, username, repo_name, collaborator_name, permission="write"):
-    """Add a collaborator to the repository"""
-    payload = {"permission": permission}
-    requests.post(f"{BASE_URL}/{username}/{repo_name}/collaborators/{collaborator_name}", 
-                 json=payload, auth=auth)
+    def add_collaborator(self, repo_name: str, collaborator_name: str, permission: str = "write"):
+        payload = {"permission": permission}
+        self._request("post", f"{self.username}/{repo_name}/collaborators/{collaborator_name}", json=payload)
 
-def seed_repository(auth, username, repo_name):
-    print(f"\n--- Seeding Repository: {repo_name} ---")
+
+def seed_repository(client: GgitClient, repo_name: str):
+    logging.info(f"--- Seeding Repository: {repo_name} ---")
     
     # 1. Create repository
     is_private = random.choice([True, False])
-    if create_repo(auth, username, repo_name, is_private):
-        print(f"[+] Repository created (private: {is_private})")
+    if client.create_repo(repo_name, is_private):
+        logging.info(f"Repository created (private: {is_private})")
     else:
-        print(f"[!] Error creating repo")
+        logging.error(f"Failed to create repository '{repo_name}'. Skipping.")
         return
     
     # 2. Create multiple branches
     branches = []
     for _ in range(random.randint(1, 3)):
         branch_name = f"feature/{random_string(6)}"
-        if create_branch(auth, username, repo_name, branch_name):
-            branches.append(branch_name)
-            print(f"[+] Created branch: {branch_name}")
+        client.create_branch(repo_name, branch_name)
+        branches.append(branch_name)
+        logging.info(f"Created branch: {branch_name}")
     
     # 3. Create commits on main branch
     for _ in range(random.randint(2, 5)):
@@ -196,8 +206,8 @@ def seed_repository(auth, username, repo_name):
                 "is_new": True
             })
         
-        create_commit(auth, username, repo_name, files)
-        print(f"[+] Commit: {message[:50]}...")
+        client.create_commit(repo_name, files)
+        logging.info(f"Commit on main: {message[:50]}...")
     
     # 4. Create commits on feature branches
     for branch in branches:
@@ -209,8 +219,8 @@ def seed_repository(auth, username, repo_name):
                 "message": message,
                 "is_new": True
             }]
-            create_commit(auth, username, repo_name, files, branch=branch)
-            print(f"[+] Commit on {branch}: {message}")
+            client.create_commit(repo_name, files, branch=branch)
+            logging.info(f"Commit on {branch}: {message}")
     
     # 5. Create Pull Requests
     for branch in branches:
@@ -233,16 +243,15 @@ def seed_repository(auth, username, repo_name):
 ## Testing
 {fake.paragraph()}"""
             
-            pr_index = create_pull_request(auth, username, repo_name, title, body, branch)
+            pr_index = client.create_pull_request(repo_name, title, body, branch)
             if pr_index:
-                print(f"[+] Created PR #{pr_index}: {title}")
+                logging.info(f"Created PR #{pr_index}: {title}")
                 
                 # Add comments to PR
                 if random.choice([True, False]):
                     time.sleep(0.5)
-                    add_issue_comment(auth, username, repo_name, pr_index, 
-                                    f"Thanks for the contribution! I'll review this soon. {fake.sentence()}")
-                    print(f"   Added comment to PR #{pr_index}")
+                    client.add_issue_comment(repo_name, pr_index, f"Thanks for the contribution! I'll review this soon. {fake.sentence()}")
+                    logging.info(f"  -> Added comment to PR #{pr_index}")
     
     # 6. Create Issues
     issues = []
@@ -272,10 +281,10 @@ def seed_repository(auth, username, repo_name):
 - OS: {random.choice(['Ubuntu 22.04', 'macOS 14', 'Windows 11'])}
 - Version: {random.choice(['1.0.0', '1.1.0', '2.0.0'])}"""
         
-        issue_idx = create_issue(auth, username, repo_name, title, content)
+        issue_idx = client.create_issue(repo_name, title, content)
         if issue_idx:
             issues.append(issue_idx)
-            print(f"[+] Created issue #{issue_idx}: {title[:50]}...")
+            logging.info(f"Created issue #{issue_idx}: {title[:50]}...")
             
             # Add comments to issues
             for _ in range(random.randint(1, 3)):
@@ -286,8 +295,8 @@ def seed_repository(auth, username, repo_name):
                     f"Thanks for reporting! {fake.sentence()}",
                     f"Fixed in latest commit. {fake.sentence()}"
                 ])
-                add_issue_comment(auth, username, repo_name, issue_idx, comment)
-                print(f"   Added comment to issue #{issue_idx}")
+                client.add_issue_comment(repo_name, issue_idx, comment)
+                logging.info(f"  -> Added comment to issue #{issue_idx}")
     
     # 7. Create Wiki pages
     wiki_pages = [
@@ -300,8 +309,8 @@ def seed_repository(auth, username, repo_name):
     
     selected_pages = random.sample(wiki_pages, random.randint(2, len(wiki_pages)))
     for page in selected_pages:
-        create_wiki_page(auth, username, repo_name, page["title"], page["content"])
-        print(f"[+] Created wiki page: {page['title']}")
+        client.create_wiki_page(repo_name, page["title"], page["content"])
+        logging.info(f"Created wiki page: {page['title']}")
     
     # 8. Create Releases
     releases = [
@@ -318,8 +327,7 @@ def seed_repository(auth, username, repo_name):
 - {fake.sentence()}
 
 ## Installation
-```bash
-git clone http://localhost:3005/{username}/{repo_name}.git
+```bash\ngit clone {client.base_url.replace('/api/v2', '')}/{client.username}/{repo_name}.git
 cd {repo_name}
 git checkout {tag}
 ```
