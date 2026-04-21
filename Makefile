@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend build clean help install-deps
+.PHONY: dev backend frontend build rebuild clean help install-deps
 
 # Default target
 help:
@@ -7,6 +7,7 @@ help:
 	@echo "  make backend   - Compila y ejecuta el servidor Gogs (puerto 3005)"
 	@echo "  make frontend  - Ejecuta el servidor de desarrollo Svelte (puerto 5173)"
 	@echo "  make build     - Compila el binario de Gogs"
+	@echo "  make rebuild   - Fuerza una recompilación completa desde cero"
 	@echo "  make install   - Instala las dependencias del frontend"
 
 # Limpiar puertos antes de empezar
@@ -32,7 +33,12 @@ frontend:
 # Compila el binario
 build:
 	@echo "Compilando Gogs..."
-	@go build -o gogs ./cmd/ggit
+	@go build -v -ldflags="-s -w" -o gogs ./cmd/ggit
+
+# Fuerza la recompilación ignorando la caché
+rebuild:
+	@echo "Forzando recompilación completa..."
+	@go build -a -v -ldflags="-s -w" -o gogs ./cmd/ggit
 
 # Instalación de dependencias
 install:
