@@ -28,9 +28,7 @@ Gogs has the following dependencies:
 - [go-mockgen](https://github.com/derision-test/go-mockgen)
 - Database upon your choice (pick one, we choose PostgreSQL in this document):
   - [PostgreSQL](https://wiki.postgresql.org/wiki/Detailed_installation_guides) (v9.6 or higher)
-  - [MySQL](https://dev.mysql.com/downloads/mysql/) with `ENGINE=InnoDB` (v5.7 or higher)
   - [SQLite3](https://www.sqlite.org/index.html)
-  - [TiDB](https://github.com/pingcap/tidb)
 
 ### macOS
 

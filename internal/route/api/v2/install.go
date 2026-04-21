@@ -30,7 +30,7 @@ func GetInstallSettings(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"db_types": []string{"MySQL", "PostgreSQL", "SQLite3"},
+		"db_types": []string{"PostgreSQL", "SQLite3"},
 		"default_settings": map[string]any{
 			"db_type":          "PostgreSQL",
 			"db_host":          conf.Database.Host,
@@ -80,7 +80,6 @@ func PerformInstall(c *context.APIContext) {
 	// Database mapping
 	dbTypes := map[string]string{
 		"PostgreSQL": "postgres",
-		"MySQL":      "mysql",
 		"SQLite3":    "sqlite3",
 	}
 	conf.Database.Type = dbTypes[f.DbType]

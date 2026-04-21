@@ -7,7 +7,6 @@ icon: "download"
 ## Prerequisites
 
 1. Ggit requires use of one of the following database backends:
-   - MySQL, >= 5.7
    - PostgreSQL, >= 9.6
    - SQLite 3
 1. Git, >= 1.8.3, on both server and client side
@@ -25,27 +24,14 @@ icon: "download"
 
 ## Initialize database
 
-If you choose to use MySQL or PostgreSQL as your database backend, you need to first complete the initial database creation.
+If you choose to use PostgreSQL as your database backend, you need to first complete the initial database creation.
 
-<Tabs>
-  <Tab title="PostgreSQL">
-    Create a database user and database:
+Create a database user and database:
 
-    ```bash
-    psql -c "CREATE USER ggit WITH PASSWORD '{YOUR_PASSWORD}';"
-    psql -c "CREATE DATABASE ggit OWNER ggit ENCODING 'UTF8';"
-    ```
-
-  </Tab>
-  <Tab title="MySQL">
-    Use the [bundled script](https://github.com/gogs/gogs/blob/main/scripts/mysql.sql) to create the database with proper encoding:
-
-    ```zsh
-    mysql -u root -p < scripts/mysql.sql
-    ```
-
-  </Tab>
-</Tabs>
+```bash
+psql -c "CREATE USER ggit WITH PASSWORD '{YOUR_PASSWORD}';"
+psql -c "CREATE DATABASE ggit OWNER ggit ENCODING 'UTF8';"
+```
 
 ## Installation methods
 

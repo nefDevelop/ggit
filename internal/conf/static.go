@@ -509,7 +509,6 @@ var HookMode bool
 // Indicates which database backend is currently being used.
 var (
 	UseSQLite3    bool
-	UseMySQL      bool
 	UsePostgreSQL bool
 )
 

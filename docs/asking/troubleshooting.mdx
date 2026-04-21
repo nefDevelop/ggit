@@ -73,39 +73,6 @@ This page covers common problems you may encounter when installing, configuring,
 ## Database
 
 <AccordionGroup>
-  <Accordion title="Incorrect MySQL storage engine (key too long)">
-    **Error**:
-
-    ```text
-    Error 1071: Specified key was too long; max key length is 1000 bytes
-    ```
-
-    **Possible cause**: The database is using the MyISAM storage engine, which has a shorter maximum key length than InnoDB.
-
-    **Solution**: After importing the initial schema, log into MySQL and switch the storage engine:
-
-    ```sql
-    USE gogs;
-    SET GLOBAL storage_engine=INNODB;
-    ```
-
-    Then re-run the Ggit installer at `http://localhost:3000/install`.
-
-  </Accordion>
-
-  <Accordion title="Outdated MySQL password authentication">
-    **Error**:
-
-    ```text
-    Database setting is not correct: This server only supports the insecure old password authentication.
-    ```
-
-    **Possible cause**: The MySQL user's password was only updated for the `@localhost` entry. A second entry in the user table (such as `@%`) still has the old-format password.
-
-    **Solution**: Update the password for all host entries of the MySQL user. See [this GitHub discussion](https://github.com/gogs/gogs/issues/385#issuecomment-54357073) for detailed steps.
-
-  </Accordion>
-
   <Accordion title="Wrong SQLite3 database file">
     **Error**: Pushing to a repository shows that the owner is not registered, or the `user` table does not exist.
 

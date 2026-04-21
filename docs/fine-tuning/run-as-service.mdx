@@ -29,7 +29,7 @@ Running Ggit as a system service ensures it starts automatically on boot and res
     [Unit]
     Description=Gogs
     After=network.target
-    After=mariadb.service mysql.service mysqld.service postgresql.service memcached.service redis.service
+    After=postgresql.service memcached.service redis.service
 
     [Service]
     # Uncomment the following if you have repos with lots of files
@@ -62,7 +62,7 @@ Running Ggit as a system service ensures it starts automatically on boot and res
     - `Environment` -- ensure `USER` and `HOME` match the Ggit user
 
     <Tip>
-      If you use MySQL/MariaDB, PostgreSQL, Redis, or Memcached, the `After=` lines ensure Ggit starts after those services. Uncomment or add lines as needed for your database.
+      If you use PostgreSQL, Redis, or Memcached, the `After=` lines ensure Ggit starts after those services. Uncomment or add lines as needed for your database.
     </Tip>
 
     ### 2. Enable and start the service
@@ -185,7 +185,7 @@ Running Ggit as a system service ensures it starts automatically on boot and res
 
     depend() {
         need net
-        after mysql postgresql
+        after postgresql
     }
     ```
 

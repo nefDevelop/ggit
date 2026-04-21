@@ -35,8 +35,6 @@ func TestMain(m *testing.M) {
 	logger.Default = logger.Default.LogMode(level)
 
 	switch os.Getenv("GOGS_DATABASE_TYPE") {
-	case "mysql":
-		conf.UseMySQL = true
 	case "postgres":
 		conf.UsePostgreSQL = true
 	default:

@@ -13,7 +13,6 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/olekukonko/tablewriter/tw"
-	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -41,10 +40,6 @@ func main() {
 		postgres.New(postgres.Config{
 			Conn: conn,
 		}),
-		mysql.New(mysql.Config{
-			Conn:                      conn,
-			SkipInitializeWithVersion: true,
-		}),
 		sqlite.Open(""),
 	}
 	collected := make([][]*tableInfo, 0, len(dialectors))
@@ -70,14 +65,13 @@ func main() {
 			})),
 			tablewriter.WithHeaderAutoFormat(tw.Off),
 		)
-		table.Header("Field", "Column", "PostgreSQL", "MySQL", "SQLite3")
+		table.Header("Field", "Column", "PostgreSQL", "SQLite3")
 		for j, f := range ti.Fields {
-			sqlite3Type := strings.ToUpper(collected[2][i].Fields[j].Type)
+			sqlite3Type := strings.ToUpper(collected[1][i].Fields[j].Type)
 			sqlite3Type = strings.ReplaceAll(sqlite3Type, "PRIMARY KEY ", "")
 			_ = table.Append([]string{
 				f.Name, f.Column,
-				strings.ToUpper(f.Type),                         // PostgreSQL
-				strings.ToUpper(collected[1][i].Fields[j].Type), // MySQL
+				strings.ToUpper(f.Type), // PostgreSQL
 				sqlite3Type,
 			})
 		}

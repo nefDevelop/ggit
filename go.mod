@@ -47,7 +47,6 @@ require (
 	golang.org/x/net v0.53.0
 	golang.org/x/text v0.36.0
 	gopkg.in/ini.v1 v1.67.1
-	gorm.io/driver/mysql v1.6.0
 	gorm.io/driver/postgres v1.6.0
 	gorm.io/gorm v1.31.1
 	unknwon.dev/clog/v2 v2.2.0
@@ -55,7 +54,6 @@ require (
 
 require (
 	bitbucket.org/creachadair/shell v0.0.9 // indirect
-	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/Azure/go-ntlmssp v0.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
@@ -97,7 +95,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.30.2 // indirect
-	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/goccy/go-json v0.10.6 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

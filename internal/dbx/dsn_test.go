@@ -46,29 +46,6 @@ func TestNewDSN(t *testing.T) {
 		wantDSN string
 	}{
 		{
-			name: "mysql: unix",
-			opts: conf.DatabaseOpts{
-				Type:     "mysql",
-				Host:     "/tmp/mysql.sock",
-				Name:     "gogs",
-				User:     "gogs",
-				Password: "pa$$word",
-			},
-			wantDSN: "gogs:pa$$word@unix(/tmp/mysql.sock)/gogs?charset=utf8mb4&parseTime=true",
-		},
-		{
-			name: "mysql: tcp",
-			opts: conf.DatabaseOpts{
-				Type:     "mysql",
-				Host:     "localhost:3306",
-				Name:     "gogs",
-				User:     "gogs",
-				Password: "pa$$word",
-			},
-			wantDSN: "gogs:pa$$word@tcp(localhost:3306)/gogs?charset=utf8mb4&parseTime=true",
-		},
-
-		{
 			name: "postgres: unix",
 			opts: conf.DatabaseOpts{
 				Type:     "postgres",
@@ -101,7 +78,7 @@ func TestNewDSN(t *testing.T) {
 				Type: "sqlite3",
 				Path: "/tmp/gogs.db",
 			},
-			wantDSN: "file:/tmp/gogs.db?cache=shared&mode=rwc",
+			wantDSN: "file:/tmp/gogs.db?cache=shared&mode=rwc&_journal_mode=WAL",
 		},
 	}
 	for _, test := range tests {

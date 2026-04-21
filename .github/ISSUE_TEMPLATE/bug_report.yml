@@ -41,7 +41,7 @@ body:
     attributes:
       label: Database
       description: |
-        Please specify the exact database and version you're reporting for, e.g. "PostgreSQL 9.6", "MySQL 5.7", "SQLite 3".
+        Please specify the exact database and version you're reporting for, e.g. "PostgreSQL 9.6", "SQLite 3".
     validations:
       required: true
   - type: textarea

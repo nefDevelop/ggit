@@ -26,40 +26,6 @@ func NewDB(t *testing.T, suite string, tables ...any) *gorm.DB {
 	var dbOpts conf.DatabaseOpts
 	var cleanup func(db *gorm.DB)
 	switch dbType {
-	case "mysql":
-		dbOpts = conf.DatabaseOpts{
-			Type:     "mysql",
-			Host:     os.ExpandEnv("$MYSQL_HOST:$MYSQL_PORT"),
-			Name:     dbName,
-			User:     os.Getenv("MYSQL_USER"),
-			Password: os.Getenv("MYSQL_PASSWORD"),
-		}
-
-		dsn, err := dbx.NewDSN(dbOpts)
-		require.NoError(t, err)
-
-		sqlDB, err := sql.Open("mysql", dsn)
-		require.NoError(t, err)
-
-		// Set up test database
-		dbName = fmt.Sprintf("gogs-%s-%d", suite, time.Now().Unix())
-		_, err = sqlDB.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS `%s`", dbName))
-		require.NoError(t, err)
-
-		_, err = sqlDB.Exec(fmt.Sprintf("CREATE DATABASE `%s`", dbName))
-		require.NoError(t, err)
-
-		dbOpts.Name = dbName
-
-		cleanup = func(db *gorm.DB) {
-			testDB, err := db.DB()
-			if err == nil {
-				_ = testDB.Close()
-			}
-
-			_, _ = sqlDB.Exec(fmt.Sprintf("DROP DATABASE `%s`", dbName))
-			_ = sqlDB.Close()
-		}
 	case "postgres":
 		dbOpts = conf.DatabaseOpts{
 			Type:     "postgres",

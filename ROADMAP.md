@@ -169,5 +169,95 @@ _ [x] Refinado de sombras \* [x] Soporte avanzado para temas (Deep Night / Solar
 - [ ] **Refactor de Nomenclatura:**
   - Actualizar `gogs.io/gogs` a `ggit.io/ggit` (o similar) en todo el core.
   - Cambiar rutas por defecto (`gogs-repositories` -> `ggit-repositories`) en la configuración.
-- [ ] **Zero Legacy Templates (Emails):**
-  - Migrar los templates de correo restantes a un sistema de renderizado más moderno o desacoplado.
+## Fase 15: Optimización de Rendimiento y Simplificación (Core)
+
+**Objetivo:** Convertir el fork en una plataforma ultra-ligera eliminando "grasa" técnica y procesos innecesarios.
+
+- [x] **Optimización de Base de Datos:**
+  - [x] Activar modo **WAL** en SQLite para mejorar la concurrencia en equipos de 20-100 personas. [COMPLETO]
+  - [x] Eliminar soporte para **MySQL/MariaDB** para simplificar el binario y las dependencias. [COMPLETO]
+- [ ] **Estrategia "Docs-as-Code" (Nueva Wiki):**
+  - [ ] Eliminar el sistema de repositorios "fantasma" (`.wiki.git`) que duplica el I/O en disco.
+  - [ ] Implementar la "Carpeta Mágica": La Wiki leerá automáticamente de `/docs` o `.docs` del repo principal.
+  - [ ] Añadir soporte para **Wikilinks** `[[Enlace]]` en el renderizado de Markdown.
+- [ ] **Limpieza de Procesos en Segundo Plano:**
+  - [ ] Eliminar **Mirrors** (`internal/repox/mirror.go`): Quitar tareas programadas de clonación externa.
+  - [ ] Eliminar **LFS** (`internal/lfsx`): Simplificar la gestión de archivos si no se requieren grandes binarios.
+  - [ ] Reducir **Idiomas**: Eliminar archivos de traducción exóticos en `conf/locale` para ahorrar RAM al inicio.
+- [ ] **Simplificación de Autenticación:**
+  - [ ] Mantener solo **Local + LDAP/OIDC**. Eliminar métodos obsoletos como PAM o SMTP-Auth.
+
+
+
+
+---
+  1. Los "Nuevos" Indispensables (Para equipos)
+   * Pull Requests y Code Review: Para 100 personas es el corazón. Sin un sistema de revisión de código, no es una
+     herramienta de equipo, es solo un disco duro con Git.
+   * Webhooks: Vital para integrar con Slack/Discord o con su sistema de CI/CD (Jenkins, GitHub Actions, etc.).
+   * Autenticación Externa (LDAP / OIDC): Con 100 personas, el administrador no quiere crear usuarios a mano. Quieren
+     conectar su sistema de identidad actual.
+   * Email (Notificaciones básicas): Aunque tú no lo uses, un equipo necesita saber cuándo les han asignado una tarea
+     o cuándo un Pull Request ha sido aprobado. Pero se puede simplificar a solo "notificaciones críticas".
+   * SSH Key Management: Obligatorio para desarrolladores.
+
+
+
+  2. Los Prescindibles (Candidatos a salir)
+  Si quieres que el binario ocupe menos, gaste menos RAM y la CPU no se distraiga, puedes eliminar o desactivar:
+
+   * Localización (i18n) (conf/locale/): Gogs/Gitea traen decenas de idiomas. Para un equipo pequeño, puedes dejar
+     solo Inglés y Español y borrar el resto. Esto libera megabytes de archivos de texto que se cargan en RAM al
+     inicio.
+   * Búsqueda Global de Contenido: Si el servidor tiene que indexar el interior de cada archivo de cada commit, la
+     CPU sufrirá. Para 100 personas, la búsqueda por nombre de repositorio suele ser suficiente.
+   * Sistema de Wikis Integrado: Muchos equipos usan Notion, Obsidian o una carpeta de documentos dentro del propio
+     repositorio. El sistema de Wiki integrado de Gogs usa una lógica de "repo dentro de otro repo" que añade
+     complejidad.
+   * Mirroring Automático (internal/repox/mirror.go): Si no necesitas que el servidor esté clonando repositorios
+     externos cada hora de forma automática, esta lógica y sus tareas programadas pueden salir.
+   * Migraciones desde terceros (internal/repox/migrate.go): Toda la lógica para importar desde GitHub, GitLab,
+     Bitbucket, etc. Una vez que has movido tus repos, este código no se vuelve a usar.
+   * Organizaciones y Equipos Complejos: Si vuestro flujo es plano, podrías simplificar mucho la lógica de permisos
+     eliminando la jerarquía de "Organizaciones > Equipos > Usuarios".
+
+  ---
+
+
+
+   A. Espejos (Mirrors) - Candidato #1 a salir
+   * Por qué: Los equipos suelen subir su código directamente. La función de "Mirror" (que el servidor esté clonando
+     otros repos cada X tiempo) consume mucha CPU y ancho de banda en segundo plano. 
+   * Decisión: Eliminar internal/repox/mirror.go y su lógica de tareas programadas.
+
+  B. LFS (Large File Storage) - Candidato #2 a salir
+   * Por qué: Si el enfoque no es para estudios de videojuegos o diseño 3D, LFS añade una complejidad enorme en la
+     gestión de archivos y en la base de datos.
+   * Decisión: Quitar internal/lfsx. Un equipo de 100 devs web/apps no lo echará de menos.
+
+  C. Wiki Integrada
+   * Por qué: La mayoría de equipos usa herramientas externas (Notion, Confluence) o simplemente una carpeta docs/
+     dentro del repositorio. La Wiki de Gogs es un "repo fantasma" que complica las copias de seguridad.
+   * Decisión: Prescindible. Se puede motivar a usar archivos .md en el propio repo.
+
+  D. Soporte de Migración Masiva
+   * Por qué: Gogs/Gitea tienen lógica pesada para importar desde GitHub, GitLab, Bitbucket...
+   * Decisión: Para un producto enfocado a "rendimiento personal/pequeño equipo", basta con permitir crear un repo
+     vacío y que el usuario haga un git push. No necesitas 5000 líneas de código para hablar con la API de GitHub.
+
+  E. Múltiples fuentes de Auth "exóticas"
+   * Por qué: Gogs soporta PAM, SMTP-Auth, LDAP, Local... 
+   * Decisión: Quédate con Local + LDAP. Elimina PAM (complejo de configurar en Docker/Linux) y SMTP-Auth (poco
+     usado).
+
+  ---
+
+  3. El "Plan Quirúrgico" de Rendimiento
+
+  Si quieres que este fork sea recordado por su velocidad, yo atacaría esto en el código:
+
+   1. Limpiar internal/cron: Reduce las tareas de fondo al mínimo. Solo limpieza de sesiones y poco más.
+   2. Eliminar internal/repox/migrate y internal/repox/mirror: Son las partes más "ruidosas" del backend.
+   3. Reducir Idiomas: Deja solo los 3 o 4 más usados (Inglés, Español, Chino, quizás Alemán/Francés). Eliminar 30
+      archivos de traducción aligera la carga de memoria.
+

@@ -6,7 +6,6 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/glebarez/sqlite"
-	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
@@ -37,22 +36,13 @@ func NewDSN(opts conf.DatabaseOpts) (dsn string, err error) {
 	}
 
 	switch opts.Type {
-	case "mysql":
-		if opts.Host[0] == '/' { // Looks like a unix socket
-			dsn = fmt.Sprintf("%s:%s@unix(%s)/%s%scharset=utf8mb4&parseTime=true",
-				opts.User, opts.Password, opts.Host, opts.Name, concate)
-		} else {
-			dsn = fmt.Sprintf("%s:%s@tcp(%s)/%s%scharset=utf8mb4&parseTime=true",
-				opts.User, opts.Password, opts.Host, opts.Name, concate)
-		}
-
 	case "postgres":
 		host, port := ParsePostgreSQLHostPort(opts.Host)
 		dsn = fmt.Sprintf("user='%s' password='%s' host='%s' port='%s' dbname='%s' sslmode='%s' search_path='%s' application_name='gogs'",
 			opts.User, opts.Password, host, port, opts.Name, opts.SSLMode, opts.Schema)
 
 	case "sqlite3":
-		dsn = "file:" + opts.Path + "?cache=shared&mode=rwc"
+		dsn = "file:" + opts.Path + "?cache=shared&mode=rwc&_journal_mode=WAL"
 
 	default:
 		return "", errors.Errorf("unrecognized dialect: %s", opts.Type)
@@ -71,8 +61,6 @@ func OpenDB(opts conf.DatabaseOpts, cfg *gorm.Config) (*gorm.DB, error) {
 
 	var dialector gorm.Dialector
 	switch opts.Type {
-	case "mysql":
-		dialector = mysql.Open(dsn)
 	case "postgres":
 		dialector = postgres.Open(dsn)
 	case "sqlite3":
