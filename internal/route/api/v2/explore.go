@@ -182,6 +182,11 @@ func ExploreOrganizations(c *context.APIContext) {
 
 // ExploreTopics returns a list of popular topics.
 func ExploreTopics(c *context.APIContext) {
+	if !database.HasEngine {
+		c.JSON(http.StatusOK, map[string]any{"ok": true, "topics": []any{}})
+		return
+	}
+
 	topics, err := database.Handle.Repositories().ListPopularTopics(c.Req.Context(), 20)
 	if err != nil {
 		c.Error(err, "list popular topics")
