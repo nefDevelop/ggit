@@ -4,10 +4,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/unknwon/com"
-
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/lazyregexp"
+	"gogs.io/gogs/internal/strx"
 )
 
 const ErrAlphaDashDotSlash = "AlphaDashDotSlashError"
@@ -72,7 +71,7 @@ func Assign(form any, data map[string]any) {
 		if fieldName == "-" {
 			continue
 		} else if fieldName == "" {
-			fieldName = com.ToSnakeCase(field.Name)
+			fieldName = strx.ToSnakeCase(field.Name)
 		}
 
 		data[fieldName] = val.Field(i).Interface()

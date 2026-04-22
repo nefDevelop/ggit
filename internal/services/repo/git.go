@@ -11,7 +11,6 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-	"github.com/unknwon/com"
 
 	embedConf "gogs.io/gogs/conf"
 	"gogs.io/gogs/internal/conf"
@@ -19,6 +18,7 @@ import (
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/process"
 	"gogs.io/gogs/internal/repox"
+	"gogs.io/gogs/internal/strx"
 )
 
 func getRepoInitFile(tp, name string) ([]byte, error) {
@@ -57,7 +57,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 		"CloneURL.HTTPS": cloneLink.HTTPS,
 	}
 	if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
-		[]byte(com.Expand(string(data), match)), 0o644); err != nil {
+		[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
 		return errors.Newf("write README.md: %v", err)
 	}
 

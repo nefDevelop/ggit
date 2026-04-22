@@ -19,7 +19,6 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/unknwon/cae/zip"
-	"github.com/unknwon/com"
 	"golang.org/x/image/draw"
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
@@ -966,7 +965,7 @@ func prepareRepoCommit(repo *Repository, tmpDir, repoPath string, opts CreateRep
 		"CloneURL.HTTPS": cloneLink.HTTPS,
 	}
 	if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
-		[]byte(com.Expand(string(data), match)), 0o644); err != nil {
+		[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
 		return errors.Newf("write README.md: %v", err)
 	}
 

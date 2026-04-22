@@ -57,7 +57,7 @@
 - [x] **Avatares:** Desactivar Gravatar/Libravatar. Usar avatares locales o generados.
 - [x] **Webhooks:** Eliminar integraciones específicas (Slack, Discord, DingTalk). Mantener solo **Webhook Genérico (JSON)**. [COMPLETO]
 - [x] **Email Minimalista:** Implementado estilo **Slim HTML** (ligero y con formato esencial). [COMPLETO]
-
+- [x]    * github.com/unknwon/com: Es una librería de utilidades antigua de la era Gogs. Gran parte de lo que hace ya lo hace la librería estándar de Go o strx. 
 ---
 
 ## Fase 11: Estrategia "Docs-as-Code" (Nueva Wiki)

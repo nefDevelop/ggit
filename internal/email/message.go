@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/cockroachdb/errors"
-	"github.com/inbucket/html2text"
 	gomail "github.com/wneessen/go-mail"
+	"gogs.io/gogs/internal/strx" // Asegúrate de importar strx
 	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
@@ -34,10 +34,7 @@ func newMessageFrom(to []string, from, subject, htmlBody string) (*message, erro
 	m.SetDate()
 
 	if conf.Email.UsePlainText || conf.Email.AddPlainTextAlt {
-		plainBody, err := html2text.FromString(htmlBody)
-		if err != nil {
-			return nil, errors.Wrap(err, "convert HTML to plain text")
-		}
+		plainBody := strx.HTMLToText(htmlBody)
 		if conf.Email.UsePlainText {
 			m.SetBodyString(gomail.TypeTextPlain, plainBody)
 		} else {
