@@ -173,16 +173,10 @@ func Register(c *context.APIContext) {
 		return
 	}
 
-	var payload registerPayload
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.ErrorStatus(http.StatusBadRequest, err)
-		return
-	}
-
 	u, err := authservice.Auth.Register(c.Req.Context(), authservice.SignupOptions{
-		Username: payload.UserName,
-		Email:    payload.Email,
-		Password: payload.Password,
+		Username: f.UserName,
+		Email:    f.Email,
+		Password: f.Password,
 	})
 	if err != nil {
 		switch {

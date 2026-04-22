@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
 

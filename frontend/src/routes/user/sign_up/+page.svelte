@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
 
@@ -53,8 +54,7 @@
       const res = await apiFetch('/api/v2/user/register', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'X-Csrf-Token': getCsrfToken()
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           username,

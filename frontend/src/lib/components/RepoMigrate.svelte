@@ -260,7 +260,7 @@
     }
 
     .form-section {
-        background: var(--island island-interactive-bg);
+        background: var(--island-interactive-bg);
         border: 1px solid var(--md-sys-color-outline-variant);
         border-radius: 24px;
         padding: 2rem;
