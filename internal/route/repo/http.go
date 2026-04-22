@@ -182,12 +182,6 @@ Please create and use personal access token on user settings page`)
 			return
 		}
 
-		if !isPull && repo.IsMirror {
-			c.String(http.StatusForbidden, "Mirror repository is read-only")
-			c.Abort()
-			return
-		}
-
 		c.Set("httpContext", &HTTPContext{
 			Context:   &gcontext.Context{Context: c},
 			OwnerName: ownerName,

@@ -61,9 +61,6 @@ func FuncMap() []template.FuncMap {
 			"AppDomain": func() string {
 				return conf.Server.Domain
 			},
-			"DisableGravatar": func() bool {
-				return conf.Picture.DisableGravatar
-			},
 			"ShowFooterTemplateLoadTime": func() bool {
 				return conf.Other.ShowFooterTemplateLoadTime
 			},
@@ -240,8 +237,6 @@ func ActionIcon(opType int) string {
 		return "alert"
 	case 19: // Fork a repository
 		return "repo-forked"
-	case 20, 21, 22: // Mirror sync
-		return "repo-clone"
 	default:
 		return "invalid type"
 	}

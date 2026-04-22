@@ -25,7 +25,7 @@ func SetEngine() (*gorm.DB, error) {
 	} else {
 		logPath = filepath.Join(conf.Log.RootPath, "gorm.log")
 	}
-	
+
 	var err error
 	var gormLogger logger.Writer
 	if conf.HookMode {
@@ -74,7 +74,7 @@ type Statistic struct {
 		User, Org, PublicKey,
 		Repo, Watch, Star, Action, Access,
 		Issue, Comment, Oauth, Follow,
-		Mirror, Release, LoginSource, Webhook,
+		Release, LoginSource, Webhook,
 		Milestone, Label, HookTask,
 		Team, UpdateTask, Attachment int64
 	}
@@ -93,7 +93,6 @@ func GetStatistic(ctx context.Context) (stats Statistic) {
 	Handle.db.WithContext(ctx).Model(new(Comment)).Count(&stats.Counter.Comment)
 	stats.Counter.Oauth = 0
 	Handle.db.WithContext(ctx).Model(new(Follow)).Count(&stats.Counter.Follow)
-	Handle.db.WithContext(ctx).Model(new(Mirror)).Count(&stats.Counter.Mirror)
 	Handle.db.WithContext(ctx).Model(new(Release)).Count(&stats.Counter.Release)
 	stats.Counter.LoginSource = Handle.LoginSources().Count(ctx)
 	Handle.db.WithContext(ctx).Model(new(Webhook)).Count(&stats.Counter.Webhook)

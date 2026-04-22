@@ -2,7 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
 	import { authState, checkAuth } from '$lib/auth.svelte';
-	import { i18n } from '$lib/i18n.svelte';
+	import { i18n } from '$lib/i18n.svelte.ts';
 	import { onMount } from 'svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import RightSidebar from '$lib/components/RightSidebar.svelte';
@@ -12,7 +12,9 @@
 
 	onMount(() => {
 		checkAuth();
-		i18n.loadLocale(i18n.locale);
+		// Cargar el idioma guardado o el del navegador
+		const savedLocale = localStorage.getItem('ggit-locale') || navigator.language || 'es-ES';
+		i18n.init(savedLocale);
 	});
 
 	const isDashboard = $derived($page.url.pathname === '/' || $page.url.pathname === '/dashboard');

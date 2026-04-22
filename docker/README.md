@@ -132,7 +132,7 @@ This container has some options available via environment variables, these optio
      See: [Backup System](#backup-system)
 - **BACKUP_EXTRA_ARGS**:
   - <u>Possible value:</u>
-    `--verbose --exclude-mirror-repos`
+    `--verbose`
   - <u>Default:</u>
     `null`
   - <u>Action:</u>

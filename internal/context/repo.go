@@ -42,15 +42,13 @@ type Repository struct {
 	RepoLink     string
 	CloneLink    repox.CloneLink
 	CommitsCount int64
-	Mirror       *database.Mirror
-
-	PullRequest *PullRequest
+	PullRequest  *PullRequest
 }
 
 // ... helper methods (IsOwner, IsAdmin, etc.) same as before ...
-func (r *Repository) IsOwner() bool { return r.AccessMode >= database.AccessModeOwner }
-func (r *Repository) IsAdmin() bool { return r.AccessMode >= database.AccessModeAdmin }
-func (r *Repository) IsWriter() bool { return r.AccessMode >= database.AccessModeWrite }
+func (r *Repository) IsOwner() bool   { return r.AccessMode >= database.AccessModeOwner }
+func (r *Repository) IsAdmin() bool   { return r.AccessMode >= database.AccessModeAdmin }
+func (r *Repository) IsWriter() bool  { return r.AccessMode >= database.AccessModeWrite }
 func (r *Repository) HasAccess() bool { return r.AccessMode >= database.AccessModeRead }
 
 func (r *Repository) CanEnableEditor() bool {
@@ -199,17 +197,6 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 
 			gctx.Repo.Repository.EnableIssues = repo.CanGuestViewIssues()
 			gctx.Repo.Repository.EnableWiki = repo.CanGuestViewWiki()
-		}
-
-		if repo.IsMirror {
-			gctx.Repo.Mirror, err = database.GetMirrorByRepoID(repo.ID)
-			if err != nil {
-				gctx.Error(err, "get mirror by repository ID")
-				return
-			}
-			gctx.Data["MirrorEnablePrune"] = gctx.Repo.Mirror.EnablePrune
-			gctx.Data["MirrorInterval"] = gctx.Repo.Mirror.Interval
-			gctx.Data["Mirror"] = gctx.Repo.Mirror
 		}
 
 		gitRepo, err := git.Open(database.RepoPath(ownerName, repoName))

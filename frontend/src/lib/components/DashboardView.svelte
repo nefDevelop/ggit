@@ -9,12 +9,10 @@
   let data = $state<{
     repositories: any[],
     collaborative: any[],
-    mirrors: any[],
     organizations: any[]
   }>({
     repositories: [],
     collaborative: [],
-    mirrors: [],
     organizations: []
   });
   let feeds = $state<any[]>([]);

@@ -31,11 +31,6 @@
 
   const isAdminPath = $derived(page.url.pathname.startsWith('/admin'));
 
-  function toggleLanguage() {
-    const next = i18n.locale === 'en-US' ? 'es-ES' : 'en-US';
-    i18n.setLocale(next);
-  }
-
   function getCsrfToken() {
     if (typeof document === 'undefined') return '';
     const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
@@ -105,10 +100,6 @@
 
   <!-- BRAND AT BOTTOM -->
   <div class="brand-section-bottom">
-    <button class="lang-toggle-btn" onclick={toggleLanguage} title="Change Language">
-        <span class="material-symbols-rounded">language</span>
-        <span class="lang-text">{i18n.locale === 'en-US' ? 'EN' : 'ES'}</span>
-    </button>
     <div class="brand-info">
         <span class="brand-name">Ggit</span>
         <span class="version">v2026.4.0</span>
@@ -301,22 +292,6 @@
     font-weight: 900;
     font-size: 1rem;
   }
-
-  .lang-toggle-btn {
-    background: var(--surface-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    color: var(--text-color);
-    padding: 0.4rem 0.6rem;
-    border-radius: 0.75rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    transition: all 0.2s;
-  }
-  .lang-toggle-btn:hover { background: var(--surface-variant-hover); border-color: var(--primary-color); }
-  .lang-toggle-btn .material-symbols-rounded { font-size: 1.1rem; }
-  .lang-text { font-size: 0.75rem; font-weight: 800; }
 
   .brand-info { display: flex; flex-direction: column; }
   .brand-name { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; line-height: 1; }

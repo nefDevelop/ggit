@@ -15,7 +15,6 @@ import (
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/email"
-	"gogs.io/gogs/internal/form"
 	"gogs.io/gogs/internal/userx"
 )
 
@@ -62,15 +61,15 @@ type AddSSHKey struct {
 // GetUserProfileSettings returns the current user's profile settings.
 func GetUserProfileSettings(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
-		"name":      c.User.Name,
-		"full_name": c.User.FullName,
-		"email":     c.User.Email,
-		"website":   c.User.Website,
-		"location":  c.User.Location,
-		"disable_news_feed": c.User.DisableNewsFeed,
+		"name":                   c.User.Name,
+		"full_name":              c.User.FullName,
+		"email":                  c.User.Email,
+		"website":                c.User.Website,
+		"location":               c.User.Location,
+		"disable_news_feed":      c.User.DisableNewsFeed,
 		"enable_dicebear_avatar": conf.Picture.EnableDicebearAvatar,
-		"avatar_url": c.User.AvatarURL(),
-		"use_custom_avatar": c.User.UseCustomAvatar,
+		"avatar_url":             c.User.AvatarURL(),
+		"use_custom_avatar":      c.User.UseCustomAvatar,
 	})
 }
 
@@ -341,35 +340,18 @@ func DeleteUserAccessToken(c *context.APIContext) {
 // UpdateUserAvatar updates the current user's avatar.
 func UpdateUserAvatar(c *context.APIContext) {
 	var f struct {
-		Source   string                `json:"source"`
-		Avatar   *multipart.FileHeader `form:"avatar"`
-		Gravatar string                `json:"gravatar" binding:"omitempty,email,max=254"`
+		Avatar *multipart.FileHeader `form:"avatar"`
 	}
 	// Try to bind as multipart form first
 	if err := c.Request.ParseMultipartForm(32 << 20); err == nil {
-		f.Source = c.Req.PostFormValue("source")
-		f.Gravatar = c.Req.PostFormValue("gravatar")
 		file, header, err := c.Req.FormFile("avatar")
 		if err == nil {
 			f.Avatar = header
 			_ = file.Close()
 		}
-	} else {
-		// Try JSON for Gravatar source
-		if err := c.ShouldBindJSON(&f); err != nil {
-			c.ErrorStatus(http.StatusBadRequest, err)
-			return
-		}
 	}
 
-	if f.Source == form.AvatarLookup {
-		if err := database.Handle.Users().Update(c.Req.Context(), c.User.ID, database.UpdateUserOptions{
-			AvatarEmail: &f.Gravatar,
-		}); err != nil {
-			c.StatusError(http.StatusInternalServerError, "Update avatar email failed", err)
-			return
-		}
-	} else if f.Avatar != nil {
+	if f.Avatar != nil {
 		content, err := f.Avatar.Open()
 		if err != nil {
 			c.StatusError(http.StatusInternalServerError, "Open avatar file failed", err)

@@ -37,7 +37,6 @@ On the release branch:
 
 On the `main` branch:
 
-- [ ] Update the repository mirror on [Gitee](https://gitee.com/unknwon/gogs).
 - [ ] Create a new release announcement in [Discussions](https://github.com/gogs/gogs/discussions/categories/announcements).
 - [ ] Send a tweet on the [official Twitter account](https://twitter.com/GogsHQ) for the minor release.
 - [ ] Close the milestone for the minor release.

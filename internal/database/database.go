@@ -49,7 +49,7 @@ var Tables = []any{
 	new(HookTask),
 	new(Issue), new(IssueLabel), new(IssueUser),
 	new(Label), new(LFSObject), new(LoginSource),
-	new(Milestone), new(Mirror),
+	new(Milestone),
 	new(Notice),
 	new(OrgUser),
 	new(ProtectBranch), new(ProtectBranchWhitelist), new(PublicKey), new(PullRequest),

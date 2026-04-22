@@ -13,7 +13,6 @@ import (
 type DashboardData struct {
 	Repositories     []*apiv2types.RepositoryResponse `json:"repositories"`
 	Collaborative    []*apiv2types.RepositoryResponse `json:"collaborative"`
-	Mirrors          []*apiv2types.RepositoryResponse `json:"mirrors"`
 	OrganizationList []*apiv2types.UserResponse       `json:"organizations"`
 }
 
@@ -51,18 +50,6 @@ func GetDashboardData(c *context.APIContext) {
 		apiCollaborative[i] = r.APIFormat(r.MustOwner())
 	}
 
-	// 3. Get Mirror Repositories
-	mirrors, err := database.GetUserMirrorRepositories(ctxUser.ID)
-	if err != nil {
-		c.Error(err, "get mirror repositories")
-		return
-	}
-	_ = database.MirrorRepositoryList(mirrors).LoadAttributes()
-	apiMirrors := make([]*apiv2types.RepositoryResponse, len(mirrors))
-	for i, r := range mirrors {
-		apiMirrors[i] = r.APIFormat(r.MustOwner())
-	}
-
 	// 4. Get Organizations
 	orgs, err := database.Handle.Organizations().List(
 		c.Req.Context(),
@@ -83,7 +70,6 @@ func GetDashboardData(c *context.APIContext) {
 	c.JSON(http.StatusOK, DashboardData{
 		Repositories:     apiRepos,
 		Collaborative:    apiCollaborative,
-		Mirrors:          apiMirrors,
 		OrganizationList: apiOrgs,
 	})
 }

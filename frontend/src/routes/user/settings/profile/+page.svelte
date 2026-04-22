@@ -159,7 +159,7 @@
         method: 'DELETE'
       });
       if (res.ok) {
-        message = 'Avatar deleted. Using Gravatar/Identicon.';
+        message = 'Avatar deleted. Using default avatar.';
         avatarCacheBuster = Date.now();
         fetchProfile();
       }

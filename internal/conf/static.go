@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/gogs/go-libravatar"
 	"gopkg.in/ini.v1"
 
 	"gogs.io/gogs/conf"
@@ -125,11 +124,6 @@ var (
 		FormatLayout string `ini:"-"` // Actual layout of the Format.
 	}
 
-	// Mirror settings
-	Mirror struct {
-		DefaultInterval int
-	}
-
 	// Webhook settings
 	Webhook struct {
 		Types          []string
@@ -161,11 +155,6 @@ var (
 
 	// Cron tasks
 	Cron struct {
-		UpdateMirror struct {
-			Enabled    bool
-			RunAtStart bool
-			Schedule   string
-		} `ini:"cron.update_mirrors"`
 		RepoHealthCheck struct {
 			Enabled    bool
 			RunAtStart bool
@@ -198,7 +187,6 @@ var (
 		GCArgs               []string `ini:"GC_ARGS" delim:" "`
 		Timeout              struct {
 			Migrate int
-			Mirror  int
 			Clone   int
 			Pull    int
 			Diff    int
@@ -396,13 +384,7 @@ var UI UIOpts
 type PictureOpts struct {
 	AvatarUploadPath           string
 	RepositoryAvatarUploadPath string
-	GravatarSource             string
-	DisableGravatar            bool
-	EnableFederatedAvatar      bool
 	EnableDicebearAvatar       bool
-
-	// Derived from other static values
-	LibravatarService *libravatar.Libravatar `ini:"-"` // Initialized client for federated avatar.
 }
 
 // Picture settings

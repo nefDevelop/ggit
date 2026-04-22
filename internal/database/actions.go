@@ -133,7 +133,6 @@ func (s *ActionsStore) ListAuditLog(ctx context.Context, page int) ([]*Action, e
 		Find(&actions).Error
 }
 
-
 // notifyWatchers creates rows in action table for watchers who are able to see the action.
 func (s *ActionsStore) notifyWatchers(ctx context.Context, act *Action) error {
 	watches, err := newReposStore(s.db).ListWatches(ctx, act.RepoID)
@@ -198,87 +197,6 @@ func (s *ActionsStore) RenameRepo(ctx context.Context, doer, owner *User, oldRep
 			Content:      oldRepoName,
 		},
 	)
-}
-
-func (s *ActionsStore) mirrorSyncAction(ctx context.Context, opType ActionType, owner *User, repo *Repository, refName string, content []byte) error {
-	return s.notifyWatchers(ctx,
-		&Action{
-			ActUserID:    owner.ID,
-			ActUserName:  owner.Name,
-			OpType:       opType,
-			Content:      string(content),
-			RepoID:       repo.ID,
-			RepoUserName: owner.Name,
-			RepoName:     repo.Name,
-			RefName:      refName,
-			IsPrivate:    repo.IsPrivate || repo.IsUnlisted,
-		},
-	)
-}
-
-type MirrorSyncPushOptions struct {
-	Owner       *User
-	Repo        *Repository
-	RefName     string
-	OldCommitID string
-	NewCommitID string
-	Commits     *PushCommits
-}
-
-// MirrorSyncPush creates an action for mirror synchronization of pushed
-// commits.
-func (s *ActionsStore) MirrorSyncPush(ctx context.Context, opts MirrorSyncPushOptions) error {
-	if conf.UI.FeedMaxCommitNum > 0 && len(opts.Commits.Commits) > conf.UI.FeedMaxCommitNum {
-		opts.Commits.Commits = opts.Commits.Commits[:conf.UI.FeedMaxCommitNum]
-	}
-
-	apiCommits, err := opts.Commits.APIFormat(ctx,
-		newUsersStore(s.db),
-		repox.RepositoryPath(opts.Owner.Name, opts.Repo.Name),
-		repox.HTMLURL(opts.Owner.Name, opts.Repo.Name),
-	)
-	if err != nil {
-		return errors.Wrap(err, "convert commits to API format")
-	}
-
-	opts.Commits.CompareURL = repox.CompareCommitsPath(opts.Owner.Name, opts.Repo.Name, opts.OldCommitID, opts.NewCommitID)
-	apiPusher := opts.Owner.APIFormat()
-	err = PrepareWebhooks(
-		opts.Repo,
-		HookEventTypePush,
-		&apiv2types.WebhookPushPayload{
-			Ref:        opts.RefName,
-			Before:     opts.OldCommitID,
-			After:      opts.NewCommitID,
-			CompareURL: conf.Server.ExternalURL + opts.Commits.CompareURL,
-			Commits:    apiCommits,
-			Repo:       opts.Repo.APIFormat(opts.Owner),
-			Pusher:     apiPusher,
-			Sender:     apiPusher,
-		},
-	)
-	if err != nil {
-		return errors.Wrap(err, "prepare webhooks")
-	}
-
-	data, err := json.Marshal(opts.Commits)
-	if err != nil {
-		return errors.Wrap(err, "marshal JSON")
-	}
-
-	return s.mirrorSyncAction(ctx, ActionMirrorSyncPush, opts.Owner, opts.Repo, opts.RefName, data)
-}
-
-// MirrorSyncCreate creates an action for mirror synchronization of a new
-// reference.
-func (s *ActionsStore) MirrorSyncCreate(ctx context.Context, owner *User, repo *Repository, refName string) error {
-	return s.mirrorSyncAction(ctx, ActionMirrorSyncCreate, owner, repo, refName, nil)
-}
-
-// MirrorSyncDelete creates an action for mirror synchronization of a reference
-// deletion.
-func (s *ActionsStore) MirrorSyncDelete(ctx context.Context, owner *User, repo *Repository, refName string) error {
-	return s.mirrorSyncAction(ctx, ActionMirrorSyncDelete, owner, repo, refName, nil)
 }
 
 // MergePullRequest creates an action for merging a pull request.
@@ -719,9 +637,6 @@ const (
 	ActionDeleteBranch                            // 17
 	ActionDeleteTag                               // 18
 	ActionForkRepo                                // 19
-	ActionMirrorSyncPush                          // 20
-	ActionMirrorSyncCreate                        // 21
-	ActionMirrorSyncDelete                        // 22
 )
 
 // Action is a user operation to a repository. It implements template.Actioner
@@ -730,7 +645,7 @@ type Action struct {
 	ID           int64      `gorm:"primaryKey" json:"id"`
 	UserID       int64      `gorm:"index" json:"user_id"` // Receiver user ID
 	OpType       ActionType `json:"op_type"`
-	ActUserID    int64      `json:"act_user_id"`  // Doer user ID
+	ActUserID    int64      `json:"act_user_id"`   // Doer user ID
 	ActUserName  string     `json:"act_user_name"` // Doer user name
 	ActAvatar    string     `xorm:"-" gorm:"-" json:"act_avatar"`
 	RepoID       int64      `xorm:"INDEX" gorm:"index" json:"repo_id"`
@@ -872,11 +787,11 @@ func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore *UsersStore, r
 			Message: pcs.Commits[i].Message,
 			URL:     repoURL + "/commit/" + pcs.Commits[i].Sha1,
 			Author: &apiv2types.WebhookPayloadUser{
-				Name: pcs.Commits[i].AuthorName,
+				Name:  pcs.Commits[i].AuthorName,
 				Email: pcs.Commits[i].AuthorEmail,
 			},
 			Committer: &apiv2types.WebhookPayloadUser{
-				Name: pcs.Commits[i].CommitterName,
+				Name:  pcs.Commits[i].CommitterName,
 				Email: pcs.Commits[i].CommitterEmail,
 			},
 			Timestamp: pcs.Commits[i].Timestamp,

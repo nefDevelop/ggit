@@ -12,13 +12,10 @@ type Type int
 
 // Note: New type must append to the end of list to maintain backward compatibility.
 const (
-	None   Type = iota
-	Plain       // 1
-	LDAP        // 2
-	SMTP        // 3
-	PAM         // 4
-	DLDAP       // 5
-	GitHub      // 6
+	None  Type = iota
+	Plain      // 1
+	LDAP       // 2
+	DLDAP      // 5
 
 	Mock Type = 999
 )
@@ -26,11 +23,8 @@ const (
 // Name returns the human-readable name for given authentication type.
 func Name(typ Type) string {
 	return map[Type]string{
-		LDAP:   "LDAP (via BindDN)",
-		DLDAP:  "LDAP (simple auth)", // Via direct bind
-		SMTP:   "SMTP",
-		PAM:    "PAM",
-		GitHub: "GitHub",
+		LDAP:  "LDAP (via BindDN)",
+		DLDAP: "LDAP (simple auth)", // Via direct bind
 	}[typ]
 }
 

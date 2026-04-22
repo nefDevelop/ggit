@@ -13,8 +13,8 @@ import (
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/email"
 	"gogs.io/gogs/internal/process"
-	"gogs.io/gogs/internal/tool"
 	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"gogs.io/gogs/internal/tool"
 )
 
 // GetAdminAuditLog returns all actions from the system (for admins).
@@ -175,7 +175,6 @@ func GetAdminConfig(c *context.APIContext) {
 		"release":    conf.Release,
 		"picture":    conf.Picture,
 		"http":       conf.HTTP,
-		"mirror":     conf.Mirror,
 		"webhook":    conf.Webhook,
 		"git":        conf.Git,
 	})
@@ -353,9 +352,9 @@ func UpdateAdminUser(c *context.APIContext) {
 		Website:         f.Website,
 		Location:        f.Location,
 		MaxRepoCreation: f.MaxRepoCreation,
-		IsActivated:      f.IsActivated,
-		IsAdmin:          f.IsAdmin,
-		ProhibitLogin:    f.ProhibitLogin,
+		IsActivated:     f.IsActivated,
+		IsAdmin:         f.IsAdmin,
+		ProhibitLogin:   f.ProhibitLogin,
 	}
 
 	if err := database.Handle.Users().Update(c.Req.Context(), userID, opts); err != nil {

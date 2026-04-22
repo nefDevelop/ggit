@@ -18,17 +18,6 @@ func NewContext() {
 		entry *cron.Entry
 		err   error
 	)
-	if conf.Cron.UpdateMirror.Enabled {
-		entry, err = c.AddFunc("Update mirrors", conf.Cron.UpdateMirror.Schedule, database.MirrorUpdate)
-		if err != nil {
-			log.Fatal("Cron.(update mirrors): %v", err)
-		}
-		if conf.Cron.UpdateMirror.RunAtStart {
-			entry.Prev = time.Now()
-			entry.ExecTimes++
-			go database.MirrorUpdate()
-		}
-	}
 	if conf.Cron.RepoHealthCheck.Enabled {
 		entry, err = c.AddFunc("Repository health check", conf.Cron.RepoHealthCheck.Schedule, database.GitFsck)
 		if err != nil {

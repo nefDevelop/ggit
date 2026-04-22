@@ -86,7 +86,6 @@
               "api-reference/repositories/get-a-repository",
               "api-reference/repositories/delete-a-repository",
               "api-reference/repositories/edit-issue-tracker-settings",
-              "api-reference/repositories/mirror-sync",
               "api-reference/repositories/list-branches",
               "api-reference/repositories/get-a-branch",
               "api-reference/repositories/get-a-single-commit",

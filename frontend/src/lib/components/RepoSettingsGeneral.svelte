@@ -9,7 +9,6 @@
   let saving = $state(false);
   let message = $state('');
   let deleteConfirm = $state('');
-  let syncing = $state(false);
 
   function formatDate(d: string) {
     if (!d || d.startsWith('0001')) return 'Never';
@@ -46,25 +45,6 @@
       message = 'Failed to update repository.';
     } finally {
       saving = false;
-    }
-  }
-
-  async function syncMirror() {
-    syncing = true;
-    try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/mirror/sync`, {
-        method: 'POST'
-      });
-      if (res.ok) {
-        message = 'Mirror sync triggered!';
-        setTimeout(() => message = '', 3000);
-        fetchSettings();
-      }
-    } catch (e) {
-      console.error(e);
-      message = 'Failed to trigger sync.';
-    } finally {
-      syncing = false;
     }
   }
 
@@ -155,49 +135,6 @@
   {/if}
 </div>
 
-{#if settings.is_mirror}
-<div class="settings-card island island-interactive mirror-card">
-  <header class="card-header">
-    <h3 class="card-title">Mirror Settings</h3>
-  </header>
-  <div class="card-body mirror-body">
-    <div class="form-group">
-      <label for="mirror_address">Remote Address</label>
-      <input type="text" id="mirror_address" bind:value={settings.mirror_address} placeholder="https://github.com/user/repo.git" />
-    </div>
-
-    <div class="form-group">
-      <label for="mirror_interval">Sync Interval (Hours)</label>
-      <input type="number" id="mirror_interval" bind:value={settings.mirror_interval} min="1" />
-    </div>
-
-    <div class="mirror-meta">
-      <div class="meta-item">
-        <span class="meta-label">Last Sync:</span>
-        <span class="meta-value">{formatDate(settings.last_sync)}</span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">Next Sync:</span>
-        <span class="meta-value">{formatDate(settings.next_sync)}</span>
-      </div>
-    </div>
-
-    <div class="form-actions space-between">
-       <button class="btn btn-secondary" onclick={syncMirror} disabled={syncing}>
-         {#if syncing}
-           Syncing...
-         {:else}
-           Sync Now
-         {/if}
-       </button>
-       <button class="btn btn-primary" onclick={saveSettings} disabled={saving}>
-         {saving ? 'Saving...' : 'Save Mirror Settings'}
-       </button>
-    </div>
-  </div>
-</div>
-{/if}
-
 <div class="settings-card island island-interactive danger">
   <header class="card-header">
     <h3 class="card-title red">Danger Zone</h3>
@@ -262,12 +199,4 @@
 
   .skeleton-form { height: 300px; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
-
-  .mirror-card { margin-top: 2rem; }
-  .mirror-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  .mirror-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.75rem; border: 1px solid var(--md-sys-color-outline-variant); }
-  .meta-item { display: flex; flex-direction: column; gap: 0.25rem; }
-  .meta-label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-  .meta-value { font-size: 0.95rem; font-weight: 600; }
-  .form-actions.space-between { justify-content: space-between; }
 </style>

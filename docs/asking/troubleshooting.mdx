@@ -154,12 +154,10 @@ This page covers common problems you may encounter when installing, configuring,
     **Possible cause**: This can happen for two reasons:
 
     1. Nginx is trying to resolve `localhost` as an IPv6 address, causing a delay.
-    2. Gravatar avatar lookups are being attempted without a valid email address.
 
     **Solution**:
 
     1. Use the explicit hostname `127.0.0.1` instead of `localhost` during the initial setup at `http://gogs-server:3000/install`.
-    2. Either use a valid Gravatar email address for the administrator account or disable avatar lookup during the initial setup.
 
   </Accordion>
 

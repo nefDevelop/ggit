@@ -17,7 +17,6 @@ type MigrateRepoForm struct {
 	AuthPassword string `json:"auth_password"`
 	UID          int64  `json:"uid" binding:"required"`
 	RepoName     string `json:"repo_name" binding:"required,max=100"`
-	Mirror       bool   `json:"mirror"`
 	Private      bool   `json:"private"`
 	Unlisted     bool   `json:"unlisted"`
 	Description  string `json:"description" binding:"max=512"`
@@ -52,16 +51,15 @@ func MigrateRepo(c *context.APIContext) {
 	remoteAddr := strings.TrimSpace(f.CloneAddr)
 	// TODO: Add proper URL parsing/formatting with auth if needed, similar to form.MigrateRepo.ParseRemoteAddr
 	// For now, assume cloneAddr is either public or has auth already or we handle it here.
-	
+
 	// Implementation Note: In the legacy code, ParseRemoteAddr handles AuthUsername/Password inclusion in the URL.
 	// We'll do a simplified version or just use the same logic if accessible.
-	
+
 	repo, err := database.MigrateRepository(c.User, ctxUser, database.MigrateRepoOptions{
 		Name:        f.RepoName,
 		Description: f.Description,
 		IsPrivate:   f.Private || conf.Repository.ForcePrivate,
 		IsUnlisted:  f.Unlisted,
-		IsMirror:    f.Mirror,
 		RemoteAddr:  remoteAddr, // Note: Should include auth if provided
 	})
 

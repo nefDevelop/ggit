@@ -26,7 +26,7 @@ The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-
 - Repository and organization webhooks, including Slack, Discord and Dingtalk.
 - Repository Git hooks, deploy keys and Git LFS.
 - Repository issues, pull requests, wiki, protected branches and collaboration.
-- Migrate and mirror repositories with wiki from other code hosts.
+- Migrate repositories with wiki from other code hosts.
 - Web editor for quick editing repository files and wiki.
 - Jupyter Notebook and PDF rendering.
 - Authentication via SMTP, LDAP, reverse proxy, GitHub.com and GitHub Enterprise with 2FA.

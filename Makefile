@@ -23,7 +23,7 @@ dev: clean-ports
 # Compila y corre el backend
 backend: build
 	@echo "Arrancando Backend Go en http://localhost:3005 ..."
-	./gogs web -p 3005
+	./ggit web -p 3005
 
 # Corre el frontend de Svelte
 frontend:
@@ -32,7 +32,7 @@ frontend:
 
 # Compila el binario
 build:
-	@echo "Compilando Gogs..."
+	@echo "Compilando Ggit..."
 	@go build -v -ldflags="-s -w" -o ggit ./cmd/ggit
 
 # Fuerza la recompilación ignorando la caché
@@ -48,4 +48,4 @@ install:
 # Limpieza
 clean:
 	@echo "Limpiando binarios..."
-	rm -f gogs
+	rm -f ggit

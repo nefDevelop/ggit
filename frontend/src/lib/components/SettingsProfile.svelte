@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { authState } from '$lib/auth.svelte';
+  import { i18n } from '$lib/i18n.svelte';
   
   let profile = $state<any>({
     username: '',
@@ -161,8 +162,8 @@
     <!-- INFO COLUMN -->
     <div class="info-content">
       <header class="content-header">
-        <h3 class="title">Public Profile</h3>
-        <p class="subtitle">Update your personal information and identity.</p>
+        <h3 class="title">{i18n.t('settings.public_profile') || 'Public Profile'}</h3>
+        <p class="subtitle">{i18n.t('settings.public_profile_desc') || 'Update your personal information and identity.'}</p>
       </header>
 
       {#if loading}
@@ -171,24 +172,24 @@
         <form class="precision-form" onsubmit={(e) => { e.preventDefault(); saveProfile(); }}>
           <div class="form-grid">
             <div class="form-group">
-              <label for="username">Username</label>
-              <input type="text" id="username" bind:value={profile.username} placeholder="Username" />
-              <p class="hint">Your unique identifier on Ggit.</p>
+              <label for="username">{i18n.t('username')}</label>
+              <input type="text" id="username" bind:value={profile.username} placeholder={i18n.t('username')} />
+              <p class="hint">{i18n.t('settings.username_helper') || 'Your unique identifier on Ggit.'}</p>
             </div>
 
             <div class="form-group">
-              <label for="full_name">Full Name</label>
-              <input type="text" id="full_name" bind:value={profile.full_name} placeholder="Your display name" />
+              <label for="full_name">{i18n.t('settings.full_name') || 'Full Name'}</label>
+              <input type="text" id="full_name" bind:value={profile.full_name} placeholder={i18n.t('settings.full_name') || 'Your display name'} />
             </div>
 
             <div class="form-group">
-              <label for="website">Website</label>
+              <label for="website">{i18n.t('website')}</label>
               <input type="url" id="website" bind:value={profile.website} placeholder="https://..." />
             </div>
 
             <div class="form-group">
-              <label for="location">Location</label>
-              <input type="text" id="location" bind:value={profile.location} placeholder="City, Country" />
+              <label for="location">{i18n.t('settings.location') || 'Location'}</label>
+              <input type="text" id="location" bind:value={profile.location} placeholder={i18n.t('settings.location') || 'City, Country'} />
             </div>
           </div>
 
@@ -196,7 +197,7 @@
             {#if message}<span class="status success">{message}</span>{/if}
             {#if error}<span class="status error">{error}</span>{/if}
             <button type="submit" class="btn btn-action-primary" disabled={saving}>
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? i18n.t('settings.saving') || 'Saving...' : i18n.t('settings.update_profile') || 'Save Changes'}
             </button>
           </div>
         </form>

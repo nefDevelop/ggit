@@ -54,7 +54,6 @@ func GetInstallSettings(c *context.APIContext) {
 			"register_confirm": conf.Auth.RequireEmailConfirmation,
 			"mail_notify":      conf.User.EnableEmailNotification,
 			"offline_mode":     conf.Server.OfflineMode,
-			"disable_gravatar": conf.Picture.DisableGravatar,
 		},
 	})
 }

@@ -18,7 +18,6 @@ import (
 	"github.com/gogs/chardet"
 
 	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/cryptox"
 )
 
 // ShortSHA1 truncates SHA1 string length to at most 10.
@@ -118,31 +117,9 @@ func CreateTimeLimitCode(data string, minutes int, startInf any) string {
 	return code
 }
 
-// HashEmail hashes email address to MD5 string.
-// https://en.gravatar.com/site/implement/hash/
-func HashEmail(email string) string {
-	return cryptox.MD5(strings.ToLower(strings.TrimSpace(email)))
-}
-
-// AvatarLink returns relative avatar link to the site domain by given email,
-// which includes app sub-url as prefix. However, it is possible
-// to return full URL if user enables Gravatar-like service.
+// AvatarLink returns the default avatar link relative to the site domain.
 func AvatarLink(email string) (url string) {
-	if conf.Picture.EnableFederatedAvatar && conf.Picture.LibravatarService != nil &&
-		strings.Contains(email, "@") {
-		var err error
-		url, err = conf.Picture.LibravatarService.FromEmail(email)
-		if err != nil {
-			log.Warn("AvatarLink.LibravatarService.FromEmail [%s]: %v", email, err)
-		}
-	}
-	if url == "" && !conf.Picture.DisableGravatar {
-		url = conf.Picture.GravatarSource + HashEmail(email) + "?d=identicon"
-	}
-	if url == "" {
-		url = conf.Server.Subpath + "/img/avatar_default.png"
-	}
-	return url
+	return conf.Server.Subpath + "/img/avatar_default.png"
 }
 
 // AppendAvatarSize appends avatar size query parameter to the URL in the correct format.

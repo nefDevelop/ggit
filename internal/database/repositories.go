@@ -81,7 +81,6 @@ type CreateRepoOptions struct {
 	Description   string
 	DefaultBranch string
 	Private       bool
-	Mirror        bool
 	EnableWiki    bool
 	EnableIssues  bool
 	EnablePulls   bool
@@ -119,7 +118,6 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 		Description:   opts.Description,
 		DefaultBranch: opts.DefaultBranch,
 		IsPrivate:     opts.Private,
-		IsMirror:      opts.Mirror,
 		EnableWiki:    opts.EnableWiki,
 		EnableIssues:  opts.EnableIssues,
 		EnablePulls:   opts.EnablePulls,

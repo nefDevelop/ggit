@@ -28,7 +28,6 @@ Answers to common questions about Ggit configuration, administration, and usage.
     OFFLINE_MODE = true
     ```
 
-    This disables external network calls such as CDN resource loading and Gravatar avatar fetching.
 
   </Accordion>
 
@@ -85,16 +84,3 @@ Answers to common questions about Ggit configuration, administration, and usage.
   </Accordion>
 </AccordionGroup>
 
-## Other
-
-<AccordionGroup>
-  <Accordion title="Why can't I create a wiki for my mirrored repository?">
-    Mirrored repositories cannot have their own wiki because the mirror is a read-only copy of the upstream repository.
-
-    If you see the "Welcome to Wiki!" page but no green "Create the first page" button, your repository was likely created as a mirror. You have two options:
-
-    1. Edit the wiki on the upstream repository that is being mirrored.
-    2. Convert the mirror to a regular repository under **Settings** > **Danger Zone** if you no longer need it to be a mirror.
-
-  </Accordion>
-</AccordionGroup>

@@ -289,7 +289,6 @@ func GetOrgsByUserID(userID int64, showAll bool) ([]*User, error) {
 	return getOrgsByUserID(Handle.db, userID, showAll)
 }
 
-
 // GetOwnedOrgsByUserID returns a list of organizations are owned by given user ID.
 func GetOwnedOrgsByUserID(userID int64) ([]*User, error) {
 	return getOwnedOrgsByUserID(Handle.db, userID)
@@ -512,33 +511,4 @@ func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repos
 	}
 
 	return repos, repoCount, nil
-}
-
-// GetUserMirrorRepositories returns mirror repositories of the organization which the user has access to.
-func (org *User) GetUserMirrorRepositories(userID int64) ([]*Repository, error) {
-	teamIDs, err := org.GetUserTeamIDs(userID)
-	if err != nil {
-		return nil, errors.Newf("GetUserTeamIDs: %v", err)
-	}
-	if len(teamIDs) == 0 {
-		teamIDs = []int64{-1}
-	}
-
-	var teamRepoIDs []int64
-	if err = Handle.db.Table("team_repo").Where("team_id IN (?)", teamIDs).Distinct("repo_id").Pluck("repo_id", &teamRepoIDs).Error; err != nil {
-		return nil, errors.Newf("get team repository ids: %v", err)
-	}
-	if len(teamRepoIDs) == 0 {
-		teamRepoIDs = []int64{-1}
-	}
-
-	repos := make([]*Repository, 0, 10)
-	err = Handle.db.Where("owner_id = ?", org.ID).
-		Where("(is_private = ? OR id IN (?)) AND is_mirror = ?", false, teamRepoIDs, true).
-		Order("updated_unix DESC").
-		Find(&repos).Error
-	if err != nil {
-		return nil, errors.Newf("get user repositories: %v", err)
-	}
-	return repos, nil
 }

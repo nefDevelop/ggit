@@ -1,83 +1,57 @@
-import { apiFetch } from "./api";
+let currentLocale = $state("en-US");
+let dictionary = $state<Record<string, any>>({});
+let loading = $state(true);
 
-type Translations = Record<string, Record<string, string>>;
+export const i18n = {
+  get locale() {
+    return currentLocale;
+  },
+  get loading() {
+    return loading;
+  },
 
-class I18nManager {
-  locale = $state("en-US");
-  translations = $state<Translations>({});
-  loading = $state(false);
-
-  constructor() {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("ggit_locale");
-      if (saved) {
-        this.locale = saved;
-      } else {
-        // Detect from browser
-        const browserLang = navigator.language;
-        if (browserLang) {
-            // Basic mapping if needed, e.g. "en" -> "en-US"
-            this.locale = browserLang;
-        }
-      }
-    }
-  }
-
-  async loadLocale(lang: string) {
-    this.loading = true;
+  // Función para cambiar de idioma (Carga perezosa)
+  async init(lang: string = "en-US") {
+    loading = true;
     try {
-      const res = await apiFetch(`/api/v2/i18n/${lang}`);
-      if (res.ok) {
-        this.translations = await res.json();
-        this.locale = lang;
-        if (typeof window !== "undefined") {
-          localStorage.setItem("ggit_locale", lang);
-          document.documentElement.lang = lang.split('-')[0];
-        }
-      } else {
-          // If 404 and it has a hyphen, try the base language
-          if (lang.includes('-')) {
-              await this.loadLocale(lang.split('-')[0]);
-          }
+      // Vite dividirá cada JSON en un archivo (chunk) separado
+      const module = await import(`../locales/${lang}.json`);
+      dictionary = module.default || module;
+      currentLocale = lang;
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("ggit-locale", lang);
       }
     } catch (e) {
-      console.error("Failed to load locale", lang, e);
+      console.error(`No se pudo cargar el idioma: ${lang}`, e);
     } finally {
-      this.loading = false;
+      loading = false;
     }
-  }
+  },
 
-  /**
-   * t translates a key from the current locale.
-   * Keys can be "common.home" or just "home" (defaults to common section).
-   */
+  // Función de traducción
   t(key: string, ...args: any[]): string {
-    let section = "common";
-    let k = key;
+    const keys = key.split(".");
+    let value: any = dictionary;
 
-    if (key.includes('.')) {
-      const parts = key.split('.');
-      section = parts[0];
-      k = parts[1];
+    // Navegar por el JSON (ej. "auth.forgot_password")
+    for (const k of keys) {
+      if (value === undefined || value === null) break;
+      value = value[k];
     }
 
-    let text = this.translations[section]?.[k];
-    if (!text) return ""; // Return empty string for falsy check in UI
+    if (typeof value !== "string") {
+      return key; // Fallback a la clave si no existe la traducción
+    }
 
-    // Support for Go-style format verbs %s, %d, %v, %q
-    let i = 0;
-    return text.replace(/%[sdvq]/g, () => {
-      const val = args[i++];
-      return val !== undefined ? val : "";
-    });
-  }
+    // Reemplazar variables estilo Gogs (%s, %d, %v)
+    if (args && args.length > 0) {
+      let i = 0;
+      return value.replace(/%[sdv]/g, (match) => {
+        return i < args.length ? String(args[i++]) : match;
+      });
+    }
 
-  /**
-   * setLocale changes the current language and reloads translations.
-   */
-  async setLocale(lang: string) {
-      await this.loadLocale(lang);
-  }
-}
-
-export const i18n = new I18nManager();
+    return value;
+  },
+};

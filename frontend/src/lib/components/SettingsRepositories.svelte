@@ -60,7 +60,7 @@
             <div class="repo-main">
                <RepoRow {repo} />
             </div>
-            {#if repo.owner.username !== repo.context_user} <!-- If collaborative -->
+            {#if repo.owner?.username && repo.owner.username !== repo.context_user} <!-- If collaborative -->
               <button class="btn btn-ghost error btn-sm" onclick={() => leaveRepo(repo.id, repo.full_name)}>
                 <span class="material-symbols-rounded">logout</span> Leave
               </button>

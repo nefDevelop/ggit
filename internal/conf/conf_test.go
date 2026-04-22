@@ -40,7 +40,6 @@ func TestInit(t *testing.T) {
 		{"attachment", &Attachment},
 		{"time", &Time},
 		{"picture", &Picture},
-		{"mirror", &Mirror},
 		{"i18n", &I18n},
 	} {
 		err := cfg.Section(v.section).ReflectFrom(v.config)

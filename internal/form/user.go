@@ -36,12 +36,10 @@ type Install struct {
 	RegisterConfirm bool
 	MailNotify      bool
 
-	OfflineMode           bool
-	DisableGravatar       bool
-	EnableFederatedAvatar bool
-	DisableRegistration   bool
-	EnableCaptcha         bool
-	RequireSignInView     bool
+	OfflineMode         bool
+	DisableRegistration bool
+	EnableCaptcha       bool
+	RequireSignInView   bool
 
 	AdminName          string `binding:"OmitEmpty;AlphaDashDot;MaxSize(30)" locale:"install.admin_name"`
 	AdminPasswd        string `binding:"OmitEmpty;MaxSize(255)" locale:"install.admin_password"`
@@ -102,15 +100,12 @@ func (f *UpdateProfile) Validate(ctx ValidationContext, errs binding.Errors) bin
 }
 
 const (
-	AvatarLocal  string = "local"
-	AvatarLookup string = "lookup"
+	AvatarLocal string = "local"
 )
 
 type Avatar struct {
-	Source      string
-	Avatar      *multipart.FileHeader
-	Gravatar    string `binding:"OmitEmpty;Email;MaxSize(254)"`
-	Federavatar bool
+	Source string
+	Avatar *multipart.FileHeader
 }
 
 func (f *Avatar) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {

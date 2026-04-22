@@ -67,7 +67,6 @@ func GlobalInit(customConf string) error {
 
 		// Booting long running goroutines.
 		cron.NewContext()
-		database.InitSyncMirrors()
 		database.InitDeliverHooks()
 		database.InitTestPullRequests()
 	}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { i18n } from '$lib/i18n.svelte';
+  import { i18n } from '$lib/i18n.svelte.ts';
   import { onMount } from 'svelte';
 
   let auditLogs = $state<any[]>([]);
@@ -53,7 +53,7 @@
 <div class="admin-view-header">
   <div class="header-content">
     <h1>{i18n.t('admin.audit_log') || 'Audit Log'}</h1>
-    <p class="subtitle">Mirroring system activity and administrative changes.</p>
+    <p class="subtitle">Tracking system activity and administrative changes.</p>
   </div>
   <button class="btn btn-tonal" onclick={() => fetchAuditLogs(1)} disabled={loading}>
     <span class="material-symbols-rounded" class:spin={loading}>refresh</span>

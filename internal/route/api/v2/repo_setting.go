@@ -19,24 +19,9 @@ func GetRepoSettings(c *context.APIContext) {
 		"website":       repo.Website,
 		"private":       repo.IsPrivate,
 		"unlisted":      repo.IsUnlisted,
-		"is_mirror":     repo.IsMirror,
 		"enable_wiki":   repo.EnableWiki,
 		"enable_issues": repo.EnableIssues,
 		"enable_pulls":  repo.EnablePulls,
-	}
-
-	if repo.IsMirror {
-		if err := repo.GetMirror(); err != nil {
-			c.Error(err, "get mirror")
-			return
-		}
-		if repo.Mirror != nil {
-			res["mirror_address"] = repo.Mirror.Address()
-			res["mirror_interval"] = repo.Mirror.Interval
-			res["last_sync"] = repo.Mirror.LastSync
-			res["next_sync"] = repo.Mirror.NextSync
-			res["enable_prune"] = repo.Mirror.EnablePrune
-		}
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -62,28 +47,6 @@ func UpdateRepoSettings(c *context.APIContext) {
 	if err := database.UpdateRepository(repo, visibilityChanged); err != nil {
 		c.Error(err, "update repository")
 		return
-	}
-
-	if repo.IsMirror {
-		if err := repo.GetMirror(); err != nil {
-			c.Error(err, "get mirror")
-			return
-		}
-		if repo.Mirror != nil {
-			repo.Mirror.Interval = f.Interval
-			repo.Mirror.EnablePrune = f.EnablePrune
-			if f.MirrorAddress != "" && f.MirrorAddress != repo.Mirror.Address() {
-				if err := repo.Mirror.SaveAddress(f.MirrorAddress); err != nil {
-					c.Error(err, "save mirror address")
-					return
-				}
-			}
-
-			if err := database.UpdateMirror(repo.Mirror); err != nil {
-				c.Error(err, "update mirror")
-				return
-			}
-		}
 	}
 
 	c.JSON(http.StatusOK, repo)
@@ -159,6 +122,7 @@ func DeleteRepoHook(c *context.APIContext) {
 		"status": "ok",
 	})
 }
+
 // DeleteRepository deletes the repository.
 func DeleteRepository(c *context.APIContext) {
 	var f struct {

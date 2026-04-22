@@ -41,7 +41,6 @@ type MigrateRepo struct {
 	AuthPassword string `json:"auth_password"`
 	UID          int64  `json:"uid" binding:"Required"`
 	RepoName     string `json:"repo_name" binding:"Required;AlphaDashDot;MaxSize(100)"`
-	Mirror       bool   `json:"mirror"`
 	Private      bool   `json:"private"`
 	Unlisted     bool   `json:"unlisted"`
 	Description  string `json:"description" binding:"MaxSize(512)"`
@@ -94,7 +93,6 @@ type RepoSetting struct {
 	Website       string `binding:"Url;MaxSize(100)"`
 	Branch        string
 	Interval      int
-	MirrorAddress string
 	Private       bool
 	Unlisted      bool
 	EnablePrune   bool

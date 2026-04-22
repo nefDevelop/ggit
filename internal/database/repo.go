@@ -199,9 +199,6 @@ type Repository struct {
 	IsUnlisted bool `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
 	IsBare     bool
 
-	IsMirror bool
-	*Mirror  `xorm:"-" gorm:"-" json:"-"`
-
 	// Advanced settings
 	EnableWiki            bool `xorm:"NOT NULL DEFAULT true" gorm:"not null;default:TRUE"`
 	AllowPublicWiki       bool
@@ -365,7 +362,6 @@ func (r *Repository) CustomAvatarPath() string {
 
 // RelAvatarLink returns relative avatar link to the site domain,
 // which includes app sub-url as prefix.
-// Since Gravatar support not needed here - just check for image path.
 func (r *Repository) RelAvatarLink() string {
 	defaultImgURL := ""
 	if !osx.Exist(r.CustomAvatarPath()) {
@@ -622,11 +618,6 @@ func (r *Repository) IssueStats(userID int64, filterMode FilterMode, isPull bool
 	return GetRepoIssueStats(r.ID, userID, filterMode, isPull)
 }
 
-func (r *Repository) GetMirror() (err error) {
-	r.Mirror, err = GetMirrorByRepoID(r.ID)
-	return err
-}
-
 func (r *Repository) repoPath(tx *gorm.DB) string {
 	return RepoPath(r.mustOwner(tx).Name, r.Name)
 }
@@ -673,7 +664,7 @@ func (r *Repository) CanBeForked() bool {
 
 // CanEnablePulls returns true if repository meets the requirements of accepting pulls.
 func (r *Repository) CanEnablePulls() bool {
-	return !r.IsMirror && !r.IsBare
+	return !r.IsBare
 }
 
 // AllowPulls returns true if repository meets the requirements of accepting pulls and has them enabled.
@@ -687,7 +678,7 @@ func (r *Repository) IsBranchRequirePullRequest(name string) bool {
 
 // CanEnableEditor returns true if repository meets the requirements of web editor.
 func (r *Repository) CanEnableEditor() bool {
-	return !r.IsMirror
+	return true
 }
 
 // FIXME: should have a mutex to prevent producing same index for two issues that are created
@@ -815,7 +806,6 @@ type MigrateRepoOptions struct {
 	Description string
 	IsPrivate   bool
 	IsUnlisted  bool
-	IsMirror    bool
 	RemoteAddr  string
 }
 
@@ -845,7 +835,6 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		Description: opts.Description,
 		IsPrivate:   opts.IsPrivate,
 		IsUnlisted:  opts.IsUnlisted,
-		IsMirror:    opts.IsMirror,
 	})
 	if err != nil {
 		return nil, err
@@ -867,7 +856,6 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 
 	RemoveAllWithNotice("Repository path erase before creation", repoPath)
 	if err = git.Clone(opts.RemoteAddr, repoPath, git.CloneOptions{
-		Mirror:  true,
 		Quiet:   true,
 		Timeout: migrateTimeout,
 	}); err != nil {
@@ -903,24 +891,10 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		}
 	}
 
-	if opts.IsMirror {
-		if err = Handle.db.Create(&Mirror{
-			RepoID:      repo.ID,
-			Interval:    conf.Mirror.DefaultInterval,
-			EnablePrune: true,
-			NextSync:    time.Now().Add(time.Duration(conf.Mirror.DefaultInterval) * time.Hour),
-		}).Error; err != nil {
-			return repo, errors.Newf("InsertOne: %v", err)
-		}
-
-		repo.IsMirror = true
-		return repo, UpdateRepository(repo, false)
-	}
-
 	return CleanUpMigrateInfo(repo)
 }
 
-// cleanUpMigrateGitConfig removes mirror info which prevents "push --all".
+// cleanUpMigrateGitConfig removes remote origin info which prevents "push --all".
 // This also removes possible user credentials.
 func cleanUpMigrateGitConfig(configPath string) error {
 	cfg, err := ini.Load(configPath)
@@ -934,7 +908,7 @@ func cleanUpMigrateGitConfig(configPath string) error {
 	return nil
 }
 
-// Finish migrating repository with things that don't need to be done for mirrors.
+// CleanUpMigrateInfo finishes migrating repository.
 func CleanUpMigrateInfo(repo *Repository) (*Repository, error) {
 	repoPath := repo.RepoPath()
 	if err := repox.CreateDelegateHooks(repoPath); err != nil {
@@ -980,7 +954,6 @@ type CreateRepoOptionsLegacy struct {
 	Readme      string
 	IsPrivate   bool
 	IsUnlisted  bool
-	IsMirror    bool
 	AutoInit    bool
 }
 
@@ -1247,19 +1220,16 @@ func CreateRepository(doer, owner *User, opts CreateRepoOptionsLegacy) (_ *Repos
 			return err
 		}
 
-		// No need for init mirror.
-		if !opts.IsMirror {
-			if err = initRepository(tx, repoPath, doer, repo, opts); err != nil {
-				RemoveAllWithNotice("Delete repository for initialization failure", repoPath)
-				return errors.Newf("initRepository: %v", err)
-			}
+		if err = initRepository(tx, repoPath, doer, repo, opts); err != nil {
+			RemoveAllWithNotice("Delete repository for initialization failure", repoPath)
+			return errors.Newf("initRepository: %v", err)
+		}
 
-			_, stderr, err := process.ExecDir(-1,
-				repoPath, fmt.Sprintf("CreateRepository 'git update-server-info': %s", repoPath),
-				"git", "update-server-info")
-			if err != nil {
-				return errors.Newf("CreateRepository 'git update-server-info': %s", stderr)
-			}
+		_, stderr, err := process.ExecDir(-1,
+			repoPath, fmt.Sprintf("CreateRepository 'git update-server-info': %s", repoPath),
+			"git", "update-server-info")
+		if err != nil {
+			return errors.Newf("CreateRepository 'git update-server-info': %s", stderr)
 		}
 		return nil
 	})
@@ -1537,16 +1507,6 @@ func GetRepositoriesByForkID(forkID int64) ([]*Repository, error) {
 	return getRepositoriesByForkID(Handle.db, forkID)
 }
 
-func getNonMirrorRepositories(e Engine) ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	return repos, e.Where("is_mirror = ?", false).Find(&repos).Error
-}
-
-// GetRepositoriesMirror returns only mirror repositories with user.
-func GetNonMirrorRepositories() ([]*Repository, error) {
-	return getNonMirrorRepositories(Handle.db)
-}
-
 func updateRepository(tx *gorm.DB, repo *Repository, visibilityChanged bool) (err error) {
 	repo.LowerName = strings.ToLower(repo.Name)
 
@@ -1666,9 +1626,6 @@ func DeleteRepository(ownerID, repoID int64) error {
 		}
 		if err = tx.Where("repo_id = ?", repoID).Delete(new(Star)).Error; err != nil {
 			return errors.Newf("delete stars: %v", err)
-		}
-		if err = tx.Where("repo_id = ?", repoID).Delete(new(Mirror)).Error; err != nil {
-			return errors.Newf("delete mirrors: %v", err)
 		}
 		if err = tx.Where("repo_id = ?", repoID).Delete(new(IssueUser)).Error; err != nil {
 			return errors.Newf("delete issue_users: %v", err)
@@ -1834,12 +1791,6 @@ func GetUserRepositories(opts *UserRepoOptions) ([]*Repository, error) {
 	return repos, db.Find(&repos).Error
 }
 
-// GetUserMirrorRepositories returns a list of mirror repositories of given user.
-func GetUserMirrorRepositories(userID int64) ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	return repos, Handle.db.Where("owner_id = ? AND is_mirror = ?", userID, true).Find(&repos).Error
-}
-
 // GetRecentUpdatedRepositories returns the list of repositories that are recently updated.
 func GetRecentUpdatedRepositories(page, pageSize int) (repos []*Repository, err error) {
 	err = Handle.db.Limit(pageSize).Offset((page-1)*pageSize).
@@ -1849,20 +1800,25 @@ func GetRecentUpdatedRepositories(page, pageSize int) (repos []*Repository, err 
 
 // GetUserAndCollaborativeRepositories returns list of repositories the user owns and collaborates.
 func GetUserAndCollaborativeRepositories(userID int64) ([]*Repository, error) {
-	repos := make([]*Repository, 0, 10)
-	if err := Handle.db.Table("repository AS repo").
-		Joins("INNER JOIN collaboration ON collaboration.repo_id = repo.id").
-		Where("collaboration.user_id = ?", userID).
-		Find(&repos).Error; err != nil {
-		return nil, errors.Newf("select collaborative repositories: %v", err)
+	// Get IDs of collaborative repos first.
+	var collabRepoIDs []int64
+	err := Handle.db.Model(&Collaboration{}).Where("user_id = ?", userID).Pluck("repo_id", &collabRepoIDs).Error
+	if err != nil {
+		return nil, errors.Wrap(err, "get collaborative repository IDs")
 	}
 
-	ownRepos := make([]*Repository, 0, 10)
-	if err := Handle.db.Where("owner_id = ?", userID).Find(&ownRepos); err != nil {
-		return nil, errors.Newf("select own repositories: %v", err)
+	// Build a single query for repositories the user owns OR collaborates on.
+	query := Handle.db.Model(&Repository{}).Where("owner_id = ?", userID)
+	if len(collabRepoIDs) > 0 {
+		query = query.Or("id IN (?)", collabRepoIDs)
 	}
 
-	return append(repos, ownRepos...), nil
+	repos := make([]*Repository, 0, 20)
+	if err := query.Order("updated_unix DESC").Find(&repos).Error; err != nil {
+		return nil, errors.Wrap(err, "get user and collaborative repositories")
+	}
+
+	return repos, nil
 }
 
 type SearchRepoOptions struct {
@@ -2094,7 +2050,6 @@ func SyncRepositoryHooks() error {
 var taskStatusTable = sync.NewStatusTable()
 
 const (
-	taskNameMirrorUpdate     = "mirror_update"
 	taskNameGitFSCK          = "git_fsck"
 	taskNameCheckRepoStats   = "check_repos_stats"
 	taskNameCleanOldArchives = "clean_old_archives"
@@ -2331,41 +2286,6 @@ func (repos RepositoryList) loadAttributes(tx *gorm.DB) error {
 }
 
 func (repos RepositoryList) LoadAttributes() error {
-	return repos.loadAttributes(Handle.db)
-}
-
-type MirrorRepositoryList []*Repository
-
-func (repos MirrorRepositoryList) loadAttributes(tx *gorm.DB) error {
-	if len(repos) == 0 {
-		return nil
-	}
-
-	// Load mirrors.
-	repoIDs := make([]int64, 0, len(repos))
-	for i := range repos {
-		if !repos[i].IsMirror {
-			continue
-		}
-
-		repoIDs = append(repoIDs, repos[i].ID)
-	}
-	mirrors := make([]*Mirror, 0, len(repoIDs))
-	if err := tx.Where("repo_id IN (?)", repoIDs).Find(&mirrors).Error; err != nil {
-		return errors.Newf("find mirrors: %v", err)
-	}
-
-	set := make(map[int64]*Mirror)
-	for i := range mirrors {
-		set[mirrors[i].RepoID] = mirrors[i]
-	}
-	for i := range repos {
-		repos[i].Mirror = set[repos[i].ID]
-	}
-	return nil
-}
-
-func (repos MirrorRepositoryList) LoadAttributes() error {
 	return repos.loadAttributes(Handle.db)
 }
 

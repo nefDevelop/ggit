@@ -3,13 +3,15 @@
   import { apiFetch } from '$lib/api';
   import { onMount } from 'svelte';
   import { authState } from '$lib/auth.svelte';
+  import { i18n } from '$lib/i18n.svelte';
+  import LanguageSelector from './LanguageSelector.svelte';
 
   const sections = [
-    { id: 'pr', label: 'Pull Requests', icon: 'merge', desc: 'Display and manage code review requests.' },
-    { id: 'issue', label: 'Issues', icon: 'error', desc: 'Track bugs, enhancements, and tasks.' },
-    { id: 'wiki', label: 'Wiki', icon: 'menu_book', desc: 'Host documentation for your project.' },
-    { id: 'branch', label: 'Branches', icon: 'fork_right', desc: 'View and manage development branches.' },
-    { id: 'commits', label: 'Commits', icon: 'history', desc: 'Browse the full history of changes.' }
+    { id: 'pr', label: i18n.t('pull_requests'), icon: 'merge', desc: i18n.t('settings.pr_desc') || 'Display and manage code review requests.' },
+    { id: 'issue', label: i18n.t('issues'), icon: 'error', desc: i18n.t('settings.issue_desc') || 'Track bugs, enhancements, and tasks.' },
+    { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: 'menu_book', desc: i18n.t('settings.wiki_desc') || 'Host documentation for your project.' },
+    { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: 'fork_right', desc: i18n.t('settings.branch_desc') || 'View and manage development branches.' },
+    { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: 'history', desc: i18n.t('settings.commits_desc') || 'Browse the full history of changes.' }
   ] as const;
 
   let profile = $state<any>({ disable_news_feed: false });
@@ -46,14 +48,14 @@
 <div class="settings-section">
   <header class="section-header-modern">
     <div class="header-info">
-      <h3>My Ggit</h3>
-      <p>Customize your repository and dashboard experience.</p>
+      <h3>{i18n.t('settings.my_ggit') || 'My Ggit'}</h3>
+      <p>{i18n.t('settings.my_ggit_desc') || 'Customize your repository and dashboard experience.'}</p>
     </div>
   </header>
 
   <div class="switches-container">
     <div class="switches-group">
-      <h4 class="group-title">Repository Tab Modules</h4>
+      <h4 class="group-title">{i18n.t('settings.repo_tab_modules') || 'Repository Tab Modules'}</h4>
       <div class="switches-grid">
         {#each sections as section}
           <div class="switch-row-item">
@@ -79,15 +81,15 @@
     </div>
 
     <div class="switches-group">
-      <h4 class="group-title">Dashboard Preferences</h4>
+      <h4 class="group-title">{i18n.t('settings.dashboard_preferences') || 'Dashboard Preferences'}</h4>
       <div class="switches-grid">
         <div class="switch-row-item">
           <div class="item-info">
             <div class="title-with-icon">
               <span class="material-symbols-rounded mini">timeline</span>
-              <span class="label">Activity Feed</span>
+              <span class="label">{i18n.t('settings.activity_feed') || 'Activity Feed'}</span>
             </div>
-            <p class="desc">Show pushes, merges and relevant repository activity.</p>
+            <p class="desc">{i18n.t('settings.activity_feed_desc') || 'Show pushes, merges and relevant repository activity.'}</p>
           </div>
           
           <label class="precision-switch">
@@ -101,6 +103,8 @@
         </div>
       </div>
     </div>
+
+    <LanguageSelector />
   </div>
 </div>
 

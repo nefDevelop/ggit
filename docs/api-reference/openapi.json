@@ -391,10 +391,6 @@
                   "repo_name": {
                     "type": "string"
                   },
-                  "mirror": {
-                    "type": "boolean",
-                    "default": false
-                  },
                   "private": {
                     "type": "boolean",
                     "default": false
@@ -550,45 +546,6 @@
             }
           }
         }
-      }
-    },
-    "/repos/{owner}/{repo}/mirror-sync": {
-      "post": {
-        "operationId": "mirrorSync",
-        "summary": "Mirror sync",
-        "tags": ["Repositories"],
-        "responses": {
-          "202": {
-            "description": "Mirror sync has been queued."
-          },
-          "404": {
-            "description": "Resource not found."
-          },
-          "422": {
-            "description": "Validation error."
-          }
-        },
-        "parameters": [
-          {
-            "name": "owner",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Repository owner"
-          },
-          {
-            "name": "repo",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "Repository name"
-          }
-        ],
-        "description": "Add a mirror repository to the sync queue. Returns 404 if the repository is not a mirror."
       }
     },
     "/repos/{owner}/{repo}/branches": {
@@ -5232,9 +5189,6 @@
             "description": "Present when fork is true"
           },
           "empty": {
-            "type": "boolean"
-          },
-          "mirror": {
             "type": "boolean"
           },
           "size": {

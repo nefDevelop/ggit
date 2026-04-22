@@ -141,12 +141,6 @@ func ToAuditLogResponse(a *database.Action) *types.AuditLogResponse {
 		opName = "Delete Tag"
 	case database.ActionForkRepo:
 		opName = "Fork Repository"
-	case database.ActionMirrorSyncPush:
-		opName = "Mirror Sync Push"
-	case database.ActionMirrorSyncCreate:
-		opName = "Mirror Sync Create"
-	case database.ActionMirrorSyncDelete:
-		opName = "Mirror Sync Delete"
 	}
 
 	return &types.AuditLogResponse{

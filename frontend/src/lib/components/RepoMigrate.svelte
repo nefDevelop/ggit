@@ -17,7 +17,6 @@
         repo_name: '',
         description: '',
         private: false,
-        mirror: false,
         unlisted: false
     });
 
@@ -188,14 +187,6 @@
                     <div class="checkbox-content">
                         <span class="label">Repositorio Privado</span>
                         <span class="desc">Solo tú y los colaboradores podrán verlo.</span>
-                    </div>
-                </label>
-
-                <label class="checkbox-item">
-                    <input type="checkbox" bind:checked={form.mirror} />
-                    <div class="checkbox-content">
-                        <span class="label">Este repositorio es un espejo (Mirror)</span>
-                        <span class="desc">Sincronizará automáticamente los cambios del origen.</span>
                     </div>
                 </label>
 

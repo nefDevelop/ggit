@@ -2,7 +2,7 @@ package v2
 
 import (
 	"github.com/gin-gonic/gin"
-	
+
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/ginx"
 )
@@ -16,7 +16,7 @@ import (
 // RegisterRoutes registers all v2 API routes to the given router group.
 func RegisterRoutes(r *gin.RouterGroup) {
 	r.Use(context.APIContexter())
-	
+
 	r.GET("/install/settings", ginx.Handle(GetInstallSettings))
 	r.GET("/i18n/:lang", ginx.Handle(GetI18nStrings))
 	r.GET("/repo/templates", ginx.Handle(GetRepoTemplates))
@@ -25,7 +25,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	{
 		user.POST("/login", ginx.Handle(Login))
 		user.POST("/register", ginx.Handle(Register))
-		
+
 		user.GET("/check", ginx.Handle(CheckAuth))
 		user.POST("/logout", ginx.Handle(Logout))
 		user.POST("/login/two_factor", ginx.Handle(LoginTwoFactor))
@@ -98,7 +98,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/config", ginx.Handle(GetAdminConfig))
 		admin.POST("/config/test_email", ginx.Handle(SendAdminTestEmail))
 		admin.GET("/monitor", ginx.Handle(GetAdminMonitor))
-		
+
 		admin.GET("/users", ginx.Handle(GetAdminUsers))
 		admin.POST("/users", ginx.Handle(CreateAdminUser))
 		admin.GET("/users/:id", ginx.Handle(GetAdminUser))
@@ -178,9 +178,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/archive/*name", ginx.Handle(GetRepoArchive))
 		repo.GET("/raw/:ref/*path", ginx.Handle(GetRepoRawFile))
 		repo.GET("/media/:ref/*path", ginx.Handle(GetRepoMediaFile))
-		
+
 		repo.GET("/compare/*info", ginx.Handle(GetComparison))
-		
+
 		repo.GET("/labels", ginx.Handle(ListRepoLabels))
 		repo.POST("/labels", ginx.Handle(CreateRepoLabel))
 		repo.GET("/labels/:id", ginx.Handle(GetRepoLabel))
@@ -211,7 +211,6 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 			settingGroup.GET("/hooks", ginx.Handle(GetRepoHooks))
 			settingGroup.DELETE("/hooks/:id", ginx.Handle(DeleteRepoHook))
-			settingGroup.POST("/mirror/sync", ginx.Handle(SyncMirrorRepo))
 
 			settingGroup.GET("/keys", ginx.Handle(ListRepoDeployKeys))
 			settingGroup.POST("/keys", ginx.Handle(AddRepoDeployKey))

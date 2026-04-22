@@ -174,11 +174,6 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 		fail("Unknown git command", "Unknown git command '%s'", verb)
 	}
 
-	// Prohibit push to mirror repositories.
-	if requestMode > database.AccessModeRead && repo.IsMirror {
-		fail("Mirror repository is read-only", "")
-	}
-
 	// Allow anonymous (user is nil) clone for public repositories.
 	var user *database.User
 

@@ -9,25 +9,26 @@
   import SettingsRepositories from './SettingsRepositories.svelte';
   import SettingsOrganizations from './SettingsOrganizations.svelte';
   import SettingsMyGgit from './SettingsMyGgit.svelte';
+  import { i18n } from '$lib/i18n.svelte';
 
   let activeTab = $state('profile');
 
   const tabs = [
-    { id: 'profile', label: 'Profile', icon: 'person' },
-    { id: 'myggit', label: 'My Ggit', icon: 'grid_view' },
-    { id: 'appearance', label: 'Appearance', icon: 'palette' },
-    { id: 'emails', label: 'Emails', icon: 'mail' },
-    { id: 'security', label: 'Security', icon: 'security' },
-    { id: 'keys', label: 'SSH Keys', icon: 'key' },
-    { id: 'tokens', label: 'Access Tokens', icon: 'token' },
-    { id: 'repos', label: 'Repositories', icon: 'book' },
-    { id: 'orgs', label: 'Organizations', icon: 'corporate_fare' }
+    { id: 'profile', label: i18n.t('settings.profile') || 'Profile', icon: 'person' },
+    { id: 'myggit', label: i18n.t('settings.my_ggit') || 'My Ggit', icon: 'grid_view' },
+    { id: 'appearance', label: i18n.t('settings.appearance') || 'Appearance', icon: 'palette' },
+    { id: 'emails', label: i18n.t('settings.emails') || 'Emails', icon: 'mail' },
+    { id: 'security', label: i18n.t('settings.security') || 'Security', icon: 'security' },
+    { id: 'keys', label: i18n.t('settings.ssh_keys') || 'SSH Keys', icon: 'key' },
+    { id: 'tokens', label: i18n.t('settings.access_tokens') || 'Access Tokens', icon: 'token' },
+    { id: 'repos', label: i18n.t('settings.repositories') || 'Repositories', icon: 'book' },
+    { id: 'orgs', label: i18n.t('settings.organizations') || 'Organizations', icon: 'corporate_fare' }
   ];
 </script>
 
 <div class="settings-container">
   <aside class="settings-sidebar island island-interactive">
-    <h3 class="sidebar-title">User Settings</h3>
+    <h3 class="sidebar-title">{i18n.t('settings.user_settings') || 'User Settings'}</h3>
     <nav class="settings-nav">
       {#each tabs as tab}
         <button 
