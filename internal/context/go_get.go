@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/unknwon/com"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/repox"
+	"gogs.io/gogs/internal/strx"
 )
 
 // ServeGoGet does quick responses for appropriate go-get meta with status OK
@@ -40,7 +40,7 @@ func ServeGoGet() gin.HandlerFunc {
 		if !strings.HasPrefix(conf.Server.ExternalURL, "https://") {
 			insecureFlag = "--insecure "
 		}
-		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(com.Expand(`<!doctype html>
+		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(strx.Expand(`<!doctype html>
 <html>
 	<head>
 		<meta name="go-import" content="{GoGetImport} git {CloneLink}">

@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
-	"github.com/unknwon/cae/zip"
+	"gogs.io/gogs/internal/archiver"
 	"golang.org/x/image/draw"
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
@@ -119,7 +119,7 @@ func LoadRepoConfig() {
 }
 
 func NewRepoContext() {
-	zip.Verbose = false
+	archiver.Verbose = false
 
 	// Check Git installation.
 	if _, err := exec.LookPath("git"); err != nil {
@@ -203,7 +203,8 @@ type Repository struct {
 	AllowPublicWiki       bool
 	EnableExternalWiki    bool
 	ExternalWikiURL       string
-	EnableIssues          bool `gorm:"not null;default:TRUE"`
+	WikiFolderName        string `gorm:"type:VARCHAR(255);not null;default:'docs'"`
+	EnableIssues          bool   `gorm:"not null;default:TRUE"`
 	AllowPublicIssues     bool
 	EnableExternalTracker bool
 	ExternalTrackerURL    string

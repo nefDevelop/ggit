@@ -4,6 +4,8 @@ import (
 	"bytes"
 	stdcontext "context"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-enry/go-enry/v2"
@@ -16,6 +18,81 @@ import (
 	"gogs.io/gogs/internal/template/highlight"
 	"gogs.io/gogs/internal/tool"
 )
+
+// SearchRepoContents searches for a keyword in the repository using git grep.
+func SearchRepoContents(c *context.APIContext) {
+	q := c.Query("q")
+	if q == "" {
+		c.JSON(http.StatusOK, []any{})
+		return
+	}
+
+	ref := c.Query("ref")
+	if ref == "" {
+		ref = c.Repo.BranchName
+		if ref == "" {
+			ref = c.Repo.Repository.DefaultBranch
+		}
+	}
+
+	args := []string{"grep", "-I", "--line-number", "--null", "--max-count", "100"}
+	if c.Query("case_sensitive") != "true" {
+		args = append(args, "-i")
+	}
+	if c.Query("regex") == "true" {
+		args = append(args, "-E")
+	} else {
+		args = append(args, "-F")
+	}
+	args = append(args, "-e", q, ref)
+
+	output, err := git.NewCommand(args...).RunInDir(c.Repo.Repository.RepoPath())
+	if err != nil {
+		// git grep returns exit code 1 if no matches found
+		c.JSON(http.StatusOK, []any{})
+		return
+	}
+
+	stdout := string(output)
+	lines := strings.Split(stdout, "\n")
+	results := make([]map[string]any, 0, len(lines))
+	for _, line := range lines {
+		if line == "" {
+			continue
+		}
+
+		// git grep --null --line-number format:
+		// ref:filename\x00line:content
+		parts := strings.SplitN(line, "\x00", 2)
+		if len(parts) < 2 {
+			continue
+		}
+
+		filePart := parts[0]
+		contentPart := parts[1]
+
+		// filePart is "ref:filename"
+		fileName := strings.TrimPrefix(filePart, ref+":")
+
+		// contentPart is "line:content"
+		contentSubParts := strings.SplitN(contentPart, ":", 2)
+		lineNum := 0
+		content := ""
+		if len(contentSubParts) == 2 {
+			lineNum, _ = strconv.Atoi(contentSubParts[0])
+			content = contentSubParts[1]
+		}
+
+		results = append(results, map[string]any{
+			"filename": fileName,
+			"line":     lineNum,
+			"content":  content,
+		})
+	}
+
+	c.JSON(http.StatusOK, results)
+}
+
 
 // CreateRepo creates a new repository for the authenticated user.
 func CreateRepo(c *context.APIContext) {

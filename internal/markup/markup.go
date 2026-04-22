@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/unknwon/com"
+	"gogs.io/gogs/internal/strx"
 	"golang.org/x/net/html"
 
 	"gogs.io/gogs/internal/conf"
@@ -108,7 +108,7 @@ func RenderIssueIndexPattern(rawBytes []byte, urlPrefix string, metas map[string
 			} else {
 				metas["index"] = string(m[1:])
 			}
-			link = fmt.Sprintf(`<a href="%s">%s</a>`, com.Expand(metas["format"], metas), m)
+			link = fmt.Sprintf(`<a href="%s">%s</a>`, strx.Expand(metas["format"], metas), m)
 		}
 		rawBytes = bytes.Replace(rawBytes, m, []byte(link), 1)
 	}

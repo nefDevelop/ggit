@@ -12,12 +12,12 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/unknwon/i18n"
 	log "unknwon.dev/clog/v2"
 
 	"github.com/gogs/chardet"
 
 	"gogs.io/gogs/internal/conf"
+	"gogs.io/gogs/internal/i18nx"
 )
 
 // ShortSHA1 truncates SHA1 string length to at most 10.
@@ -218,50 +218,50 @@ func TimeSincePro(then time.Time) string {
 func timeSince(then time.Time, lang string) string {
 	now := time.Now()
 
-	lbl := i18n.Tr(lang, "tool.ago")
+	lbl := i18nx.Tr(lang, "tool.ago")
 	diff := now.Unix() - then.Unix()
 	if then.After(now) {
-		lbl = i18n.Tr(lang, "tool.from_now")
+		lbl = i18nx.Tr(lang, "tool.from_now")
 		diff = then.Unix() - now.Unix()
 	}
 
 	switch {
 	case diff <= 0:
-		return i18n.Tr(lang, "tool.now")
+		return i18nx.Tr(lang, "tool.now")
 	case diff <= 2:
-		return i18n.Tr(lang, "tool.1s", lbl)
+		return i18nx.Tr(lang, "tool.1s", lbl)
 	case diff < 1*Minute:
-		return i18n.Tr(lang, "tool.seconds", diff, lbl)
+		return i18nx.Tr(lang, "tool.seconds", diff, lbl)
 
 	case diff < 2*Minute:
-		return i18n.Tr(lang, "tool.1m", lbl)
+		return i18nx.Tr(lang, "tool.1m", lbl)
 	case diff < 1*Hour:
-		return i18n.Tr(lang, "tool.minutes", diff/Minute, lbl)
+		return i18nx.Tr(lang, "tool.minutes", diff/Minute, lbl)
 
 	case diff < 2*Hour:
-		return i18n.Tr(lang, "tool.1h", lbl)
+		return i18nx.Tr(lang, "tool.1h", lbl)
 	case diff < 1*Day:
-		return i18n.Tr(lang, "tool.hours", diff/Hour, lbl)
+		return i18nx.Tr(lang, "tool.hours", diff/Hour, lbl)
 
 	case diff < 2*Day:
-		return i18n.Tr(lang, "tool.1d", lbl)
+		return i18nx.Tr(lang, "tool.1d", lbl)
 	case diff < 1*Week:
-		return i18n.Tr(lang, "tool.days", diff/Day, lbl)
+		return i18nx.Tr(lang, "tool.days", diff/Day, lbl)
 
 	case diff < 2*Week:
-		return i18n.Tr(lang, "tool.1w", lbl)
+		return i18nx.Tr(lang, "tool.1w", lbl)
 	case diff < 1*Month:
-		return i18n.Tr(lang, "tool.weeks", diff/Week, lbl)
+		return i18nx.Tr(lang, "tool.weeks", diff/Week, lbl)
 
 	case diff < 2*Month:
-		return i18n.Tr(lang, "tool.1mon", lbl)
+		return i18nx.Tr(lang, "tool.1mon", lbl)
 	case diff < 1*Year:
-		return i18n.Tr(lang, "tool.months", diff/Month, lbl)
+		return i18nx.Tr(lang, "tool.months", diff/Month, lbl)
 
 	case diff < 2*Year:
-		return i18n.Tr(lang, "tool.1y", lbl)
+		return i18nx.Tr(lang, "tool.1y", lbl)
 	default:
-		return i18n.Tr(lang, "tool.years", diff/Year, lbl)
+		return i18nx.Tr(lang, "tool.years", diff/Year, lbl)
 	}
 }
 

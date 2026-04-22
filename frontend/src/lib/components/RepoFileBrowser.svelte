@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { onMount, getContext } from 'svelte';
   import { getLanguageColor } from '$lib/utils/languages';
+  import RepoSearchResults from './RepoSearchResults.svelte';
   
   let { path = '' } = $props();
   let username = $derived(page.params.username);
@@ -11,6 +12,17 @@
   let repoData = $state<any>(null);
   let loading = $state(true);
   let error = $state('');
+  
+  let searchQuery = $state('');
+
+  function handleSearch(e: any) {
+    searchQuery = e.detail;
+  }
+
+  onMount(() => {
+    window.addEventListener('ggit:search', handleSearch);
+    return () => window.removeEventListener('ggit:search', handleSearch);
+  });
 
   async function fetchRepo() {
     loading = true;
@@ -83,7 +95,9 @@
       <p>{error}</p>
     </div>
   {:else if repoData}
-    {#if repoData.is_bare}
+    {#if searchQuery}
+      <RepoSearchResults query={searchQuery} branch={repoData.branch || 'HEAD'} />
+    {:else if repoData.is_bare}
       <div class="empty-state">
         <div class="empty-icon-ring">
           <span class="material-symbols-rounded">terminal</span>

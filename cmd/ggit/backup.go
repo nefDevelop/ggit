@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
-	"github.com/unknwon/cae/zip"
+	zip "gogs.io/gogs/internal/archiver"
 	"github.com/urfave/cli/v3"
 	"gopkg.in/ini.v1"
 	log "unknwon.dev/clog/v2"

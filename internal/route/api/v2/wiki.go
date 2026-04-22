@@ -1,8 +1,12 @@
 package v2
 
 import (
+	"fmt"
 	"net/http"
+	"path"
+	"sort"
 	"strings"
+	"sync"
 
 	"github.com/gogs/git-module"
 
@@ -11,7 +15,18 @@ import (
 	"gogs.io/gogs/internal/markup"
 )
 
-// ListWikiPages returns a list of wiki pages (Markdown files in /docs).
+type WikiPage struct {
+	Name     string      `json:"name"`
+	Title    string      `json:"title"`
+	Order    int         `json:"order"`
+	URL      string      `json:"url"`
+	IsFolder bool        `json:"is_folder"`
+	Children []*WikiPage `json:"children,omitempty"`
+}
+
+var wikiSidebarCache sync.Map // key: repo_id:commit_sha
+
+// ListWikiPages returns a tree of wiki pages (Markdown files in the configured wiki folder).
 func ListWikiPages(c *context.APIContext) {
 	branch := c.Repo.Repository.DefaultBranch
 	commit, err := c.Repo.GitRepo.BranchCommit(branch)
@@ -20,75 +35,119 @@ func ListWikiPages(c *context.APIContext) {
 		return
 	}
 
-	entries, err := commit.Entries(git.LsTreeOptions{Verbatim: true})
-	if err != nil {
-		c.Error(err, "list entries")
+	wikiFolder := c.Repo.Repository.WikiFolderName
+	if wikiFolder == "" {
+		wikiFolder = "docs"
+	}
+
+	cacheKey := fmt.Sprintf("%d:%s", c.Repo.Repository.ID, commit.ID.String())
+	if val, ok := wikiSidebarCache.Load(cacheKey); ok {
+		c.JSON(http.StatusOK, val)
 		return
 	}
 
-	// Look for "docs" or ".docs" directory
-	var docsEntry *git.TreeEntry
-	for i := range entries {
-		if entries[i].Type() == git.ObjectTree && (entries[i].Name() == "docs" || entries[i].Name() == ".docs") {
-			docsEntry = entries[i]
-			break
+	// Root scan
+	tree, err := commit.Subtree(wikiFolder)
+	if err != nil {
+		// Fallback to .docs if docs doesn't exist and folder is default
+		if wikiFolder == "docs" {
+			tree, err = commit.Subtree(".docs")
 		}
 	}
 
-	if docsEntry == nil {
-		c.JSON(http.StatusOK, []PageMeta{})
+	if err != nil || tree == nil {
+		c.JSON(http.StatusOK, []*WikiPage{})
 		return
 	}
 
-	// In git-module, Tree entries are accessed through a commit or sub-tree
-	docsTree, err := c.Repo.GitRepo.LsTree(docsEntry.ID().String(), git.LsTreeOptions{Verbatim: true})
-	if err != nil {
-		c.Error(err, "get docs tree")
-		return
-	}
+	pages := buildWikiTree(c, tree, "")
+	
+	// Sort top level
+	sortWikiPages(pages)
 
-	entries, err = docsTree.Entries()
-	if err != nil {
-		c.Error(err, "get docs entries")
-		return
-	}
-
-	pages := make([]PageMeta, 0, len(entries))
-	for i := range entries {
-		if entries[i].Type() == git.ObjectBlob && strings.HasSuffix(entries[i].Name(), ".md") {
-			name := strings.TrimSuffix(entries[i].Name(), ".md")
-			// Get last commit for this file
-			commits, err := c.Repo.GitRepo.Log(git.RefsHeads+branch, git.LogOptions{Path: docsEntry.Name() + "/" + entries[i].Name()})
-			updated := int64(0)
-			if err == nil && len(commits) > 0 {
-				updated = commits[0].Author.When.Unix()
-			}
-
-			pages = append(pages, PageMeta{
-				Name:    name,
-				URL:     database.ToWikiPageURL(name),
-				Updated: updated,
-			})
-		}
-	}
-
+	wikiSidebarCache.Store(cacheKey, pages)
 	c.JSON(http.StatusOK, pages)
 }
 
-type PageMeta struct {
-	Name    string `json:"name"`
-	URL     string `json:"url"`
-	Updated int64  `json:"updated"`
+func buildWikiTree(c *context.APIContext, tree *git.Tree, relPath string) []*WikiPage {
+	entries, err := tree.Entries()
+	if err != nil {
+		return nil
+	}
+
+	pages := make([]*WikiPage, 0, len(entries))
+	for _, entry := range entries {
+		if strings.HasPrefix(entry.Name(), ".") {
+			continue // ignore hidden
+		}
+
+		if entry.IsTree() {
+			subtree, err := tree.Subtree(entry.Name())
+			if err != nil {
+				continue
+			}
+			subPages := buildWikiTree(c, subtree, path.Join(relPath, entry.Name()))
+			if len(subPages) > 0 {
+				sortWikiPages(subPages)
+				pages = append(pages, &WikiPage{
+					Name:     entry.Name(),
+					Title:    entry.Name(), // Folder title can also come from a _index.md later
+					IsFolder: true,
+					Children: subPages,
+				})
+			}
+			continue
+		}
+
+		if strings.HasSuffix(entry.Name(), ".md") {
+			name := strings.TrimSuffix(entry.Name(), ".md")
+			
+			// Read frontmatter for title and order
+			title := name
+			order := 1000 // default high order
+			
+			blob, err := entry.Blob().Bytes()
+			if err == nil {
+				meta, _ := markup.ExtractMetadata(blob)
+				if meta != nil {
+					if t, ok := meta["title"].(string); ok {
+						title = t
+					}
+					if o, ok := meta["order"].(int); ok {
+						order = o
+					} else if o, ok := meta["order"].(float64); ok {
+						order = int(o)
+					}
+				}
+			}
+
+			pages = append(pages, &WikiPage{
+				Name:  name,
+				Title: title,
+				Order: order,
+				URL:   database.ToWikiPageURL(path.Join(relPath, name)),
+			})
+		}
+	}
+	return pages
+}
+
+func sortWikiPages(pages []*WikiPage) {
+	sort.Slice(pages, func(i, j int) bool {
+		if pages[i].Order != pages[j].Order {
+			return pages[i].Order < pages[j].Order
+		}
+		return strings.Compare(strings.ToLower(pages[i].Title), strings.ToLower(pages[j].Title)) < 0
+	})
 }
 
 // GetWikiPage returns the content of a single doc page.
 func GetWikiPage(c *context.APIContext) {
-	pageURL := c.Params("page")
-	if pageURL == "" {
-		pageURL = "README"
+	pagePath := c.Params("page")
+	if pagePath == "" {
+		pagePath = "README"
 	}
-	pageName := database.ToWikiPageName(pageURL)
-
+	
 	branch := c.Repo.Repository.DefaultBranch
 	commit, err := c.Repo.GitRepo.BranchCommit(branch)
 	if err != nil {
@@ -96,14 +155,28 @@ func GetWikiPage(c *context.APIContext) {
 		return
 	}
 
-	// Try to find the file in /docs/pageName.md or /.docs/pageName.md
-	possiblePaths := []string{"docs/" + pageName + ".md", ".docs/" + pageName + ".md"}
+	wikiFolder := c.Repo.Repository.WikiFolderName
+	if wikiFolder == "" {
+		wikiFolder = "docs"
+	}
+
+	// Try multiple paths
+	possiblePaths := []string{
+		path.Join(wikiFolder, pagePath+".md"),
+	}
+	if wikiFolder == "docs" {
+		possiblePaths = append(possiblePaths, path.Join(".docs", pagePath+".md"))
+	}
+	
+	// Also try the name directly if it ends with .md or is a folder index
+	// but the UI usually sends the path without .md
+
 	var blob *git.Blob
 	var finalPath string
 
 	for _, p := range possiblePaths {
 		entry, err := commit.TreeEntry(p)
-		if err == nil {
+		if err == nil && !entry.IsTree() {
 			blob = entry.Blob()
 			finalPath = p
 			break
@@ -122,9 +195,10 @@ func GetWikiPage(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"name":         pageName,
+		"name":         path.Base(pagePath),
+		"path":         pagePath,
 		"content":      string(p),
-		"content_html": string(markup.Render(markup.TypeMarkdown, p, c.Repo.RepoLink+"/"+finalPath, nil)),
+		"content_html": string(markup.Render(markup.TypeMarkdown, p, c.Repo.RepoLink+"/src/"+branch+"/"+path.Dir(finalPath), nil)),
 	})
 }
 

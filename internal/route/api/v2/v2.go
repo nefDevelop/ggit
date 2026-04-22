@@ -126,6 +126,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 	repo := r.Group("/:username/:reponame", context.RepoAssignment(), context.RepoRef())
 	{
+		repo.GET("/search", ginx.Handle(SearchRepoContents))
 		repo.GET("/view/*path", ginx.Handle(GetRepoView))
 		repo.GET("/commits/*path", ginx.Handle(GetRepoCommits))
 		repo.GET("/watchers", ginx.Handle(GetRepoWatchers))

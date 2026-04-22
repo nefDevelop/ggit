@@ -50,6 +50,10 @@
 
 ### Autenticación y Comunicación
 
+- [x] **Modernización de Dependencias (Core):**
+  - [x] Eliminar `github.com/unknwon/com` (Sustituido por `internal/strx`). [COMPLETO]
+  - [x] Eliminar `github.com/unknwon/cae` (Sustituido por `internal/archiver`). [COMPLETO]
+  - [x] Eliminar `github.com/unknwon/i18n` (Sustituido por `internal/i18nx`). [COMPLETO]
 - [x] **Simplificación de Autenticación:**
   - [x] Eliminar métodos complejos (PAM, SMTP-Auth, GitHub OAuth).
   - [x] Mantener **Local + LDAP**.
@@ -57,7 +61,6 @@
 - [x] **Avatares:** Desactivar Gravatar/Libravatar. Usar avatares locales o generados.
 - [x] **Webhooks:** Eliminar integraciones específicas (Slack, Discord, DingTalk). Mantener solo **Webhook Genérico (JSON)**. [COMPLETO]
 - [x] **Email Minimalista:** Implementado estilo **Slim HTML** (ligero y con formato esencial). [COMPLETO]
-- [x] - github.com/unknwon/com: Es una librería de utilidades antigua de la era Gogs. Gran parte de lo que hace ya lo hace la librería estándar de Go o strx.
 
 ---
 
@@ -66,21 +69,20 @@
 **Objetivo:** Eliminar la wiki tradicional a favor de contenido dentro del repositorio.
 
 - [x] **Eliminar Wiki Legacy:** Borrar el sistema de repositorios independientes `.wiki.git`. [COMPLETO]
-- [ ] **Implementar "Wiki-Folder":**
-  - En cada push, se miran los frontmatter de la documentacion. con
-  - [ ] **Detector de Carpeta:** Activar pestaña Wiki si existe `/docs` o `.docs`. (carpeta seleccionable en ajustes del repositocio, por defecto `/docs`)
-  - el sidebar se genera con, estructura de carpetas (se ignoran ocultas)
-  - [ ] **Sidebar Dinámico:** Generar menú lateral leyendo YAML/TOML Frontmatter de los `.md`.
-  - [ ] **Caché por Commit:** Solo recalcular el sidebar si el `CommitSHA` cambia.
-  - [ ] **Wikilinks:** Soporte para `[[Enlace]]` mediante Goldmark en el backend.
+- [x] **Implementar "Wiki-Folder":** [COMPLETO]
+  - En cada push, se miran los frontmatter de la documentacion.
+  - [x] **Detector de Carpeta:** Activar pestaña Wiki si existe `/docs` o `.docs`. (carpeta seleccionable en ajustes del repositocio, por defecto `/docs`)
+  - [x] **Sidebar Dinámico:** Generar menú lateral leyendo YAML/TOML Frontmatter de los `.md`.
+  - [x] **Caché por Commit:** Solo recalcular el sidebar si el `CommitSHA` cambia.
+  - [x] **Wikilinks:** Soporte para `[[Enlace]]` mediante Goldmark en el backend. (Global: Se ha migrado todo el motor de Markdown a Goldmark).
 
----
+<!-- ---
 
 title: Instalacion
 order: 2 
 
 ---
-se puede poner en todos el order, con 1 solo ya se posiciona todos los de la carpeta. si no esta puesto por orden alfabetico. 
+se puede poner en todos el order, con 1 solo ya se posiciona todos los de la carpeta. si no esta puesto por orden alfabetico.  -->
 
 
 
@@ -90,7 +92,7 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 - [x] **Internacionalización (I18n):** Carga dinámica de JSON locales en Frontend.
 - [ ] **Búsqueda Avanzada de Repositorio:**
   - [x] Desactivar indexación profunda global (Bleve/CPU Killer).
-  - [ ] Implementar **Repo Search (On-demand):** Búsqueda interna vía `git grep` en tiempo real.
+  - [x] Implementar **Repo Search (On-demand):** Búsqueda interna vía `git grep` en tiempo real.
 - [ ] **Web File Management (CRUD):** Creación, subida (Drag & Drop) y borrado de archivos vía web.
 
 ---
@@ -103,42 +105,10 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ---
 
-He analizado las dependencias actuales del proyecto leyendo tu go.mod y explorando el código. Aquí tienes un análisis técnico profundo
-sobre las librerías actuales y las mejores alternativas para implementar la funcionalidad "Wiki-Folder", buscando el máximo rendimiento
-y mantenibilidad:
 
-1. Motor de Markdown y Extensiones (Wikilinks)
 
-- Lo que usas actualmente: github.com/russross/blackfriday (v1.6.0).
-- Análisis: Esta versión es muy antigua (Blackfriday v1 está esencialmente deprecado). Es rápido, pero su diseño es monolítico.
-  Extenderlo para soportar [[Wikilinks]] o interceptar nodos te obligaría a hacer "hacks" procesando el string de texto a base de
-  Expresiones Regulares antes o después del renderizado, lo cual es lento y muy propenso a errores.
-- La mejor alternativa: github.com/yuin/goldmark
-  - Por qué: Es el estándar de oro actual en el ecosistema Go (lo usa Hugo y Gitea). Es 100% compatible con CommonMark y, lo más
-    importante, está basado en AST (Abstract Syntax Tree).
-  - Para implementar [[Wikilinks]], solo necesitas escribir un pequeño Parser para el AST. Esto hace el parsing en una sola pasada,
-    de forma nativa, limpia y extremadamente eficiente.
 
-2. Extracción del Frontmatter (YAML/TOML para el Sidebar)
 
-- Lo que tendrías que hacer ahora: Usar regexp para cortar todo lo que está entre --- y --- al inicio del .md, y luego pasarle ese
-  string a gopkg.in/yaml.v3 (que he visto que tienes como dependencia indirecta en el go.mod).
-- La mejor alternativa: github.com/yuin/goldmark-meta (una extensión oficial de Goldmark).
-  - Por qué: Extrae el Frontmatter automáticamente durante la fase de parseo del AST, sin penalizar el rendimiento. Cuando llamas a
-    la función de renderizado, directamente te devuelve un map[string]any con los datos (ej: Title, Order) y el contenido limpio
-    listo para HTML. Ahorras ciclos de CPU y simplificas el código enormemente.
-
-3. Lectura del Repositorio Git (Detector de /docs y archivos)
-
-- Lo que usas actualmente: github.com/gogs/git-module (v1.8.7).
-- Análisis: Esta librería funciona haciendo llamadas al binario del sistema (git rev-list, git cat-file, etc.) usando os/exec. Para
-  leer un archivo suelto está bien, pero para montar el "Sidebar Dinámico", tendrías que leer el contenido de 10, 20 o 50 archivos .md
-  de golpe. Hacer spawn de 50 procesos git en el servidor por cada visita hundiría el rendimiento.
-- La mejor alternativa: github.com/go-git/go-git/v5.
-  - Por qué: Es una implementación de Git puramente en Go. Lee los archivos directamente del disco (o memoria) parseando los objetos
-    de Git (blobs, trees) sin levantar procesos externos.
-  - Con go-git, recorrer la carpeta docs/ y extraer el contenido de 50 archivos .md toma literalmente microsegundos. Sería
-    infinitamente más escalable para Ggit.
 
 4. Caché del Sidebar por Commit
 
@@ -150,13 +120,19 @@ y mantenibilidad:
     commit de la rama principal no ha cambiado, devuelves el Sidebar precalculado en $O(1)$. Si cambia (alguien hace push), la clave
     antigua desaparecerá naturalmente de la caché.
 
-Resumen de la Estrategia Óptima
+Resumen de viabilidad:
+GORM .Select() (Prioridad 🔥):
 
-Si yo tuviera que diseñar esta arquitectura para Ggit hoy, la propondría así:
+Viabilidad: Total. Es la mejora con mayor impacto inmediato y menor riesgo.
+Acción: Refactorizar los endpoints de listas para no cargar columnas pesadas (como descripciones largas o configuraciones) si solo vamos a mostrar el nombre y el ID.
+Gestión de Procesos (Semaforización) (Prioridad ⚡):
 
-1.  Sustituir Blackfriday por Goldmark en todo el proyecto de Ggit. Esto modernizaría enormemente todo el renderizado de repositorios,
-    no solo la Wiki.
-2.  Usar go-git (junto al git-module que ya tienes para compatibilidad) solo para la función de mapear el directorio de la Wiki a gran
-    velocidad en memoria.
-3.  Almacenar la estructura del Sidebar generada en un LRU Cache atado al Commit SHA.
+Viabilidad: Muy alta.
+Acción: Implementar un límite (semáforo) para procesos pesados como git grep. Esto evita que una ráfaga de usuarios consuma toda la RAM del sistema operativo simultáneamente.
+go-git/v5 para Metadatos (Prioridad 🛠):
 
+Viabilidad: Media/Alta.
+Acción: Usarlo específicamente para el escaneo de la carpeta /docs (Wiki) y el árbol de archivos rápido. Para operaciones pesadas (grep, diff), seguiremos usando procesos externos para no saturar el Heap de Go.
+Eliminación de Mirrors:
+
+Estado: Ya está prácticamente completado. He verificado que la lógica de sincronización ya no está en cron

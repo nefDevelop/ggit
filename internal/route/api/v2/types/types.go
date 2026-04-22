@@ -51,8 +51,9 @@ type RepositoryResponse struct {
 	NumBranches   int                   `json:"num_branches"`
 	IsPrivate     bool                  `json:"is_private"`
 	HTMLURL       string                `json:"html_url"`
-	DefaultBranch string                `json:"default_branch"`
-	CreatedAt     time.Time             `json:"created_at"`
+	DefaultBranch  string                `json:"default_branch"`
+	WikiFolderName string                `json:"wiki_folder_name"`
+	CreatedAt      time.Time             `json:"created_at"`
 	UpdatedAt     time.Time             `json:"updated_at"`
 	Permissions   *RepositoryPermission `json:"permissions,omitempty"`
 	Parent        *RepositoryResponse   `json:"parent,omitempty"`

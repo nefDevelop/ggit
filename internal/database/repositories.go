@@ -46,6 +46,7 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		IsPrivate:     r.IsPrivate,
 		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
 		DefaultBranch: r.DefaultBranch,
+		WikiFolderName: r.WikiFolderName,
 		CreatedAt:     time.Unix(r.CreatedUnix, 0),
 		UpdatedAt:     time.Unix(r.UpdatedUnix, 0),
 		Permissions:   opt.Permission,
@@ -81,12 +82,13 @@ type CreateRepoOptions struct {
 	Description   string
 	DefaultBranch string
 	Private       bool
-	EnableWiki    bool
-	EnableIssues  bool
-	EnablePulls   bool
-	Fork          bool
-	ForkID        int64
-	CreatedAt     time.Time
+	EnableWiki     bool
+	WikiFolderName string
+	EnableIssues   bool
+	EnablePulls    bool
+	Fork           bool
+	ForkID         int64
+	CreatedAt      time.Time
 }
 
 // Create creates a new repository record in the database. It returns
@@ -119,6 +121,7 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 		DefaultBranch: opts.DefaultBranch,
 		IsPrivate:     opts.Private,
 		EnableWiki:    opts.EnableWiki,
+		WikiFolderName: opts.WikiFolderName,
 		EnableIssues:  opts.EnableIssues,
 		EnablePulls:   opts.EnablePulls,
 		IsFork:        opts.Fork,
@@ -145,6 +148,7 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 type UpdateRepoOptions struct {
 	PrimaryLanguage *string
 	Languages       *string
+	WikiFolderName  *string
 }
 
 // Update updates the repository record in the database.
@@ -155,6 +159,9 @@ func (s *RepositoriesStore) Update(ctx context.Context, repoID int64, opts Updat
 	}
 	if opts.Languages != nil {
 		updates["languages"] = *opts.Languages
+	}
+	if opts.WikiFolderName != nil {
+		updates["wiki_folder_name"] = *opts.WikiFolderName
 	}
 
 	if len(updates) == 0 {
