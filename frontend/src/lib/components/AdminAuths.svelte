@@ -38,7 +38,7 @@
   <header class="section-header">
     <div class="header-text">
        <h2>Authentication Sources</h2>
-       <p class="subtitle">External authentication methods like LDAP, SMTP, or OAuth2.</p>
+       <p class="subtitle">External authentication methods like LDAP.</p>
     </div>
     <button class="btn btn-primary">
       <span class="material-symbols-rounded">add_moderator</span>
@@ -52,7 +52,7 @@
         <div class="card-top">
           <div class="type-icon">
             <span class="material-symbols-rounded">
-              {source.type === 1 || source.type === 2 ? 'hub' : source.type === 3 ? 'mail' : 'security'}
+              {source.type === 2 || source.type === 5 ? 'hub' : 'security'}
             </span>
           </div>
           <div class="auth-info">
@@ -76,7 +76,7 @@
     <div class="empty-state island island-interactive">
       <span class="material-symbols-rounded">no_encryption</span>
       <h3>No authentication sources</h3>
-      <p>Configure LDAP or SMTP to allow external user authentication.</p>
+      <p>Configure LDAP to allow external user authentication.</p>
     </div>
   {/if}
 </div>

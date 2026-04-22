@@ -235,7 +235,11 @@ type AuthOpts struct {
 	RequireEmailConfirmation  bool
 	RequireSigninView         bool
 	DisableRegistration       bool
-	EnableRegistrationCaptcha bool
+
+	// Simple Captcha (Question/Math)
+	EnableRegistrationQuestion bool
+	RegistrationQuestion       string
+	RegistrationAnswer         string
 
 	EnableReverseProxyAuthentication   bool
 	EnableReverseProxyAutoRegistration bool

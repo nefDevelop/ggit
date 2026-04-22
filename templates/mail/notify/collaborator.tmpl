@@ -1,12 +1,5 @@
 {{template "common/header" .}}
-	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Collaborator Invitation</p>
-	<p>You have been added as a collaborator to the repository: <code style="padding: 2px 6px; background: #eee; border-radius: 4px;">{{.RepoName}}</code></p>
-	
-	<div style="text-align: center; margin-top: 30px;">
-		<a href="{{.Link}}" class="btn-capsule">View Repository</a>
-	</div>
-
-	<p style="font-size: 14px; color: #7a7a7a; margin-top: 30px;">
-		You now have access to contribute to this project. Happy coding!
-	</p>
+	<p>Hola <b>{{.Doer.DisplayName}}</b> te ha añadido como colaborador al repositorio: <b>{{.RepoName}}</b>.</p>
+	<p>Ahora tienes acceso para contribuir en este proyecto.</p>
+	<p><a href="{{.Link}}" class="link">Ver Repositorio</a></p>
 {{template "common/footer" .}}

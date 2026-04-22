@@ -49,26 +49,26 @@ type Comment struct {
 	ID              int64       `gorm:"primaryKey"`
 	Type            CommentType `gorm:"not null"`
 	PosterID        int64       `gorm:"index"`
-	Poster          *User       `xorm:"-" json:"-" gorm:"-"`
-	IssueID         int64       `xorm:"INDEX" gorm:"index"`
-	Issue           *Issue      `xorm:"-" json:"-" gorm:"-"`
+	Poster          *User       `json:"-" gorm:"-"`
+	IssueID         int64       `gorm:"index"`
+	Issue           *Issue      `json:"-" gorm:"-"`
 	CommitID        int64
 	Line            int64
-	Content         string `xorm:"TEXT" gorm:"type:TEXT"`
-	RenderedContent string `xorm:"-" json:"-" gorm:"-"`
+	Content         string `gorm:"type:TEXT"`
+	RenderedContent string `json:"-" gorm:"-"`
 
-	Created     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64
-	Updated     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Updated     time.Time `json:"-" gorm:"-"`
 	UpdatedUnix int64
 
 	// Reference issue in commit message
-	CommitSHA string `xorm:"VARCHAR(40)" gorm:"type:VARCHAR(40)"`
+	CommitSHA string `gorm:"type:VARCHAR(40)"`
 
-	Attachments []*Attachment `xorm:"-" json:"-" gorm:"-"`
+	Attachments []*Attachment `json:"-" gorm:"-"`
 
 	// For view issue page.
-	ShowTag CommentTag `xorm:"-" json:"-" gorm:"-"`
+	ShowTag CommentTag `json:"-" gorm:"-"`
 }
 
 // BeforeCreate implements the GORM create hook.

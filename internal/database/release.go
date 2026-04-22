@@ -18,26 +18,26 @@ import (
 
 // Release represents a release of repository.
 type Release struct {
-	ID               int64 `gorm:"primaryKey"`
-	RepoID           int64 `gorm:"index"`
-	Repo             *Repository `xorm:"-" json:"-" gorm:"-"`
+	ID               int64       `gorm:"primaryKey"`
+	RepoID           int64       `gorm:"index"`
+	Repo             *Repository `json:"-" gorm:"-"`
 	PublisherID      int64       `gorm:"index"`
-	Publisher        *User       `xorm:"-" json:"-" gorm:"-"`
+	Publisher        *User       `json:"-" gorm:"-"`
 	TagName          string      `gorm:"not null"`
 	LowerTagName     string      `gorm:"index;not null"`
 	Target           string      `gorm:"not null"`
 	Title            string
-	Sha1             string `xorm:"VARCHAR(40)" gorm:"type:VARCHAR(40)"`
+	Sha1             string `gorm:"type:VARCHAR(40)"`
 	NumCommits       int64
-	NumCommitsBehind int64  `xorm:"-" json:"-" gorm:"-"`
-	Note             string `xorm:"TEXT" gorm:"type:TEXT"`
-	IsDraft          bool   `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:false"`
+	NumCommitsBehind int64  `json:"-" gorm:"-"`
+	Note             string `gorm:"type:TEXT"`
+	IsDraft          bool   `gorm:"not null;default:false"`
 	IsPrerelease     bool
 
-	Created     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64
 
-	Attachments []*Attachment `xorm:"-" json:"-" gorm:"-"`
+	Attachments []*Attachment `json:"-" gorm:"-"`
 }
 
 // BeforeCreate implements the GORM create hook.

@@ -11,7 +11,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/urfave/cli/v3"
 	log "unknwon.dev/clog/v2"
@@ -67,17 +66,11 @@ func runHookPreReceive(_ context.Context, cmd *cli.Command) error {
 	}
 	setup(cmd, "pre-receive.log", true)
 
-	isWiki := strings.Contains(os.Getenv(database.EnvRepoCustomHooksPath), ".wiki.git/")
-
 	buf := bytes.NewBuffer(nil)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		buf.Write(scanner.Bytes())
 		buf.WriteByte('\n')
-
-		if isWiki {
-			continue
-		}
 
 		fields := bytes.Fields(scanner.Bytes())
 		if len(fields) != 3 {
@@ -198,18 +191,11 @@ func runHookPostReceive(_ context.Context, cmd *cli.Command) error {
 	// so we need to setup additional services for email notifications.
 	email.NewContext()
 
-	isWiki := strings.Contains(os.Getenv(database.EnvRepoCustomHooksPath), ".wiki.git/")
-
 	buf := bytes.NewBuffer(nil)
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		buf.Write(scanner.Bytes())
 		buf.WriteByte('\n')
-
-		// TODO: support news feeds for wiki
-		if isWiki {
-			continue
-		}
 
 		fields := bytes.Fields(scanner.Bytes())
 		if len(fields) != 3 {

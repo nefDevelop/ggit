@@ -310,8 +310,6 @@ func usersChangeUsername(t *testing.T, ctx context.Context, s *UsersStore) {
 	require.NoError(t, err)
 	err = os.MkdirAll(repox.RepositoryLocalPath(repo.ID), os.ModePerm)
 	require.NoError(t, err)
-	err = os.MkdirAll(repox.RepositoryLocalWikiPath(repo.ID), os.ModePerm)
-	require.NoError(t, err)
 
 	// Make sure mock data is set up correctly
 	// TODO: Use PullRequests.GetByID to replace SQL hack when the method is available.
@@ -327,7 +325,6 @@ func usersChangeUsername(t *testing.T, ctx context.Context, s *UsersStore) {
 
 	assert.True(t, osx.Exist(repox.UserPath(alice.Name)))
 	assert.True(t, osx.Exist(repox.RepositoryLocalPath(repo.ID)))
-	assert.True(t, osx.Exist(repox.RepositoryLocalWikiPath(repo.ID)))
 
 	const newUsername = "alice-new"
 	err = s.ChangeUsername(ctx, alice.ID, newUsername)
@@ -341,7 +338,6 @@ func usersChangeUsername(t *testing.T, ctx context.Context, s *UsersStore) {
 	assert.True(t, osx.Exist(repox.UserPath(newUsername)))
 	assert.False(t, osx.Exist(repox.UserPath(alice.Name)))
 	assert.False(t, osx.Exist(repox.RepositoryLocalPath(repo.ID)))
-	assert.False(t, osx.Exist(repox.RepositoryLocalWikiPath(repo.ID)))
 
 	alice, err = s.GetByID(ctx, alice.ID)
 	require.NoError(t, err)

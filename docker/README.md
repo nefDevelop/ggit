@@ -40,7 +40,7 @@ Directory `/var/gogs` keeps Git repositories and Ggit data:
 
     /var/gogs
     |-- git
-    |   |-- gogs-repositories
+    |   |-- ggit-repositories
     |-- ssh
     |   |-- # ssh public/private keys for Gogs
     |-- gogs
@@ -68,7 +68,7 @@ $ docker run --name=gogs -p 10022:22 -p 10880:3000 -v gogs-data:/data gogs/gogs
 
 Most of the settings are obvious and easy to understand, but there are some settings can be confusing by running Ggit inside Docker:
 
-- **Repository Root Path**: keep it as default value `/home/git/gogs-repositories` because `start.sh` already made a symbolic link for you.
+- **Repository Root Path**: keep it as default value `/home/git/ggit-repositories` because `start.sh` already made a symbolic link for you.
 - **Run User**: keep it as default value `git` because `build/finalize.sh` already setup a user with name `git`.
 - **Domain**: fill in with Docker container IP (e.g. `192.168.99.100`). But if you want to access your Ggit instance from a different physical machine, please fill in with the hostname or IP address of the Docker host machine.
 - **SSH Port**: Use the exposed port from Docker container. For example, your SSH server listens on `22` inside Docker, **but** you expose it by `10022:22`, then use `10022` for this value. **Builtin SSH server is not recommended inside Docker Container**

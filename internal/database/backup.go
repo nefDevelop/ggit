@@ -102,7 +102,6 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 	return rows.Err()
 }
 
-
 // ImportDatabase imports data from backup archive in JSON Lines format.
 func ImportDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bool) error {
 	// All tables are now managed by GORM and included in the main 'Tables' list.
@@ -188,4 +187,3 @@ func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error
 	}
 	return nil
 }
-

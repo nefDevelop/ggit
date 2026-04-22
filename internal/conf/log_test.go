@@ -49,7 +49,7 @@ MODE = file
 	f, err := ini.Load([]byte(`
 [log]
 ROOT_PATH = log
-MODE = console, file, slack, discord
+MODE = console, file
 BUFFER_LEN = 50
 LEVEL = trace
 
@@ -63,15 +63,6 @@ DAILY_ROTATE = true
 MAX_SIZE_SHIFT = 20
 MAX_LINES = 1000
 MAX_DAYS = 3
-
-[log.slack]
-LEVEL = Warn
-URL = https://slack.com
-
-[log.discord]
-LEVEL = error
-URL = https://discordapp.com
-USERNAME = yoyo
 `))
 	if err != nil {
 		t.Fatal(err)
@@ -87,8 +78,6 @@ USERNAME = yoyo
 		Modes: []string{
 			log.DefaultConsoleName,
 			log.DefaultFileName,
-			log.DefaultSlackName,
-			log.DefaultDiscordName,
 		},
 		Configs: []*loggerConf{
 			{
@@ -108,19 +97,6 @@ USERNAME = yoyo
 						MaxLines: 1000,
 						MaxDays:  3,
 					},
-				},
-			}, {
-				Buffer: 50,
-				Config: log.SlackConfig{
-					Level: log.LevelWarn,
-					URL:   "https://slack.com",
-				},
-			}, {
-				Buffer: 50,
-				Config: log.DiscordConfig{
-					Level:    log.LevelError,
-					URL:      "https://discordapp.com",
-					Username: "yoyo",
 				},
 			},
 		},

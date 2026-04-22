@@ -1,16 +1,7 @@
 {{template "common/header" .}}
-	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Hi {{.Username}},</p>
-	<p>You've requested to change your email address on <b>{{AppName}}</b>.</p>
-	<p>Please click the button below to verify your new email address: <code>{{.Email}}</code>. This link will expire in <b>{{.ActiveCodeLives}} hours</b>.</p>
-	
-	<div style="text-align: center;">
-		<a href="{{AppURL}}user/activate_email?code={{.Code}}&email={{.Email}}" class="btn-capsule">Verify Email Address</a>
-	</div>
-
-	<p style="font-size: 14px; color: #7a7a7a;">
-		Not working? Try copying and pasting the following link into your browser:
-	</p>
-	<div class="code-block">
-		{{AppURL}}user/activate_email?code={{.Code}}&email={{.Email}}
-	</div>
+	<p>Hola <b>{{.Username}}</b>,</p>
+	<p>Has solicitado cambiar tu dirección de correo en <b>{{AppName}}</b>.</p>
+	<p>Pulsa en el siguiente enlace para verificar tu nueva dirección (<code>{{.Email}}</code>). Este enlace caducará en <b>{{.ActiveCodeLives}} horas</b>:</p>
+	<p><a href="{{AppURL}}user/activate_email?code={{.Code}}&email={{.Email}}" class="link">Verificar dirección de correo</a></p>
+	<p style="font-size: 14px; color: #666;">Si el enlace no funciona, copia y pega esto en tu navegador:<br>{{AppURL}}user/activate_email?code={{.Code}}&email={{.Email}}</p>
 {{template "common/footer" .}}

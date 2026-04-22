@@ -20,11 +20,7 @@ type CloneLink struct {
 }
 
 // NewCloneLink returns clone URLs using given owner and repository name.
-func NewCloneLink(owner, repo string, isWiki bool) *CloneLink {
-	if isWiki {
-		repo += ".wiki"
-	}
-
+func NewCloneLink(owner, repo string) *CloneLink {
 	cl := new(CloneLink)
 	if conf.SSH.Port != 22 {
 		cl.SSH = fmt.Sprintf("ssh://%s@%s:%d/%s/%s.git", conf.App.RunUser, conf.SSH.Domain, conf.SSH.Port, owner, repo)
@@ -66,12 +62,6 @@ func RepositoryPath(owner, repo string) string {
 // with the given ID.
 func RepositoryLocalPath(repoID int64) string {
 	return filepath.Join(conf.Server.AppDataPath, "tmp", "local-repo", strconv.FormatInt(repoID, 10))
-}
-
-// RepositoryLocalWikiPath returns the absolute path of the repository local
-// wiki copy with the given ID.
-func RepositoryLocalWikiPath(repoID int64) string {
-	return filepath.Join(conf.Server.AppDataPath, "tmp", "local-wiki", strconv.FormatInt(repoID, 10))
 }
 
 var hooksTpls = map[git.HookName]string{

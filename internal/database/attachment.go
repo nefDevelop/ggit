@@ -19,13 +19,13 @@ import (
 // Attachment represent a attachment of issue/comment/release.
 type Attachment struct {
 	ID        int64  `gorm:"primaryKey"`
-	UUID      string `xorm:"uuid UNIQUE" gorm:"unique;not null"`
-	IssueID   int64  `xorm:"INDEX" gorm:"index"`
+	UUID      string `gorm:"unique;not null"`
+	IssueID   int64  `gorm:"index"`
 	CommentID int64  `gorm:"index"`
-	ReleaseID int64  `xorm:"INDEX" gorm:"index"`
+	ReleaseID int64  `gorm:"index"`
 	Name      string `gorm:"not null"`
 
-	Created     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64
 }
 

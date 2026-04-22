@@ -10,7 +10,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/cockroachdb/errors"
-	"github.com/go-macaron/binding"
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
@@ -18,12 +17,18 @@ import (
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/dbx"
 	"gogs.io/gogs/internal/errx"
+	"gogs.io/gogs/internal/lazyregexp"
 	"gogs.io/gogs/internal/markup"
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/internal/repox"
 	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
 	"gogs.io/gogs/internal/strx"
 	"gogs.io/gogs/internal/userx"
+)
+
+var (
+	// alphaDashDotPattern represents a regex for valid username/email characters.
+	alphaDashDotPattern = lazyregexp.New(`[^\d\w\-_.]`)
 )
 
 // UsersStore is the storage layer for users.
@@ -127,7 +132,7 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 	}
 
 	// Validate username make sure it satisfies requirement.
-	if binding.AlphaDashDotPattern.MatchString(extAccount.Name) {
+	if alphaDashDotPattern.MatchString(extAccount.Name) {
 		return nil, errors.Newf("invalid pattern for attribute 'username' [%s]: must be valid alpha or numeric or dash(-_) or dot characters", extAccount.Name)
 	}
 
@@ -210,7 +215,6 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, userID int64, newUserna
 			}
 
 			deleteRepoLocalCopy(repo.ID)
-			RemoveAllWithNotice(fmt.Sprintf("Delete repository %d wiki local copy", repo.ID), repox.RepositoryLocalWikiPath(repo.ID))
 		}
 		if err = rows.Err(); err != nil {
 			return errors.Wrap(err, "check rows.Err")
@@ -1230,29 +1234,29 @@ const (
 // User represents the object of an individual or an organization.
 type User struct {
 	ID        int64  `gorm:"primaryKey"`
-	LowerName string `xorm:"UNIQUE NOT NULL" gorm:"unique;not null"`
-	Name      string `xorm:"UNIQUE NOT NULL" gorm:"not null"`
+	LowerName string `gorm:"unique;not null"`
+	Name      string `gorm:"not null"`
 	FullName  string
 	// Email is the primary email address (to be used for communication)
-	Email       string `xorm:"NOT NULL" gorm:"not null"`
-	Password    string `xorm:"passwd NOT NULL" gorm:"column:passwd;not null"`
-	LoginSource int64  `xorm:"NOT NULL DEFAULT 0" gorm:"not null;default:0"`
+	Email       string `gorm:"not null"`
+	Password    string `gorm:"column:passwd;not null"`
+	LoginSource int64  `gorm:"not null;default:0"`
 	LoginName   string
 	Type        UserType
 	Location    string
 	Website     string
-	Rands       string `xorm:"VARCHAR(10)" gorm:"type:VARCHAR(10)"`
-	Salt        string `xorm:"VARCHAR(10)" gorm:"type:VARCHAR(10)"`
+	Rands       string `gorm:"type:VARCHAR(10)"`
+	Salt        string `gorm:"type:VARCHAR(10)"`
 
-	Created     time.Time `xorm:"-" gorm:"-" json:"-"`
+	Created     time.Time `gorm:"-" json:"-"`
 	CreatedUnix int64
-	Updated     time.Time `xorm:"-" gorm:"-" json:"-"`
+	Updated     time.Time `gorm:"-" json:"-"`
 	UpdatedUnix int64
 
 	// Remember visibility choice for convenience, true for private
 	LastRepoVisibility bool
 	// Maximum repository creation limit, -1 means use global default
-	MaxRepoCreation int `xorm:"NOT NULL DEFAULT -1" gorm:"not null;default:-1"`
+	MaxRepoCreation int `gorm:"not null;default:-1"`
 
 	// Permissions
 	IsActive         bool // Activate primary email
@@ -1262,13 +1266,13 @@ type User struct {
 	ProhibitLogin    bool
 
 	// Avatar
-	Avatar          string `xorm:"VARCHAR(2048) NOT NULL" gorm:"type:VARCHAR(2048);not null"`
-	AvatarEmail     string `xorm:"NOT NULL" gorm:"not null"`
+	Avatar          string `gorm:"type:VARCHAR(2048);not null"`
+	AvatarEmail     string `gorm:"not null"`
 	UseCustomAvatar bool
 
 	// Counters
 	NumFollowers int
-	NumFollowing int `xorm:"NOT NULL DEFAULT 0" gorm:"not null;default:0"`
+	NumFollowing int `gorm:"not null;default:0"`
 	NumStars     int
 	NumRepos     int
 
@@ -1276,8 +1280,8 @@ type User struct {
 	Description string
 	NumTeams    int
 	NumMembers  int
-	Teams       []*Team `xorm:"-" gorm:"-" json:"-"`
-	Members     []*User `xorm:"-" gorm:"-" json:"-"`
+	Teams       []*Team `gorm:"-" json:"-"`
+	Members     []*User `gorm:"-" json:"-"`
 
 	DisableNewsFeed bool
 }
@@ -1576,15 +1580,15 @@ func isUsernameAllowed(name string) error {
 // EmailAddress is an email address of a user.
 type EmailAddress struct {
 	ID          int64  `gorm:"primaryKey"`
-	UserID      int64  `xorm:"uid INDEX NOT NULL" gorm:"column:uid;index;uniqueIndex:email_address_user_email_unique;not null"`
-	Email       string `xorm:"UNIQUE NOT NULL" gorm:"uniqueIndex:email_address_user_email_unique;not null;size:254"`
+	UserID      int64  `gorm:"column:uid;index;uniqueIndex:email_address_user_email_unique;not null"`
+	Email       string `gorm:"uniqueIndex:email_address_user_email_unique;not null;size:254"`
 	IsActivated bool   `gorm:"not null;default:FALSE"`
-	IsPrimary   bool   `xorm:"-" gorm:"-" json:"-"`
+	IsPrimary   bool   `gorm:"-" json:"-"`
 }
 
 // Follow represents relations of users and their followers.
 type Follow struct {
 	ID       int64 `gorm:"primaryKey"`
-	UserID   int64 `xorm:"UNIQUE(follow)" gorm:"uniqueIndex:follow_user_follow_unique;not null"`
-	FollowID int64 `xorm:"UNIQUE(follow)" gorm:"uniqueIndex:follow_user_follow_unique;not null"`
+	UserID   int64 `gorm:"uniqueIndex:follow_user_follow_unique;not null"`
+	FollowID int64 `gorm:"uniqueIndex:follow_user_follow_unique;not null"`
 }

@@ -400,7 +400,7 @@ func (r *Repository) DeleteRepoFile(doer *User, opts DeleteRepoFileOptions) (err
 // Upload represent a uploaded file to a repo to be deleted when moved
 type Upload struct {
 	ID   int64  `gorm:"primaryKey"`
-	UUID string `xorm:"uuid UNIQUE" gorm:"unique;not null"`
+	UUID string `gorm:"unique;not null"`
 	Name string `gorm:"not null"`
 }
 

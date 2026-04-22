@@ -647,15 +647,15 @@ type Action struct {
 	OpType       ActionType `json:"op_type"`
 	ActUserID    int64      `json:"act_user_id"`   // Doer user ID
 	ActUserName  string     `json:"act_user_name"` // Doer user name
-	ActAvatar    string     `xorm:"-" gorm:"-" json:"act_avatar"`
-	RepoID       int64      `xorm:"INDEX" gorm:"index" json:"repo_id"`
+	ActAvatar    string     `gorm:"-" json:"act_avatar"`
+	RepoID       int64      `gorm:"index" json:"repo_id"`
 	RepoUserName string     `json:"repo_user_name"`
 	RepoName     string     `json:"repo_name"`
 	RefName      string     `json:"ref_name"`
-	IsPrivate    bool       `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE" json:"is_private"`
-	Content      string     `xorm:"TEXT" json:"content"`
+	IsPrivate    bool       `gorm:"not null;default:FALSE" json:"is_private"`
+	Content      string     `json:"content"`
 
-	Created     time.Time `xorm:"-" gorm:"-" json:"created_at"`
+	Created     time.Time `gorm:"-" json:"created_at"`
 	CreatedUnix int64     `json:"created_unix"`
 }
 

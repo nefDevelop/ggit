@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"gogs.io/gogs/internal/auth"
 	"gogs.io/gogs/internal/conf"
@@ -121,9 +122,11 @@ func Logout(c *context.APIContext) {
 }
 
 type registerPayload struct {
-	UserName string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+	UserName      string `json:"username" binding:"required"`
+	Email         string `json:"email" binding:"required,email"`
+	Password      string `json:"password" binding:"required"`
+	MiddleName    string `json:"middle_name"`    // Honeypot
+	CaptchaAnswer string `json:"captcha_answer"` // Question answer
 }
 
 // @Summary User Registration
@@ -142,6 +145,27 @@ func Register(c *context.APIContext) {
 	if conf.Auth.DisableRegistration {
 		c.StatusError(http.StatusForbidden, "Registration is disabled.", nil)
 		return
+	}
+
+	var f registerPayload
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	// 1. Honeypot check (must be empty)
+	if len(f.MiddleName) > 0 {
+		log.Warn("Registration blocked by honeypot: %s", f.UserName)
+		c.Status(http.StatusNoContent) // Stealth drop
+		return
+	}
+
+	// 2. Question Captcha check (if enabled)
+	if conf.Auth.EnableRegistrationQuestion {
+		if strings.TrimSpace(f.CaptchaAnswer) != conf.Auth.RegistrationAnswer {
+			c.StatusError(http.StatusBadRequest, "Incorrect answer to security question.", nil)
+			return
+		}
 	}
 
 	if !database.HasEngine || authservice.Auth == nil {
@@ -454,4 +478,12 @@ func Activate(c *context.APIContext) {
 
 	log.Trace("Email activated: %s", emailAddr.Email)
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// GetRegistrationSettings returns the current registration security settings.
+func GetRegistrationSettings(c *context.APIContext) {
+	c.JSON(http.StatusOK, map[string]any{
+		"enable_question": conf.Auth.EnableRegistrationQuestion,
+		"question":        conf.Auth.RegistrationQuestion,
+	})
 }

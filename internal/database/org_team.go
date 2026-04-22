@@ -15,14 +15,14 @@ const ownerTeamName = "Owners"
 
 // Team represents a organization team.
 type Team struct {
-	ID          int64       `gorm:"primaryKey"`
-	OrgID       int64       `xorm:"INDEX" gorm:"index"`
-	LowerName   string      `gorm:"index;not null"`
-	Name        string      `gorm:"not null"`
-	Description string      `gorm:"type:VARCHAR(255)"`
-	Authorize   AccessMode  `gorm:"not null"`
-	Repos       []*Repository `xorm:"-" json:"-" gorm:"-"`
-	Members     []*User       `xorm:"-" json:"-" gorm:"-"`
+	ID          int64         `gorm:"primaryKey"`
+	OrgID       int64         `gorm:"index"`
+	LowerName   string        `gorm:"index;not null"`
+	Name        string        `gorm:"not null"`
+	Description string        `gorm:"type:VARCHAR(255)"`
+	Authorize   AccessMode    `gorm:"not null"`
+	Repos       []*Repository `json:"-" gorm:"-"`
+	Members     []*User       `json:"-" gorm:"-"`
 	NumRepos    int
 	NumMembers  int
 }
@@ -35,7 +35,6 @@ func (t *Team) AfterFind(_ *gorm.DB) error {
 	}
 	return nil
 }
-
 
 // IsOwnerTeam returns true if team is owner team.
 func (t *Team) IsOwnerTeam() bool {
@@ -430,9 +429,9 @@ func DeleteTeam(t *Team) error {
 // TeamUser represents an team-user relation.
 type TeamUser struct {
 	ID     int64 `gorm:"primaryKey"`
-	OrgID  int64 `xorm:"INDEX" gorm:"index"`
-	TeamID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:team_user_team_user_unique"`
-	UID    int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:team_user_team_user_unique"`
+	OrgID  int64 `gorm:"index"`
+	TeamID int64 `gorm:"uniqueIndex:team_user_team_user_unique"`
+	UID    int64 `gorm:"uniqueIndex:team_user_team_user_unique"`
 }
 
 func isTeamMember(tx *gorm.DB, orgID, teamID, uid int64) bool {
@@ -617,9 +616,9 @@ func RemoveTeamMember(orgID, teamID, uid int64) error {
 // TeamRepo represents an team-repository relation.
 type TeamRepo struct {
 	ID     int64 `gorm:"primaryKey"`
-	OrgID  int64 `xorm:"INDEX" gorm:"index"`
-	TeamID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:team_repo_team_repo_unique"`
-	RepoID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:team_repo_team_repo_unique"`
+	OrgID  int64 `gorm:"index"`
+	TeamID int64 `gorm:"uniqueIndex:team_repo_team_repo_unique"`
+	RepoID int64 `gorm:"uniqueIndex:team_repo_team_repo_unique"`
 }
 
 func hasTeamRepo(tx *gorm.DB, orgID, teamID, repoID int64) bool {

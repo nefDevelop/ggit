@@ -2,8 +2,6 @@ package form
 
 import (
 	"mime/multipart"
-
-	"github.com/go-macaron/binding"
 )
 
 //nolint:staticcheck // Reason: needed for legacy code
@@ -38,7 +36,6 @@ type Install struct {
 
 	OfflineMode         bool
 	DisableRegistration bool
-	EnableCaptcha       bool
 	RequireSignInView   bool
 
 	AdminName          string `binding:"OmitEmpty;AlphaDashDot;MaxSize(30)" locale:"install.admin_name"`
@@ -47,7 +44,7 @@ type Install struct {
 	AdminEmail         string `binding:"OmitEmpty;MinSize(3);MaxSize(254);Include(@)" locale:"install.admin_email"`
 }
 
-func (f *Install) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *Install) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -65,7 +62,7 @@ type Register struct {
 	Retype   string
 }
 
-func (f *Register) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *Register) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -76,7 +73,7 @@ type SignIn struct {
 	Remember    bool
 }
 
-func (f *SignIn) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *SignIn) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -95,7 +92,7 @@ type UpdateProfile struct {
 	DisableNewsFeed bool   `json:"disable_news_feed"`
 }
 
-func (f *UpdateProfile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *UpdateProfile) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -108,7 +105,7 @@ type Avatar struct {
 	Avatar *multipart.FileHeader
 }
 
-func (f *Avatar) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *Avatar) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -116,7 +113,7 @@ type AddEmail struct {
 	Email string `binding:"Required;Email;MaxSize(254)"`
 }
 
-func (f *AddEmail) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *AddEmail) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -126,7 +123,7 @@ type ChangePassword struct {
 	Retype      string
 }
 
-func (f *ChangePassword) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *ChangePassword) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -135,7 +132,7 @@ type AddSSHKey struct {
 	Content string `binding:"Required"`
 }
 
-func (f *AddSSHKey) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *AddSSHKey) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -143,6 +140,6 @@ type NewAccessToken struct {
 	Name string `binding:"Required"`
 }
 
-func (f *NewAccessToken) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *NewAccessToken) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }

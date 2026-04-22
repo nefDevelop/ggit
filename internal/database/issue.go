@@ -23,35 +23,35 @@ var ErrMissingIssueNumber = errors.New("no issue number specified")
 // Issue represents an issue or pull request of repository.
 type Issue struct {
 	ID              int64       `gorm:"primaryKey"`
-	RepoID          int64       `xorm:"INDEX UNIQUE(repo_index)" gorm:"index;uniqueIndex:issue_repo_index_unique;not null"`
-	Repo            *Repository `xorm:"-" json:"-" gorm:"-"`
-	Index           int64       `xorm:"UNIQUE(repo_index)" gorm:"uniqueIndex:issue_repo_index_unique;not null"` // Index in one repository.
+	RepoID          int64       `gorm:"index;uniqueIndex:issue_repo_index_unique;not null"`
+	Repo            *Repository `json:"-" gorm:"-"`
+	Index           int64       `gorm:"uniqueIndex:issue_repo_index_unique;not null"` // Index in one repository.
 	PosterID        int64       `gorm:"index"`
-	Poster          *User       `xorm:"-" json:"-" gorm:"-"`
-	Title           string      `xorm:"name" gorm:"column:name;not null"`
-	Content         string      `xorm:"TEXT" gorm:"type:TEXT"`
-	RenderedContent string      `xorm:"-" json:"-" gorm:"-"`
-	Labels          []*Label    `xorm:"-" json:"-" gorm:"-"`
+	Poster          *User       `json:"-" gorm:"-"`
+	Title           string      `gorm:"column:name;not null"`
+	Content         string      `gorm:"type:TEXT"`
+	RenderedContent string      `json:"-" gorm:"-"`
+	Labels          []*Label    `json:"-" gorm:"-"`
 	MilestoneID     int64       `gorm:"index"`
-	Milestone       *Milestone  `xorm:"-" json:"-" gorm:"-"`
+	Milestone       *Milestone  `json:"-" gorm:"-"`
 	Priority        int
 	AssigneeID      int64 `gorm:"index"`
-	Assignee        *User `xorm:"-" json:"-" gorm:"-"`
+	Assignee        *User `json:"-" gorm:"-"`
 	IsClosed        bool
-	IsRead          bool         `xorm:"-" json:"-" gorm:"-"`
+	IsRead          bool         `json:"-" gorm:"-"`
 	IsPull          bool         // Indicates whether is a pull request or not.
-	PullRequest     *PullRequest `xorm:"-" json:"-" gorm:"-"`
+	PullRequest     *PullRequest `json:"-" gorm:"-"`
 	NumComments     int
 
-	Deadline     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Deadline     time.Time `json:"-" gorm:"-"`
 	DeadlineUnix int64
-	Created      time.Time `xorm:"-" json:"-" gorm:"-"`
+	Created      time.Time `json:"-" gorm:"-"`
 	CreatedUnix  int64
-	Updated      time.Time `xorm:"-" json:"-" gorm:"-"`
+	Updated      time.Time `json:"-" gorm:"-"`
 	UpdatedUnix  int64
 
-	Attachments []*Attachment `xorm:"-" json:"-" gorm:"-"`
-	Comments    []*Comment    `xorm:"-" json:"-" gorm:"-"`
+	Attachments []*Attachment `json:"-" gorm:"-"`
+	Comments    []*Comment    `json:"-" gorm:"-"`
 }
 
 // BeforeCreate implements the GORM create hook.
@@ -976,9 +976,9 @@ func GetParticipantsByIssueID(issueID int64) ([]*User, error) {
 // IssueUser represents an issue-user relation.
 type IssueUser struct {
 	ID          int64 `gorm:"primary_key"`
-	UserID      int64 `xorm:"uid INDEX" gorm:"column:uid;index"`
+	UserID      int64 `gorm:"column:uid;index"`
 	IssueID     int64
-	RepoID      int64 `xorm:"INDEX" gorm:"index"`
+	RepoID      int64 `gorm:"index"`
 	MilestoneID int64
 	IsRead      bool
 	IsAssigned  bool
@@ -986,7 +986,6 @@ type IssueUser struct {
 	IsPoster    bool
 	IsClosed    bool
 }
-
 
 func newIssueUsers(tx *gorm.DB, repo *Repository, issue *Issue) error {
 	assignees, err := repo.getAssignees(tx)
@@ -1057,7 +1056,7 @@ func GetIssueUserPairsByRepoIds(rids []int64, isClosed bool, page int) ([]*Issue
 	}
 
 	ius := make([]*IssueUser, 0, 10)
-	err := Handle.db.Limit(20).Offset((page - 1) * 20).Where("repo_id IN (?) AND is_closed = ?", rids, isClosed).Find(&ius).Error
+	err := Handle.db.Limit(20).Offset((page-1)*20).Where("repo_id IN (?) AND is_closed = ?", rids, isClosed).Find(&ius).Error
 	return ius, err
 }
 
@@ -1141,17 +1140,6 @@ const (
 	FilterModeCreate    FilterMode = "created_by"
 	FilterModeMention   FilterMode = "mentioned"
 )
-
-func parseCountResult(results []map[string][]byte) int64 {
-	if len(results) == 0 {
-		return 0
-	}
-	for _, result := range results[0] {
-		count, _ := strconv.ParseInt(string(result), 10, 64)
-		return count
-	}
-	return 0
-}
 
 type IssueStatsOptions struct {
 	RepoID      int64

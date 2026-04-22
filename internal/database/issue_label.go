@@ -51,13 +51,13 @@ func GetLabelTemplateFile(name string) ([][2]string, error) {
 // Label represents a label of repository for issues.
 type Label struct {
 	ID              int64  `gorm:"primaryKey"`
-	RepoID          int64  `xorm:"INDEX" gorm:"index"`
+	RepoID          int64  `gorm:"index"`
 	Name            string `gorm:"not null"`
-	Color           string `xorm:"VARCHAR(7)" gorm:"type:VARCHAR(7);not null"`
+	Color           string `gorm:"type:VARCHAR(7);not null"`
 	NumIssues       int
 	NumClosedIssues int
-	NumOpenIssues   int  `xorm:"-" json:"-" gorm:"-"`
-	IsChecked       bool `xorm:"-" json:"-" gorm:"-"`
+	NumOpenIssues   int  `json:"-" gorm:"-"`
+	IsChecked       bool `json:"-" gorm:"-"`
 }
 
 // AfterFind implements the GORM query hook.
@@ -256,8 +256,8 @@ func DeleteLabel(repoID, labelID int64) error {
 // IssueLabel represents relation between issue and its label.
 type IssueLabel struct {
 	ID      int64 `gorm:"primaryKey"`
-	IssueID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:issue_label_issue_label_unique"`
-	LabelID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:issue_label_issue_label_unique"`
+	IssueID int64 `gorm:"uniqueIndex:issue_label_issue_label_unique"`
+	LabelID int64 `gorm:"uniqueIndex:issue_label_issue_label_unique"`
 }
 
 func hasIssueLabel(tx *gorm.DB, issueID, labelID int64) bool {

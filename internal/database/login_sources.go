@@ -11,10 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/github"
 	"gogs.io/gogs/internal/auth/ldap"
-	"gogs.io/gogs/internal/auth/pam"
-	"gogs.io/gogs/internal/auth/smtp"
 	"gogs.io/gogs/internal/errx"
 )
 
@@ -22,18 +19,18 @@ import (
 type LoginSource struct {
 	ID        int64 `gorm:"primaryKey"`
 	Type      auth.Type
-	Name      string        `xorm:"UNIQUE" gorm:"unique"`
-	IsActived bool          `xorm:"NOT NULL DEFAULT false" gorm:"not null"`
-	IsDefault bool          `xorm:"DEFAULT false"`
-	Provider  auth.Provider `xorm:"-" gorm:"-"`
-	Config    string        `xorm:"TEXT cfg" gorm:"column:cfg;type:TEXT" json:"RawConfig"`
+	Name      string        `gorm:"unique"`
+	IsActived bool          `gorm:"not null"`
+	IsDefault bool          ``
+	Provider  auth.Provider `gorm:"-"`
+	Config    string        `gorm:"column:cfg;type:TEXT" json:"RawConfig"`
 
-	Created     time.Time `xorm:"-" gorm:"-" json:"-"`
+	Created     time.Time `gorm:"-" json:"-"`
 	CreatedUnix int64
-	Updated     time.Time `xorm:"-" gorm:"-" json:"-"`
+	Updated     time.Time `gorm:"-" json:"-"`
 	UpdatedUnix int64
 
-	File loginSourceFileStore `xorm:"-" gorm:"-" json:"-"`
+	File loginSourceFileStore `gorm:"-" json:"-"`
 }
 
 // BeforeSave implements the GORM save hook.
@@ -87,30 +84,6 @@ func (s *LoginSource) AfterFind(_ *gorm.DB) error {
 		}
 		s.Provider = ldap.NewProvider(true, &cfg)
 
-	case auth.SMTP:
-		var cfg smtp.Config
-		err := json.Unmarshal([]byte(s.Config), &cfg)
-		if err != nil {
-			return err
-		}
-		s.Provider = smtp.NewProvider(&cfg)
-
-	case auth.PAM:
-		var cfg pam.Config
-		err := json.Unmarshal([]byte(s.Config), &cfg)
-		if err != nil {
-			return err
-		}
-		s.Provider = pam.NewProvider(&cfg)
-
-	case auth.GitHub:
-		var cfg github.Config
-		err := json.Unmarshal([]byte(s.Config), &cfg)
-		if err != nil {
-			return err
-		}
-		s.Provider = github.NewProvider(&cfg)
-
 	case auth.Mock:
 		var cfg mockProviderConfig
 		err := json.Unmarshal([]byte(s.Config), &cfg)
@@ -139,32 +112,8 @@ func (s *LoginSource) IsDLDAP() bool {
 	return s.Type == auth.DLDAP
 }
 
-func (s *LoginSource) IsSMTP() bool {
-	return s.Type == auth.SMTP
-}
-
-func (s *LoginSource) IsPAM() bool {
-	return s.Type == auth.PAM
-}
-
-func (s *LoginSource) IsGitHub() bool {
-	return s.Type == auth.GitHub
-}
-
 func (s *LoginSource) LDAP() *ldap.Config {
 	return s.Provider.Config().(*ldap.Config)
-}
-
-func (s *LoginSource) SMTP() *smtp.Config {
-	return s.Provider.Config().(*smtp.Config)
-}
-
-func (s *LoginSource) PAM() *pam.Config {
-	return s.Provider.Config().(*pam.Config)
-}
-
-func (s *LoginSource) GitHub() *github.Config {
-	return s.Provider.Config().(*github.Config)
 }
 
 // LoginSourcesStore is the storage layer for login sources.

@@ -29,7 +29,7 @@ func TestNewCloneLink(t *testing.T) {
 			},
 		)
 
-		got := NewCloneLink("alice", "example", false)
+		got := NewCloneLink("alice", "example")
 		want := &CloneLink{
 			SSH:   "git@example.com:alice/example.git",
 			HTTPS: "https://example.com/alice/example.git",
@@ -45,26 +45,10 @@ func TestNewCloneLink(t *testing.T) {
 			},
 		)
 
-		got := NewCloneLink("alice", "example", false)
+		got := NewCloneLink("alice", "example")
 		want := &CloneLink{
 			SSH:   "ssh://git@example.com:2222/alice/example.git",
 			HTTPS: "https://example.com/alice/example.git",
-		}
-		assert.Equal(t, want, got)
-	})
-
-	t.Run("wiki", func(t *testing.T) {
-		conf.SetMockSSH(t,
-			conf.SSHOpts{
-				Domain: "example.com",
-				Port:   22,
-			},
-		)
-
-		got := NewCloneLink("alice", "example", true)
-		want := &CloneLink{
-			SSH:   "git@example.com:alice/example.wiki.git",
-			HTTPS: "https://example.com/alice/example.wiki.git",
 		}
 		assert.Equal(t, want, got)
 	})
@@ -96,12 +80,12 @@ func TestUserPath(t *testing.T) {
 
 	conf.SetMockRepository(t,
 		conf.RepositoryOpts{
-			Root: "/home/git/gogs-repositories",
+			Root: "/home/git/ggit-repositories",
 		},
 	)
 
 	got := UserPath("alice")
-	want := "/home/git/gogs-repositories/alice"
+	want := "/home/git/ggit-repositories/alice"
 	assert.Equal(t, want, got)
 }
 
@@ -113,12 +97,12 @@ func TestRepositoryPath(t *testing.T) {
 
 	conf.SetMockRepository(t,
 		conf.RepositoryOpts{
-			Root: "/home/git/gogs-repositories",
+			Root: "/home/git/ggit-repositories",
 		},
 	)
 
 	got := RepositoryPath("alice", "example")
-	want := "/home/git/gogs-repositories/alice/example.git"
+	want := "/home/git/ggit-repositories/alice/example.git"
 	assert.Equal(t, want, got)
 }
 
@@ -137,23 +121,5 @@ func TestRepositoryLocalPath(t *testing.T) {
 
 	got := RepositoryLocalPath(1)
 	want := "data/tmp/local-repo/1"
-	assert.Equal(t, want, got)
-}
-
-func TestRepositoryLocalWikiPath(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("Skipping testing on Windows")
-		return
-	}
-
-	conf.SetMockServer(
-		t,
-		conf.ServerOpts{
-			AppDataPath: "data",
-		},
-	)
-
-	got := RepositoryLocalWikiPath(1)
-	want := "data/tmp/local-wiki/1"
 	assert.Equal(t, want, got)
 }

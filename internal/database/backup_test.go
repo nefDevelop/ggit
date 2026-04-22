@@ -12,8 +12,7 @@ import (
 	"gorm.io/gorm"
 
 	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/github"
-	"gogs.io/gogs/internal/auth/pam"
+	"gogs.io/gogs/internal/auth/ldap"
 	"gogs.io/gogs/internal/cryptox"
 	"gogs.io/gogs/internal/dbtest"
 	"gogs.io/gogs/internal/lfsx"
@@ -101,7 +100,7 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			RepoName:     "example",
 			RefName:      "main",
 			IsPrivate:    false,
-			Content:      `{"Len":1,"Commits":[],"CompareURL":""}`,
+			Content:      `{"Len":1,"Commits":[],"CompareURL":"" }`,
 			CreatedUnix:  1588568886,
 		},
 		&Action{
@@ -115,7 +114,7 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			RepoName:     "example",
 			RefName:      "main",
 			IsPrivate:    false,
-			Content:      `{"Len":1,"Commits":[],"CompareURL":""}`,
+			Content:      `{"Len":1,"Commits":[],"CompareURL":"" }`,
 			CreatedUnix:  1588568886,
 		},
 		&Action{
@@ -157,36 +156,36 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 		},
 
 		&LFSObject{
-			RepoID:    1,
-			OID:       "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-			Size:      100,
-			Storage:   lfsx.StorageLocal,
+			RepoID:      1,
+			OID:         "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+			Size:        100,
+			Storage:     lfsx.StorageLocal,
 			CreatedUnix: 1588568886,
 		},
 		&LFSObject{
-			RepoID:    2,
-			OID:       "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
-			Size:      100,
-			Storage:   lfsx.StorageLocal,
+			RepoID:      2,
+			OID:         "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
+			Size:        100,
+			Storage:     lfsx.StorageLocal,
 			CreatedUnix: 1588568886,
 		},
 
 		&LoginSource{
-			Type:      auth.PAM,
-			Name:      "My PAM",
+			Type:      auth.LDAP,
+			Name:      "My LDAP",
 			IsActived: true,
-			Provider: pam.NewProvider(&pam.Config{
-				ServiceName: "PAM service",
+			Provider: ldap.NewProvider(false, &ldap.Config{
+				Host: "ldap.example.com",
 			}),
 			CreatedUnix: 1588568886,
 			UpdatedUnix: 1588572486, // 1 hour later
 		},
 		&LoginSource{
-			Type:      auth.GitHub,
-			Name:      "GitHub.com",
+			Type:      auth.DLDAP,
+			Name:      "Direct LDAP",
 			IsActived: true,
-			Provider: github.NewProvider(&github.Config{
-				APIEndpoint: "https://api.github.com",
+			Provider: ldap.NewProvider(true, &ldap.Config{
+				Host: "ldap.example.com",
 			}),
 			CreatedUnix: 1588568886,
 		},

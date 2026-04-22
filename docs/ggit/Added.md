@@ -21,10 +21,10 @@
 - **Avatares Externos:** Eliminados **Gravatar** y Libravatar para mejorar la privacidad y depender exclusivamente de almacenamiento local/identicons.
 - _(Planificado)_ **Wiki Fantasma:** Eliminación de los repositorios ocultos (`.wiki.git`) a favor de un enfoque _Docs-as-Code_ directamente en la rama principal.
 - **Mirrors Automáticos:** Eliminación de clonaciones programadas de terceros para evitar consumo excesivo de CPU y red en segundo plano.
-- _(Planificado)_ **Autenticación Exótica:** Eliminación de los métodos de inicio de sesión complejos (PAM, SMTP-Auth) en favor de Local + LDAP/OIDC.
-- _(Planificado)_ **Migraciones de APIs Externas:** Limpieza de código de sincronización masiva con GitHub/GitLab.
+- **Autenticación Exótica:** Eliminación de los métodos de inicio de sesión complejos (PAM, SMTP-Auth, GitHub OAuth) en favor de Local + LDAP. [COMPLETO]
+- _(Planificado)_ **OIDC (OpenID Connect):** Implementación de autenticación moderna.
+- **Migraciones de APIs Externas:** Limpieza de código de sincronización masiva con GitHub/GitLab.
 - **Exceso de Idiomas -> Carga de idiomas lazy desde svelte evitando cargarlos todos en RAM:** Limpieza de archivos de traducciones (`locale`) no mantenidos o de bajo uso para ahorrar uso de memoria RAM en el arranque.
 
 
-
-- _(Planificado)_ **LFS (Large File Storage):** Eliminación para reducir la complejidad del almacenamiento.
+- Captcha, sustituido por sistema mas simple

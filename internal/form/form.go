@@ -1,11 +1,9 @@
 package form
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
-	"github.com/go-macaron/binding"
 	"github.com/unknwon/com"
 
 	"gogs.io/gogs/internal/context"
@@ -16,24 +14,39 @@ const ErrAlphaDashDotSlash = "AlphaDashDotSlashError"
 
 var AlphaDashDotSlashPattern = lazyregexp.New("[^\\d\\w-_\\./]")
 
-func init() {
-	binding.SetNameMapper(com.ToSnakeCase)
-	binding.AddRule(&binding.Rule{
-		IsMatch: func(rule string) bool {
-			return rule == "AlphaDashDotSlash"
-		},
-		IsValid: func(errs binding.Errors, name string, v any) (bool, binding.Errors) {
-			if AlphaDashDotSlashPattern.MatchString(fmt.Sprintf("%v", v)) {
-				errs.Add([]string{name}, ErrAlphaDashDotSlash, "AlphaDashDotSlash")
-				return false, errs
-			}
-			return true, errs
-		},
+// Validation Error Classifications
+const (
+	ERR_REQUIRED       = "Required"
+	ERR_ALPHA_DASH     = "AlphaDash"
+	ERR_ALPHA_DASH_DOT = "AlphaDashDot"
+	ERR_SIZE           = "Size"
+	ERR_MIN_SIZE       = "MinSize"
+	ERR_MAX_SIZE       = "MaxSize"
+	ERR_EMAIL          = "Email"
+	ERR_URL            = "Url"
+	ERR_INCLUDE        = "Include"
+)
+
+type Error struct {
+	Classification string
+	FieldNames     []string
+}
+
+type Errors []Error
+
+func (e Errors) Len() int {
+	return len(e)
+}
+
+func (e *Errors) Add(fieldNames []string, classification string, message string) {
+	*e = append(*e, Error{
+		Classification: classification,
+		FieldNames:     fieldNames,
 	})
 }
 
 type Form interface {
-	Validate(ctx ValidationContext, errs binding.Errors) binding.Errors
+	Validate(ctx ValidationContext, errs Errors) Errors
 }
 
 type ValidationContext interface {
@@ -91,7 +104,7 @@ func getInclude(field reflect.StructField) string {
 	return getRuleBody(field, "Include(")
 }
 
-func validate(errs binding.Errors, data map[string]any, f Form, l context.Locale) binding.Errors {
+func validate(errs Errors, data map[string]any, f Form, l context.Locale) Errors {
 	if errs.Len() == 0 {
 		return errs
 	}
@@ -124,25 +137,25 @@ func validate(errs binding.Errors, data map[string]any, f Form, l context.Locale
 			}
 
 			switch errs[0].Classification {
-			case binding.ERR_REQUIRED:
+			case ERR_REQUIRED:
 				data["ErrorMsg"] = trName + l.Tr("form.require_error")
-			case binding.ERR_ALPHA_DASH:
+			case ERR_ALPHA_DASH:
 				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_error")
-			case binding.ERR_ALPHA_DASH_DOT:
+			case ERR_ALPHA_DASH_DOT:
 				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_dot_error")
 			case ErrAlphaDashDotSlash:
 				data["ErrorMsg"] = trName + l.Tr("form.alpha_dash_dot_slash_error")
-			case binding.ERR_SIZE:
+			case ERR_SIZE:
 				data["ErrorMsg"] = trName + l.Tr("form.size_error", getSize(field))
-			case binding.ERR_MIN_SIZE:
+			case ERR_MIN_SIZE:
 				data["ErrorMsg"] = trName + l.Tr("form.min_size_error", getMinSize(field))
-			case binding.ERR_MAX_SIZE:
+			case ERR_MAX_SIZE:
 				data["ErrorMsg"] = trName + l.Tr("form.max_size_error", getMaxSize(field))
-			case binding.ERR_EMAIL:
+			case ERR_EMAIL:
 				data["ErrorMsg"] = trName + l.Tr("form.email_error")
-			case binding.ERR_URL:
+			case ERR_URL:
 				data["ErrorMsg"] = trName + l.Tr("form.url_error")
-			case binding.ERR_INCLUDE:
+			case ERR_INCLUDE:
 				data["ErrorMsg"] = trName + l.Tr("form.include_error", getInclude(field))
 			default:
 				data["ErrorMsg"] = l.Tr("form.unknown_error") + " " + errs[0].Classification

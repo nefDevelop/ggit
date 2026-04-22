@@ -22,10 +22,7 @@
 
   const AUTH_TYPES = [
     { id: 2, name: 'LDAP (via BindDN)' },
-    { id: 5, name: 'LDAP (simple auth)' },
-    { id: 3, name: 'SMTP' },
-    { id: 4, name: 'PAM' },
-    { id: 6, name: 'GitHub OAuth' }
+    { id: 5, name: 'LDAP (simple auth)' }
   ];
 
   function initConfig(t: number) {
@@ -50,19 +47,6 @@
         group_member_uid: '',
         user_uid: ''
       };
-    } else if (t === 3) {
-      config = {
-        smtp_auth: 'PLAIN',
-        smtp_host: '',
-        smtp_port: 587,
-        allowed_domains: '',
-        tls: true,
-        skip_verify: false
-      };
-    } else if (t === 4) {
-      config = { pam_service_name: '' };
-    } else if (t === 6) {
-      config = { github_api_endpoint: 'https://api.github.com/' };
     }
   }
 
@@ -218,50 +202,6 @@
                <input type="text" bind:value={config.attribute_mail} placeholder="mail" required />
              </div>
           </div>
-        {:else if type === 3}
-          <div class="form-grid">
-            <div class="field">
-              <label>SMTP Auth</label>
-              <select bind:value={config.smtp_auth}>
-                <option value="PLAIN">PLAIN</option>
-                <option value="LOGIN">LOGIN</option>
-                <option value="CRAM-MD5">CRAM-MD5</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>SMTP Host</label>
-              <input type="text" bind:value={config.smtp_host} required />
-            </div>
-            <div class="field">
-              <label>SMTP Port</label>
-              <input type="number" bind:value={config.smtp_port} required />
-            </div>
-            <div class="field full">
-              <label>Allowed Domains</label>
-              <input type="text" bind:value={config.allowed_domains} placeholder="example.com, company.local" />
-            </div>
-            <div class="checkbox-group">
-               <label class="checkbox">
-                 <input type="checkbox" bind:checked={config.tls} />
-                 <span>Enable TLS</span>
-               </label>
-               <label class="checkbox">
-                 <input type="checkbox" bind:checked={config.skip_verify} />
-                 <span>Skip TLS Verify</span>
-               </label>
-            </div>
-          </div>
-        {:else if type === 4}
-           <div class="field">
-             <label>PAM Service Name</label>
-             <input type="text" bind:value={config.pam_service_name} required />
-           </div>
-        {:else if type === 6}
-           <div class="field">
-             <label>GitHub API Endpoint</label>
-             <input type="url" bind:value={config.github_api_endpoint} required />
-             <small>Standard: https://api.github.com/</small>
-           </div>
         {/if}
       </section>
 

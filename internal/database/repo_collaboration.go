@@ -11,9 +11,9 @@ import (
 // Collaboration represent the relation between an individual and a repository.
 type Collaboration struct {
 	ID     int64      `gorm:"primaryKey"`
-	UserID int64      `xorm:"UNIQUE(s) INDEX NOT NULL" gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
-	RepoID int64      `xorm:"UNIQUE(s) INDEX NOT NULL" gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
-	Mode   AccessMode `xorm:"DEFAULT 2 NOT NULL" gorm:"not null;default:2"`
+	UserID int64      `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
+	RepoID int64      `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
+	Mode   AccessMode `gorm:"not null;default:2"`
 }
 
 func (c *Collaboration) ModeI18nKey() string {

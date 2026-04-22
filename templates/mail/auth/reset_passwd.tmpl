@@ -1,16 +1,7 @@
 {{template "common/header" .}}
-	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Hi {{.Username}},</p>
-	<p>We received a request to reset your password for your <b>{{AppName}}</b> account.</p>
-	<p>Please click the button below to choose a new password. This link will expire in <b>{{.ResetPwdCodeLives}} hours</b>.</p>
-	
-	<div style="text-align: center;">
-		<a href="{{AppURL}}user/reset_password?code={{.Code}}" class="btn-capsule">Reset Password</a>
-	</div>
-
-	<p style="font-size: 14px; color: #7a7a7a;">
-		If you did not request this, you can safely ignore this email. Your password will not change until you access the link above and create a new one.
-	</p>
-	<div class="code-block">
-		{{AppURL}}user/reset_password?code={{.Code}}
-	</div>
+	<p>Hola <b>{{.Username}}</b>,</p>
+	<p>Has solicitado restablecer tu contraseña para tu cuenta en <b>{{AppName}}</b>.</p>
+	<p>Pulsa en el siguiente enlace para elegir una nueva:</p>
+	<p><a href="{{AppURL}}user/reset_password?code={{.Code}}" class="link">Restablecer Contraseña</a></p>
+	<p style="font-size: 14px; color: #666;">Este enlace caducará en <b>{{.ResetPwdCodeLives}} horas</b>. Si no has solicitado este cambio, puedes ignorar este correo.</p>
 {{template "common/footer" .}}

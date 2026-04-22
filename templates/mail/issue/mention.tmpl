@@ -1,13 +1,7 @@
 {{template "common/header" .}}
-	<p style="font-size: 18px; font-weight: 700; color: #1a237e;">
-		{{.Doer.DisplayName}} mentioned you:
-	</p>
-	
-	<div style="background-color: #f8f9fa; border-left: 4px solid #3f51b5; padding: 15px; margin: 20px 0; font-style: italic;">
+	<p><b>{{.Doer.DisplayName}}</b> te ha mencionado:</p>
+	<div style="margin: 20px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #3f51b5; font-style: italic;">
 		{{.Body | Str2HTML}}
 	</div>
-
-	<div style="text-align: center; margin-top: 30px;">
-		<a href="{{.Link}}" class="btn-capsule">Respond to Mention</a>
-	</div>
+	<p><a href="{{.Link}}" class="link">Responder a la mención</a></p>
 {{template "common/footer" .}}

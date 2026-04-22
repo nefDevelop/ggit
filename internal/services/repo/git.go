@@ -49,7 +49,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 		return errors.Newf("getRepoInitFile[%s]: %v", readmeName, err)
 	}
 
-	cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name, false)
+	cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name)
 	match := map[string]string{
 		"Name":           repo.Name,
 		"Description":    repo.Description,

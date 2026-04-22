@@ -1492,7 +1492,7 @@
                 "properties": {
                   "type": {
                     "type": "string",
-                    "enum": ["gogs", "slack", "discord", "dingtalk"]
+                    "enum": ["gogs"]
                   },
                   "config": {
                     "type": "object",
@@ -5520,7 +5520,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["gogs", "slack", "discord", "dingtalk"]
+            "enum": ["gogs"]
           },
           "events": {
             "type": "array",

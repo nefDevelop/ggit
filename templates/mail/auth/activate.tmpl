@@ -1,16 +1,7 @@
 {{template "common/header" .}}
-	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Hi {{.Username}},</p>
-	<p>Thanks for registering at <b>{{AppName}}</b>! We're excited to have you on board.</p>
-	<p>Please click the button below to verify your email address and activate your account. This link will remain active for <b>{{.ActiveCodeLives}} hours</b>.</p>
-	
-	<div style="text-align: center;">
-		<a href="{{AppURL}}user/activate?code={{.Code}}" class="btn-capsule">Activate Account</a>
-	</div>
-
-	<p style="font-size: 14px; color: #7a7a7a;">
-		Not working? Try copying and pasting the following link into your browser:
-	</p>
-	<div class="code-block">
-		{{AppURL}}user/activate?code={{.Code}}
-	</div>
+	<p>Hola <b>{{.Username}}</b>,</p>
+	<p>Gracias por registrarte en <b>{{AppName}}</b>.</p>
+	<p>Pulsa en el siguiente enlace para activar tu cuenta. Este enlace será válido durante <b>{{.ActiveCodeLives}} horas</b>:</p>
+	<p><a href="{{AppURL}}user/activate?code={{.Code}}" class="link">Activar mi cuenta</a></p>
+	<p style="font-size: 14px; color: #666;">Si el enlace no funciona, copia y pega esto en tu navegador:<br>{{AppURL}}user/activate?code={{.Code}}</p>
 {{template "common/footer" .}}

@@ -11,7 +11,7 @@ import (
 // Topic represents a repository topic.
 type Topic struct {
 	ID          int64  `gorm:"primaryKey"`
-	Name        string `xorm:"UNIQUE" gorm:"unique;not null"`
+	Name        string `gorm:"unique;not null"`
 	NumRepos    int
 	CreatedUnix int64
 	UpdatedUnix int64
@@ -34,8 +34,8 @@ func (t *Topic) BeforeUpdate(tx *gorm.DB) error {
 
 // RepoTopic represents a repository and its topic.
 type RepoTopic struct {
-	TopicID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:repo_topic_unique;not null"`
-	RepoID  int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:repo_topic_unique;not null"`
+	TopicID int64 `gorm:"uniqueIndex:repo_topic_unique;not null"`
+	RepoID  int64 `gorm:"uniqueIndex:repo_topic_unique;not null"`
 }
 
 // GetTopicsByRepoID returns all topics associated with the given repository.

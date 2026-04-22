@@ -24,10 +24,6 @@ type Locale interface {
 	Language() string
 }
 
-type Captcha interface {
-	VerifyReq(req *http.Request) bool
-}
-
 type Cache interface {
 	Get(key string) any
 	Put(key string, val any, timeout int64) error

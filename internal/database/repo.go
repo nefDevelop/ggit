@@ -167,14 +167,14 @@ func NewRepoContext() {
 // Repository contains information of a repository.
 type Repository struct {
 	ID              int64  `gorm:"primaryKey"`
-	OwnerID         int64  `xorm:"UNIQUE(s)" gorm:"uniqueIndex:repo_owner_name_unique"`
-	Owner           *User  `xorm:"-" gorm:"-" json:"-"`
-	LowerName       string `xorm:"UNIQUE(s) INDEX NOT NULL" gorm:"uniqueIndex:repo_owner_name_unique;index;not null"`
-	Name            string `xorm:"INDEX NOT NULL" gorm:"index;not null"`
-	Description     string `xorm:"VARCHAR(512)" gorm:"type:VARCHAR(512)"`
+	OwnerID         int64  `gorm:"uniqueIndex:repo_owner_name_unique"`
+	Owner           *User  `gorm:"-" json:"-"`
+	LowerName       string `gorm:"uniqueIndex:repo_owner_name_unique;index;not null"`
+	Name            string `gorm:"index;not null"`
+	Description     string `gorm:"type:VARCHAR(512)"`
 	Website         string
 	DefaultBranch   string
-	Size            int64 `xorm:"NOT NULL DEFAULT 0" gorm:"not null;default:0"`
+	Size            int64 `gorm:"not null;default:0"`
 	UseCustomAvatar bool
 
 	// Counters
@@ -183,50 +183,50 @@ type Repository struct {
 	NumForks            int
 	NumIssues           int
 	NumClosedIssues     int
-	NumOpenIssues       int `xorm:"-" gorm:"-" json:"-"`
+	NumOpenIssues       int `gorm:"-" json:"-"`
 	NumPulls            int
 	NumClosedPulls      int
-	NumOpenPulls        int `xorm:"-" gorm:"-" json:"-"`
-	NumMilestones       int `xorm:"NOT NULL DEFAULT 0" gorm:"not null;default:0"`
-	NumClosedMilestones int `xorm:"NOT NULL DEFAULT 0" gorm:"not null;default:0"`
-	NumOpenMilestones   int `xorm:"-" gorm:"-" json:"-"`
-	NumTags             int `xorm:"-" gorm:"-" json:"-"`
+	NumOpenPulls        int `gorm:"-" json:"-"`
+	NumMilestones       int `gorm:"not null;default:0"`
+	NumClosedMilestones int `gorm:"not null;default:0"`
+	NumOpenMilestones   int `gorm:"-" json:"-"`
+	NumTags             int `gorm:"-" json:"-"`
 
 	IsPrivate bool
 	IsFork    bool
 	// TODO: When migrate to GORM, make sure to do a loose migration with `HasColumn` and `AddColumn`,
 	// see docs in https://gorm.io/docs/migration.html.
-	IsUnlisted bool `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
+	IsUnlisted bool `gorm:"not null;default:FALSE"`
 	IsBare     bool
 
 	// Advanced settings
-	EnableWiki            bool `xorm:"NOT NULL DEFAULT true" gorm:"not null;default:TRUE"`
+	EnableWiki            bool `gorm:"not null;default:TRUE"`
 	AllowPublicWiki       bool
 	EnableExternalWiki    bool
 	ExternalWikiURL       string
-	EnableIssues          bool `xorm:"NOT NULL DEFAULT true" gorm:"not null;default:TRUE"`
+	EnableIssues          bool `gorm:"not null;default:TRUE"`
 	AllowPublicIssues     bool
 	EnableExternalTracker bool
 	ExternalTrackerURL    string
 	ExternalTrackerFormat string
 	ExternalTrackerStyle  string
-	ExternalMetas         map[string]string `xorm:"-" gorm:"-" json:"-"`
-	EnablePulls           bool              `xorm:"NOT NULL DEFAULT true" gorm:"not null;default:TRUE"`
-	PullsIgnoreWhitespace bool              `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
-	PullsAllowRebase      bool              `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
-	PullsAllowManualMerge bool              `xorm:"NOT NULL DEFAULT false" gorm:"not null;default:FALSE"`
+	ExternalMetas         map[string]string `gorm:"-" json:"-"`
+	EnablePulls           bool              `gorm:"not null;default:TRUE"`
+	PullsIgnoreWhitespace bool              `gorm:"not null;default:FALSE"`
+	PullsAllowRebase      bool              `gorm:"not null;default:FALSE"`
+	PullsAllowManualMerge bool              `gorm:"not null;default:FALSE"`
 
-	PrimaryLanguage string `xorm:"VARCHAR(32)" gorm:"type:VARCHAR(32)"`
-	Languages       string `xorm:"TEXT" gorm:"type:TEXT"`
+	PrimaryLanguage string `gorm:"type:VARCHAR(32)"`
+	Languages       string `gorm:"type:TEXT"`
 
 	ForkID   int64
-	BaseRepo *Repository `xorm:"-" gorm:"-" json:"-"`
+	BaseRepo *Repository `gorm:"-" json:"-"`
 
-	Created     time.Time `xorm:"-" gorm:"-" json:"-"`
+	Created     time.Time `gorm:"-" json:"-"`
 	CreatedUnix int64
-	Updated     time.Time `xorm:"-" gorm:"-" json:"-"`
+	Updated     time.Time `gorm:"-" json:"-"`
 	UpdatedUnix int64
-	Topics      []string `xorm:"-" gorm:"-" json:"-"`
+	Topics      []string `gorm:"-" json:"-"`
 }
 
 func (repos RepositoryList) LoadTopics(ctx context.Context) error {
@@ -449,7 +449,7 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 			)
 			p.Push = accessMode >= AccessModeWrite
 		}
-		permission = p
+		apiRepo.Permissions = p
 	}
 	if r.IsFork {
 		p := &apiv2types.RepositoryPermission{Pull: true}
@@ -466,7 +466,7 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 			p.Admin = accessMode >= AccessModeAdmin
 			p.Push = accessMode >= AccessModeWrite
 		}
-		apiRepo.Parent = r.BaseRepo.APIFormatLegacy(nil, user...)
+		apiRepo.Parent = r.BaseRepo.APIFormatLegacy(p, user...)
 	}
 	return apiRepo
 }
@@ -697,12 +697,8 @@ func (r *Repository) LocalCopyPath() string {
 // For existing local copy, it checks out to target branch by default, and safe to
 // assume subsequent operations are against target branch when caller has confidence
 // about no race condition.
-func UpdateLocalCopyBranch(repoPath, localPath, branch string, isWiki bool) (err error) {
+func UpdateLocalCopyBranch(repoPath, localPath, branch string) (err error) {
 	if !osx.Exist(localPath) {
-		// Checkout to a specific branch fails when wiki is an empty repository.
-		if isWiki {
-			branch = ""
-		}
 		if err = git.Clone(repoPath, localPath, git.CloneOptions{
 			Branch:  branch,
 			Timeout: time.Duration(conf.Git.Timeout.Clone) * time.Second,
@@ -739,7 +735,7 @@ func UpdateLocalCopyBranch(repoPath, localPath, branch string, isWiki bool) (err
 
 // UpdateLocalCopyBranch makes sure local copy of repository in given branch is up-to-date.
 func (r *Repository) UpdateLocalCopyBranch(branch string) error {
-	return UpdateLocalCopyBranch(r.RepoPath(), r.LocalCopyPath(), branch, false)
+	return UpdateLocalCopyBranch(r.RepoPath(), r.LocalCopyPath(), branch)
 }
 
 // PatchPath returns corresponding patch file path of repository by given issue ID.
@@ -807,25 +803,6 @@ type MigrateRepoOptions struct {
 	IsPrivate   bool
 	IsUnlisted  bool
 	RemoteAddr  string
-}
-
-/*
-- GitHub, GitLab, Gogs: *.wiki.git
-- BitBucket: *.git/wiki
-*/
-var commonWikiURLSuffixes = []string{".wiki.git", ".git/wiki"}
-
-// wikiRemoteURL returns accessible repository URL for wiki if exists.
-// Otherwise, it returns an empty string.
-func wikiRemoteURL(remote string) string {
-	remote = strings.TrimSuffix(remote, ".git")
-	for _, suffix := range commonWikiURLSuffixes {
-		wikiURL := remote + suffix
-		if git.IsURLAccessible(time.Minute, wikiURL) {
-			return wikiURL
-		}
-	}
-	return ""
 }
 
 // MigrateRepository migrates a existing repository from other project hosting.
@@ -2299,8 +2276,8 @@ func (repos RepositoryList) LoadAttributes() error {
 // Watch is connection request for receiving repository notification.
 type Watch struct {
 	ID     int64 `gorm:"primaryKey"`
-	UserID int64 `xorm:"UNIQUE(watch)" gorm:"uniqueIndex:watch_user_repo_unique;not null"`
-	RepoID int64 `xorm:"UNIQUE(watch)" gorm:"uniqueIndex:watch_user_repo_unique;not null"`
+	UserID int64 `gorm:"uniqueIndex:watch_user_repo_unique;not null"`
+	RepoID int64 `gorm:"uniqueIndex:watch_user_repo_unique;not null"`
 }
 
 func isWatching(tx *gorm.DB, userID, repoID int64) bool {
@@ -2422,8 +2399,8 @@ func NotifyWatchers(act *Action) error {
 
 type Star struct {
 	ID     int64 `gorm:"primaryKey"`
-	UserID int64 `xorm:"uid UNIQUE(s)" gorm:"column:uid;uniqueIndex:star_user_repo_unique;not null"`
-	RepoID int64 `xorm:"UNIQUE(s)" gorm:"uniqueIndex:star_user_repo_unique;not null"`
+	UserID int64 `gorm:"column:uid;uniqueIndex:star_user_repo_unique;not null"`
+	RepoID int64 `gorm:"uniqueIndex:star_user_repo_unique;not null"`
 }
 
 // Star or unstar repository.

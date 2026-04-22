@@ -1,9 +1,5 @@
 package form
 
-import (
-	"github.com/go-macaron/binding"
-)
-
 type AdminCrateUser struct {
 	LoginType  string `binding:"Required"`
 	LoginName  string
@@ -13,7 +9,7 @@ type AdminCrateUser struct {
 	SendNotify bool
 }
 
-func (f *AdminCrateUser) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *AdminCrateUser) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -33,6 +29,6 @@ type AdminEditUser struct {
 	ProhibitLogin    bool
 }
 
-func (f *AdminEditUser) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *AdminEditUser) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }

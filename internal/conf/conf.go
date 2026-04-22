@@ -158,7 +158,7 @@ func Init(customConf string) error {
 	// ----- Repository settings -----
 	// *******************************
 
-	Repository.Root = filepath.Join(HomeDir(), "gogs-repositories")
+	Repository.Root = filepath.Join(HomeDir(), "ggit-repositories")
 	if err = File.Section("repository").MapTo(&Repository); err != nil {
 		return errors.Wrap(err, "mapping [repository] section")
 	}

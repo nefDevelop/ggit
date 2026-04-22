@@ -12,10 +12,7 @@ import (
 	"gopkg.in/ini.v1"
 
 	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/github"
 	"gogs.io/gogs/internal/auth/ldap"
-	"gogs.io/gogs/internal/auth/pam"
-	"gogs.io/gogs/internal/auth/smtp"
 	"gogs.io/gogs/internal/errx"
 	"gogs.io/gogs/internal/osx"
 )
@@ -171,33 +168,6 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			}
 			loginSource.Type = auth.DLDAP
 			loginSource.Provider = ldap.NewProvider(true, &cfg)
-
-		case "smtp":
-			var cfg smtp.Config
-			err = cfgSection.MapTo(&cfg)
-			if err != nil {
-				return errors.Wrap(err, `map "config" section`)
-			}
-			loginSource.Type = auth.SMTP
-			loginSource.Provider = smtp.NewProvider(&cfg)
-
-		case "pam":
-			var cfg pam.Config
-			err = cfgSection.MapTo(&cfg)
-			if err != nil {
-				return errors.Wrap(err, `map "config" section`)
-			}
-			loginSource.Type = auth.PAM
-			loginSource.Provider = pam.NewProvider(&cfg)
-
-		case "github":
-			var cfg github.Config
-			err = cfgSection.MapTo(&cfg)
-			if err != nil {
-				return errors.Wrap(err, `map "config" section`)
-			}
-			loginSource.Type = auth.GitHub
-			loginSource.Provider = github.NewProvider(&cfg)
 
 		default:
 			return errors.Newf("unknown type %q", authType)

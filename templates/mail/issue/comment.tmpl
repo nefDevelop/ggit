@@ -1,11 +1,6 @@
 {{template "common/header" .}}
-	<div style="margin-bottom: 25px;">
+	<div style="margin-bottom: 25px; padding: 15px; background: #f9f9f9; border-radius: 8px;">
 		{{.Body | Str2HTML}}
 	</div>
-
-	<hr />
-	
-	<div style="text-align: center; margin-top: 20px;">
-		<a href="{{.Link}}" class="btn-capsule">View Issue Details</a>
-	</div>
+	<p><a href="{{.Link}}" class="link">Ver conversación en el Issue</a></p>
 {{template "common/footer" .}}

@@ -103,14 +103,10 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 			owner        *database.User
 			err          error
 			isIssuesPage bool
-			isWikiPage   bool
 		)
 
 		if len(pages) > 0 {
 			isIssuesPage = pages[0]
-		}
-		if len(pages) > 1 {
-			isWikiPage = pages[1]
 		}
 
 		ownerName := c.Param("username")
@@ -174,29 +170,22 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 
 		if gctx.Repo.AccessMode == database.AccessModeNone {
 			if repo.IsPartialPublic() &&
-				(!(isIssuesPage || isWikiPage) ||
-					(isIssuesPage && !repo.CanGuestViewIssues()) ||
-					(isWikiPage && !repo.CanGuestViewWiki())) {
-				switch {
-				case repo.CanGuestViewIssues():
+				(!isIssuesPage || !repo.CanGuestViewIssues()) {
+				if repo.CanGuestViewIssues() {
 					gctx.Redirect(repo.Link() + "/issues")
-				case repo.CanGuestViewWiki():
-					gctx.Redirect(repo.Link() + "/wiki")
-				default:
+				} else {
 					gctx.NotFound()
 				}
 				return
 			}
 
 			if !repo.IsPartialPublic() ||
-				(isIssuesPage && !repo.CanGuestViewIssues()) ||
-				(isWikiPage && !repo.CanGuestViewWiki()) {
+				(isIssuesPage && !repo.CanGuestViewIssues()) {
 				gctx.NotFound()
 				return
 			}
 
 			gctx.Repo.Repository.EnableIssues = repo.CanGuestViewIssues()
-			gctx.Repo.Repository.EnableWiki = repo.CanGuestViewWiki()
 		}
 
 		gitRepo, err := git.Open(database.RepoPath(ownerName, repoName))

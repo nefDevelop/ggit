@@ -23,7 +23,7 @@ The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-
 - User dashboard, user profile and activity timeline.
 - Access repositories via SSH, HTTP and HTTPS protocols.
 - User, organization and repository management.
-- Repository and organization webhooks, including Slack, Discord and Dingtalk.
+- Repository and organization webhooks.
 - Repository Git hooks, deploy keys and Git LFS.
 - Repository issues, pull requests, wiki, protected branches and collaboration.
 - Migrate repositories with wiki from other code hosts.

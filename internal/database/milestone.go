@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	log "unknwon.dev/clog/v2"
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
+	log "unknwon.dev/clog/v2"
 
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/errx"
@@ -16,21 +16,21 @@ import (
 // Milestone represents a milestone of repository.
 type Milestone struct {
 	ID              int64  `gorm:"primaryKey"`
-	RepoID          int64  `xorm:"INDEX" gorm:"index"`
+	RepoID          int64  `gorm:"index"`
 	Name            string `gorm:"not null"`
-	Content         string `xorm:"TEXT" gorm:"type:TEXT"`
-	RenderedContent string `xorm:"-" json:"-" gorm:"-"`
+	Content         string `gorm:"type:TEXT"`
+	RenderedContent string `json:"-" gorm:"-"`
 	IsClosed        bool
 	NumIssues       int
 	NumClosedIssues int
-	NumOpenIssues   int `xorm:"-" json:"-" gorm:"-"`
-	Completeness    int // Percentage(1-100).
-	IsOverDue       bool `xorm:"-" json:"-" gorm:"-"`
+	NumOpenIssues   int  `json:"-" gorm:"-"`
+	Completeness    int  // Percentage(1-100).
+	IsOverDue       bool `json:"-" gorm:"-"`
 
-	DeadlineString string    `xorm:"-" json:"-" gorm:"-"`
-	Deadline       time.Time `xorm:"-" json:"-" gorm:"-"`
+	DeadlineString string    `json:"-" gorm:"-"`
+	Deadline       time.Time `json:"-" gorm:"-"`
 	DeadlineUnix   int64
-	ClosedDate     time.Time `xorm:"-" json:"-" gorm:"-"`
+	ClosedDate     time.Time `json:"-" gorm:"-"`
 	ClosedDateUnix int64
 }
 
@@ -70,7 +70,6 @@ func (m *Milestone) AfterFind(_ *gorm.DB) error {
 	m.ClosedDate = time.Unix(m.ClosedDateUnix, 0).Local()
 	return nil
 }
-
 
 // State returns string representation of milestone status.
 func (m *Milestone) State() apiv2types.IssueStateType {

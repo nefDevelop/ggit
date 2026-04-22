@@ -104,7 +104,7 @@ const (
 // RunAdminOperation executes an administrative maintenance operation.
 func RunAdminOperation(c *context.APIContext) {
 	var f struct {
-		Op int `json:"op" binding:"Required"`
+		Op int `json:"op" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -183,7 +183,7 @@ func GetAdminConfig(c *context.APIContext) {
 // SendAdminTestEmail sends a test email to the specified address.
 func SendAdminTestEmail(c *context.APIContext) {
 	var f struct {
-		Email string `json:"email" binding:"Required;Email;MaxSize(254)"`
+		Email string `json:"email" binding:"required,email,max=254"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -229,9 +229,9 @@ func GetAdminUsers(c *context.APIContext) {
 // CreateAdminUser creates a new user account.
 func CreateAdminUser(c *context.APIContext) {
 	var f struct {
-		Username      string `json:"username" binding:"Required"`
-		Email         string `json:"email" binding:"Required;Email;MaxSize(254)"`
-		Password      string `json:"password" binding:"Required;MaxSize(255)"`
+		Username      string `json:"username" binding:"required"`
+		Email         string `json:"email" binding:"required,email,max=254"`
+		Password      string `json:"password" binding:"required,max=255"`
 		FullName      string `json:"full_name"`
 		Website       string `json:"website"`
 		Location      string `json:"location"`
@@ -394,11 +394,11 @@ func GetAdminAuths(c *context.APIContext) {
 // CreateAdminAuth creates a new authentication source.
 func CreateAdminAuth(c *context.APIContext) {
 	var f struct {
-		Type      int    `json:"type" binding:"Required"`
-		Name      string `json:"name" binding:"Required"`
+		Type      int    `json:"type" binding:"required"`
+		Name      string `json:"name" binding:"required"`
 		Activated bool   `json:"activated"`
 		Default   bool   `json:"default"`
-		Config    any    `json:"config" binding:"Required"`
+		Config    any    `json:"config" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -421,6 +421,36 @@ func CreateAdminAuth(c *context.APIContext) {
 		"status": "ok",
 		"id":     source.ID,
 	})
+}
+
+// UpdateAdminConfig updates certain server configurations.
+func UpdateAdminConfig(c *context.APIContext) {
+	var f struct {
+		EnableRegistrationQuestion bool   `json:"enable_registration_question"`
+		RegistrationQuestion       string `json:"registration_question"`
+		RegistrationAnswer         string `json:"registration_answer"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	// Update in-memory config
+	conf.Auth.EnableRegistrationQuestion = f.EnableRegistrationQuestion
+	conf.Auth.RegistrationQuestion = f.RegistrationQuestion
+	conf.Auth.RegistrationAnswer = f.RegistrationAnswer
+
+	// Save to app.ini
+	conf.File.Section("auth").Key("ENABLE_REGISTRATION_QUESTION").SetValue(fmt.Sprint(f.EnableRegistrationQuestion))
+	conf.File.Section("auth").Key("REGISTRATION_QUESTION").SetValue(f.RegistrationQuestion)
+	conf.File.Section("auth").Key("REGISTRATION_ANSWER").SetValue(f.RegistrationAnswer)
+
+	if err := conf.File.SaveTo(conf.CustomConf); err != nil {
+		c.Error(err, "save configuration")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 
 // GetAdminAuth returns a login source's information.

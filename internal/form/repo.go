@@ -4,8 +4,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/go-macaron/binding"
-
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/database"
 	"gogs.io/gogs/internal/netx"
@@ -31,7 +29,7 @@ type CreateRepo struct {
 	Readme      string
 }
 
-func (f *CreateRepo) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *CreateRepo) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -46,7 +44,7 @@ type MigrateRepo struct {
 	Description  string `json:"description" binding:"MaxSize(512)"`
 }
 
-func (f *MigrateRepo) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *MigrateRepo) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -113,7 +111,7 @@ type RepoSetting struct {
 	PullsAllowRebase      bool
 }
 
-func (f *RepoSetting) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *RepoSetting) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -132,7 +130,7 @@ type ProtectBranch struct {
 	WhitelistTeams     string
 }
 
-func (f *ProtectBranch) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *ProtectBranch) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -175,41 +173,7 @@ type NewWebhook struct {
 	Webhook
 }
 
-func (f *NewWebhook) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
-}
-
-type NewSlackHook struct {
-	PayloadURL string `binding:"Required;Url"`
-	Channel    string `binding:"Required"`
-	Username   string
-	IconURL    string
-	Color      string
-	Webhook
-}
-
-func (f *NewSlackHook) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
-}
-
-type NewDiscordHook struct {
-	PayloadURL string `binding:"Required;Url"`
-	Username   string
-	IconURL    string
-	Color      string
-	Webhook
-}
-
-func (f *NewDiscordHook) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
-	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
-}
-
-type NewDingtalkHook struct {
-	PayloadURL string `binding:"Required;Url"`
-	Webhook
-}
-
-func (f *NewDingtalkHook) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *NewWebhook) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -229,7 +193,7 @@ type NewIssue struct {
 	Files       []string
 }
 
-func (f *NewIssue) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *NewIssue) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -239,7 +203,7 @@ type CreateComment struct {
 	Files   []string
 }
 
-func (f *CreateComment) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *CreateComment) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -256,7 +220,7 @@ type CreateMilestone struct {
 	Deadline string
 }
 
-func (f *CreateMilestone) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *CreateMilestone) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -273,7 +237,7 @@ type CreateLabel struct {
 	Color string `binding:"Required;Size(7)" locale:"repo.issues.label_color"`
 }
 
-func (f *CreateLabel) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *CreateLabel) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -281,7 +245,7 @@ type InitializeLabels struct {
 	TemplateName string `binding:"Required"`
 }
 
-func (f *InitializeLabels) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *InitializeLabels) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -303,7 +267,7 @@ type NewRelease struct {
 	CreatedAt  string `json:"created_at"`
 }
 
-func (f *NewRelease) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *NewRelease) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -315,7 +279,7 @@ type EditRelease struct {
 	Files      []string
 }
 
-func (f *EditRelease) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *EditRelease) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -335,7 +299,7 @@ type NewWiki struct {
 }
 
 // FIXME: use code generation to generate this method.
-func (f *NewWiki) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *NewWiki) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -357,7 +321,7 @@ type EditRepoFile struct {
 	CreatedAt     string `json:"created_at"`
 }
 
-func (f *EditRepoFile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *EditRepoFile) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -369,7 +333,7 @@ type EditPreviewDiff struct {
 	Content string
 }
 
-func (f *EditPreviewDiff) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *EditPreviewDiff) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -390,7 +354,7 @@ type UploadRepoFile struct {
 	Files         []string
 }
 
-func (f *UploadRepoFile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *UploadRepoFile) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -402,7 +366,7 @@ type RemoveUploadFile struct {
 	File string `binding:"Required;MaxSize(50)"`
 }
 
-func (f *RemoveUploadFile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *RemoveUploadFile) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 
@@ -420,7 +384,7 @@ type DeleteRepoFile struct {
 	NewBranchName string `binding:"AlphaDashDot;MaxSize(100)"`
 }
 
-func (f *DeleteRepoFile) Validate(ctx ValidationContext, errs binding.Errors) binding.Errors {
+func (f *DeleteRepoFile) Validate(ctx ValidationContext, errs Errors) Errors {
 	return validate(errs, ctx.GetData(), f, ctx.GetLocale())
 }
 

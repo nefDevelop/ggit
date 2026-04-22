@@ -45,7 +45,7 @@ func TestMain(m *testing.M) {
 }
 
 func newTestDB(t *testing.T, suite string) *gorm.DB {
-	return dbtest.NewDB(t, suite, append(Tables)...)
+	return dbtest.NewDB(t, suite, Tables...)
 }
 
 func clearTables(t *testing.T, db *gorm.DB) error {
@@ -53,7 +53,7 @@ func clearTables(t *testing.T, db *gorm.DB) error {
 		return nil
 	}
 
-	for _, t := range append(Tables) {
+	for _, t := range Tables {
 		err := db.Where("TRUE").Delete(t).Error
 		if err != nil {
 			return err

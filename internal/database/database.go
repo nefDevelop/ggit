@@ -94,7 +94,12 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "get underlying *sql.DB")
 	}
-	sqlDB.SetMaxOpenConns(conf.Database.MaxOpenConns)
+
+	maxOpenConns := conf.Database.MaxOpenConns
+	if conf.Database.Type == "sqlite3" {
+		maxOpenConns = 1
+	}
+	sqlDB.SetMaxOpenConns(maxOpenConns)
 	sqlDB.SetMaxIdleConns(conf.Database.MaxIdleConns)
 	sqlDB.SetConnMaxLifetime(time.Minute)
 

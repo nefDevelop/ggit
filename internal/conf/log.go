@@ -90,26 +90,7 @@ func initLogConf(cfg *ini.File, hookMode bool) (_ *logConf, hasConsole bool, _ e
 					},
 				},
 			}
-
-		case log.DefaultSlackName:
-			c = &loggerConf{
-				Buffer: buffer,
-				Config: log.SlackConfig{
-					Level: level,
-					URL:   sec.Key("URL").String(),
-				},
-			}
-
-		case log.DefaultDiscordName:
-			c = &loggerConf{
-				Buffer: buffer,
-				Config: log.DiscordConfig{
-					Level:    level,
-					URL:      sec.Key("URL").String(),
-					Username: sec.Key("USERNAME").String(),
-				},
-			}
-
+			
 		default:
 			continue
 		}
@@ -155,12 +136,6 @@ func InitLogging(hookMode bool) {
 		case log.DefaultFileName:
 			level = c.Config.(log.FileConfig).Level
 			err = log.NewFile(c.Buffer, c.Config)
-		case log.DefaultSlackName:
-			level = c.Config.(log.SlackConfig).Level
-			err = log.NewSlack(c.Buffer, c.Config)
-		case log.DefaultDiscordName:
-			level = c.Config.(log.DiscordConfig).Level
-			err = log.NewDiscord(c.Buffer, c.Config)
 		default:
 			panic("unreachable")
 		}

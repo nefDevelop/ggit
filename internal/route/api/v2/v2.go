@@ -23,6 +23,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 	user := r.Group("/user")
 	{
+		user.GET("/registration_settings", ginx.Handle(GetRegistrationSettings))
 		user.POST("/login", ginx.Handle(Login))
 		user.POST("/register", ginx.Handle(Register))
 
@@ -96,6 +97,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/stats", ginx.Handle(GetAdminStats))
 		admin.POST("/operations", ginx.Handle(RunAdminOperation))
 		admin.GET("/config", ginx.Handle(GetAdminConfig))
+		admin.PUT("/config", ginx.Handle(UpdateAdminConfig))
 		admin.POST("/config/test_email", ginx.Handle(SendAdminTestEmail))
 		admin.GET("/monitor", ginx.Handle(GetAdminMonitor))
 

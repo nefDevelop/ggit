@@ -1,13 +1,6 @@
 {{template "common/header" .}}
-	<p style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Welcome, {{.Username}}!</p>
-	<p>This is your registration confirmation for <b>{{AppName}}</b>. Your account has been successfully created.</p>
-	<p>You can now log in using your username: <code>{{.Username}}</code>.</p>
-	
-	<div style="text-align: center;">
-		<a href="{{AppURL}}user/login" class="btn-capsule">Login to your account</a>
-	</div>
-
-	<p style="font-size: 14px; color: #7a7a7a;">
-		We're glad to have you with us! If you have any questions, feel free to reach out to the site administrator.
-	</p>
+	<p>¡Bienvenido/a, <b>{{.Username}}</b>!</p>
+	<p>Tu cuenta en <b>{{AppName}}</b> ha sido creada con éxito.</p>
+	<p>Ya puedes iniciar sesión con tu usuario: <code>{{.Username}}</code>.</p>
+	<p><a href="{{AppURL}}user/login" class="link">Acceder a mi cuenta</a></p>
 {{template "common/footer" .}}

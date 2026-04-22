@@ -11,10 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/github"
 	"gogs.io/gogs/internal/auth/ldap"
-	"gogs.io/gogs/internal/auth/pam"
-	"gogs.io/gogs/internal/auth/smtp"
 	"gogs.io/gogs/internal/errx"
 )
 
@@ -38,13 +35,13 @@ func TestLoginSource_BeforeSave(t *testing.T) {
 
 	t.Run("Config has been set", func(t *testing.T) {
 		s := &LoginSource{
-			Provider: pam.NewProvider(&pam.Config{
-				ServiceName: "pam_service",
+			Provider: ldap.NewProvider(false, &ldap.Config{
+				Host: "ldap.example.com",
 			}),
 		}
 		err := s.BeforeSave(db)
 		require.NoError(t, err)
-		assert.Equal(t, `{"ServiceName":"pam_service"}`, s.Config)
+		assert.Contains(t, s.Config, `"Host":"ldap.example.com"`)
 	})
 }
 
@@ -118,21 +115,6 @@ func TestLoginSource_AfterFind(t *testing.T) {
 			authType: auth.DLDAP,
 			wantType: &ldap.Provider{},
 		},
-		{
-			name:     "SMTP",
-			authType: auth.SMTP,
-			wantType: &smtp.Provider{},
-		},
-		{
-			name:     "PAM",
-			authType: auth.PAM,
-			wantType: &pam.Provider{},
-		},
-		{
-			name:     "GitHub",
-			authType: auth.GitHub,
-			wantType: &github.Provider{},
-		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -189,15 +171,15 @@ func TestLoginSources(t *testing.T) {
 }
 
 func loginSourcesCreate(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
-	// Create first login source with name "GitHub"
+	// Create first login source with name "LDAP"
 	source, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:      auth.GitHub,
-			Name:      "GitHub",
+			Type:      auth.LDAP,
+			Name:      "LDAP",
 			Activated: true,
 			Default:   false,
-			Config: &github.Config{
-				APIEndpoint: "https://api.github.com",
+			Config: &ldap.Config{
+				Host: "ldap.example.com",
 			},
 		},
 	)
@@ -227,12 +209,12 @@ func loginSourcesCount(t *testing.T, ctx context.Context, s *LoginSourcesStore) 
 	// Create two login sources, one in database and one as source file.
 	_, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:      auth.GitHub,
-			Name:      "GitHub",
+			Type:      auth.LDAP,
+			Name:      "LDAP",
 			Activated: true,
 			Default:   false,
-			Config: &github.Config{
-				APIEndpoint: "https://api.github.com",
+			Config: &ldap.Config{
+				Host: "ldap.example.com",
 			},
 		},
 	)
@@ -249,12 +231,12 @@ func loginSourcesDeleteByID(t *testing.T, ctx context.Context, s *LoginSourcesSt
 	t.Run("delete but in used", func(t *testing.T) {
 		source, err := s.Create(ctx,
 			CreateLoginSourceOptions{
-				Type:      auth.GitHub,
-				Name:      "GitHub",
+				Type:      auth.LDAP,
+				Name:      "LDAP",
 				Activated: true,
 				Default:   false,
-				Config: &github.Config{
-					APIEndpoint: "https://api.github.com",
+				Config: &ldap.Config{
+					Host: "ldap.example.com",
 				},
 			},
 		)
@@ -280,15 +262,15 @@ func loginSourcesDeleteByID(t *testing.T, ctx context.Context, s *LoginSourcesSt
 	})
 	setMockLoginSourceFilesStore(t, s, mock)
 
-	// Create a login source with name "GitHub2"
+	// Create a login source with name "LDAP2"
 	source, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:      auth.GitHub,
-			Name:      "GitHub2",
+			Type:      auth.LDAP,
+			Name:      "LDAP2",
 			Activated: true,
 			Default:   false,
-			Config: &github.Config{
-				APIEndpoint: "https://api.github.com",
+			Config: &ldap.Config{
+				Host: "ldap.example.com",
 			},
 		},
 	)
@@ -322,15 +304,15 @@ func loginSourcesGetByID(t *testing.T, ctx context.Context, s *LoginSourcesStore
 	})
 	setMockLoginSourceFilesStore(t, s, mock)
 
-	expConfig := &github.Config{
-		APIEndpoint: "https://api.github.com",
+	expConfig := &ldap.Config{
+		Host: "ldap.example.com",
 	}
 
-	// Create a login source with name "GitHub"
+	// Create a login source with name "LDAP"
 	source, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:      auth.GitHub,
-			Name:      "GitHub",
+			Type:      auth.LDAP,
+			Name:      "LDAP",
 			Activated: true,
 			Default:   false,
 			Config:    expConfig,
@@ -366,21 +348,21 @@ func loginSourcesList(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	// Create two login sources in database, one activated and the other one not
 	_, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type: auth.PAM,
-			Name: "PAM",
-			Config: &pam.Config{
-				ServiceName: "PAM",
+			Type: auth.LDAP,
+			Name: "LDAP",
+			Config: &ldap.Config{
+				Host: "ldap.example.com",
 			},
 		},
 	)
 	require.NoError(t, err)
 	_, err = s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:      auth.GitHub,
-			Name:      "GitHub",
+			Type:      auth.DLDAP,
+			Name:      "DLDAP",
 			Activated: true,
-			Config: &github.Config{
-				APIEndpoint: "https://api.github.com",
+			Config: &ldap.Config{
+				Host: "ldap2.example.com",
 			},
 		},
 	)
@@ -416,23 +398,23 @@ func loginSourcesResetNonDefault(t *testing.T, ctx context.Context, s *LoginSour
 	// Create two login sources both have default on
 	source1, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:    auth.PAM,
-			Name:    "PAM",
+			Type:    auth.LDAP,
+			Name:    "LDAP1",
 			Default: true,
-			Config: &pam.Config{
-				ServiceName: "PAM",
+			Config: &ldap.Config{
+				Host: "ldap1.example.com",
 			},
 		},
 	)
 	require.NoError(t, err)
 	source2, err := s.Create(ctx,
 		CreateLoginSourceOptions{
-			Type:      auth.GitHub,
-			Name:      "GitHub",
+			Type:      auth.LDAP,
+			Name:      "LDAP2",
 			Activated: true,
 			Default:   true,
-			Config: &github.Config{
-				APIEndpoint: "https://api.github.com",
+			Config: &ldap.Config{
+				Host: "ldap2.example.com",
 			},
 		},
 	)
@@ -454,23 +436,23 @@ func loginSourcesResetNonDefault(t *testing.T, ctx context.Context, s *LoginSour
 
 func loginSourcesSave(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	t.Run("save to database", func(t *testing.T) {
-		// Create a login source with name "GitHub"
+		// Create a login source with name "LDAP"
 		source, err := s.Create(ctx,
 			CreateLoginSourceOptions{
-				Type:      auth.GitHub,
-				Name:      "GitHub",
+				Type:      auth.LDAP,
+				Name:      "LDAP",
 				Activated: true,
 				Default:   false,
-				Config: &github.Config{
-					APIEndpoint: "https://api.github.com",
+				Config: &ldap.Config{
+					Host: "ldap.example.com",
 				},
 			},
 		)
 		require.NoError(t, err)
 
 		source.IsActived = false
-		source.Provider = github.NewProvider(&github.Config{
-			APIEndpoint: "https://api2.github.com",
+		source.Provider = ldap.NewProvider(false, &ldap.Config{
+			Host: "ldap2.example.com",
 		})
 		err = s.Save(ctx, source)
 		require.NoError(t, err)
@@ -478,14 +460,14 @@ func loginSourcesSave(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 		source, err = s.GetByID(ctx, source.ID)
 		require.NoError(t, err)
 		assert.False(t, source.IsActived)
-		assert.Equal(t, "https://api2.github.com", source.GitHub().APIEndpoint)
+		assert.Equal(t, "ldap2.example.com", source.LDAP().Host)
 	})
 
 	t.Run("save to file", func(t *testing.T) {
 		mockFile := NewMockLoginSourceFileStore()
 		source := &LoginSource{
-			Provider: github.NewProvider(&github.Config{
-				APIEndpoint: "https://api.github.com",
+			Provider: ldap.NewProvider(false, &ldap.Config{
+				Host: "ldap.example.com",
 			}),
 			File: mockFile,
 		}

@@ -5,15 +5,52 @@
   let config = $state<any>(null);
   let loading = $state(true);
 
+  // Registration Security Settings
+  let regSecurity = $state({
+    enable: false,
+    question: '',
+    answer: ''
+  });
+  let savingSecurity = $state(false);
+
   async function fetchConfig() {
     loading = true;
     try {
       const res = await apiFetch('/api/v2/admin/config');
-      if (res.ok) config = await res.json();
+      if (res.ok) {
+        config = await res.json();
+        // Extract registration settings for editing
+        regSecurity.enable = config.auth.EnableRegistrationQuestion;
+        regSecurity.question = config.auth.RegistrationQuestion;
+        regSecurity.answer = config.auth.RegistrationAnswer;
+      }
     } catch (e) {
       console.error(e);
     } finally {
       loading = false;
+    }
+  }
+
+  async function updateAuthSettings() {
+    savingSecurity = true;
+    try {
+      const res = await apiFetch('/api/v2/admin/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          enable_registration_question: regSecurity.enable,
+          registration_question: regSecurity.question,
+          registration_answer: regSecurity.answer
+        })
+      });
+      if (res.ok) {
+        alert('Settings updated successfully!');
+        fetchConfig();
+      }
+    } catch (e) {
+      alert('Failed to update settings');
+    } finally {
+      savingSecurity = false;
     }
   }
 
@@ -81,6 +118,39 @@
         </div>
       {/each}
 
+      <div class="config-card island island-interactive tonal security-edit-section">
+        <h3 class="card-title">Registration Security</h3>
+        <div class="edit-content">
+          <p>Configure a simple security question to prevent automated bot registrations.</p>
+          
+          <div class="form-grid-edit">
+            <div class="field">
+              <label class="checkbox-label">
+                <input type="checkbox" bind:checked={regSecurity.enable} />
+                <span>Enable Security Question</span>
+              </label>
+            </div>
+
+            {#if regSecurity.enable}
+              <div class="field">
+                <label>Security Question</label>
+                <input type="text" placeholder="e.g. What is the name of this service?" bind:value={regSecurity.question} />
+              </div>
+              <div class="field">
+                <label>Correct Answer</label>
+                <input type="text" placeholder="e.g. Ggit" bind:value={regSecurity.answer} />
+              </div>
+            {/if}
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" onclick={updateAuthSettings} disabled={savingSecurity}>
+              {savingSecurity ? 'Saving...' : 'Save Security Settings'}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="config-card island island-interactive tonal test-email-section">
         <h3 class="card-title">Test Email Configuration</h3>
         <div class="test-email-content">
@@ -114,6 +184,16 @@
   .config-item { display: flex; flex-direction: column; gap: 0.2rem; }
   .key { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.6; }
   .val { font-size: 0.95rem; font-family: monospace; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .edit-content { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  .edit-content p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+  .form-grid-edit { display: flex; flex-direction: column; gap: 1rem; max-width: 500px; }
+  .field { display: flex; flex-direction: column; gap: 0.5rem; }
+  .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+  .checkbox-label { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: #fff !important; }
+  .checkbox-label input { width: 1.2rem; height: 1.2rem; }
+  .field input[type="text"] { background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.5rem; outline: none; }
+  .field input:focus { border-color: var(--primary-color); }
 
   .skeleton-config { height: 600px; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }

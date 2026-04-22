@@ -15,17 +15,14 @@ require (
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/go-ldap/ldap/v3 v3.4.13
-	github.com/go-macaron/binding v1.2.0
 	github.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f
 	github.com/gogs/cron v0.0.0-20171120032916-9f6c956d3e14
 	github.com/gogs/git-module v1.8.7
 	github.com/gogs/minwinsvc v0.0.0-20170301035411-95be6356811a
-	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/inbucket/html2text v1.0.0
 	github.com/issue9/identicon v1.2.1
 	github.com/microcosm-cc/bluemonday v1.0.27
-	github.com/msteinert/pam v1.2.0
 	github.com/niklasfasching/go-org v1.9.1
 	github.com/olekukonko/tablewriter v1.1.4
 	github.com/pquerna/otp v1.5.0
@@ -80,7 +77,6 @@ require (
 	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-macaron/inject v0.0.0-20200308113650-138e5925c53b // indirect
 	github.com/go-openapi/jsonpointer v0.23.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.5 // indirect
 	github.com/go-openapi/spec v0.22.4 // indirect
@@ -97,7 +93,6 @@ require (
 	github.com/goccy/go-json v0.10.6 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/gorilla/context v1.1.2 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
@@ -148,7 +143,6 @@ require (
 	golang.org/x/sys v0.43.0 // indirect
 	golang.org/x/tools v0.44.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
-	gopkg.in/macaron.v1 v1.5.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	modernc.org/libc v1.72.0 // indirect
 	modernc.org/mathutil v1.7.1 // indirect

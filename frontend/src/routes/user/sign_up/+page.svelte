@@ -6,15 +6,37 @@
   let email = $state('');
   let password = $state('');
   let retype = $state('');
+  let hp_field = $state(''); // Honeypot field
   let errorMsg = $state('');
   let successMsg = $state('');
   let loading = $state(false);
+  let regSettings = $state({
+    enable_question: false,
+    question: ''
+  });
+
+  async function fetchRegSettings() {
+    try {
+      const res = await apiFetch('/api/v2/user/registration_settings');
+      if (res.ok) {
+        regSettings = await res.json();
+      }
+    } catch (e) {
+      console.error('Failed to fetch registration settings', e);
+    }
+  }
+
+  onMount(() => {
+    fetchRegSettings();
+  });
 
   function getCsrfToken() {
     if (typeof document === 'undefined') return '';
     const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
     return match ? match[2] : '';
   }
+
+  let captcha_answer = $state('');
 
   async function handleSignUp(e: Event) {
     e.preventDefault();
@@ -37,7 +59,9 @@
         body: JSON.stringify({
           username,
           email,
-          password
+          password,
+          middle_name: hp_field,
+          captcha_answer
         })
       });
 
@@ -88,6 +112,17 @@
     {/if}
 
     <form onsubmit={handleSignUp} class="auth-form">
+      <!-- Honeypot field (invisible to humans) -->
+      <div style="display: none;" aria-hidden="true">
+        <input 
+          type="text" 
+          name="middle_name" 
+          bind:value={hp_field} 
+          tabindex="-1" 
+          autocomplete="off" 
+        />
+      </div>
+
       <div class="form-group">
         <label for="username">Username</label>
         <input 
@@ -135,6 +170,19 @@
           placeholder="••••••••"
         />
       </div>
+
+      {#if regSettings.enable_question}
+        <div class="form-group question-group">
+          <label for="captcha_answer">Security Question: <b>{regSettings.question}</b></label>
+          <input 
+            type="text" 
+            id="captcha_answer" 
+            bind:value={captcha_answer} 
+            required 
+            placeholder="Your answer"
+          />
+        </div>
+      {/if}
 
       <button type="submit" class="btn btn-primary" disabled={loading || !!successMsg}>
         {loading ? 'Creating...' : 'Create Account'}
@@ -241,6 +289,13 @@
     border-radius: var(--radius);
     margin-bottom: 1.5rem;
     font-size: 0.9rem;
+  }
+
+  .question-group {
+    background: rgba(var(--primary-rgb), 0.05);
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px dashed var(--primary-color);
   }
 
   .box-error {

@@ -14,12 +14,12 @@ import (
 
 // LFSObject represents an LFS object.
 type LFSObject struct {
-	ID    int64  `gorm:"primaryKey"`
-	OID   lfsx.OID `xorm:"UNIQUE(s) INDEX" gorm:"column:oid;uniqueIndex:lfs_object_oid_repo_unique;index;not null"`
-	Size  int64  `xorm:"NOT NULL" gorm:"not null"`
-	RepoID      int64        `xorm:"UNIQUE(s)" gorm:"uniqueIndex:lfs_object_oid_repo_unique;not null"`
-	Storage     lfsx.Storage `xorm:"NOT NULL" gorm:"not null"`
-	Created     time.Time    `xorm:"-" json:"-" gorm:"-"`
+	ID          int64        `gorm:"primaryKey"`
+	OID         lfsx.OID     `gorm:"column:oid;uniqueIndex:lfs_object_oid_repo_unique;index;not null"`
+	Size        int64        `gorm:"not null"`
+	RepoID      int64        `gorm:"uniqueIndex:lfs_object_oid_repo_unique;not null"`
+	Storage     lfsx.Storage `gorm:"not null"`
+	Created     time.Time    `json:"-" gorm:"-"`
 	CreatedUnix int64
 }
 
@@ -30,6 +30,7 @@ func (o *LFSObject) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
 // AfterFind implements the GORM query hook.
 func (o *LFSObject) AfterFind(_ *gorm.DB) error {
 	o.Created = time.Unix(o.CreatedUnix, 0).Local()

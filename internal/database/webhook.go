@@ -90,23 +90,23 @@ const (
 
 // Webhook represents a web hook object.
 type Webhook struct {
-	ID           int64 `gorm:"primaryKey"`
-	RepoID       int64 `gorm:"index"`
-	OrgID        int64 `gorm:"index"`
-	URL          string `xorm:"url TEXT" gorm:"column:url;type:TEXT;not null"`
+	ID           int64  `gorm:"primaryKey"`
+	RepoID       int64  `gorm:"index"`
+	OrgID        int64  `gorm:"index"`
+	URL          string `gorm:"column:url;type:TEXT;not null"`
 	ContentType  HookContentType
-	Secret       string     `xorm:"TEXT" gorm:"type:TEXT"`
-	Events       string     `xorm:"TEXT" gorm:"type:TEXT"`
-	*HookEvent   `xorm:"-" gorm:"-"` // LEGACY [1.0]: Cannot ignore JSON (i.e. json:"-") here, it breaks old backup archive
-	IsSSL        bool       `xorm:"is_ssl" gorm:"column:is_ssl"`
+	Secret       string     `gorm:"type:TEXT"`
+	Events       string     `gorm:"type:TEXT"`
+	*HookEvent   `gorm:"-"` // LEGACY [1.0]: Cannot ignore JSON (i.e. json:"-") here, it breaks old backup archive
+	IsSSL        bool       `gorm:"column:is_ssl"`
 	IsActive     bool
 	HookTaskType HookTaskType
-	Meta         string     `xorm:"TEXT" gorm:"type:TEXT"` // store hook-specific attributes
+	Meta         string     `gorm:"type:TEXT"` // store hook-specific attributes
 	LastStatus   HookStatus // Last delivery status
 
-	Created     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64
-	Updated     time.Time `xorm:"-" json:"-" gorm:"-"`
+	Updated     time.Time `json:"-" gorm:"-"`
 	UpdatedUnix int64
 }
 
@@ -137,14 +137,6 @@ func (w *Webhook) AfterFind(_ *gorm.DB) error {
 	w.Created = time.Unix(w.CreatedUnix, 0).Local()
 	w.Updated = time.Unix(w.UpdatedUnix, 0).Local()
 	return nil
-}
-
-func (w *Webhook) SlackMeta() *SlackMeta {
-	s := &SlackMeta{}
-	if err := json.Unmarshal([]byte(w.Meta), s); err != nil {
-		log.Error("Failed to get Slack meta [webhook_id: %d]: %v", w.ID, err)
-	}
-	return s
 }
 
 // History returns history of webhook by given conditions.
@@ -361,16 +353,10 @@ type HookTaskType int
 
 const (
 	GOGS HookTaskType = iota + 1
-	SLACK
-	DISCORD
-	DINGTALK
 )
 
 var hookTaskTypes = map[string]HookTaskType{
-	"gogs":     GOGS,
-	"slack":    SLACK,
-	"discord":  DISCORD,
-	"dingtalk": DINGTALK,
+	"gogs": GOGS,
 }
 
 // ToHookTaskType returns HookTaskType by given name.
@@ -382,12 +368,6 @@ func (t HookTaskType) Name() string {
 	switch t {
 	case GOGS:
 		return "gogs"
-	case SLACK:
-		return "slack"
-	case DISCORD:
-		return "discord"
-	case DINGTALK:
-		return "dingtalk"
 	}
 	return ""
 }
@@ -426,27 +406,27 @@ type HookResponse struct {
 // HookTask represents a hook task.
 type HookTask struct {
 	ID                          int64  `gorm:"primaryKey"`
-	RepoID                      int64  `xorm:"INDEX" gorm:"index"`
+	RepoID                      int64  `gorm:"index"`
 	HookID                      int64  `gorm:"index"`
 	UUID                        string `gorm:"unique;not null;size:36"`
 	Type                        HookTaskType
-	URL                         string `xorm:"TEXT" gorm:"type:TEXT;not null"`
-	Signature                   string `xorm:"TEXT" gorm:"type:TEXT"`
-	apiv2types.WebhookPayloader `xorm:"-" json:"-" gorm:"-"`
-	PayloadContent              string `xorm:"TEXT" gorm:"type:TEXT"`
+	URL                         string `gorm:"type:TEXT;not null"`
+	Signature                   string `gorm:"type:TEXT"`
+	apiv2types.WebhookPayloader `json:"-" gorm:"-"`
+	PayloadContent              string `gorm:"type:TEXT"`
 	ContentType                 HookContentType
 	EventType                   HookEventType
 	IsSSL                       bool
 	IsDelivered                 bool
 	Delivered                   int64
-	DeliveredString             string `xorm:"-" json:"-" gorm:"-"`
+	DeliveredString             string `json:"-" gorm:"-"`
 
 	// History info.
 	IsSucceed       bool
-	RequestContent  string        `xorm:"TEXT" gorm:"type:TEXT"`
-	RequestInfo     *HookRequest  `xorm:"-" json:"-" gorm:"-"`
-	ResponseContent string        `xorm:"TEXT" gorm:"type:TEXT"`
-	ResponseInfo    *HookResponse `xorm:"-" json:"-" gorm:"-"`
+	RequestContent  string        `gorm:"type:TEXT"`
+	RequestInfo     *HookRequest  `json:"-" gorm:"-"`
+	ResponseContent string        `gorm:"type:TEXT"`
+	ResponseInfo    *HookResponse `json:"-" gorm:"-"`
 }
 
 // BeforeUpdate implements the GORM update hook.
@@ -590,25 +570,7 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 		}
 
 		// Use separate objects so modifications won't be made on payload on non-Gogs type hooks.
-		switch w.HookTaskType {
-		case SLACK:
-			payloader, err = GetSlackPayload(p, event, w.Meta)
-			if err != nil {
-				return errors.Newf("GetSlackPayload: %v", err)
-			}
-		case DISCORD:
-			payloader, err = GetDiscordPayload(p, event, w.Meta)
-			if err != nil {
-				return errors.Newf("GetDiscordPayload: %v", err)
-			}
-		case DINGTALK:
-			payloader, err = GetDingtalkPayload(p, event)
-			if err != nil {
-				return errors.Newf("GetDingtalkPayload: %v", err)
-			}
-		default:
-			payloader = p
-		}
+		payloader = p
 
 		var signature string
 		if len(w.Secret) > 0 {
