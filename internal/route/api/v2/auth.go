@@ -39,7 +39,7 @@ type loginPayload struct {
 // Login authenticates a user and establishes a session via cookies.
 func Login(c *context.APIContext) {
 	if !database.HasEngine || authservice.Auth == nil {
-		c.StatusError(http.StatusServiceUnavailable, "Gogs has not been installed yet. Please visit /install.", nil)
+		c.StatusError(http.StatusServiceUnavailable, "Ggit has not been installed yet. Please visit /install.", nil)
 		return
 	}
 
@@ -169,7 +169,7 @@ func Register(c *context.APIContext) {
 	}
 
 	if !database.HasEngine || authservice.Auth == nil {
-		c.StatusError(http.StatusServiceUnavailable, "Gogs has not been installed yet. Please visit /install.", nil)
+		c.StatusError(http.StatusServiceUnavailable, "Ggit has not been installed yet. Please visit /install.", nil)
 		return
 	}
 

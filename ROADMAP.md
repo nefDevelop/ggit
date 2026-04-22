@@ -67,19 +67,23 @@
 
 - [x] **Eliminar Wiki Legacy:** Borrar el sistema de repositorios independientes `.wiki.git`. [COMPLETO]
 - [ ] **Implementar "Wiki-Folder":**
-  - [ ] **Detector de Carpeta:** Activar pestaña Wiki si existe `/docs` o `.docs`.
+  - En cada push, se miran los frontmatter de la documentacion. con
+  - [ ] **Detector de Carpeta:** Activar pestaña Wiki si existe `/docs` o `.docs`. (carpeta seleccionable en ajustes del repositocio, por defecto `/docs`)
+  - el sidebar se genera con, estructura de carpetas (se ignoran ocultas)
   - [ ] **Sidebar Dinámico:** Generar menú lateral leyendo YAML/TOML Frontmatter de los `.md`.
   - [ ] **Caché por Commit:** Solo recalcular el sidebar si el `CommitSHA` cambia.
   - [ ] **Wikilinks:** Soporte para `[[Enlace]]` mediante Goldmark en el backend.
-  - En cada push, se miran los frontmatter de la documentacion. con
 
 ---
 
 title: Instalacion
-parent: Introduccion
-y algun metodo mas? como se crearia ucon frontm
+order: 2 
 
 ---
+se puede poner en todos el order, con 1 solo ya se posiciona todos los de la carpeta. si no esta puesto por orden alfabetico. 
+
+
+
 
 ## Fase 12: Funcionalidades de Precisión
 

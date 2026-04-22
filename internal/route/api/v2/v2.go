@@ -18,6 +18,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	r.Use(context.APIContexter())
 
 	r.GET("/install/settings", ginx.Handle(GetInstallSettings))
+	r.POST("/install", ginx.Handle(PerformInstall))
 	r.GET("/i18n/:lang", ginx.Handle(GetI18nStrings))
 	r.GET("/repo/templates", ginx.Handle(GetRepoTemplates))
 

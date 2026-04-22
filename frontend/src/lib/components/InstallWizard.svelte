@@ -34,7 +34,7 @@
         window.location.href = '/user/login';
       } else {
         const data = await res.json();
-        error = data.error || 'Installation failed.';
+        error = data.error || data.message || 'Installation failed.';
       }
     } catch (e) {
       error = 'A network error occurred.';
