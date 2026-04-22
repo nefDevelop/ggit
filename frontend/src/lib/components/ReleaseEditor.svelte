@@ -49,7 +49,7 @@
         const res = await apiFetch(`/api/v2/${username}/${reponame}/releases/attachments`, {
           method: "POST",
           body: formData
-        }, true); // IsFormData = true
+        });
         
         if (res.ok) {
             const attachment = await res.json();

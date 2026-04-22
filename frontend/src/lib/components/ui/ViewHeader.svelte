@@ -1,5 +1,6 @@
 <script lang="ts">
   import GlobalSearch from '../GlobalSearch.svelte';
+  import type { Snippet } from 'svelte';
 
   interface Tab {
     id: string;
@@ -7,12 +8,19 @@
     icon: string;
   }
 
+  interface Props {
+    tabs?: Tab[];
+    activeTab?: string;
+    showSearch?: boolean;
+    actions?: Snippet;
+  }
+
   let { 
     tabs = [], 
     activeTab = $bindable(''), 
     showSearch = true,
     actions
-  } = $props();
+  }: Props = $props();
 
 </script>
 

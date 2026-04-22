@@ -2,7 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
 	import { authState, checkAuth } from '$lib/auth.svelte';
-	import { i18n } from '$lib/i18n.svelte.ts';
+	import { i18n } from '$lib/i18n.svelte';
 	import { onMount } from 'svelte';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import RightSidebar from '$lib/components/RightSidebar.svelte';

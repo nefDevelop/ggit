@@ -1,6 +1,6 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { i18n } from '$lib/i18n.svelte.ts';
+  import { i18n } from '$lib/i18n.svelte';
   import { onMount } from 'svelte';
 
   let auditLogs = $state<any[]>([]);

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { i18n } from '$lib/i18n.svelte.ts';
+    import { i18n } from '$lib/i18n.svelte';
     import { getAvailableLanguages } from '$lib/locales';
 
     const availableLanguages = getAvailableLanguages();

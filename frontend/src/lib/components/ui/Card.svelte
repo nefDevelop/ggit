@@ -1,20 +1,30 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  interface Props {
+    class?: string;
+    children?: Snippet;
+    padding?: 'none' | 'sm' | 'md' | 'lg';
+    hover?: boolean;
+    variant?: 'lowest' | 'low' | 'container' | 'high' | 'highest';
+  }
+
   let { 
     class: className = '',
     children,
     padding = 'md',
     hover = false,
-    variant = 'container' // lowest, low, container, high, highest
-  } = $props();
+    variant = 'container'
+  }: Props = $props();
 
-  const paddings = {
+  const paddings: Record<NonNullable<Props['padding']>, string> = {
     none: 'p-0',
     sm: 'p-sm',
     md: 'p-md',
     lg: 'p-lg'
   };
 
-  const variants = {
+  const variants: Record<NonNullable<Props['variant']>, string> = {
     lowest: 'bg-lowest',
     low: 'bg-low',
     container: 'bg-container',

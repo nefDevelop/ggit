@@ -1,13 +1,23 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  interface Props {
+    variant?: 'neutral' | 'primary' | 'secondary' | 'tertiary' | 'success' | 'danger' | 'warning' | 'ghost';
+    size?: 'sm' | 'md';
+    class?: string;
+    children?: Snippet;
+    icon?: string;
+  }
+
   let { 
     variant = 'neutral', 
     size = 'md',
     class: className = '',
     children,
     icon
-  } = $props();
+  }: Props = $props();
 
-  const variants = {
+  const variants: Record<NonNullable<Props['variant']>, string> = {
     neutral: 'badge-neutral',
     primary: 'badge-primary',
     secondary: 'badge-secondary',
@@ -18,7 +28,7 @@
     ghost: 'badge-ghost'
   };
 
-  const sizes = {
+  const sizes: Record<NonNullable<Props['size']>, string> = {
     sm: 'badge-sm',
     md: 'badge-md'
   };

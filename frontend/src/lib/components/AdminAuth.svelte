@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import AdminAuthEditor from './AdminAuthEditor.svelte';
   
   let sources = $state<any[]>([]);
   let loading = $state(true);
@@ -56,7 +57,7 @@
 </script>
 
 {#if showEditor}
-  <AdminAuthEditor id={editingAuthId} onSave={handleSave} onCancel={handleCancel} />
+  <AdminAuthEditor authId={editingAuthId} onSave={handleSave} onCancel={handleCancel} />
 {/if}
 
 <div class="admin-auth island island-interactive tonal">

@@ -1,4 +1,17 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  interface Props {
+    variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'outline';
+    size?: 'sm' | 'md' | 'lg';
+    type?: 'button' | 'submit' | 'reset';
+    disabled?: boolean;
+    class?: string;
+    onclick?: (e: MouseEvent) => void;
+    children?: Snippet;
+    icon?: string;
+  }
+
   let { 
     variant = 'primary', 
     size = 'md', 
@@ -8,9 +21,9 @@
     onclick,
     children,
     icon
-  } = $props();
+  }: Props = $props();
 
-  const variants = {
+  const variants: Record<NonNullable<Props['variant']>, string> = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
     tertiary: 'btn-tertiary',
@@ -19,7 +32,7 @@
     outline: 'btn-outline'
   };
 
-  const sizes = {
+  const sizes: Record<NonNullable<Props['size']>, string> = {
     sm: 'btn-sm',
     md: 'btn-md',
     lg: 'btn-lg'

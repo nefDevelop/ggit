@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { goto } from '$app/navigation';
   import ReleaseEditor from '$lib/components/ReleaseEditor.svelte';
 
   let username = $derived(page.params.username);
@@ -11,7 +12,12 @@
 </svelte:head>
 
 <div class="page-container">
-  <ReleaseEditor {username} {reponame} />
+  <ReleaseEditor 
+    {username} 
+    {reponame} 
+    onSaved={() => goto(`/${username}/${reponame}/releases`)}
+    onCancel={() => history.back()}
+  />
 </div>
 
 <style>
