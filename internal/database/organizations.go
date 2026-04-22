@@ -50,7 +50,7 @@ func (s *OrganizationsStore) List(ctx context.Context, opts ListOrgsOptions) ([]
 	}
 
 	var orgs []*Organization
-	return orgs, tx.Find(&orgs).Error
+	return orgs, tx.Select(userListFields).Find(&orgs).Error
 }
 
 // SearchByName returns a list of organizations whose username or full name

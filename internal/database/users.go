@@ -26,6 +26,10 @@ import (
 	"gogs.io/gogs/internal/userx"
 )
 
+// userListFields are the columns used for listing users/organizations.
+// We avoid 'passwd', 'salt', 'rands', etc. for security and to save RAM.
+const userListFields = "id, lower_name, name, full_name, email, type, location, website, avatar, avatar_email, use_custom_avatar, num_followers, num_following, num_stars, num_repos, description, num_teams, num_members, created_unix, updated_unix, is_admin, is_active, prohibit_login"
+
 var (
 	// alphaDashDotPattern represents a regex for valid username/email characters.
 	alphaDashDotPattern = lazyregexp.New(`[^\d\w\-_.]`)
@@ -813,6 +817,7 @@ func (s *UsersStore) IsUsernameUsed(ctx context.Context, username string, exclud
 func (s *UsersStore) List(ctx context.Context, page, pageSize int) ([]*User, error) {
 	users := make([]*User, 0, pageSize)
 	return users, s.db.WithContext(ctx).
+		Select(userListFields).
 		Where("type = ?", UserTypeIndividual).
 		Limit(pageSize).Offset((page - 1) * pageSize).
 		Order("id ASC").
@@ -835,6 +840,7 @@ func (s *UsersStore) ListFollowers(ctx context.Context, userID int64, page, page
 	*/
 	users := make([]*User, 0, pageSize)
 	return users, s.db.WithContext(ctx).
+		Select(userListFields).
 		Joins(dbx.Quote("LEFT JOIN follow ON follow.user_id = %s.id", "user")).
 		Where("follow.follow_id = ?", userID).
 		Limit(pageSize).Offset((page - 1) * pageSize).
@@ -858,6 +864,7 @@ func (s *UsersStore) ListFollowings(ctx context.Context, userID int64, page, pag
 	*/
 	users := make([]*User, 0, pageSize)
 	return users, s.db.WithContext(ctx).
+		Select(userListFields).
 		Joins(dbx.Quote("LEFT JOIN follow ON follow.follow_id = %s.id", "user")).
 		Where("follow.user_id = ?", userID).
 		Limit(pageSize).Offset((page - 1) * pageSize).
@@ -882,7 +889,7 @@ func searchUserByName(ctx context.Context, db *gorm.DB, userType UserType, keywo
 	}
 
 	users := make([]*User, 0, pageSize)
-	return users, count, tx.Order(orderBy).Limit(pageSize).Offset((page - 1) * pageSize).Find(&users).Error
+	return users, count, tx.Select(userListFields).Order(orderBy).Limit(pageSize).Offset((page - 1) * pageSize).Find(&users).Error
 }
 
 // SearchByName returns a list of users whose username or full name matches the

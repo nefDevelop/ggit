@@ -46,6 +46,12 @@ func SearchRepoContents(c *context.APIContext) {
 	}
 	args = append(args, "-e", q, ref)
 
+	if err := tool.AcquireSemaphore(c.Req.Context(), tool.GitGrepSemaphore); err != nil {
+		c.Error(err, "acquire grep semaphore")
+		return
+	}
+	defer tool.ReleaseSemaphore(tool.GitGrepSemaphore)
+
 	output, err := git.NewCommand(args...).RunInDir(c.Repo.Repository.RepoPath())
 	if err != nil {
 		// git grep returns exit code 1 if no matches found

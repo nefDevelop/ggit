@@ -37,6 +37,9 @@
   - [x] Configurar `Max Open Conns: 1` para evitar bloqueos de escritura.
   - [x] Configurar `Synchronous: NORMAL` para balance velocidad/seguridad.
 - [x] **Unificación de Persistencia (XORM -> GORM):** Migrar el 100% de los modelos restantes. [COMPLETO]
+- [x] **Gestión de Memoria (RAM):** [COMPLETO]
+  - [x] **GORM .Select():** Optimizar listados para no cargar columnas pesadas en memoria.
+  - [x] **Semaforización:** Limitar procesos `git grep` concurrentes para evitar OOM.
 - [x] **Caché L2:** Desactivar el caché de nivel 2 del ORM para liberar RAM. [COMPLETO - Resuelto al migrar a GORM]
 
 ### Servicios de Fondo y Dependencias
