@@ -1,45 +1,19 @@
 {
-  "app_desc": "Un servizio Git auto-ospitato pronto all'uso",
-  "home": "Home",
-  "dashboard": "Pannello di controllo",
-  "explore": "Esplora",
-  "help": "Aiuto",
-  "sign_in": "Accedi",
-  "sign_out": "Esci",
-  "sign_up": "Registrati",
-  "register": "Registrati",
-  "website": "Sito Web",
-  "page": "Pagina",
-  "template": "Template",
-  "language": "Lingua",
-  "create_new": "Crea...",
-  "user_profile_and_more": "Profilo utente e altro",
-  "signed_in_as": "Accesso effettuato come",
-  "username": "Nome utente",
-  "email": "E-mail",
-  "password": "Password",
-  "re_type": "Conferma",
-  "captcha": "Captcha",
-  "repository": "Repository",
-  "organization": "Organizzazione",
-  "new_repo": "Nuovo Repository",
-  "new_migrate": "Nuova Migrazione",
-  "new_fork": "Nuovo Fork Repository",
-  "new_org": "Nuova organizzazione",
-  "manage_org": "Gestisci le organizzazioni",
-  "admin_panel": "Pannello di amministrazione",
   "account_settings": "Impostazioni dell'account",
-  "settings": "Impostazioni",
-  "your_profile": "Il tuo profilo",
-  "your_settings": "Impostazioni",
   "activities": "Attivitá",
-  "pull_requests": "Pull Request",
-  "issues": "Problemi",
-  "cancel": "Annulla",
-  "status": {
-    "page_not_found": "Pagina Non Trovata",
-    "internal_server_error": "Errore Interno del Server"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Pannello di amministrazione",
+  "app_desc": "Un servizio Git auto-ospitato pronto all'uso",
   "auth": {
     "create_new_account": "Crea un nuovo Account",
     "register_hepler_msg": "Hai già un account? Accedi ora!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Inserisci un codice di accesso a due fattori",
     "login_two_factor_invalid_recovery_code": "Il codice di recupero è stato utilizzato o non è valido."
   },
-  "mail": {
-    "activate_account": "Per favore attiva il tuo account",
-    "activate_email": "Verifica il tuo indirizzo e-mail",
-    "reset_password": "Reimposta la tua password",
-    "register_success": "Registrazione completata con successo, Benvenuto",
-    "register_notify": "Benvenuti a bordo"
-  },
+  "cancel": "Annulla",
+  "captcha": "Captcha",
+  "create_new": "Crea...",
+  "dashboard": "Pannello di controllo",
+  "email": "E-mail",
+  "explore": "Esplora",
   "form": {
     "UserName": "Nome utente",
     "RepoName": "Nome Repository",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Questa organizzazione ha ancora la proprietà del repository, dovete cancellarla o trasferirli prima.",
     "target_branch_not_exist": "Il ramo (branch) di destinazione non esiste."
   },
+  "help": "Aiuto",
+  "home": "Home",
+  "issues": "Problemi",
+  "language": "Lingua",
+  "mail": {
+    "activate_account": "Per favore attiva il tuo account",
+    "activate_email": "Verifica il tuo indirizzo e-mail",
+    "reset_password": "Reimposta la tua password",
+    "register_success": "Registrazione completata con successo, Benvenuto",
+    "register_notify": "Benvenuti a bordo"
+  },
+  "manage_org": "Gestisci le organizzazioni",
+  "new_fork": "Nuovo Fork Repository",
+  "new_migrate": "Nuova Migrazione",
+  "new_org": "Nuova organizzazione",
+  "new_repo": "Nuovo Repository",
+  "organization": "Organizzazione",
+  "page": "Pagina",
+  "password": "Password",
+  "pull_requests": "Pull Request",
+  "re_type": "Conferma",
+  "register": "Registrati",
+  "repository": "Repository",
+  "settings": "Impostazioni",
+  "settings_title": "Settings",
+  "sign_in": "Accedi",
+  "sign_out": "Esci",
+  "sign_up": "Registrati",
+  "signed_in_as": "Accesso effettuato come",
+  "status": {
+    "page_not_found": "Pagina Non Trovata",
+    "internal_server_error": "Errore Interno del Server"
+  },
+  "template": "Template",
   "user": {
     "change_avatar": "Cambia il tuo avatar",
     "join_on": "Si è unito il",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Nome utente o schema %q non consentito."
     }
-  }
+  },
+  "user_profile_and_more": "Profilo utente e altro",
+  "username": "Nome utente",
+  "website": "Sito Web",
+  "your_profile": "Il tuo profilo",
+  "your_settings": "Impostazioni"
 }

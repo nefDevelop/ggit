@@ -1,45 +1,19 @@
 {
-  "app_desc": "Een eenvoudige zelfgehoste Git service geschreven in Go",
-  "home": "Home",
-  "dashboard": "Dashboard",
-  "explore": "Verkennen",
-  "help": "Help",
-  "sign_in": "Inloggen",
-  "sign_out": "Uitloggen",
-  "sign_up": "Aanmelden",
-  "register": "Registreren",
-  "website": "Website",
-  "page": "Pagina",
-  "template": "Sjabloon",
-  "language": "Taal",
-  "create_new": "Toevoegen...",
-  "user_profile_and_more": "Gebruikersprofiel en meer",
-  "signed_in_as": "Aangemeld als",
-  "username": "Gebruikersnaam",
-  "email": "E-mail",
-  "password": "Wachtwoord",
-  "re_type": "Verificatie",
-  "captcha": "CAPTCHA",
-  "repository": "Repository",
-  "organization": "Organisatie",
-  "new_repo": "Nieuwe repository",
-  "new_migrate": "Nieuwe migratie",
-  "new_fork": "Nieuwe Fork",
-  "new_org": "Nieuwe organisatie",
-  "manage_org": "Beheer organisaties",
-  "admin_panel": "Adminpaneel",
   "account_settings": "Accountinstellingen",
-  "settings": "Instellingen",
-  "your_profile": "Uw profiel",
-  "your_settings": "Uw instellingen",
   "activities": "Activiteiten",
-  "pull_requests": "Pull requests",
-  "issues": "Issues",
-  "cancel": "Annuleren",
-  "status": {
-    "page_not_found": "Pagina niet gevonden",
-    "internal_server_error": "Interne Server Fout"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Adminpaneel",
+  "app_desc": "Een eenvoudige zelfgehoste Git service geschreven in Go",
   "auth": {
     "create_new_account": "Maak nieuw account aan",
     "register_hepler_msg": "Heeft u al een account? Meld u nu aan!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Voer een two-factor wachtwoord in",
     "login_two_factor_invalid_recovery_code": "Herstelcode is al gebruikt of ongeldig."
   },
-  "mail": {
-    "activate_account": "Activeer uw account",
-    "activate_email": "Verifieer je e-mailadres",
-    "reset_password": "Stel je wachtwoord opnieuw in",
-    "register_success": "Registratie succesvol, welkom",
-    "register_notify": "Welkom aan boord"
-  },
+  "cancel": "Annuleren",
+  "captcha": "CAPTCHA",
+  "create_new": "Toevoegen...",
+  "dashboard": "Dashboard",
+  "email": "E-mail",
+  "explore": "Verkennen",
   "form": {
     "UserName": "Gebruikersnaam",
     "RepoName": "Naam van repository",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "De organisatie heeft nog eigendomen op repositories. U moet deze eerst verwijderen of overdragen.",
     "target_branch_not_exist": "Doel branch bestaat niet"
   },
+  "help": "Help",
+  "home": "Home",
+  "issues": "Issues",
+  "language": "Taal",
+  "mail": {
+    "activate_account": "Activeer uw account",
+    "activate_email": "Verifieer je e-mailadres",
+    "reset_password": "Stel je wachtwoord opnieuw in",
+    "register_success": "Registratie succesvol, welkom",
+    "register_notify": "Welkom aan boord"
+  },
+  "manage_org": "Beheer organisaties",
+  "new_fork": "Nieuwe Fork",
+  "new_migrate": "Nieuwe migratie",
+  "new_org": "Nieuwe organisatie",
+  "new_repo": "Nieuwe repository",
+  "organization": "Organisatie",
+  "page": "Pagina",
+  "password": "Wachtwoord",
+  "pull_requests": "Pull requests",
+  "re_type": "Verificatie",
+  "register": "Registreren",
+  "repository": "Repository",
+  "settings": "Instellingen",
+  "settings_title": "Settings",
+  "sign_in": "Inloggen",
+  "sign_out": "Uitloggen",
+  "sign_up": "Aanmelden",
+  "signed_in_as": "Aangemeld als",
+  "status": {
+    "page_not_found": "Pagina niet gevonden",
+    "internal_server_error": "Interne Server Fout"
+  },
+  "template": "Sjabloon",
   "user": {
     "change_avatar": "Wijzig je profielfoto",
     "join_on": "Aangemeld op",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Gebruikersprofiel en meer",
+  "username": "Gebruikersnaam",
+  "website": "Website",
+  "your_profile": "Uw profiel",
+  "your_settings": "Uw instellingen"
 }

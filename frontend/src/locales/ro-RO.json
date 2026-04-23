@@ -1,45 +1,19 @@
 {
-  "app_desc": "Un serviciu Git auto-găzduit fără dureri de cap",
-  "home": "Acasă",
-  "dashboard": "Prezentare generală",
-  "explore": "Explorează",
-  "help": "Ajutor",
-  "sign_in": "Autentificare",
-  "sign_out": "Deconectare",
-  "sign_up": "Înregistrare",
-  "register": "Înregistrare",
-  "website": "Site web",
-  "page": "Pagina",
-  "template": "Șablon",
-  "language": "Limba",
-  "create_new": "Creare...",
-  "user_profile_and_more": "Profilul utilizatorului și multe altele",
-  "signed_in_as": "Conectat ca",
-  "username": "Numele de utilizator",
-  "email": "E-mail",
-  "password": "Parolă",
-  "re_type": "Introduceți din nou",
-  "captcha": "Captcha",
-  "repository": "Repositoriu",
-  "organization": "Organizație",
-  "new_repo": "Repositoriu nou",
-  "new_migrate": "Migrare nouă",
-  "new_fork": "Repositoriu nou bifurcat",
-  "new_org": "Organizație nouă",
-  "manage_org": "Gestionare organizații",
-  "admin_panel": "Panou Administrator",
   "account_settings": "Setări cont",
-  "settings": "Setări",
-  "your_profile": "Profilul dumneavoastră",
-  "your_settings": "Setările tale",
   "activities": "Activități",
-  "pull_requests": "Trageți solicitările",
-  "issues": "Probleme",
-  "cancel": "Anulare",
-  "status": {
-    "page_not_found": "Pagina nu a fost găsită",
-    "internal_server_error": "Eroare internă de server"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Panou Administrator",
+  "app_desc": "Un serviciu Git auto-găzduit fără dureri de cap",
   "auth": {
     "create_new_account": "Creați un cont nou",
     "register_hepler_msg": "Aveți deja un cont? Conectați-vă acum!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Introduceți un cod de recuperare pentru verificarea în doi pași",
     "login_two_factor_invalid_recovery_code": "Cod de recuperare deja utilizat sau nu este valid."
   },
-  "mail": {
-    "activate_account": "Vă rugăm să vă activați contul",
-    "activate_email": "Verificați adresa dvs. de e-mail",
-    "reset_password": "Resetați-vă parola",
-    "register_success": "Înregistrare reușită, bun venit",
-    "register_notify": "Bine ați venit la bord"
-  },
+  "cancel": "Anulare",
+  "captcha": "Captcha",
+  "create_new": "Creare...",
+  "dashboard": "Prezentare generală",
+  "email": "E-mail",
+  "explore": "Explorează",
   "form": {
     "UserName": "Nume utilizator",
     "RepoName": "Nume repozitoriu",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Această organizație încă are drept de proprietate asupra depozitelor, trebuie să le ștergeți sau să le transferați mai întâi.",
     "target_branch_not_exist": "Ramura țintă nu există."
   },
+  "help": "Ajutor",
+  "home": "Acasă",
+  "issues": "Probleme",
+  "language": "Limba",
+  "mail": {
+    "activate_account": "Vă rugăm să vă activați contul",
+    "activate_email": "Verificați adresa dvs. de e-mail",
+    "reset_password": "Resetați-vă parola",
+    "register_success": "Înregistrare reușită, bun venit",
+    "register_notify": "Bine ați venit la bord"
+  },
+  "manage_org": "Gestionare organizații",
+  "new_fork": "Repositoriu nou bifurcat",
+  "new_migrate": "Migrare nouă",
+  "new_org": "Organizație nouă",
+  "new_repo": "Repositoriu nou",
+  "organization": "Organizație",
+  "page": "Pagina",
+  "password": "Parolă",
+  "pull_requests": "Trageți solicitările",
+  "re_type": "Introduceți din nou",
+  "register": "Înregistrare",
+  "repository": "Repositoriu",
+  "settings": "Setări",
+  "settings_title": "Settings",
+  "sign_in": "Autentificare",
+  "sign_out": "Deconectare",
+  "sign_up": "Înregistrare",
+  "signed_in_as": "Conectat ca",
+  "status": {
+    "page_not_found": "Pagina nu a fost găsită",
+    "internal_server_error": "Eroare internă de server"
+  },
+  "template": "Șablon",
   "user": {
     "change_avatar": "Schimbați-vă avatarul",
     "join_on": "Înregistrat pe",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Numele de utilizator sau modelul %q nu sunt permise."
     }
-  }
+  },
+  "user_profile_and_more": "Profilul utilizatorului și multe altele",
+  "username": "Numele de utilizator",
+  "website": "Site web",
+  "your_profile": "Profilul dumneavoastră",
+  "your_settings": "Setările tale"
 }

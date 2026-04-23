@@ -2,6 +2,7 @@ import { apiFetch } from "$lib/api";
 export const authState = $state({
 	user: null as any,
 	isAuthenticated: false,
+	isInstalled: true,
 	loading: true,
 });
 
@@ -27,6 +28,25 @@ export async function checkAuth() {
 		authState.isAuthenticated = false;
 	} finally {
 		authState.loading = false;
+	}
+}
+
+export async function checkInstallation() {
+	try {
+		const res = await apiFetch('/api/v2/install/settings');
+		// 403 Forbidden means it's already installed.
+		// 200 OK means it's NOT installed yet.
+		if (res.status === 403) {
+			authState.isInstalled = true;
+			return true;
+		} else if (res.ok) {
+			authState.isInstalled = false;
+			return false;
+		}
+		return true; // Assume installed on error to be safe
+	} catch (err) {
+		console.error('Failed to check installation', err);
+		return true;
 	}
 }
 

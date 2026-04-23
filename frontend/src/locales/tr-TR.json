@@ -1,45 +1,19 @@
 {
-  "app_desc": "Kendi sunucunuzda barındırabileceğiniz zahmetsiz bir Git servisi",
-  "home": "Ana Sayfa",
-  "dashboard": "Pano",
-  "explore": "Keşfet",
-  "help": "Yardım",
-  "sign_in": "Giriş Yap",
-  "sign_out": "Çıkış Yap",
-  "sign_up": "Kaydol",
-  "register": "Üye Ol",
-  "website": "Web sitesi",
-  "page": "Sayfa",
-  "template": "Şablon",
-  "language": "Dil",
-  "create_new": "Oluştur...",
-  "user_profile_and_more": "Kullanıcı profili ve daha fazlası",
-  "signed_in_as": "Giriş yapan:",
-  "username": "Kullanıcı Adı",
-  "email": "E-Posta",
-  "password": "Parola",
-  "re_type": "Tekrar Girin",
-  "captcha": "Captcha",
-  "repository": "Depo",
-  "organization": "Organizasyon",
-  "new_repo": "Yeni Depo",
-  "new_migrate": "Yeni Göç",
-  "new_fork": "Yeni Çatal Depo",
-  "new_org": "Yeni Organizasyon",
-  "manage_org": "Organizasyonları Yönet",
-  "admin_panel": "Yönetim Paneli",
   "account_settings": "Hesap Ayarları",
-  "settings": "Ayarlar",
-  "your_profile": "Profiliniz",
-  "your_settings": "Ayarlarınız",
   "activities": "Aktiviteler",
-  "pull_requests": "Değişiklik İsteği",
-  "issues": "Sorunlar",
-  "cancel": "İptal",
-  "status": {
-    "page_not_found": "Sayfa Bulunamadı",
-    "internal_server_error": "İç Sunucu Hatası."
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Yönetim Paneli",
+  "app_desc": "Kendi sunucunuzda barındırabileceğiniz zahmetsiz bir Git servisi",
   "auth": {
     "create_new_account": "Yeni Hesap Oluştur",
     "register_hepler_msg": "Bir hesabınız var mı? Şimdi giriş yapın!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "İki faktörlü şifre kodu girin",
     "login_two_factor_invalid_recovery_code": "Kurtarma kodu kullanılmış veya geçerli değil."
   },
-  "mail": {
-    "activate_account": "Lütfen hesabınızı aktifleştirin",
-    "activate_email": "E-posta adresinizi doğrulayın",
-    "reset_password": "Parolanızı sıfırlayın",
-    "register_success": "Kayıt başarılı, hoşgeldiniz",
-    "register_notify": "Hoşgeldiniz"
-  },
+  "cancel": "İptal",
+  "captcha": "Captcha",
+  "create_new": "Oluştur...",
+  "dashboard": "Pano",
+  "email": "E-Posta",
+  "explore": "Keşfet",
   "form": {
     "UserName": "Kullanıcı Adı",
     "RepoName": "Depo adı",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Bu organizasyon hala bazı depoların sahibi durumunda. Öncelikle bunları silmeniz ya da başka birine transfer etmeniz gerekiyor.",
     "target_branch_not_exist": "Hedef dal mevcut değil."
   },
+  "help": "Yardım",
+  "home": "Ana Sayfa",
+  "issues": "Sorunlar",
+  "language": "Dil",
+  "mail": {
+    "activate_account": "Lütfen hesabınızı aktifleştirin",
+    "activate_email": "E-posta adresinizi doğrulayın",
+    "reset_password": "Parolanızı sıfırlayın",
+    "register_success": "Kayıt başarılı, hoşgeldiniz",
+    "register_notify": "Hoşgeldiniz"
+  },
+  "manage_org": "Organizasyonları Yönet",
+  "new_fork": "Yeni Çatal Depo",
+  "new_migrate": "Yeni Göç",
+  "new_org": "Yeni Organizasyon",
+  "new_repo": "Yeni Depo",
+  "organization": "Organizasyon",
+  "page": "Sayfa",
+  "password": "Parola",
+  "pull_requests": "Değişiklik İsteği",
+  "re_type": "Tekrar Girin",
+  "register": "Üye Ol",
+  "repository": "Depo",
+  "settings": "Ayarlar",
+  "settings_title": "Settings",
+  "sign_in": "Giriş Yap",
+  "sign_out": "Çıkış Yap",
+  "sign_up": "Kaydol",
+  "signed_in_as": "Giriş yapan:",
+  "status": {
+    "page_not_found": "Sayfa Bulunamadı",
+    "internal_server_error": "İç Sunucu Hatası."
+  },
+  "template": "Şablon",
   "user": {
     "change_avatar": "Profil resmini değiştir",
     "join_on": "Şuna katıldınız",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Kullanıcı adı veya %q desenine izin verilmiyor."
     }
-  }
+  },
+  "user_profile_and_more": "Kullanıcı profili ve daha fazlası",
+  "username": "Kullanıcı Adı",
+  "website": "Web sitesi",
+  "your_profile": "Profiliniz",
+  "your_settings": "Ayarlarınız"
 }

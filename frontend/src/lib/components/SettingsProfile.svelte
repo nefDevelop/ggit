@@ -1,41 +1,55 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount, getContext } from 'svelte';
-  import { authState } from '$lib/auth.svelte';
-  import { i18n } from '$lib/i18n.svelte';
-  import Avatar from '$lib/components/Avatar.svelte';
-  
+  import { onMount, getContext } from "svelte";
+  import { authState } from "$lib/auth.svelte";
+  import { i18n } from "$lib/i18n.svelte";
+  import Avatar from "$lib/components/Avatar.svelte";
+
   let profile = $state<any>({
-    username: '',
-    full_name: '',
-    website: '',
-    location: '',
-    avatar_url: '',
+    username: "",
+    full_name: "",
+    website: "",
+    location: "",
+    avatar_url: "",
     use_custom_avatar: false,
-    enable_dicebear_avatar: false
+    enable_dicebear_avatar: false,
   });
 
   let loading = $state(true);
   let saving = $state(false);
-  let message = $state('');
-  let error = $state('');
+  let message = $state("");
+  let error = $state("");
   let avatarCacheBuster = $state(Date.now());
 
   // DiceBear Logic
   const dicebearStyles = [
-    'adventurer', 'adventurer-neutral', 'avataaars', 'avataaars-neutral', 
-    'bottts', 'bottts-neutral', 'icons', 'lorelei', 'lorelei-neutral', 
-    'micah', 'open-peeps', 'notionists', 'pixel-art', 'shapes', 'thumbs'
+    "adventurer",
+    "adventurer-neutral",
+    "avataaars",
+    "avataaars-neutral",
+    "bottts",
+    "bottts-neutral",
+    "icons",
+    "lorelei",
+    "lorelei-neutral",
+    "micah",
+    "open-peeps",
+    "notionists",
+    "pixel-art",
+    "shapes",
+    "thumbs",
   ];
-  let currentDicebearStyle = $state('avataaars');
-  let dicebearSeed = $state('');
+  let currentDicebearStyle = $state("avataaars");
+  let dicebearSeed = $state("");
   let showDiceBear = $state(false);
-  const dicebearUrl = $derived(`https://api.dicebear.com/7.x/${currentDicebearStyle}/png?seed=${dicebearSeed || profile.username}`);
+  const dicebearUrl = $derived(
+    `https://api.dicebear.com/7.x/${currentDicebearStyle}/png?seed=${dicebearSeed || profile.username}`,
+  );
 
   async function fetchProfile() {
     loading = true;
     try {
-      const res = await apiFetch('/api/v2/user/settings/profile');
+      const res = await apiFetch("/api/v2/user/settings/profile");
       if (res.ok) profile = await res.json();
     } catch (e) {
       console.error(e);
@@ -46,29 +60,29 @@
 
   async function saveProfile() {
     saving = true;
-    message = '';
-    error = '';
+    message = "";
+    error = "";
     try {
-      const res = await apiFetch('/api/v2/user/settings/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await apiFetch("/api/v2/user/settings/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: profile.username,
           full_name: profile.full_name,
           website: profile.website,
-          location: profile.location
-        })
+          location: profile.location,
+        }),
       });
       if (res.ok) {
-        message = 'Profile updated successfully!';
+        message = "Profile updated successfully!";
         if (authState.user) {
           authState.user.username = profile.username;
           authState.user.full_name = profile.full_name;
         }
-        setTimeout(() => message = '', 3000);
+        setTimeout(() => (message = ""), 3000);
       }
     } catch (e) {
-      error = 'Failed to update profile.';
+      error = "Failed to update profile.";
     } finally {
       saving = false;
     }
@@ -80,18 +94,21 @@
     saving = true;
     try {
       const formData = new FormData();
-      formData.append('avatar', file);
-      const res = await apiFetch('/api/v2/user/settings/avatar', {
-        method: 'POST',
-        body: formData
+      formData.append("avatar", file);
+      const res = await apiFetch("/api/v2/user/settings/avatar", {
+        method: "POST",
+        body: formData,
       });
       if (res.ok) {
         message = 'Avatar updated!';
         avatarCacheBuster = Date.now();
         await fetchProfile();
+        if (authState.user) {
+          authState.user.avatar_url = profile.avatar_url + '?cb=' + avatarCacheBuster;
+        }
       }
     } catch (e) {
-      error = 'Upload failed.';
+      error = "Upload failed.";
     } finally {
       saving = false;
     }
@@ -100,14 +117,19 @@
   async function deleteAvatar() {
     saving = true;
     try {
-      const res = await apiFetch('/api/v2/user/settings/avatar', { method: 'DELETE' });
+      const res = await apiFetch("/api/v2/user/settings/avatar", {
+        method: "DELETE",
+      });
       if (res.ok) {
         message = 'Avatar removed.';
         avatarCacheBuster = Date.now();
-        fetchProfile();
+        await fetchProfile();
+        if (authState.user) {
+          authState.user.avatar_url = profile.avatar_url;
+        }
       }
     } catch (e) {
-      error = 'Failed to delete avatar.';
+      error = "Failed to delete avatar.";
     } finally {
       saving = false;
     }
@@ -119,33 +141,58 @@
       const imgRes = await fetch(dicebearUrl);
       const blob = await imgRes.blob();
       const formData = new FormData();
-      formData.append('avatar', new File([blob], 'avatar.png', { type: 'image/png' }));
-      const res = await apiFetch('/api/v2/user/settings/avatar', { method: 'POST', body: formData });
+      formData.append(
+        "avatar",
+        new File([blob], "avatar.png", { type: "image/png" }),
+      );
+      const res = await apiFetch("/api/v2/user/settings/avatar", {
+        method: "POST",
+        body: formData,
+      });
       if (res.ok) {
         message = 'Magic avatar saved!';
         avatarCacheBuster = Date.now();
         await fetchProfile();
+        if (authState.user) {
+          authState.user.avatar_url = profile.avatar_url + '?cb=' + avatarCacheBuster;
+        }
       }
-    } catch (e) { error = 'Failed to save magic avatar.'; }
-    finally { saving = false; }
+    } catch (e) {
+      error = "Failed to save magic avatar.";
+    } finally {
+      saving = false;
+    }
   }
 
   onMount(fetchProfile);
 </script>
 
-<div class="profile-modular-card island island-interactive">
+<div class="profile-modular-card">
   <div class="profile-layout">
     <!-- AVATAR COLUMN -->
     <div class="avatar-sidebar">
       <div class="avatar-shield">
-        <Avatar src={profile.avatar_url} username={profile.username} size={160} />
+        <Avatar
+          src={profile.avatar_url}
+          username={profile.username}
+          size={160}
+        />
         <div class="avatar-actions-overlay">
           <label class="action-btn" title="Upload New">
             <span class="material-symbols-rounded">cloud_upload</span>
-            <input type="file" accept="image/*" onchange={handleAvatarUpload} hidden />
+            <input
+              type="file"
+              accept="image/*"
+              onchange={handleAvatarUpload}
+              hidden
+            />
           </label>
           {#if profile.use_custom_avatar}
-            <button class="action-btn delete" onclick={deleteAvatar} title="Remove">
+            <button
+              class="action-btn delete"
+              onclick={deleteAvatar}
+              title="Remove"
+            >
               <span class="material-symbols-rounded">delete</span>
             </button>
           {/if}
@@ -158,42 +205,90 @@
     <!-- INFO COLUMN -->
     <div class="info-content">
       <header class="content-header">
-        <h3 class="title">{i18n.t('settings.public_profile') || 'Public Profile'}</h3>
-        <p class="subtitle">{i18n.t('settings.public_profile_desc') || 'Update your personal information and identity.'}</p>
+        <div class="header-with-actions">
+          <div>
+            <h3 class="title">{i18n.t('settings.public_profile')}</h3>
+            <p class="subtitle">{i18n.t('settings.public_profile_desc')}</p>
+          </div>
+          <button class="btn btn-secondary btn-sm magic-trigger" onclick={() => showDiceBear = !showDiceBear}>
+            <span class="material-symbols-rounded">magic_button</span>
+            {showDiceBear ? 'Cerrar selector' : 'Avatar Mágico'}
+          </button>
+        </div>
       </header>
 
       {#if loading}
         <div class="skeleton-form"></div>
       {:else}
-        <form class="precision-form" onsubmit={(e) => { e.preventDefault(); saveProfile(); }}>
+        <form
+          class="precision-form"
+          onsubmit={(e) => {
+            e.preventDefault();
+            saveProfile();
+          }}
+        >
           <div class="form-grid">
             <div class="form-group">
-              <label for="username">{i18n.t('username')}</label>
-              <input type="text" id="username" bind:value={profile.username} placeholder={i18n.t('username')} />
-              <p class="hint">{i18n.t('settings.username_helper') || 'Your unique identifier on Ggit.'}</p>
+              <label for="username">{i18n.t("username")}</label>
+              <input
+                type="text"
+                id="username"
+                bind:value={profile.username}
+                placeholder={i18n.t("username")}
+              />
+              <p class="hint">
+                {i18n.t("settings.username_helper") ||
+                  "Your unique identifier on Ggit."}
+              </p>
             </div>
 
             <div class="form-group">
-              <label for="full_name">{i18n.t('settings.full_name') || 'Full Name'}</label>
-              <input type="text" id="full_name" bind:value={profile.full_name} placeholder={i18n.t('settings.full_name') || 'Your display name'} />
+              <label for="full_name"
+                >{i18n.t("settings.full_name") || "Full Name"}</label
+              >
+              <input
+                type="text"
+                id="full_name"
+                bind:value={profile.full_name}
+                placeholder={i18n.t("settings.full_name") ||
+                  "Your display name"}
+              />
             </div>
 
             <div class="form-group">
-              <label for="website">{i18n.t('website')}</label>
-              <input type="url" id="website" bind:value={profile.website} placeholder="https://..." />
+              <label for="website">{i18n.t("website")}</label>
+              <input
+                type="url"
+                id="website"
+                bind:value={profile.website}
+                placeholder="https://..."
+              />
             </div>
 
             <div class="form-group">
-              <label for="location">{i18n.t('settings.location') || 'Location'}</label>
-              <input type="text" id="location" bind:value={profile.location} placeholder={i18n.t('settings.location') || 'City, Country'} />
+              <label for="location"
+                >{i18n.t("settings.location") || "Location"}</label
+              >
+              <input
+                type="text"
+                id="location"
+                bind:value={profile.location}
+                placeholder={i18n.t("settings.location") || "City, Country"}
+              />
             </div>
           </div>
 
           <div class="form-footer">
             {#if message}<span class="status success">{message}</span>{/if}
             {#if error}<span class="status error">{error}</span>{/if}
-            <button type="submit" class="btn btn-action-primary" disabled={saving}>
-              {saving ? i18n.t('settings.saving') || 'Saving...' : i18n.t('settings.update_profile') || 'Save Changes'}
+            <button
+              type="submit"
+              class="btn btn-action-primary"
+              disabled={saving}
+            >
+              {saving
+                ? i18n.t("settings.saving") || "Saving..."
+                : i18n.t("settings.update_profile") || "Save Changes"}
             </button>
           </div>
         </form>
@@ -203,75 +298,253 @@
 
   {#if showDiceBear}
     <div class="dicebear-panel">
-       <div class="dicebear-preview-box">
-          <img src={dicebearUrl} alt="Preview" />
-          <button class="shuffle-icon" onclick={() => dicebearSeed = Math.random().toString(36).substring(7)}>
-            <span class="material-symbols-rounded">casino</span>
-          </button>
-       </div>
-       <div class="dicebear-controls">
-         <div class="styles-row">
-           {#each dicebearStyles as style}
-             <button class="style-item" class:active={currentDicebearStyle === style} onclick={() => currentDicebearStyle = style}>
-               {style}
-             </button>
-           {/each}
-         </div>
-         <button class="btn btn-primary btn-sm" onclick={saveDicebearAvatar} disabled={saving}>Confirm Magic Avatar</button>
-       </div>
+      <div class="dicebear-preview-box">
+        <img src={dicebearUrl} alt="Preview" />
+        <button
+          class="shuffle-icon"
+          onclick={() =>
+            (dicebearSeed = Math.random().toString(36).substring(7))}
+        >
+          <span class="material-symbols-rounded">casino</span>
+        </button>
+      </div>
+      <div class="dicebear-controls">
+        <div class="styles-row">
+          {#each dicebearStyles as style}
+            <button
+              class="style-item"
+              class:active={currentDicebearStyle === style}
+              onclick={() => (currentDicebearStyle = style)}
+            >
+              {style}
+            </button>
+          {/each}
+        </div>
+        <button
+          class="btn btn-primary btn-sm"
+          onclick={saveDicebearAvatar}
+          disabled={saving}>Confirm Magic Avatar</button
+        >
+      </div>
     </div>
   {/if}
 </div>
 
 <style>
-  .profile-modular-card { padding: 0; overflow: hidden; }
-  .profile-layout { display: flex; gap: 4rem; padding: 3rem; }
+  .profile-modular-card {
+    padding: 0;
+    overflow: hidden;
+  }
+  .profile-layout {
+    display: flex;
+    gap: 4rem;
+    padding: 3rem;
+  }
 
   /* Avatar Sidebar */
-  .avatar-sidebar { display: flex; flex-direction: column; align-items: center; gap: 2rem; width: 180px; }
+  .avatar-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 180px;
+  }
   .avatar-shield { position: relative; width: 160px; height: 160px; border-radius: 4rem; overflow: hidden; background: var(--surface-variant); border: 4px solid var(--md-sys-color-outline-variant); box-shadow: var(--shadow-lg); }
-  .main-avatar { width: 100%; height: 100%; object-fit: cover; }
   .avatar-actions-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; gap: 0.75rem; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px); }
-  .avatar-shield:hover .avatar-actions-overlay { opacity: 1; }
-  .action-btn { width: 40px; height: 40px; border-radius: 50%; background: white; color: var(--primary-color); display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: transform 0.2s; }
-  .action-btn:hover { transform: scale(1.1); }
-  .action-btn.delete { color: var(--error); }
-  .magic-trigger { border-radius: 100px; font-weight: 700; width: 100%; }
+  .avatar-shield:hover .avatar-actions-overlay {
+    opacity: 1;
+  }
+  .action-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .action-btn:hover {
+    transform: scale(1.1);
+  }
+  .action-btn.delete {
+    color: var(--error);
+  }
+  .magic-trigger {
+    border-radius: 100px;
+    font-weight: 700;
+    width: 100%;
+  }
 
   /* Info Content */
-  .info-content { flex: 1; }
+  .info-content {
+    flex: 1;
+  }
   .content-header { margin-bottom: 2.5rem; }
+  .header-with-actions { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
   .title { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  .subtitle {
+    margin: 0.5rem 0 0 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
 
-  .precision-form { display: flex; flex-direction: column; gap: 2rem; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-  .form-group label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
-  .form-group input { background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); font-size: 1rem; transition: all 0.2s; }
-  .form-group input:focus { border-color: var(--primary-color); outline: none; background: rgba(var(--primary-rgb), 0.05); }
-  .hint { margin: 0.25rem 0 0 0; font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
+  .precision-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .form-group label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+  .form-group input {
+    background: var(--surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    padding: 0.85rem 1.25rem;
+    border-radius: 1rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.2s;
+  }
+  .form-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    background: rgba(var(--primary-rgb), 0.05);
+  }
+  .hint {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
 
-  .form-footer { display: flex; justify-content: flex-end; align-items: center; gap: 2rem; margin-top: 1rem; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
-  .status { font-size: 0.9rem; font-weight: 600; }
-  .status.success { color: var(--success); }
-  .status.error { color: var(--error); }
+  .form-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .status {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .status.success {
+    color: var(--success);
+  }
+  .status.error {
+    color: var(--error);
+  }
 
   /* DiceBear Panel */
-  .dicebear-panel { background: var(--surface-variant); padding: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; gap: 3rem; align-items: center; animation: slideIn 0.4s ease-out; }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .dicebear-preview-box { position: relative; width: 120px; height: 120px; border-radius: 2rem; background: white; padding: 10px; box-shadow: var(--shadow-md); flex-shrink: 0; }
-  .dicebear-preview-box img { width: 100%; height: 100%; }
-  .shuffle-icon { position: absolute; bottom: -8px; right: -8px; width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); color: white; border: 2px solid white; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .dicebear-controls { flex: 1; display: flex; flex-direction: column; gap: 1.5rem; }
-  .styles-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .style-item { padding: 0.4rem 1rem; border-radius: 100px; background: rgba(255,255,255,0.05); border: 1px solid var(--md-sys-color-outline-variant); font-size: 0.8rem; font-weight: 600; cursor: pointer; color: var(--text-muted); }
-  .style-item.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  .dicebear-panel {
+    background: var(--surface-variant);
+    padding: 2rem;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+    animation: slideIn 0.4s ease-out;
+  }
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .dicebear-preview-box {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 2rem;
+    background: white;
+    padding: 10px;
+    box-shadow: var(--shadow-md);
+    flex-shrink: 0;
+  }
+  .dicebear-preview-box img {
+    width: 100%;
+    height: 100%;
+  }
+  .shuffle-icon {
+    position: absolute;
+    bottom: -8px;
+    right: -8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .dicebear-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .styles-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .style-item {
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-muted);
+  }
+  .style-item.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
 
   @media (max-width: 900px) {
-    .profile-layout { flex-direction: column; align-items: center; gap: 3rem; }
-    .avatar-sidebar { width: 100%; }
-    .form-grid { grid-template-columns: 1fr; }
-    .dicebear-panel { flex-direction: column; }
+    .profile-layout {
+      flex-direction: column;
+      align-items: center;
+      gap: 3rem;
+    }
+    .avatar-sidebar {
+      width: 100%;
+    }
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+    .dicebear-panel {
+      flex-direction: column;
+    }
   }
 </style>

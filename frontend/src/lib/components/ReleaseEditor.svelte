@@ -1,7 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount } from 'svelte';
-  import BranchSelector from './BranchSelector.svelte';
+  import { onMount } from "svelte";
+  import BranchSelector from "./BranchSelector.svelte";
 
   let { username, reponame, release = null, onSaved, onCancel } = $props();
 
@@ -11,25 +11,28 @@
   let note = $state(release?.note || "");
   let isDraft = $state(release?.is_draft || false);
   let isPrerelease = $state(release?.is_prerelease || false);
-  
+
   let branches = $state([] as any[]);
   let tags = $state([] as any[]);
-  let attachments = $state((release?.attachments || []) as any[]);  let uploading = $state(false);
+  let attachments = $state((release?.attachments || []) as any[]);
+  let uploading = $state(false);
   let saving = $state(false);
 
   async function fetchData() {
     try {
       const bRes = await apiFetch(`/api/v2/${username}/${reponame}/branches`);
       if (bRes.ok) {
-          const data = await bRes.json();
-          branches = [data.default, ...data.active, ...data.stale].map(b => ({name: b.name}));
-          if (!release) target = data.default.name;
+        const data = await bRes.json();
+        branches = [data.default, ...data.active, ...data.stale].map((b) => ({
+          name: b.name,
+        }));
+        if (!release) target = data.default.name;
       }
-      
+
       const rRes = await apiFetch(`/api/v2/${username}/${reponame}/releases`);
       if (rRes.ok) {
-          const data = await rRes.json();
-          tags = data.releases.map((r: any) => ({name: r.tag_name}));
+        const data = await rRes.json();
+        tags = data.releases.map((r: any) => ({ name: r.tag_name }));
       }
     } catch (e) {
       console.error(e);
@@ -39,21 +42,24 @@
   async function handleFileUpload(e: Event) {
     const files = (e.target as HTMLInputElement).files;
     if (!files || files.length === 0) return;
-    
+
     uploading = true;
     for (const file of Array.from(files)) {
       const formData = new FormData();
       formData.append("file", file);
-      
+
       try {
-        const res = await apiFetch(`/api/v2/${username}/${reponame}/releases/attachments`, {
-          method: "POST",
-          body: formData
-        });
-        
+        const res = await apiFetch(
+          `/api/v2/${username}/${reponame}/releases/attachments`,
+          {
+            method: "POST",
+            body: formData,
+          },
+        );
+
         if (res.ok) {
-            const attachment = await res.json();
-            attachments = [...attachments, attachment];
+          const attachment = await res.json();
+          attachments = [...attachments, attachment];
         }
       } catch (e) {
         console.error("Upload failed", e);
@@ -63,15 +69,17 @@
   }
 
   function removeAttachment(uuid: string) {
-      attachments = attachments.filter(a => a.uuid !== uuid);
+    attachments = attachments.filter((a) => a.uuid !== uuid);
   }
 
   async function save(publish = false) {
     if (!tagName) return;
     saving = true;
     const method = release ? "PATCH" : "POST";
-    const url = release ? `/api/v2/${username}/${reponame}/releases/${release.id}` : `/api/v2/${username}/${reponame}/releases`;
-    
+    const url = release
+      ? `/api/v2/${username}/${reponame}/releases/${release.id}`
+      : `/api/v2/${username}/${reponame}/releases`;
+
     const body = {
       tag_name: tagName,
       target: target,
@@ -79,19 +87,19 @@
       content: note,
       draft: !publish && isDraft ? "on" : "", // Legacy form compatibility if needed, but our API uses bool or string
       prerelease: isPrerelease,
-      files: attachments.map(a => a.uuid)
+      files: attachments.map((a) => a.uuid),
     };
 
     try {
       const res = await apiFetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        body: JSON.stringify(body),
       });
-      
+
       if (res.ok) {
-          const savedRelease = await res.json();
-          onSaved(savedRelease);
+        const savedRelease = await res.json();
+        onSaved(savedRelease);
       }
     } catch (e) {
       console.error(e);
@@ -103,9 +111,9 @@
   onMount(fetchData);
 </script>
 
-<div class="release-editor island island-interactive shadow-xl">
+<div class="release-editor shadow-xl">
   <header class="editor-header">
-    <h3>{release ? 'Edit Release' : 'New Release'}</h3>
+    <h3>{release ? "Edit Release" : "New Release"}</h3>
     <button class="btn-icon" onclick={onCancel}>
       <span class="material-symbols-rounded">close</span>
     </button>
@@ -116,32 +124,49 @@
       <div class="field-row">
         <div class="field tag-field">
           <label for="tag-name">Tag Version</label>
-          <input id="tag-name" type="text" bind:value={tagName} placeholder="e.g. v1.0.0" disabled={!!release} />
-          <p class="help">Choose an existing tag, or create a new one on publish.</p>
+          <input
+            id="tag-name"
+            type="text"
+            bind:value={tagName}
+            placeholder="e.g. v1.0.0"
+            disabled={!!release}
+          />
+          <p class="help">
+            Choose an existing tag, or create a new one on publish.
+          </p>
         </div>
-        
+
         <div class="field target-field">
-          <BranchSelector 
-            label="Target Branch" 
-            branches={branches} 
-            bind:selected={target} 
+          <BranchSelector
+            label="Target Branch"
+            {branches}
+            bind:selected={target}
           />
         </div>
       </div>
 
       <div class="field">
         <label for="rel-title">Release Title</label>
-        <input id="rel-title" type="text" bind:value={title} placeholder="Release title" />
+        <input
+          id="rel-title"
+          type="text"
+          bind:value={title}
+          placeholder="Release title"
+        />
       </div>
 
       <div class="field">
         <label for="rel-note">Release Notes</label>
-        <textarea id="rel-note" bind:value={note} placeholder="Describe the changes in this version..."></textarea>
+        <textarea
+          id="rel-note"
+          bind:value={note}
+          placeholder="Describe the changes in this version..."
+        ></textarea>
       </div>
 
       <div class="attachments-zone">
         <label>Binary Attachments</label>
-        <div class="upload-area" class:uploading={uploading}>
+        <div class="upload-area" class:uploading>
           <span class="material-symbols-rounded">cloud_upload</span>
           <p>Drag and drop assets here, or <strong>browse</strong></p>
           <input type="file" multiple onchange={handleFileUpload} />
@@ -150,10 +175,13 @@
         {#if attachments.length > 0}
           <div class="attachment-list">
             {#each attachments as a}
-              <div class="attachment-item island island-interactive tonal">
+              <div class="attachment-item tonal">
                 <span class="material-symbols-rounded">description</span>
                 <span class="name">{a.name}</span>
-                <button class="remove-btn" onclick={() => removeAttachment(a.uuid)}>
+                <button
+                  class="remove-btn"
+                  onclick={() => removeAttachment(a.uuid)}
+                >
                   <span class="material-symbols-rounded">delete</span>
                 </button>
               </div>
@@ -164,13 +192,15 @@
     </div>
 
     <aside class="editor-sidebar">
-      <div class="options island island-interactive tonal">
+      <div class="options tonal">
         <h4>Options</h4>
         <label class="checkbox-row">
           <input type="checkbox" bind:checked={isPrerelease} />
           <div class="check-text">
             <strong>This is a pre-release</strong>
-            <span>Inform users that this release is not ready for production.</span>
+            <span
+              >Inform users that this release is not ready for production.</span
+            >
           </div>
         </label>
 
@@ -186,12 +216,20 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn-primary lg" onclick={() => save(!isDraft)} disabled={saving}>
+        <button
+          class="btn btn-primary lg"
+          onclick={() => save(!isDraft)}
+          disabled={saving}
+        >
           {#if saving}
             <span class="spinner-sm"></span>
             Saving...
           {:else}
-            {release?.is_draft && !isDraft ? 'Publish Release' : (release ? 'Update Release' : 'Create Release')}
+            {release?.is_draft && !isDraft
+              ? "Publish Release"
+              : release
+                ? "Update Release"
+                : "Create Release"}
           {/if}
         </button>
         <button class="btn btn-tonal" onclick={onCancel}>Cancel</button>
@@ -201,65 +239,232 @@
 </div>
 
 <style>
-  .release-editor { padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem; background: var(--md3-surface-1); }
-  
-  .editor-header { display: flex; justify-content: space-between; align-items: center; }
-  .editor-header h3 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+  .release-editor {
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    background: var(--md3-surface-1);
+  }
 
-  .editor-grid { display: grid; grid-template-columns: 1fr 350px; gap: 3rem; align-items: start; }
-  
-  .main-form { display: flex; flex-direction: column; gap: 1.5rem; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  
-  .field { display: flex; flex-direction: column; gap: 0.5rem; }
-  .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); padding-left: 0.5rem; }
-  .field input, .field textarea { background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; outline: none; width: 100%; transition: all 0.2s; }
-  .field input:focus, .field textarea:focus { border-color: var(--primary-color); background: var(--md-sys-color-primary-container); }
-  .field textarea { height: 350px; resize: vertical; font-family: inherit; }
-  .help { font-size: 0.75rem; color: var(--text-muted); margin: 0; padding-left: 0.5rem; }
+  .editor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .editor-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
 
-  .attachments-zone { display: flex; flex-direction: column; gap: 1rem; }
-  .attachments-zone label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); padding-left: 0.5rem; }
-  
-  .upload-area { 
-    position: relative; 
-    border: 2px dashed var(--md-sys-color-outline-variant); 
-    border-radius: 1.5rem; 
-    padding: 2.5rem; 
-    text-align: center; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    gap: 0.5rem; 
+  .editor-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .main-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .field label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding-left: 0.5rem;
+  }
+  .field input,
+  .field textarea {
+    background: var(--md-sys-color-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    color: #fff;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    transition: all 0.2s;
+  }
+  .field input:focus,
+  .field textarea:focus {
+    border-color: var(--primary-color);
+    background: var(--md-sys-color-primary-container);
+  }
+  .field textarea {
+    height: 350px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  .help {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+    padding-left: 0.5rem;
+  }
+
+  .attachments-zone {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .attachments-zone label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    padding-left: 0.5rem;
+  }
+
+  .upload-area {
+    position: relative;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
     color: var(--text-muted);
     transition: all 0.2s;
-    background: rgba(255,255,255,0.01);
+    background: rgba(255, 255, 255, 0.01);
   }
-  .upload-area:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.02); color: var(--text-color); }
-  .upload-area input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .upload-area span { font-size: 3rem; opacity: 0.5; }
-  .upload-area.uploading { opacity: 0.5; pointer-events: none; }
+  .upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.02);
+    color: var(--text-color);
+  }
+  .upload-area input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .upload-area span {
+    font-size: 3rem;
+    opacity: 0.5;
+  }
+  .upload-area.uploading {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 
-  .attachment-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
-  .attachment-item { padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; font-size: 0.9rem; position: relative; }
-  .attachment-item .name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .remove-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; display: flex; border-radius: 50%; transition: all 0.2s; }
-  .remove-btn:hover { background: var(--color-danger); color: var(--color-danger); }
+  .attachment-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .attachment-item {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    position: relative;
+  }
+  .attachment-item .name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+  .remove-btn:hover {
+    background: var(--color-danger);
+    color: var(--color-danger);
+  }
 
-  .editor-sidebar { display: flex; flex-direction: column; gap: 2rem; position: sticky; top: 1rem; }
-  .options { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  .options h4 { margin: 0; font-size: 1.1rem; }
-  
-  .checkbox-row { display: flex; gap: 1rem; cursor: pointer; transition: opacity 0.2s; }
-  .checkbox-row:hover { opacity: 0.8; }
-  .checkbox-row input { width: 1.25rem; height: 1.25rem; margin-top: 0.25rem; cursor: pointer; }
-  .check-text { display: flex; flex-direction: column; gap: 0.2rem; }
-  .check-text strong { font-size: 0.95rem; }
-  .check-text span { font-size: 0.8rem; color: var(--text-muted); }
+  .editor-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    position: sticky;
+    top: 1rem;
+  }
+  .options {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .options h4 {
+    margin: 0;
+    font-size: 1.1rem;
+  }
 
-  .actions { display: flex; flex-direction: column; gap: 0.75rem; }
-  .btn.lg { height: 56px; font-weight: 800; font-size: 1rem; }
+  .checkbox-row {
+    display: flex;
+    gap: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .checkbox-row:hover {
+    opacity: 0.8;
+  }
+  .checkbox-row input {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.25rem;
+    cursor: pointer;
+  }
+  .check-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .check-text strong {
+    font-size: 0.95rem;
+  }
+  .check-text span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
 
-  .spinner-sm { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .btn.lg {
+    height: 56px;
+    font-weight: 800;
+    font-size: 1rem;
+  }
+
+  .spinner-sm {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 </style>

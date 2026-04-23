@@ -1,45 +1,19 @@
 {
-  "app_desc": "편리한 설치형 Git 서비스",
-  "home": "홈",
-  "dashboard": "대시보드",
-  "explore": "탐색",
-  "help": "도움말",
-  "sign_in": "로그인",
-  "sign_out": "로그아웃",
-  "sign_up": "가입하기",
-  "register": "가입하기",
-  "website": "웹 사이트",
-  "page": "페이지",
-  "template": "템플릿",
-  "language": "언어",
-  "create_new": "만들기...",
-  "user_profile_and_more": "사용자 프로필 및 기타",
-  "signed_in_as": "다음 사용자로 로그인됨",
-  "username": "사용자명",
-  "email": "이메일",
-  "password": "비밀번호",
-  "re_type": "재입력",
-  "captcha": "보안 문자",
-  "repository": "저장소",
-  "organization": "조직",
-  "new_repo": "새 저장소",
-  "new_migrate": "새 마이그레이션",
-  "new_fork": "새로운 포크 저장소",
-  "new_org": "새로운 조직",
-  "manage_org": "조직 관리",
-  "admin_panel": "관리자 패널",
   "account_settings": "계정 설정",
-  "settings": "설정",
-  "your_profile": "프로필",
-  "your_settings": "설정",
   "activities": "활동",
-  "pull_requests": "풀 리퀘스트",
-  "issues": "이슈",
-  "cancel": "취소",
-  "status": {
-    "page_not_found": "페이지를 찾을 수 없음",
-    "internal_server_error": "내부 서버 오류"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "관리자 패널",
+  "app_desc": "편리한 설치형 Git 서비스",
   "auth": {
     "create_new_account": "새 계정 생성",
     "register_hepler_msg": "이미 계정을 가지고 계신가요? 로그인하세요!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "2단계 패스코드를 입력하세요",
     "login_two_factor_invalid_recovery_code": "복구 코드가 사용 중이거나 유효하지 않습니다."
   },
-  "mail": {
-    "activate_account": "계정을 활성화하세요",
-    "activate_email": "이메일 주소 확인",
-    "reset_password": "비밀번호 초기화",
-    "register_success": "등록 성공, 환영합니다.",
-    "register_notify": "잘 오셨습니다"
-  },
+  "cancel": "취소",
+  "captcha": "보안 문자",
+  "create_new": "만들기...",
+  "dashboard": "대시보드",
+  "email": "이메일",
+  "explore": "탐색",
   "form": {
     "UserName": "사용자 이름",
     "RepoName": "저장소 이름",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "조직이 소유하고 있는 저장소가 있습니다. 삭제하거나 이전해야 합니다.",
     "target_branch_not_exist": "대상 브랜치가 존재하지 않습니다."
   },
+  "help": "도움말",
+  "home": "홈",
+  "issues": "이슈",
+  "language": "언어",
+  "mail": {
+    "activate_account": "계정을 활성화하세요",
+    "activate_email": "이메일 주소 확인",
+    "reset_password": "비밀번호 초기화",
+    "register_success": "등록 성공, 환영합니다.",
+    "register_notify": "잘 오셨습니다"
+  },
+  "manage_org": "조직 관리",
+  "new_fork": "새로운 포크 저장소",
+  "new_migrate": "새 마이그레이션",
+  "new_org": "새로운 조직",
+  "new_repo": "새 저장소",
+  "organization": "조직",
+  "page": "페이지",
+  "password": "비밀번호",
+  "pull_requests": "풀 리퀘스트",
+  "re_type": "재입력",
+  "register": "가입하기",
+  "repository": "저장소",
+  "settings": "설정",
+  "settings_title": "Settings",
+  "sign_in": "로그인",
+  "sign_out": "로그아웃",
+  "sign_up": "가입하기",
+  "signed_in_as": "다음 사용자로 로그인됨",
+  "status": {
+    "page_not_found": "페이지를 찾을 수 없음",
+    "internal_server_error": "내부 서버 오류"
+  },
+  "template": "템플릿",
   "user": {
     "change_avatar": "아바타 변경",
     "join_on": "가입 :",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "사용자 이름 또는 패턴 %q 은(는) 허용되지 않습니다."
     }
-  }
+  },
+  "user_profile_and_more": "사용자 프로필 및 기타",
+  "username": "사용자명",
+  "website": "웹 사이트",
+  "your_profile": "프로필",
+  "your_settings": "설정"
 }

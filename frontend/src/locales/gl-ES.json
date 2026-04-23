@@ -1,45 +1,19 @@
 {
-  "app_desc": "Un servizo de Git auto aloxado e sen complicacións",
-  "home": "Inicio",
-  "dashboard": "Panel de control",
-  "explore": "Explorar",
-  "help": "Axuda",
-  "sign_in": "Iniciar sesión",
-  "sign_out": "Cerrar sesión",
-  "sign_up": "Rexistro",
-  "register": "Rexistro",
-  "website": "Páxina web",
-  "page": "Páxina",
-  "template": "Modelo",
-  "language": "Idioma",
-  "create_new": "Crear…",
-  "user_profile_and_more": "Perfil de usuario/a e máis",
-  "signed_in_as": "Identificado/a como",
-  "username": "Nome da persoa usuaria",
-  "email": "Correo electrónico",
-  "password": "Contrasinal",
-  "re_type": "Ingrese de novo",
-  "captcha": "Captcha=Captcha",
-  "repository": "Repositorio",
-  "organization": "Organización",
-  "new_repo": "Novo repositorio",
-  "new_migrate": "Nova migración",
-  "new_fork": "Novo fork do repositorio",
-  "new_org": "Nova organización",
-  "manage_org": "Administrar organizacións",
-  "admin_panel": "Panel de administración",
   "account_settings": "Configuracións da conta",
-  "settings": "Configuracións",
-  "your_profile": "O teu perfil",
-  "your_settings": "A túa configuración",
   "activities": "Actividade",
-  "pull_requests": "Solicitudes de integración",
-  "issues": "Incidencias",
-  "cancel": "Cancelar",
-  "status": {
-    "page_not_found": "Page Not Found",
-    "internal_server_error": "Internal Server Error"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Panel de administración",
+  "app_desc": "Un servizo de Git auto aloxado e sen complicacións",
   "auth": {
     "create_new_account": "Crear unha nova conta",
     "register_hepler_msg": "Xa tes unha conta? Inicia sesión!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Introduza o código de acceso en dous pasos",
     "login_two_factor_invalid_recovery_code": "O código de recuperación foi usado ou non é válido."
   },
-  "mail": {
-    "activate_account": "Por favor, activa a túa conta",
-    "activate_email": "Verifica o teu correo electrónico",
-    "reset_password": "Restablece o teu contrasinal",
-    "register_success": "Rexistro completado, benvido/a",
-    "register_notify": "Benvido/a a bordo"
-  },
+  "cancel": "Cancelar",
+  "captcha": "Captcha=Captcha",
+  "create_new": "Crear…",
+  "dashboard": "Panel de control",
+  "email": "Correo electrónico",
+  "explore": "Explorar",
   "form": {
     "UserName": "Nome da persoa usuaria",
     "RepoName": "Nome do repositorio",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Esta organización é dona dun ou máis repositorios, tes que eliminalos ou transferilos primeiro.",
     "target_branch_not_exist": "A rama de destino non existe"
   },
+  "help": "Axuda",
+  "home": "Inicio",
+  "issues": "Incidencias",
+  "language": "Idioma",
+  "mail": {
+    "activate_account": "Por favor, activa a túa conta",
+    "activate_email": "Verifica o teu correo electrónico",
+    "reset_password": "Restablece o teu contrasinal",
+    "register_success": "Rexistro completado, benvido/a",
+    "register_notify": "Benvido/a a bordo"
+  },
+  "manage_org": "Administrar organizacións",
+  "new_fork": "Novo fork do repositorio",
+  "new_migrate": "Nova migración",
+  "new_org": "Nova organización",
+  "new_repo": "Novo repositorio",
+  "organization": "Organización",
+  "page": "Páxina",
+  "password": "Contrasinal",
+  "pull_requests": "Solicitudes de integración",
+  "re_type": "Ingrese de novo",
+  "register": "Rexistro",
+  "repository": "Repositorio",
+  "settings": "Configuracións",
+  "settings_title": "Settings",
+  "sign_in": "Iniciar sesión",
+  "sign_out": "Cerrar sesión",
+  "sign_up": "Rexistro",
+  "signed_in_as": "Identificado/a como",
+  "status": {
+    "page_not_found": "Page Not Found",
+    "internal_server_error": "Internal Server Error"
+  },
+  "template": "Modelo",
   "user": {
     "change_avatar": "Cambiar o teu avatar",
     "join_on": "Rexistrado o",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Perfil de usuario/a e máis",
+  "username": "Nome da persoa usuaria",
+  "website": "Páxina web",
+  "your_profile": "O teu perfil",
+  "your_settings": "A túa configuración"
 }

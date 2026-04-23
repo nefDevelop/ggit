@@ -1,45 +1,19 @@
 {
-  "app_desc": "En smidig Git-tjänst du kör själv skriven i Go",
-  "home": "Startsida",
-  "dashboard": "Instrumentpanel",
-  "explore": "Utforska",
-  "help": "Hjälp",
-  "sign_in": "Logga in",
-  "sign_out": "Logga ut",
-  "sign_up": "Registrera dig",
-  "register": "Registrera dig",
-  "website": "Webbplats",
-  "page": "Sida",
-  "template": "Mall",
-  "language": "Språk",
-  "create_new": "Skapa...",
-  "user_profile_and_more": "Användarprofil med mera",
-  "signed_in_as": "Inloggad som",
-  "username": "Användarnamn",
-  "email": "E-post",
-  "password": "Lösenord",
-  "re_type": "Ange igen",
-  "captcha": "Captcha",
-  "repository": "Utvecklingskatalog",
-  "organization": "Organisation",
-  "new_repo": "Ny utvecklingskatalog",
-  "new_migrate": "Ny migrering",
-  "new_fork": "Nytt gafflat repo",
-  "new_org": "Ny organisation",
-  "manage_org": "Hantera organisationer",
-  "admin_panel": "Admin-panel",
   "account_settings": "Kontoinställningar",
-  "settings": "inställningar",
-  "your_profile": "Din profil",
-  "your_settings": "Dina inställningar",
   "activities": "Aktiviteter",
-  "pull_requests": "Pull förfrågningar",
-  "issues": "Problem",
-  "cancel": "Avbryt",
-  "status": {
-    "page_not_found": "Sidan hittades inte",
-    "internal_server_error": "Internt serverfel"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Admin-panel",
+  "app_desc": "En smidig Git-tjänst du kör själv skriven i Go",
   "auth": {
     "create_new_account": "Skapa nytt konto",
     "register_hepler_msg": "Har du redan ett konto? Logga in nu!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Ange en tvåfaktorsautentiserings kod",
     "login_two_factor_invalid_recovery_code": "Återställningskoden har använts eller är inte giltig."
   },
-  "mail": {
-    "activate_account": "Vänligen aktivera ditt konto",
-    "activate_email": "Verifiera din epostaddress",
-    "reset_password": "Återställ ditt lösenord",
-    "register_success": "Registreringen slutförd, välkommen",
-    "register_notify": "Välkommen ombord"
-  },
+  "cancel": "Avbryt",
+  "captcha": "Captcha",
+  "create_new": "Skapa...",
+  "dashboard": "Instrumentpanel",
+  "email": "E-post",
+  "explore": "Utforska",
   "form": {
     "UserName": "Användarnamn",
     "RepoName": "Utvecklingskatalogens namn",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Denna organisation har fortfarande ägandeskap över en eller flera utvecklingskataloger, du måste ta bort eller överföra dem först.",
     "target_branch_not_exist": "Målgrenen finns inte."
   },
+  "help": "Hjälp",
+  "home": "Startsida",
+  "issues": "Problem",
+  "language": "Språk",
+  "mail": {
+    "activate_account": "Vänligen aktivera ditt konto",
+    "activate_email": "Verifiera din epostaddress",
+    "reset_password": "Återställ ditt lösenord",
+    "register_success": "Registreringen slutförd, välkommen",
+    "register_notify": "Välkommen ombord"
+  },
+  "manage_org": "Hantera organisationer",
+  "new_fork": "Nytt gafflat repo",
+  "new_migrate": "Ny migrering",
+  "new_org": "Ny organisation",
+  "new_repo": "Ny utvecklingskatalog",
+  "organization": "Organisation",
+  "page": "Sida",
+  "password": "Lösenord",
+  "pull_requests": "Pull förfrågningar",
+  "re_type": "Ange igen",
+  "register": "Registrera dig",
+  "repository": "Utvecklingskatalog",
+  "settings": "inställningar",
+  "settings_title": "Settings",
+  "sign_in": "Logga in",
+  "sign_out": "Logga ut",
+  "sign_up": "Registrera dig",
+  "signed_in_as": "Inloggad som",
+  "status": {
+    "page_not_found": "Sidan hittades inte",
+    "internal_server_error": "Internt serverfel"
+  },
+  "template": "Mall",
   "user": {
     "change_avatar": "Byt din avatar",
     "join_on": "Gick med",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Användarnamn eller mönster %q är inte tillåtet."
     }
-  }
+  },
+  "user_profile_and_more": "Användarprofil med mera",
+  "username": "Användarnamn",
+  "website": "Webbplats",
+  "your_profile": "Din profil",
+  "your_settings": "Dina inställningar"
 }

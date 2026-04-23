@@ -1,45 +1,19 @@
 {
-  "app_desc": "Um serviço de Git auto-hospedado e amigável escrito em Go",
-  "home": "Página inicial",
-  "dashboard": "Painel de controle",
-  "explore": "Explorar",
-  "help": "Ajuda",
-  "sign_in": "Entrar",
-  "sign_out": "Sair",
-  "sign_up": "Cadastrar",
-  "register": "Registrar",
-  "website": "Site",
-  "page": "Página",
-  "template": "Modelo",
-  "language": "Idioma",
-  "create_new": "Criar...",
-  "user_profile_and_more": "Perfil do usuário e mais",
-  "signed_in_as": "Entrou como",
-  "username": "Usuário",
-  "email": "E-mail",
-  "password": "Senha",
-  "re_type": "Digite novamente",
-  "captcha": "Captcha",
-  "repository": "Repositório",
-  "organization": "Organização",
-  "new_repo": "Novo repositório",
-  "new_migrate": "Nova migração",
-  "new_fork": "Novo fork de repositório",
-  "new_org": "Nova organização",
-  "manage_org": "Gerenciar organizações",
-  "admin_panel": "Painel do administrador",
   "account_settings": "Configurações da conta",
-  "settings": "Configurações",
-  "your_profile": "Seu perfil",
-  "your_settings": "Suas configurações",
   "activities": "Atividades",
-  "pull_requests": "Pull requests",
-  "issues": "Problemas",
-  "cancel": "Cancelar",
-  "status": {
-    "page_not_found": "Página Não Encontrada",
-    "internal_server_error": "Erro interno do servidor"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Painel do administrador",
+  "app_desc": "Um serviço de Git auto-hospedado e amigável escrito em Go",
   "auth": {
     "create_new_account": "Criar nova conta",
     "register_hepler_msg": "Já tem uma conta? Entre agora!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Insira uma senha p/ autenticação",
     "login_two_factor_invalid_recovery_code": "O código de recuperação já foi usado ou é inválido."
   },
-  "mail": {
-    "activate_account": "Por favor, ative sua conta",
-    "activate_email": "Verifique seu endereço de e-mail",
-    "reset_password": "Resetar sua senha",
-    "register_success": "Registrado com sucesso. Bem vindo",
-    "register_notify": "Bem-vindo a bordo"
-  },
+  "cancel": "Cancelar",
+  "captcha": "Captcha",
+  "create_new": "Criar...",
+  "dashboard": "Painel de controle",
+  "email": "E-mail",
+  "explore": "Explorar",
   "form": {
     "UserName": "Nome de usuário",
     "RepoName": "Nome do repositório",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Esta organização ainda tem a propriedade do repositório, você deve excluir ou transferí-la primeiro.",
     "target_branch_not_exist": "O branch de destino não existe."
   },
+  "help": "Ajuda",
+  "home": "Página inicial",
+  "issues": "Problemas",
+  "language": "Idioma",
+  "mail": {
+    "activate_account": "Por favor, ative sua conta",
+    "activate_email": "Verifique seu endereço de e-mail",
+    "reset_password": "Resetar sua senha",
+    "register_success": "Registrado com sucesso. Bem vindo",
+    "register_notify": "Bem-vindo a bordo"
+  },
+  "manage_org": "Gerenciar organizações",
+  "new_fork": "Novo fork de repositório",
+  "new_migrate": "Nova migração",
+  "new_org": "Nova organização",
+  "new_repo": "Novo repositório",
+  "organization": "Organização",
+  "page": "Página",
+  "password": "Senha",
+  "pull_requests": "Pull requests",
+  "re_type": "Digite novamente",
+  "register": "Registrar",
+  "repository": "Repositório",
+  "settings": "Configurações",
+  "settings_title": "Settings",
+  "sign_in": "Entrar",
+  "sign_out": "Sair",
+  "sign_up": "Cadastrar",
+  "signed_in_as": "Entrou como",
+  "status": {
+    "page_not_found": "Página Não Encontrada",
+    "internal_server_error": "Erro interno do servidor"
+  },
+  "template": "Modelo",
   "user": {
     "change_avatar": "Mude seu avatar",
     "join_on": "Inscreveu-se em",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Nome de usuário ou padrão %q não é permitido."
     }
-  }
+  },
+  "user_profile_and_more": "Perfil do usuário e mais",
+  "username": "Usuário",
+  "website": "Site",
+  "your_profile": "Seu perfil",
+  "your_settings": "Suas configurações"
 }

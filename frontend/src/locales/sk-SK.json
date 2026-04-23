@@ -1,45 +1,19 @@
 {
-  "app_desc": "A painless self-hosted Git service",
-  "home": "Domovská stránka",
-  "dashboard": "Nástenka",
-  "explore": "Prehľadávať",
-  "help": "Pomoc",
-  "sign_in": "Prihlásiť sa",
-  "sign_out": "Odhlásiť sa",
-  "sign_up": "Zaregistrovať sa",
-  "register": "Registrovať",
-  "website": "Web stránka",
-  "page": "Stránka",
-  "template": "Šablóna",
-  "language": "Jazyk",
-  "create_new": "Vytvoriť...",
-  "user_profile_and_more": "Profil používateľa a ďalšie",
-  "signed_in_as": "Prihlásený ako",
-  "username": "Používateľské meno",
-  "email": "E-mail",
-  "password": "Heslo",
-  "re_type": "Zadajte znova",
-  "captcha": "Kontrolný kód",
-  "repository": "Repozitár",
-  "organization": "Organizácia",
-  "new_repo": "Nový repozitár",
-  "new_migrate": "Nová migrácia",
-  "new_fork": "Nový fork repozitára",
-  "new_org": "Nová organizácia",
-  "manage_org": "Spravovať organizácie",
-  "admin_panel": "Admin Panel",
   "account_settings": "Nastavenie účtu",
-  "settings": "Nastavenia",
-  "your_profile": "Váš profil",
-  "your_settings": "Vaše Nastavenia",
   "activities": "Aktivity",
-  "pull_requests": "Pull Requesty",
-  "issues": "Issues",
-  "cancel": "Zrušiť",
-  "status": {
-    "page_not_found": "Page Not Found",
-    "internal_server_error": "Internal Server Error"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Admin Panel",
+  "app_desc": "A painless self-hosted Git service",
   "auth": {
     "create_new_account": "Vytvoriť nový účet",
     "register_hepler_msg": "Máte už účet? Prihláste sa teraz!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Zadajte prístupový kód dvojfaktorového overenia",
     "login_two_factor_invalid_recovery_code": "Obnovovací kód už bol použitý alebo nie je platný."
   },
-  "mail": {
-    "activate_account": "Aktivujte svoj účet prosím",
-    "activate_email": "Overte svoju e-mail adresu",
-    "reset_password": "Obnovte si vaše heslo",
-    "register_success": "Registrácia úspešná, Vitajte",
-    "register_notify": "Vitajte na palube"
-  },
+  "cancel": "Zrušiť",
+  "captcha": "Kontrolný kód",
+  "create_new": "Vytvoriť...",
+  "dashboard": "Nástenka",
+  "email": "E-mail",
+  "explore": "Prehľadávať",
   "form": {
     "UserName": "Používateľské meno",
     "RepoName": "Názov repozitára",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Táto organizácia stále vlastní repozitáre, musíte ich najskôr odstrániť alebo preniesť.",
     "target_branch_not_exist": "Cieľová branch neexistuje."
   },
+  "help": "Pomoc",
+  "home": "Domovská stránka",
+  "issues": "Issues",
+  "language": "Jazyk",
+  "mail": {
+    "activate_account": "Aktivujte svoj účet prosím",
+    "activate_email": "Overte svoju e-mail adresu",
+    "reset_password": "Obnovte si vaše heslo",
+    "register_success": "Registrácia úspešná, Vitajte",
+    "register_notify": "Vitajte na palube"
+  },
+  "manage_org": "Spravovať organizácie",
+  "new_fork": "Nový fork repozitára",
+  "new_migrate": "Nová migrácia",
+  "new_org": "Nová organizácia",
+  "new_repo": "Nový repozitár",
+  "organization": "Organizácia",
+  "page": "Stránka",
+  "password": "Heslo",
+  "pull_requests": "Pull Requesty",
+  "re_type": "Zadajte znova",
+  "register": "Registrovať",
+  "repository": "Repozitár",
+  "settings": "Nastavenia",
+  "settings_title": "Settings",
+  "sign_in": "Prihlásiť sa",
+  "sign_out": "Odhlásiť sa",
+  "sign_up": "Zaregistrovať sa",
+  "signed_in_as": "Prihlásený ako",
+  "status": {
+    "page_not_found": "Page Not Found",
+    "internal_server_error": "Internal Server Error"
+  },
+  "template": "Šablóna",
   "user": {
     "change_avatar": "Zmeniť svoj avatar",
     "join_on": "Registrovaný",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Profil používateľa a ďalšie",
+  "username": "Používateľské meno",
+  "website": "Web stránka",
+  "your_profile": "Váš profil",
+  "your_settings": "Vaše Nastavenia"
 }

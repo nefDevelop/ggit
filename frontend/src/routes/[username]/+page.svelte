@@ -4,9 +4,11 @@
   import { page } from "$app/state";
   import RepoRow from "$lib/components/RepoRow.svelte";
   import UserRow from "$lib/components/UserRow.svelte";
+  import Avatar from "$lib/components/Avatar.svelte";
 
   const username = page.params.username;
   let user = $state<any>(null);
+  let orgs = $state<any[]>([]);
   let activeTab = $state("repos"); // 'repos', 'stars', 'followers', 'following'
   let data = $state<any[]>([]);
   let loading = $state(true);
@@ -44,7 +46,16 @@
 
   onMount(async () => {
     await fetchProfile();
-    if (user) await fetchTabData("repos");
+    if (user) {
+      await fetchTabData("repos");
+      // Fetch public orgs for this user
+      try {
+        const res = await apiFetch(`/api/v2/users/${username}/orgs`);
+        if (res.ok) orgs = await res.json();
+      } catch (e) {
+        console.error(e);
+      }
+    }
   });
 </script>
 
@@ -61,6 +72,16 @@
         </div>
         <p class="username">@{user.username}</p>
         <p class="email">{user.email}</p>
+        
+        {#if orgs.length > 0}
+          <div class="user-orgs-mini">
+            {#each orgs as org}
+              <a href="/org/{org.username}" title={org.full_name || org.username}>
+                <Avatar src={org.avatar_url} username={org.username} size={32} />
+              </a>
+            {/each}
+          </div>
+        {/if}
       </div>
     </header>
 
@@ -178,6 +199,23 @@
     color: var(--text-muted);
     font-size: 0.9rem;
     margin-top: 0.5rem;
+  }
+
+  .user-orgs-mini {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .user-orgs-mini a {
+    transition: transform 0.2s;
+    display: flex;
+  }
+  .user-orgs-mini a:hover {
+    transform: translateY(-3px);
   }
 
   .profile-tabs {

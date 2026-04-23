@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -40,7 +41,7 @@ func ensureAbs(path string) string {
 // runs the app. The first return value is the actual user name. This check is ignored
 // under Windows since SSH remote login is not the main method to login on Windows.
 func CheckRunUser(runUser string) (string, bool) {
-	if IsWindowsRuntime() {
+	if IsWindowsRuntime() || os.Getenv("GGIT_SKIP_RUN_USER_CHECK") == "true" {
 		return "", true
 	}
 

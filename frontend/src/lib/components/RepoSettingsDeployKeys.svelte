@@ -1,28 +1,30 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext } from "svelte";
 
-  const repo: any = getContext('repo');
-  
+  const repo: any = getContext("repo");
+
   let keys = $state<any[]>([]);
   let loading = $state(true);
-  let error = $state('');
+  let error = $state("");
 
   let showModal = $state(false);
-  let newKey = $state({ title: '', key: '', read_only: true });
+  let newKey = $state({ title: "", key: "", read_only: true });
   let isSubmitting = $state(false);
 
   async function fetchKeys() {
     loading = true;
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/keys`);
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/keys`,
+      );
       if (res.ok) {
         keys = await res.json();
       } else {
-        error = 'Failed to load deploy keys.';
+        error = "Failed to load deploy keys.";
       }
     } catch (e) {
-      error = 'An error occurred while fetching deploy keys.';
+      error = "An error occurred while fetching deploy keys.";
     } finally {
       loading = false;
     }
@@ -31,38 +33,44 @@
   async function handleAdd() {
     isSubmitting = true;
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/keys`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newKey)
-      });
-      
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/keys`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newKey),
+        },
+      );
+
       if (res.ok) {
         const key = await res.json();
         keys = [...keys, key];
         showModal = false;
-        newKey = { title: '', key: '', read_only: true };
+        newKey = { title: "", key: "", read_only: true };
       } else {
         const data = await res.json();
-        alert(data.message || 'Failed to add deploy key.');
+        alert(data.message || "Failed to add deploy key.");
       }
     } catch (e) {
       console.error(e);
-      alert('An error occurred while adding the key.');
+      alert("An error occurred while adding the key.");
     } finally {
       isSubmitting = false;
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Are you sure you want to delete this deploy key?')) return;
-    
+    if (!confirm("Are you sure you want to delete this deploy key?")) return;
+
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/keys/${id}`, {
-        method: 'DELETE'
-      });
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/keys/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (res.ok) {
-        keys = keys.filter(k => k.id !== id);
+        keys = keys.filter((k) => k.id !== id);
       }
     } catch (e) {
       console.error(e);
@@ -71,9 +79,9 @@
 
   function formatDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   }
 
@@ -84,9 +92,12 @@
   <header class="section-header">
     <div class="header-content">
       <h2>Deploy Keys</h2>
-      <p>Deploy keys allow external servers to clone this repository via SSH without needing a user account.</p>
+      <p>
+        Deploy keys allow external servers to clone this repository via SSH
+        without needing a user account.
+      </p>
     </div>
-    <button class="btn btn-primary" onclick={() => showModal = true}>
+    <button class="btn btn-primary" onclick={() => (showModal = true)}>
       <span class="material-symbols-rounded">add</span>
       Add Key
     </button>
@@ -94,27 +105,29 @@
 
   {#if loading}
     <div class="skeleton-list">
-      <div class="skeleton-item island island-interactive tonal"></div>
-      <div class="skeleton-item island island-interactive tonal"></div>
+      <div class="skeleton-item tonal"></div>
+      <div class="skeleton-item tonal"></div>
     </div>
   {:else if error}
-    <div class="error-banner island island-interactive">
-       <span class="material-symbols-rounded">error</span>
-       {error}
+    <div class="error-banner">
+      <span class="material-symbols-rounded">error</span>
+      {error}
     </div>
   {:else if keys.length === 0}
-    <div class="empty-state island island-interactive tonal">
+    <div class="empty-state tonal">
       <span class="material-symbols-rounded size-xl">vpn_key</span>
       <h3>No Deploy Keys</h3>
       <p>You haven't configured any deploy keys for this repository yet.</p>
-      <button class="btn btn-tonal" onclick={() => showModal = true}>Add your first deploy key</button>
+      <button class="btn btn-tonal" onclick={() => (showModal = true)}
+        >Add your first deploy key</button
+      >
     </div>
   {:else}
     <div class="keys-list">
       {#each keys as key}
-        <div class="key-item island island-interactive tonal">
+        <div class="key-item tonal">
           <div class="key-icon-box">
-             <span class="material-symbols-rounded">key</span>
+            <span class="material-symbols-rounded">key</span>
           </div>
           <div class="key-info">
             <div class="key-main">
@@ -126,14 +139,18 @@
               {/if}
             </div>
             <div class="key-fingerprint">
-               <code>{key.key.substring(0, 32)}...</code>
+              <code>{key.key.substring(0, 32)}...</code>
             </div>
             <div class="key-meta">
               Added on {formatDate(key.created_at)}
             </div>
           </div>
           <div class="key-actions">
-            <button class="btn-icon delete" onclick={() => handleDelete(key.id)} title="Delete">
+            <button
+              class="btn-icon delete"
+              onclick={() => handleDelete(key.id)}
+              title="Delete"
+            >
               <span class="material-symbols-rounded">delete</span>
             </button>
           </div>
@@ -143,37 +160,43 @@
   {/if}
 
   {#if showModal}
-    <div class="modal-overlay" onclick={() => showModal = false}>
-      <div class="modal-content" onclick={e => e.stopPropagation()}>
+    <div class="modal-overlay" onclick={() => (showModal = false)}>
+      <div class="modal-content" onclick={(e) => e.stopPropagation()}>
         <header class="modal-header">
           <h3>Add Deploy Key</h3>
-          <button class="btn-icon" onclick={() => showModal = false}>
+          <button class="btn-icon" onclick={() => (showModal = false)}>
             <span class="material-symbols-rounded">close</span>
           </button>
         </header>
 
-        <form class="modal-body" onsubmit={(e) => { e.preventDefault(); handleAdd(); }}>
+        <form
+          class="modal-body"
+          onsubmit={(e) => {
+            e.preventDefault();
+            handleAdd();
+          }}
+        >
           <div class="form-group">
             <label for="title">Title</label>
-            <input 
-              type="text" 
-              id="title" 
-              bind:value={newKey.title} 
-              placeholder="e.g. CI Server" 
+            <input
+              type="text"
+              id="title"
+              bind:value={newKey.title}
+              placeholder="e.g. CI Server"
               required
-              class="island island-interactive tonal"
+              class=" tonal"
             />
           </div>
 
           <div class="form-group">
             <label for="key">Public Key Content</label>
-            <textarea 
-              id="key" 
-              bind:value={newKey.key} 
-              placeholder="ssh-rsa AAAAB3Nza..." 
+            <textarea
+              id="key"
+              bind:value={newKey.key}
+              placeholder="ssh-rsa AAAAB3Nza..."
               required
               rows="5"
-              class="island island-interactive tonal"
+              class=" tonal"
             ></textarea>
           </div>
 
@@ -182,13 +205,23 @@
               <input type="checkbox" bind:checked={newKey.read_only} />
               <span class="checkmark"></span>
               Allow write access
-              <p class="checkbox-hint">If unchecked, this key will have push permissions.</p>
+              <p class="checkbox-hint">
+                If unchecked, this key will have push permissions.
+              </p>
             </label>
           </div>
 
           <footer class="modal-footer">
-            <button type="button" class="btn btn-tonal" onclick={() => showModal = false}>Cancel</button>
-            <button type="submit" class="btn btn-primary" disabled={isSubmitting}>
+            <button
+              type="button"
+              class="btn btn-tonal"
+              onclick={() => (showModal = false)}>Cancel</button
+            >
+            <button
+              type="submit"
+              class="btn btn-primary"
+              disabled={isSubmitting}
+            >
               {#if isSubmitting}
                 <span class="spinner"></span>
               {:else}
@@ -203,71 +236,304 @@
 </div>
 
 <style>
-  .keys-manager { display: flex; flex-direction: column; gap: 2rem; animation: fadeIn 0.3s ease-out; }
-  
-  .section-header { display: flex; justify-content: space-between; align-items: flex-start; }
-  .header-content h2 { margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 800; }
-  .header-content p { margin: 0; color: var(--text-muted); font-size: 0.95rem; }
+  .keys-manager {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    animation: fadeIn 0.3s ease-out;
+  }
 
-  .keys-list { display: flex; flex-direction: column; gap: 1rem; }
-  .key-item { display: flex; gap: 1.25rem; align-items: center; padding: 1.25rem 1.5rem; transition: transform 0.2s, background 0.2s; }
-  .key-item:hover { transform: translateX(5px); background: rgba(255,255,255,0.03); }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .header-content h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  .header-content p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
 
-  .key-icon-box { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); width: 48px; height: 48px; border-radius: 1rem; display: flex; align-items: center; justify-content: center; }
-  .key-icon-box span { font-size: 1.75rem; }
+  .keys-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .key-item {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    transition:
+      transform 0.2s,
+      background 0.2s;
+  }
+  .key-item:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.03);
+  }
 
-  .key-info { flex: 1; }
-  .key-main { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem; }
-  .key-title { font-weight: 700; font-size: 1.1rem; }
-  
-  .badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 0.1rem 0.5rem; border-radius: 4px; }
-  .badge-read { background: rgba(255,255,255,0.1); color: var(--text-color); }
-  .badge-write { background: rgba(var(--primary-rgb), 0.2); color: var(--primary-color); }
+  .key-icon-box {
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color);
+    width: 48px;
+    height: 48px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .key-icon-box span {
+    font-size: 1.75rem;
+  }
 
-  .key-fingerprint { margin-bottom: 0.25rem; }
-  .key-fingerprint code { font-size: 0.75rem; opacity: 0.6; font-family: 'JetBrains Mono', monospace; }
+  .key-info {
+    flex: 1;
+  }
+  .key-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.25rem;
+  }
+  .key-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
 
-  .key-meta { font-size: 0.8rem; color: var(--text-muted); }
+  .badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+  }
+  .badge-read {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+  }
+  .badge-write {
+    background: rgba(var(--primary-rgb), 0.2);
+    color: var(--primary-color);
+  }
 
-  .btn-icon { background: transparent; border: none; color: var(--text-muted); padding: 0.5rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s; display: flex; }
-  .btn-icon:hover { background: rgba(255,255,255,0.05); color: var(--text-color); }
-  .btn-icon.delete:hover { background: rgba(248, 113, 113, 0.1); color: #f87171; }
+  .key-fingerprint {
+    margin-bottom: 0.25rem;
+  }
+  .key-fingerprint code {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    font-family: "JetBrains Mono", monospace;
+  }
 
-  .empty-state { padding: 4rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; text-align: center; }
-  .empty-state .size-xl { font-size: 4rem; opacity: 0.2; }
-  .empty-state h3 { margin: 1rem 0 0 0; }
-  .empty-state p { color: var(--text-muted); max-width: 400px; margin-bottom: 1rem; }
+  .key-meta {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+  }
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+  }
+  .btn-icon.delete:hover {
+    background: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+  }
+
+  .empty-state {
+    padding: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+  .empty-state .size-xl {
+    font-size: 4rem;
+    opacity: 0.2;
+  }
+  .empty-state h3 {
+    margin: 1rem 0 0 0;
+  }
+  .empty-state p {
+    color: var(--text-muted);
+    max-width: 400px;
+    margin-bottom: 1rem;
+  }
 
   /* Modal Styles */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-  .modal-content { background: var(--md3-surface-2); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); width: 100%; max-width: 600px; box-shadow: var(--shadow-2xl); }
-  
-  .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; justify-content: space-between; align-items: center; }
-  .modal-header h3 { margin: 0; }
-  
-  .modal-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  
-  .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-  .form-group label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
-  .form-group input, .form-group textarea { border: 1px solid transparent; padding: 1rem; border-radius: 1rem; font-family: inherit; transition: border 0.2s; }
-  .form-group input:focus, .form-group textarea:focus { border-color: var(--primary-color); outline: none; }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .modal-content {
+    background: var(--md3-surface-2);
+    border-radius: 1.5rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    width: 100%;
+    max-width: 600px;
+    box-shadow: var(--shadow-2xl);
+  }
 
-  .checkbox-group { padding-top: 0.5rem; }
-  .checkbox-container { display: block; position: relative; padding-left: 2.5rem; cursor: pointer; font-size: 0.95rem; font-weight: 600; user-select: none; }
-  .checkbox-container input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
-  .checkmark { position: absolute; top: 0; left: 0; height: 1.5rem; width: 1.5rem; background-color: var(--md3-surface-1); border: 2px solid var(--md-sys-color-outline-variant); border-radius: 0.4rem; transition: all 0.2s; }
-  .checkbox-container:hover input ~ .checkmark { border-color: var(--primary-color); }
-  .checkbox-container input:checked ~ .checkmark { background-color: var(--primary-color); border-color: var(--primary-color); }
-  .checkmark:after { content: ""; position: absolute; display: none; left: 8px; top: 3px; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); }
-  .checkbox-container input:checked ~ .checkmark:after { display: block; }
-  
-  .checkbox-hint { margin: 0.25rem 0 0 0; font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
+  .modal-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-header h3 {
+    margin: 0;
+  }
 
-  .modal-footer { padding-top: 1rem; display: flex; justify-content: flex-end; gap: 1rem; }
+  .modal-body {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 
-  .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }
-  .skeleton-item { height: 90px; width: 100%; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
-  
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+  .form-group input,
+  .form-group textarea {
+    border: 1px solid transparent;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-family: inherit;
+    transition: border 0.2s;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+  }
+
+  .checkbox-group {
+    padding-top: 0.5rem;
+  }
+  .checkbox-container {
+    display: block;
+    position: relative;
+    padding-left: 2.5rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    user-select: none;
+  }
+  .checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1.5rem;
+    width: 1.5rem;
+    background-color: var(--md3-surface-1);
+    border: 2px solid var(--md-sys-color-outline-variant);
+    border-radius: 0.4rem;
+    transition: all 0.2s;
+  }
+  .checkbox-container:hover input ~ .checkmark {
+    border-color: var(--primary-color);
+  }
+  .checkbox-container input:checked ~ .checkmark {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 8px;
+    top: 3px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+  }
+
+  .checkbox-hint {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .modal-footer {
+    padding-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+
+  .skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .skeleton-item {
+    height: 90px;
+    width: 100%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>

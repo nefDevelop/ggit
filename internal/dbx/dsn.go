@@ -2,6 +2,7 @@ package dbx
 
 import (
 	"fmt"
+	"path/filepath"
 	"strings"
 
 	"github.com/cockroachdb/errors"
@@ -42,7 +43,8 @@ func NewDSN(opts conf.DatabaseOpts) (dsn string, err error) {
 			opts.User, opts.Password, host, port, opts.Name, opts.SSLMode, opts.Schema)
 
 	case "sqlite3":
-		dsn = "file:" + opts.Path + "?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL"
+		path, _ := filepath.Abs(opts.Path)
+		dsn = "file://" + path + "?cache=shared&mode=rwc&_journal_mode=DELETE&_synchronous=FULL"
 
 	default:
 		return "", errors.Errorf("unrecognized dialect: %s", opts.Type)

@@ -1,45 +1,19 @@
 {
-  "app_desc": "Bezbolesna usługa Git na własnym serwerze",
-  "home": "Strona główna",
-  "dashboard": "Pulpit",
-  "explore": "Odkrywaj",
-  "help": "Pomoc",
-  "sign_in": "Zaloguj się",
-  "sign_out": "Wyloguj",
-  "sign_up": "Zarejestruj się",
-  "register": "Zarejestruj się",
-  "website": "Strona",
-  "page": "Strona",
-  "template": "Szablon",
-  "language": "Język",
-  "create_new": "Utwórz...",
-  "user_profile_and_more": "Profil użytkownika i więcej",
-  "signed_in_as": "Zalogowany jako",
-  "username": "Nazwa użytkownika",
-  "email": "E-mail",
-  "password": "Hasło",
-  "re_type": "Wpisz ponownie",
-  "captcha": "Captcha",
-  "repository": "Repozytorium",
-  "organization": "Organizacja",
-  "new_repo": "Nowe repozytorium",
-  "new_migrate": "Nowa migracja",
-  "new_fork": "Forkuj repozytorium",
-  "new_org": "Nowa organizacja",
-  "manage_org": "Zarządzaj organizacjami",
-  "admin_panel": "Panel admina",
   "account_settings": "Ustawienia konta",
-  "settings": "Ustawienia",
-  "your_profile": "Twój profil",
-  "your_settings": "Twoje ustawienia",
   "activities": "Aktywności",
-  "pull_requests": "Oczekujące zmiany",
-  "issues": "Problemy",
-  "cancel": "Anuluj",
-  "status": {
-    "page_not_found": "Strona nie została znaleziona",
-    "internal_server_error": "Wewnętrzny błąd serwera"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Panel admina",
+  "app_desc": "Bezbolesna usługa Git na własnym serwerze",
   "auth": {
     "create_new_account": "Załóż nowe konto",
     "register_hepler_msg": "Masz już konto? Zaloguj się teraz!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Wprowadź hasło dwuetapowe",
     "login_two_factor_invalid_recovery_code": "Kod odzyskiwania został już wykorzystany lub nie jest prawidłowy."
   },
-  "mail": {
-    "activate_account": "Prosimy aktywować swoje konto",
-    "activate_email": "Potwierdź swój adres e-mail",
-    "reset_password": "Zmień swoje hasło",
-    "register_success": "Zostałeś zarejestrowany, witamy",
-    "register_notify": "Witamy na pokładzie"
-  },
+  "cancel": "Anuluj",
+  "captcha": "Captcha",
+  "create_new": "Utwórz...",
+  "dashboard": "Pulpit",
+  "email": "E-mail",
+  "explore": "Odkrywaj",
   "form": {
     "UserName": "Nazwa użytkownika",
     "RepoName": "Nazwa repozytorium",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Ta organizacja dalej jest właścicielem repozytorium, które musisz usunąć bądź przekazać.",
     "target_branch_not_exist": "Gałąź docelowa nie istnieje."
   },
+  "help": "Pomoc",
+  "home": "Strona główna",
+  "issues": "Problemy",
+  "language": "Język",
+  "mail": {
+    "activate_account": "Prosimy aktywować swoje konto",
+    "activate_email": "Potwierdź swój adres e-mail",
+    "reset_password": "Zmień swoje hasło",
+    "register_success": "Zostałeś zarejestrowany, witamy",
+    "register_notify": "Witamy na pokładzie"
+  },
+  "manage_org": "Zarządzaj organizacjami",
+  "new_fork": "Forkuj repozytorium",
+  "new_migrate": "Nowa migracja",
+  "new_org": "Nowa organizacja",
+  "new_repo": "Nowe repozytorium",
+  "organization": "Organizacja",
+  "page": "Strona",
+  "password": "Hasło",
+  "pull_requests": "Oczekujące zmiany",
+  "re_type": "Wpisz ponownie",
+  "register": "Zarejestruj się",
+  "repository": "Repozytorium",
+  "settings": "Ustawienia",
+  "settings_title": "Settings",
+  "sign_in": "Zaloguj się",
+  "sign_out": "Wyloguj",
+  "sign_up": "Zarejestruj się",
+  "signed_in_as": "Zalogowany jako",
+  "status": {
+    "page_not_found": "Strona nie została znaleziona",
+    "internal_server_error": "Wewnętrzny błąd serwera"
+  },
+  "template": "Szablon",
   "user": {
     "change_avatar": "Zmień swój awatar",
     "join_on": "Dołączył",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Nazwa użytkownika lub wzór %q jest niedozwolony."
     }
-  }
+  },
+  "user_profile_and_more": "Profil użytkownika i więcej",
+  "username": "Nazwa użytkownika",
+  "website": "Strona",
+  "your_profile": "Twój profil",
+  "your_settings": "Twoje ustawienia"
 }

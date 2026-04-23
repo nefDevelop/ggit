@@ -2,7 +2,7 @@
   let { commit, minimalist = false } = $props();
 
   function timeAgo(dateStr: string) {
-    if (!dateStr) return 'unknown';
+    if (!dateStr) return "unknown";
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -14,13 +14,13 @@
     if (days > 0) return `${days}d ago`;
     if (hours > 0) return `${hours}h ago`;
     if (minutes > 0) return `${minutes}m ago`;
-    return 'just now';
+    return "just now";
   }
 </script>
 
-<div class="commit-row island island-interactive tonal hover-lift" class:minimalist>
+<div class="commit-row tonal hover-lift" class:minimalist>
   <div class="commit-avatar">
-    {commit.author?.name?.[0] || 'U'}
+    {commit.author?.name?.[0] || "U"}
   </div>
   <div class="commit-content">
     <div class="commit-summary">{commit.summary}</div>
@@ -59,7 +59,7 @@
     box-shadow: none;
   }
   .minimalist:hover {
-    background: rgba(255,255,255,0.02);
+    background: rgba(255, 255, 255, 0.02);
   }
 
   .commit-avatar {
@@ -110,7 +110,7 @@
 
   .sha {
     font-family: monospace;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
     color: var(--primary-color);

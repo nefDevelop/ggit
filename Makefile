@@ -36,12 +36,16 @@ dev: clean-ports
 # Compila y corre el backend
 backend: build
 	@echo "Arrancando Backend Go en http://localhost:3005 ..."
-	./.bin/ggit web -p 3005
+	@GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit web -p 3005
 
 # Corre el frontend de Svelte
 frontend:
 	@echo "Arrancando Frontend Svelte en http://localhost:5555 ..."
 	@cd frontend && npm run dev -- --port 5555
+
+sync-i18n:
+	@echo "Sincronizando archivos de idioma..."
+	@node scripts/sync-i18n.js
 
 # Compila el binario
 build:

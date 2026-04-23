@@ -1,45 +1,19 @@
 {
-  "app_desc": "Зручний сервіс власного Git хостингу",
-  "home": "Головна сторінка",
-  "dashboard": "Панель керування",
-  "explore": "Огляд",
-  "help": "Довідка",
-  "sign_in": "Увійти",
-  "sign_out": "Вийти",
-  "sign_up": "Реєстрація",
-  "register": "Реєстрація",
-  "website": "Вебсторінка",
-  "page": "Сторінка",
-  "template": "Шаблон",
-  "language": "Мова",
-  "create_new": "Створити...",
-  "user_profile_and_more": "Профіль користувача та інше",
-  "signed_in_as": "Увійшов як",
-  "username": "Ім'я користувача",
-  "email": "Електронна пошта",
-  "password": "Пароль",
-  "re_type": "Повторіть",
-  "captcha": "CAPTCHA",
-  "repository": "Репозиторій",
-  "organization": "Організація",
-  "new_repo": "Новий репозиторій",
-  "new_migrate": "Нова міграція",
-  "new_fork": "Нове відгалудження",
-  "new_org": "Нова організація",
-  "manage_org": "Керування організаціями",
-  "admin_panel": "Панель адміністратора",
   "account_settings": "Налаштування облікового запису",
-  "settings": "Налаштування",
-  "your_profile": "Ваш профіль",
-  "your_settings": "Ваші налаштування",
   "activities": "Дії",
-  "pull_requests": "Запити на злиття",
-  "issues": "Проблеми",
-  "cancel": "Скасувати",
-  "status": {
-    "page_not_found": "Сторінку не знайдено",
-    "internal_server_error": "Внутрішня помилка серверу"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Панель адміністратора",
+  "app_desc": "Зручний сервіс власного Git хостингу",
   "auth": {
     "create_new_account": "Створити новий обліковий запис",
     "register_hepler_msg": "Вже зареєстровані? Увійдіть зараз!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Введіть двофакторний код",
     "login_two_factor_invalid_recovery_code": "Код відновлення не валідний, або його вже було використано."
   },
-  "mail": {
-    "activate_account": "Будь ласка, активуйте ваш обліковий запис",
-    "activate_email": "Перевірте свою електронну адресу",
-    "reset_password": "Скидання пароля",
-    "register_success": "Реєстрація пройшла успішно, ласкаво просимо",
-    "register_notify": "Ласкаво просимо на борту"
-  },
+  "cancel": "Скасувати",
+  "captcha": "CAPTCHA",
+  "create_new": "Створити...",
+  "dashboard": "Панель керування",
+  "email": "Електронна пошта",
+  "explore": "Огляд",
   "form": {
     "UserName": "Ім'я користувача",
     "RepoName": "Ім'я сховища",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Ця організація досі є власником сховища, тому ви повинні видалити або перемістити його.",
     "target_branch_not_exist": "Цільової гілки не існує"
   },
+  "help": "Довідка",
+  "home": "Головна сторінка",
+  "issues": "Проблеми",
+  "language": "Мова",
+  "mail": {
+    "activate_account": "Будь ласка, активуйте ваш обліковий запис",
+    "activate_email": "Перевірте свою електронну адресу",
+    "reset_password": "Скидання пароля",
+    "register_success": "Реєстрація пройшла успішно, ласкаво просимо",
+    "register_notify": "Ласкаво просимо на борту"
+  },
+  "manage_org": "Керування організаціями",
+  "new_fork": "Нове відгалудження",
+  "new_migrate": "Нова міграція",
+  "new_org": "Нова організація",
+  "new_repo": "Новий репозиторій",
+  "organization": "Організація",
+  "page": "Сторінка",
+  "password": "Пароль",
+  "pull_requests": "Запити на злиття",
+  "re_type": "Повторіть",
+  "register": "Реєстрація",
+  "repository": "Репозиторій",
+  "settings": "Налаштування",
+  "settings_title": "Settings",
+  "sign_in": "Увійти",
+  "sign_out": "Вийти",
+  "sign_up": "Реєстрація",
+  "signed_in_as": "Увійшов як",
+  "status": {
+    "page_not_found": "Сторінку не знайдено",
+    "internal_server_error": "Внутрішня помилка серверу"
+  },
+  "template": "Шаблон",
   "user": {
     "change_avatar": "Змінити свій аватар",
     "join_on": "Приєднався",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Ім'я користувача чи шаблон %q не допускаються."
     }
-  }
+  },
+  "user_profile_and_more": "Профіль користувача та інше",
+  "username": "Ім'я користувача",
+  "website": "Вебсторінка",
+  "your_profile": "Ваш профіль",
+  "your_settings": "Ваші налаштування"
 }

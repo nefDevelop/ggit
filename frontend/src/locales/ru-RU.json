@@ -1,45 +1,19 @@
 {
-  "app_desc": "Удобная служба для собственного Git-репозитория",
-  "home": "Главная",
-  "dashboard": "Панель управления",
-  "explore": "Обзор",
-  "help": "Помощь",
-  "sign_in": "Вход",
-  "sign_out": "Выход",
-  "sign_up": "Регистрация",
-  "register": "Регистрация",
-  "website": "Веб-сайт",
-  "page": "Страница",
-  "template": "Шаблон",
-  "language": "Язык",
-  "create_new": "Создать...",
-  "user_profile_and_more": "Профиль пользователя и прочее",
-  "signed_in_as": "Вы вошли как",
-  "username": "Имя пользователя",
-  "email": "Эл. почта",
-  "password": "Пароль",
-  "re_type": "Введите повторно",
-  "captcha": "Капча",
-  "repository": "Репозиторий",
-  "organization": "Организация",
-  "new_repo": "Новый репозиторий",
-  "new_migrate": "Новая миграция",
-  "new_fork": "Новое ответвление репозитория",
-  "new_org": "Новая организация",
-  "manage_org": "Управление организациями",
-  "admin_panel": "Панель администратора",
   "account_settings": "Настройки аккаунта",
-  "settings": "Настройки",
-  "your_profile": "Ваш профиль",
-  "your_settings": "Ваши настройки",
   "activities": "Активность",
-  "pull_requests": "Запросы на слияние",
-  "issues": "Задачи",
-  "cancel": "Отмена",
-  "status": {
-    "page_not_found": "Страница не найдена",
-    "internal_server_error": "Внутренняя ошибка сервера"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Панель администратора",
+  "app_desc": "Удобная служба для собственного Git-репозитория",
   "auth": {
     "create_new_account": "Создать новый аккаунт",
     "register_hepler_msg": "Уже есть аккаунт? Авторизуйтесь!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Введите код двухфакторной аутентификации",
     "login_two_factor_invalid_recovery_code": "Код восстановления был использован или не действителен."
   },
-  "mail": {
-    "activate_account": "Пожалуйста активируйте свой аккаунт",
-    "activate_email": "Подтвердите адрес своей электронной почты",
-    "reset_password": "Восстановите ваш пароль",
-    "register_success": "Регистрация завершена. Добро пожаловать",
-    "register_notify": "Добро пожаловать на борт"
-  },
+  "cancel": "Отмена",
+  "captcha": "Капча",
+  "create_new": "Создать...",
+  "dashboard": "Панель управления",
+  "email": "Эл. почта",
+  "explore": "Обзор",
   "form": {
     "UserName": "Пользователь",
     "RepoName": "Имя репозитория",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Данная организация все еще является владельцем репозиториев, сначала нужно удалить или переместить их.",
     "target_branch_not_exist": "Целевая ветка не существует."
   },
+  "help": "Помощь",
+  "home": "Главная",
+  "issues": "Задачи",
+  "language": "Язык",
+  "mail": {
+    "activate_account": "Пожалуйста активируйте свой аккаунт",
+    "activate_email": "Подтвердите адрес своей электронной почты",
+    "reset_password": "Восстановите ваш пароль",
+    "register_success": "Регистрация завершена. Добро пожаловать",
+    "register_notify": "Добро пожаловать на борт"
+  },
+  "manage_org": "Управление организациями",
+  "new_fork": "Новое ответвление репозитория",
+  "new_migrate": "Новая миграция",
+  "new_org": "Новая организация",
+  "new_repo": "Новый репозиторий",
+  "organization": "Организация",
+  "page": "Страница",
+  "password": "Пароль",
+  "pull_requests": "Запросы на слияние",
+  "re_type": "Введите повторно",
+  "register": "Регистрация",
+  "repository": "Репозиторий",
+  "settings": "Настройки",
+  "settings_title": "Settings",
+  "sign_in": "Вход",
+  "sign_out": "Выход",
+  "sign_up": "Регистрация",
+  "signed_in_as": "Вы вошли как",
+  "status": {
+    "page_not_found": "Страница не найдена",
+    "internal_server_error": "Внутренняя ошибка сервера"
+  },
+  "template": "Шаблон",
   "user": {
     "change_avatar": "Изменить аватар",
     "join_on": "Присоединился",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Имя пользователя «%s» не допускается."
     }
-  }
+  },
+  "user_profile_and_more": "Профиль пользователя и прочее",
+  "username": "Имя пользователя",
+  "website": "Веб-сайт",
+  "your_profile": "Ваш профиль",
+  "your_settings": "Ваши настройки"
 }

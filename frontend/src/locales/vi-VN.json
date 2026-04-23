@@ -1,45 +1,19 @@
 {
-  "app_desc": "Một server lưu trữ Git tự host dễ dàng",
-  "home": "Trang chủ",
-  "dashboard": "Bảng điều khiển",
-  "explore": "Khám phá",
-  "help": "Trợ giúp",
-  "sign_in": "Đăng nhập",
-  "sign_out": "Đăng xuất",
-  "sign_up": "Đăng ký",
-  "register": "Đăng ký",
-  "website": "Website",
-  "page": "Trang",
-  "template": "Mẫu",
-  "language": "Ngôn ngữ",
-  "create_new": "Tạo mới...",
-  "user_profile_and_more": "Thông tin người dùng và thêm nữa",
-  "signed_in_as": "Đăng nhập như là",
-  "username": "Username",
-  "email": "Email",
-  "password": "Mật khẩu",
-  "re_type": "Nhập lại",
-  "captcha": "Mã xác minh",
-  "repository": "Kho",
-  "organization": "Tổ chức",
-  "new_repo": "Kho mới",
-  "new_migrate": "Mốc mới",
-  "new_fork": "Bản sao kho mới",
-  "new_org": "Tổ chức mới",
-  "manage_org": "Quản lý tổ chức",
-  "admin_panel": "Bảng quản trị",
   "account_settings": "Cài đặt Tài khoản",
-  "settings": "Cài đặt",
-  "your_profile": "Hồ sơ của bạn",
-  "your_settings": "Cài đặt của bạn",
   "activities": "Hoạt động",
-  "pull_requests": "Yêu cầu khéo về",
-  "issues": "Các vấn đề",
-  "cancel": "Hủy bỏ",
-  "status": {
-    "page_not_found": "Không tìm thấy trang này!",
-    "internal_server_error": "Lỗi nội bộ máy chủ."
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Bảng quản trị",
+  "app_desc": "Một server lưu trữ Git tự host dễ dàng",
   "auth": {
     "create_new_account": "Tạo một Tài khoản mới",
     "register_hepler_msg": "Đã có tài khoản? Đăng nhập bây giờ!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Nhập mã khóa 2 yếu tố",
     "login_two_factor_invalid_recovery_code": "Mã phục hồi đã được sử dụng hoặc không hợp lệ."
   },
-  "mail": {
-    "activate_account": "Xin vui lòng kích hoạt tài khoản",
-    "activate_email": "Xác minh địa chỉ email của bạn",
-    "reset_password": "Đặt lại mật khẩu của bạn",
-    "register_success": "Đăng ký thành công, chào mừng",
-    "register_notify": "Chào mừng trên hệ thống"
-  },
+  "cancel": "Hủy bỏ",
+  "captcha": "Mã xác minh",
+  "create_new": "Tạo mới...",
+  "dashboard": "Bảng điều khiển",
+  "email": "Email",
+  "explore": "Khám phá",
   "form": {
     "UserName": "Username",
     "RepoName": "Tên kho lưu trữ",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "This organization still has ownership of repositories, you must delete or transfer them first.",
     "target_branch_not_exist": "Target branch does not exist."
   },
+  "help": "Trợ giúp",
+  "home": "Trang chủ",
+  "issues": "Các vấn đề",
+  "language": "Ngôn ngữ",
+  "mail": {
+    "activate_account": "Xin vui lòng kích hoạt tài khoản",
+    "activate_email": "Xác minh địa chỉ email của bạn",
+    "reset_password": "Đặt lại mật khẩu của bạn",
+    "register_success": "Đăng ký thành công, chào mừng",
+    "register_notify": "Chào mừng trên hệ thống"
+  },
+  "manage_org": "Quản lý tổ chức",
+  "new_fork": "Bản sao kho mới",
+  "new_migrate": "Mốc mới",
+  "new_org": "Tổ chức mới",
+  "new_repo": "Kho mới",
+  "organization": "Tổ chức",
+  "page": "Trang",
+  "password": "Mật khẩu",
+  "pull_requests": "Yêu cầu khéo về",
+  "re_type": "Nhập lại",
+  "register": "Đăng ký",
+  "repository": "Kho",
+  "settings": "Cài đặt",
+  "settings_title": "Settings",
+  "sign_in": "Đăng nhập",
+  "sign_out": "Đăng xuất",
+  "sign_up": "Đăng ký",
+  "signed_in_as": "Đăng nhập như là",
+  "status": {
+    "page_not_found": "Không tìm thấy trang này!",
+    "internal_server_error": "Lỗi nội bộ máy chủ."
+  },
+  "template": "Mẫu",
   "user": {
     "change_avatar": "Change your avatar",
     "join_on": "Joined on",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Tên người dùng %q là không được phép."
     }
-  }
+  },
+  "user_profile_and_more": "Thông tin người dùng và thêm nữa",
+  "username": "Username",
+  "website": "Website",
+  "your_profile": "Hồ sơ của bạn",
+  "your_settings": "Cài đặt của bạn"
 }

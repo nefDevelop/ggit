@@ -107,9 +107,9 @@
           <div class="item-info">
             <div class="title-with-icon">
               <span class="material-symbols-rounded mini">corporate_fare</span>
-              <span class="label">Mostrar Organizaciones en Sidebar</span>
+              <span class="label">{i18n.t('settings.orgs_sidebar')}</span>
             </div>
-            <p class="desc">Muestra u oculta la sección de tus organizaciones en la navegación lateral.</p>
+            <p class="desc">{i18n.t('settings.orgs_sidebar_desc')}</p>
           </div>
           
           <label class="precision-switch">

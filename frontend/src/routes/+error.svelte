@@ -32,7 +32,9 @@
 				{#if status === 404}
 					<div class="glitch-text" data-text="404">404</div>
 				{:else if status === 500}
-					<RefreshCw size={64} class="animate-spin-slow" />
+					<div class="animate-spin-slow">
+						<RefreshCw size={64} />
+					</div>
 				{:else}
 					<Terminal size={64} />
 				{/if}

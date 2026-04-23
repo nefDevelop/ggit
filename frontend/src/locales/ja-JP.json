@@ -1,45 +1,19 @@
 {
-  "app_desc": "Go言語で実装したセルフホストGitサービス",
-  "home": "ホーム",
-  "dashboard": "ダッシュボード",
-  "explore": "エクスプローラ",
-  "help": "ヘルプ",
-  "sign_in": "サインイン",
-  "sign_out": "サインアウト",
-  "sign_up": "サインアップ",
-  "register": "登録",
-  "website": "WEBサイト",
-  "page": "ページ",
-  "template": "テンプレート",
-  "language": "言語",
-  "create_new": "作成...",
-  "user_profile_and_more": "ユーザープロフィールなど",
-  "signed_in_as": "サインイン済み",
-  "username": "ユーザー名",
-  "email": "メールアドレス",
-  "password": "パスワード",
-  "re_type": "再入力",
-  "captcha": "CAPTCHA",
-  "repository": "リポジトリ",
-  "organization": "組織",
-  "new_repo": "新しいリポジトリ",
-  "new_migrate": "新しい移行",
-  "new_fork": "新しいフォークのリポジトリ",
-  "new_org": "新しい組織",
-  "manage_org": "組織を管理",
-  "admin_panel": "管理者パネル",
   "account_settings": "アカウント設定",
-  "settings": "設定",
-  "your_profile": "プロフィール",
-  "your_settings": "設定",
   "activities": "アクティビティ",
-  "pull_requests": "プルリクエスト",
-  "issues": "課題",
-  "cancel": "キャンセル",
-  "status": {
-    "page_not_found": "ページが見つかりません",
-    "internal_server_error": "サーバ内部エラー"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "管理者パネル",
+  "app_desc": "Go言語で実装したセルフホストGitサービス",
   "auth": {
     "create_new_account": "新規アカウントを作成",
     "register_hepler_msg": "既にアカウントをお持ちですか？今すぐログインしましょう！",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "2段階認証用パスコードを入力",
     "login_two_factor_invalid_recovery_code": "このリカバリーコードは使用済みか、正しくありません。"
   },
-  "mail": {
-    "activate_account": "アカウントを有効化してください。",
-    "activate_email": "メールアドレスを確認",
-    "reset_password": "パスワードをリセットします.",
-    "register_success": "登録完了です。ようこそ！",
-    "register_notify": "ボードへようこそ"
-  },
+  "cancel": "キャンセル",
+  "captcha": "CAPTCHA",
+  "create_new": "作成...",
+  "dashboard": "ダッシュボード",
+  "email": "メールアドレス",
+  "explore": "エクスプローラ",
   "form": {
     "UserName": "ユーザ名",
     "RepoName": "リポジトリ名",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "この組織はまだリポジトリの所有しています、リポジトリを削除または転送する必要があります。",
     "target_branch_not_exist": "ターゲットブランチが存在しない"
   },
+  "help": "ヘルプ",
+  "home": "ホーム",
+  "issues": "課題",
+  "language": "言語",
+  "mail": {
+    "activate_account": "アカウントを有効化してください。",
+    "activate_email": "メールアドレスを確認",
+    "reset_password": "パスワードをリセットします.",
+    "register_success": "登録完了です。ようこそ！",
+    "register_notify": "ボードへようこそ"
+  },
+  "manage_org": "組織を管理",
+  "new_fork": "新しいフォークのリポジトリ",
+  "new_migrate": "新しい移行",
+  "new_org": "新しい組織",
+  "new_repo": "新しいリポジトリ",
+  "organization": "組織",
+  "page": "ページ",
+  "password": "パスワード",
+  "pull_requests": "プルリクエスト",
+  "re_type": "再入力",
+  "register": "登録",
+  "repository": "リポジトリ",
+  "settings": "設定",
+  "settings_title": "Settings",
+  "sign_in": "サインイン",
+  "sign_out": "サインアウト",
+  "sign_up": "サインアップ",
+  "signed_in_as": "サインイン済み",
+  "status": {
+    "page_not_found": "ページが見つかりません",
+    "internal_server_error": "サーバ内部エラー"
+  },
+  "template": "テンプレート",
   "user": {
     "change_avatar": "アバターを変更",
     "join_on": "登録日",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "ユーザープロフィールなど",
+  "username": "ユーザー名",
+  "website": "WEBサイト",
+  "your_profile": "プロフィール",
+  "your_settings": "設定"
 }

@@ -31,17 +31,20 @@ export const i18n = {
 
   // Función de traducción
   t(key: string, ...args: any[]): string {
-    const keys = key.split(".");
+    const parts = key.split('.');
     let value: any = dictionary;
-
-    // Navegar por el JSON (ej. "auth.forgot_password")
-    for (const k of keys) {
-      if (value === undefined || value === null) break;
-      value = value[k];
+    
+    for (const part of parts) {
+      if (value && typeof value === 'object') {
+        value = value[part];
+      } else {
+        value = undefined;
+        break;
+      }
     }
 
-    if (typeof value !== "string") {
-      return key; // Fallback a la clave si no existe la traducción
+    if (typeof value !== 'string') {
+      return key;
     }
 
     // Reemplazar variables estilo Gogs (%s, %d, %v)

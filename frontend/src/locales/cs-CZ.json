@@ -1,45 +1,19 @@
 {
-  "app_desc": "Snadná soukromá služba Git",
-  "home": "Domů",
-  "dashboard": "Přehled",
-  "explore": "Procházet",
-  "help": "Nápověda",
-  "sign_in": "Přihlásit se",
-  "sign_out": "Odhlásit se",
-  "sign_up": "Registrovat se",
-  "register": "Registrovat se",
-  "website": "Webové stránky",
-  "page": "Strana",
-  "template": "Šablona",
-  "language": "Jazyk",
-  "create_new": "Vytvořit...",
-  "user_profile_and_more": "Uživatelský profil a další",
-  "signed_in_as": "Přihlášen jako",
-  "username": "Uživatelské jméno",
-  "email": "E-mail",
-  "password": "Heslo",
-  "re_type": "Znovu zadat",
-  "captcha": "CAPTCHA",
-  "repository": "Repozitář",
-  "organization": "Organizace",
-  "new_repo": "Nový repozitář",
-  "new_migrate": "Nové přenesení",
-  "new_fork": "Nový repositář rozštěpení",
-  "new_org": "Nová organizace",
-  "manage_org": "Spravovat organizace",
-  "admin_panel": "Panel správce",
   "account_settings": "Nastavení účtu",
-  "settings": "Nastavení",
-  "your_profile": "Váš profil",
-  "your_settings": "Vaše nastavení",
   "activities": "Aktivity",
-  "pull_requests": "Požadavky na natažení",
-  "issues": "Úkoly",
-  "cancel": "Zrušit",
-  "status": {
-    "page_not_found": "Page Not Found",
-    "internal_server_error": "Internal Server Error"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Panel správce",
+  "app_desc": "Snadná soukromá služba Git",
   "auth": {
     "create_new_account": "Vytvořit nový účet",
     "register_hepler_msg": "Již máte účet? Přihlašte se!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Zadejte přístupový kód dvoufaktorového ověření",
     "login_two_factor_invalid_recovery_code": "Obnovovací kód již byl použit nebo není platný."
   },
-  "mail": {
-    "activate_account": "Prosím, aktivujte si váš účet",
-    "activate_email": "Ověřte vaši e-mailovou adresu",
-    "reset_password": "Obnova vašeho hesla",
-    "register_success": "Vítejte, váš účet byl zaregistrován",
-    "register_notify": "Vítejte"
-  },
+  "cancel": "Zrušit",
+  "captcha": "CAPTCHA",
+  "create_new": "Vytvořit...",
+  "dashboard": "Přehled",
+  "email": "E-mail",
+  "explore": "Procházet",
   "form": {
     "UserName": "Uživatelské jméno",
     "RepoName": "Název repositáře",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Tato organizace stále vlastní repositáře, musíte je nejdříve smazat nebo předat.",
     "target_branch_not_exist": "Cílová větev neexistuje."
   },
+  "help": "Nápověda",
+  "home": "Domů",
+  "issues": "Úkoly",
+  "language": "Jazyk",
+  "mail": {
+    "activate_account": "Prosím, aktivujte si váš účet",
+    "activate_email": "Ověřte vaši e-mailovou adresu",
+    "reset_password": "Obnova vašeho hesla",
+    "register_success": "Vítejte, váš účet byl zaregistrován",
+    "register_notify": "Vítejte"
+  },
+  "manage_org": "Spravovat organizace",
+  "new_fork": "Nový repositář rozštěpení",
+  "new_migrate": "Nové přenesení",
+  "new_org": "Nová organizace",
+  "new_repo": "Nový repozitář",
+  "organization": "Organizace",
+  "page": "Strana",
+  "password": "Heslo",
+  "pull_requests": "Požadavky na natažení",
+  "re_type": "Znovu zadat",
+  "register": "Registrovat se",
+  "repository": "Repozitář",
+  "settings": "Nastavení",
+  "settings_title": "Settings",
+  "sign_in": "Přihlásit se",
+  "sign_out": "Odhlásit se",
+  "sign_up": "Registrovat se",
+  "signed_in_as": "Přihlášen jako",
+  "status": {
+    "page_not_found": "Page Not Found",
+    "internal_server_error": "Internal Server Error"
+  },
+  "template": "Šablona",
   "user": {
     "change_avatar": "Změnit vaši uživatelskou ikonu",
     "join_on": "Zaregistroval se dne",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Uživatelský profil a další",
+  "username": "Uživatelské jméno",
+  "website": "Webové stránky",
+  "your_profile": "Váš profil",
+  "your_settings": "Vaše nastavení"
 }

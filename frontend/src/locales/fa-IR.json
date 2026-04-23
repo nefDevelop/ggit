@@ -1,45 +1,19 @@
 {
-  "app_desc": "یک سرویس گیت بی‌درد سر و راحت",
-  "home": "صفحهٔ اصلی",
-  "dashboard": "میز کار",
-  "explore": "گشت‌و‌گذار",
-  "help": "راهنما",
-  "sign_in": "ورود",
-  "sign_out": "خروج",
-  "sign_up": "ثبت‌نام کنید",
-  "register": "ثبت نام",
-  "website": "وب‌سایت",
-  "page": "صفحه",
-  "template": "قالب",
-  "language": "زبان",
-  "create_new": "ایجاد...",
-  "user_profile_and_more": "پروفایل کاربر و …",
-  "signed_in_as": "ورود به عنوان",
-  "username": "نام کاربری",
-  "email": "ایمیل",
-  "password": "رمز عبور",
-  "re_type": "تایپ مجدد",
-  "captcha": "تصویر امنیتی",
-  "repository": "مخزن",
-  "organization": "سازمان",
-  "new_repo": "مخزن جدید",
-  "new_migrate": "انتقال جدید",
-  "new_fork": "ایجاد یک انشعاب مخزن جدید",
-  "new_org": "سازمان جدید",
-  "manage_org": "مدیریت سازمان‌ها",
-  "admin_panel": "پنل مدیریت",
   "account_settings": "تنظیمات حساب",
-  "settings": "تنظيمات",
-  "your_profile": "پروفایل شما",
-  "your_settings": "تنظیمات شما",
   "activities": "فعالیت‌ها",
-  "pull_requests": "پول ریکوست",
-  "issues": "مسائل",
-  "cancel": "لغو",
-  "status": {
-    "page_not_found": "صفحه مورد نظر یافت نشد.",
-    "internal_server_error": "خطای داخلی سرور"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "پنل مدیریت",
+  "app_desc": "یک سرویس گیت بی‌درد سر و راحت",
   "auth": {
     "create_new_account": "ایجاد حساب جدید",
     "register_hepler_msg": "قبلا ثبت نام کردید؟ از اینجا وارد شوید!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "کد عبور دوگانه را وارد کنید",
     "login_two_factor_invalid_recovery_code": "کد بازیابی قبلا استفاده شده و یا معتبر نیست."
   },
-  "mail": {
-    "activate_account": "لطفا حساب خود را فعال کنید",
-    "activate_email": "آدرس ایمیل خود را تایید کنید",
-    "reset_password": "تنظیم مجدد رمز عبور",
-    "register_success": "ثبت نام با موفقیت انجام شد، خوش‌امدید",
-    "register_notify": "خوش آمدید"
-  },
+  "cancel": "لغو",
+  "captcha": "تصویر امنیتی",
+  "create_new": "ایجاد...",
+  "dashboard": "میز کار",
+  "email": "ایمیل",
+  "explore": "گشت‌و‌گذار",
   "form": {
     "UserName": "نام کاربری",
     "RepoName": "نام مخزن",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "این سازمان در حال حاضر مالک برخی مخازن است، شما ابتدا باید آن ها را حذف یا منتقل کنید.",
     "target_branch_not_exist": "شاخه مورد نظر وجود ندارد."
   },
+  "help": "راهنما",
+  "home": "صفحهٔ اصلی",
+  "issues": "مسائل",
+  "language": "زبان",
+  "mail": {
+    "activate_account": "لطفا حساب خود را فعال کنید",
+    "activate_email": "آدرس ایمیل خود را تایید کنید",
+    "reset_password": "تنظیم مجدد رمز عبور",
+    "register_success": "ثبت نام با موفقیت انجام شد، خوش‌امدید",
+    "register_notify": "خوش آمدید"
+  },
+  "manage_org": "مدیریت سازمان‌ها",
+  "new_fork": "ایجاد یک انشعاب مخزن جدید",
+  "new_migrate": "انتقال جدید",
+  "new_org": "سازمان جدید",
+  "new_repo": "مخزن جدید",
+  "organization": "سازمان",
+  "page": "صفحه",
+  "password": "رمز عبور",
+  "pull_requests": "پول ریکوست",
+  "re_type": "تایپ مجدد",
+  "register": "ثبت نام",
+  "repository": "مخزن",
+  "settings": "تنظيمات",
+  "settings_title": "Settings",
+  "sign_in": "ورود",
+  "sign_out": "خروج",
+  "sign_up": "ثبت‌نام کنید",
+  "signed_in_as": "ورود به عنوان",
+  "status": {
+    "page_not_found": "صفحه مورد نظر یافت نشد.",
+    "internal_server_error": "خطای داخلی سرور"
+  },
+  "template": "قالب",
   "user": {
     "change_avatar": "تغییر آواتار",
     "join_on": "ملحق شد در",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "الگوی نام کاربری '%s' مجاز نیست."
     }
-  }
+  },
+  "user_profile_and_more": "پروفایل کاربر و …",
+  "username": "نام کاربری",
+  "website": "وب‌سایت",
+  "your_profile": "پروفایل شما",
+  "your_settings": "تنظیمات شما"
 }

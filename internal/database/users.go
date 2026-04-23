@@ -27,7 +27,7 @@ import (
 
 // userListFields are the columns used for listing users/organizations.
 // We avoid 'passwd', 'salt', 'rands', etc. for security and to save RAM.
-const userListFields = "id, lower_name, name, full_name, email, type, location, website, avatar, avatar_email, use_custom_avatar, num_followers, num_following, num_stars, num_repos, description, num_teams, num_members, created_unix, updated_unix, is_admin, is_active, prohibit_login"
+const userListFields = "user.id, user.lower_name, user.name, user.full_name, user.email, user.type, user.location, user.website, user.avatar, user.avatar_email, user.use_custom_avatar, user.num_followers, user.num_following, user.num_stars, user.num_repos, user.description, user.num_teams, user.num_members, user.created_unix, user.updated_unix, user.is_admin, user.is_active, user.prohibit_login"
 
 var (
 	// alphaDashDotPattern represents a regex for valid username/email characters.
@@ -1413,7 +1413,7 @@ func (u *User) AvatarURLPath() string {
 // package.
 func (u *User) AvatarURL() string {
 	link := u.AvatarURLPath()
-	if link[0] == '/' && link[1] != '/' {
+	if len(link) > 1 && link[0] == '/' && link[1] != '/' {
 		return conf.Server.ExternalURL + strings.TrimPrefix(link, conf.Server.Subpath)[1:]
 	}
 	return link

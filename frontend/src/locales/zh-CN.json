@@ -1,45 +1,19 @@
 {
-  "app_desc": "一款极易搭建的自助 Git 服务",
-  "home": "首页",
-  "dashboard": "控制面板",
-  "explore": "发现",
-  "help": "帮助",
-  "sign_in": "登录",
-  "sign_out": "退出",
-  "sign_up": "注册",
-  "register": "注册",
-  "website": "官方网站",
-  "page": "页面",
-  "template": "模板",
-  "language": "语言选项",
-  "create_new": "创建...",
-  "user_profile_and_more": "用户信息及更多",
-  "signed_in_as": "已登录用户",
-  "username": "用户名",
-  "email": "邮箱",
-  "password": "密码",
-  "re_type": "确认密码",
-  "captcha": "验证码",
-  "repository": "仓库",
-  "organization": "组织",
-  "new_repo": "创建新的仓库",
-  "new_migrate": "迁移外部仓库",
-  "new_fork": "创建新的派生仓库",
-  "new_org": "创建新的组织",
-  "manage_org": "管理我的组织",
-  "admin_panel": "管理面板",
   "account_settings": "帐户设置",
-  "settings": "帐户设置",
-  "your_profile": "个人信息",
-  "your_settings": "用户设置",
   "activities": "最近活动",
-  "pull_requests": "合并请求",
-  "issues": "工单管理",
-  "cancel": "取消",
-  "status": {
-    "page_not_found": "页面未找到",
-    "internal_server_error": "内部服务器错误"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "管理面板",
+  "app_desc": "一款极易搭建的自助 Git 服务",
   "auth": {
     "create_new_account": "创建帐户",
     "register_hepler_msg": "已经注册？立即登录！",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "输入两步验证动态令牌",
     "login_two_factor_invalid_recovery_code": "恢复密钥已经被使用或是无效的"
   },
-  "mail": {
-    "activate_account": "请激活您的帐户",
-    "activate_email": "请验证您的邮箱地址",
-    "reset_password": "重置您的密码",
-    "register_success": "注册成功，欢迎使用",
-    "register_notify": "欢迎使用"
-  },
+  "cancel": "取消",
+  "captcha": "验证码",
+  "create_new": "创建...",
+  "dashboard": "控制面板",
+  "email": "邮箱",
+  "explore": "发现",
   "form": {
     "UserName": "用户名",
     "RepoName": "仓库名称",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "该组织仍然是某些仓库的拥有者，您必须先转移或删除它们才能执行删除组织操作！",
     "target_branch_not_exist": "目标分支不存在。"
   },
+  "help": "帮助",
+  "home": "首页",
+  "issues": "工单管理",
+  "language": "语言选项",
+  "mail": {
+    "activate_account": "请激活您的帐户",
+    "activate_email": "请验证您的邮箱地址",
+    "reset_password": "重置您的密码",
+    "register_success": "注册成功，欢迎使用",
+    "register_notify": "欢迎使用"
+  },
+  "manage_org": "管理我的组织",
+  "new_fork": "创建新的派生仓库",
+  "new_migrate": "迁移外部仓库",
+  "new_org": "创建新的组织",
+  "new_repo": "创建新的仓库",
+  "organization": "组织",
+  "page": "页面",
+  "password": "密码",
+  "pull_requests": "合并请求",
+  "re_type": "确认密码",
+  "register": "注册",
+  "repository": "仓库",
+  "settings": "帐户设置",
+  "settings_title": "Settings",
+  "sign_in": "登录",
+  "sign_out": "退出",
+  "sign_up": "注册",
+  "signed_in_as": "已登录用户",
+  "status": {
+    "page_not_found": "页面未找到",
+    "internal_server_error": "内部服务器错误"
+  },
+  "template": "模板",
   "user": {
     "change_avatar": "修改头像",
     "join_on": "加入于",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "禁止使用用户名或模式 %q"
     }
-  }
+  },
+  "user_profile_and_more": "用户信息及更多",
+  "username": "用户名",
+  "website": "官方网站",
+  "your_profile": "个人信息",
+  "your_settings": "用户设置"
 }

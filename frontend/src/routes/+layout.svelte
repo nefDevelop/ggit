@@ -1,17 +1,28 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
-	import { authState, checkAuth } from '$lib/auth.svelte';
+	import { authState, checkAuth, checkInstallation } from '$lib/auth.svelte';
 	import { i18n } from '$lib/i18n.svelte';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import RightSidebar from '$lib/components/RightSidebar.svelte';
 	import { page } from '$app/stores';
 
 	let { children } = $props();
 
-	onMount(() => {
-		checkAuth();
+	onMount(async () => {
+		await checkAuth();
+		const installed = await checkInstallation();
+
+		// Redirection Logic
+		const path = $page.url.pathname;
+		if (!installed && path !== '/install') {
+			goto('/install');
+		} else if (installed && path === '/install') {
+			goto('/');
+		}
+
 		// Cargar el idioma guardado o el del navegador
 		const savedLocale = localStorage.getItem('ggit-locale') || navigator.language || 'es-ES';
 		i18n.init(savedLocale);
@@ -50,7 +61,13 @@
 
     <div id="main-container-wrapper">
         <main id="main-content">
-            {@render children()}
+            {#if authState.loading}
+                <div class="initial-loading">
+                    <div class="spinner"></div>
+                </div>
+            {:else}
+                {@render children()}
+            {/if}
         </main>
     </div>
 

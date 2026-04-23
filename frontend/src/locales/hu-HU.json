@@ -1,45 +1,19 @@
 {
-  "app_desc": "Fájdalommentes, saját gépre telepíthető Git szolgáltatás",
-  "home": "Kezdőlap",
-  "dashboard": "Áttekintés",
-  "explore": "Felfedezés",
-  "help": "Súgó",
-  "sign_in": "Bejelentkezés",
-  "sign_out": "Kijelentkezés",
-  "sign_up": "Regisztráció",
-  "register": "Regisztráció",
-  "website": "Weboldal",
-  "page": "Oldal",
-  "template": "Sablon",
-  "language": "Nyelv",
-  "create_new": "Létrehozás...",
-  "user_profile_and_more": "Felhasználói profil és egyebek",
-  "signed_in_as": "Bejelentkezve, mint",
-  "username": "Felhasználónév",
-  "email": "E-mail",
-  "password": "Jelszó",
-  "re_type": "Újra",
-  "captcha": "Ellenőrző kód",
-  "repository": "Tároló",
-  "organization": "Szervezet",
-  "new_repo": "Új tároló",
-  "new_migrate": "Új migráció",
-  "new_fork": "Új tároló másolása",
-  "new_org": "Új szervezet",
-  "manage_org": "Szervezetek kezelése",
-  "admin_panel": "Rendszergazdai felület",
   "account_settings": "Fiók beállításai",
-  "settings": "Beállítások",
-  "your_profile": "Profilom",
-  "your_settings": "Beállításaim",
   "activities": "Tevékenységek",
-  "pull_requests": "Pull request-ek",
-  "issues": "Problémák",
-  "cancel": "Mégse",
-  "status": {
-    "page_not_found": "Az oldal nem található",
-    "internal_server_error": "Belső kiszolgálóhiba"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Rendszergazdai felület",
+  "app_desc": "Fájdalommentes, saját gépre telepíthető Git szolgáltatás",
   "auth": {
     "create_new_account": "Új fiók létrehozása",
     "register_hepler_msg": "Van már felhasználói fiókja? Jelentkezz be!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Adja meg a kétlépcsős hitelesítés kódját",
     "login_two_factor_invalid_recovery_code": "Helyreállító kód már felhasználásra került, vagy nem érvényes."
   },
-  "mail": {
-    "activate_account": "Kérlek aktiváld a fiókod",
-    "activate_email": "Ellenőrizd az email címed",
-    "reset_password": "Állítsd vissza a jelszavad",
-    "register_success": "Sikeres regisztráció, üdvözöljük",
-    "register_notify": "Üdvözlünk a fedélzeten"
-  },
+  "cancel": "Mégse",
+  "captcha": "Ellenőrző kód",
+  "create_new": "Létrehozás...",
+  "dashboard": "Áttekintés",
+  "email": "E-mail",
+  "explore": "Felfedezés",
   "form": {
     "UserName": "Felhasználónév",
     "RepoName": "Tároló neve",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Ez a szervezet továbbra is tulajdonosa tárolóknak, ezért előbb törölje vagy adja át másnak a tárolókat.",
     "target_branch_not_exist": "Cél branch nem létezik."
   },
+  "help": "Súgó",
+  "home": "Kezdőlap",
+  "issues": "Problémák",
+  "language": "Nyelv",
+  "mail": {
+    "activate_account": "Kérlek aktiváld a fiókod",
+    "activate_email": "Ellenőrizd az email címed",
+    "reset_password": "Állítsd vissza a jelszavad",
+    "register_success": "Sikeres regisztráció, üdvözöljük",
+    "register_notify": "Üdvözlünk a fedélzeten"
+  },
+  "manage_org": "Szervezetek kezelése",
+  "new_fork": "Új tároló másolása",
+  "new_migrate": "Új migráció",
+  "new_org": "Új szervezet",
+  "new_repo": "Új tároló",
+  "organization": "Szervezet",
+  "page": "Oldal",
+  "password": "Jelszó",
+  "pull_requests": "Pull request-ek",
+  "re_type": "Újra",
+  "register": "Regisztráció",
+  "repository": "Tároló",
+  "settings": "Beállítások",
+  "settings_title": "Settings",
+  "sign_in": "Bejelentkezés",
+  "sign_out": "Kijelentkezés",
+  "sign_up": "Regisztráció",
+  "signed_in_as": "Bejelentkezve, mint",
+  "status": {
+    "page_not_found": "Az oldal nem található",
+    "internal_server_error": "Belső kiszolgálóhiba"
+  },
+  "template": "Sablon",
   "user": {
     "change_avatar": "Profilkép megváltoztatása",
     "join_on": "Csatlakozott",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "A %q felhasználónév, vagy minta nem engedélyezett."
     }
-  }
+  },
+  "user_profile_and_more": "Felhasználói profil és egyebek",
+  "username": "Felhasználónév",
+  "website": "Weboldal",
+  "your_profile": "Profilom",
+  "your_settings": "Beállításaim"
 }

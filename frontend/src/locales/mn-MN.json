@@ -1,45 +1,19 @@
 {
-  "app_desc": "Хамгийн хялбар GIT үйлчилгээ",
-  "home": "Эхлэл",
-  "dashboard": "Удирдлага",
-  "explore": "Бүгдийг харах",
-  "help": "Тусламж",
-  "sign_in": "Нэвтрэх",
-  "sign_out": "Гарах",
-  "sign_up": "Бүртгүүлэх",
-  "register": "Бүртгүүлэх",
-  "website": "Вэбсайт",
-  "page": "Хуудас",
-  "template": "Загвар",
-  "language": "Хэл",
-  "create_new": "Шинээр нэмэх...",
-  "user_profile_and_more": "Хэрэглэгчийн профайл болон бусад",
-  "signed_in_as": "Нэвтэрсэн хэрэглэгч",
-  "username": "Нэвтрэх нэр",
-  "email": "Имэйл",
-  "password": "Нууц үг",
-  "re_type": "Дахин бичих",
-  "captcha": "Батлах тэмдэгт",
-  "repository": "Репо",
-  "organization": "Байгууллага",
-  "new_repo": "Шинэ Репо",
-  "new_migrate": "Шинэ",
-  "new_fork": "Шинэ Репо Салаалах",
-  "new_org": "Шинэ Байгууллага",
-  "manage_org": "Байгууллага удирдах",
-  "admin_panel": "Админ удирдлага",
   "account_settings": "Дансны тохиргоо",
-  "settings": "Тохиргоо",
-  "your_profile": "Таны профайл",
-  "your_settings": "Таны тохиргоо",
   "activities": "Үйлдлүүд",
-  "pull_requests": "Татаж авах хүсэлтүүд",
-  "issues": "Асуудал",
-  "cancel": "Болих",
-  "status": {
-    "page_not_found": "Хуудас олдсонгүй",
-    "internal_server_error": "Сервертэй холбогдоход алдаа гарлаа."
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Админ удирдлага",
+  "app_desc": "Хамгийн хялбар GIT үйлчилгээ",
   "auth": {
     "create_new_account": "Шинэ данс үүсгэх",
     "register_hepler_msg": "Та хэрэглэгчийн эрхээ үүсгэсэн бол Нэвтрэх хуудас руу шилжих!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "2 давхар баталгаажуулалтын нууц үгээ оруулна уу",
     "login_two_factor_invalid_recovery_code": "Сэргээх код өмнө нь ашиглагдсан эсвэл хүчингүй байна."
   },
-  "mail": {
-    "activate_account": "Бүртгэлээ идэвхжүүлнэ үү",
-    "activate_email": "Имэйл хаягаа баталгаажуулна уу",
-    "reset_password": "Нууц үгээ дахин сэргээх",
-    "register_success": "Бүртгэл амжилттай боллоо, тавтай морилно уу",
-    "register_notify": "Манай системд тавтай морилно уу"
-  },
+  "cancel": "Болих",
+  "captcha": "Батлах тэмдэгт",
+  "create_new": "Шинээр нэмэх...",
+  "dashboard": "Удирдлага",
+  "email": "Имэйл",
+  "explore": "Бүгдийг харах",
   "form": {
     "UserName": "Нэвтрэн нэр",
     "RepoName": "Репо нэр",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Энэ байгууллага нь аль нэг Репо эзэмшиж байгаа тул та эхлээд устгах эсвэл шилжүүлэх ёстой.",
     "target_branch_not_exist": "Сонгосон салаа олдохгүй байна."
   },
+  "help": "Тусламж",
+  "home": "Эхлэл",
+  "issues": "Асуудал",
+  "language": "Хэл",
+  "mail": {
+    "activate_account": "Бүртгэлээ идэвхжүүлнэ үү",
+    "activate_email": "Имэйл хаягаа баталгаажуулна уу",
+    "reset_password": "Нууц үгээ дахин сэргээх",
+    "register_success": "Бүртгэл амжилттай боллоо, тавтай морилно уу",
+    "register_notify": "Манай системд тавтай морилно уу"
+  },
+  "manage_org": "Байгууллага удирдах",
+  "new_fork": "Шинэ Репо Салаалах",
+  "new_migrate": "Шинэ",
+  "new_org": "Шинэ Байгууллага",
+  "new_repo": "Шинэ Репо",
+  "organization": "Байгууллага",
+  "page": "Хуудас",
+  "password": "Нууц үг",
+  "pull_requests": "Татаж авах хүсэлтүүд",
+  "re_type": "Дахин бичих",
+  "register": "Бүртгүүлэх",
+  "repository": "Репо",
+  "settings": "Тохиргоо",
+  "settings_title": "Settings",
+  "sign_in": "Нэвтрэх",
+  "sign_out": "Гарах",
+  "sign_up": "Бүртгүүлэх",
+  "signed_in_as": "Нэвтэрсэн хэрэглэгч",
+  "status": {
+    "page_not_found": "Хуудас олдсонгүй",
+    "internal_server_error": "Сервертэй холбогдоход алдаа гарлаа."
+  },
+  "template": "Загвар",
   "user": {
     "change_avatar": "Өөрийн зургаа солих",
     "join_on": "Бүртгүүлсэн",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "%q нэвтрэх нэр эсвэл загвар зөвшөөрөгдөхгүй байна."
     }
-  }
+  },
+  "user_profile_and_more": "Хэрэглэгчийн профайл болон бусад",
+  "username": "Нэвтрэх нэр",
+  "website": "Вэбсайт",
+  "your_profile": "Таны профайл",
+  "your_settings": "Таны тохиргоо"
 }

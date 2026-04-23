@@ -1,35 +1,35 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import AdminDashboard from './AdminDashboard.svelte';
-  import AdminUsers from './AdminUsers.svelte';
-  import AdminRepos from './AdminRepos.svelte';
-  import AdminAuths from './AdminAuths.svelte';
-  import AdminConfig from './AdminConfig.svelte';
-  import AdminNotices from './AdminNotices.svelte';
-  import AdminMonitor from './AdminMonitor.svelte';
+  import { onMount } from "svelte";
+  import AdminDashboard from "./AdminDashboard.svelte";
+  import AdminUsers from "./AdminUsers.svelte";
+  import AdminRepos from "./AdminRepos.svelte";
+  import AdminAuths from "./AdminAuths.svelte";
+  import AdminConfig from "./AdminConfig.svelte";
+  import AdminNotices from "./AdminNotices.svelte";
+  import AdminMonitor from "./AdminMonitor.svelte";
 
-  let activeTab = $state('dashboard');
+  let activeTab = $state("dashboard");
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-    { id: 'users', label: 'Users', icon: 'person' },
-    { id: 'repos', label: 'Repositories', icon: 'book' },
-    { id: 'auths', label: 'Authentication', icon: 'security' },
-    { id: 'config', label: 'Configuration', icon: 'settings' },
-    { id: 'monitor', label: 'Monitor', icon: 'monitoring' },
-    { id: 'notices', label: 'System Notices', icon: 'notifications' }
+    { id: "dashboard", label: "Dashboard", icon: "dashboard" },
+    { id: "users", label: "Users", icon: "person" },
+    { id: "repos", label: "Repositories", icon: "book" },
+    { id: "auths", label: "Authentication", icon: "security" },
+    { id: "config", label: "Configuration", icon: "settings" },
+    { id: "monitor", label: "Monitor", icon: "monitoring" },
+    { id: "notices", label: "System Notices", icon: "notifications" },
   ];
 </script>
 
 <div class="admin-container">
-  <aside class="admin-sidebar island island-interactive">
+  <aside class="admin-sidebar">
     <h3 class="sidebar-title">Server Administration</h3>
     <nav class="admin-nav">
       {#each tabs as tab}
-        <button 
-          class="nav-item" 
+        <button
+          class="nav-item"
           class:active={activeTab === tab.id}
-          onclick={() => activeTab = tab.id}
+          onclick={() => (activeTab = tab.id)}
         >
           <span class="material-symbols-rounded">{tab.icon}</span>
           {tab.label}
@@ -39,19 +39,19 @@
   </aside>
 
   <main class="admin-content">
-    {#if activeTab === 'dashboard'}
+    {#if activeTab === "dashboard"}
       <AdminDashboard />
-    {:else if activeTab === 'users'}
+    {:else if activeTab === "users"}
       <AdminUsers />
-    {:else if activeTab === 'repos'}
+    {:else if activeTab === "repos"}
       <AdminRepos />
-    {:else if activeTab === 'auths'}
+    {:else if activeTab === "auths"}
       <AdminAuths />
-    {:else if activeTab === 'config'}
+    {:else if activeTab === "config"}
       <AdminConfig />
-    {:else if activeTab === 'monitor'}
+    {:else if activeTab === "monitor"}
       <AdminMonitor />
-    {:else if activeTab === 'notices'}
+    {:else if activeTab === "notices"}
       <AdminNotices />
     {/if}
   </main>
@@ -67,8 +67,14 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   .admin-sidebar {

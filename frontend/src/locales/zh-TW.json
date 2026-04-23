@@ -1,45 +1,19 @@
 {
-  "app_desc": "一款極易搭建的自助 Git 服務",
-  "home": "首頁",
-  "dashboard": "控制面板",
-  "explore": "探索",
-  "help": "說明",
-  "sign_in": "登入",
-  "sign_out": "登出",
-  "sign_up": "註冊",
-  "register": "註冊",
-  "website": "網站",
-  "page": "頁面",
-  "template": "樣板",
-  "language": "語言",
-  "create_new": "創建...",
-  "user_profile_and_more": "用戶信息及更多",
-  "signed_in_as": "已登入用戶",
-  "username": "用戶名稱",
-  "email": "電子郵件",
-  "password": "密碼",
-  "re_type": "確認密碼",
-  "captcha": "驗證碼",
-  "repository": "儲存庫",
-  "organization": "組織",
-  "new_repo": "新增儲存庫",
-  "new_migrate": "遷移外部倉庫",
-  "new_fork": "新增程式庫分支",
-  "new_org": "新增組織",
-  "manage_org": "管理組織",
-  "admin_panel": "管理面板",
   "account_settings": "帳號設定",
-  "settings": "設定",
-  "your_profile": "個人資訊",
-  "your_settings": "用戶設定",
   "activities": "活動",
-  "pull_requests": "合併請求",
-  "issues": "問題",
-  "cancel": "取消",
-  "status": {
-    "page_not_found": "找不到頁面",
-    "internal_server_error": "內部伺服器錯誤"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "管理面板",
+  "app_desc": "一款極易搭建的自助 Git 服務",
   "auth": {
     "create_new_account": "創建帳戶",
     "register_hepler_msg": "已經註冊？立即登錄！",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "鍵入兩步驗證碼",
     "login_two_factor_invalid_recovery_code": "恢復代碼已使用或無效。"
   },
-  "mail": {
-    "activate_account": "請激活您的帳戶",
-    "activate_email": "請驗證您的郵箱地址",
-    "reset_password": "重置密碼",
-    "register_success": "註冊成功，歡迎使用",
-    "register_notify": "歡迎使用"
-  },
+  "cancel": "取消",
+  "captcha": "驗證碼",
+  "create_new": "創建...",
+  "dashboard": "控制面板",
+  "email": "電子郵件",
+  "explore": "探索",
   "form": {
     "UserName": "用戶名",
     "RepoName": "儲存庫名稱",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "該組織仍然是某些倉庫的擁有者，您必須先轉移或刪除它們才能執行刪除組織操作！",
     "target_branch_not_exist": "目標分支不存在"
   },
+  "help": "說明",
+  "home": "首頁",
+  "issues": "問題",
+  "language": "語言",
+  "mail": {
+    "activate_account": "請激活您的帳戶",
+    "activate_email": "請驗證您的郵箱地址",
+    "reset_password": "重置密碼",
+    "register_success": "註冊成功，歡迎使用",
+    "register_notify": "歡迎使用"
+  },
+  "manage_org": "管理組織",
+  "new_fork": "新增程式庫分支",
+  "new_migrate": "遷移外部倉庫",
+  "new_org": "新增組織",
+  "new_repo": "新增儲存庫",
+  "organization": "組織",
+  "page": "頁面",
+  "password": "密碼",
+  "pull_requests": "合併請求",
+  "re_type": "確認密碼",
+  "register": "註冊",
+  "repository": "儲存庫",
+  "settings": "設定",
+  "settings_title": "Settings",
+  "sign_in": "登入",
+  "sign_out": "登出",
+  "sign_up": "註冊",
+  "signed_in_as": "已登入用戶",
+  "status": {
+    "page_not_found": "找不到頁面",
+    "internal_server_error": "內部伺服器錯誤"
+  },
+  "template": "樣板",
   "user": {
     "change_avatar": "更改頭像",
     "join_on": "加入於",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "用戶名不允許 %q 的格式。"
     }
-  }
+  },
+  "user_profile_and_more": "用戶信息及更多",
+  "username": "用戶名稱",
+  "website": "網站",
+  "your_profile": "個人資訊",
+  "your_settings": "用戶設定"
 }

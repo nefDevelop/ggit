@@ -1,45 +1,19 @@
 {
-  "app_desc": "Un service Git auto-hébergé et indolore.",
-  "home": "Accueil",
-  "dashboard": "Tableau de bord",
-  "explore": "Explorer",
-  "help": "Aide",
-  "sign_in": "Connexion",
-  "sign_out": "Déconnexion",
-  "sign_up": "Inscription",
-  "register": "S'inscrire",
-  "website": "Site web",
-  "page": "Page",
-  "template": "Modèle",
-  "language": "Langue",
-  "create_new": "Créer...",
-  "user_profile_and_more": "Profil utilisateur et plus",
-  "signed_in_as": "Connecté en tant que",
-  "username": "Nom d'utilisateur",
-  "email": "E-mail",
-  "password": "Mot de passe",
-  "re_type": "Confirmez",
-  "captcha": "Captcha",
-  "repository": "Dépôt",
-  "organization": "Organisation",
-  "new_repo": "Nouveau dépôt",
-  "new_migrate": "Nouvelle migration",
-  "new_fork": "Nouveau dépôt séparé",
-  "new_org": "Nouvelle organisation",
-  "manage_org": "Gérer les organisations",
-  "admin_panel": "Administration",
   "account_settings": "Paramètres du compte",
-  "settings": "Paramètres",
-  "your_profile": "Votre profil",
-  "your_settings": "Vos paramètres",
   "activities": "Activités",
-  "pull_requests": "Demandes d'admission",
-  "issues": "Tickets",
-  "cancel": "Annuler",
-  "status": {
-    "page_not_found": "Page non trouvée",
-    "internal_server_error": "Erreur interne du serveur"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Administration",
+  "app_desc": "Un service Git auto-hébergé et indolore.",
   "auth": {
     "create_new_account": "Créer un nouveau compte",
     "register_hepler_msg": "Déjà enregistré ? Connectez-vous !",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Entrez un code d'authentification en deux étapes",
     "login_two_factor_invalid_recovery_code": "Code de récupération a été utilisé ou n'est pas valide."
   },
-  "mail": {
-    "activate_account": "Veuillez activer votre compte",
-    "activate_email": "Veuillez vérifier votre adresse e-mail",
-    "reset_password": "Réinitialiser votre mot de passe",
-    "register_success": "Inscription réussie, bienvenue",
-    "register_notify": "Bienvenue à bord"
-  },
+  "cancel": "Annuler",
+  "captcha": "Captcha",
+  "create_new": "Créer...",
+  "dashboard": "Tableau de bord",
+  "email": "E-mail",
+  "explore": "Explorer",
   "form": {
     "UserName": "Nom d'utilisateur",
     "RepoName": "Nom du dépôt",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Cette organisation est toujours propriétaire d'un ou plusieurs dépôts. Vous devez d'abord les supprimer ou les transférer.",
     "target_branch_not_exist": "La branche cible n'existe pas."
   },
+  "help": "Aide",
+  "home": "Accueil",
+  "issues": "Tickets",
+  "language": "Langue",
+  "mail": {
+    "activate_account": "Veuillez activer votre compte",
+    "activate_email": "Veuillez vérifier votre adresse e-mail",
+    "reset_password": "Réinitialiser votre mot de passe",
+    "register_success": "Inscription réussie, bienvenue",
+    "register_notify": "Bienvenue à bord"
+  },
+  "manage_org": "Gérer les organisations",
+  "new_fork": "Nouveau dépôt séparé",
+  "new_migrate": "Nouvelle migration",
+  "new_org": "Nouvelle organisation",
+  "new_repo": "Nouveau dépôt",
+  "organization": "Organisation",
+  "page": "Page",
+  "password": "Mot de passe",
+  "pull_requests": "Demandes d'admission",
+  "re_type": "Confirmez",
+  "register": "S'inscrire",
+  "repository": "Dépôt",
+  "settings": "Paramètres",
+  "settings_title": "Settings",
+  "sign_in": "Connexion",
+  "sign_out": "Déconnexion",
+  "sign_up": "Inscription",
+  "signed_in_as": "Connecté en tant que",
+  "status": {
+    "page_not_found": "Page non trouvée",
+    "internal_server_error": "Erreur interne du serveur"
+  },
+  "template": "Modèle",
   "user": {
     "change_avatar": "Changer votre avatar",
     "join_on": "Inscrit le",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Le nom de l'utilisateur ou le schéma n'est pas autorisé"
     }
-  }
+  },
+  "user_profile_and_more": "Profil utilisateur et plus",
+  "username": "Nom d'utilisateur",
+  "website": "Site web",
+  "your_profile": "Votre profil",
+  "your_settings": "Vos paramètres"
 }

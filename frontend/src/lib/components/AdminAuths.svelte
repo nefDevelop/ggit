@@ -1,14 +1,14 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount } from 'svelte';
-  
+  import { onMount } from "svelte";
+
   let sources = $state<any[]>([]);
   let loading = $state(true);
 
   async function fetchAuths() {
     loading = true;
     try {
-      const res = await apiFetch('/api/v2/admin/auths');
+      const res = await apiFetch("/api/v2/admin/auths");
       if (res.ok) sources = await res.json();
     } catch (e) {
       console.error(e);
@@ -18,13 +18,14 @@
   }
 
   async function deleteAuth(id: number) {
-    if (!confirm('Are you sure you want to delete this authentication source?')) return;
+    if (!confirm("Are you sure you want to delete this authentication source?"))
+      return;
     try {
       const res = await apiFetch(`/api/v2/admin/auths/${id}`, {
-        method: 'DELETE'
+        method: "DELETE",
       });
       if (res.ok) {
-        sources = sources.filter(s => s.id !== id);
+        sources = sources.filter((s) => s.id !== id);
       }
     } catch (e) {
       console.error(e);
@@ -37,8 +38,8 @@
 <div class="admin-auths">
   <header class="section-header">
     <div class="header-text">
-       <h2>Authentication Sources</h2>
-       <p class="subtitle">External authentication methods like LDAP.</p>
+      <h2>Authentication Sources</h2>
+      <p class="subtitle">External authentication methods like LDAP.</p>
     </div>
     <button class="btn btn-primary">
       <span class="material-symbols-rounded">add_moderator</span>
@@ -48,32 +49,35 @@
 
   <div class="auth-grid">
     {#each sources as source}
-      <div class="auth-card island island-interactive tonal">
+      <div class="auth-card tonal">
         <div class="card-top">
           <div class="type-icon">
             <span class="material-symbols-rounded">
-              {source.type === 2 || source.type === 5 ? 'hub' : 'security'}
+              {source.type === 2 || source.type === 5 ? "hub" : "security"}
             </span>
           </div>
           <div class="auth-info">
-             <strong>{source.name}</strong>
-             <span class="type-name">Type: {source.type_name || 'Legacy'}</span>
+            <strong>{source.name}</strong>
+            <span class="type-name">Type: {source.type_name || "Legacy"}</span>
           </div>
           <div class="status-badge" class:active={source.is_actived}>
-            {source.is_actived ? 'Active' : 'Disabled'}
+            {source.is_actived ? "Active" : "Disabled"}
           </div>
         </div>
-        
+
         <div class="card-actions">
-           <button class="btn btn-outline small">View Config</button>
-           <button class="btn btn-danger-text small" onclick={() => deleteAuth(source.id)}>Delete</button>
+          <button class="btn btn-outline small">View Config</button>
+          <button
+            class="btn btn-danger-text small"
+            onclick={() => deleteAuth(source.id)}>Delete</button
+          >
         </div>
       </div>
     {/each}
   </div>
 
   {#if !loading && sources.length === 0}
-    <div class="empty-state island island-interactive">
+    <div class="empty-state">
       <span class="material-symbols-rounded">no_encryption</span>
       <h3>No authentication sources</h3>
       <p>Configure LDAP to allow external user authentication.</p>
@@ -82,31 +86,110 @@
 </div>
 
 <style>
-  .admin-auths { display: flex; flex-direction: column; gap: 2rem; }
-  
-  .section-header { display: flex; justify-content: space-between; align-items: flex-end; }
-  .section-header h2 { margin: 0; font-size: 1.75rem; font-weight: 800; }
-  .subtitle { color: var(--text-muted); margin: 0.25rem 0 0 0; }
+  .admin-auths {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
 
-  .auth-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
-  
-  .auth-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  .card-top { display: flex; align-items: flex-start; gap: 1rem; }
-  
-  .type-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; }
-  .type-icon span { font-size: 1.5rem; }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .section-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+  }
+  .subtitle {
+    color: var(--text-muted);
+    margin: 0.25rem 0 0 0;
+  }
 
-  .auth-info { flex: 1; display: flex; flex-direction: column; }
-  .auth-info strong { font-size: 1.1rem; }
-  .type-name { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800; }
+  .auth-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
 
-  .status-badge { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); padding: 0.2rem 0.5rem; background: rgba(255,255,255,0.05); border-radius: 4px; text-transform: uppercase; }
-  .status-badge.active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+  .auth-card {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 
-  .card-actions { display: flex; justify-content: flex-end; gap: 0.5rem; align-items: center; }
-  .small { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-  .btn-danger-text { color: #ef4444; }
+  .type-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .type-icon span {
+    font-size: 1.5rem;
+  }
 
-  .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); }
-  .empty-state span { font-size: 4rem; opacity: 0.2; }
+  .auth-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .auth-info strong {
+    font-size: 1.1rem;
+  }
+  .type-name {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 800;
+  }
+
+  .status-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    padding: 0.2rem 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .status-badge.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  .card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  .btn-danger-text {
+    color: #ef4444;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-muted);
+  }
+  .empty-state span {
+    font-size: 4rem;
+    opacity: 0.2;
+  }
 </style>

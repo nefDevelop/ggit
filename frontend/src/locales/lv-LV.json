@@ -1,45 +1,19 @@
 {
-  "app_desc": "Viegli uzstādāms Git serviss, kas rakstīts valodā Go",
-  "home": "Sākums",
-  "dashboard": "Infopanelis",
-  "explore": "Izpētīt",
-  "help": "Palīdzība",
-  "sign_in": "Pierakstīties",
-  "sign_out": "Izrakstīties",
-  "sign_up": "Reģistrēties",
-  "register": "Reģistrēties",
-  "website": "Mājas lapa",
-  "page": "Lapa",
-  "template": "Sagatave",
-  "language": "Valoda",
-  "create_new": "Izveidot...",
-  "user_profile_and_more": "Lietotāja profilu un vairāk",
-  "signed_in_as": "Pierakstījies kā",
-  "username": "Lietotājvārds",
-  "email": "E-pasts",
-  "password": "Parole",
-  "re_type": "Parole atkārtoti",
-  "captcha": "Pārbaudes kods",
-  "repository": "Repozitorijs",
-  "organization": "Organizācija",
-  "new_repo": "Jauns repozitorijs",
-  "new_migrate": "Jauna migrācija",
-  "new_fork": "Jauns atdalītais repozitorijs",
-  "new_org": "Jauna organizācija",
-  "manage_org": "Pārvaldīt organizācijas",
-  "admin_panel": "Admin panelis",
   "account_settings": "Konta iestatījumi",
-  "settings": "Iestatījumi",
-  "your_profile": "Tavs profils",
-  "your_settings": "Tavi iestatījumi",
   "activities": "Aktivitāte",
-  "pull_requests": "Izmaiņu pieprasījumi",
-  "issues": "Problēmas",
-  "cancel": "Atcelt",
-  "status": {
-    "page_not_found": "Page Not Found",
-    "internal_server_error": "Internal Server Error"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Admin panelis",
+  "app_desc": "Viegli uzstādāms Git serviss, kas rakstīts valodā Go",
   "auth": {
     "create_new_account": "Izveidot jaunu kontu",
     "register_hepler_msg": "Jau ir konts? Pieraksties tagad!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Ievadiet divu faktoru kodu",
     "login_two_factor_invalid_recovery_code": "Atjaunošanas kods jau ir izmantots vai nav pareizs."
   },
-  "mail": {
-    "activate_account": "Lūdzu, aktivizējiet savu kontu",
-    "activate_email": "Apstipriniet savu e-pasta adresi",
-    "reset_password": "Atiestatīt savu paroli",
-    "register_success": "Reģistrācija notikusi veiksmīgi",
-    "register_notify": "Laipni lūgti uz klāja"
-  },
+  "cancel": "Atcelt",
+  "captcha": "Pārbaudes kods",
+  "create_new": "Izveidot...",
+  "dashboard": "Infopanelis",
+  "email": "E-pasts",
+  "explore": "Izpētīt",
   "form": {
     "UserName": "Lietotājvārds",
     "RepoName": "Repozitorija nosaukums",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Šī organizācija ir vismaz viena repozitorija īpašnieks, tos sākumā ir nepieciešams izdzēst vai nomainīt to īpašnieku.",
     "target_branch_not_exist": "Mērķa atzars neeksistē"
   },
+  "help": "Palīdzība",
+  "home": "Sākums",
+  "issues": "Problēmas",
+  "language": "Valoda",
+  "mail": {
+    "activate_account": "Lūdzu, aktivizējiet savu kontu",
+    "activate_email": "Apstipriniet savu e-pasta adresi",
+    "reset_password": "Atiestatīt savu paroli",
+    "register_success": "Reģistrācija notikusi veiksmīgi",
+    "register_notify": "Laipni lūgti uz klāja"
+  },
+  "manage_org": "Pārvaldīt organizācijas",
+  "new_fork": "Jauns atdalītais repozitorijs",
+  "new_migrate": "Jauna migrācija",
+  "new_org": "Jauna organizācija",
+  "new_repo": "Jauns repozitorijs",
+  "organization": "Organizācija",
+  "page": "Lapa",
+  "password": "Parole",
+  "pull_requests": "Izmaiņu pieprasījumi",
+  "re_type": "Parole atkārtoti",
+  "register": "Reģistrēties",
+  "repository": "Repozitorijs",
+  "settings": "Iestatījumi",
+  "settings_title": "Settings",
+  "sign_in": "Pierakstīties",
+  "sign_out": "Izrakstīties",
+  "sign_up": "Reģistrēties",
+  "signed_in_as": "Pierakstījies kā",
+  "status": {
+    "page_not_found": "Page Not Found",
+    "internal_server_error": "Internal Server Error"
+  },
+  "template": "Sagatave",
   "user": {
     "change_avatar": "Mainīt profila attēlu",
     "join_on": "Pievienojās",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Lietotāja profilu un vairāk",
+  "username": "Lietotājvārds",
+  "website": "Mājas lapa",
+  "your_profile": "Tavs profils",
+  "your_settings": "Tavi iestatījumi"
 }

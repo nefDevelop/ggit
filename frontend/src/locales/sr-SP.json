@@ -1,45 +1,19 @@
 {
-  "app_desc": "Једноставан Git сервис",
-  "home": "Почетна",
-  "dashboard": "Контролни панел",
-  "explore": "Преглед",
-  "help": "Помоћ",
-  "sign_in": "Пријавите се",
-  "sign_out": "Одјава",
-  "sign_up": "Регистрација",
-  "register": "Регистрација",
-  "website": "Веб-страница",
-  "page": "Страница",
-  "template": "Шаблон",
-  "language": "Језик",
-  "create_new": "Креирај...",
-  "user_profile_and_more": "Профил корисника и остало",
-  "signed_in_as": "Пријављени сте као",
-  "username": "Корисничко име",
-  "email": "E-пошта",
-  "password": "Лозинка",
-  "re_type": "Унесите поново",
-  "captcha": "Captcha",
-  "repository": "Спремиште",
-  "organization": "Организација",
-  "new_repo": "Ново спремиште",
-  "new_migrate": "Нова миграција",
-  "new_fork": "Нова грана спремишта",
-  "new_org": "Нова организација",
-  "manage_org": "Управљање организацијама",
-  "admin_panel": "Админ панела",
   "account_settings": "Подешавања налога",
-  "settings": "Подешавања",
-  "your_profile": "Ваш профил",
-  "your_settings": "Ваша подешавања",
   "activities": "Активности",
-  "pull_requests": "Захтеви за спајање",
-  "issues": "Дискусије",
-  "cancel": "Откажи",
-  "status": {
-    "page_not_found": "Page Not Found",
-    "internal_server_error": "Internal Server Error"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Админ панела",
+  "app_desc": "Једноставан Git сервис",
   "auth": {
     "create_new_account": "Креирате нови налог",
     "register_hepler_msg": "Већ имате налог? Пријавите се!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Унеси двоструку шифру",
     "login_two_factor_invalid_recovery_code": "Шифра за опоравак је већ била коришћена или није више важећа."
   },
-  "mail": {
-    "activate_account": "Молимо вас активирајте ваш налог",
-    "activate_email": "Потврдите вашу адресу е-поште",
-    "reset_password": "Ресет лозинке",
-    "register_success": "Регистрација успешна, добродошли",
-    "register_notify": "Добро дошли"
-  },
+  "cancel": "Откажи",
+  "captcha": "Captcha",
+  "create_new": "Креирај...",
+  "dashboard": "Контролни панел",
+  "email": "E-пошта",
+  "explore": "Преглед",
   "form": {
     "UserName": "Корисничко име",
     "RepoName": "Име спремишта",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Ова организација садржи спремиштa, прво их избришете или преместите.",
     "target_branch_not_exist": "Ова грана не постоји."
   },
+  "help": "Помоћ",
+  "home": "Почетна",
+  "issues": "Дискусије",
+  "language": "Језик",
+  "mail": {
+    "activate_account": "Молимо вас активирајте ваш налог",
+    "activate_email": "Потврдите вашу адресу е-поште",
+    "reset_password": "Ресет лозинке",
+    "register_success": "Регистрација успешна, добродошли",
+    "register_notify": "Добро дошли"
+  },
+  "manage_org": "Управљање организацијама",
+  "new_fork": "Нова грана спремишта",
+  "new_migrate": "Нова миграција",
+  "new_org": "Нова организација",
+  "new_repo": "Ново спремиште",
+  "organization": "Организација",
+  "page": "Страница",
+  "password": "Лозинка",
+  "pull_requests": "Захтеви за спајање",
+  "re_type": "Унесите поново",
+  "register": "Регистрација",
+  "repository": "Спремиште",
+  "settings": "Подешавања",
+  "settings_title": "Settings",
+  "sign_in": "Пријавите се",
+  "sign_out": "Одјава",
+  "sign_up": "Регистрација",
+  "signed_in_as": "Пријављени сте као",
+  "status": {
+    "page_not_found": "Page Not Found",
+    "internal_server_error": "Internal Server Error"
+  },
+  "template": "Шаблон",
   "user": {
     "change_avatar": "Промените аватар",
     "join_on": "Регистриран",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Профил корисника и остало",
+  "username": "Корисничко име",
+  "website": "Веб-страница",
+  "your_profile": "Ваш профил",
+  "your_settings": "Ваша подешавања"
 }

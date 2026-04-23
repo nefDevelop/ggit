@@ -9,10 +9,6 @@ export default defineConfig({
 				target: 'http://localhost:3005',
 				changeOrigin: true
 			},
-			'/install': {
-				target: 'http://localhost:3005',
-				changeOrigin: true
-			},
 			'/avatars': {
 				target: 'http://localhost:3005',
 				changeOrigin: true

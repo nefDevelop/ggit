@@ -1,45 +1,19 @@
 {
-  "app_desc": "Sebuah layanan Git hosting-pribadi yang mudah",
-  "home": "Halaman utama",
-  "dashboard": "Dasbor",
-  "explore": "Jelajahi",
-  "help": "Bantuan",
-  "sign_in": "Masuk",
-  "sign_out": "Keluar",
-  "sign_up": "Daftar",
-  "register": "Daftar",
-  "website": "Situs web",
-  "page": "Halaman",
-  "template": "Templat",
-  "language": "Bahasa",
-  "create_new": "Buat...",
-  "user_profile_and_more": "Profil pengguna dan lebih",
-  "signed_in_as": "Masuk sebagai",
-  "username": "Nama pengguna",
-  "email": "Email",
-  "password": "Sandi",
-  "re_type": "Ketik ulang",
-  "captcha": "Captcha",
-  "repository": "Repositori",
-  "organization": "Organisasi",
-  "new_repo": "Repositori Baru",
-  "new_migrate": "Migrasi Baru",
-  "new_fork": "Cabang Repositori Baru",
-  "new_org": "Organisasi Baru",
-  "manage_org": "Mengelola Organisasi",
-  "admin_panel": "Panel Admin",
   "account_settings": "Pengaturan Akun",
-  "settings": "Pengaturan",
-  "your_profile": "Profile Anda",
-  "your_settings": "Pengaturanmu",
   "activities": "Aktivitas",
-  "pull_requests": "Permintaan Tarik",
-  "issues": "Masalah",
-  "cancel": "Batal",
-  "status": {
-    "page_not_found": "Halaman tidak ditemukan",
-    "internal_server_error": "Kesalahan Server Internal"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Panel Admin",
+  "app_desc": "Sebuah layanan Git hosting-pribadi yang mudah",
   "auth": {
     "create_new_account": "Buat akun baru",
     "register_hepler_msg": "Sudah memiliki account? Sign in sekarang!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Masukkan kode akses dua faktor",
     "login_two_factor_invalid_recovery_code": "Kode pemulihan telah digunakan atau tidak sesuai."
   },
-  "mail": {
-    "activate_account": "Silakan aktifkan akun Anda",
-    "activate_email": "Silakan cek alamat email Anda",
-    "reset_password": "Atur ulang sandi anda",
-    "register_success": "Pendaftaran sukses, Selamat datang",
-    "register_notify": "Selamat bergabung"
-  },
+  "cancel": "Batal",
+  "captcha": "Captcha",
+  "create_new": "Buat...",
+  "dashboard": "Dasbor",
+  "email": "Email",
+  "explore": "Jelajahi",
   "form": {
     "UserName": "Nama pengguna",
     "RepoName": "Nama repository",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Organisasi ini masih memiliki kepemilikan atas repositori, Anda harus menghapus atau mentransfernya terlebih dahulu.",
     "target_branch_not_exist": "Cabang yang ditargetkan tidak ada."
   },
+  "help": "Bantuan",
+  "home": "Halaman utama",
+  "issues": "Masalah",
+  "language": "Bahasa",
+  "mail": {
+    "activate_account": "Silakan aktifkan akun Anda",
+    "activate_email": "Silakan cek alamat email Anda",
+    "reset_password": "Atur ulang sandi anda",
+    "register_success": "Pendaftaran sukses, Selamat datang",
+    "register_notify": "Selamat bergabung"
+  },
+  "manage_org": "Mengelola Organisasi",
+  "new_fork": "Cabang Repositori Baru",
+  "new_migrate": "Migrasi Baru",
+  "new_org": "Organisasi Baru",
+  "new_repo": "Repositori Baru",
+  "organization": "Organisasi",
+  "page": "Halaman",
+  "password": "Sandi",
+  "pull_requests": "Permintaan Tarik",
+  "re_type": "Ketik ulang",
+  "register": "Daftar",
+  "repository": "Repositori",
+  "settings": "Pengaturan",
+  "settings_title": "Settings",
+  "sign_in": "Masuk",
+  "sign_out": "Keluar",
+  "sign_up": "Daftar",
+  "signed_in_as": "Masuk sebagai",
+  "status": {
+    "page_not_found": "Halaman tidak ditemukan",
+    "internal_server_error": "Kesalahan Server Internal"
+  },
+  "template": "Templat",
   "user": {
     "change_avatar": "Ubah Avatarmu",
     "join_on": "Bergabung pada",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Nama pengguna atau pola %q tidak diizinkan."
     }
-  }
+  },
+  "user_profile_and_more": "Profil pengguna dan lebih",
+  "username": "Nama pengguna",
+  "website": "Situs web",
+  "your_profile": "Profile Anda",
+  "your_settings": "Pengaturanmu"
 }

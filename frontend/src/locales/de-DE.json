@@ -1,45 +1,19 @@
 {
-  "app_desc": "Ein einfacher, selbst gehosteter Git-Service",
-  "home": "Startseite",
-  "dashboard": "Übersicht",
-  "explore": "Erkunden",
-  "help": "Hilfe",
-  "sign_in": "Anmelden",
-  "sign_out": "Abmelden",
-  "sign_up": "Registrieren",
-  "register": "Registrieren",
-  "website": "Webseite",
-  "page": "Seite",
-  "template": "Vorlage",
-  "language": "Sprache",
-  "create_new": "Erstellen...",
-  "user_profile_and_more": "Benutzerprofil und mehr",
-  "signed_in_as": "Angemeldet als",
-  "username": "Benutzername",
-  "email": "E-Mail",
-  "password": "Passwort",
-  "re_type": "Erneut eingeben",
-  "captcha": "Captcha",
-  "repository": "Repository",
-  "organization": "Organisation",
-  "new_repo": "Neues Repository",
-  "new_migrate": "Neue Migration",
-  "new_fork": "Neues Fork-Repository",
-  "new_org": "Neue Organisation",
-  "manage_org": "Organisationen verwalten",
-  "admin_panel": "Administration",
   "account_settings": "Kontoeinstellungen",
-  "settings": "Einstellungen",
-  "your_profile": "Ihr Profil",
-  "your_settings": "Ihre Einstellungen",
   "activities": "Aktivitäten",
-  "pull_requests": "Pull-Requests",
-  "issues": "Issues",
-  "cancel": "Abbrechen",
-  "status": {
-    "page_not_found": "Seite nicht gefunden",
-    "internal_server_error": "Interner Serverfehler"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Administration",
+  "app_desc": "Ein einfacher, selbst gehosteter Git-Service",
   "auth": {
     "create_new_account": "Neues Konto erstellen",
     "register_hepler_msg": "Haben Sie bereits ein Konto? Jetzt anmelden!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Geben Sie die Zwei-Faktor-Authentifizierungs PIN ein",
     "login_two_factor_invalid_recovery_code": "Der Wiederherstellungscode wurde schon benutzt oder ist nicht gültig."
   },
-  "mail": {
-    "activate_account": "Bitte aktivieren Sie Ihr Konto",
-    "activate_email": "Bestätigen Sie Ihre E-Mail-Adresse",
-    "reset_password": "Passwort zurücksetzen",
-    "register_success": "Registrierung erfolgreich, Willkommen",
-    "register_notify": "Willkommen an Bord"
-  },
+  "cancel": "Abbrechen",
+  "captcha": "Captcha",
+  "create_new": "Erstellen...",
+  "dashboard": "Übersicht",
+  "email": "E-Mail",
+  "explore": "Erkunden",
   "form": {
     "UserName": "Benutzername",
     "RepoName": "Repository-Name",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Diese Organisation besitzt noch Repositories. Diese müssen zuerst gelöscht oder übertragen werden.",
     "target_branch_not_exist": "Ziel-Branch existiert nicht"
   },
+  "help": "Hilfe",
+  "home": "Startseite",
+  "issues": "Issues",
+  "language": "Sprache",
+  "mail": {
+    "activate_account": "Bitte aktivieren Sie Ihr Konto",
+    "activate_email": "Bestätigen Sie Ihre E-Mail-Adresse",
+    "reset_password": "Passwort zurücksetzen",
+    "register_success": "Registrierung erfolgreich, Willkommen",
+    "register_notify": "Willkommen an Bord"
+  },
+  "manage_org": "Organisationen verwalten",
+  "new_fork": "Neues Fork-Repository",
+  "new_migrate": "Neue Migration",
+  "new_org": "Neue Organisation",
+  "new_repo": "Neues Repository",
+  "organization": "Organisation",
+  "page": "Seite",
+  "password": "Passwort",
+  "pull_requests": "Pull-Requests",
+  "re_type": "Erneut eingeben",
+  "register": "Registrieren",
+  "repository": "Repository",
+  "settings": "Einstellungen",
+  "settings_title": "Settings",
+  "sign_in": "Anmelden",
+  "sign_out": "Abmelden",
+  "sign_up": "Registrieren",
+  "signed_in_as": "Angemeldet als",
+  "status": {
+    "page_not_found": "Seite nicht gefunden",
+    "internal_server_error": "Interner Serverfehler"
+  },
+  "template": "Vorlage",
   "user": {
     "change_avatar": "Ändern Sie ihr Profilbild",
     "join_on": "Beigetreten am",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Benutzername oder Muster %q ist nicht erlaubt."
     }
-  }
+  },
+  "user_profile_and_more": "Benutzerprofil und mehr",
+  "username": "Benutzername",
+  "website": "Webseite",
+  "your_profile": "Ihr Profil",
+  "your_settings": "Ihre Einstellungen"
 }

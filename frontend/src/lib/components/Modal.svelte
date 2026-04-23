@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade, fly } from 'svelte/transition';
+  import { fade, fly } from "svelte/transition";
 
   interface Props {
     show: boolean;
@@ -11,7 +11,7 @@
   let { show, title, children, onclose }: Props = $props();
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape' && show) onclose();
+    if (e.key === "Escape" && show) onclose();
   }
 </script>
 
@@ -19,19 +19,16 @@
 
 {#if show}
   <!-- BACKDROP -->
-  <div 
-    class="modal-backdrop" 
-    onclick={onclose} 
+  <div
+    class="modal-backdrop"
+    onclick={onclose}
     transition:fade={{ duration: 200 }}
     aria-hidden="true"
   ></div>
 
   <!-- MODAL CONTENT -->
-  <div 
-    class="modal-wrapper"
-    transition:fly={{ y: 20, duration: 300 }}
-  >
-    <div class="modal-card island island-interactive tonal">
+  <div class="modal-wrapper" transition:fly={{ y: 20, duration: 300 }}>
+    <div class="modal-card tonal">
       <header class="modal-header">
         <h3>{title}</h3>
         <button class="close-btn" onclick={onclose}>
@@ -52,7 +49,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
     z-index: 1000;
   }
@@ -79,7 +76,7 @@
     display: flex;
     flex-direction: column;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .modal-header {
@@ -90,7 +87,11 @@
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
-  .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 800; }
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+  }
 
   .close-btn {
     background: transparent;
@@ -101,7 +102,10 @@
     border-radius: 50%;
     transition: all 0.2s;
   }
-  .close-btn:hover { background: var(--md-sys-color-surface-variant); color: #fff; }
+  .close-btn:hover {
+    background: var(--md-sys-color-surface-variant);
+    color: #fff;
+  }
 
   .modal-body {
     padding: 2rem;

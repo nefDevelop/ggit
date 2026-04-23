@@ -1,45 +1,19 @@
 {
-  "app_desc": "Kivuton itse-hostattu Git palvelu",
-  "home": "Etusivu",
-  "dashboard": "Kojelauta",
-  "explore": "Tutki",
-  "help": "Apua",
-  "sign_in": "Kirjaudu sisään",
-  "sign_out": "Kirjaudu ulos",
-  "sign_up": "Rekisteröidy",
-  "register": "Rekisteröidy",
-  "website": "Nettisivut",
-  "page": "Sivu",
-  "template": "Malli",
-  "language": "Kieli",
-  "create_new": "Luo...",
-  "user_profile_and_more": "Käyttäjäprofiili ja lisää",
-  "signed_in_as": "Kirjautuneena käyttäjänä",
-  "username": "Käyttäjätunnus",
-  "email": "Sähköposti",
-  "password": "Salasana",
-  "re_type": "Kirjoita uudelleen",
-  "captcha": "Captcha",
-  "repository": "Tietosäilö",
-  "organization": "Organisaatio",
-  "new_repo": "Uusi tietosäilö",
-  "new_migrate": "Uusi migraatio",
-  "new_fork": "Uusi tietosäilö haarautuksesta",
-  "new_org": "Uusi organisaatio",
-  "manage_org": "Ylläpidä organisaatioita",
-  "admin_panel": "Ylläpito paneeli",
   "account_settings": "Tilin asetukset",
-  "settings": "Asetukset",
-  "your_profile": "Profiilisi",
-  "your_settings": "Asetuksesi",
   "activities": "Toimet",
-  "pull_requests": "Vetopyynnöt",
-  "issues": "Esitykset",
-  "cancel": "Peruuta",
-  "status": {
-    "page_not_found": "Sivua ei löydy",
-    "internal_server_error": "Sisäinen palvelinvirhe"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Ylläpito paneeli",
+  "app_desc": "Kivuton itse-hostattu Git palvelu",
   "auth": {
     "create_new_account": "Luo uusi tili",
     "register_hepler_msg": "Onko sinulla jo tili? Kirjaudu sisään nyt!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Kirjoita kaksivaiheisen todennuksen salasana",
     "login_two_factor_invalid_recovery_code": "Palautuskoodi on käytetty tai ei ole kelvollinen."
   },
-  "mail": {
-    "activate_account": "Ole hyvä ja aktivoi tilisi",
-    "activate_email": "Vahvista sähköpostiosoitteesi",
-    "reset_password": "Tyhjennä salasana",
-    "register_success": "Rekisteröinti onnistunut, tervetuloa",
-    "register_notify": "Tervetuloa mukaan"
-  },
+  "cancel": "Peruuta",
+  "captcha": "Captcha",
+  "create_new": "Luo...",
+  "dashboard": "Kojelauta",
+  "email": "Sähköposti",
+  "explore": "Tutki",
   "form": {
     "UserName": "Käyttäjätunnus",
     "RepoName": "Tietosäilön nimi",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Tällä organisaatiolla on yhä omistajuus tietosäilöön, sinun täytyy poistaa tai siirtää ne ensin.",
     "target_branch_not_exist": "Kohde haaraa ei ole olemassa."
   },
+  "help": "Apua",
+  "home": "Etusivu",
+  "issues": "Esitykset",
+  "language": "Kieli",
+  "mail": {
+    "activate_account": "Ole hyvä ja aktivoi tilisi",
+    "activate_email": "Vahvista sähköpostiosoitteesi",
+    "reset_password": "Tyhjennä salasana",
+    "register_success": "Rekisteröinti onnistunut, tervetuloa",
+    "register_notify": "Tervetuloa mukaan"
+  },
+  "manage_org": "Ylläpidä organisaatioita",
+  "new_fork": "Uusi tietosäilö haarautuksesta",
+  "new_migrate": "Uusi migraatio",
+  "new_org": "Uusi organisaatio",
+  "new_repo": "Uusi tietosäilö",
+  "organization": "Organisaatio",
+  "page": "Sivu",
+  "password": "Salasana",
+  "pull_requests": "Vetopyynnöt",
+  "re_type": "Kirjoita uudelleen",
+  "register": "Rekisteröidy",
+  "repository": "Tietosäilö",
+  "settings": "Asetukset",
+  "settings_title": "Settings",
+  "sign_in": "Kirjaudu sisään",
+  "sign_out": "Kirjaudu ulos",
+  "sign_up": "Rekisteröidy",
+  "signed_in_as": "Kirjautuneena käyttäjänä",
+  "status": {
+    "page_not_found": "Sivua ei löydy",
+    "internal_server_error": "Sisäinen palvelinvirhe"
+  },
+  "template": "Malli",
   "user": {
     "change_avatar": "Vaihda profiilikuvasi",
     "join_on": "Liitytty",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Käyttäjätunnusta tai mallia %q ei ole sallittu."
     }
-  }
+  },
+  "user_profile_and_more": "Käyttäjäprofiili ja lisää",
+  "username": "Käyttäjätunnus",
+  "website": "Nettisivut",
+  "your_profile": "Profiilisi",
+  "your_settings": "Asetuksesi"
 }

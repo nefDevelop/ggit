@@ -1,11 +1,11 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { authState } from '$lib/auth.svelte';
-  import { i18n } from '$lib/i18n.svelte';
-  import { page } from '$app/state';
-  import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
-  import Avatar from '$lib/components/Avatar.svelte';
-  import { userPrefs } from '$lib/settings.svelte';
+  import { authState } from "$lib/auth.svelte";
+  import { i18n } from "$lib/i18n.svelte";
+  import { page } from "$app/state";
+  import ThemeSwitch from "$lib/components/ThemeSwitch.svelte";
+  import Avatar from "$lib/components/Avatar.svelte";
+  import { userPrefs } from "$lib/settings.svelte";
 
   let showThemePanel = $state(false);
   let userOrgs = $state<any[]>([]);
@@ -13,7 +13,7 @@
   async function fetchUserOrgs() {
     if (!authState.isAuthenticated) return;
     try {
-      const res = await apiFetch('/api/v2/user/settings/orgs');
+      const res = await apiFetch("/api/v2/user/settings/orgs");
       if (res.ok) userOrgs = await res.json();
     } catch (e) {
       console.error("Failed to load sidebar orgs", e);
@@ -25,39 +25,86 @@
   });
 
   const navItems = $derived([
-    { name: i18n.t('dashboard'), icon: 'grid_view', path: '/dashboard' },
-    { name: i18n.t('explore'), icon: 'search', path: '/explore/repos' },
-    ...(authState.user?.is_admin ? [
-      { name: i18n.t('admin_panel'), icon: 'security', path: '/admin/users', isParent: true }
-    ] : []),
-    { name: i18n.t('settings'), icon: 'settings', path: '/user/settings' },
+    { name: i18n.t("dashboard"), icon: "grid_view", path: "/dashboard" },
+    { name: i18n.t("explore"), icon: "search", path: "/explore/repos" },
+    ...(authState.user?.is_admin
+      ? [
+          {
+            name: i18n.t("admin_panel"),
+            icon: "security",
+            path: "/admin/users",
+            isParent: true,
+          },
+        ]
+      : []),
+    {
+      name: i18n.t("settings_title"),
+      icon: "settings",
+      path: "/user/settings",
+    },
   ]);
 
   const adminSubItems = $derived([
-    { name: i18n.t('admin.users') || 'Users', icon: 'person', path: '/admin/users' },
-    { name: i18n.t('admin.repositories') || 'Repositories', icon: 'book', path: '/admin/repos' },
-    { name: i18n.t('admin.organizations') || 'Organizations', icon: 'corporate_fare', path: '/admin/orgs' },
-    { name: i18n.t('admin.auths') || 'Authentication', icon: 'lock', path: '/admin/auth' },
-    { name: i18n.t('admin.config') || 'Configuration', icon: 'settings', path: '/admin/config' },
-    { name: i18n.t('admin.monitor') || 'Monitor', icon: 'monitoring', path: '/admin/monitor' },
-    { name: i18n.t('admin.maintenance') || 'Maintenance', icon: 'build', path: '/admin/maintenance' },
-    { name: i18n.t('admin.audit_log') || 'Audit Log', icon: 'history_edu', path: '/admin/audit_log' },
-    { name: i18n.t('admin.notices') || 'Notices', icon: 'notifications', path: '/admin/notices' }
+    {
+      name: i18n.t("admin.users") || "Users",
+      icon: "person",
+      path: "/admin/users",
+    },
+    {
+      name: i18n.t("admin.repositories") || "Repositories",
+      icon: "book",
+      path: "/admin/repos",
+    },
+    {
+      name: i18n.t("admin.organizations") || "Organizations",
+      icon: "corporate_fare",
+      path: "/admin/orgs",
+    },
+    {
+      name: i18n.t("admin.auths") || "Authentication",
+      icon: "lock",
+      path: "/admin/auth",
+    },
+    {
+      name: i18n.t("admin.config") || "Configuration",
+      icon: "settings",
+      path: "/admin/config",
+    },
+    {
+      name: i18n.t("admin.monitor") || "Monitor",
+      icon: "monitoring",
+      path: "/admin/monitor",
+    },
+    {
+      name: i18n.t("admin.maintenance") || "Maintenance",
+      icon: "build",
+      path: "/admin/maintenance",
+    },
+    {
+      name: i18n.t("admin.audit_log") || "Audit Log",
+      icon: "history_edu",
+      path: "/admin/audit_log",
+    },
+    {
+      name: i18n.t("admin.notices") || "Notices",
+      icon: "notifications",
+      path: "/admin/notices",
+    },
   ]);
 
-  const isAdminPath = $derived(page.url.pathname.startsWith('/admin'));
+  const isAdminPath = $derived(page.url.pathname.startsWith("/admin"));
 
   function getCsrfToken() {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
-    return match ? match[2] : '';
+    if (typeof document === "undefined") return "";
+    const match = document.cookie.match(new RegExp("(^| )XSRF-TOKEN=([^;]+)"));
+    return match ? match[2] : "";
   }
 
   async function handleLogout() {
-    await apiFetch('/api/v2/user/logout', { 
-      method: 'POST'
+    await apiFetch("/api/v2/user/logout", {
+      method: "POST",
     });
-    window.location.href = '/user/login';
+    window.location.href = "/user/login";
   }
 </script>
 
@@ -66,10 +113,16 @@
   {#if authState.isAuthenticated}
     <div class="user-profile-summary">
       <div class="avatar-ring">
-        <Avatar src={authState.user?.avatar_url} username={authState.user?.username} size={40} />
+        <Avatar
+          src={authState.user?.avatar_url}
+          username={authState.user?.username}
+          size={40}
+        />
       </div>
       <div class="user-details">
-        <span class="full-name">{authState.user?.full_name || authState.user?.username}</span>
+        <span class="full-name"
+          >{authState.user?.full_name || authState.user?.username}</span
+        >
         <span class="user-handle">@{authState.user?.username}</span>
       </div>
       <button class="minimal-logout" onclick={handleLogout} title="Logout">
@@ -80,10 +133,11 @@
 
   <div class="nav-links">
     {#each navItems as item}
-      <a 
-        href={item.path} 
-        class="nav-item" 
-        class:active={page.url.pathname === item.path || (item.isParent && isAdminPath)}
+      <a
+        href={item.path}
+        class="nav-item"
+        class:active={page.url.pathname === item.path ||
+          (item.isParent && isAdminPath)}
       >
         <span class="material-symbols-rounded">{item.icon}</span>
         <span class="item-label">{item.name}</span>
@@ -92,9 +146,9 @@
       {#if item.isParent && isAdminPath}
         <div class="sub-nav-links">
           {#each adminSubItems as sub}
-            <a 
-              href={sub.path} 
-              class="sub-nav-item" 
+            <a
+              href={sub.path}
+              class="sub-nav-item"
               class:active={page.url.pathname === sub.path}
             >
               <span class="material-symbols-rounded">{sub.icon}</span>
@@ -108,14 +162,18 @@
     <!-- ORGANIZATIONS SECTION -->
     {#if authState.isAuthenticated && userPrefs.current.showSidebarOrgs}
       <div class="nav-section-title">
-        <span>{i18n.t('organizations') || 'Organizaciones'}</span>
+        <span>{i18n.t("organizations") || "Organizaciones"}</span>
         <a href="/org/create" class="mini-add" title="Nueva Organización">
           <span class="material-symbols-rounded">add</span>
         </a>
       </div>
       <div class="nav-org-list">
         {#each userOrgs as org}
-          <a href="/org/{org.username}" class="nav-item org-item" class:active={page.url.pathname === `/org/${org.username}`}>
+          <a
+            href="/org/{org.username}"
+            class="nav-item org-item"
+            class:active={page.url.pathname === `/org/${org.username}`}
+          >
             <Avatar src={org.avatar_url} username={org.username} size={24} />
             <span class="item-label">{org.full_name || org.username}</span>
           </a>
@@ -129,7 +187,10 @@
 
   <!-- THEME SELECTOR -->
   <div class="theme-trigger-section">
-    <button class="appearance-btn" onclick={() => showThemePanel = !showThemePanel}>
+    <button
+      class="appearance-btn"
+      onclick={() => (showThemePanel = !showThemePanel)}
+    >
       <span class="material-symbols-rounded">palette</span>
       <span class="item-label">Apariencia</span>
     </button>
@@ -138,8 +199,8 @@
   <!-- BRAND AT BOTTOM -->
   <div class="brand-section-bottom">
     <div class="brand-info">
-        <span class="brand-name">Ggit</span>
-        <span class="version">v2026.4.0</span>
+      <span class="brand-name">Ggit</span>
+      <span class="version">v2026.4.0</span>
     </div>
   </div>
 </nav>
@@ -155,7 +216,7 @@
     height: 100vh;
     box-sizing: border-box;
     z-index: 1000;
-    /* No borders, no island island-interactives, just flat integration with background */
+    /* No borders, no s, just flat integration with background */
   }
 
   /* USER PROFILE SUMMARY */
@@ -185,14 +246,6 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
     flex-shrink: 0;
-  }
-
-  .sidebar-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--bg-color);
   }
 
   .user-details {
@@ -264,7 +317,7 @@
   }
 
   .nav-item.active .material-symbols-rounded {
-    font-variation-settings: 'FILL' 1;
+    font-variation-settings: "FILL" 1;
   }
 
   /* ORGANIZATIONS */
@@ -297,8 +350,12 @@
     transition: color 0.2s;
     display: flex;
   }
-  .mini-add:hover { color: var(--primary-color); }
-  .mini-add span { font-size: 1.25rem; }
+  .mini-add:hover {
+    color: var(--primary-color);
+  }
+  .mini-add span {
+    font-size: 1.25rem;
+  }
 
   .nav-empty-hint {
     font-size: 0.75rem;
@@ -356,48 +413,66 @@
     opacity: 0.6;
     transition: opacity 0.2s;
   }
-  .brand-section-bottom:hover { opacity: 1; }
-
-  .logo-circle-flat {
-    width: 32px;
-    height: 32px;
-    background: var(--text-muted);
-    color: var(--bg-color);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 1rem;
+  .brand-section-bottom:hover {
+    opacity: 1;
   }
 
-  .brand-info { display: flex; flex-direction: column; }
-  .brand-name { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; line-height: 1; }
-  .version { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); }
+  .brand-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .brand-name {
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .version {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
 
   /* Mobile stays similar but at bottom */
   @media (max-width: 1024px) {
     .navigation-bar {
-        width: 100vw;
-        height: 70px;
-        flex-direction: row;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
-        padding: 0 1rem;
-        background: var(--bg-color);
-        border-top: 1px solid var(--md-sys-color-outline-variant);
-        align-items: center;
-        padding-bottom: env(safe-area-inset-bottom);
-        height: calc(70px + env(safe-area-inset-bottom));
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      width: 100vw;
+      height: 70px;
+      flex-direction: row;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      padding: 0 1rem;
+      background: var(--bg-color);
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      align-items: center;
+      padding-bottom: env(safe-area-inset-bottom);
+      height: calc(70px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
     }
-    .user-profile-summary, .brand-section-bottom, .item-label, span:not(.material-symbols-rounded) { display: none; }
-    .nav-links { flex-direction: row; width: 100%; justify-content: space-around; }
-    .nav-item { padding: 0.5rem; }
-    .theme-trigger-section { padding: 0; margin: 0; }
-    .appearance-btn { width: auto; padding: 0.5rem; }
+    .user-profile-summary,
+    .brand-section-bottom,
+    .item-label,
+    span:not(.material-symbols-rounded) {
+      display: none;
+    }
+    .nav-links {
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-around;
+    }
+    .nav-item {
+      padding: 0.5rem;
+    }
+    .theme-trigger-section {
+      padding: 0;
+      margin: 0;
+    }
+    .appearance-btn {
+      width: auto;
+      padding: 0.5rem;
+    }
   }
 
   /* Theme Button Styles */

@@ -1,45 +1,19 @@
 {
-  "app_desc": "A painless self-hosted Git service",
-  "home": "Home",
-  "dashboard": "Dashboard",
-  "explore": "Explore",
-  "help": "Help",
-  "sign_in": "Sign In",
-  "sign_out": "Sign Out",
-  "sign_up": "Sign Up",
-  "register": "Register",
-  "website": "Website",
-  "page": "Page",
-  "template": "Template",
-  "language": "Language",
-  "create_new": "Create...",
-  "user_profile_and_more": "User profile and more",
-  "signed_in_as": "Signed in as",
-  "username": "Username",
-  "email": "Email",
-  "password": "Password",
-  "re_type": "Re-Type",
-  "captcha": "Captcha",
-  "repository": "Repository",
-  "organization": "Organisation",
-  "new_repo": "New Repository",
-  "new_migrate": "New Migration",
-  "new_fork": "New Fork Repository",
-  "new_org": "New Organisation",
-  "manage_org": "Manage Organisations",
-  "admin_panel": "Admin Panel",
   "account_settings": "Account Settings",
-  "settings": "Settings",
-  "your_profile": "Your Profile",
-  "your_settings": "Your Settings",
   "activities": "Activities",
-  "pull_requests": "Pull Requests",
-  "issues": "Issues",
-  "cancel": "Cancel",
-  "status": {
-    "page_not_found": "Page Not Found",
-    "internal_server_error": "Internal Server Error"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Admin Panel",
+  "app_desc": "A painless self-hosted Git service",
   "auth": {
     "create_new_account": "Create New Account",
     "register_hepler_msg": "Already have an account? Sign in now!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Enter a two-factor passcode",
     "login_two_factor_invalid_recovery_code": "Recovery code has been used or does not valid."
   },
-  "mail": {
-    "activate_account": "Please activate your account",
-    "activate_email": "Verify your email address",
-    "reset_password": "Reset your password",
-    "register_success": "Registration successful, welcome",
-    "register_notify": "Welcome on board"
-  },
+  "cancel": "Cancel",
+  "captcha": "Captcha",
+  "create_new": "Create...",
+  "dashboard": "Dashboard",
+  "email": "Email",
+  "explore": "Explore",
   "form": {
     "UserName": "Username",
     "RepoName": "Repository name",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "This organisation still has ownership of repositories, you must delete or transfer them first.",
     "target_branch_not_exist": "Target branch does not exist."
   },
+  "help": "Help",
+  "home": "Home",
+  "issues": "Issues",
+  "language": "Language",
+  "mail": {
+    "activate_account": "Please activate your account",
+    "activate_email": "Verify your email address",
+    "reset_password": "Reset your password",
+    "register_success": "Registration successful, welcome",
+    "register_notify": "Welcome on board"
+  },
+  "manage_org": "Manage Organisations",
+  "new_fork": "New Fork Repository",
+  "new_migrate": "New Migration",
+  "new_org": "New Organisation",
+  "new_repo": "New Repository",
+  "organization": "Organisation",
+  "page": "Page",
+  "password": "Password",
+  "pull_requests": "Pull Requests",
+  "re_type": "Re-Type",
+  "register": "Register",
+  "repository": "Repository",
+  "settings": "Settings",
+  "settings_title": "Settings",
+  "sign_in": "Sign In",
+  "sign_out": "Sign Out",
+  "sign_up": "Sign Up",
+  "signed_in_as": "Signed in as",
+  "status": {
+    "page_not_found": "Page Not Found",
+    "internal_server_error": "Internal Server Error"
+  },
+  "template": "Template",
   "user": {
     "change_avatar": "Change your avatar",
     "join_on": "Joined on",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "Username or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "User profile and more",
+  "username": "Username",
+  "website": "Website",
+  "your_profile": "Your Profile",
+  "your_settings": "Your Settings"
 }

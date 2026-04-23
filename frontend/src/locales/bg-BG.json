@@ -1,45 +1,19 @@
 {
-  "app_desc": "Безпроблемен собствен Git сървър",
-  "home": "Начало",
-  "dashboard": "Табло",
-  "explore": "Каталог",
-  "help": "Помощ",
-  "sign_in": "Вход",
-  "sign_out": "Изход",
-  "sign_up": "Регистрирайте се",
-  "register": "Регистрация",
-  "website": "Уебсайт",
-  "page": "Страница",
-  "template": "Шаблон",
-  "language": "Език",
-  "create_new": "Създаване...",
-  "user_profile_and_more": "Потребителски профил и пр.",
-  "signed_in_as": "Вписан като",
-  "username": "Потребител",
-  "email": "Ел. поща",
-  "password": "Парола",
-  "re_type": "Въведете повторно",
-  "captcha": "Captcha",
-  "repository": "Хранилище",
-  "organization": "Организация",
-  "new_repo": "Ново хранилище",
-  "new_migrate": "Нова миграция",
-  "new_fork": "Ново разклонено хранилище",
-  "new_org": "Нова организация",
-  "manage_org": "Управление на организации",
-  "admin_panel": "Административен панел",
   "account_settings": "Настройки на профила",
-  "settings": "Настройки",
-  "your_profile": "Вашият профил",
-  "your_settings": "Вашите настройки",
   "activities": "Активности",
-  "pull_requests": "Заявки за сливане",
-  "issues": "Задачи",
-  "cancel": "Отказ",
-  "status": {
-    "page_not_found": "Страницата не е намерена",
-    "internal_server_error": "Вътрешна грешка в сървър"
+  "admin": {
+    "users": "User Management",
+    "repositories": "Repository Management",
+    "organizations": "Organization Management",
+    "auths": "Authentication Sources",
+    "config": "Configuration",
+    "monitor": "Monitoring",
+    "maintenance": "Maintenance",
+    "audit_log": "Audit Log",
+    "notices": "System Notices"
   },
+  "admin_panel": "Административен панел",
+  "app_desc": "Безпроблемен собствен Git сървър",
   "auth": {
     "create_new_account": "Създай нов профил",
     "register_hepler_msg": "Вече имате профил? Впишете се сега!",
@@ -73,13 +47,12 @@
     "login_two_factor_enter_passcode": "Въведете двуфакторен код",
     "login_two_factor_invalid_recovery_code": "Този код за възстановяване вече е бил използван или не е валиден."
   },
-  "mail": {
-    "activate_account": "Моля активирайте Вашия профил",
-    "activate_email": "Провери адрес на ел. поща",
-    "reset_password": "Нулиране на паролата",
-    "register_success": "Успешна регистрация и добре дошли",
-    "register_notify": "Добре дошли"
-  },
+  "cancel": "Отказ",
+  "captcha": "Captcha",
+  "create_new": "Създаване...",
+  "dashboard": "Табло",
+  "email": "Ел. поща",
+  "explore": "Каталог",
   "form": {
     "UserName": "Потребителско име",
     "RepoName": "Име на хранилището",
@@ -131,6 +104,40 @@
     "org_still_own_repo": "Тази организация все още притежава хранилище. Първо трябва да го изтриете или да го прехвърлите на друга организация.",
     "target_branch_not_exist": "Целевият клон не съществува."
   },
+  "help": "Помощ",
+  "home": "Начало",
+  "issues": "Задачи",
+  "language": "Език",
+  "mail": {
+    "activate_account": "Моля активирайте Вашия профил",
+    "activate_email": "Провери адрес на ел. поща",
+    "reset_password": "Нулиране на паролата",
+    "register_success": "Успешна регистрация и добре дошли",
+    "register_notify": "Добре дошли"
+  },
+  "manage_org": "Управление на организации",
+  "new_fork": "Ново разклонено хранилище",
+  "new_migrate": "Нова миграция",
+  "new_org": "Нова организация",
+  "new_repo": "Ново хранилище",
+  "organization": "Организация",
+  "page": "Страница",
+  "password": "Парола",
+  "pull_requests": "Заявки за сливане",
+  "re_type": "Въведете повторно",
+  "register": "Регистрация",
+  "repository": "Хранилище",
+  "settings": "Настройки",
+  "settings_title": "Settings",
+  "sign_in": "Вход",
+  "sign_out": "Изход",
+  "sign_up": "Регистрирайте се",
+  "signed_in_as": "Вписан като",
+  "status": {
+    "page_not_found": "Страницата не е намерена",
+    "internal_server_error": "Вътрешна грешка в сървър"
+  },
+  "template": "Шаблон",
   "user": {
     "change_avatar": "Промени своя аватар",
     "join_on": "Регистриран",
@@ -144,5 +151,10 @@
     "form": {
       "name_not_allowed": "User name or pattern %q is not allowed."
     }
-  }
+  },
+  "user_profile_and_more": "Потребителски профил и пр.",
+  "username": "Потребител",
+  "website": "Уебсайт",
+  "your_profile": "Вашият профил",
+  "your_settings": "Вашите настройки"
 }
