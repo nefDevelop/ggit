@@ -139,15 +139,6 @@ var (
 		FileExtensions      []string
 	}
 
-	// Smartypants settings
-	Smartypants struct {
-		Enabled      bool
-		Fractions    bool
-		Dashes       bool
-		LatexDashes  bool
-		AngledQuotes bool
-	}
-
 	// Admin settings
 	Admin struct {
 		DisableRegularOrgCreation bool

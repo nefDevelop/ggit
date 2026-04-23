@@ -10,13 +10,10 @@ RUN npm run build
 
 # Etapa 2: Compilar el Backend (Go)
 FROM golang:1.26-alpine3.23 AS binarybuilder
-RUN apk --no-cache add build-base git linux-pam-dev bash
+RUN apk --no-cache add build-base git linux-pam-dev bash make
 WORKDIR /app/ggit
 COPY . .
-RUN ./docker/build/install-task.sh
-RUN chmod +x scripts/sync_templates.sh && ./scripts/sync_templates.sh
-# El tag bindata es vital para que las plantillas internas funcionen si falla el frontend
-RUN TAGS="cert pam bindata" task build
+RUN make sync build
 
 # Etapa 3: Imagen Final (Alpine)
 FROM alpine:3.23

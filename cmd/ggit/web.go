@@ -3,9 +3,7 @@ package main
 import (
 	stdctx "context"
 	"fmt"
-	"net"
 	"net/http"
-	"net/http/fcgi"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -104,17 +102,9 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 		Handler: r,
 	}
 
-	if protocol == "fcgi" {
-		f, err := net.Listen("tcp", listenAddr)
-		if err != nil {
-			log.Fatal("Failed to listen: %v", err)
-		}
-		return fcgi.Serve(f, r)
-	}
-
 	if protocol == "https" {
 		return server.ListenAndServeTLS(conf.Server.CertFile, conf.Server.KeyFile)
-		}
+	}
 	return server.ListenAndServe()
 }
 

@@ -123,3 +123,20 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 - [x] **Selector de Inicialización Granular:** Desacoplado README/Licencia/Gitignore con lógica independiente.
 - [x] **Multi-select Chips:** Interfaz moderna de etiquetas para selección múltiple de plantillas.
 - [x] **Fixed TS/CSS:** Errores de tipado y alertas de accesibilidad (autofocus) resueltos.
+
+## Fase 15: Optimización y Limpieza de Legado (Ggit Core Pruning) ✅
+
+**Objetivo:** Eliminar deuda técnica de Gogs y reducir el peso del binario final para un rendimiento superior.
+
+### Limpieza de Recursos
+- [x] **Eliminación de Activos Obsoletos:** Borrados 5.6MB de emojis en PNG y archivos de traducción huérfanos (`localeBORRAR`).
+- [x] **Emojis Nativos (Unicode):** Activada extensión de emojis en Goldmark para usar caracteres de sistema, eliminando dependencia de imágenes.
+- [x] **Optimización de Imágenes:** Reducción de peso en activos estáticos de la carpeta `public/img`.
+
+### Refactorización del Core y DevOps
+- [x] **Eliminación de FastCGI:** Limpiado soporte para el protocolo FCGI en el arranque del servidor (`web.go`).
+- [x] **Markdown Puro:** Eliminada configuración y lógica de Smartypants para evitar transformaciones de texto indeseadas.
+- [x] **Orquestación Unificada (Makefile):** Migración completa de `Taskfile.yml` a un `Makefile` profesional con inyección de metadatos (BuildTime/Commit).
+- [x] **Modernización de Docker:** Extirpada la lógica de SOCAT y tuneleo de puertos obsoleta en `start.sh`.
+- [x] **Ggit Branding:** Actualizados scripts de montaje y arranque con la identidad correcta de Ggit (usuarios de sistema y variables de entorno).
+- [x] **Limpieza de Captcha Legacy:** Verificada la eliminación total del antiguo sistema de captchas por imágenes de Gogs.

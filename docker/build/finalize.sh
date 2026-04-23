@@ -18,10 +18,10 @@ wget --quiet https://github.com/tianon/gosu/releases/download/1.17/gosu-${arch} 
 echo "${checksum}  /usr/sbin/gosu" | sha256sum -cs
 chmod +x /usr/sbin/gosu
 
-# Create git user for Gogs
+# Create git user for Ggit
 addgroup -S git
-adduser -G git -H -D -g 'Gogs Git User' git -h /data/git -s /bin/bash && usermod -p '*' git && passwd -u git
-echo "export GOGS_CUSTOM=${GOGS_CUSTOM}" >> /etc/profile
+adduser -G git -H -D -g 'Ggit Git User' git -h /data/git -s /bin/bash && usermod -p '*' git && passwd -u git
+echo "export GGIT_CUSTOM=${GGIT_CUSTOM}" >> /etc/profile
 
 # Final cleaning
 rm -rf /app/ggit/build
