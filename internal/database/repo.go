@@ -61,7 +61,7 @@ func (err InvalidRepoReference) Error() string {
 var repoWorkingPool = sync.NewExclusivePool()
 
 var (
-	Gitignores, Licenses, Readmes, LabelTemplates []string
+	Gitignores, GlobalIgnores, Licenses, Readmes, LabelTemplates []string
 
 	// Maximum items per page in forks, watchers and stars of a repo
 	ItemsPerPage = 40
@@ -98,7 +98,33 @@ func LoadRepoConfig() {
 	Licenses = typeFiles[1]
 	Readmes = typeFiles[2]
 	LabelTemplates = typeFiles[3]
+
+	// Special handling for Gitignores to include languages and global
+	Gitignores = []string{}
+	GlobalIgnores = []string{}
+
+	langPath := filepath.Join(conf.CustomDir(), "conf", "gitignore", "languages")
+	if osx.IsDir(langPath) {
+		entries, _ := os.ReadDir(langPath)
+		for _, entry := range entries {
+			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".gitignore") {
+				Gitignores = append(Gitignores, "languages/"+entry.Name())
+			}
+		}
+	}
+
+	globalMapPath := filepath.Join(conf.CustomDir(), "conf", "gitignore", "global")
+	if osx.IsDir(globalMapPath) {
+		entries, _ := os.ReadDir(globalMapPath)
+		for _, entry := range entries {
+			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".gitignore") {
+				GlobalIgnores = append(GlobalIgnores, "global/"+entry.Name())
+			}
+		}
+	}
+
 	sort.Strings(Gitignores)
+	sort.Strings(GlobalIgnores)
 	sort.Strings(Licenses)
 	sort.Strings(Readmes)
 	sort.Strings(LabelTemplates)
@@ -952,22 +978,25 @@ func prepareRepoCommit(repo *Repository, tmpDir, repoPath string, opts CreateRep
 		return errors.Wrap(err, "clone")
 	}
 
+	var data []byte
 	// README
-	data, err := getRepoInitFile("readme", opts.Readme)
-	if err != nil {
-		return errors.Newf("getRepoInitFile[%s]: %v", opts.Readme, err)
-	}
+	if len(opts.Readme) > 0 {
+		data, err = getRepoInitFile("readme", opts.Readme)
+		if err != nil {
+			return errors.Newf("getRepoInitFile[%s]: %v", opts.Readme, err)
+		}
 
-	cloneLink := repo.CloneLink()
-	match := map[string]string{
-		"Name":           repo.Name,
-		"Description":    repo.Description,
-		"CloneURL.SSH":   cloneLink.SSH,
-		"CloneURL.HTTPS": cloneLink.HTTPS,
-	}
-	if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
-		[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
-		return errors.Newf("write README.md: %v", err)
+		cloneLink := repo.CloneLink()
+		match := map[string]string{
+			"Name":           repo.Name,
+			"Description":    repo.Description,
+			"CloneURL.SSH":   cloneLink.SSH,
+			"CloneURL.HTTPS": cloneLink.HTTPS,
+		}
+		if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
+			[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
+			return errors.Newf("write README.md: %v", err)
+		}
 	}
 
 	// .gitignore

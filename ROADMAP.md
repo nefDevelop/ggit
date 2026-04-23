@@ -103,6 +103,23 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 ## Fase 13: Rebranding e Identidad Final (En Proceso)
 
 - [ ] **Refactor de Nomenclatura:** Actualizar `gogs.io/gogs` a la nueva identidad en todo el core.
+- [x] **Arquitectura de Inicialización Granular:** Desacoplado de README, Licencia y .gitignore en la creación de repositorios. [COMPLETO]
+- [x] **Multiselección de .gitignore:** Implementado sistema de chips para combinar múltiples plantillas en el primer commit. [COMPLETO]
+- [ ] **Identicons SVG (Client-side):** Implementar componente Svelte para generación determinista de avatares SVG basada en seed (correo/ID), eliminando el almacenamiento físico y permitiendo el uso de CSS `currentColor` (Adaptación automática de temas).
 - [x] **Rutas por defecto:** Cambiar carpetas de almacenamiento de `gogs-repositories` a `ggit-repositories`. [COMPLETO]
 - [x] **Component Library:** Consolidar la librería de componentes Svelte (M3 Expressive). [COMPLETO]
 
+## Fase 14: Sistema de Plantillas Dinámico (Ggit Gitignore Hub) - ¡LOGRADO! ✅
+
+**Objetivo:** Automatizar y securizar la creación de repositorios eliminando dependencias de terceros y plantillas obsoletas.
+
+### Automatización y Backend
+- [x] **Script de Sincronización:** Creado `scripts/sync_templates.sh` que descarga y organiza `github/gitignore`.
+- [x] **Categorización Inteligente:** Estructura de carpetas `/languages` y `/global` implementada en el core.
+- [x] **Ggit Standard Base:** Creado `_ggit_security.gitignore` incluyendo protección para `.env`, logs y claves.
+- [x] **Concatenador de Plantillas:** El backend ahora puede recibir una lista de plantillas y fusionarlas en el commit inicial.
+
+### Experiencia de Usuario (Frontend)
+- [x] **Selector de Inicialización Granular:** Desacoplado README/Licencia/Gitignore con lógica independiente.
+- [x] **Multi-select Chips:** Interfaz moderna de etiquetas para selección múltiple de plantillas.
+- [x] **Fixed TS/CSS:** Errores de tipado y alertas de accesibilidad (autofocus) resueltos.

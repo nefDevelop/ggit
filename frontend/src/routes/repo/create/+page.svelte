@@ -9,11 +9,14 @@
   let autoInit = $state(true);
 
   let gitignores = $state<string[]>([]);
+  let global_ignores = $state<string[]>([]);
   let licenses = $state<string[]>([]);
   let readmes = $state<string[]>([]);
   
-  let selectedGitignore = $state('');
+  let selectedGitignores = $state<string[]>([]);
   let selectedLicense = $state('');
+  
+  let includeReadme = $state(true);
   let selectedReadme = $state('Default');
   
   let errorMsg = $state('');
@@ -25,6 +28,7 @@
       if (res.ok) {
         const data = await res.json();
         gitignores = data.gitignores || [];
+        global_ignores = data.global_ignores || [];
         licenses = data.licenses || [];
         readmes = data.readmes || [];
       }
@@ -59,9 +63,9 @@
           description,
           private: isPrivate,
           auto_init: autoInit,
-          gitignores: selectedGitignore,
+          gitignores: selectedGitignores.join(','),
           license: selectedLicense,
-          readme: selectedReadme
+          readme: includeReadme ? selectedReadme : ''
         })
       });
       
@@ -115,10 +119,9 @@
               id="repo-name" 
               bind:value={name} 
               placeholder="mi-proyecto-increible"
-            pattern="[a-zA-Z0-9_\-\.]+"
-            title="Solo letras, números, guiones y puntos"
-            disabled={loading}
-            autofocus
+              pattern="[a-zA-Z0-9_\-\.]+"
+              title="Solo letras, números, guiones y puntos"
+              disabled={loading}
               required
             />
           </div>
@@ -176,40 +179,117 @@
             <span class="material-symbols-rounded check-icon">check</span>
           </div>
           <div class="check-text">
-            <strong>Generar README.md automático</strong>
-            <span>Crea un archivo de presentación para poder clonar el repo de inmediato.</span>
+            <strong>Inicializar repositorio</strong>
+            <span>Crea el primer commit automáticamente con los archivos seleccionados.</span>
           </div>
         </label>
 
         {#if autoInit}
-          <div class="init-details">
-            <div class="input-field">
-              <label for="gitignore">.gitignore</label>
-              <select id="gitignore" bind:value={selectedGitignore} disabled={loading}>
-                <option value="">Ninguno</option>
+          <div class="init-details-v2">
+            <!-- README OPTION -->
+            <div class="init-item">
+              <label class="item-toggle">
+                <input type="checkbox" bind:checked={includeReadme} />
+                <span class="material-symbols-rounded">description</span>
+                <div>
+                  <strong>Incluir README.md</strong>
+                  {#if includeReadme}
+                  <select bind:value={selectedReadme}>
+                    {#each readmes as r}<option value={r}>{r}</option>{/each}
+                  </select>
+                  {/if}
+                </div>
+              </label>
+            </div>
+
+            <!-- LICENSE OPTION -->
+            <div class="init-item">
+              <label class="item-toggle">
+                <input 
+                  type="checkbox" 
+                  checked={selectedLicense !== ''} 
+                  onchange={(e) => {
+                    const target = e.target as HTMLInputElement;
+                    selectedLicense = target.checked ? (licenses[0] || '') : '';
+                  }} 
+                />
+                <span class="material-symbols-rounded">balance</span>
+                <div>
+                  <strong>Incluir Licencia</strong>
+                  {#if selectedLicense !== ''}
+                  <select bind:value={selectedLicense}>
+                    <option value="">Ninguna</option>
+                    {#each licenses as l}<option value={l}>{l}</option>{/each}
+                  </select>
+                  {/if}
+                </div>
+              </label>
+            </div>
+
+            <!-- MULTI-GITIGNORE OPTION -->
+            <div class="init-item full">
+              <div class="section-label">
+                <span class="material-symbols-rounded">security</span>
+                <strong>Recomendados (Ggit Security & Global)</strong>
+              </div>
+              <div class="gitignore-chips">
+                {#each global_ignores as g}
+                  <button 
+                    type="button"
+                    class="chip" 
+                    title={g}
+                    class:active={selectedGitignores.includes(g)}
+                    onclick={() => {
+                      if (selectedGitignores.includes(g)) {
+                        selectedGitignores = selectedGitignores.filter(i => i !== g);
+                      } else {
+                        selectedGitignores = [...selectedGitignores, g];
+                      }
+                    }}
+                  >
+                    <span class="material-symbols-rounded">public</span>
+                    {g.replace('global/', '').replace('.gitignore', '')}
+                    {#if selectedGitignores.includes(g)}
+                      <span class="material-symbols-rounded">close</span>
+                    {/if}
+                  </button>
+                {/each}
+              </div>
+
+              <div class="section-label" style="margin-top: 1.5rem;">
+                <span class="material-symbols-rounded">terminal</span>
+                <strong>Por Lenguaje</strong>
+              </div>
+              <div class="gitignore-chips">
                 {#each gitignores as g}
-                  <option value={g}>{g}</option>
+                  <button 
+                    type="button"
+                    class="chip" 
+                    title={g}
+                    class:active={selectedGitignores.includes(g)}
+                    onclick={() => {
+                      if (selectedGitignores.includes(g)) {
+                        selectedGitignores = selectedGitignores.filter(i => i !== g);
+                      } else {
+                        selectedGitignores = [...selectedGitignores, g];
+                      }
+                    }}
+                  >
+                    <span class="material-symbols-rounded">code</span>
+                    {g.replace('languages/', '').replace('.gitignore', '')}
+                    {#if selectedGitignores.includes(g)}
+                      <span class="material-symbols-rounded">close</span>
+                    {/if}
+                  </button>
                 {/each}
-              </select>
-            </div>
+              </div>
 
-            <div class="input-field">
-              <label for="license">Licencia</label>
-              <select id="license" bind:value={selectedLicense} disabled={loading}>
-                <option value="">Ninguna</option>
-                {#each licenses as l}
-                  <option value={l}>{l}</option>
-                {/each}
-              </select>
-            </div>
-
-            <div class="input-field">
-              <label for="readme">Plantilla README</label>
-              <select id="readme" bind:value={selectedReadme} disabled={loading}>
-                {#each readmes as r}
-                  <option value={r}>{r}</option>
-                {/each}
-              </select>
+              {#if selectedGitignores.length > 0}
+                <div class="selection-summary">
+                  <span class="material-symbols-rounded">check</span>
+                  <strong>Mix seleccionado:</strong> {selectedGitignores.map(g => (g.split('/').pop() || '').replace('.gitignore', '')).join(' + ')}
+                </div>
+              {/if}
             </div>
           </div>
         {/if}
@@ -261,6 +341,7 @@
     font-weight: 900;
     margin: 0;
     background: linear-gradient(to right, var(--text-primary), var(--primary-color));
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -387,26 +468,92 @@
     outline: none;
   }
 
-  .init-details {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .init-details-v2 {
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
-    margin-top: 1.5rem;
+    margin-top: 2rem;
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
   }
 
-  .init-details .input-field:last-child {
-    grid-column: span 2;
+  .init-item {
+    background: var(--surface-variant-hover);
+    padding: 1.25rem;
+    border-radius: 1.25rem;
+    border: 1px solid var(--border-color);
   }
 
-  @media (max-width: 600px) {
-    .init-details {
-      grid-template-columns: 1fr;
-    }
-    .init-details .input-field:last-child {
-      grid-column: span 1;
-    }
+  .init-item.full { grid-column: span 2; }
+
+  .item-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    cursor: pointer;
+  }
+
+  .item-toggle input { width: 20px; height: 20px; margin-top: 3px; }
+  .item-toggle span { color: var(--primary-color); font-size: 1.5rem; }
+  .item-toggle div { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+  .item-toggle strong { font-size: 1rem; color: var(--text-primary); }
+
+  .item-toggle select {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    border-radius: 0.75rem;
+    background: var(--surface-variant);
+  }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+  }
+
+  .gitignore-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background: rgba(0,0,0,0.05);
+    border-radius: 1rem;
+  }
+
+  .chip {
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .chip:hover { background: var(--border-color); color: var(--text-primary); }
+  .chip.active {
+    background: var(--primary-color);
+    color: var(--on-primary);
+    border-color: var(--primary-color);
+  }
+
+  .selection-summary {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    background: var(--primary-surface);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
   }
 
   /* VISIBILITY SELECTOR */
