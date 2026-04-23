@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
+	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/strx"
 )
@@ -39,8 +40,13 @@ func CSRF() gin.HandlerFunc {
 			ctx.Data["CSRFTokenHTML"] = template.HTML(fmt.Sprintf(`<input type="hidden" name="_csrf" value="%s">`, token))
 		}
 
-		// Always provide token to SPA/Frontend via a non-HttpOnly cookie to prevent out-of-sync
-		c.SetCookie("XSRF-TOKEN", token, 86400, "/", "", false, false)
+		// Always provide token to SPA/Frontend via a non-HttpOnly cookie to prevent out-of-sync.
+		// We use the configured subpath to ensure cookie is only sent to the app.
+		cookiePath := conf.Server.Subpath
+		if cookiePath == "" {
+			cookiePath = "/"
+		}
+		c.SetCookie("XSRF-TOKEN", token, 86400, cookiePath, "", false, false)
 
 		// Validate token for mutable requests
 		if c.Request.Method == http.MethodPost ||

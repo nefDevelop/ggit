@@ -41,11 +41,6 @@
   import { onMount } from 'svelte';
   onMount(loadTemplates);
 
-  function getCsrfToken() {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
-    return match ? match[2] : '';
-  }
 
   async function handleSubmit() {
     if (!name) return;
@@ -56,8 +51,7 @@
       const res = await apiFetch('/api/v2/user/repos', {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json',
-          'X-Csrf-Token': getCsrfToken()
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           name,
@@ -249,7 +243,7 @@
                     }}
                   >
                     <span class="material-symbols-rounded">verified</span>
-                    {g.replace('global/', '').replace('.gitignore', '').replace('_', ' ')}
+                    {g.replace('global/', '').replace('.gitignore', '').replace(/_/g, ' ').trim()}
                     {#if selectedGitignores.includes(g)}
                       <span class="material-symbols-rounded">close</span>
                     {/if}

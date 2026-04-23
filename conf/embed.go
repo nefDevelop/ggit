@@ -4,7 +4,7 @@ import (
 	"embed"
 )
 
-//go:embed app.ini **/*
+//go:embed app.ini **/* gitignore/**/_*
 var Files embed.FS
 
 // FileNames returns a list of filenames exists in the given direction within
