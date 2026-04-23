@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/yuin/goldmark"
+	emoji "github.com/yuin/goldmark-emoji"
 	meta "github.com/yuin/goldmark-meta"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/extension"
@@ -14,7 +15,6 @@ import (
 	"github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
-
 )
 
 // goldmarkRenderer is a Goldmark-based renderer.
@@ -27,6 +27,7 @@ func init() {
 			extension.DefinitionList,
 			extension.Footnote,
 			meta.Meta,
+			emoji.Emoji,
 			&wikilinkExtension{},
 		),
 		goldmark.WithParserOptions(

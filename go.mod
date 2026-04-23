@@ -33,7 +33,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/urfave/cli/v3 v3.8.0
 	github.com/wneessen/go-mail v0.7.2
-	github.com/yuin/goldmark v1.7.8
+	github.com/yuin/goldmark v1.7.10
 	github.com/yuin/goldmark-meta v1.1.0
 	golang.org/x/crypto v0.50.0
 	golang.org/x/image v0.39.0

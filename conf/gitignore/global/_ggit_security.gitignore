@@ -1,34 +1,46 @@
 # ##########################################
-# Ggit Security Base - Recomendado
+# Ggit Security & Global Standard
+# Protección contra fugas de secretos y basura de sistema
 # ##########################################
 
-# Identificadores de entorno y secretos
+# --- Secretos y Entornos ---
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 *.pem
 *.key
+*.pfx
+*.crt
+# Secretos de frameworks
+.vercel
+.netlify
+.serverless/
 auth.json
 
-# Archivos de Sistema
+# --- Basura de Sistema (Cross-Platform) ---
 .DS_Store
 Thumbs.db
 Desktop.ini
+$RECYCLE.BIN/
 
-# Logs y Temporales
+# --- IDEs y Editores ---
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.iws
+*.sublime-project
+*.sublime-workspace
+
+# --- Logs y Temporales ---
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.eslintcache
-.stylelintcache
+tmp/
 
-# Carpetas de dependencias comunes (fallback)
-node_modules/
-bower_components/
-jspm_packages/
+# --- Bloqueos de Dependencias ---
+# No ignoramos lockfiles por defecto, pero sí sus archivos temporales
+.pnpm-debug.log*
 
-# End of Ggit Security Base
+# ##########################################
