@@ -87,9 +87,18 @@ func PerformInstall(c *context.APIContext) {
 	// Database mapping
 	dbTypes := map[string]string{
 		"PostgreSQL": "postgres",
+		"Postgres":   "postgres",
+		"postgres":   "postgres",
 		"SQLite3":    "sqlite3",
+		"sqlite3":    "sqlite3",
+		"sqlite":     "sqlite3",
 	}
 	conf.Database.Type = dbTypes[f.DbType]
+
+	if conf.Database.Type == "" {
+		c.StatusError(http.StatusBadRequest, "Unrecognized database type: "+f.DbType, nil)
+		return
+	}
 	conf.Database.Host = f.DbHost
 	conf.Database.User = f.DbUser
 	conf.Database.Password = f.DbPasswd

@@ -103,7 +103,56 @@ func getInclude(field reflect.StructField) string {
 	return getRuleBody(field, "Include(")
 }
 
+func isZero(v reflect.Value) bool {
+	switch v.Kind() {
+	case reflect.String:
+		return len(strings.TrimSpace(v.String())) == 0
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int() == 0
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return v.Uint() == 0
+	case reflect.Float32, reflect.Float64:
+		return v.Float() == 0
+	}
+	return v.IsZero()
+}
+
+func Check(f any) Errors {
+	errs := Errors{}
+	typ := reflect.TypeOf(f)
+	val := reflect.ValueOf(f)
+	if typ.Kind() == reflect.Ptr {
+		typ = typ.Elem()
+		val = val.Elem()
+	}
+
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		tag := field.Tag.Get("valid")
+		if tag == "" {
+			continue
+		}
+
+		v := val.Field(i)
+		rules := strings.Split(tag, ";")
+		for _, rule := range rules {
+			if rule == "Required" {
+				if isZero(v) {
+					errs = append(errs, Error{Classification: ERR_REQUIRED, FieldNames: []string{field.Name}})
+					break
+				}
+			}
+			// NOTE: Add more rule implementations as needed
+		}
+	}
+	return errs
+}
+
 func validate(errs Errors, data map[string]any, f Form, l context.Locale) Errors {
+	if errs.Len() == 0 {
+		errs = Check(f)
+	}
+
 	if errs.Len() == 0 {
 		return errs
 	}
