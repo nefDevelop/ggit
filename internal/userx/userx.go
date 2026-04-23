@@ -50,36 +50,6 @@ func CustomAvatarPath(userID int64) string {
 	return filepath.Join(conf.Picture.AvatarUploadPath, strconv.FormatInt(userID, 10))
 }
 
-// GenerateRandomAvatar generates a random avatar and stores to local file
-// system using given user information.
-func GenerateRandomAvatar(userID int64, name, email string) error {
-	seed := email
-	if seed == "" {
-		seed = name
-	}
-
-	img, err := avatar.RandomImage([]byte(seed))
-	if err != nil {
-		return errors.Wrap(err, "generate random image")
-	}
-
-	avatarPath := CustomAvatarPath(userID)
-	err = os.MkdirAll(filepath.Dir(avatarPath), os.ModePerm)
-	if err != nil {
-		return errors.Wrap(err, "create avatar directory")
-	}
-
-	f, err := os.Create(avatarPath)
-	if err != nil {
-		return errors.Wrap(err, "create avatar file")
-	}
-	defer func() { _ = f.Close() }()
-
-	if err = png.Encode(f, img); err != nil {
-		return errors.Wrap(err, "encode avatar image to file")
-	}
-	return nil
-}
 
 // SaveAvatar saves the given avatar for the user.
 func SaveAvatar(userID int64, data []byte) error {

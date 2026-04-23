@@ -57,26 +57,6 @@ func TestCustomAvatarPath(t *testing.T) {
 	assert.Equal(t, want, got)
 }
 
-func TestGenerateRandomAvatar(t *testing.T) {
-	if runtime.GOOS == "windows" {
-		t.Skip("Skipping testing on Windows")
-		return
-	}
-
-	conf.SetMockPicture(t,
-		conf.PictureOpts{
-			AvatarUploadPath: os.TempDir(),
-		},
-	)
-
-	avatarPath := CustomAvatarPath(1)
-	defer func() { _ = os.Remove(avatarPath) }()
-
-	err := GenerateRandomAvatar(1, "alice", "alice@example.com")
-	require.NoError(t, err)
-	got := osx.IsFile(avatarPath)
-	assert.True(t, got)
-}
 
 func TestSaveAvatar(t *testing.T) {
 	if runtime.GOOS == "windows" {

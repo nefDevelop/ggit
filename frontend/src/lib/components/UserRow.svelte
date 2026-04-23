@@ -1,11 +1,12 @@
 <script lang="ts">
+  import Avatar from '$lib/components/Avatar.svelte';
   let { user } = $props();
   
   // Format dates or other info if needed
 </script>
 
 <div class="user-row island">
-  <img src={user.avatar_url} alt={user.username} class="avatar" />
+  <Avatar src={user.avatar_url} username={user.username} size={48} class="avatar" />
   <div class="user-info">
     <a href="/{user.username}" class="name">{user.full_name || user.username}</a>
     <span class="username">@{user.username}</span>

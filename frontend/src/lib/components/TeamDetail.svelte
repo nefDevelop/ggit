@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { page } from '$app/state';
+  import Avatar from '$lib/components/Avatar.svelte';
   import { goto } from '$app/navigation';
   
   let { orgName, teamID } = $props();
@@ -178,7 +179,7 @@
              {#if team.Members && team.Members.length > 0}
                {#each team.Members as member}
                  <div class="list-item">
-                   <img src={member.avatar_url} alt="" class="avatar-xs" />
+                   <Avatar src={member.avatar_url} username={member.username} size={32} class="avatar-xs" />
                    <div class="user-meta">
                      <span class="name">{member.username}</span>
                    </div>
@@ -270,7 +271,6 @@
   .list-item { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border-radius: 0.75rem; transition: all 0.2s; }
   .list-item:hover { background: rgba(255,255,255,0.04); }
   
-  .avatar-xs { width: 32px; height: 32px; border-radius: 50%; }
   .repo-icon { font-size: 1.25rem; color: var(--primary-color); opacity: 0.6; }
   
   .user-meta, .repo-meta { flex: 1; display: flex; flex-direction: column; }

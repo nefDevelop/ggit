@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import Avatar from './Avatar.svelte';
   
   let orgs = $state<any[]>([]);
   let loading = $state(true);

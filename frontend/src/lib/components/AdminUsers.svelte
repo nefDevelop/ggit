@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import AdminUserEditor from './AdminUserEditor.svelte';
+  import Avatar from './Avatar.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import Badge from './ui/Badge.svelte';
@@ -96,7 +97,7 @@
               <td>{user.id}</td>
               <td>
                 <div class="user-cell">
-                  <img src={user.avatar_url} alt="" class="small-avatar" />
+                  <Avatar src={user.avatar_url} username={user.username} size={32} class="small-avatar" />
                   <div class="names">
                     <strong>{user.username}</strong>
                     <span>{user.full_name || ''}</span>

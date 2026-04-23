@@ -4,6 +4,7 @@
   import { i18n } from '$lib/i18n.svelte';
   import { page } from '$app/state';
   import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
 
   let showThemePanel = $state(false);
 
@@ -50,7 +51,7 @@
   {#if authState.isAuthenticated}
     <div class="user-profile-summary">
       <div class="avatar-ring">
-        <img src={authState.user?.avatar_url || authState.user?.avatar} alt="Avatar" class="sidebar-avatar" />
+        <Avatar src={authState.user?.avatar_url} username={authState.user?.username} size={40} />
       </div>
       <div class="user-details">
         <span class="full-name">{authState.user?.full_name || authState.user?.username}</span>

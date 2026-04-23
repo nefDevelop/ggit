@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import { onMount } from 'svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
 
   let feeds = $state<any[]>([]);
   let loading = $state(true);
@@ -74,7 +75,7 @@
             <div class="activity-entry">
               <div class="entry-marker">
                 <div class="avatar-box">
-                  <img src={act.act_avatar} alt="" class="user-avatar" />
+                  <Avatar src={act.act_avatar} username={act.act_user_name} size={32} class="user-avatar" />
                   <div class="type-icon {act.op_type === 5 ? 'push' : 'create'}">
                     <span class="material-symbols-rounded">
                       {act.op_type === 5 ? 'commit' : 'add_box'}
@@ -184,10 +185,9 @@
     height: 32px;
   }
 
-  .user-avatar {
+  :global(.user-avatar) {
     width: 100%;
     height: 100%;
-    border-radius: 50%;
     border: 2px solid var(--bg-color);
   }
 

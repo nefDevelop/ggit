@@ -3,6 +3,7 @@
   import OrgTeams from './OrgTeams.svelte';
   import OrgMembers from './OrgMembers.svelte';
   import { apiFetch } from '$lib/api';
+  import Avatar from '$lib/components/Avatar.svelte';
 
   let { orgName } = $props();
   
@@ -43,7 +44,7 @@
 {:else if org}
   <div class="org-layout">
     <header class="org-header island island-interactive tonal">
-      <img src={org.avatar_url} alt={org.username} class="org-avatar" />
+      <Avatar src={org.avatar_url} username={org.username} size={100} class="org-avatar" />
       <div class="org-info">
         <h1>{org.full_name || org.username}</h1>
         <p class="org-desc">{org.description || 'No description provided.'}</p>
@@ -112,7 +113,7 @@
   .org-layout { display: flex; flex-direction: column; gap: 2rem; }
   
   .org-header { display: flex; align-items: center; gap: 2rem; padding: 2.5rem; }
-  .org-avatar { width: 100px; height: 100px; border-radius: 1.5rem; background: #222; }
+  :global(.org-avatar) { border-radius: 1.5rem !important; background: #222; }
   
   .org-info { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
   .org-info h1 { margin: 0; font-size: 2rem; font-weight: 800; }

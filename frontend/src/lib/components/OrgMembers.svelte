@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { apiFetch } from '$lib/api';
+  import Avatar from '$lib/components/Avatar.svelte';
   
   let { orgName } = $props();
   
@@ -73,7 +74,7 @@
         {#each members as member}
           <div class="member-card island island-interactive tonal hover-lift">
              <div class="member-main">
-                <img src={member.avatar_url} alt="" class="member-avatar" />
+                <Avatar src={member.avatar_url} username={member.username} size={44} class="member-avatar" />
                 <div class="member-info">
                    <a href="/{member.username}" class="member-name">{member.full_name || member.username}</a>
                    <span class="member-user">@{member.username}</span>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import Avatar from './Avatar.svelte';
   
   const repo: any = getContext('repo');
   let collaborators = $state<any[]>([]);
@@ -64,7 +65,7 @@
   <div class="collaborator-list-modern">
     {#each collaborators as col}
       <div class="collab-row-flat">
-        <img src={col.avatar_url} alt={col.username} class="mini-avatar" />
+        <Avatar src={col.avatar_url} username={col.username} size={36} class="mini-avatar" />
         <div class="collab-info">
           <strong>{col.full_name || col.username}</strong>
           <span class="user-handle">@{col.username}</span>
@@ -104,7 +105,7 @@
   .collab-row-flat:last-child { border-bottom: none; }
   .collab-row-flat:hover { background: var(--surface-variant); }
   
-  .mini-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); }
+  :global(.mini-avatar) { background: var(--surface-2); }
   
   .collab-info { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
   .collab-info strong { font-size: 0.95rem; font-weight: 700; color: var(--text-color); }

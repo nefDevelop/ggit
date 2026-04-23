@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
   import ReleaseEditor from './ReleaseEditor.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
@@ -194,7 +195,7 @@
                   <div class="publisher-info">
                     <span>Published by</span>
                     <a href={`/${release.publisher.username}`} class="user-chip">
-                      <img src={release.publisher.avatar_url} alt={release.publisher.username} />
+                      <Avatar src={release.publisher.avatar_url} username={release.publisher.username} size={28} />
                       {release.publisher.username}
                     </a>
                   </div>
@@ -261,8 +262,8 @@
 
   .release-side { display: flex; flex-direction: column; gap: 2rem; }
   
-  .assets-box { background: var(--md-sys-color-background) !important; }
-  .assets-box h4 { margin: 0 0 1rem 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; font-weight: 800; }
+  :global(.assets-box) { background: var(--md-sys-color-background) !important; }
+  :global(.assets-box) h4 { margin: 0 0 1rem 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; font-weight: 800; }
   .asset-links { display: flex; flex-direction: column; gap: 0.25rem; }
   .asset-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--md-sys-color-primary); font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 0.75rem; transition: all 0.2s; }
   .asset-item:hover { background: var(--md-sys-color-primary-container); transform: translateX(4px); }
@@ -272,7 +273,7 @@
   .publisher-info { display: flex; flex-direction: column; gap: 0.75rem; padding-left: 0.5rem; }
   .publisher-info span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
   .user-chip { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; color: var(--md-sys-color-on-surface); text-decoration: none; }
-  .user-chip img { width: 28px; height: 28px; border-radius: 50%; background: var(--md-sys-color-surface-variant); border: 1px solid var(--md-sys-color-outline-variant); }
+  .user-chip :global(.avatar-container) { border: 1px solid var(--md-sys-color-outline-variant); }
 
   .pagination { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
   

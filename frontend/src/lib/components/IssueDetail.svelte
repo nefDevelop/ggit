@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
   
   let { index } = $props();
   const repo: any = getContext('repo');
@@ -98,9 +99,7 @@
       <div class="timeline">
         <!-- Original post -->
         <div class="timeline-item main-post">
-          <div class="item-avatar">
-            <span class="material-symbols-rounded">person</span>
-          </div>
+          <Avatar src={issue.user?.avatar_url} username={issue.user?.username} size={48} class="item-avatar" />
           <div class="item-card-flat">
             <div class="item-header">
               <strong>{issue.user?.username}</strong> commented {timeAgo(issue.created_at)}
@@ -116,9 +115,7 @@
         <!-- Comments -->
         {#each comments as comment}
           <div class="timeline-item">
-            <div class="item-avatar">
-              <span class="material-symbols-rounded">chat_bubble</span>
-            </div>
+            <Avatar src={comment.user?.avatar_url} username={comment.user?.username} size={48} class="item-avatar" />
             <div class="item-card-flat">
               <div class="item-header">
                 <strong>{comment.user?.username}</strong> commented {timeAgo(comment.created_at)}
@@ -132,9 +129,7 @@
 
         <!-- Add Comment -->
         <div class="timeline-item new-comment-item">
-          <div class="item-avatar pulse">
-            <span class="material-symbols-rounded">add_comment</span>
-          </div>
+          <Avatar username={issue.user?.username} size={48} class="item-avatar pulse" />
           <div class="item-card-flat">
             <textarea 
               placeholder="Leave a comment..." 
@@ -160,7 +155,7 @@
           <div class="side-val">
             {#if issue.assignee}
                <div class="user-pill">
-                 <span class="material-symbols-rounded">account_circle</span>
+                 <Avatar src={issue.assignee.avatar_url} username={issue.assignee.username} size={24} />
                  {issue.assignee.username}
                </div>
             {:else}

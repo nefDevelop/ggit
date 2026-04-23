@@ -3,6 +3,7 @@
   import { onMount, getContext } from 'svelte';
   import { authState } from '$lib/auth.svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
   
   let profile = $state<any>({
     username: '',
@@ -137,7 +138,7 @@
     <!-- AVATAR COLUMN -->
     <div class="avatar-sidebar">
       <div class="avatar-shield">
-        <img src={`${profile.avatar_url}${profile.avatar_url?.includes('?') ? '&' : '?'}t=${avatarCacheBuster}`} alt="Avatar" class="main-avatar" />
+        <Avatar src={profile.avatar_url} username={profile.username} size={160} />
         <div class="avatar-actions-overlay">
           <label class="action-btn" title="Upload New">
             <span class="material-symbols-rounded">cloud_upload</span>
@@ -151,12 +152,7 @@
         </div>
       </div>
 
-      {#if profile.enable_dicebear_avatar}
-        <button class="btn btn-tonal magic-trigger" class:active={showDiceBear} onclick={() => showDiceBear = !showDiceBear}>
-          <span class="material-symbols-rounded">auto_fix_high</span>
-          Magic Avatar
-        </button>
-      {/if}
+      <!-- Magic Avatar (DiceBear) is now replaced by Identicons by default -->
     </div>
 
     <!-- INFO COLUMN -->

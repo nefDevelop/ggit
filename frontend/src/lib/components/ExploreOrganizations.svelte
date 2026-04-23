@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
   
   let { q = '' } = $props();
   
@@ -40,7 +41,7 @@
     <div class="orgs-grid">
       {#each orgs as org}
         <a href="/org/{org.username}" class="org-card tonal hover-lift">
-          <img src={org.avatar_url} alt="" class="org-avatar" />
+          <Avatar src={org.avatar_url} username={org.username} size={64} class="org-avatar" />
           <div class="org-info">
             <header>
                <strong class="org-name">{org.full_name || org.username}</strong>
@@ -98,15 +99,15 @@
     box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
   }
 
-  .org-avatar { width: 64px; height: 64px; border-radius: 12px; box-shadow: var(--shadow-sm); transition: all 0.3s; border: 1px solid var(--md-sys-color-outline-variant); }
-  .org-card:hover .org-avatar { border-color: var(--primary-color); transform: scale(1.05); }
+  :global(.org-avatar) { border-radius: 12px !important; box-shadow: var(--shadow-sm); transition: all 0.3s; border: 1px solid var(--md-sys-color-outline-variant); }
+  .org-card:hover :global(.org-avatar) { border-color: var(--primary-color); transform: scale(1.05); }
   
   .org-info { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
   .org-info header { display: flex; flex-direction: column; }
   .org-name { font-size: 1.05rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
   .org-username { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; opacity: 0.7; }
   
-  .org-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; opacity: 0.8; }
+  .org-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0.4rem 0; line-height: 1.5; display: -webkit-box; line-clamp: 2; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; opacity: 0.8; }
 
   .org-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.4rem; }
   .meta-item { display: flex; align-items: center; gap: 0.3rem; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; opacity: 0.6; }

@@ -11,7 +11,6 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
@@ -1401,11 +1400,8 @@ func (u *User) AvatarURLPath() string {
 		return defaultURLPath
 	}
 
-	hasCustomAvatar := osx.IsFile(userx.CustomAvatarPath(u.ID))
-	if !hasCustomAvatar {
-		if err := userx.GenerateRandomAvatar(u.ID, u.Name, u.Email); err != nil {
-			log.Error("Failed to generate random avatar [user_id: %d]: %v", u.ID, err)
-		}
+	if !osx.IsFile(userx.CustomAvatarPath(u.ID)) {
+		return ""
 	}
 	return fmt.Sprintf("%s/%s/%d", conf.Server.Subpath, conf.UsersAvatarPathPrefix, u.ID)
 }

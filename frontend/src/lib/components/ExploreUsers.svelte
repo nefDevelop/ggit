@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
   
   let { q = '' } = $props();
   
@@ -49,7 +50,7 @@
     <div class="users-list">
       {#each users as user}
         <a href="/{user.username}" class="user-card tonal hover-lift">
-          <img src={user.avatar_url} alt={user.username} class="avatar" />
+          <Avatar src={user.avatar_url} username={user.username} size={44} class="avatar" />
           <div class="user-info">
             <strong class="username">{user.username}</strong>
             <span class="full-name">{user.full_name || 'No display name'}</span>
@@ -99,8 +100,8 @@
     box-shadow: 0 8px 16px -8px rgba(0, 0, 0, 0.2);
   }
   
-  .avatar { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--md-sys-color-outline-variant); transition: all 0.3s; }
-  .user-card:hover .avatar { border-color: var(--primary-color); transform: rotate(5deg); }
+  :global(.avatar) { border: 2px solid var(--md-sys-color-outline-variant); transition: all 0.3s; }
+  .user-card:hover :global(.avatar) { border-color: var(--primary-color); transform: rotate(5deg); }
   
   .user-info { flex: 1; display: flex; flex-direction: column; gap: 0.05rem; }
   .username { font-size: 1rem; font-weight: 800; color: var(--md-sys-color-on-surface); }

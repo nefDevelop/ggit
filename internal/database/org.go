@@ -128,7 +128,7 @@ func CreateOrganization(org, owner *User) (err error) {
 	if org.Salt, err = userx.RandomSalt(); err != nil {
 		return err
 	}
-	org.UseCustomAvatar = true
+	org.UseCustomAvatar = false
 	org.MaxRepoCreation = -1
 	org.NumTeams = 1
 	org.NumMembers = 1
@@ -137,7 +137,6 @@ func CreateOrganization(org, owner *User) (err error) {
 		if err = tx.Create(org).Error; err != nil {
 			return errors.Newf("insert organization: %v", err)
 		}
-		_ = userx.GenerateRandomAvatar(org.ID, org.Name, org.Email)
 
 		// Add initial creator to organization and owner team.
 		if err = tx.Create(&OrgUser{
