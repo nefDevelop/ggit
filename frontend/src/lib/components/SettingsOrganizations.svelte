@@ -1,7 +1,10 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
-  import Avatar from "./Avatar.svelte";
+  import { i18n } from '$lib/i18n.svelte';
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
+  import Avatar from './Avatar.svelte';
 
   let orgs = $state<any[]>([]);
   let loading = $state(true);
@@ -10,9 +13,7 @@
     loading = true;
     try {
       const res = await apiFetch("/api/v2/user/settings/orgs");
-      if (res.ok) {
-        orgs = await res.json();
-      }
+      if (res.ok) orgs = await res.json();
     } catch (e) {
       console.error(e);
     } finally {
@@ -21,177 +22,112 @@
   }
 
   async function leaveOrg(id: number, name: string) {
-    if (!confirm(`Are you sure you want to leave the organization ${name}?`))
-      return;
+    if (!confirm(`¿Estás seguro de que quieres abandonar la organización ${name}?`)) return;
     try {
-      const res = await apiFetch(`/api/v2/user/settings/orgs/${id}`, {
-        method: "DELETE",
-      });
+      const res = await apiFetch(`/api/v2/user/settings/orgs/${id}`, { method: "DELETE" });
       if (res.ok) {
         await fetchOrgs();
       } else {
         const data = await res.json();
-        alert(data.message || "Failed to leave organization");
+        alert(data.message || "Error al abandonar la organización");
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
 
   onMount(fetchOrgs);
 </script>
 
-<div class="settings-card">
-  <header class="card-header">
-    <div class="header-main">
-      <div class="header-info">
-        <h3 class="card-title">Organizations</h3>
-        <p class="card-desc">Organizations you are a member of.</p>
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">corporate_fare</span>
+        <div>
+          <h2>Mis Organizaciones</h2>
+          <p class="subtitle">Gestiona tu pertenencia a equipos y organizaciones de desarrollo</p>
+        </div>
       </div>
-      <a href="/org/create" class="btn btn-primary btn-sm">
-        <span class="material-symbols-rounded">add</span> New Organization
-      </a>
+      <Button variant="primary" icon="add" href="/org/create">Nueva Organización</Button>
     </div>
   </header>
 
-  <div class="card-body">
-    {#if loading}
-      <div class="skeletons">
-        {#each Array(3) as _}<div class="skeleton-org"></div>{/each}
+  <div class="modular-stack">
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">groups</span>
+        Equipos y Entidades
       </div>
-    {:else if orgs.length === 0}
-      <div class="empty-state">
-        <span class="material-symbols-rounded">corporate_fare</span>
-        <p>You are not a member of any organization yet.</p>
-      </div>
-    {:else}
-      <div class="org-list">
-        {#each orgs as org}
-          <div class="org-item tonal">
-            <div class="org-main">
-              <img src={org.avatar_url} alt="" class="org-avatar" />
-              <div class="org-info">
-                <a href="/org/{org.username}" class="org-name"
-                  >{org.full_name || org.username}</a
-                >
-                <span class="org-user">@{org.username}</span>
+      <div class="island tonal-list">
+        {#if loading}
+          <div class="skeleton-orgs"></div>
+        {:else if orgs.length === 0}
+          <div class="empty-orgs-box">
+             <span class="material-symbols-rounded">corporate_fare</span>
+             <p>No perteneces a ninguna organización todavía.</p>
+          </div>
+        {:else}
+          {#each orgs as org}
+            <div class="org-modular-row">
+              <div class="org-brand">
+                 <div class="org-avatar-shield">
+                    <Avatar src={org.avatar_url} username={org.username} size={64} />
+                 </div>
+                 <div class="org-meta">
+                    <a href="/org/{org.username}" class="org-full-name">{org.full_name || org.username}</a>
+                    <span class="org-alias">@{org.username}</span>
+                 </div>
+              </div>
+              <div class="org-actions">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  icon="logout" 
+                  class="danger-btn" 
+                  onclick={() => leaveOrg(org.id, org.username)}
+                >Abandonar</Button>
               </div>
             </div>
-            <button
-              class="btn btn-ghost error btn-sm"
-              onclick={() => leaveOrg(org.id, org.username)}
-            >
-              <span class="material-symbols-rounded">logout</span> Leave
-            </button>
-          </div>
-        {/each}
+          {/each}
+        {/if}
       </div>
-    {/if}
+    </div>
   </div>
-</div>
+</Card>
 
 <style>
-  .settings-card {
-    display: flex;
-    flex-direction: column;
-  }
-  .card-header {
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
-  .header-main {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  .card-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-  }
-  .card-desc {
-    margin: 0.25rem 0 0;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-  }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .section-header { margin-bottom: 4rem; }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .card-body {
-    padding: 1.5rem;
-  }
+  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
-  .org-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .org-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.5rem;
-  }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+  .module-tag span { font-size: 1.25rem; }
 
-  .org-main {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  .org-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background: #222;
-  }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .org-modular-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  .org-modular-row:last-child { border-bottom: none; }
+  .org-modular-row:hover { background: rgba(255,255,255,0.02); }
 
-  .org-info {
-    display: flex;
-    flex-direction: column;
-  }
-  .org-name {
-    font-weight: 700;
-    color: #fff;
-    text-decoration: none;
-  }
-  .org-name:hover {
-    color: var(--primary-color);
-  }
-  .org-user {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
+  .org-brand { display: flex; align-items: center; gap: 1.5rem; }
+  .org-avatar-shield { width: 64px; height: 64px; border-radius: 1.25rem; overflow: hidden; border: 2px solid var(--md-sys-color-outline-variant); }
+  
+  .org-meta { display: flex; flex-direction: column; gap: 0.2rem; }
+  .org-full-name { font-size: 1.25rem; font-weight: 900; color: var(--text-color); text-decoration: none; }
+  .org-full-name:hover { color: var(--primary-color); }
+  .org-alias { font-size: 0.9rem; color: var(--text-muted); font-weight: 700; opacity: 0.7; }
 
-  .skeleton-org {
-    height: 72px;
-    background: var(--md3-surface-3);
-    border-radius: 1rem;
-    margin-bottom: 0.5rem;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.5;
-    }
-    50% {
-      opacity: 0.8;
-    }
-  }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
-  .empty-state {
-    text-align: center;
-    padding: 4rem;
-    color: var(--text-muted);
-  }
-  .empty-state span {
-    font-size: 3rem;
-    opacity: 0.2;
-  }
+  .empty-orgs-box { padding: 5rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+  .empty-orgs-box span { font-size: 4rem; opacity: 0.2; }
 
-  .btn-ghost.error {
-    color: #ef4444;
-  }
-  .btn-ghost.error:hover {
-    background: rgba(239, 68, 68, 0.1);
-  }
+  .skeleton-orgs { height: 240px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 </style>

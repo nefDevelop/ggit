@@ -1,20 +1,22 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { i18n } from '$lib/i18n.svelte';
+  import Card from './ui/Card.svelte';
 
   let currentTheme = $state('default');
   let currentScheme = $state('auto');
 
   const themes = [
-    { id: 'default', name: 'Default (Blue)', color: '#0b57d0' },
-    { id: 'ayu', name: 'Ayu (Orange)', color: '#ffb454' },
-    { id: 'monokai', name: 'Monokai (Green)', color: '#a6e22e' },
-    { id: 'nord', name: 'Nord (Ice Blue)', color: '#88c0d0' }
+    { id: 'default', name: 'Ggit Dynamic', color: '#0b57d0' },
+    { id: 'ayu', name: 'Ayu Sunrise', color: '#ffb454' },
+    { id: 'monokai', name: 'Monokai Pro', color: '#a6e22e' },
+    { id: 'nord', name: 'Nordic Frost', color: '#88c0d0' }
   ];
 
   const schemes = [
-    { id: 'auto', name: 'System Auto', icon: 'brightness_auto' },
-    { id: 'light', name: 'Light Mode', icon: 'light_mode' },
-    { id: 'dark', name: 'Dark Mode', icon: 'dark_mode' }
+    { id: 'auto', name: 'Sistema Dual', icon: 'brightness_auto' },
+    { id: 'light', name: 'Modo Claro', icon: 'light_mode' },
+    { id: 'dark', name: 'Modo Oscuro', icon: 'dark_mode' }
   ];
 
   onMount(() => {
@@ -40,99 +42,123 @@
   }
 </script>
 
-<div class="appearance-modular-view">
-  <header class="section-header-modern">
-    <div class="header-info">
-      <h3>Appearance</h3>
-      <p>Customize the look and feel of your workspace.</p>
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">palette</span>
+      <div>
+        <h2>{i18n.t('settings.appearance') || 'Apariencia'}</h2>
+        <p class="subtitle">Personaliza la interfaz y el esquema de colores de tu espacio</p>
+      </div>
     </div>
   </header>
-  
-  <div class="appearance-content">
-    <div class="option-group">
-      <h4 class="group-title">Color Mode</h4>
+
+  <div class="modular-stack">
+    <!-- COLOR SCHEME -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">contrast</span>
+        Modo de Color
+      </div>
       <div class="scheme-grid">
         {#each schemes as scheme}
           <button 
             type="button" 
-            class="scheme-btn" 
+            class="scheme-modular-card island" 
             class:active={currentScheme === scheme.id}
             onclick={() => applyScheme(scheme.id)}
           >
-            <span class="material-symbols-rounded">{scheme.icon}</span>
-            <div class="label-box">
-              <span class="name">{scheme.name}</span>
+            <div class="scheme-icon-box">
+              <span class="material-symbols-rounded">{scheme.icon}</span>
             </div>
+            <span class="scheme-name">{scheme.name}</span>
+            {#if currentScheme === scheme.id}
+              <div class="active-dot"></div>
+            {/if}
           </button>
         {/each}
       </div>
     </div>
 
-    <div class="option-group">
-      <h4 class="group-title">Accent Theme</h4>
-      <div class="theme-grid">
+    <!-- ACCENT THEME -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">colorize</span>
+        Tema de Acento
+      </div>
+      <div class="theme-modular-grid">
         {#each themes as theme}
           <button 
             type="button" 
-            class="theme-card" 
+            class="theme-modular-tile tonal" 
             class:active={currentTheme === theme.id}
             onclick={() => applyTheme(theme.id)}
           >
-            <div class="color-preview" style="background-color: {theme.color};"></div>
-            <span class="theme-name">{theme.name}</span>
+            <div class="color-disk shadow-sm" style="background-color: {theme.color};"></div>
+            <div class="theme-info">
+              <span class="name">{theme.name}</span>
+              <span class="hex">{theme.color}</span>
+            </div>
+            {#if currentTheme === theme.id}
+               <span class="material-symbols-rounded check-icon">check_circle</span>
+            {/if}
           </button>
         {/each}
       </div>
     </div>
   </div>
-</div>
+</Card>
 
 <style>
-  .appearance-modular-view { display: flex; flex-direction: column; gap: 2.5rem; }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   
-  .section-header-modern { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
-  .section-header-modern h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .section-header-modern p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  .section-header { margin-bottom: 4rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .appearance-content { display: flex; flex-direction: column; gap: 3rem; }
+  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
-  .option-group { display: flex; flex-direction: column; gap: 1.25rem; }
-  .group-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 0.5rem; }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+  .module-tag span { font-size: 1.25rem; }
 
   /* Scheme Selector */
-  .scheme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-  .scheme-btn {
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;
-    background: var(--surface-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    padding: 2rem;
-    border-radius: 1.25rem;
-    cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    color: var(--text-muted);
+  .scheme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .scheme-modular-card {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+    padding: 3rem 2rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant);
+    background: rgba(255,255,255,0.01); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .scheme-btn:hover { background: rgba(255,255,255,0.02); transform: translateY(-3px); }
-  .scheme-btn.active { border-color: var(--primary-color); background: var(--md-sys-color-primary-container); color: var(--primary-color); box-shadow: var(--shadow-md); }
-  .scheme-btn .material-symbols-rounded { font-size: 1.75rem; }
-  .scheme-btn .name { font-weight: 700; font-size: 0.9rem; }
+  .scheme-modular-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.03); border-color: var(--primary-color); }
+  .scheme-modular-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); box-shadow: var(--shadow-xl); }
+  
+  .scheme-icon-box { width: 64px; height: 64px; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); display: flex; align-items: center; justify-content: center; color: var(--primary-color); }
+  .scheme-icon-box span { font-size: 2.5rem; }
+  .scheme-name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
+  
+  .active-dot { position: absolute; top: 1.5rem; right: 1.5rem; width: 12px; height: 12px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 0 15px var(--primary-color); }
 
   /* Theme Grid */
-  .theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.5rem; }
-  .theme-card {
-    display: flex; align-items: center; gap: 1.25rem;
-    background: var(--surface-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    padding: 1.25rem;
-    border-radius: 1.25rem;
-    cursor: pointer; transition: all 0.2s; color: var(--text-color);
+  .theme-modular-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+  .theme-modular-tile {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: 1.5rem 1.75rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant);
+    background: rgba(0,0,0,0.1); transition: all 0.3s;
   }
-  .theme-card:hover { transform: translateY(-3px); background: rgba(255,255,255,0.02); }
-  .theme-card.active { border-color: var(--primary-color); background: var(--md-sys-color-primary-container); }
-  
-  .color-preview { width: 2.5rem; height: 2.5rem; border-radius: 1rem; flex-shrink: 0; box-shadow: var(--shadow-sm); border: 2px solid rgba(255,255,255,0.1); }
-  .theme-name { font-weight: 700; font-size: 0.9rem; }
+  .theme-modular-tile:hover { transform: scale(1.02); background: rgba(255,255,255,0.02); border-color: var(--primary-color); }
+  .theme-modular-tile.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
-  @media (max-width: 600px) {
+  .color-disk { width: 3.5rem; height: 3.5rem; border-radius: 50%; border: 4px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+  .theme-info { display: flex; flex-direction: column; flex: 1; text-align: left; }
+  .theme-info .name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
+  .theme-info .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); opacity: 0.6; }
+  
+  .check-icon { color: var(--primary-color); font-size: 1.75rem; }
+
+  @media (max-width: 800px) {
     .scheme-grid { grid-template-columns: 1fr; }
-    .theme-grid { grid-template-columns: 1fr; }
+    .theme-modular-grid { grid-template-columns: 1fr; }
   }
 </style>

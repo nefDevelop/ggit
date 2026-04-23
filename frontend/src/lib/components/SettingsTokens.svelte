@@ -1,11 +1,10 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
-  import Button from './ui/Button.svelte';
-  import Input from './ui/Input.svelte';
+  import { i18n } from '$lib/i18n.svelte';
   import Card from './ui/Card.svelte';
-  import Badge from './ui/Badge.svelte';
-  
+  import Button from './ui/Button.svelte';
+
   let tokens = $state<any[]>([]);
   let loading = $state(true);
   let newTokenName = $state('');
@@ -17,11 +16,7 @@
     try {
       const res = await apiFetch('/api/v2/user/settings/tokens');
       if (res.ok) tokens = await res.json();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      loading = false;
-    }
+    } catch (e) { console.error(e); } finally { loading = false; }
   }
 
   async function createToken() {
@@ -35,7 +30,7 @@
       });
       if (res.ok) {
         const token = await res.json();
-        generatedToken = token.sha1; // Ggit returns the clear token once
+        generatedToken = token.sha1; 
         tokens = [token, ...tokens];
         newTokenName = '';
       }
@@ -47,105 +42,155 @@
   }
 
   async function deleteToken(id: number) {
-    if (!confirm('Are you sure you want to delete this token?')) return;
+    if (!confirm('¿Seguro que quieres eliminar este token?')) return;
     try {
-      const res = await apiFetch(`/api/v2/user/settings/tokens/${id}`, {
-        method: 'DELETE'
-      });
-      if (res.ok) {
-        tokens = tokens.filter(t => t.id !== id);
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      const res = await apiFetch(`/api/v2/user/settings/tokens/${id}`, { method: 'DELETE' });
+      if (res.ok) tokens = tokens.filter(t => t.id !== id);
+    } catch (e) { console.error(e); }
   }
 
   onMount(fetchTokens);
 </script>
 
-<Card padding="none" class="settings-card">
-  <header class="card-header">
-    <h3 class="card-title">Access Tokens</h3>
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">token</span>
+      <div>
+        <h2>Tokens de Acceso Personal</h2>
+        <p class="subtitle">Claves seguras para autenticarte vía API o Git sin usar tu contraseña</p>
+      </div>
+    </div>
   </header>
-  
-  <div class="card-body">
-    <p class="desc">Personal access tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git over HTTP, or can be used to authenticate to the API over Basic Authentication.</p>
 
+  <div class="modular-stack">
     {#if generatedToken}
-      <div class="generated-token">
-        <div class="token-warning">
-           <span class="material-symbols-rounded">warning</span>
-           <strong>Make sure to copy your personal access token now. You won’t be able to see it again!</strong>
+      <div class="generated-alert island">
+        <div class="alert-top">
+           <span class="material-symbols-rounded">security_update_good</span>
+           <div class="alert-text">
+              <strong>¡Token Generado con Éxito!</strong>
+              <p>Copia este token ahora. Por seguridad, no podrás volver a verlo.</p>
+           </div>
         </div>
         <div class="token-display">
            <code>{generatedToken}</code>
-           <Button variant="ghost" size="sm" icon="content_copy" onclick={() => navigator.clipboard.writeText(generatedToken)} />
+           <Button variant="ghost" icon="content_copy" onclick={() => {
+             navigator.clipboard.writeText(generatedToken);
+             alert('¡Token copiado al portapapeles!');
+           }} />
         </div>
-        <Button onclick={() => generatedToken = ''}>I've copied it</Button>
+        <Button variant="primary" onclick={() => generatedToken = ''}>He guardado el token</Button>
       </div>
     {/if}
 
-    <div class="tokens-list">
-      {#each tokens as token}
-        <Card padding="sm" class="token-row">
-          <div class="token-info">
-            <strong>{token.name}</strong>
-            <span class="token-meta">Created {new Date(token.created_at).toLocaleDateString()}</span>
+    <!-- TOKENS LIST -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">format_list_bulleted</span>
+        Mis Tokens Activos
+      </div>
+      <div class="island tonal-list">
+        {#if loading}
+          <div class="skeleton-tokens"></div>
+        {:else if tokens.length === 0}
+          <div class="empty-tokens-box">
+             <span class="material-symbols-rounded">lock_open</span>
+             <p>No has generado ningún token todavía.</p>
           </div>
-          <Button variant="ghost" size="sm" icon="delete" class="danger-icon" onclick={() => deleteToken(token.id)} />
-        </Card>
-      {/each}
-      {#if !loading && tokens.length === 0}
-        <div class="empty-state">No access tokens generated yet.</div>
-      {/if}
+        {:else}
+          {#each tokens as token}
+            <div class="token-row">
+              <div class="token-main">
+                <div class="token-icon-wrap tonal">
+                   <span class="material-symbols-rounded">api</span>
+                </div>
+                <div class="token-info">
+                   <span class="token-name">{token.name}</span>
+                   <span class="token-date">Creado el {new Date(token.created_at).toLocaleDateString()}</span>
+                </div>
+              </div>
+              <div class="token-actions">
+                <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteToken(token.id)} />
+              </div>
+            </div>
+          {/each}
+        {/if}
+      </div>
     </div>
 
-    <hr class="divider" />
-
-    <form class="add-token-form" onsubmit={(e) => { e.preventDefault(); createToken(); }}>
-      <h4>Generate New Token</h4>
-      <div class="form-group">
-        <div class="inline-form">
-          <Input bind:value={newTokenName} placeholder="Project Alpha Release" label="Token Name" />
-          <div class="btn-align">
-            <Button type="submit" disabled={submitting || !newTokenName} icon={submitting ? 'sync' : 'key'}>
-              {submitting ? 'Generating...' : 'Generate Token'}
-            </Button>
-          </div>
-        </div>
+    <!-- GENERATE FORM -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">add_circle</span>
+        Generar Nuevo Token
       </div>
-    </form>
+      <div class="island form-box">
+        <form onsubmit={(e) => { e.preventDefault(); createToken(); }} class="premium-token-form">
+          <div class="inline-input-layout">
+             <div class="field">
+                <label>Nombre del Propósito</label>
+                <input type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required />
+             </div>
+             <Button type="submit" variant="primary" icon="key" disabled={submitting || !newTokenName}>
+                {submitting ? 'Generando...' : 'Generar Token'}
+             </Button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </Card>
 
 <style>
-  .settings-card { display: flex; flex-direction: column; }
-  .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   
-  .card-body { padding: 2rem; }
-  .desc { color: var(--text-muted); margin-bottom: 2rem; }
+  .section-header { margin-bottom: 4rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .generated-token { padding: 1.5rem; margin-bottom: 2rem; border-left: 4px solid var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); border-radius: 0.5rem; display: flex; flex-direction: column; gap: 1rem; }
-  .token-warning { display: flex; align-items: center; gap: 0.75rem; color: var(--md-sys-color-primary); font-size: 0.9rem; }
-  .token-display { display: flex; gap: 1rem; align-items: center; background: var(--md-sys-color-background); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1rem; border-radius: 0.75rem; }
-  .token-display code { flex: 1; font-family: monospace; font-size: 1.1rem; color: var(--md-sys-color-on-surface); overflow-x: auto; }
+  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
-  .tokens-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-  :global(.token-row) { display: flex; align-items: center; gap: 1.5rem; background: var(--md-sys-color-surface-container) !important; }
-  .token-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
-  .token-info strong { font-size: 1rem; color: var(--md-sys-color-on-surface); }
-  .token-meta { font-size: 0.75rem; color: var(--text-muted); opacity: 0.7; }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+  .module-tag span { font-size: 1.25rem; }
 
-  .divider { border: 0; border-top: 1px solid var(--md-sys-color-outline-variant); margin: 2rem 0; }
+  .generated-alert { padding: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); display: flex; flex-direction: column; gap: 2rem; animation: slideDown 0.4s; }
+  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .alert-top { display: flex; align-items: center; gap: 1.5rem; }
+  .alert-top span { font-size: 3rem; color: var(--primary-color); }
+  .alert-text strong { display: block; font-size: 1.25rem; font-weight: 950; }
+  .alert-text p { margin: 0.25rem 0 0; color: var(--text-muted); }
 
-  .add-token-form { display: flex; flex-direction: column; gap: 1rem; }
-  .add-token-form h4 { margin: 0; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--md-sys-color-on-surface); }
-  
-  .inline-form { display: flex; gap: 1rem; align-items: flex-end; }
-  .btn-align { margin-bottom: 0.25rem; }
-  
-  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 1rem; }
-  :global(.danger-icon:hover) { color: var(--color-danger) !important; }
+  .token-display { display: flex; align-items: center; gap: 1.5rem; background: #08080c; border: 1px solid #1a1a24; padding: 1rem 1.5rem; border-radius: 1.5rem; }
+  .token-display code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #6ee7b7; word-break: break-all; }
+
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  .token-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  .token-row:last-child { border-bottom: none; }
+  .token-row:hover { background: rgba(255,255,255,0.02); }
+
+  .token-main { display: flex; align-items: center; gap: 1.5rem; }
+  .token-icon-wrap { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); }
+  .token-icon-wrap span { font-size: 2rem; }
+
+  .token-info { display: flex; flex-direction: column; gap: 0.4rem; }
+  .token-name { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
+  .token-date { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 700; }
+
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+  .empty-tokens-box { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .empty-tokens-box span { font-size: 3rem; opacity: 0.2; }
+
+  /* FORM */
+  .form-box { padding: 3rem; background: rgba(255,255,255,0.01); border-radius: 2.5rem; }
+  .inline-input-layout { display: flex; align-items: flex-end; gap: 1.5rem; }
+  .field { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+  .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
+  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 0.85rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; height: 3.5rem; }
+  .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+
+  .skeleton-tokens { height: 160px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 </style>
-

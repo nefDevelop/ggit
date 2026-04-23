@@ -1,56 +1,50 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount, getContext } from "svelte";
+  import { onMount } from "svelte";
   import { authState } from "$lib/auth.svelte";
+  import Avatar from "./Avatar.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import Avatar from "$lib/components/Avatar.svelte";
+  import Card from "./ui/Card.svelte";
+  import Button from "./ui/Button.svelte";
 
   let profile = $state<any>({
     username: "",
     full_name: "",
+    email: "",
     website: "",
     location: "",
     avatar_url: "",
     use_custom_avatar: false,
-    enable_dicebear_avatar: false,
   });
 
   let loading = $state(true);
   let saving = $state(false);
-  let message = $state("");
-  let error = $state("");
-  let avatarCacheBuster = $state(Date.now());
 
-  // DiceBear Logic
-  const dicebearStyles = [
-    "adventurer",
-    "adventurer-neutral",
-    "avataaars",
-    "avataaars-neutral",
-    "bottts",
-    "bottts-neutral",
-    "icons",
-    "lorelei",
-    "lorelei-neutral",
-    "micah",
-    "open-peeps",
-    "notionists",
-    "pixel-art",
-    "shapes",
-    "thumbs",
-  ];
-  let currentDicebearStyle = $state("avataaars");
-  let dicebearSeed = $state("");
+  // Magic Avatar (DiceBear)
   let showDiceBear = $state(false);
-  const dicebearUrl = $derived(
-    `https://api.dicebear.com/7.x/${currentDicebearStyle}/png?seed=${dicebearSeed || profile.username}`,
+  let currentDicebearStyle = $state("identicon");
+  let dicebearSeed = $state(Math.random().toString(36).substring(7));
+  const dicebearStyles = [
+    "identicon",
+    "bottts",
+    "avataaars",
+    "pixel-art",
+    "adventurer",
+    "fun-emoji",
+  ];
+
+  let dicebearUrl = $derived(
+    `https://api.dicebear.com/7.x/${currentDicebearStyle}/svg?seed=${dicebearSeed}`,
   );
 
   async function fetchProfile() {
     loading = true;
     try {
-      const res = await apiFetch("/api/v2/user/settings/profile");
-      if (res.ok) profile = await res.json();
+      const res = await apiFetch("/api/v2/user/settings");
+      if (res.ok) {
+        const data = await res.json();
+        profile = data;
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -60,29 +54,24 @@
 
   async function saveProfile() {
     saving = true;
-    message = "";
-    error = "";
     try {
-      const res = await apiFetch("/api/v2/user/settings/profile", {
-        method: "PUT",
+      const res = await apiFetch("/api/v2/user/settings", {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: profile.username,
           full_name: profile.full_name,
           website: profile.website,
           location: profile.location,
         }),
       });
       if (res.ok) {
-        message = "Profile updated successfully!";
+        // Sync with global auth state if needed
         if (authState.user) {
-          authState.user.username = profile.username;
           authState.user.full_name = profile.full_name;
         }
-        setTimeout(() => (message = ""), 3000);
       }
     } catch (e) {
-      error = "Failed to update profile.";
+      console.error(e);
     } finally {
       saving = false;
     }
@@ -91,74 +80,58 @@
   async function handleAvatarUpload(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
-    saving = true;
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
     try {
-      const formData = new FormData();
-      formData.append("avatar", file);
       const res = await apiFetch("/api/v2/user/settings/avatar", {
         method: "POST",
         body: formData,
       });
       if (res.ok) {
-        message = 'Avatar updated!';
-        avatarCacheBuster = Date.now();
-        await fetchProfile();
-        if (authState.user) {
-          authState.user.avatar_url = profile.avatar_url + '?cb=' + avatarCacheBuster;
-        }
+        const data = await res.json();
+        profile.avatar_url = data.avatar_url + "?cb=" + Date.now();
+        if (authState.user) authState.user.avatar_url = profile.avatar_url;
       }
-    } catch (e) {
-      error = "Upload failed.";
-    } finally {
-      saving = false;
+    } catch (err) {
+      console.error(err);
     }
   }
 
   async function deleteAvatar() {
-    saving = true;
     try {
       const res = await apiFetch("/api/v2/user/settings/avatar", {
         method: "DELETE",
       });
       if (res.ok) {
-        message = 'Avatar removed.';
-        avatarCacheBuster = Date.now();
-        await fetchProfile();
-        if (authState.user) {
-          authState.user.avatar_url = profile.avatar_url;
-        }
+        const data = await res.json();
+        profile.avatar_url = data.avatar_url + "?cb=" + Date.now();
+        if (authState.user) authState.user.avatar_url = profile.avatar_url;
       }
-    } catch (e) {
-      error = "Failed to delete avatar.";
-    } finally {
-      saving = false;
+    } catch (err) {
+      console.error(err);
     }
   }
 
   async function saveDicebearAvatar() {
     saving = true;
     try {
-      const imgRes = await fetch(dicebearUrl);
-      const blob = await imgRes.blob();
-      const formData = new FormData();
-      formData.append(
-        "avatar",
-        new File([blob], "avatar.png", { type: "image/png" }),
-      );
-      const res = await apiFetch("/api/v2/user/settings/avatar", {
+      const res = await apiFetch("/api/v2/user/settings/avatar/magic", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          url: dicebearUrl,
+        }),
       });
       if (res.ok) {
-        message = 'Magic avatar saved!';
-        avatarCacheBuster = Date.now();
-        await fetchProfile();
-        if (authState.user) {
-          authState.user.avatar_url = profile.avatar_url + '?cb=' + avatarCacheBuster;
-        }
+        const data = await res.json();
+        profile.avatar_url = data.avatar_url + "?cb=" + Date.now();
+        if (authState.user) authState.user.avatar_url = profile.avatar_url;
+        showDiceBear = false;
       }
-    } catch (e) {
-      error = "Failed to save magic avatar.";
+    } catch (err) {
+      console.error(err);
     } finally {
       saving = false;
     }
@@ -167,18 +140,70 @@
   onMount(fetchProfile);
 </script>
 
-<div class="profile-modular-card">
-  <div class="profile-layout">
-    <!-- AVATAR COLUMN -->
-    <div class="avatar-sidebar">
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">person</span>
+        <div>
+          <h2>{i18n.t("settings.public_profile")}</h2>
+          <p class="subtitle">{i18n.t("settings.public_profile_desc")}</p>
+        </div>
+      </div>
+      <Button
+        variant="ghost"
+        icon="magic_button"
+        onclick={() => (showDiceBear = !showDiceBear)}
+      >
+        {showDiceBear ? "Cerrar selector" : "Avatar Mágico"}
+      </Button>
+    </div>
+  </header>
+
+  {#if showDiceBear}
+    <div class="magic-avatar-panel island tonal">
+      <div class="dicebear-preview">
+        <div class="preview-shield">
+          <img src={dicebearUrl} alt="DiceBear Preview" />
+          <button
+            class="shuffle-btn"
+            onclick={() =>
+              (dicebearSeed = Math.random().toString(36).substring(7))}
+          >
+            <span class="material-symbols-rounded">casino</span>
+          </button>
+        </div>
+      </div>
+      <div class="dicebear-settings">
+        <div class="styles-grid">
+          {#each dicebearStyles as style}
+            <button
+              class="style-chip"
+              class:active={currentDicebearStyle === style}
+              onclick={() => (currentDicebearStyle = style)}
+            >
+              {style.replace("-", " ")}
+            </button>
+          {/each}
+        </div>
+        <Button variant="primary" onclick={saveDicebearAvatar} disabled={saving}>
+          Confirmar Avatar Mágico
+        </Button>
+      </div>
+    </div>
+  {/if}
+
+  <div class="profile-layout-grid">
+    <!-- AVATAR SIDE -->
+    <div class="avatar-column">
       <div class="avatar-shield">
         <Avatar
           src={profile.avatar_url}
           username={profile.username}
-          size={160}
+          size={200}
         />
-        <div class="avatar-actions-overlay">
-          <label class="action-btn" title="Upload New">
+        <div class="avatar-overlay">
+          <label class="overlay-btn" title="Subir foto">
             <span class="material-symbols-rounded">cloud_upload</span>
             <input
               type="file"
@@ -187,351 +212,291 @@
               hidden
             />
           </label>
-          {#if profile.use_custom_avatar}
+          {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
             <button
-              class="action-btn delete"
+              class="overlay-btn delete"
               onclick={deleteAvatar}
-              title="Remove"
+              title="Quitar foto"
             >
               <span class="material-symbols-rounded">delete</span>
             </button>
           {/if}
         </div>
       </div>
-
-      <!-- Magic Avatar (DiceBear) is now replaced by Identicons by default -->
+      <span class="username-tag">@{profile.username}</span>
     </div>
 
-    <!-- INFO COLUMN -->
-    <div class="info-content">
-      <header class="content-header">
-        <div class="header-with-actions">
-          <div>
-            <h3 class="title">{i18n.t('settings.public_profile')}</h3>
-            <p class="subtitle">{i18n.t('settings.public_profile_desc')}</p>
-          </div>
-          <button class="btn btn-secondary btn-sm magic-trigger" onclick={() => showDiceBear = !showDiceBear}>
-            <span class="material-symbols-rounded">magic_button</span>
-            {showDiceBear ? 'Cerrar selector' : 'Avatar Mágico'}
-          </button>
-        </div>
-      </header>
-
+    <!-- FORM SIDE -->
+    <div class="form-column">
       {#if loading}
         <div class="skeleton-form"></div>
       {:else}
         <form
-          class="precision-form"
+          class="settings-form"
           onsubmit={(e) => {
             e.preventDefault();
             saveProfile();
           }}
         >
           <div class="form-grid">
-            <div class="form-group">
+            <div class="field">
               <label for="username">{i18n.t("username")}</label>
               <input
-                type="text"
                 id="username"
-                bind:value={profile.username}
-                placeholder={i18n.t("username")}
-              />
-              <p class="hint">
-                {i18n.t("settings.username_helper") ||
-                  "Your unique identifier on Ggit."}
-              </p>
-            </div>
-
-            <div class="form-group">
-              <label for="full_name"
-                >{i18n.t("settings.full_name") || "Full Name"}</label
-              >
-              <input
                 type="text"
+                bind:value={profile.username}
+                disabled
+              />
+              <p class="hint">{i18n.t("settings.username_helper")}</p>
+            </div>
+
+            <div class="field">
+              <label for="full_name">{i18n.t("settings.full_name")}</label>
+              <input
                 id="full_name"
+                type="text"
                 bind:value={profile.full_name}
-                placeholder={i18n.t("settings.full_name") ||
-                  "Your display name"}
+                placeholder="Tu nombre real"
               />
             </div>
 
-            <div class="form-group">
+            <div class="field">
+              <label for="email">{i18n.t("email")}</label>
+              <input
+                id="email"
+                type="email"
+                bind:value={profile.email}
+                disabled
+              />
+            </div>
+
+            <div class="field">
               <label for="website">{i18n.t("website")}</label>
               <input
-                type="url"
                 id="website"
+                type="url"
                 bind:value={profile.website}
-                placeholder="https://..."
+                placeholder="https://tuweb.com"
               />
             </div>
 
-            <div class="form-group">
-              <label for="location"
-                >{i18n.t("settings.location") || "Location"}</label
-              >
+            <div class="field full-width">
+              <label for="location">{i18n.t("settings.location")}</label>
               <input
-                type="text"
                 id="location"
+                type="text"
                 bind:value={profile.location}
-                placeholder={i18n.t("settings.location") || "City, Country"}
+                placeholder="Ciudad, País"
               />
             </div>
           </div>
 
           <div class="form-footer">
-            {#if message}<span class="status success">{message}</span>{/if}
-            {#if error}<span class="status error">{error}</span>{/if}
-            <button
-              type="submit"
-              class="btn btn-action-primary"
-              disabled={saving}
-            >
-              {saving
-                ? i18n.t("settings.saving") || "Saving..."
-                : i18n.t("settings.update_profile") || "Save Changes"}
-            </button>
+            <Button type="submit" variant="primary" disabled={saving}>
+              {saving ? i18n.t("settings.saving") : i18n.t("settings.update_profile")}
+            </Button>
           </div>
         </form>
       {/if}
     </div>
   </div>
-
-  {#if showDiceBear}
-    <div class="dicebear-panel">
-      <div class="dicebear-preview-box">
-        <img src={dicebearUrl} alt="Preview" />
-        <button
-          class="shuffle-icon"
-          onclick={() =>
-            (dicebearSeed = Math.random().toString(36).substring(7))}
-        >
-          <span class="material-symbols-rounded">casino</span>
-        </button>
-      </div>
-      <div class="dicebear-controls">
-        <div class="styles-row">
-          {#each dicebearStyles as style}
-            <button class="style-item" class:active={currentDicebearStyle === style} onclick={() => currentDicebearStyle = style}>
-              {style.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')}
-            </button>
-          {/each}
-        </div>
-        <button
-          class="btn btn-primary btn-sm"
-          onclick={saveDicebearAvatar}
-          disabled={saving}>Confirm Magic Avatar</button
-        >
-      </div>
-    </div>
-  {/if}
-</div>
+</Card>
 
 <style>
-  .profile-modular-card {
-    padding: 0;
-    overflow: hidden;
-  }
-  .profile-layout {
-    display: flex;
-    gap: 4rem;
-    padding: 3rem;
+  :global(.settings-premium-card) {
+    border-radius: 3rem;
+    background: rgba(var(--surface-rgb), 0.5);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--md-sys-color-outline-variant);
   }
 
-  /* Avatar Sidebar */
-  .avatar-sidebar {
+  .section-header {
+    margin-bottom: 4rem;
+  }
+  .header-flex {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .title-with-icon {
+    display: flex;
     align-items: center;
     gap: 2rem;
-    width: 180px;
   }
-  .avatar-shield { position: relative; width: 160px; height: 160px; border-radius: 4rem; overflow: hidden; background: var(--surface-variant); border: 4px solid var(--md-sys-color-outline-variant); box-shadow: var(--shadow-lg); }
-  .avatar-actions-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; gap: 0.75rem; opacity: 0; transition: opacity 0.2s; backdrop-filter: blur(4px); }
-  .avatar-shield:hover .avatar-actions-overlay {
-    opacity: 1;
-  }
-  .action-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: white;
+  .hero-icon {
+    font-size: 3rem;
     color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-  .action-btn:hover {
-    transform: scale(1.1);
-  }
-  .action-btn.delete {
-    color: var(--error);
-  }
-  .magic-trigger {
-    border-radius: 100px;
-    font-weight: 700;
-    width: 100%;
+    background: rgba(var(--primary-rgb), 0.1);
+    padding: 1.25rem;
+    border-radius: 2rem;
   }
 
-  /* Info Content */
-  .info-content {
-    flex: 1;
+  h2 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 950;
+    letter-spacing: -0.04em;
   }
-  .content-header { margin-bottom: 2.5rem; }
-  .header-with-actions { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
-  .title { margin: 0; font-size: 1.5rem; font-weight: 900; }
   .subtitle {
     margin: 0.5rem 0 0 0;
     color: var(--text-muted);
-    font-size: 0.95rem;
+    font-size: 1.1rem;
   }
 
-  .precision-form {
+  .profile-layout-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 3rem;
+    max-width: 100%;
+  }
+  @media (max-width: 1100px) {
+    .profile-layout-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .avatar-column {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .avatar-shield {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 5rem;
+    overflow: hidden;
+    border: 4px solid var(--md-sys-color-outline-variant);
+    box-shadow: var(--shadow-xl);
+  }
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+  }
+  .avatar-shield:hover .avatar-overlay {
+    opacity: 1;
+  }
+  .overlay-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: white;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s;
+  }
+  .overlay-btn:hover {
+    transform: scale(1.1);
+  }
+  .overlay-btn.delete {
+    color: var(--error);
+  }
+
+  .username-tag {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.1);
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+  }
+
+  .settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
   }
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
-  .form-group {
+  .field {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
-  .form-group label {
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
+  .field.full-width {
+    grid-column: span 2;
   }
-  .form-group input {
-    background: var(--surface-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    padding: 0.85rem 1.25rem;
-    border-radius: 1rem;
+  .field label {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--text-color);
-    font-size: 1rem;
-    transition: all 0.2s;
+    margin-left: 0.5rem;
   }
-  .form-group input:focus {
+  .field input {
+    background: var(--surface-variant);
+    border: 2px solid transparent;
+    padding: 1rem 1.5rem;
+    border-radius: 1.25rem;
+    color: var(--text-color);
+    font-size: 1.05rem;
+    transition: all 0.3s;
+  }
+  .field input:focus {
     border-color: var(--primary-color);
     outline: none;
     background: rgba(var(--primary-rgb), 0.05);
+    box-shadow: 0 0 0 5px rgba(var(--primary-rgb), 0.15);
+  }
+  .field input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   .hint {
-    margin: 0.25rem 0 0 0;
     font-size: 0.75rem;
     color: var(--text-muted);
-    opacity: 0.7;
+    margin: 0 0 0 0.5rem;
   }
 
   .form-footer {
     display: flex;
     justify-content: flex-end;
-    align-items: center;
-    gap: 2rem;
-    margin-top: 1rem;
-    padding-top: 2rem;
+    padding-top: 2.5rem;
     border-top: 1px solid var(--md-sys-color-outline-variant);
   }
-  .status {
-    font-size: 0.9rem;
-    font-weight: 600;
+
+  .magic-avatar-panel {
+    margin-bottom: 3rem;
+    padding: 2.5rem;
+    border-radius: 2.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3rem;
+    border: 2px solid var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.03);
+    animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .status.success {
-    color: var(--success);
-  }
-  .status.error {
-    color: var(--error);
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  /* DiceBear Panel */
-  .dicebear-panel { 
-    background: var(--surface-variant); 
-    padding: 2.5rem; 
-    border: 1px solid var(--md-sys-color-outline-variant); 
-    display: flex; 
-    gap: 3rem; 
-    align-items: center; 
-    animation: slideIn 0.4s ease-out;
-    border-radius: 3rem;
-    margin: 2rem;
-    box-shadow: var(--shadow-lg);
-  }
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  .dicebear-preview-box { position: relative; width: 140px; height: 140px; border-radius: 3.5rem; background: white; padding: 15px; box-shadow: var(--shadow-lg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .dicebear-preview-box img { width: 100%; height: 100%; border-radius: 2.5rem; }
-  .shuffle-icon {
-    position: absolute;
-    bottom: -8px;
-    right: -8px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    color: white;
-    border: 2px solid white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-  .dicebear-controls {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .styles-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .style-item {
-    padding: 0.4rem 1rem;
-    border-radius: 100px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    color: var(--text-muted);
-  }
-  .style-item.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-  }
+  .dicebear-preview { display: flex; align-items: center; justify-content: center; }
+  .preview-shield { position: relative; width: 140px; height: 140px; border-radius: 2rem; overflow: hidden; background: white; border: 4px solid var(--md-sys-color-outline-variant); }
+  .preview-shield img { width: 100%; height: 100%; }
+  .shuffle-btn { position: absolute; bottom: 0.5rem; right: 0.5rem; background: var(--primary-color); color: white; border: none; padding: 0.5rem; border-radius: 0.75rem; cursor: pointer; }
 
-  @media (max-width: 900px) {
-    .profile-layout {
-      flex-direction: column;
-      align-items: center;
-      gap: 3rem;
-    }
-    .avatar-sidebar {
-      width: 100%;
-    }
-    .form-grid {
-      grid-template-columns: 1fr;
-    }
-    .dicebear-panel {
-      flex-direction: column;
-    }
-  }
+  .dicebear-settings { display: flex; flex-direction: column; gap: 1.5rem; }
+  .styles-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .style-chip { padding: 0.5rem 1rem; border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.85rem; text-transform: capitalize; }
+  .style-chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+  .skeleton-form { height: 400px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 </style>

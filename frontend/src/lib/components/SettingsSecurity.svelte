@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api";
+  import { i18n } from '$lib/i18n.svelte';
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
 
   let oldPassword = $state("");
   let newPassword = $state("");
@@ -15,13 +18,13 @@
   let passcode = $state("");
   let recoveryCodes = $state([] as string[]);
   let showRecovery = $state(false);
+
   async function updatePassword() {
     if (newPassword !== repeatPassword) {
-      message = "Passwords do not match.";
+      message = "Las contraseñas no coinciden.";
       isError = true;
       return;
     }
-
     saving = true;
     message = "";
     isError = false;
@@ -36,17 +39,15 @@
         }),
       });
       if (res.ok) {
-        message = "Password updated successfully!";
-        oldPassword = "";
-        newPassword = "";
-        repeatPassword = "";
+        message = "¡Contraseña actualizada correctamente!";
+        oldPassword = ""; newPassword = ""; repeatPassword = "";
       } else {
         const body = await res.json();
-        message = body.message || "Failed to update password.";
+        message = body.message || "Error al actualizar la contraseña.";
         isError = true;
       }
     } catch (e) {
-      message = "Network error.";
+      message = "Error de red.";
       isError = true;
     } finally {
       saving = false;
@@ -60,35 +61,23 @@
         const data = await res.json();
         twoFactorEnabled = data.enabled;
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
 
   async function initiate2FA() {
     try {
-      const res = await apiFetch(
-        "/api/v2/user/settings/security/two_factor/enable",
-        { method: "POST" },
-      );
-      if (res.ok) {
-        enrollment = await res.json();
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      const res = await apiFetch("/api/v2/user/settings/security/two_factor/enable", { method: "POST" });
+      if (res.ok) enrollment = await res.json();
+    } catch (e) { console.error(e); }
   }
 
   async function confirm2FA() {
     try {
-      const res = await apiFetch(
-        "/api/v2/user/settings/security/two_factor/confirm",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ passcode }),
-        },
-      );
+      const res = await apiFetch("/api/v2/user/settings/security/two_factor/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ passcode }),
+      });
       if (res.ok) {
         const data = await res.json();
         recoveryCodes = data.recovery_codes;
@@ -96,379 +85,210 @@
         enrollment = null;
         showRecovery = true;
       } else {
-        alert("Invalid passcode");
+        alert("Código inválido");
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
 
   async function disable2FA() {
-    if (
-      !confirm(
-        "Are you sure you want to disable 2FA? This will make your account less secure.",
-      )
-    )
-      return;
+    if (!confirm("¿Seguro que quieres deshabilitar el 2FA? Tu cuenta será menos segura.")) return;
     try {
-      const res = await apiFetch("/api/v2/user/settings/security/two_factor", {
-        method: "DELETE",
-      });
+      const res = await apiFetch("/api/v2/user/settings/security/two_factor", { method: "DELETE" });
       if (res.ok) {
         twoFactorEnabled = false;
         showRecovery = false;
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   }
 
-  onMount(() => {
-    fetch2FAStatus();
-  });
+  onMount(fetch2FAStatus);
 </script>
 
-<div class="settings-stack">
-  <div class="settings-card">
-    <header class="card-header">
-      <h3 class="card-title">Security & Password</h3>
-    </header>
-
-    <form
-      class="settings-form"
-      onsubmit={(e) => {
-        e.preventDefault();
-        updatePassword();
-      }}
-    >
-      <div class="form-group">
-        <label for="old_pass">Current Password</label>
-        <input
-          type="password"
-          id="old_pass"
-          bind:value={oldPassword}
-          required
-        />
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">security</span>
+      <div>
+        <h2>Seguridad y Acceso</h2>
+        <p class="subtitle">Protege tu cuenta con contraseñas fuertes y autenticación en dos pasos</p>
       </div>
+    </div>
+  </header>
 
-      <div class="form-group">
-        <label for="new_pass">New Password</label>
-        <input
-          type="password"
-          id="new_pass"
-          bind:value={newPassword}
-          required
-        />
+  <div class="modular-stack">
+    <!-- PASSWORD SECTION -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">password</span>
+        Cambiar Contraseña
       </div>
-
-      <div class="form-group">
-        <label for="rep_pass">Repeat New Password</label>
-        <input
-          type="password"
-          id="rep_pass"
-          bind:value={repeatPassword}
-          required
-        />
+      <div class="island form-box">
+        <form onsubmit={(e) => { e.preventDefault(); updatePassword(); }} class="security-form">
+          <div class="form-grid">
+            <div class="field">
+              <label>Contraseña Actual</label>
+              <input type="password" bind:value={oldPassword} placeholder="••••••••" required />
+            </div>
+            <div class="field">
+              <label>Nueva Contraseña</label>
+              <input type="password" bind:value={newPassword} placeholder="Mínimo 8 caracteres" required />
+            </div>
+            <div class="field">
+              <label>Confirmar Nueva Contraseña</label>
+              <input type="password" bind:value={repeatPassword} placeholder="••••••••" required />
+            </div>
+          </div>
+          
+          <div class="form-footer">
+            {#if message}
+              <div class="status-alert" class:is-error={isError}>
+                <span class="material-symbols-rounded">{isError ? 'error' : 'check_circle'}</span>
+                {message}
+              </div>
+            {/if}
+            <Button type="submit" variant="primary" disabled={saving || !oldPassword}>
+              {saving ? 'Actualizando...' : 'Actualizar Contraseña'}
+            </Button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <div class="form-actions">
-        {#if message}
-          <span class="status-msg" class:error={isError}>{message}</span>
+    <!-- 2FA SECTION -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">phonelink_lock</span>
+        Doble Factor (2FA)
+      </div>
+      <div class="island enrollment-box" class:is-protected={twoFactorEnabled}>
+        <div class="enrollment-header">
+           <div class="status-indicator">
+              <span class="material-symbols-rounded">{twoFactorEnabled ? 'verified_user' : 'gpp_maybe'}</span>
+              <div class="status-text">
+                 <strong>{twoFactorEnabled ? 'Cuenta Protegida' : 'Protección Deshabilitada'}</strong>
+                 <span>{twoFactorEnabled ? 'El acceso requiere un código temporal adicional.' : 'Añade una capa extra de seguridad a tu cuenta.'}</span>
+              </div>
+           </div>
+           {#if !twoFactorEnabled && !enrollment}
+              <Button variant="primary" icon="enhanced_encryption" onclick={initiate2FA}>Configurar 2FA</Button>
+           {/if}
+        </div>
+
+        {#if showRecovery}
+          <div class="recovery-view">
+             <h4>¡Éxito! 2FA Habilitado</h4>
+             <p>Guarda estos códigos de recuperación en un lugar seguro. Los necesitarás si pierdes acceso a tu dispositivo.</p>
+             <div class="recovery-grid">
+                {#each recoveryCodes as code}
+                   <code>{code}</code>
+                {/each}
+             </div>
+             <Button variant="outline" onclick={() => showRecovery = false}>He guardado los códigos</Button>
+          </div>
+        {:else if enrollment}
+          <div class="enrollment-flow">
+             <div class="steps-row">
+                <div class="step-card tonal">
+                   <span class="step-num">1</span>
+                   <p>Escanea el código QR con una app como Google Authenticator o Authy.</p>
+                   <div class="qr-wrap">
+                      <img src={enrollment.qr_code} alt="QR" />
+                   </div>
+                   <div class="manual-code">
+                      <small>O introduce el secreto manualmente:</small>
+                      <code>{enrollment.secret}</code>
+                   </div>
+                </div>
+                <div class="step-card tonal">
+                   <span class="step-num">2</span>
+                   <p>Introduce el código de 6 dígitos que aparece en tu aplicación móvil.</p>
+                   <div class="verify-box">
+                      <input type="text" maxlength="6" placeholder="000000" bind:value={passcode} />
+                      <Button variant="primary" onclick={confirm2FA} disabled={passcode.length < 6}>Verificar y Activar</Button>
+                   </div>
+                   <Button variant="ghost" onclick={() => enrollment = null}>Cancelar Proceso</Button>
+                </div>
+             </div>
+          </div>
+        {:else if twoFactorEnabled}
+          <div class="manage-2fa">
+             <div class="actions-row">
+                <Button variant="outline" icon="key" onclick={async () => {
+                  const res = await apiFetch("/api/v2/user/settings/security/two_factor/recovery_codes");
+                  if (res.ok) { const data = await res.json(); recoveryCodes = data.recovery_codes; showRecovery = true; }
+                }}>Ver Códigos de Recuperación</Button>
+                <Button variant="ghost" icon="no_encryption" class="danger-btn" onclick={disable2FA}>Desactivar 2FA</Button>
+             </div>
+          </div>
         {/if}
-        <button
-          type="submit"
-          class="btn btn-primary"
-          disabled={saving || !oldPassword || !newPassword}
-        >
-          {saving ? "Updating..." : "Change Password"}
-        </button>
       </div>
-    </form>
-  </div>
-
-  <div
-    class="settings-card {twoFactorEnabled ? 'tonal-success' : 'tonal-warning'}"
-  >
-    <header class="card-header">
-      <div class="header-with-badge">
-        <h3 class="card-title">Two-Factor Authentication</h3>
-        <span class="status-badge {twoFactorEnabled ? 'enabled' : 'disabled'}">
-          {twoFactorEnabled ? "Protected" : "Unprotected"}
-        </span>
-      </div>
-      <p class="card-desc">
-        Add an extra layer of security to your account by requiring more than
-        just a password to log in.
-      </p>
-    </header>
-
-    <div class="card-body">
-      {#if showRecovery}
-        <div class="recovery-box">
-          <h4>Success! 2FA is enabled.</h4>
-          <p>
-            Please save these recovery codes in a safe place. You can use them
-            to log in if you lose access to your device.
-          </p>
-          <div class="recovery-codes">
-            {#each recoveryCodes as code}
-              <code>{code}</code>
-            {/each}
-          </div>
-          <button class="btn btn-tonal" onclick={() => (showRecovery = false)}
-            >I've saved them</button
-          >
-        </div>
-      {:else if enrollment}
-        <div class="enrollment-flow">
-          <div class="qr-section">
-            <img src={enrollment.qr_code} alt="QR Code" class="qr-image" />
-            <div class="secret-text">
-              <p>
-                Scan this QR code with your authenticator app (e.g., Google
-                Authenticator, Authy).
-              </p>
-              <p>Or enter this secret manually:</p>
-              <code>{enrollment.secret}</code>
-            </div>
-          </div>
-          <div class="confirm-section">
-            <label for="passcode">Enter 6-digit passcode to verify:</label>
-            <div class="input-group">
-              <input
-                type="text"
-                id="passcode"
-                bind:value={passcode}
-                placeholder="000000"
-                maxlength="6"
-              />
-              <button
-                class="btn btn-primary"
-                onclick={confirm2FA}
-                disabled={passcode.length < 6}>Verify & Enable</button
-              >
-            </div>
-            <button class="btn btn-ghost" onclick={() => (enrollment = null)}
-              >Cancel</button
-            >
-          </div>
-        </div>
-      {:else if twoFactorEnabled}
-        <div class="enabled-state">
-          <p>
-            You have two-factor authentication enabled via an authenticator app.
-          </p>
-          <div class="actions">
-            <button
-              class="btn btn-outline"
-              onclick={async () => {
-                const res = await apiFetch(
-                  "/api/v2/user/settings/security/two_factor/recovery_codes",
-                );
-                if (res.ok) {
-                  const data = await res.json();
-                  recoveryCodes = data.recovery_codes;
-                  showRecovery = true;
-                }
-              }}>View Recovery Codes</button
-            >
-            <button class="btn btn-ghost error" onclick={disable2FA}
-              >Disable 2FA</button
-            >
-          </div>
-        </div>
-      {:else}
-        <div class="disabled-state">
-          <p>
-            Two-factor authentication is not currently enabled for your account.
-          </p>
-          <button class="btn btn-primary" onclick={initiate2FA}
-            >Enable 2FA</button
-          >
-        </div>
-      {/if}
     </div>
   </div>
-</div>
+</Card>
 
 <style>
-  .settings-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  .settings-card {
-    display: flex;
-    flex-direction: column;
-  }
-  .card-header {
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
-  .card-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-  }
-  .card-desc {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin: 0.5rem 0 0;
-  }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .section-header { margin-bottom: 4rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .header-with-badge {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .status-badge {
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-  }
-  .status-badge.enabled {
-    background: #10b981;
-    color: #000;
-  }
-  .status-badge.disabled {
-    background: #f59e0b;
-    color: #000;
-  }
+  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
-  .card-body {
-    padding: 2rem;
-  }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+  .module-tag span { font-size: 1.25rem; }
 
-  .settings-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .form-group label {
-    font-size: 0.85rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding-left: 0.25rem;
-  }
+  .island { border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.01); }
+  .form-box { padding: 3rem; }
 
-  input {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    color: var(--text-color);
-    font-family: inherit;
-    font-size: 1rem;
-    transition: all 0.2s;
-  }
-  input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background: rgba(0, 0, 0, 0.4);
-  }
+  .security-form { display: flex; flex-direction: column; gap: 2.5rem; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+  .field { display: flex; flex-direction: column; gap: 0.75rem; }
+  .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
+  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; }
+  .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
-  .form-actions {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1.5rem;
-    margin-top: 1rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-  }
-  .status-msg {
-    font-size: 0.9rem;
-    color: #10b981;
-  }
-  .status-msg.error {
-    color: #ef4444;
-  }
+  .form-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
+  .status-alert { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; color: #10b981; }
+  .status-alert.is-error { color: var(--error); }
 
-  /* 2FA Styles */
-  .recovery-box {
-    padding: 2rem;
-    background: rgba(16, 185, 129, 0.05);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-  }
-  .recovery-codes {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
-    margin: 1.5rem 0;
-  }
-  .recovery-codes code {
-    background: #000;
-    padding: 0.5rem;
-    border-radius: 0.4rem;
-    text-align: center;
-    color: var(--primary-color);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-  }
+  /* 2FA ENROLLMENT */
+  .enrollment-box { padding: 3rem; }
+  .enrollment-box.is-protected { background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.2); }
+  
+  .enrollment-header { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .status-indicator { display: flex; align-items: center; gap: 1.5rem; }
+  .status-indicator span { font-size: 3rem; color: var(--text-muted); }
+  .is-protected .status-indicator span { color: #10b981; }
+  .status-text { display: flex; flex-direction: column; }
+  .status-text strong { font-size: 1.5rem; font-weight: 900; }
+  .status-text span { color: var(--text-muted); font-size: 1rem; }
 
-  .enrollment-flow {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  .qr-section {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-  .qr-image {
-    width: 180px;
-    height: 180px;
-    background: #fff;
-    padding: 10px;
-    border-radius: 1rem;
-  }
-  .secret-text code {
-    display: block;
-    background: #000;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    margin-top: 0.5rem;
-    font-size: 1.1rem;
-    color: var(--primary-color);
-  }
+  .recovery-view { margin-top: 2.5rem; padding: 2.5rem; background: #08080c; border-radius: 2rem; border: 1px solid #1a1a24; text-align: center; }
+  .recovery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 2rem 0; }
+  .recovery-grid code { background: #000; padding: 1rem; border-radius: 1rem; color: var(--primary-color); font-weight: 900; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; letter-spacing: 0.1em; border: 1px solid #222; }
 
-  .confirm-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-    pt: 1.5rem;
-  }
-  .input-group {
-    display: flex;
-    gap: 1rem;
-  }
-  .input-group input {
-    width: 150px;
-    text-align: center;
-    font-size: 1.5rem;
-    letter-spacing: 0.2em;
-    font-weight: 800;
-  }
+  .enrollment-flow { margin-top: 3rem; }
+  .steps-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .step-card { padding: 2rem; border-radius: 2rem; position: relative; }
+  .step-num { position: absolute; top: 1.5rem; right: 1.5rem; width: 32px; height: 32px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+  .qr-wrap { background: white; padding: 1rem; border-radius: 1.5rem; width: fit-content; margin: 1.5rem auto; }
+  .qr-wrap img { width: 180px; height: 180px; }
+  .manual-code { text-align: center; }
+  .manual-code code { display: block; margin-top: 0.5rem; background: #000; padding: 0.75rem; border-radius: 0.75rem; color: var(--primary-color); font-weight: 800; }
 
-  .actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  .btn-ghost.error {
-    color: #ef4444;
-  }
-  .btn-ghost.error:hover {
-    background: rgba(239, 68, 68, 0.1);
+  .verify-box { display: flex; flex-direction: column; gap: 1rem; margin: 2rem 0; }
+  .verify-box input { text-align: center; font-size: 2rem; font-weight: 950; letter-spacing: 0.3em; background: #000; border: 2px solid var(--primary-color); padding: 1rem; border-radius: 1.25rem; color: white; }
+
+  .manage-2fa { margin-top: 2.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 2.5rem; }
+  .actions-row { display: flex; gap: 1rem; }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+
+  @media (max-width: 900px) {
+    .steps-row { grid-template-columns: 1fr; }
+    .enrollment-header { flex-direction: column; align-items: flex-start; }
   }
 </style>

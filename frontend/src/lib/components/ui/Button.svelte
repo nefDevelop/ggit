@@ -10,6 +10,7 @@
     onclick?: (e: MouseEvent) => void;
     children?: Snippet;
     icon?: string;
+    href?: string;
   }
 
   let { 
@@ -20,7 +21,8 @@
     class: className = '',
     onclick,
     children,
-    icon
+    icon,
+    href
   }: Props = $props();
 
   const variants: Record<NonNullable<Props['variant']>, string> = {
@@ -39,19 +41,34 @@
   };
 </script>
 
-<button 
-  {type} 
-  {disabled} 
-  class="btn {variants[variant]} {sizes[size]} {className}" 
-  {onclick}
->
-  {#if icon}
-    <span class="material-symbols-rounded">{icon}</span>
-  {/if}
-  {#if children}
-    {@render children()}
-  {/if}
-</button>
+{#if href}
+  <a 
+    {href}
+    class="btn {variants[variant]} {sizes[size]} {className}" 
+    onclick={(e) => !disabled && onclick?.(e as any)}
+  >
+    {#if icon}
+      <span class="material-symbols-rounded">{icon}</span>
+    {/if}
+    {#if children}
+      {@render children()}
+    {/if}
+  </a>
+{:else}
+  <button 
+    {type} 
+    {disabled} 
+    class="btn {variants[variant]} {sizes[size]} {className}" 
+    {onclick}
+  >
+    {#if icon}
+      <span class="material-symbols-rounded">{icon}</span>
+    {/if}
+    {#if children}
+      {@render children()}
+    {/if}
+  </button>
+{/if}
 
 <style>
   .btn {
@@ -139,4 +156,3 @@
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 </style>
-

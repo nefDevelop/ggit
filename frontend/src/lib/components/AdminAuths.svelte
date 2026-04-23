@@ -13,20 +13,13 @@
     try {
       const res = await apiFetch("/api/v2/admin/auths");
       if (res.ok) sources = await res.json();
-    } catch (e) {
-      console.error(e);
-    } finally {
-      loading = false;
-    }
+    } catch (e) { console.error(e); } finally { loading = false; }
   }
 
   async function deleteAuth(id: number) {
-    if (!confirm("Are you sure you want to delete this authentication source?"))
-      return;
+    if (!confirm("¿Seguro que quieres eliminar este origen de autenticación?")) return;
     try {
-      const res = await apiFetch(`/api/v2/admin/auths/${id}`, {
-        method: "DELETE",
-      });
+      const res = await apiFetch(`/api/v2/admin/auths/${id}`, { method: "DELETE" });
       if (res.ok) fetchAuths();
     } catch (e) { console.error(e); }
   }
@@ -34,98 +27,115 @@
   onMount(fetchAuths);
 </script>
 
-<Card class="admin-view-card" padding="lg">
+<Card class="settings-premium-card" padding="lg">
   <header class="section-header">
     <div class="header-flex">
       <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">lock</span>
+        <span class="material-symbols-rounded hero-icon">lock_person</span>
         <div>
-          <h2>Orígenes de Autenticación</h2>
-          <p class="subtitle">Gestiona métodos externos como LDAP, OAuth2 o PAM</p>
+          <h2>Fuentes de Autenticación</h2>
+          <p class="subtitle">Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos</p>
         </div>
       </div>
-      <Button variant="primary" icon="add_moderator" class="hero-btn">Nueva Fuente</Button>
+      <Button variant="primary" icon="add_moderator">Nueva Fuente</Button>
     </div>
   </header>
 
-  {#if loading}
-    <div class="skeleton-grid"></div>
-  {:else if sources.length === 0}
-    <div class="empty-state-card island">
-      <span class="material-symbols-rounded">no_encryption</span>
-      <h3>Sin fuentes de autenticación</h3>
-      <p>Configura LDAP u otros servicios para permitir el acceso externo.</p>
-      <Button variant="outline" icon="add">Añadir Primera Fuente</Button>
-    </div>
-  {:else}
-    <div class="auth-grid">
-      {#each sources as source}
-        <div class="auth-source-card island tonal-hover">
-          <div class="source-top">
-            <div class="type-capsule" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : '#9c27b0'}">
-              <span class="material-symbols-rounded">{source.type === 2 || source.type === 5 ? "hub" : "security"}</span>
-            </div>
-            <div class="source-meta">
-              <div class="name-row">
-                <span class="name">{source.name}</span>
-                <span class="status-dot" class:active={source.is_actived}></span>
-              </div>
-              <span class="type-label">{source.type_name || "Protocolo Ggit"}</span>
-            </div>
-          </div>
-          
-          <div class="source-footer">
-            <div class="active-badge" class:active={source.is_actived}>
-              {source.is_actived ? 'Activo' : 'Deshabilitado'}
-            </div>
-            <div class="actions">
-              <Button variant="ghost" size="sm" icon="settings" />
-              <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteAuth(source.id)} />
-            </div>
-          </div>
-        </div>
-      {/each}
-    </div>
-  {/if}
+  <div class="modern-table-card">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Origen</th>
+          <th>Tipo / Protocolo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#if loading}
+          {#each Array(3) as _}
+            <tr class="skeleton-row">
+              <td colspan="5"><div class="skeleton-line"></div></td>
+            </tr>
+          {/each}
+        {:else if sources.length === 0}
+          <tr>
+            <td colspan="5" class="empty-state">No hay orígenes de autenticación configurados.</td>
+          </tr>
+        {:else}
+          {#each sources as source}
+            <tr class="hover-row">
+              <td class="id-cell">#{source.id}</td>
+              <td>
+                <div class="source-cell">
+                  <div class="source-icon tonal">
+                    <span class="material-symbols-rounded">{source.type === 2 || source.type === 5 ? "hub" : "verified_user"}</span>
+                  </div>
+                  <div class="source-info">
+                    <strong>{source.name}</strong>
+                    <span>{source.type === 2 ? 'Servidor LDAP' : source.type === 6 ? 'Servicio SMTP' : 'Autenticación Externa'}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : '#9c27b0'}">
+                   {source.type_name || "Protocolo Estándar"}
+                </span>
+              </td>
+              <td>
+                <span class="status-chip" class:active={source.is_actived}>
+                  {source.is_actived ? 'Operativo' : 'Inactivo'}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <Button variant="ghost" size="sm" icon="settings" />
+                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteAuth(source.id)} />
+                </div>
+              </td>
+            </tr>
+          {/each}
+        {/if}
+      </tbody>
+    </table>
+  </div>
 </Card>
 
 <style>
-  .admin-view-card { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(20px); border: 1px solid var(--md-sys-color-outline-variant); }
-  .section-header { margin-bottom: 3.5rem; }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
   .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .hero-btn { border-radius: 1.5rem !important; padding: 1rem 2rem !important; font-weight: 800 !important; }
+  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+  .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
+  .modern-table tr:last-child td { border-bottom: none; }
 
-  .auth-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
-  .auth-source-card { padding: 1.75rem; border-radius: 2.25rem; border: 1px solid var(--md-sys-color-outline-variant); display: flex; flex-direction: column; gap: 2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }
-  .auth-source-card:hover { transform: translateY(-6px); border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .id-cell { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-weight: 700; opacity: 0.5; font-size: 0.85rem; }
+  
+  .source-cell { display: flex; align-items: center; gap: 1.25rem; }
+  .source-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 1rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
+  .source-icon span { font-size: 1.75rem; }
+  
+  .source-info { display: flex; flex-direction: column; }
+  .source-info strong { font-size: 1.1rem; font-weight: 800; color: var(--text-color); }
+  .source-info span { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
 
-  .source-top { display: flex; align-items: center; gap: 1.25rem; }
-  .type-capsule { width: 56px; height: 56px; border-radius: 1.25rem; background: rgba(var(--primary-rgb), 0.1); color: var(--accent); display: flex; align-items: center; justify-content: center; }
-  .type-capsule span { font-size: 2.25rem; }
+  .type-badge { font-size: 0.75rem; font-weight: 900; color: var(--accent); background: rgba(156, 39, 176, 0.1); padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(156, 39, 176, 0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+  
+  .status-chip { display: inline-block; padding: 0.3rem 1rem; border-radius: 100px; font-size: 0.7rem; font-weight: 900; background: rgba(255,255,255,0.05); color: var(--text-muted); text-transform: uppercase; border: 1px solid var(--md-sys-color-outline-variant); }
+  .status-chip.active { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
 
-  .source-meta { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
-  .name-row { display: flex; align-items: center; gap: 0.75rem; justify-content: space-between; }
-  .name { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
-  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; }
-  .status-dot.active { background: #10b981; box-shadow: 0 0 10px #10b98180; }
-  .type-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.1em; }
-
-  .source-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
-  .active-badge { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.3rem 0.75rem; border-radius: 100px; }
-  .active-badge.active { color: #10b981; background: rgba(16, 185, 129, 0.1); }
-
-  .actions { display: flex; gap: 0.5rem; }
+  .action-buttons { display: flex; gap: 0.5rem; }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
-  .empty-state-card { padding: 5rem; text-align: center; border-radius: 3rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; border: 2px dashed var(--md-sys-color-outline-variant); }
-  .empty-state-card span { font-size: 4rem; opacity: 0.2; }
-  .empty-state-card h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .empty-state-card p { margin: 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  .skeleton-grid { height: 400px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 1.1rem; opacity: 0.5; }
+  .skeleton-line { height: 2rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
 </style>

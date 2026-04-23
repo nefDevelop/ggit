@@ -1,9 +1,9 @@
 <script lang="ts">
-  import AdminAuth from '$lib/components/AdminAuth.svelte';
+  import AdminAuths from '$lib/components/AdminAuths.svelte';
 </script>
 
 <svelte:head>
-  <title>Login Sources · Admin · Ggit</title>
+  <title>Orígenes de Autenticación · Admin · Ggit</title>
 </svelte:head>
 
-<AdminAuth />
+<AdminAuths />

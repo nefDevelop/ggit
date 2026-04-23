@@ -39,7 +39,7 @@
       : []),
     {
       name: i18n.t("settings_title"),
-      icon: "settings",
+      icon: "manage_accounts",
       path: "/user/settings",
     },
   ]);

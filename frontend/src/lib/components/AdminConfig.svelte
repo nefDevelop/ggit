@@ -64,7 +64,7 @@
   onMount(fetchConfig);
 </script>
 
-<Card class="admin-view-card" padding="lg">
+<Card class="settings-premium-card" padding="lg">
   <header class="section-header">
     <div class="title-with-icon">
       <span class="material-symbols-rounded hero-icon">settings</span>
@@ -113,12 +113,12 @@
               {#if regSecurity.enable}
                 <div class="field-row">
                   <div class="field">
-                    <label>Pregunta</label>
-                    <input type="text" bind:value={regSecurity.question} placeholder="Ej: ¿Cuál es el nombre de este servicio?" />
+                    <label for="reg-q">Pregunta</label>
+                    <input id="reg-q" type="text" bind:value={regSecurity.question} placeholder="Ej: ¿Cuál es el nombre de este servicio?" />
                   </div>
                   <div class="field">
-                    <label>Respuesta</label>
-                    <input type="text" bind:value={regSecurity.answer} placeholder="Ej: Ggit" />
+                    <label for="reg-a">Respuesta</label>
+                    <input id="reg-a" type="text" bind:value={regSecurity.answer} placeholder="Ej: Ggit" />
                   </div>
                 </div>
               {/if}
@@ -133,7 +133,7 @@
 </Card>
 
 <style>
-  .admin-view-card { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(20px); border: 1px solid var(--md-sys-color-outline-variant); }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   .section-header { margin-bottom: 4rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
   .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }

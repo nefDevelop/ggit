@@ -1,18 +1,19 @@
 <script lang="ts">
-  // Refreshed preferences types
-  import { userPrefs, type UserPreferences } from '$lib/settings.svelte';
+  import { userPrefs } from '$lib/settings.svelte';
   import { apiFetch } from '$lib/api';
   import { onMount } from 'svelte';
   import { authState } from '$lib/auth.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import LanguageSelector from './LanguageSelector.svelte';
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
 
   const sections = [
-    { id: 'pr', label: i18n.t('pull_requests'), icon: 'merge', desc: i18n.t('settings.pr_desc') || 'Display and manage code review requests.' },
-    { id: 'issue', label: i18n.t('issues'), icon: 'error', desc: i18n.t('settings.issue_desc') || 'Track bugs, enhancements, and tasks.' },
-    { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: 'menu_book', desc: i18n.t('settings.wiki_desc') || 'Host documentation for your project.' },
-    { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: 'fork_right', desc: i18n.t('settings.branch_desc') || 'View and manage development branches.' },
-    { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: 'history', desc: i18n.t('settings.commits_desc') || 'Browse the full history of changes.' }
+    { id: 'pr', label: i18n.t('pull_requests'), icon: 'merge', desc: i18n.t('settings.pr_desc') },
+    { id: 'issue', label: i18n.t('issues'), icon: 'error', desc: i18n.t('settings.issue_desc') },
+    { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: 'menu_book', desc: i18n.t('settings.wiki_desc') },
+    { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: 'fork_right', desc: i18n.t('settings.branch_desc') },
+    { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: 'history', desc: i18n.t('settings.commits_desc') }
   ] as const;
 
   let profile = $state<any>({ disable_news_feed: false });
@@ -46,73 +47,81 @@
   onMount(fetchProfile);
 </script>
 
-<div class="settings-section">
-  <header class="section-header-modern">
-    <div class="header-info">
-      <h3>{i18n.t('settings.my_ggit') || 'My Ggit'}</h3>
-      <p>{i18n.t('settings.my_ggit_desc') || 'Customize your repository and dashboard experience.'}</p>
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">grid_view</span>
+      <div>
+        <h2>{i18n.t('settings.my_ggit')}</h2>
+        <p class="subtitle">{i18n.t('settings.my_ggit_desc')}</p>
+      </div>
     </div>
   </header>
 
-  <div class="switches-container">
-    <div class="switches-group">
-      <h4 class="group-title">{i18n.t('settings.repo_tab_modules') || 'Repository Tab Modules'}</h4>
-      <div class="switches-grid">
+  <div class="modular-stack">
+    <!-- REPO MODULES -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">extension</span>
+        {i18n.t('settings.repo_tab_modules')}
+      </div>
+      <div class="island tonal-list">
         {#each sections as section}
-          <div class="switch-row-item">
-            <div class="item-info">
-              <div class="title-with-icon">
-                <span class="material-symbols-rounded mini">{section.icon}</span>
-                <span class="label">{section.label}</span>
+          <div class="toggle-row">
+            <div class="row-info">
+              <div class="row-title">
+                <span class="material-symbols-rounded">{section.icon}</span>
+                {section.label}
               </div>
-              <p class="desc">{section.desc}</p>
+              <p class="row-desc">{section.desc}</p>
             </div>
-            
-            <label class="precision-switch">
+            <label class="premium-switch">
               <input 
                 type="checkbox" 
                 checked={userPrefs.current.repoTabs[section.id]} 
                 onchange={() => userPrefs.toggleRepoTab(section.id)}
               />
-              <span class="slider"></span>
+              <span class="switch-slider"></span>
             </label>
           </div>
         {/each}
       </div>
     </div>
 
-    <div class="switches-group">
-      <h4 class="group-title">{i18n.t('settings.dashboard_preferences') || 'Dashboard Preferences'}</h4>
-      <div class="switches-grid">
-        <div class="switch-row-item">
-          <div class="item-info">
-            <div class="title-with-icon">
-              <span class="material-symbols-rounded mini">timeline</span>
-              <span class="label">{i18n.t('settings.activity_feed') || 'Activity Feed'}</span>
+    <!-- DASHBOARD PREFS -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">dashboard_customize</span>
+        {i18n.t('settings.dashboard_preferences')}
+      </div>
+      <div class="island tonal-list">
+        <div class="toggle-row">
+          <div class="row-info">
+            <div class="row-title">
+              <span class="material-symbols-rounded">timeline</span>
+              {i18n.t('settings.activity_feed')}
             </div>
-            <p class="desc">{i18n.t('settings.activity_feed_desc') || 'Show pushes, merges and relevant repository activity.'}</p>
+            <p class="row-desc">{i18n.t('settings.activity_feed_desc')}</p>
           </div>
-          
-          <label class="precision-switch">
+          <label class="premium-switch">
             <input 
               type="checkbox" 
               checked={!profile.disable_news_feed} 
               onchange={toggleNewsFeed}
             />
-            <span class="slider"></span>
+            <span class="switch-slider"></span>
           </label>
         </div>
 
-        <div class="switch-row-item">
-          <div class="item-info">
-            <div class="title-with-icon">
-              <span class="material-symbols-rounded mini">corporate_fare</span>
-              <span class="label">{i18n.t('settings.orgs_sidebar')}</span>
+        <div class="toggle-row">
+          <div class="row-info">
+            <div class="row-title">
+              <span class="material-symbols-rounded">corporate_fare</span>
+              {i18n.t('settings.orgs_sidebar')}
             </div>
-            <p class="desc">{i18n.t('settings.orgs_sidebar_desc')}</p>
+            <p class="row-desc">{i18n.t('settings.orgs_sidebar_desc')}</p>
           </div>
-          
-          <label class="precision-switch">
+          <label class="premium-switch">
             <input 
               type="checkbox" 
               checked={userPrefs.current.showSidebarOrgs} 
@@ -121,49 +130,63 @@
                 userPrefs.save();
               }}
             />
-            <span class="slider"></span>
+            <span class="switch-slider"></span>
           </label>
         </div>
       </div>
     </div>
 
-    <LanguageSelector />
+    <!-- LANGUAGE -->
+    <div class="config-module">
+       <div class="module-tag">
+         <span class="material-symbols-rounded">translate</span>
+         Región e Idioma
+       </div>
+       <div class="island tonal-list language-card">
+          <LanguageSelector />
+       </div>
+    </div>
   </div>
-</div>
+</Card>
 
 <style>
-  .settings-section { display: flex; flex-direction: column; gap: 2.5rem; }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   
-  .section-header-modern { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
-  .section-header-modern h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .section-header-modern p { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
+  .section-header { margin-bottom: 4rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .switches-container { display: flex; flex-direction: column; gap: 3rem; }
-  .switches-group { display: flex; flex-direction: column; gap: 1rem; }
-  .group-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 0.5rem; }
-
-  .switches-grid { display: flex; flex-direction: column; background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
   
-  .switch-row-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 2rem; }
-  .switch-row-item:last-child { border-bottom: none; }
-  .switch-row-item:hover { background: rgba(255,255,255,0.02); }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+  .module-tag span { font-size: 1.25rem; }
 
-  .item-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 1rem; font-weight: 700; color: var(--text-color); }
-  .desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; opacity: 0.8; }
-  .mini { font-size: 1.25rem; color: var(--primary-color); }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-row:hover { background: rgba(255,255,255,0.02); }
 
-  /* Precision Switch Styles */
-  .precision-switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
-  .precision-switch input { opacity: 0; width: 0; height: 0; }
-  .slider { position: absolute; cursor: pointer; inset: 0; background-color: rgba(255,255,255,0.1); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px; border: 1px solid var(--md-sys-color-outline-variant); }
-  .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: var(--text-muted); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%; }
+  .row-info { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
+  .row-title { display: flex; align-items: center; gap: 1rem; font-size: 1.15rem; font-weight: 800; color: var(--text-color); }
+  .row-title span { color: var(--primary-color); opacity: 0.7; font-size: 1.5rem; }
+  .row-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
-  input:checked + .slider { background-color: var(--primary-color); border-color: var(--primary-color); }
-  input:checked + .slider:before { transform: translateX(20px); background-color: var(--on-primary); }
+  .premium-switch { position: relative; display: inline-block; width: 52px; height: 28px; flex-shrink: 0; cursor: pointer; }
+  .premium-switch input { opacity: 0; width: 0; height: 0; }
+  .switch-slider { position: absolute; inset: 0; background: var(--surface-variant); border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .switch-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: var(--text-muted); border-radius: 50%; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  
+  input:checked + .switch-slider { background: var(--primary-color); border-color: var(--primary-color); }
+  input:checked + .switch-slider:before { transform: translateX(24px); background: white; }
+
+  .language-card { padding: 1rem; }
 
   @media (max-width: 600px) {
-    .switch-row-item { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-    .precision-switch { align-self: flex-end; }
+    .toggle-row { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; }
+    .premium-switch { align-self: flex-end; }
   }
 </style>

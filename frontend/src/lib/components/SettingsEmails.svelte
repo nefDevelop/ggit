@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api";
+  import { i18n } from '$lib/i18n.svelte';
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
 
   let emails = $state<any[]>([]);
   let newEmail = $state("");
@@ -13,9 +16,7 @@
     loading = true;
     try {
       const res = await apiFetch("/api/v2/user/settings/emails");
-      if (res.ok) {
-        emails = await res.json();
-      }
+      if (res.ok) emails = await res.json();
     } catch (e) {
       console.error(e);
     } finally {
@@ -27,6 +28,7 @@
     if (!newEmail) return;
     saving = true;
     message = "";
+    isError = false;
     try {
       const res = await apiFetch("/api/v2/user/settings/emails", {
         method: "POST",
@@ -34,16 +36,16 @@
         body: JSON.stringify({ email: newEmail }),
       });
       if (res.ok) {
-        message = "Email added successfully!";
+        message = "¡Correo añadido correctamente!";
         newEmail = "";
         await fetchEmails();
       } else {
         const body = await res.json();
-        message = body.message || "Failed to add email.";
+        message = body.message || "Error al añadir el correo.";
         isError = true;
       }
     } catch (e) {
-      message = "Network error.";
+      message = "Error de red.";
       isError = true;
     } finally {
       saving = false;
@@ -51,19 +53,15 @@
   }
 
   async function deleteEmail(email: string) {
-    if (!confirm(`Are you sure you want to delete ${email}?`)) return;
+    if (!confirm(`¿Seguro que quieres eliminar ${email}?`)) return;
     try {
       const res = await apiFetch("/api/v2/user/settings/emails", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      if (res.ok) {
-        await fetchEmails();
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      if (res.ok) fetchEmails();
+    } catch (e) { console.error(e); }
   }
 
   async function makePrimary(email: string) {
@@ -73,234 +71,146 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      if (res.ok) {
-        await fetchEmails();
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      if (res.ok) fetchEmails();
+    } catch (e) { console.error(e); }
   }
 
   onMount(fetchEmails);
 </script>
 
-<div class="settings-card">
-  <header class="card-header">
-    <h3 class="card-title">Manage Email Addresses</h3>
-    <p class="card-desc">
-      Your primary email address will be used for notifications and security
-      alerts.
-    </p>
+<Card class="settings-premium-card" padding="lg">
+  <header class="section-header">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">mail</span>
+      <div>
+        <h2>Configuración de Email</h2>
+        <p class="subtitle">Gestiona tus direcciones y elige tu correo principal de contacto</p>
+      </div>
+    </div>
   </header>
 
-  <div class="email-list">
-    {#if loading}
-      <div class="skeleton-list">
-        {#each Array(2) as _}<div class="skeleton-item"></div>{/each}
+  <div class="modular-stack">
+    <!-- EMAIL LIST -->
+    <div class="config-module">
+      <div class="module-tag">
+        <span class="material-symbols-rounded">list_alt</span>
+        Direcciones Vinculadas
       </div>
-    {:else}
-      {#each emails as email}
-        <div class="email-item {email.is_primary ? 'primary' : ''}">
-          <div class="email-info">
-            <span class="email-address">{email.email}</span>
-            <div class="email-badges">
-              {#if email.is_primary}
-                <span class="badge primary-badge">Primary</span>
-              {/if}
-              {#if email.is_activated}
-                <span class="badge active-badge">Activated</span>
-              {:else}
-                <span class="badge pending-badge">Pending</span>
-              {/if}
+      <div class="island tonal-list">
+        {#if loading}
+          <div class="skeleton-emails"></div>
+        {:else}
+          {#each emails as email}
+            <div class="email-row" class:is-primary={email.is_primary}>
+              <div class="email-core">
+                <span class="material-symbols-rounded email-icon">{email.is_primary ? 'verified' : 'alternate_email'}</span>
+                <div class="email-meta">
+                  <span class="address">{email.email}</span>
+                  <div class="badge-row">
+                    {#if email.is_primary}
+                      <span class="badge primary">Principal</span>
+                    {/if}
+                    {#if email.is_activated}
+                      <span class="badge active">Activado</span>
+                    {:else}
+                      <span class="badge pending">Pendiente de verificación</span>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+              <div class="email-actions">
+                {#if !email.is_primary && email.is_activated}
+                   <Button variant="ghost" size="sm" icon="star" onclick={() => makePrimary(email.email)}>Principal</Button>
+                {/if}
+                {#if !email.is_primary}
+                   <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteEmail(email.email)} />
+                {/if}
+              </div>
             </div>
-          </div>
-          <div class="email-actions">
-            {#if !email.is_primary && email.is_activated}
-              <button
-                class="btn btn-icon-text"
-                onclick={() => makePrimary(email.email)}
-              >
-                <span class="material-symbols-rounded">star</span> Make Primary
-              </button>
-            {/if}
-            {#if !email.is_primary}
-              <button
-                class="btn btn-icon-only btn-ghost error"
-                onclick={() => deleteEmail(email.email)}
-              >
-                <span class="material-symbols-rounded">delete</span>
-              </button>
-            {/if}
-          </div>
-        </div>
-      {/each}
-    {/if}
-  </div>
-
-  <form
-    class="add-email-form"
-    onsubmit={(e) => {
-      e.preventDefault();
-      addEmail();
-    }}
-  >
-    <div class="input-group">
-      <input
-        type="email"
-        placeholder="Add new email address..."
-        bind:value={newEmail}
-        required
-      />
-      <button
-        type="submit"
-        class="btn btn-primary"
-        disabled={saving || !newEmail}
-      >
-        {saving ? "Adding..." : "Add"}
-      </button>
+          {/each}
+        {/if}
+      </div>
     </div>
-    {#if message}
-      <p class="status-msg" class:error={isError}>{message}</p>
-    {/if}
-  </form>
-</div>
+
+    <!-- ADD EMAIL -->
+    <div class="config-module">
+       <div class="module-tag">
+         <span class="material-symbols-rounded">add_circle</span>
+         Añadir Nueva Dirección
+       </div>
+       <div class="island add-form-box">
+          <form onsubmit={(e) => { e.preventDefault(); addEmail(); }} class="add-email-form">
+            <div class="premium-input-group">
+               <span class="material-symbols-rounded">mark_email_read</span>
+               <input 
+                 type="email" 
+                 placeholder="ejemplo@correo.com" 
+                 bind:value={newEmail} 
+                 required 
+               />
+               <Button type="submit" variant="primary" disabled={saving || !newEmail}>
+                  {saving ? 'Añadiendo...' : 'Vincular Correo'}
+               </Button>
+            </div>
+          </form>
+          {#if message}
+            <div class="status-alert" class:is-error={isError}>
+               <span class="material-symbols-rounded">{isError ? 'error' : 'check_circle'}</span>
+               {message}
+            </div>
+          {/if}
+       </div>
+    </div>
+  </div>
+</Card>
 
 <style>
-  .settings-card {
-    display: flex;
-    flex-direction: column;
-  }
-  .card-header {
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
-  .card-title {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-  }
-  .card-desc {
-    margin: 0.5rem 0 0;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-  }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .section-header { margin-bottom: 4rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .email-list {
-    display: flex;
-    flex-direction: column;
-  }
-  .email-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    transition: background 0.2s;
-  }
-  .email-item:hover {
-    background: rgba(255, 255, 255, 0.02);
-  }
-  .email-item.primary {
-    background: rgba(var(--primary-rgb), 0.03);
-  }
+  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
-  .email-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .email-address {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #fff;
-  }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+  .module-tag span { font-size: 1.25rem; }
 
-  .email-badges {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .badge {
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-  }
-  .primary-badge {
-    background: var(--primary-color);
-    color: #000;
-  }
-  .active-badge {
-    background: rgba(16, 185, 129, 0.2);
-    color: #10b981;
-  }
-  .pending-badge {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-  }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .email-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  .email-row:last-child { border-bottom: none; }
+  .email-row.is-primary { background: rgba(var(--primary-rgb), 0.04); }
+  .email-row:hover { background: rgba(255,255,255,0.02); }
 
-  .email-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+  .email-core { display: flex; align-items: center; gap: 1.5rem; }
+  .email-icon { font-size: 2rem; color: var(--primary-color); opacity: 0.5; }
+  .is-primary .email-icon { opacity: 1; }
+  
+  .email-meta { display: flex; flex-direction: column; gap: 0.4rem; }
+  .address { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
+  
+  .badge-row { display: flex; gap: 0.75rem; }
+  .badge { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted); }
+  .badge.primary { background: var(--primary-color); color: white; }
+  .badge.active { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .badge.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 
-  .add-email-form {
-    padding: 2rem;
-  }
-  .input-group {
-    display: flex;
-    gap: 1rem;
-  }
-  .input-group input {
-    flex: 1;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    color: var(--text-color);
-    font-size: 1rem;
-    font-family: inherit;
-  }
-  .input-group input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    background: rgba(0, 0, 0, 0.4);
-  }
+  .email-actions { display: flex; gap: 0.75rem; }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
-  .status-msg {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #10b981;
-  }
-  .status-msg.error {
-    color: #ef4444;
-  }
+  .add-form-box { padding: 3rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.01); }
+  .premium-input-group { display: flex; align-items: center; gap: 1rem; background: var(--surface-variant); padding: 0.75rem 1.25rem; border-radius: 1.5rem; border: 2px solid transparent; transition: all 0.3s; }
+  .premium-input-group:focus-within { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .premium-input-group span { color: var(--primary-color); opacity: 0.6; }
+  .premium-input-group input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-color); font-size: 1.1rem; padding: 0.5rem 0; }
 
-  .skeleton-list {
-    display: flex;
-    flex-direction: column;
-  }
-  .skeleton-item {
-    height: 80px;
-    width: 100%;
-    animation: pulse 1.5s infinite;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.6;
-    }
-  }
+  .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.25rem; background: rgba(16, 185, 129, 0.1); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); animation: fadeInUp 0.4s; }
+  .status-alert.is-error { background: rgba(var(--error-rgb), 0.1); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  .btn-ghost.error {
-    color: #ef4444;
-  }
-  .btn-ghost.error:hover {
-    background: rgba(239, 68, 68, 0.1);
-  }
+  .skeleton-emails { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 </style>

@@ -31,30 +31,28 @@
     }
   }
 
-  onMount(() => {
-    fetchAuditLogs();
-  });
+  onMount(() => { fetchAuditLogs(); });
 
   function formatDate(unix: number) {
     return new Date(unix * 1000).toLocaleString();
   }
 
   function getOpColor(opType: number) {
-    if (opType === 1 || opType === 19) return 'var(--primary-color)'; 
-    if (opType === 17 || opType === 18) return 'var(--error)';
+    if (opType === 1 || opType === 19) return '#10b981'; 
+    if (opType === 17 || opType === 18) return '#ef4444';
     if (opType === 5) return '#3b82f6';
-    return 'var(--text-muted)';
+    return '#888';
   }
 </script>
 
-<Card class="admin-view-card" padding="lg">
+<Card class="settings-premium-card" padding="lg">
   <header class="section-header">
     <div class="header-flex">
       <div class="title-with-icon">
         <span class="material-symbols-rounded hero-icon">history_edu</span>
         <div>
-          <h2>{i18n.t('admin.audit_log')}</h2>
-          <p class="subtitle">Seguimiento de actividad del sistema y cambios administrativos</p>
+          <h2>Registro de Auditoría</h2>
+          <p class="subtitle">Historial de eventos críticos, cambios de seguridad y acciones administrativas</p>
         </div>
       </div>
       <Button variant="ghost" icon="refresh" onclick={() => fetchAuditLogs(1)} disabled={loading}>Actualizar</Button>
@@ -65,11 +63,11 @@
     <table class="modern-table">
       <thead>
         <tr>
-          <th>Tiempo</th>
-          <th>Acción</th>
-          <th>Actor</th>
-          <th>Repositorio</th>
-          <th>Detalles</th>
+          <th>Tiempo del Evento</th>
+          <th>Acción Realizada</th>
+          <th>Usuario Responsable</th>
+          <th>Entidad / Repositorio</th>
+          <th>Detalles Técnicos</th>
         </tr>
       </thead>
       <tbody>
@@ -80,7 +78,7 @@
             </tr>
           {/each}
         {:else if auditLogs.length === 0}
-          <tr><td colspan="5" class="empty-state">No se han encontrado registros de auditoría.</td></tr>
+          <tr><td colspan="5" class="empty-state">No se han encontrado registros de auditoría históricos.</td></tr>
         {:else}
           {#each auditLogs as log}
             <tr class="hover-row">
@@ -90,9 +88,9 @@
                   {log.op_name}
                 </span>
               </td>
-              <td class="actor-cell">
-                <div class="actor-info">
-                  <span class="material-symbols-rounded">person_outline</span>
+              <td>
+                <div class="actor-brand">
+                  <span class="material-symbols-rounded">person</span>
                   <strong>{log.actor_name}</strong>
                 </div>
               </td>
@@ -100,14 +98,14 @@
                 {#if log.repo_path}
                    <a href="/{log.repo_path}" class="repo-link">{log.repo_path}</a>
                 {:else}
-                   <span class="muted">—</span>
+                   <span class="muted-value">—</span>
                 {/if}
               </td>
               <td>
                 {#if log.content}
                    <code class="mini-snippet">{log.content.slice(0, 60)}{log.content.length > 60 ? '...' : ''}</code>
                 {:else}
-                   <span class="muted-text">N/A</span>
+                   <span class="null-value">No disponible</span>
                 {/if}
               </td>
             </tr>
@@ -119,44 +117,47 @@
 
   {#if hasMore}
     <div class="footer-actions">
-       <Button variant="outline" class="load-more-btn" onclick={() => fetchAuditLogs(page + 1)} disabled={loading}>
-          {loading ? 'Cargando...' : 'Cargar más resultados'}
+       <Button variant="primary" icon="expand_more" class="load-more-btn" onclick={() => fetchAuditLogs(page + 1)} disabled={loading}>
+          {loading ? 'Consultando...' : 'Ver registros anteriores'}
        </Button>
     </div>
   {/if}
 </Card>
 
 <style>
-  .admin-view-card { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(20px); border: 1px solid var(--md-sys-color-outline-variant); }
-  .section-header { margin-bottom: 3.5rem; }
+  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
   .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); }
+  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .modern-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
+  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
   .modern-table tr:last-child td { border-bottom: none; }
 
-  .time-cell { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+  .time-cell { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; opacity: 0.8; }
   
-  .op-capsule { padding: 0.4rem 1rem; border-radius: 1.25rem; font-size: 0.75rem; font-weight: 900; background: rgba(var(--op-color, 255, 255, 255), 0.08); color: var(--op-color, #fff); border: 1px solid rgba(var(--op-color, 255, 255, 255), 0.15); text-transform: uppercase; letter-spacing: 0.05em; }
+  .op-capsule { padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 900; background: rgba(var(--op-color, 255, 255, 255), 0.1); color: var(--op-color, #fff); border: 1px solid rgba(var(--op-color, 255, 255, 255), 0.1); text-transform: uppercase; letter-spacing: 0.05em; }
 
-  .actor-info { display: flex; align-items: center; gap: 0.75rem; }
-  .actor-info span { color: var(--primary-color); opacity: 0.6; font-size: 1.25rem; }
-  .actor-info strong { color: var(--text-color); font-weight: 800; font-size: 1rem; }
+  .actor-brand { display: flex; align-items: center; gap: 0.75rem; }
+  .actor-brand span { color: var(--primary-color); opacity: 0.6; font-size: 1.25rem; }
+  .actor-brand strong { color: var(--text-color); font-weight: 800; font-size: 1rem; }
 
-  .repo-link { color: var(--primary-color); text-decoration: none; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+  .repo-link { color: var(--primary-color); text-decoration: none; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
   .repo-link:hover { text-decoration: underline; }
 
-  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.75rem; font-size: 0.85rem; color: #aaa; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
-  .muted-text { color: #444; font-style: italic; font-size: 0.85rem; }
+  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.85rem; font-size: 0.85rem; color: #999; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
+  .muted-value { color: #555; font-weight: 800; }
+  .null-value { color: #444; font-style: italic; font-size: 0.85rem; }
 
-  .footer-actions { margin-top: 2.5rem; display: flex; justify-content: center; }
-  :global(.load-more-btn) { width: 100%; max-width: 500px; border-radius: 1.5rem !important; }
+  .footer-actions { margin-top: 3rem; display: flex; justify-content: center; }
+  :global(.load-more-btn) { width: auto; min-width: 300px; border-radius: 1.5rem !important; }
 
+  .empty-state { padding: 5rem; text-align: center; color: var(--text-muted); font-weight: 700; opacity: 0.5; }
   .skeleton-line { height: 2rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
 </style>
