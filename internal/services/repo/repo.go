@@ -30,7 +30,7 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// 1. Crear el registro en la base de datos
 		var err error
-		repo, err = s.db.Repositories().Create(ctx, owner.ID, database.CreateRepoOptions{
+		repo, err = s.db.WithTransaction(tx).Repositories().Create(ctx, owner.ID, database.CreateRepoOptions{
 			Name:         opts.Name,
 			Description:  opts.Description,
 			Private:      opts.IsPrivate,
@@ -55,19 +55,17 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 		}
 
 		log.Trace("Repository created: %s/%s", owner.Name, repo.Name)
-
-		// 3. Detectar lenguajes si se auto-inicializó
-		if opts.AutoInit {
-			if err := UpdateRepositoryLanguages(repo); err != nil {
-				log.Error("UpdateRepositoryLanguages: %v", err)
-			}
-		}
-
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
+	}
+
+	// 3. Detectar lenguajes si se auto-inicializó
+	if opts.AutoInit {
+		if err := UpdateRepositoryLanguages(repo); err != nil {
+			log.Error("UpdateRepositoryLanguages: %v", err)
+		}
 	}
 
 	return repo, nil

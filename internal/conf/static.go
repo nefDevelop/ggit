@@ -485,8 +485,7 @@ var HookMode bool
 
 // Indicates which database backend is currently being used.
 var (
-	UseSQLite3    bool
-	UsePostgreSQL bool
+	UseSQLite3 bool
 )
 
 // UsersAvatarPathPrefix is the path prefix to user avatars.

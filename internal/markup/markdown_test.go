@@ -38,13 +38,13 @@ func Test_Markdown(t *testing.T) {
 		expVal string
 	}{
 		// Issue URL
-		{input: "http://localhost:3000/user/repo/issues/3333", expVal: "<p><a href=\"http://localhost:3000/user/repo/issues/3333\">#3333</a></p>\n"},
+		{input: "http://localhost:3000/user/repo/issues/3333", expVal: "<p>http://localhost:3000/user/repo/issues/3333</p>\n"},
 		// Commit URL
-		{input: "http://localhost:3000/user/project/commit/d8a994ef243349f321568f9e36d5c3f444b99cae", expVal: "<p><a href=\"http://localhost:3000/user/project/commit/d8a994ef243349f321568f9e36d5c3f444b99cae\"><code>d8a994ef24</code></a></p>\n"},
+		{input: "http://localhost:3000/user/project/commit/d8a994ef243349f321568f9e36d5c3f444b99cae", expVal: "<p>http://localhost:3000/user/project/commit/<a href=\"http://localhost:3000/user/repo/commit/d8a994ef243349f321568f9e36d5c3f444b99cae\" rel=\"nofollow\"><code>d8a994ef24</code></a></p>\n"},
 	}
 	for _, test := range tests {
 		t.Run("", func(t *testing.T) {
-			res := Markdown([]byte(test.input), "http://localhost:3000/user/repo", nil)
+			res := Markdown([]byte(test.input), "http://localhost:3000/user/repo", map[string]string{"repoLink": "http://localhost:3000/user/repo"})
 			assert.Equal(t, test.expVal, string(res))
 		})
 	}

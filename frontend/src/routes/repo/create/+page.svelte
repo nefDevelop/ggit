@@ -256,7 +256,7 @@
                 <strong>Globales (IDEs, OS, Sistemas)</strong>
               </div>
               <div class="gitignore-chips">
-                {#each global_ignores.filter(g => !g.includes('_ggit') && g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
+                {#each global_ignores.filter(g => !g.toLowerCase().includes('ggit') && g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
                   <button 
                     type="button"
                     class="chip" 

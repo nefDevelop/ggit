@@ -35,13 +35,6 @@ var (
 	// MentionPattern matches string that mentions someone, e.g. @Unknwon
 	MentionPattern = lazyregexp.New(`(\s|^|\W)@[0-9a-zA-Z-_\.]+`)
 
-	// CommitPattern matches link to certain commit with or without trailing hash,
-	// e.g. https://try.github.com/nef734/ggit/gogs/commit/d8a994ef243349f321568f9e36d5c3f444b99cae#diff-2
-	CommitPattern = lazyregexp.New(`(\s|^)https?.*commit/[0-9a-zA-Z]+(#+[0-9a-zA-Z-]*)?`)
-
-	// IssueFullPattern matches link to an issue with or without trailing hash,
-	// e.g. https://try.github.com/nef734/ggit/gogs/issues/4#issue-685
-	IssueFullPattern = lazyregexp.New(`(\s|^)https?.*issues/[0-9]+(#+[0-9a-zA-Z-]*)?`)
 	// IssueNumericPattern matches string that references to a numeric issue, e.g. #1287
 	IssueNumericPattern = lazyregexp.New(`( |^|\(|\[)#[0-9]+\b`)
 	// IssueAlphanumericPattern matches string that references to an alphanumeric issue, e.g. ABC-1234

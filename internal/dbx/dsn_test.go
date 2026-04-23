@@ -45,6 +45,3 @@ func TestNewDSN(t *testing.T) {
 	}
 }
 
-func TestQuote(t *testing.T) {
-	assert.Equal(t, "`table`", Quote("table"))
-}

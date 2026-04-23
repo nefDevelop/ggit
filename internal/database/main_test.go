@@ -34,12 +34,7 @@ func TestMain(m *testing.M) {
 	// NOTE: AutoMigrate does not respect logger passed in gorm.Config.
 	logger.Default = logger.Default.LogMode(level)
 
-	switch os.Getenv("GOGS_DATABASE_TYPE") {
-	case "postgres":
-		conf.UsePostgreSQL = true
-	default:
-		conf.UseSQLite3 = true
-	}
+	conf.UseSQLite3 = true
 
 	os.Exit(m.Run())
 }

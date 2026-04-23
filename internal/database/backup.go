@@ -18,7 +18,6 @@ import (
 	"gorm.io/gorm/schema"
 	log "unknwon.dev/clog/v2"
 
-	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/osx"
 )
 
@@ -152,13 +151,9 @@ func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error
 		return errors.Wrap(err, "auto migrate")
 	}
 
-	s, err := schema.Parse(table, &sync.Map{}, db.NamingStrategy)
+	_, err = schema.Parse(table, &sync.Map{}, db.NamingStrategy)
 	if err != nil {
 		return errors.Wrap(err, "parse schema")
-	}
-	rawTableName := s.Table
-	skipResetIDSeq := map[string]bool{
-		"lfs_object": true,
 	}
 
 	scanner := bufio.NewScanner(r)
@@ -178,12 +173,5 @@ func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error
 		}
 	}
 
-	// PostgreSQL needs manually reset table sequence for auto increment keys
-	if conf.UsePostgreSQL && !skipResetIDSeq[rawTableName] {
-		seqName := rawTableName + "_id_seq"
-		if err = db.WithContext(ctx).Exec(fmt.Sprintf(`SELECT setval('%s', COALESCE((SELECT MAX(id)+1 FROM "%s"), 1), false)`, seqName, rawTableName)).Error; err != nil {
-			return errors.Wrapf(err, "reset table %q.%q", rawTableName, seqName)
-		}
-	}
 	return nil
 }
