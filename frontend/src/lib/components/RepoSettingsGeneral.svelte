@@ -72,6 +72,31 @@
     }
   }
 
+  async function transferRepo() {
+    const newOwner = prompt("Introduce el nombre de usuario o organización del nuevo propietario:");
+    if (!newOwner) return;
+    
+    saving = true;
+    try {
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/transfer`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ new_owner: newOwner }),
+        },
+      );
+      if (res.ok) {
+        message = "Repository transfer initiated!";
+        goto("/dashboard");
+      }
+    } catch (e) {
+      message = "Failed to transfer repository.";
+    } finally {
+      saving = false;
+    }
+  }
+
   onMount(fetchSettings);
 </script>
 
@@ -143,6 +168,14 @@
             <p>Project documentation.</p>
           </div>
         </label>
+        <label class="checkbox-container archived-toggle">
+          <input type="checkbox" bind:checked={settings.archived} />
+          <span class="checkmark"></span>
+          <div class="checkbox-text">
+            <strong>Archivar Repositorio</strong>
+            <p>Convertir en solo lectura. Útil para proyectos terminados.</p>
+          </div>
+        </label>
       </div>
 
       <div class="form-actions">
@@ -182,6 +215,18 @@
           onclick={deleteRepo}
         >
           Delete Repository
+        </button>
+      </div>
+    </div>
+
+    <div class="danger-item">
+      <div class="danger-text">
+        <strong>Transferir Propiedad</strong>
+        <p>Transferir este repositorio a otro usuario o a una organización.</p>
+      </div>
+      <div class="transfer-action">
+        <button class="btn btn-tonal" onclick={transferRepo} disabled={saving}>
+          Transferir repositorio
         </button>
       </div>
     </div>
@@ -365,6 +410,21 @@
   }
   .delete-action input:focus {
     border-color: #ef4444;
+  }
+
+  .danger-item {
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .danger-item:first-child {
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .archived-toggle {
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    background: rgba(var(--primary-rgb), 0.05);
   }
 
   .skeleton-form {

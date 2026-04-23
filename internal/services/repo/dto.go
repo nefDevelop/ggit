@@ -8,8 +8,10 @@ type CreateOptions struct {
 	Gitignores  string
 	License     string
 	Readme      string
-	IsPrivate   bool
-	IsUnlisted  bool
-	AutoInit    bool
-	CreatedAt   time.Time
+	Website      string
+	DefaultBranch string
+	IsPrivate    bool
+	IsUnlisted   bool
+	AutoInit     bool
+	CreatedAt    time.Time
 }

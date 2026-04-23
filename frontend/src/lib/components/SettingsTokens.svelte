@@ -10,6 +10,7 @@
   let newTokenName = $state('');
   let generatedToken = $state('');
   let submitting = $state(false);
+  let error = $state("");
 
   async function fetchTokens() {
     loading = true;
@@ -33,8 +34,13 @@
         generatedToken = token.sha1; 
         tokens = [token, ...tokens];
         newTokenName = '';
+        error = '';
+      } else {
+        const data = await res.json();
+        error = data.message || 'Error al generar el token';
       }
     } catch (e) {
+      error = "Error de conexión al servidor";
       console.error(e);
     } finally {
       submitting = false;
@@ -136,6 +142,9 @@
                 {submitting ? 'Generando...' : 'Generar Token'}
              </Button>
           </div>
+          {#if error}
+             <p class="error-msg">{error}</p>
+          {/if}
         </form>
       </div>
     </div>
@@ -193,4 +202,6 @@
   .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .skeleton-tokens { height: 160px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+
+  .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 2rem; border-radius: 1.25rem; font-size: 0.9rem; font-weight: 700; margin: 1.5rem 0 0; border: 1px solid rgba(var(--error-rgb), 0.2); }
 </style>

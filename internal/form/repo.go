@@ -86,29 +86,30 @@ func (f MigrateRepo) ParseRemoteAddr(user *database.User) (string, error) {
 }
 
 type RepoSetting struct {
-	RepoName      string `valid:"Required;AlphaDashDot;MaxSize(100)"`
-	Description   string `valid:"MaxSize(512)"`
-	Website       string `valid:"Url;MaxSize(100)"`
-	Branch        string
-	Interval      int
-	Private       bool
-	Unlisted      bool
-	EnablePrune   bool
+	RepoName      string `json:"name" valid:"Required;AlphaDashDot;MaxSize(100)"`
+	Description   string `json:"description" valid:"MaxSize(512)"`
+	Website       string `json:"website" valid:"Url;MaxSize(100)"`
+	Branch        string `json:"branch"`
+	Interval      int    `json:"interval"`
+	Private       bool   `json:"private"`
+	Unlisted      bool   `json:"unlisted"`
+	Archived      bool   `json:"archived"`
+	EnablePrune   bool   `json:"enable_prune"`
 
 	// Advanced settings
-	EnableWiki            bool
-	AllowPublicWiki       bool
-	EnableExternalWiki    bool
-	ExternalWikiURL       string
-	EnableIssues          bool
-	AllowPublicIssues     bool
-	EnableExternalTracker bool
-	ExternalTrackerURL    string
-	TrackerURLFormat      string
-	TrackerIssueStyle     string
-	EnablePulls           bool
-	PullsIgnoreWhitespace bool
-	PullsAllowRebase      bool
+	EnableWiki            bool `json:"enable_wiki"`
+	AllowPublicWiki       bool `json:"allow_public_wiki"`
+	EnableExternalWiki    bool `json:"enable_external_wiki"`
+	ExternalWikiURL       string `json:"external_wiki_url"`
+	EnableIssues          bool `json:"enable_issues"`
+	AllowPublicIssues     bool `json:"allow_public_issues"`
+	EnableExternalTracker bool `json:"enable_external_tracker"`
+	ExternalTrackerURL    string `json:"external_tracker_url"`
+	TrackerURLFormat      string `json:"tracker_url_format"`
+	TrackerIssueStyle     string `json:"tracker_issue_style"`
+	EnablePulls           bool `json:"enable_pulls"`
+	PullsIgnoreWhitespace bool `json:"pulls_ignore_whitespace"`
+	PullsAllowRebase      bool `json:"pulls_allow_rebase"`
 }
 
 func (f *RepoSetting) Validate(ctx ValidationContext, errs Errors) Errors {

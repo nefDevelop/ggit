@@ -103,29 +103,58 @@ func SearchRepoContents(c *context.APIContext) {
 // CreateRepo creates a new repository for the authenticated user.
 func CreateRepo(c *context.APIContext) {
 	var f struct {
-		Name        string    `json:"name" binding:"required,max=100"`
-		Description string    `json:"description" binding:"max=255"`
-		Private     bool      `json:"private"`
-		AutoInit    bool      `json:"auto_init"`
-		Gitignores  string    `json:"gitignores"`
-		License     string    `json:"license"`
-		Readme      string    `json:"readme"`
-		CreatedAt   time.Time `json:"created_at"`
+		UID           int64     `json:"uid"`
+		Name          string    `json:"name" binding:"required,max=100"`
+		Description   string    `json:"description" binding:"max=255"`
+		Website       string    `json:"website" binding:"max=100"`
+		DefaultBranch string    `json:"default_branch" binding:"max=100"`
+		Private       bool      `json:"private"`
+		Unlisted      bool      `json:"unlisted"`
+		AutoInit      bool      `json:"auto_init"`
+		Gitignores    string    `json:"gitignores"`
+		License       string    `json:"license"`
+		Readme        string    `json:"readme"`
+		CreatedAt     time.Time `json:"created_at"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
 
-	repo, err := reposervice.Repos.Create(c.Req.Context(), c.User, c.User, reposervice.CreateOptions{
-		Name:        f.Name,
-		Description: f.Description,
-		IsPrivate:   f.Private,
-		AutoInit:    f.AutoInit,
-		Gitignores:  f.Gitignores,
-		License:     f.License,
-		Readme:      f.Readme,
-		CreatedAt:   f.CreatedAt,
+	owner := c.User
+	if f.UID != 0 && f.UID != c.User.ID {
+		var err error
+		owner, err = database.Handle.Users().GetByID(c.Req.Context(), f.UID)
+		if err != nil {
+			if database.IsErrUserNotExist(err) {
+				c.StatusError(http.StatusNotFound, "Owner not found.", err)
+			} else {
+				c.Error(err, "get owner")
+			}
+			return
+		}
+
+		// Check permission
+		if !c.User.IsAdmin {
+			if !owner.IsOrganization() || !owner.IsOwnedBy(c.User.ID) {
+				c.Status(http.StatusForbidden)
+				return
+			}
+		}
+	}
+
+	repo, err := reposervice.Repos.Create(c.Req.Context(), c.User, owner, reposervice.CreateOptions{
+		Name:          f.Name,
+		Description:   f.Description,
+		Website:       f.Website,
+		DefaultBranch: f.DefaultBranch,
+		IsPrivate:     f.Private,
+		IsUnlisted:    f.Unlisted,
+		AutoInit:      f.AutoInit,
+		Gitignores:    f.Gitignores,
+		License:       f.License,
+		Readme:        f.Readme,
+		CreatedAt:     f.CreatedAt,
 	})
 	if err != nil {
 		c.Error(err, "create repository")

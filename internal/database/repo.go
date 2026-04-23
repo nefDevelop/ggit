@@ -246,6 +246,7 @@ type Repository struct {
 	// see docs in https://gorm.io/docs/migration.html.
 	IsUnlisted bool `gorm:"not null;default:FALSE"`
 	IsBare     bool
+	IsArchived bool `gorm:"not null;default:FALSE"`
 
 	// Advanced settings
 	EnableWiki            bool `gorm:"not null;default:TRUE"`
@@ -856,15 +857,19 @@ type MigrateRepoOptions struct {
 	IsPrivate   bool
 	IsUnlisted  bool
 	RemoteAddr  string
+	Website     string
+	DefaultBranch string
 }
 
 // MigrateRepository migrates a existing repository from other project hosting.
 func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository, error) {
 	repo, err := CreateRepository(doer, owner, CreateRepoOptionsLegacy{
-		Name:        opts.Name,
-		Description: opts.Description,
-		IsPrivate:   opts.IsPrivate,
-		IsUnlisted:  opts.IsUnlisted,
+		Name:          opts.Name,
+		Description:   opts.Description,
+		IsPrivate:     opts.IsPrivate,
+		IsUnlisted:    opts.IsUnlisted,
+		Website:       opts.Website,
+		DefaultBranch: opts.DefaultBranch,
 	})
 	if err != nil {
 		return nil, err
@@ -982,6 +987,8 @@ type CreateRepoOptionsLegacy struct {
 	Gitignores  string
 	License     string
 	Readme      string
+	Website     string
+	DefaultBranch string
 	IsPrivate   bool
 	IsUnlisted  bool
 	AutoInit    bool
@@ -1241,6 +1248,8 @@ func CreateRepository(doer, owner *User, opts CreateRepoOptionsLegacy) (_ *Repos
 		Name:         opts.Name,
 		LowerName:    strings.ToLower(opts.Name),
 		Description:  opts.Description,
+		Website:      opts.Website,
+		DefaultBranch: opts.DefaultBranch,
 		IsPrivate:    opts.IsPrivate,
 		IsUnlisted:   opts.IsUnlisted,
 		EnableWiki:   true,

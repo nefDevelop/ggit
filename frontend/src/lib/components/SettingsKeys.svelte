@@ -10,6 +10,7 @@
   let newKeyTitle = $state("");
   let newKeyContent = $state("");
   let submitting = $state(false);
+  let error = $state("");
 
   async function fetchKeys() {
     loading = true;
@@ -30,9 +31,16 @@
       });
       if (res.ok) {
         newKeyTitle = ""; newKeyContent = "";
+        error = "";
         await fetchKeys();
+      } else {
+        const data = await res.json();
+        error = data.message || 'Error al añadir la clave SSH';
       }
-    } catch (e) { console.error(e); } finally { submitting = false; }
+    } catch (e) { 
+      error = "Error de conexión al servidor";
+      console.error(e); 
+    } finally { submitting = false; }
   }
 
   async function deleteKey(id: number) {
@@ -114,6 +122,9 @@
                 required
               ></textarea>
            </div>
+           {#if error}
+              <p class="error-msg">{error}</p>
+           {/if}
            <div class="form-footer">
               <Button type="submit" variant="primary" icon="key" disabled={submitting || !newKeyContent}>
                  {submitting ? 'Añadiendo...' : 'Vincular Clave SSH'}
@@ -171,4 +182,6 @@
   .form-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   .skeleton-keys { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+
+  .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 1.5rem; border-radius: 1rem; font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; border: 1px solid rgba(var(--error-rgb), 0.2); }
 </style>

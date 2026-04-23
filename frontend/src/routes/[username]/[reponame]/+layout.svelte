@@ -52,7 +52,9 @@
     currentPath.includes('/issues') ? 'issues' :
     currentPath.includes('/pulls') ? 'pulls' :
     currentPath.includes('/wiki') ? 'wiki' :
-    currentPath.includes('/branches') ? 'branches' : 'code'
+    currentPath.includes('/branches') ? 'branches' : 
+    currentPath.includes('/labels') ? 'labels' :
+    currentPath.includes('/milestones') ? 'milestones' : 'code'
   );
 
   let showCloneDropdown = $state(false);
@@ -223,6 +225,16 @@
               {#if activeTab === 'wiki'}<span class="tab-label">Wiki</span>{/if}
             </a>
           {/if}
+
+          <a href="/{username}/{reponame}/labels" class="tab" class:active={activeTab === 'labels'}>
+            <span class="material-symbols-rounded">label</span>
+            {#if activeTab === 'labels'}<span class="tab-label">Labels</span>{/if}
+          </a>
+
+          <a href="/{username}/{reponame}/milestones" class="tab" class:active={activeTab === 'milestones'}>
+            <span class="material-symbols-rounded">event</span>
+            {#if activeTab === 'milestones'}<span class="tab-label">Milestones</span>{/if}
+          </a>
         </nav>
       </div>
 

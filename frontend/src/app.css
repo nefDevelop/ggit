@@ -1256,6 +1256,7 @@ h1 {
   margin-bottom: 1.5rem;
   background: linear-gradient(135deg, var(--color-primary), var(--secondary, var(--color-primary)));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
 }
@@ -1346,6 +1347,29 @@ h2::after {
   filter: brightness(1.1);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.btn-group {
+  display: flex;
+  background: var(--surface-variant);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.btn-group .btn-action-primary {
+  border-radius: 0;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.btn-group .btn-action-primary:last-child {
+  border-right: none;
+}
+
+.btn-group .btn-action-primary:hover:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+  filter: brightness(1.15);
 }
 
 /* Icon Buttons */

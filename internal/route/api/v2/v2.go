@@ -210,6 +210,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		{
 			settingGroup.GET("", ginx.Handle(GetRepoSettings))
 			settingGroup.PATCH("", ginx.Handle(UpdateRepoSettings))
+			settingGroup.POST("/transfer", ginx.Handle(TransferRepoOwnership))
 			settingGroup.DELETE("", ginx.Handle(DeleteRepository))
 
 			settingGroup.GET("/collaborators", ginx.Handle(GetRepoCollaborators))
@@ -258,7 +259,5 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		users.GET("/:username", ginx.Handle(GetUserProfile))
 		users.GET("/:username/repos", ginx.Handle(GetUserPublicRepositories))
 		users.GET("/:username/stars", ginx.Handle(GetUserStars))
-		users.GET("/:username/followers", ginx.Handle(GetUserFollowers))
-		users.GET("/:username/following", ginx.Handle(GetUserFollowing))
 	}
 }

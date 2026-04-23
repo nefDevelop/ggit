@@ -148,7 +148,7 @@
   .commit-row:nth-child(even) { background: rgba(0,0,0,0.02); }
   .commit-row:hover { background: rgba(var(--primary-rgb), 0.04); }
 
-  .user-avatar {
+  :global(.user-avatar) {
     width: 32px;
     height: 32px;
     border-radius: 50%;

@@ -27,10 +27,10 @@ func TestDumpAndImport(t *testing.T) {
 
 	backupTables := []any{
 		new(Access), new(AccessToken), new(Action), new(EmailAddress),
-		new(Follow), new(LFSObject), new(LoginSource), new(Notice),
+		new(LFSObject), new(LoginSource), new(Notice),
 	}
 
-	const wantTables = 8
+	const wantTables = 7
 	if len(backupTables) != wantTables {
 		t.Fatalf("New table has added (want %d got %d), please add new tests for the table and update this check", wantTables, len(backupTables))
 	}
@@ -144,16 +144,6 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			IsActivated: true,
 		},
 
-		&Follow{
-			ID:       1,
-			UserID:   1,
-			FollowID: 2,
-		},
-		&Follow{
-			ID:       2,
-			UserID:   2,
-			FollowID: 1,
-		},
 
 		&LFSObject{
 			RepoID:      1,

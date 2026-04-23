@@ -41,6 +41,26 @@
     }
   }
 
+  async function deleteOrg() {
+    if (!confirm('Are you absolutely sure you want to delete this organization? This action is permanent.')) return;
+    
+    saving = true;
+    try {
+      const res = await apiFetch(`/api/v2/orgs/${orgName}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        window.location.href = '/';
+      } else {
+        message = 'Failed to delete organization.';
+      }
+    } catch (e) {
+      message = 'Error deleting organization.';
+    } finally {
+      saving = false;
+    }
+  }
+
   onMount(fetchOrg);
 </script>
 
@@ -95,7 +115,9 @@
         <strong>Delete this organization</strong>
         <p>This will permanently delete the organization and all its repositories and teams. This cannot be undone.</p>
       </div>
-      <button class="btn btn-danger">Delete Organization</button>
+      <button class="btn btn-danger" onclick={deleteOrg} disabled={saving}>
+        {saving ? 'Deleting...' : 'Delete Organization'}
+      </button>
     </div>
   </div>
 </div>

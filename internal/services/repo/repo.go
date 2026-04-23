@@ -31,13 +31,20 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 		// 1. Crear el registro en la base de datos
 		var err error
 		repo, err = s.db.WithTransaction(tx).Repositories().Create(ctx, owner.ID, database.CreateRepoOptions{
-			Name:         opts.Name,
-			Description:  opts.Description,
-			Private:      opts.IsPrivate,
-			EnableWiki:   true,
-			EnableIssues: true,
-			EnablePulls:  true,
-			CreatedAt:    opts.CreatedAt,
+			Name:          opts.Name,
+			Description:   opts.Description,
+			Website:       opts.Website,
+			DefaultBranch: opts.DefaultBranch,
+			Private:       opts.IsPrivate,
+			IsUnlisted:    opts.IsUnlisted,
+			AutoInit:      opts.AutoInit,
+			Gitignores:    opts.Gitignores,
+			License:       opts.License,
+			Readme:        opts.Readme,
+			EnableWiki:    true,
+			EnableIssues:  true,
+			EnablePulls:   true,
+			CreatedAt:     opts.CreatedAt,
 		})
 		if err != nil {
 			return err

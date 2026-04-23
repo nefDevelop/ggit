@@ -102,8 +102,6 @@ func TestUsers(t *testing.T) {
 		{"GetMailableEmailsByUsernames", usersGetMailableEmailsByUsernames},
 		{"IsUsernameUsed", usersIsUsernameUsed},
 		{"List", usersList},
-		{"ListFollowers", usersListFollowers},
-		{"ListFollowings", usersListFollowings},
 		{"SearchByName", usersSearchByName},
 		{"Update", usersUpdate},
 		{"UseCustomAvatar", usersUseCustomAvatar},
@@ -113,9 +111,7 @@ func TestUsers(t *testing.T) {
 		{"MarkEmailActivated", usersMarkEmailActivated},
 		{"MarkEmailPrimary", usersMarkEmailPrimary},
 		{"DeleteEmail", usersDeleteEmail},
-		{"Follow", usersFollow},
-		{"IsFollowing", usersIsFollowing},
-		{"Unfollow", usersUnfollow},
+		{"DeleteEmail", usersDeleteEmail},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Cleanup(func() {
@@ -509,9 +505,6 @@ func usersDeleteByID(t *testing.T, ctx context.Context, s *UsersStore) {
 	require.NoError(t, err)
 	err = reposStore.Star(ctx, testUser.ID, repo2.ID)
 	require.NoError(t, err)
-	err = s.Follow(ctx, testUser.ID, cindy.ID)
-	require.NoError(t, err)
-	err = s.Follow(ctx, frank.ID, testUser.ID)
 	require.NoError(t, err)
 
 	// Mock "authorized_keys" file
@@ -578,10 +571,8 @@ func usersDeleteByID(t *testing.T, ctx context.Context, s *UsersStore) {
 
 	cindy, err = s.GetByID(ctx, cindy.ID)
 	require.NoError(t, err)
-	assert.Equal(t, 1, cindy.NumFollowers)
 	frank, err = s.GetByID(ctx, frank.ID)
 	require.NoError(t, err)
-	assert.Equal(t, 1, frank.NumFollowing)
 
 	authorizedKeys, err := os.ReadFile(authorizedKeysPath())
 	require.NoError(t, err)
@@ -596,7 +587,6 @@ func usersDeleteByID(t *testing.T, ctx context.Context, s *UsersStore) {
 	relatedTables := []any{
 		&Watch{UserID: testUser.ID},
 		&Star{UserID: testUser.ID},
-		&Follow{UserID: testUser.ID},
 		&PublicKey{OwnerID: testUser.ID},
 		&AccessToken{UserID: testUser.ID},
 		&Collaboration{UserID: testUser.ID},
@@ -627,10 +617,8 @@ func usersDeleteByID(t *testing.T, ctx context.Context, s *UsersStore) {
 
 	cindy, err = s.GetByID(ctx, cindy.ID)
 	require.NoError(t, err)
-	assert.Equal(t, 0, cindy.NumFollowers)
 	frank, err = s.GetByID(ctx, frank.ID)
 	require.NoError(t, err)
-	assert.Equal(t, 0, frank.NumFollowing)
 
 	authorizedKeys, err = os.ReadFile(authorizedKeysPath())
 	require.NoError(t, err)
@@ -644,7 +632,6 @@ func usersDeleteByID(t *testing.T, ctx context.Context, s *UsersStore) {
 	for _, table := range []any{
 		&Watch{UserID: testUser.ID},
 		&Star{UserID: testUser.ID},
-		&Follow{UserID: testUser.ID},
 		&PublicKey{OwnerID: testUser.ID},
 		&AccessToken{UserID: testUser.ID},
 		&Collaboration{UserID: testUser.ID},
@@ -931,67 +918,6 @@ func usersList(t *testing.T, ctx context.Context, s *UsersStore) {
 	assert.Equal(t, bob.ID, got[1].ID)
 }
 
-func usersListFollowers(t *testing.T, ctx context.Context, s *UsersStore) {
-	john, err := s.Create(ctx, "john", "john@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	got, err := s.ListFollowers(ctx, john.ID, 1, 1)
-	require.NoError(t, err)
-	assert.Empty(t, got)
-
-	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-	bob, err := s.Create(ctx, "bob", "bob@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	err = s.Follow(ctx, alice.ID, john.ID)
-	require.NoError(t, err)
-	err = s.Follow(ctx, bob.ID, john.ID)
-	require.NoError(t, err)
-
-	// First page only has bob
-	got, err = s.ListFollowers(ctx, john.ID, 1, 1)
-	require.NoError(t, err)
-	require.Len(t, got, 1)
-	assert.Equal(t, bob.ID, got[0].ID)
-
-	// Second page only has alice
-	got, err = s.ListFollowers(ctx, john.ID, 2, 1)
-	require.NoError(t, err)
-	require.Len(t, got, 1)
-	assert.Equal(t, alice.ID, got[0].ID)
-}
-
-func usersListFollowings(t *testing.T, ctx context.Context, s *UsersStore) {
-	john, err := s.Create(ctx, "john", "john@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	got, err := s.ListFollowers(ctx, john.ID, 1, 1)
-	require.NoError(t, err)
-	assert.Empty(t, got)
-
-	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-	bob, err := s.Create(ctx, "bob", "bob@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	err = s.Follow(ctx, john.ID, alice.ID)
-	require.NoError(t, err)
-	err = s.Follow(ctx, john.ID, bob.ID)
-	require.NoError(t, err)
-
-	// First page only has bob
-	got, err = s.ListFollowings(ctx, john.ID, 1, 1)
-	require.NoError(t, err)
-	require.Len(t, got, 1)
-	assert.Equal(t, bob.ID, got[0].ID)
-
-	// Second page only has alice
-	got, err = s.ListFollowings(ctx, john.ID, 2, 1)
-	require.NoError(t, err)
-	require.Len(t, got, 1)
-	assert.Equal(t, alice.ID, got[0].ID)
-}
 
 func usersSearchByName(t *testing.T, ctx context.Context, s *UsersStore) {
 	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{FullName: "Alice Jordan"})
@@ -1337,71 +1263,3 @@ func usersDeleteEmail(t *testing.T, ctx context.Context, s *UsersStore) {
 	require.Equal(t, want, got)
 }
 
-func usersFollow(t *testing.T, ctx context.Context, s *UsersStore) {
-	usersStore := newUsersStore(s.db)
-	alice, err := usersStore.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-	bob, err := usersStore.Create(ctx, "bob", "bob@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	err = s.Follow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-
-	// It is OK to follow multiple times and just be noop.
-	err = s.Follow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-
-	alice, err = usersStore.GetByID(ctx, alice.ID)
-	require.NoError(t, err)
-	assert.Equal(t, 1, alice.NumFollowing)
-
-	bob, err = usersStore.GetByID(ctx, bob.ID)
-	require.NoError(t, err)
-	assert.Equal(t, 1, bob.NumFollowers)
-}
-
-func usersIsFollowing(t *testing.T, ctx context.Context, s *UsersStore) {
-	usersStore := newUsersStore(s.db)
-	alice, err := usersStore.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-	bob, err := usersStore.Create(ctx, "bob", "bob@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	got := s.IsFollowing(ctx, alice.ID, bob.ID)
-	assert.False(t, got)
-
-	err = s.Follow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-	got = s.IsFollowing(ctx, alice.ID, bob.ID)
-	assert.True(t, got)
-
-	err = s.Unfollow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-	got = s.IsFollowing(ctx, alice.ID, bob.ID)
-	assert.False(t, got)
-}
-
-func usersUnfollow(t *testing.T, ctx context.Context, s *UsersStore) {
-	usersStore := newUsersStore(s.db)
-	alice, err := usersStore.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-	bob, err := usersStore.Create(ctx, "bob", "bob@example.com", CreateUserOptions{})
-	require.NoError(t, err)
-
-	err = s.Follow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-
-	// It is OK to unfollow multiple times and just be noop.
-	err = s.Unfollow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-	err = s.Unfollow(ctx, alice.ID, bob.ID)
-	require.NoError(t, err)
-
-	alice, err = usersStore.GetByID(ctx, alice.ID)
-	require.NoError(t, err)
-	assert.Equal(t, 0, alice.NumFollowing)
-
-	bob, err = usersStore.GetByID(ctx, bob.ID)
-	require.NoError(t, err)
-	assert.Equal(t, 0, bob.NumFollowers)
-}

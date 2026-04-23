@@ -88,8 +88,14 @@ func (err ErrRepoAlreadyExist) Error() string {
 type CreateRepoOptions struct {
 	Name          string
 	Description   string
+	Website       string
 	DefaultBranch string
 	Private       bool
+	IsUnlisted    bool
+	AutoInit      bool
+	Gitignores    string
+	License       string
+	Readme        string
 	EnableWiki     bool
 	WikiFolderName string
 	EnableIssues   bool
@@ -126,8 +132,10 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 		LowerName:     strings.ToLower(opts.Name),
 		Name:          opts.Name,
 		Description:   opts.Description,
+		Website:       opts.Website,
 		DefaultBranch: opts.DefaultBranch,
 		IsPrivate:     opts.Private,
+		IsUnlisted:    opts.IsUnlisted,
 		EnableWiki:    opts.EnableWiki,
 		WikiFolderName: opts.WikiFolderName,
 		EnableIssues:  opts.EnableIssues,

@@ -45,7 +45,6 @@ var Tables = []any{
 	new(Collaboration), new(Comment),
 	new(DeployKey),
 	new(EmailAddress),
-	new(Follow),
 	new(HookTask),
 	new(Issue), new(IssueLabel), new(IssueUser),
 	new(Label), new(LFSObject), new(LoginSource),

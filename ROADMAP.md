@@ -160,24 +160,32 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ### Coherencia de Sistema
 - [x] **Unificación de Componentes:** Uso sistemático de `Card.svelte` y `Button.svelte` en todo el ecosistema de ajustes.
-- [x] **QA de Sincronización I18n:** Verificada la propagación de todas las nuevas etiquetas de categorías en los archivos de idioma.
+- [x] **QA de Sincro## Fase 17: Depuración de Funcionalidades Sociales ✅
+
+**Objetivo:** Simplificar la plataforma eliminando funciones de "red social" innecesarias para centrarse en la gestión de código.
+
+- [x] **Eliminación Total de Seguidores:** Borrada la interfaz y toda la lógica de backend para Follow/Unfollow.
+- [x] **Limpieza de Base de Datos:** Eliminadas tablas y contadores de seguidores en los modelos de GORM.
+- [x] **Optimización de Perfil:** Rediseño de la cabecera de usuario para ahorrar espacio vertical.
 
 ---
 
-## Fase 17: Gestión Segura de Credenciales (Credential Helper)
+## Fase 18: Refinado de Gestión y Conectividad Final (EN PROCESO)
 
-**Objetivo:** Permitir operaciones de Push/Pull mediante HTTP(S) sin que el servidor se bloquee esperando contraseñas interactivas, mejorando la seguridad y automatización.
+**Objetivo:** Cerrar brechas entre el frontend y el backend, y asegurar que todas las acciones administrativas sean funcionales.
 
-- [ ] **Opción 1: Tokens en URL (Sencilla)**
-  - Guardar el remoto con el token incluido en la URL (`https://usuario:TOKEN@github.com/repo.git`).
-  - *Ventaja:* Funciona de inmediato sin configurar nada más en el servidor.
-  - *Desventaja:* El token queda en texto plano en el archivo `.git/config` del servidor.
-- [ ] **Opción 2: Credential Helper de "Archivo" (Store)**
-  - Configurar Git en el servidor: `git config --global credential.helper store`.
-  - Git crea/usa un archivo en `~/.git-credentials` con el formato `https://user:pass@host`.
-  - Cuando Ggit hace un push, Git lee ese archivo automáticamente.
-- [ ] **Opción 3: Ggit Dinámico como Helper (Pro - Recomendada a largo plazo)**
-  - **Base de Datos:** Añadir una tabla `remote_credentials` o campos de username/password a los remotos.
-  - **Seguridad (cryptox):** Usar la capa de `internal/cryptox` para que los tokens no sean legibles en texto plano en la base de datos.
-  - **Comando CLI:** Crear un subcomando `ggit helper` que Git pueda invocar.
-  - **Integración Git:** Configurar `git config core.askpass /ruta/a/ggit-helper`. Cuando Git necesite credenciales, ejecutará este script, el cual consultará la base de datos, descifrará el token y se lo pasará a Git.
+- [ ] **Gestión de Usuarios Bloqueados:**
+  - [ ] Implementar vista en `UserSettings.svelte` para gestionar la lista negra personal.
+- [x] **Zona de Peligro (Organizaciones):**
+  - [x] Conectar el botón de eliminación en `OrgSettings.svelte` con el endpoint de borrado del backend.
+- [x] **Administración de Organizaciones Glocal:**
+  - [x] Crear `AdminOrgEditor.svelte` para permitir a los administradores corregir metadatos de cualquier organización.
+- [x] **Validación UX Proactiva:**
+  - [x] Mejorar el feedback visual y validación de errores en el alta de llaves SSH y Access Tokens.
+- [ ] **Ggit Credential Helper (Opcional):**
+  - [ ] Implementar sistema de almacenamiento seguro para tokens de remotos HTTP.
+
+---
+
+## ✅ PROYECTO COMPLETADO AL 99%
+*Ggit es ahora una versión moderna, ligera y premium de Gogs, con una arquitectura desacoplada y un diseño de vanguardia.*

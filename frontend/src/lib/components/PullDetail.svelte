@@ -12,6 +12,9 @@
   let error = $state('');
   
   let activeView = $state('conversation'); // 'conversation', 'commits', 'files'
+  let comments = $state<any[]>([]);
+  let newComment = $state('');
+  let postingComment = $state(false);
 
   async function fetchPullDetail() {
     if (index === 'new') {
@@ -30,11 +33,41 @@
       if (pullRes.ok) pull = await pullRes.json();
       if (diffRes.ok) diff = await diffRes.json();
       
-      if (!pull) error = 'Pull request not found.';
+      if (!pull) {
+        error = 'Pull request not found.';
+        return;
+      }
+
+      // Fetch comments (as PR is an issue in Ggit)
+      const commentsRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`);
+      if (commentsRes.ok) {
+        comments = await commentsRes.json();
+      }
     } catch (e) {
       error = 'Failed to load pull request details.';
     } finally {
       loading = false;
+    }
+  }
+
+  async function postComment() {
+    if (!newComment.trim()) return;
+    postingComment = true;
+    try {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body: newComment })
+      });
+      if (res.ok) {
+        const comment = await res.json();
+        comments = [...comments, comment];
+        newComment = '';
+      }
+    } catch (e) {
+        console.error(e);
+    } finally {
+        postingComment = false;
     }
   }
 
@@ -79,16 +112,32 @@
     <div class="pull-content-body">
       {#if activeView === 'conversation'}
         <div class="conversation-timeline">
-           <div class="timeline-item-flat">
-              <div class="item-header"><strong>{pull.user?.username}</strong> commented</div>
-              <div class="item-body markdown-body">
-                {pull.body}
+            <div class="timeline-item-flat">
+               <div class="item-header"><strong>{pull.user?.username}</strong> commented</div>
+               <div class="item-body markdown-body">
+                 {@html pull.body_html || pull.body}
+               </div>
+            </div>
+
+            {#each comments as comment}
+              <div class="timeline-item-flat">
+                <div class="item-header">
+                  <strong>{comment.user?.username}</strong> commented on {new Date(comment.created_at).toLocaleDateString()}
+                </div>
+                <div class="item-body markdown-body">
+                  {@html comment.body_html || comment.body}
+                </div>
               </div>
-           </div>
-           <div class="coming-soon">
-             <span class="material-symbols-rounded">construction</span>
-             <p>Timeline details are being modernized...</p>
-           </div>
+            {/each}
+
+            <div class="comment-composer island tonal">
+              <textarea bind:value={newComment} placeholder="Leave a comment..."></textarea>
+              <div class="composer-footer">
+                <button class="btn btn-primary" onclick={postComment} disabled={!newComment.trim() || postingComment}>
+                   {postingComment ? 'Posting...' : 'Comment'}
+                </button>
+              </div>
+            </div>
         </div>
       {:else if activeView === 'files'}
         <DiffViewer {diff} />
@@ -128,8 +177,9 @@
   .item-header { padding: 0.75rem 1.5rem; background: var(--surface-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); font-size: 0.85rem; color: var(--text-muted); }
   .item-body { padding: 1.5rem; line-height: 1.6; }
 
-  .coming-soon { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .coming-soon span { font-size: 3rem; }
+  .comment-composer { display: flex; flex-direction: column; gap: 1rem; border: 2px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
+  .comment-composer textarea { background: transparent; border: none; padding: 1.5rem; color: var(--text-color); font-family: inherit; font-size: 1rem; resize: vertical; min-height: 120px; outline: none; }
+  .composer-footer { padding: 0.75rem 1.5rem; background: var(--surface-variant); border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; justify-content: flex-end; }
 
   .skeleton-detail { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }

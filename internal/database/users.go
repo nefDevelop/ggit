@@ -27,7 +27,7 @@ import (
 
 // userListFields are the columns used for listing users/organizations.
 // We avoid 'passwd', 'salt', 'rands', etc. for security and to save RAM.
-const userListFields = "user.id, user.lower_name, user.name, user.full_name, user.email, user.type, user.location, user.website, user.avatar, user.avatar_email, user.use_custom_avatar, user.num_followers, user.num_following, user.num_stars, user.num_repos, user.description, user.num_teams, user.num_members, user.created_unix, user.updated_unix, user.is_admin, user.is_active, user.prohibit_login"
+const userListFields = "user.id, user.lower_name, user.name, user.full_name, user.email, user.type, user.location, user.website, user.avatar, user.avatar_email, user.use_custom_avatar, user.num_stars, user.num_repos, user.description, user.num_teams, user.num_members, user.created_unix, user.updated_unix, user.is_admin, user.is_active, user.prohibit_login"
 
 var (
 	// alphaDashDotPattern represents a regex for valid username/email characters.
@@ -477,48 +477,6 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 			return errors.Wrap(err, `decrease "repository.num_stars"`)
 		}
 
-		/*
-			Equivalent SQL for PostgreSQL:
-
-			UPDATE user
-			SET num_followers = num_followers - 1
-			WHERE id IN (
-				SELECT follow_id FROM follow WHERE user_id = @userID
-			)
-		*/
-		err = tx.Table("user").
-			Where("id IN (?)", tx.
-				Select("follow_id").
-				Table("follow").
-				Where("user_id = ?", userID),
-			).
-			UpdateColumn("num_followers", gorm.Expr("num_followers - 1")).
-			Error
-		if err != nil {
-			return errors.Wrap(err, `decrease "user.num_followers"`)
-		}
-
-		/*
-			Equivalent SQL for PostgreSQL:
-
-			UPDATE user
-			SET num_following = num_following - 1
-			WHERE id IN (
-				SELECT user_id FROM follow WHERE follow_id = @userID
-			)
-		*/
-		err = tx.Table("user").
-			Where("id IN (?)", tx.
-				Select("user_id").
-				Table("follow").
-				Where("follow_id = ?", userID),
-			).
-			UpdateColumn("num_following", gorm.Expr("num_following - 1")).
-			Error
-		if err != nil {
-			return errors.Wrap(err, `decrease "user.num_following"`)
-		}
-
 		if !skipRewriteAuthorizedKeys {
 			// We need to rewrite "authorized_keys" file if the user owns any public keys.
 			needsRewriteAuthorizedKeys = tx.Where("owner_id = ?", userID).First(&PublicKey{}).Error != gorm.ErrRecordNotFound
@@ -535,7 +493,6 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 		}{
 			{&Watch{}, "user_id = @userID"},
 			{&Star{}, "uid = @userID"},
-			{&Follow{}, "user_id = @userID OR follow_id = @userID"},
 			{&PublicKey{}, "owner_id = @userID"},
 
 			{&AccessToken{}, "uid = @userID"},
@@ -597,90 +554,6 @@ func (s *UsersStore) DeleteInactivated() error {
 	return nil
 }
 
-func (*UsersStore) recountFollows(tx *gorm.DB, userID, followID int64) error {
-	/*
-		Equivalent SQL for PostgreSQL:
-
-		UPDATE "user"
-		SET num_followers = (
-			SELECT COUNT(*) FROM follow WHERE follow_id = @followID
-		)
-		WHERE id = @followID
-	*/
-	err := tx.Model(&User{}).
-		Where("id = ?", followID).
-		Update(
-			"num_followers",
-			tx.Model(&Follow{}).Select("COUNT(*)").Where("follow_id = ?", followID),
-		).
-		Error
-	if err != nil {
-		return errors.Wrap(err, `update "user.num_followers"`)
-	}
-
-	/*
-		Equivalent SQL for PostgreSQL:
-
-		UPDATE "user"
-		SET num_following = (
-			SELECT COUNT(*) FROM follow WHERE user_id = @userID
-		)
-		WHERE id = @userID
-	*/
-	err = tx.Model(&User{}).
-		Where("id = ?", userID).
-		Update(
-			"num_following",
-			tx.Model(&Follow{}).Select("COUNT(*)").Where("user_id = ?", userID),
-		).
-		Error
-	if err != nil {
-		return errors.Wrap(err, `update "user.num_following"`)
-	}
-	return nil
-}
-
-// Follow marks the user to follow the other user.
-func (s *UsersStore) Follow(ctx context.Context, userID, followID int64) error {
-	if userID == followID {
-		return nil
-	}
-
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		f := &Follow{
-			UserID:   userID,
-			FollowID: followID,
-		}
-		result := tx.FirstOrCreate(f, f)
-		if result.Error != nil {
-			return errors.Wrap(result.Error, "upsert")
-		} else if result.RowsAffected <= 0 {
-			return nil // Relation already exists
-		}
-
-		return s.recountFollows(tx, userID, followID)
-	})
-}
-
-// Unfollow removes the mark the user to follow the other user.
-func (s *UsersStore) Unfollow(ctx context.Context, userID, followID int64) error {
-	if userID == followID {
-		return nil
-	}
-
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
-		err := tx.Where("user_id = ? AND follow_id = ?", userID, followID).Delete(&Follow{}).Error
-		if err != nil {
-			return errors.Wrap(err, "delete")
-		}
-		return s.recountFollows(tx, userID, followID)
-	})
-}
-
-// IsFollowing returns true if the user is following the other user.
-func (s *UsersStore) IsFollowing(ctx context.Context, userID, followID int64) bool {
-	return s.db.WithContext(ctx).Where("user_id = ? AND follow_id = ?", userID, followID).First(&Follow{}).Error == nil
-}
 
 var _ errx.NotFound = (*ErrUserNotExist)(nil)
 
@@ -820,54 +693,6 @@ func (s *UsersStore) List(ctx context.Context, page, pageSize int) ([]*User, err
 		Where("type = ?", UserTypeIndividual).
 		Limit(pageSize).Offset((page - 1) * pageSize).
 		Order("id ASC").
-		Find(&users).
-		Error
-}
-
-// ListFollowers returns a list of users that are following the given user.
-// Results are paginated by given page and page size, and sorted by the time of
-// follow in descending order.
-func (s *UsersStore) ListFollowers(ctx context.Context, userID int64, page, pageSize int) ([]*User, error) {
-	/*
-		Equivalent SQL for PostgreSQL:
-
-		SELECT * FROM "user"
-		LEFT JOIN follow ON follow.user_id = "user".id
-		WHERE follow.follow_id = @userID
-		ORDER BY follow.id DESC
-		LIMIT @limit OFFSET @offset
-	*/
-	users := make([]*User, 0, pageSize)
-	return users, s.db.WithContext(ctx).
-		Select(userListFields).
-		Joins(dbx.Quote("LEFT JOIN follow ON follow.user_id = %s.id", "user")).
-		Where("follow.follow_id = ?", userID).
-		Limit(pageSize).Offset((page - 1) * pageSize).
-		Order("follow.id DESC").
-		Find(&users).
-		Error
-}
-
-// ListFollowings returns a list of users that are followed by the given user.
-// Results are paginated by given page and page size, and sorted by the time of
-// follow in descending order.
-func (s *UsersStore) ListFollowings(ctx context.Context, userID int64, page, pageSize int) ([]*User, error) {
-	/*
-		Equivalent SQL for PostgreSQL:
-
-		SELECT * FROM "user"
-		LEFT JOIN follow ON follow.user_id = "user".id
-		WHERE follow.user_id = @userID
-		ORDER BY follow.id DESC
-		LIMIT @limit OFFSET @offset
-	*/
-	users := make([]*User, 0, pageSize)
-	return users, s.db.WithContext(ctx).
-		Select(userListFields).
-		Joins(dbx.Quote("LEFT JOIN follow ON follow.follow_id = %s.id", "user")).
-		Where("follow.user_id = ?", userID).
-		Limit(pageSize).Offset((page - 1) * pageSize).
-		Order("follow.id DESC").
 		Find(&users).
 		Error
 }
@@ -1276,9 +1101,6 @@ type User struct {
 	AvatarEmail     string `gorm:"not null"`
 	UseCustomAvatar bool
 
-	// Counters
-	NumFollowers int
-	NumFollowing int `gorm:"not null;default:0"`
 	NumStars     int
 	NumRepos     int
 
@@ -1415,13 +1237,6 @@ func (u *User) AvatarURL() string {
 	return u.AvatarURLPath()
 }
 
-// IsFollowing returns true if the user is following the given user.
-//
-// TODO(unknwon): This is also used in templates, which should be fixed by
-// having a dedicated type `template.User`.
-func (u *User) IsFollowing(followID int64) bool {
-	return Handle.Users().IsFollowing(context.TODO(), u.ID, followID)
-}
 
 // IsUserOrgOwner returns true if the user is in the owner team of the given
 // organization.
@@ -1585,9 +1400,3 @@ type EmailAddress struct {
 	IsPrimary   bool   `gorm:"-" json:"-"`
 }
 
-// Follow represents relations of users and their followers.
-type Follow struct {
-	ID       int64 `gorm:"primaryKey"`
-	UserID   int64 `gorm:"uniqueIndex:follow_user_follow_unique;not null"`
-	FollowID int64 `gorm:"uniqueIndex:follow_user_follow_unique;not null"`
-}

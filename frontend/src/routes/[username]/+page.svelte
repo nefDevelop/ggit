@@ -100,20 +100,6 @@
         <span class="material-symbols-rounded">star</span>
         Estrellas
       </button>
-      <button
-        class:active={activeTab === "followers"}
-        onclick={() => fetchTabData("followers")}
-      >
-        <span class="material-symbols-rounded">group</span>
-        Seguidores
-      </button>
-      <button
-        class:active={activeTab === "following"}
-        onclick={() => fetchTabData("following")}
-      >
-        <span class="material-symbols-rounded">person_add</span>
-        Siguiendo
-      </button>
     </div>
 
     <section class="content-section">

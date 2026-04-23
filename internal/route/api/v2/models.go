@@ -141,6 +141,8 @@ func ToAuditLogResponse(a *database.Action) *types.AuditLogResponse {
 		opName = "Delete Tag"
 	case database.ActionForkRepo:
 		opName = "Fork Repository"
+	case database.ActionUpdateConfig:
+		opName = "Update Configuration"
 	}
 
 	return &types.AuditLogResponse{

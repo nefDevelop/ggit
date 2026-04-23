@@ -3,6 +3,7 @@
   import ExploreRepos from './ExploreRepos.svelte';
   import ExploreUsers from './ExploreUsers.svelte';
   import ExploreOrganizations from './ExploreOrganizations.svelte';
+  import ExploreTopics from './ExploreTopics.svelte';
   import GlobalSearch from './GlobalSearch.svelte';
   import ViewHeader from './ui/ViewHeader.svelte';
 
@@ -12,7 +13,8 @@
   const tabs = [
     { id: 'repos', label: 'Repositories', icon: 'account_tree' },
     { id: 'users', label: 'Users', icon: 'person_search' },
-    { id: 'organizations', label: 'Organizations', icon: 'corporate_fare' }
+    { id: 'organizations', label: 'Organizations', icon: 'corporate_fare' },
+    { id: 'topics', label: 'Topics', icon: 'tag' }
   ];
 
   onMount(() => {
@@ -33,6 +35,8 @@
         <ExploreUsers q={searchQuery} />
       {:else if activeTab === 'organizations'}
         <ExploreOrganizations q={searchQuery} />
+      {:else if activeTab === 'topics'}
+        <ExploreTopics q={searchQuery} />
       {/if}
     </main>
   </div>

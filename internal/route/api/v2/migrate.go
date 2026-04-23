@@ -2,6 +2,7 @@ package v2
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 
 	log "unknwon.dev/clog/v2"
@@ -20,6 +21,8 @@ type MigrateRepoForm struct {
 	Private      bool   `json:"private"`
 	Unlisted     bool   `json:"unlisted"`
 	Description  string `json:"description" binding:"max=512"`
+	Website      string `json:"website" binding:"max=100"`
+	DefaultBranch string `json:"default_branch" binding:"max=100"`
 }
 
 // MigrateRepo migrates a repository from a remote address.
@@ -49,18 +52,28 @@ func MigrateRepo(c *context.APIContext) {
 	}
 
 	remoteAddr := strings.TrimSpace(f.CloneAddr)
-	// TODO: Add proper URL parsing/formatting with auth if needed, similar to form.MigrateRepo.ParseRemoteAddr
-	// For now, assume cloneAddr is either public or has auth already or we handle it here.
+	if strings.HasPrefix(remoteAddr, "git clone ") {
+		remoteAddr = strings.TrimPrefix(remoteAddr, "git clone ")
+	}
 
-	// Implementation Note: In the legacy code, ParseRemoteAddr handles AuthUsername/Password inclusion in the URL.
-	// We'll do a simplified version or just use the same logic if accessible.
+	if strings.HasPrefix(remoteAddr, "http://") || strings.HasPrefix(remoteAddr, "https://") {
+		u, err := url.Parse(remoteAddr)
+		if err == nil {
+			if f.AuthUsername != "" || f.AuthPassword != "" {
+				u.User = url.UserPassword(f.AuthUsername, f.AuthPassword)
+			}
+			remoteAddr = u.String()
+		}
+	}
 
 	repo, err := database.MigrateRepository(c.User, ctxUser, database.MigrateRepoOptions{
 		Name:        f.RepoName,
 		Description: f.Description,
 		IsPrivate:   f.Private || conf.Repository.ForcePrivate,
 		IsUnlisted:  f.Unlisted,
-		RemoteAddr:  remoteAddr, // Note: Should include auth if provided
+		Website:     f.Website,
+		DefaultBranch: f.DefaultBranch,
+		RemoteAddr:  remoteAddr,
 	})
 
 	if err != nil {

@@ -4,11 +4,13 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import Avatar from './Avatar.svelte';
+  import AdminOrgEditor from './AdminOrgEditor.svelte';
   import { i18n } from '$lib/i18n.svelte';
   
   let orgs = $state<any[]>([]);
   let loading = $state(true);
   let page = $state(1);
+  let editingOrg = $state<any | null>(null);
 
   async function fetchOrgs() {
     loading = true;
@@ -21,6 +23,16 @@
       console.error(e);
     } finally {
       loading = false;
+    }
+  }
+
+  async function deleteOrg(id: number) {
+    if (!confirm('¿Estás seguro de que deseas eliminar esta organización? Todos sus contenidos serán eliminados permanentemente.')) return;
+    try {
+      const res = await apiFetch(`/api/v2/admin/users/${id}`, { method: 'DELETE' });
+      if (res.ok) fetchOrgs();
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -87,8 +99,8 @@
               <td>
                 <div class="action-row">
                   <Button variant="ghost" size="sm" icon="visibility" href="/org/{org.username}" />
-                  <Button variant="ghost" size="sm" icon="edit" />
-                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" />
+                  <Button variant="ghost" size="sm" icon="edit" onclick={() => editingOrg = org} />
+                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteOrg(org.id)} />
                 </div>
               </td>
             </tr>
@@ -98,6 +110,14 @@
     </table>
   </div>
 </Card>
+
+{#if editingOrg}
+  <AdminOrgEditor 
+    org={editingOrg} 
+    onSave={() => { editingOrg = null; fetchOrgs(); }} 
+    onCancel={() => editingOrg = null} 
+  />
+{/if}
 
 <style>
   :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }

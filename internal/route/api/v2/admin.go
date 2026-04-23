@@ -1,10 +1,14 @@
 package v2
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"runtime"
 	"time"
+
+	"gopkg.in/ini.v1"
+	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
@@ -159,25 +163,16 @@ func RunAdminOperation(c *context.APIContext) {
 
 // GetAdminConfig returns the current application configuration.
 func GetAdminConfig(c *context.APIContext) {
-	c.JSON(http.StatusOK, map[string]any{
-		"app":        conf.App,
-		"server":     conf.Server,
-		"ssh":        conf.SSH,
-		"repository": conf.Repository,
-		"database":   conf.Database,
-		"security":   conf.Security,
-		"email":      conf.Email,
-		"auth":       conf.Auth,
-		"user":       conf.User,
-		"session":    conf.Session,
-		"cache":      conf.Cache,
-		"attachment": conf.Attachment,
-		"release":    conf.Release,
-		"picture":    conf.Picture,
-		"http":       conf.HTTP,
-		"webhook":    conf.Webhook,
-		"git":        conf.Git,
-	})
+	sections := conf.File.Sections()
+	resp := make(map[string]map[string]string)
+	for _, s := range sections {
+		if s.Name() == ini.DefaultSection {
+			resp["app"] = s.KeysHash()
+			continue
+		}
+		resp[s.Name()] = s.KeysHash()
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 // SendAdminTestEmail sends a test email to the specified address.
@@ -455,31 +450,36 @@ func CreateAdminAuth(c *context.APIContext) {
 	})
 }
 
-// UpdateAdminConfig updates certain server configurations.
+// UpdateAdminConfig updates server configurations for a specific section.
 func UpdateAdminConfig(c *context.APIContext) {
 	var f struct {
-		EnableRegistrationQuestion bool   `json:"enable_registration_question"`
-		RegistrationQuestion       string `json:"registration_question"`
-		RegistrationAnswer         string `json:"registration_answer"`
+		Section string            `json:"section" binding:"required"`
+		Data    map[string]string `json:"data" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
 
-	// Update in-memory config
-	conf.Auth.EnableRegistrationQuestion = f.EnableRegistrationQuestion
-	conf.Auth.RegistrationQuestion = f.RegistrationQuestion
-	conf.Auth.RegistrationAnswer = f.RegistrationAnswer
-
-	// Save to app.ini
-	conf.File.Section("auth").Key("ENABLE_REGISTRATION_QUESTION").SetValue(fmt.Sprint(f.EnableRegistrationQuestion))
-	conf.File.Section("auth").Key("REGISTRATION_QUESTION").SetValue(f.RegistrationQuestion)
-	conf.File.Section("auth").Key("REGISTRATION_ANSWER").SetValue(f.RegistrationAnswer)
+	section := conf.File.Section(f.Section)
+	for k, v := range f.Data {
+		section.Key(k).SetValue(v)
+	}
 
 	if err := conf.File.SaveTo(conf.CustomConf); err != nil {
 		c.Error(err, "save configuration")
 		return
+	}
+
+	// Reload config to memory (some parts might need specific mapping, 
+	// but for now we write to disk which is the source of truth for next restart)
+	// For immediate effect on some settings, we'd need more complex mapping.
+	// But according to the goal, we are prioritizing manageability.
+
+	// Record action in Audit Log
+	content, _ := json.Marshal(f.Data)
+	if err := database.Handle.Actions().UpdateConfig(c.Req.Context(), c.User, f.Section, string(content)); err != nil {
+		log.Error("Failed to record config update action: %v", err)
 	}
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})

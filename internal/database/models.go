@@ -73,7 +73,7 @@ type Statistic struct {
 	Counter struct {
 		User, Org, PublicKey,
 		Repo, Watch, Star, Action, Access,
-		Issue, Comment, Oauth, Follow,
+		Issue, Comment, Oauth,
 		Release, LoginSource, Webhook,
 		Milestone, Label, HookTask,
 		Team, UpdateTask, Attachment int64
@@ -92,7 +92,6 @@ func GetStatistic(ctx context.Context) (stats Statistic) {
 	Handle.db.WithContext(ctx).Model(new(Issue)).Count(&stats.Counter.Issue)
 	Handle.db.WithContext(ctx).Model(new(Comment)).Count(&stats.Counter.Comment)
 	stats.Counter.Oauth = 0
-	Handle.db.WithContext(ctx).Model(new(Follow)).Count(&stats.Counter.Follow)
 	Handle.db.WithContext(ctx).Model(new(Release)).Count(&stats.Counter.Release)
 	stats.Counter.LoginSource = Handle.LoginSources().Count(ctx)
 	Handle.db.WithContext(ctx).Model(new(Webhook)).Count(&stats.Counter.Webhook)

@@ -1,12 +1,29 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
 
   let name = $state('');
   let description = $state('');
+  let website = $state('');
+  let defaultBranch = $state('');
   let isPrivate = $state(false);
+  let isUnlisted = $state(false);
   let autoInit = $state(true);
+  let creationMode = $state<'new' | 'migrate'>(
+    (page.url.searchParams.get('mode') as 'new' | 'migrate') || 'new'
+  );
+
+  // Owners & Organizations
+  let ownerID = $state(0);
+  let organizations = $state<any[]>([]);
+
+  // Migration fields
+  let cloneAddr = $state('');
+  let authUsername = $state('');
+  let authPassword = $state('');
 
   let gitignores = $state<string[]>([]);
   let global_ignores = $state<string[]>([]);
@@ -69,8 +86,32 @@
     }
   }
 
-  import { onMount } from 'svelte';
-  onMount(loadTemplates);
+  async function loadOrganizations() {
+    try {
+      const res = await apiFetch('/api/v2/user/settings/orgs');
+      if (res.ok) {
+        organizations = await res.json();
+      }
+    } catch (e) {
+      console.error("Failed to load orgs", e);
+    }
+  }
+
+  onMount(() => {
+    ownerID = authState.user?.id || 0;
+    loadTemplates();
+    loadOrganizations();
+  });
+
+  $effect(() => {
+    // Auto-fill repo name from URL if empty and in migrate mode
+    if (creationMode === 'migrate' && cloneAddr && !name) {
+      const match = cloneAddr.match(/\/([^\/.]+)(\.git)?$/);
+      if (match) {
+        name = match[1];
+      }
+    }
+  });
 
 
   async function handleSubmit() {
@@ -79,27 +120,49 @@
     errorMsg = '';
     
     try {
-      const res = await apiFetch('/api/v2/user/repos', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          name,
-          description,
-          private: isPrivate,
-          auto_init: autoInit,
-          gitignores: selectedGitignores.join(','),
-          license: selectedLicense,
-          readme: includeReadme ? selectedReadme : ''
-        })
-      });
+      let res;
+      if (creationMode === 'new') {
+        res = await apiFetch('/api/v2/user/repos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            uid: ownerID,
+            name,
+            description,
+            website,
+            default_branch: defaultBranch,
+            private: isPrivate,
+            unlisted: isUnlisted,
+            auto_init: autoInit,
+            gitignores: selectedGitignores.join(','),
+            license: selectedLicense,
+            readme: includeReadme ? selectedReadme : ''
+          })
+        });
+      } else {
+        res = await apiFetch('/api/v2/user/repos/migrate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clone_addr: cloneAddr,
+            auth_username: authUsername,
+            auth_password: authPassword,
+            uid: ownerID,
+            repo_name: name,
+            description,
+            website,
+            default_branch: defaultBranch,
+            private: isPrivate,
+            unlisted: isUnlisted
+          })
+        });
+      }
       
       const data = await res.json();
       if (res.ok) {
         goto(`/${authState.user.username}/${name}`);
       } else {
-        errorMsg = data.message || 'Failed to create repository';
+        errorMsg = data.message || 'Failed to create/migrate repository';
       }
     } catch (e) {
       errorMsg = 'An error occurred. Please try again.';
@@ -114,13 +177,38 @@
   <header class="hero-header">
     <div class="hero-content">
       <div>
-        <h1>Crear repositorio</h1>
-        <p>Un repositorio contiene todos los archivos de tu proyecto, incluyendo el historial de revisiones.</p>
+        <h1>{creationMode === 'new' ? 'Crear nuevo repositorio' : 'Importar repositorio'}</h1>
+        <p>
+          {creationMode === 'new' 
+            ? 'Un repositorio contiene todos los archivos de tu proyecto, incluyendo el historial de revisiones.' 
+            : 'Importa un repositorio existente desde otra URL para continuar tu trabajo aquí.'}
+        </p>
       </div>
     </div>
   </header>
 
   <main class="create-grid">
+    <div class="mode-selector tonal">
+      <button 
+        type="button" 
+        class="mode-btn" 
+        class:active={creationMode === 'new'} 
+        onclick={() => creationMode = 'new'}
+      >
+        <span class="material-symbols-rounded">add_circle</span>
+        Nuevo Repositorio
+      </button>
+      <button 
+        type="button" 
+        class="mode-btn" 
+        class:active={creationMode === 'migrate'} 
+        onclick={() => creationMode = 'migrate'}
+      >
+        <span class="material-symbols-rounded">cloud_download</span>
+        Importar / Clonar
+      </button>
+    </div>
+
     <!-- RIGHT COLUMN: FORM -->
     <form class="create-form-content" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       {#if errorMsg}
@@ -133,13 +221,55 @@
       <section class="form-section tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">id_card</span>
-          <h2>Información Básica</h2>
+          <h2>{creationMode === 'new' ? 'Información Básica' : 'Origen y Destino'}</h2>
         </div>
         
+        {#if creationMode === 'migrate'}
+          <div class="input-field">
+            <label for="clone-addr">URL de Clonación (Git)</label>
+            <div class="input-wrapper">
+              <span class="prefix"><span class="material-symbols-rounded">link</span></span>
+              <input 
+                type="url" 
+                id="clone-addr" 
+                bind:value={cloneAddr} 
+                placeholder="https://github.com/usuario/repo.git"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="auth-grid">
+            <div class="input-field">
+              <label for="auth-username">Usuario <span class="optional">(opcional)</span></label>
+              <input type="text" id="auth-username" bind:value={authUsername} placeholder="Opcional" class="standard-input" />
+            </div>
+            <div class="input-field">
+              <label for="auth-password">Contraseña / Token <span class="optional">(opcional)</span></label>
+              <input type="password" id="auth-password" bind:value={authPassword} placeholder="Opcional" class="standard-input" />
+            </div>
+          </div>
+          
+          <div class="divider"></div>
+        {/if}
+
+        <div class="input-field">
+          <label for="repo-owner">Propietario</label>
+          <div class="input-wrapper select-only">
+            <span class="prefix"><span class="material-symbols-rounded">person</span></span>
+            <select id="repo-owner" bind:value={ownerID} disabled={loading}>
+              <option value={authState.user?.id}>{authState.user?.username} (Mío)</option>
+              {#each organizations as org}
+                <option value={org.id}>{org.username} (Org)</option>
+              {/each}
+            </select>
+          </div>
+        </div>
+
         <div class="input-field">
           <label for="repo-name">Nombre del Repositorio</label>
           <div class="input-wrapper">
-            <span class="prefix">{authState.user?.username} /</span>
+            <span class="prefix">{organizations.find(o => o.id === ownerID)?.username || authState.user?.username} /</span>
             <input 
               type="text" 
               id="repo-name" 
@@ -161,6 +291,23 @@
             placeholder="¿De qué trata este repositorio?"
           disabled={loading}
           ></textarea>
+        </div>
+
+        <div class="input-grid">
+          <div class="input-field">
+            <label for="repo-site">Sitio Web <span class="optional">(opcional)</span></label>
+            <div class="input-wrapper">
+              <span class="prefix"><span class="material-symbols-rounded">language</span></span>
+              <input type="url" id="repo-site" bind:value={website} placeholder="https://..." disabled={loading} />
+            </div>
+          </div>
+          <div class="input-field">
+            <label for="repo-branch">Rama por defecto <span class="optional">(opcional)</span></label>
+            <div class="input-wrapper">
+              <span class="prefix"><span class="material-symbols-rounded">fork_right</span></span>
+              <input type="text" id="repo-branch" bind:value={defaultBranch} placeholder="main" disabled={loading} />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -191,8 +338,23 @@
             {#if isPrivate}<span class="material-symbols-rounded dot">check_circle</span>{/if}
           </label>
         </div>
+
+        <div class="unlisted-wrapper">
+          <label class="fancy-checkbox" class:disabled={loading}>
+            <input type="checkbox" bind:checked={isUnlisted} disabled={loading} />
+            <div class="check-box">
+              <span class="material-symbols-rounded check-icon">check</span>
+            </div>
+            <div class="check-text">
+              <strong>Repositorio no listado (Unlisted)</strong>
+              <span>Ocultar de la página de exploración pública.</span>
+            </div>
+          </label>
+        </div>
       </section>
 
+
+      {#if creationMode === 'new'}
       <section class="form-section tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">settings</span>
@@ -338,6 +500,7 @@
           </div>
         {/if}
       </section>
+      {/if}
 
       <div class="form-actions">
         <button type="button" class="btn-text" onclick={() => goto('/dashboard')}>Cancelar</button>
@@ -346,8 +509,8 @@
             <span class="material-symbols-rounded spin">sync</span>
             Despegando...
           {:else}
-            <span class="material-symbols-rounded">rocket_launch</span>
-            Crear Repositorio
+            <span class="material-symbols-rounded">{creationMode === 'new' ? 'rocket_launch' : 'cloud_sync'}</span>
+            {creationMode === 'new' ? 'Crear Repositorio' : 'Importar Repositorio'}
           {/if}
         </button>
       </div>
@@ -387,6 +550,7 @@
     background: linear-gradient(to right, var(--text-primary), var(--primary-color));
     background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
@@ -398,9 +562,67 @@
 
   /* GRID */
   .create-grid {
-    max-width: 800px; /* Centramos el formulario para que se vea bien al quitar la columna */
+    max-width: 800px;
     margin: 0 auto;
     padding-bottom: 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .mode-selector {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--surface-variant);
+    border-radius: 1.5rem;
+    border: 1px solid var(--border-color);
+  }
+
+  .mode-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 1rem;
+    transition: all 0.2s;
+  }
+
+  .mode-btn.active {
+    background: var(--bg-color);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .mode-btn span { font-size: 1.25rem; }
+
+  .auth-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .standard-input {
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+    color: var(--text-color);
+    font-weight: 600;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 2rem 0;
   }
 
   /* FORM SECTION */
@@ -431,7 +653,33 @@
     margin-bottom: 1.5rem;
   }
 
+  .input-wrapper.select-only {
+    padding-right: 0.5rem;
+  }
+  
+  .input-wrapper select {
+    border: none;
+    background-image: none;
+    width: 100%;
+    background: transparent;
+    color: var(--text-color);
+    font-weight: 600;
+  }
+
+  .unlisted-wrapper {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
   .input-field label { font-weight: 700; font-size: 0.95rem; color: var(--text-secondary); }
+
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
 
   .input-wrapper {
     display: flex;
@@ -766,29 +1014,6 @@
     color: var(--text-muted);
     cursor: pointer;
   }
-
-  .btn-hero {
-    background: var(--primary-color);
-    color: var(--on-primary);
-    padding: 1rem 2.5rem;
-    border-radius: 3rem;
-    border: none;
-    font-weight: 800;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    cursor: pointer;
-    box-shadow: 0 10px 25px rgba(var(--primary-rgb), 0.2);
-    transition: all 0.2s;
-  }
-
-  .btn-hero:hover:not(:disabled) {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 15px 35px rgba(var(--primary-rgb), 0.3);
-  }
-
-  .btn-hero:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .error-toast {
     background: var(--error-container);

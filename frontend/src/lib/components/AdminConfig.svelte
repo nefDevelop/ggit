@@ -4,12 +4,14 @@
   import { i18n } from '$lib/i18n.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import AdminConfigEditor from './AdminConfigEditor.svelte';
 
   let config = $state<any>(null);
   let loading = $state(true);
 
   let regSecurity = $state({ enable: false, question: "", answer: "" });
   let savingSecurity = $state(false);
+  let editingSection = $state<string | null>(null);
 
   async function fetchConfig() {
     loading = true;
@@ -17,9 +19,12 @@
       const res = await apiFetch("/api/v2/admin/config");
       if (res.ok) {
         config = await res.json();
-        regSecurity.enable = config.auth.EnableRegistrationQuestion;
-        regSecurity.question = config.auth.RegistrationQuestion;
-        regSecurity.answer = config.auth.RegistrationAnswer;
+        // Specific mapping for the shortcut card
+        if (config.auth) {
+          regSecurity.enable = config.auth.ENABLE_REGISTRATION_QUESTION === 'true';
+          regSecurity.question = config.auth.REGISTRATION_QUESTION;
+          regSecurity.answer = config.auth.REGISTRATION_ANSWER;
+        }
       }
     } catch (e) { console.error(e); } finally { loading = false; }
   }
@@ -31,9 +36,12 @@
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          enable_registration_question: regSecurity.enable,
-          registration_question: regSecurity.question,
-          registration_answer: regSecurity.answer,
+          section: "auth",
+          data: {
+            ENABLE_REGISTRATION_QUESTION: String(regSecurity.enable),
+            REGISTRATION_QUESTION: regSecurity.question,
+            REGISTRATION_ANSWER: regSecurity.answer,
+          },
         }),
       });
       if (res.ok) fetchConfig();
@@ -81,9 +89,14 @@
     <div class="config-stack">
       {#each sections as section}
         <div class="config-modular-section">
-          <div class="section-tag">
-            <span class="material-symbols-rounded">{section.icon}</span>
-            {section.label}
+          <div class="section-tag-wrapper">
+            <div class="section-tag">
+              <span class="material-symbols-rounded">{section.icon}</span>
+              {section.label}
+            </div>
+            <Button variant="ghost" size="sm" icon="edit" onclick={() => editingSection = section.key}>
+              Configurar
+            </Button>
           </div>
           <div class="config-grid">
             {#each Object.entries(config[section.key] || {}) as [label, value]}
@@ -132,6 +145,15 @@
   {/if}
 </Card>
 
+{#if editingSection}
+  <AdminConfigEditor 
+    section={editingSection} 
+    data={config[editingSection]} 
+    onSave={() => { editingSection = null; fetchConfig(); }} 
+    onCancel={() => editingSection = null} 
+  />
+{/if}
+
 <style>
   :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   .section-header { margin-bottom: 4rem; }
@@ -143,7 +165,9 @@
   .config-stack { display: flex; flex-direction: column; gap: 4rem; }
 
   .config-modular-section { display: flex; flex-direction: column; gap: 1.5rem; }
-  .section-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; }
+  
+  .section-tag-wrapper { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; }
+  .section-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: none; padding-bottom: 0; width: fit-content; }
   .section-tag span { font-size: 1.25rem; }
 
   .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }

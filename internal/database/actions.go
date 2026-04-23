@@ -161,6 +161,17 @@ func (s *ActionsStore) notifyWatchers(ctx context.Context, act *Action) error {
 	return s.db.Create(actions).Error
 }
 
+// UpdateConfig creates an action for updating system configuration.
+func (s *ActionsStore) UpdateConfig(ctx context.Context, doer *User, section, content string) error {
+	return s.db.Create(&Action{
+		UserID:      doer.ID,
+		ActUserID:   doer.ID,
+		ActUserName: doer.Name,
+		OpType:      ActionUpdateConfig,
+		Content:     fmt.Sprintf("%s|%s", section, content),
+	}).Error
+}
+
 // NewRepo creates an action for creating a new repository. The action type
 // could be ActionCreateRepo or ActionForkRepo based on whether the repository
 // is a fork.
@@ -637,6 +648,7 @@ const (
 	ActionDeleteBranch                            // 17
 	ActionDeleteTag                               // 18
 	ActionForkRepo                                // 19
+	ActionUpdateConfig                            // 20
 )
 
 // Action is a user operation to a repository. It implements template.Actioner

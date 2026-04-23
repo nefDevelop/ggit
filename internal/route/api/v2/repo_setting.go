@@ -19,9 +19,11 @@ func GetRepoSettings(c *context.APIContext) {
 		"website":       repo.Website,
 		"private":       repo.IsPrivate,
 		"unlisted":      repo.IsUnlisted,
+		"archived":      repo.IsArchived,
 		"enable_wiki":   repo.EnableWiki,
 		"enable_issues": repo.EnableIssues,
 		"enable_pulls":  repo.EnablePulls,
+		"is_archived":   repo.IsArchived,
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -43,6 +45,7 @@ func UpdateRepoSettings(c *context.APIContext) {
 	repo.Website = f.Website
 	repo.IsPrivate = f.Private
 	repo.IsUnlisted = f.Unlisted
+	repo.IsArchived = f.Archived
 
 	if err := database.UpdateRepository(repo, visibilityChanged); err != nil {
 		c.Error(err, "update repository")
@@ -180,6 +183,24 @@ func DeleteRepoRemote(c *context.APIContext) {
 	name := c.Params("name")
 	if err := c.Repo.GitRepo.RemoteRemove(name); err != nil {
 		c.Error(err, "delete remote")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// TransferRepoOwnership transfers the repository ownership to another user/org.
+func TransferRepoOwnership(c *context.APIContext) {
+	var f struct {
+		NewOwner string `json:"new_owner" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := database.TransferOwnership(c.User, f.NewOwner, c.Repo.Repository); err != nil {
+		c.Error(err, "transfer ownership")
 		return
 	}
 

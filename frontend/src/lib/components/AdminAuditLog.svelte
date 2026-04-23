@@ -41,6 +41,7 @@
     if (opType === 1 || opType === 19) return '#10b981'; 
     if (opType === 17 || opType === 18) return '#ef4444';
     if (opType === 5) return '#3b82f6';
+    if (opType === 20) return '#f59e0b';
     return '#888';
   }
 </script>
