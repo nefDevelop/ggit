@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { userPrefs } from '$lib/settings.svelte';
+  // Refreshed preferences types
+  import { userPrefs, type UserPreferences } from '$lib/settings.svelte';
   import { apiFetch } from '$lib/api';
   import { onMount } from 'svelte';
   import { authState } from '$lib/auth.svelte';
@@ -114,9 +115,9 @@
           <label class="precision-switch">
             <input 
               type="checkbox" 
-              checked={userPrefs.current.showSidebarOrgs ?? true} 
+              checked={userPrefs.current.showSidebarOrgs} 
               onchange={() => {
-                userPrefs.current.showSidebarOrgs = !(userPrefs.current.showSidebarOrgs ?? true);
+                userPrefs.current.showSidebarOrgs = !userPrefs.current.showSidebarOrgs;
                 userPrefs.save();
               }}
             />

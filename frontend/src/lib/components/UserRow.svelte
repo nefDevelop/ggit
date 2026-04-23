@@ -32,13 +32,6 @@
     transform: translateX(4px);
   }
 
-  .avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    box-shadow: var(--shadow-sm);
-  }
-
   .user-info {
     flex: 1;
     display: flex;

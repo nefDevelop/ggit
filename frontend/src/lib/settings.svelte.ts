@@ -40,7 +40,7 @@ function createPreferences() {
   return {
     get current() { return prefs; },
     update(newPrefs: Partial<UserPreferences>) {
-      prefs = { ...prefs, ...newPrefs };
+      Object.assign(prefs, newPrefs);
       if (browser) {
         localStorage.setItem('ggit_user_preferences', JSON.stringify(prefs));
       }
