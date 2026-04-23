@@ -12,6 +12,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/strx"
+	"strings"
 )
 
 // CSRF returns a middleware that adds CSRF protection to the application.
@@ -70,7 +71,15 @@ func CSRF() gin.HandlerFunc {
 				sentToken = c.GetHeader("X-Csrf-Token")
 			}
 
-			if sentToken != token {
+			matched := false
+			for _, t := range strings.Split(sentToken, ",") {
+				if strings.TrimSpace(t) == token {
+					matched = true
+					break
+				}
+			}
+
+			if !matched {
 				log.Warn("CSRF token mismatch: expected %s, got %s", token, sentToken)
 				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 					"message": "CSRF token mismatch",

@@ -100,7 +100,7 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			RepoName:     "example",
 			RefName:      "main",
 			IsPrivate:    false,
-			Content:      `{"Len":1,"Commits":[],"CompareURL":"" }`,
+			Content:      `{"Len":1,"Commits":[],"CompareURL":""}`,
 			CreatedUnix:  1588568886,
 		},
 		&Action{
@@ -114,7 +114,7 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			RepoName:     "example",
 			RefName:      "main",
 			IsPrivate:    false,
-			Content:      `{"Len":1,"Commits":[],"CompareURL":"" }`,
+			Content:      `{"Len":1,"Commits":[],"CompareURL":""}`,
 			CreatedUnix:  1588568886,
 		},
 		&Action{

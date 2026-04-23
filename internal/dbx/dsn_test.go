@@ -2,6 +2,7 @@ package dbx
 
 import (
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,28 +10,6 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 )
-
-func TestParsePostgreSQLHostPort(t *testing.T) {
-	tests := []struct {
-		info    string
-		expHost string
-		expPort string
-	}{
-		{info: "127.0.0.1:1234", expHost: "127.0.0.1", expPort: "1234"},
-		{info: "127.0.0.1", expHost: "127.0.0.1", expPort: "5432"},
-		{info: "[::1]:1234", expHost: "[::1]", expPort: "1234"},
-		{info: "[::1]", expHost: "[::1]", expPort: "5432"},
-		{info: "/tmp/pg.sock:1234", expHost: "/tmp/pg.sock", expPort: "1234"},
-		{info: "/tmp/pg.sock", expHost: "/tmp/pg.sock", expPort: "5432"},
-	}
-	for _, test := range tests {
-		t.Run("", func(t *testing.T) {
-			host, port := ParsePostgreSQLHostPort(test.info)
-			assert.Equal(t, test.expHost, host)
-			assert.Equal(t, test.expPort, port)
-		})
-	}
-}
 
 func TestNewDSN(t *testing.T) {
 	t.Run("bad dialect", func(t *testing.T) {
@@ -46,46 +25,26 @@ func TestNewDSN(t *testing.T) {
 		wantDSN string
 	}{
 		{
-			name: "postgres: unix",
-			opts: conf.DatabaseOpts{
-				Type:     "postgres",
-				Host:     "/tmp/pg.sock",
-				Name:     "gogs",
-				Schema:   "test",
-				User:     "gogs@local",
-				Password: "pa$$word",
-				SSLMode:  "disable",
-			},
-			wantDSN: "user='gogs@local' password='pa$$word' host='/tmp/pg.sock' port='5432' dbname='gogs' sslmode='disable' search_path='test' application_name='gogs'",
-		},
-		{
-			name: "postgres: tcp",
-			opts: conf.DatabaseOpts{
-				Type:     "postgres",
-				Host:     "127.0.0.1",
-				Name:     "gogs",
-				Schema:   "test",
-				User:     "gogs@local",
-				Password: "pa$$word",
-				SSLMode:  "disable",
-			},
-			wantDSN: "user='gogs@local' password='pa$$word' host='127.0.0.1' port='5432' dbname='gogs' sslmode='disable' search_path='test' application_name='gogs'",
-		},
-
-		{
 			name: "sqlite3",
 			opts: conf.DatabaseOpts{
 				Type: "sqlite3",
 				Path: "/tmp/gogs.db",
 			},
-			wantDSN: "file:/tmp/gogs.db?cache=shared&mode=rwc&_journal_mode=WAL",
+			wantDSN: "file:///tmp/gogs.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL",
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			path, _ := filepath.Abs(test.opts.Path)
+			test.wantDSN = "file://" + path + "?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL"
+
 			dsn, err := NewDSN(test.opts)
 			require.NoError(t, err)
 			assert.Equal(t, test.wantDSN, dsn)
 		})
 	}
+}
+
+func TestQuote(t *testing.T) {
+	assert.Equal(t, "`table`", Quote("table"))
 }

@@ -2,20 +2,13 @@ package dbx
 
 import (
 	"fmt"
-
-	"github.com/nef734/ggit/internal/conf"
 )
 
-// Quote adds surrounding double quotes for all given arguments before being
-// formatted if the current database is UsePostgreSQL.
+// Quote adds surrounding backticks for all given arguments before being formatted.
 func Quote(format string, args ...string) string {
 	anys := make([]any, len(args))
 	for i := range args {
-		if conf.UsePostgreSQL {
-			anys[i] = `"` + args[i] + `"`
-		} else {
-			anys[i] = args[i]
-		}
+		anys[i] = "`" + args[i] + "`"
 	}
 	return fmt.Sprintf(format, anys...)
 }

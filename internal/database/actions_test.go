@@ -197,7 +197,7 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RepoName:     repo.Name,
 				RefName:      "main",
 				IsPrivate:    false,
-				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit" ,"AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":"alice/example/compare/ca82a6dff817ec66f44342007202690a93763949...085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7" }`,
+				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit","AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":"alice/example/compare/ca82a6dff817ec66f44342007202690a93763949...085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7"}`,
 				CreatedUnix:  s.db.NowFunc().Unix(),
 			},
 		}
@@ -258,7 +258,7 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RepoName:     repo.Name,
 				RefName:      "main",
 				IsPrivate:    false,
-				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit" ,"AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":"" }`,
+				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit","AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":""}`,
 				CreatedUnix:  s.db.NowFunc().Unix(),
 			},
 			{
@@ -271,7 +271,7 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RepoName:     repo.Name,
 				RefName:      "main",
 				IsPrivate:    false,
-				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit" ,"AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":"" }`,
+				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit","AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":""}`,
 				CreatedUnix:  s.db.NowFunc().Unix(),
 			},
 		}

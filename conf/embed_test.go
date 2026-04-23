@@ -11,6 +11,6 @@ func TestFileNames(t *testing.T) {
 	names, err := FileNames(".")
 	require.NoError(t, err)
 
-	want := []string{"app.ini", "auth.d", "gitignore", "label", "license", "locale", "readme"}
+	want := []string{"app.ini", "auth.d", "gitignore", "label", "license", "readme"}
 	assert.Equal(t, want, names)
 }

@@ -228,7 +228,7 @@
                 <strong>Recomendados (Ggit Security & Global)</strong>
               </div>
               <div class="gitignore-chips">
-                {#each global_ignores.filter(g => g.includes('_ggit')) as g}
+                {#each global_ignores.filter(g => g.toLowerCase().includes('ggit')) as g}
                   <button 
                     type="button"
                     class="chip recommended" 

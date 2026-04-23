@@ -136,8 +136,10 @@ func LoadRepoConfig() {
 
 	sort.Strings(Gitignores)
 	sort.Slice(GlobalIgnores, func(i, j int) bool {
-		iStart := strings.HasPrefix(path.Base(GlobalIgnores[i]), "_")
-		jStart := strings.HasPrefix(path.Base(GlobalIgnores[j]), "_")
+		iBase := path.Base(GlobalIgnores[i])
+		jBase := path.Base(GlobalIgnores[j])
+		iStart := strings.HasPrefix(iBase, "_") || strings.HasPrefix(iBase, "ggit_")
+		jStart := strings.HasPrefix(jBase, "_") || strings.HasPrefix(jBase, "ggit_")
 		if iStart && !jStart {
 			return true
 		}
