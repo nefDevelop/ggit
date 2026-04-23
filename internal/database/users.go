@@ -1412,11 +1412,7 @@ func (u *User) AvatarURLPath() string {
 // having a dedicated type `template.User` and move this to the "userx"
 // package.
 func (u *User) AvatarURL() string {
-	link := u.AvatarURLPath()
-	if len(link) > 1 && link[0] == '/' && link[1] != '/' {
-		return conf.Server.ExternalURL + strings.TrimPrefix(link, conf.Server.Subpath)[1:]
-	}
-	return link
+	return u.AvatarURLPath()
 }
 
 // IsFollowing returns true if the user is following the given user.

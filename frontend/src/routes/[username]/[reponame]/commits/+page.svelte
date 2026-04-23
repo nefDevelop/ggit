@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import Avatar from "$lib/components/Avatar.svelte";
 
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
@@ -73,8 +74,9 @@
             <Avatar 
               src={c.user?.avatar_url} 
               username={author?.Name || author?.name || "User"} 
-              seed={author?.Email || author?.email || id}
+              seed={author?.Name || author?.name}
               size={32} 
+              class="user-avatar"
             />
           </div>
           
