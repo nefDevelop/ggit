@@ -4,6 +4,7 @@
   import RepoSettingsCollaboration from '$lib/components/RepoSettingsCollaboration.svelte';
   import RepoSettingsWebhooks from '$lib/components/RepoSettingsWebhooks.svelte';
   import RepoSettingsDeployKeys from '$lib/components/RepoSettingsDeployKeys.svelte';
+  import RepoSettingsRemotes from '$lib/components/RepoSettingsRemotes.svelte';
 
   const repo: any = getContext('repo');
   let activeTab = $state('general');
@@ -11,6 +12,7 @@
   const tabs = [
     { id: 'general', label: 'General', icon: 'settings' },
     { id: 'collaboration', label: 'Collaboration', icon: 'group' },
+    { id: 'remotes', label: 'Remotes', icon: 'sync' },
     { id: 'webhooks', label: 'Webhooks', icon: 'webhook' },
     { id: 'keys', label: 'Deploy Keys', icon: 'vpn_key' }
   ];
@@ -42,6 +44,8 @@
       <RepoSettingsGeneral />
     {:else if activeTab === 'collaboration'}
         <RepoSettingsCollaboration />
+    {:else if activeTab === 'remotes'}
+        <RepoSettingsRemotes />
     {:else if activeTab === 'webhooks'}
         <RepoSettingsWebhooks />
     {:else if activeTab === 'keys'}

@@ -14,6 +14,7 @@ type MockModuleStore struct {
 	log          func(repoPath, rev string, opts ...git.LogOptions) ([]*git.Commit, error)
 	mergeBase    func(repoPath, base, head string, opts ...git.MergeBaseOptions) (string, error)
 	remoteRemove func(repoPath, name string, opts ...git.RemoteRemoveOptions) error
+	remotes      func(repoPath string) ([]string, error)
 	repoTags     func(repoPath string, opts ...git.TagsOptions) ([]string, error)
 
 	pullRequestMeta func(headPath, basePath, headBranch, baseBranch string) (*PullRequestMeta, error)
@@ -38,6 +39,10 @@ func (m *MockModuleStore) MergeBase(repoPath, base, head string, opts ...git.Mer
 
 func (m *MockModuleStore) RemoteRemove(repoPath, name string, opts ...git.RemoteRemoveOptions) error {
 	return m.remoteRemove(repoPath, name, opts...)
+}
+
+func (m *MockModuleStore) Remotes(repoPath string) ([]string, error) {
+	return m.remotes(repoPath)
 }
 
 func (m *MockModuleStore) RepoTags(repoPath string, opts ...git.TagsOptions) ([]string, error) {
