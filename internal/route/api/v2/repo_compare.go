@@ -6,8 +6,8 @@ import (
 
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/gitx"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/gitx"
 )
 
 // GetComparison returns the comparison between two branches.

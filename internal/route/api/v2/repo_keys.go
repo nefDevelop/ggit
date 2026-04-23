@@ -3,8 +3,8 @@ package v2
 import (
 	"net/http"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // ListRepoDeployKeys returns a list of deploy keys for the repository.

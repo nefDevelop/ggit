@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/lfsx"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/lfsx"
 )
 
 var _ lfsx.Storager = (*mockStorage)(nil)

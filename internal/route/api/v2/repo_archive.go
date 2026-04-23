@@ -10,10 +10,10 @@ import (
 
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 // GetRepoArchive serves the repository as a zip or tar.gz archive.

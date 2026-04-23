@@ -5,7 +5,7 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // Collaboration represent the relation between an individual and a repository.

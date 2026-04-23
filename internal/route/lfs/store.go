@@ -3,8 +3,8 @@ package lfs
 import (
 	"context"
 
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/lfsx"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/lfsx"
 )
 
 // Store is the data layer carrier for LFS endpoints. This interface is meant to

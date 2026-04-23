@@ -7,15 +7,15 @@ import (
 	"path/filepath"
 
 	"github.com/cockroachdb/errors"
-	zip "gogs.io/gogs/internal/archiver"
+	zip "github.com/nef734/ggit/internal/archiver"
 	"github.com/urfave/cli/v3"
 	"gopkg.in/ini.v1"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/semverx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/semverx"
 )
 
 var restoreCommand = cli.Command{

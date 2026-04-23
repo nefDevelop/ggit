@@ -5,9 +5,9 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/email"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/email"
 )
 
 // AuthService define las operaciones de negocio para la gestión de usuarios y acceso.

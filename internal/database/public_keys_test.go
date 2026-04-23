@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gogs.io/gogs/internal/conf"
+	"github.com/nef734/ggit/internal/conf"
 )
 
 func TestPublicKeys(t *testing.T) {

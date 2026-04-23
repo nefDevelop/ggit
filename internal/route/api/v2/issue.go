@@ -3,11 +3,11 @@ package v2
 import (
 	"net/http"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/markup"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	issueservice "gogs.io/gogs/internal/services/issue"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/markup"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	issueservice "github.com/nef734/ggit/internal/services/issue"
 )
 
 // ListIssues returns a list of issues for the repository.

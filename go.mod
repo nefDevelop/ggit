@@ -1,4 +1,4 @@
-module gogs.io/gogs
+module github.com/nef734/ggit
 
 go 1.25.9
 
@@ -149,4 +149,4 @@ require (
 )
 
 // +heroku goVersion go1.25
-// +heroku install ./cmd/gogs
+// +heroku install ./cmd/ggit

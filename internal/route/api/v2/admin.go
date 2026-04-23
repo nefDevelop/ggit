@@ -6,15 +6,15 @@ import (
 	"runtime"
 	"time"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/cron"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/email"
-	"gogs.io/gogs/internal/process"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/cron"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/email"
+	"github.com/nef734/ggit/internal/process"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 // GetAdminAuditLog returns all actions from the system (for admins).

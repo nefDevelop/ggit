@@ -17,12 +17,12 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/httplib"
-	"gogs.io/gogs/internal/netx"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	"gogs.io/gogs/internal/sync"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/httplib"
+	"github.com/nef734/ggit/internal/netx"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/sync"
 )
 
 var HookQueue = sync.NewUniqueQueue(1000)

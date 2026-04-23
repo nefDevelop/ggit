@@ -1,7 +1,7 @@
 package context
 
 import (
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/database"
 )
 
 type APIOrganization struct {

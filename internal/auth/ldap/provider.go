@@ -3,7 +3,7 @@ package ldap
 import (
 	"fmt"
 
-	"gogs.io/gogs/internal/auth"
+	"github.com/nef734/ggit/internal/auth"
 )
 
 // Provider contains configuration of an LDAP authentication provider.

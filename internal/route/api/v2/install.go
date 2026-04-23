@@ -8,13 +8,13 @@ import (
 
 	"gopkg.in/ini.v1"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/form"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/route"
-	"gogs.io/gogs/internal/strx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/form"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/route"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 // GetInstallSettings returns the default settings for the installation page.

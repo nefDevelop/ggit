@@ -3,8 +3,8 @@ package v2
 import (
 	"net/http"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/markup"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/markup"
 )
 
 // MarkdownOptions represents the request body for rendering markdown.

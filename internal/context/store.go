@@ -3,7 +3,7 @@ package context
 import (
 	"context"
 
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // Store is the data layer carrier for context middleware. This interface is

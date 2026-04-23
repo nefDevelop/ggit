@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/lfsx"
-	"gogs.io/gogs/internal/strx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/lfsx"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 // POST /{owner}/{repo}.git/info/lfs/object/batch
@@ -31,7 +31,7 @@ func serveBatch(store Store) gin.HandlerFunc {
 
 		// NOTE: We only support basic transfer as of now.
 		transfer := transferBasic
-		// Example: https://try.gogs.io/gogs/gogs.git/info/lfs/object/basic
+		// Example: https://try.github.com/nef734/ggit/gogs.git/info/lfs/object/basic
 		baseHref := fmt.Sprintf("%s%s/%s.git/info/lfs/objects/basic", conf.Server.ExternalURL, owner.Name, repo.Name)
 
 		objects := make([]batchObject, 0, len(request.Objects))

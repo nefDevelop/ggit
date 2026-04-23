@@ -7,7 +7,7 @@ import (
 	"github.com/gogs/git-module"
 	"github.com/stretchr/testify/assert"
 
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 func TestError_NotFound(t *testing.T) {

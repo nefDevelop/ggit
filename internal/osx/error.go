@@ -3,7 +3,7 @@ package osx
 import (
 	"os"
 
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 var _ errx.NotFound = (*Error)(nil)

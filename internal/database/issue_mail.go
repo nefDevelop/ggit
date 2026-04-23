@@ -7,11 +7,11 @@ import (
 	"github.com/cockroachdb/errors"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/email"
-	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/internal/strx"
-	"gogs.io/gogs/internal/userx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/email"
+	"github.com/nef734/ggit/internal/markup"
+	"github.com/nef734/ggit/internal/strx"
+	"github.com/nef734/ggit/internal/userx"
 )
 
 func (issue *Issue) MailSubject() string {

@@ -4,10 +4,10 @@ import (
 	"net/url"
 	"strings"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/netx"
-	"gogs.io/gogs/internal/osx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/netx"
+	"github.com/nef734/ggit/internal/osx"
 )
 
 // _______________________________________    _________.______________________ _______________.___.

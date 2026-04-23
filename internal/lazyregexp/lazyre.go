@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"sync"
 
-	"gogs.io/gogs/internal/testx"
+	"github.com/nef734/ggit/internal/testx"
 )
 
 // Regexp is a wrapper around regexp.Regexp, where the underlying regexp will be

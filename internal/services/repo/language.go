@@ -8,7 +8,7 @@ import (
 	"github.com/gogs/git-module"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // UpdateRepositoryLanguages analyzes the repository and updates its language statistics.

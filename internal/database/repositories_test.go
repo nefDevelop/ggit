@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 func TestRepository_BeforeCreate(t *testing.T) {

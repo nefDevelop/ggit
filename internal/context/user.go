@@ -2,7 +2,7 @@ package context
 
 import (
 	"github.com/gin-gonic/gin"
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // ParamsUser is the wrapper type of the target user defined by URL parameter, namely ':username'.

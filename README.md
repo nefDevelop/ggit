@@ -1,6 +1,6 @@
-![gogs-brand](https://user-images.githubusercontent.com/2946214/146899259-6a8b58ad-8d6e-40d2-ab02-79dc6aadabbf.png)
+![ggit-brand](https://user-images.githubusercontent.com/2946214/146899259-6a8b58ad-8d6e-40d2-ab02-79dc6aadabbf.png)
 
-[![GitHub Workflow Status](https://img.shields.io/github/checks-status/gogs/gogs/main?logo=github&style=for-the-badge)](https://github.com/gogs/gogs/actions?query=branch%3Amain) [![Sourcegraph](https://img.shields.io/badge/view%20on-Sourcegraph-brightgreen.svg?style=for-the-badge&logo=sourcegraph)](https://sourcegraph.com/github.com/gogs/gogs)
+[![GitHub Workflow Status](https://img.shields.io/github/checks-status/ggit/ggit/main?logo=github&style=for-the-badge)](https://github.com/ggit/ggit/actions?query=branch%3Amain) [![Sourcegraph](https://img.shields.io/badge/view%20on-Sourcegraph-brightgreen.svg?style=for-the-badge&logo=sourcegraph)](https://sourcegraph.com/github.com/ggit/ggit)
 
 👉 Deploy on DigitalOcean and [get $200 in free credits](https://m.do.co/c/5aeb02268b55)!
 
@@ -10,13 +10,13 @@ The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-
 
 ## 📡 Overview
 
-- Please visit [our home page](https://gogs.io) for user documentation.
+- Please visit [our home page](https://ggit.io) for user documentation.
 - Please refer to [CHANGELOG.md](CHANGELOG.md) for list of changes in each releases.
-- Want to try it before doing anything else? Do it [online](https://try.gogs.io/gogs/gogs)!
-- Having trouble? Help yourself with [troubleshooting](https://gogs.io/asking/troubleshooting) or ask questions in [Discussions](https://github.com/gogs/gogs/discussions).
-- Want to help with localization? Check out the [localization documentation](https://gogs.io/advancing/localization).
+- Want to try it before doing anything else? Do it [online](https://try.ggit.io/ggit/ggit)!
+- Having trouble? Help yourself with [troubleshooting](https://ggit.io/asking/troubleshooting) or ask questions in [Discussions](https://github.com/ggit/ggit/discussions).
+- Want to help with localization? Check out the [localization documentation](https://ggit.io/advancing/localization).
 - Ready to get hands dirty? Read our [contributing guide](.github/CONTRIBUTING.md).
-- Hmm... What about APIs? We have experimental support with [documentation](https://gogs.io/api-reference).
+- Hmm... What about APIs? We have experimental support with [documentation](https://ggit.io/api-reference).
 
 ## 💌 Features
 
@@ -32,7 +32,7 @@ The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-
 - Authentication via SMTP, LDAP, reverse proxy, GitHub.com and GitHub Enterprise with 2FA.
 - Customize HTML templates, static files and many others.
 - Rich database backend support, including PostgreSQL, SQLite3 or any database backend that speaks one of those protocols.
-- Have localization over [31 languages](https://crowdin.com/project/gogs).
+- Have localization over [31 languages](https://crowdin.com/project/ggit).
 
 ## 💾 Hardware requirements
 
@@ -47,30 +47,30 @@ The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-
 
 ## 📜 Installation
 
-Please follow [the guide in our documentation](https://gogs.io/getting-started/installation).
+Please follow [the guide in our documentation](https://ggit.io/getting-started/installation).
 
 ### Deploy to cloud
 
-- [Cloudron](https://www.cloudron.io/store/io.gogs.cloudronapp.html)
-- [YunoHost](https://github.com/YunoHost-Apps/gogs_ynh)
-- [alwaysdata](https://www.alwaysdata.com/en/marketplace/gogs/)
+- [Cloudron](https://www.cloudron.io/store/io.ggit.cloudronapp.html)
+- [YunoHost](https://github.com/YunoHost-Apps/ggit_ynh)
+- [alwaysdata](https://www.alwaysdata.com/en/marketplace/ggit/)
 
 ### Tutorials
 
-- [Private Git Web Portal in Raspberry PI With Gogs](https://peppe8o.com/private-git-web-portal-in-raspberry-pi-with-gogs/)
-- [How To Set Up Ggit on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-gogs-on-ubuntu-14-04)
+- [Private Git Web Portal in Raspberry PI With Ggit](https://peppe8o.com/private-git-web-portal-in-raspberry-pi-with-ggit/)
+- [How To Set Up Ggit on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-ggit-on-ubuntu-14-04)
 - [Run your own GitHub-like service with the help of Docker](https://blog.hypriot.com/post/run-your-own-github-like-service-with-docker/)
-- [Dockerized Ggit git server and alpine postgres in 20 minutes or less](https://garthwaite.org/docker-gogs.html)
-- [Host Your Own Private GitHub with Gogs](https://eladnava.com/host-your-own-private-github-with-gogs-io/)
-- [使用 Ggit 搭建自己的 Git 服务器](https://blog.mynook.info/post/host-your-own-git-server-using-gogs/) (Chinese)
-- [阿里云上 Ubuntu 14.04 64 位安装 Gogs](https://my.oschina.net/luyao/blog/375654) (Chinese)
-- [Installing Ggit on FreeBSD](https://www.codejam.info/2015/03/installing-gogs-on-freebsd.html)
+- [Dockerized Ggit git server and alpine postgres in 20 minutes or less](https://garthwaite.org/docker-ggit.html)
+- [Host Your Own Private GitHub with Ggit](https://eladnava.com/host-your-own-private-github-with-ggit-io/)
+- [使用 Ggit 搭建自己的 Git 服务器](https://blog.mynook.info/post/host-your-own-git-server-using-ggit/) (Chinese)
+- [阿里云上 Ubuntu 14.04 64 位安装 Ggit](https://my.oschina.net/luyao/blog/375654) (Chinese)
+- [Installing Ggit on FreeBSD](https://www.codejam.info/2015/03/installing-ggit-on-freebsd.html)
 - [How to install Ggit on a Linux Server (DigitalOcean)](https://www.youtube.com/watch?v=deSfX0gqefE)
 
 ## 📦 Software, service and product support
 
-- [Jenkins](https://plugins.jenkins.io/gogs-webhook/) (CI)
-- [Puppet](https://forge.puppet.com/modules/Siteminds/gogs) (IT)
+- [Jenkins](https://plugins.jenkins.io/ggit-webhook/) (CI)
+- [Puppet](https://forge.puppet.com/modules/Siteminds/ggit) (IT)
 - [Synology](https://www.synology.com) (Docker)
 - [Syncloud](https://syncloud.org/) (App Store)
 
@@ -92,9 +92,9 @@ Other acknowledgments:
 
 ## 👋 Contributors
 
-- See [contributors page](https://github.com/gogs/gogs/graphs/contributors) for top 100 contributors.
+- See [contributors page](https://github.com/ggit/ggit/graphs/contributors) for top 100 contributors.
 - See [TRANSLATORS](conf/locale/TRANSLATORS) for public list of translators.
 
 ## ⚖️ License
 
-This project is under the MIT License. See the [LICENSE](https://github.com/gogs/gogs/blob/main/LICENSE) file for the full license text.
+This project is under the MIT License. See the [LICENSE](https://github.com/ggit/ggit/blob/main/LICENSE) file for the full license text.

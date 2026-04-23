@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"strings"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/email"
-	authservice "gogs.io/gogs/internal/services/auth"
-	"gogs.io/gogs/internal/tool"
-	"gogs.io/gogs/internal/userx"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/email"
+	authservice "github.com/nef734/ggit/internal/services/auth"
+	"github.com/nef734/ggit/internal/tool"
+	"github.com/nef734/ggit/internal/userx"
 	log "unknwon.dev/clog/v2"
 )
 

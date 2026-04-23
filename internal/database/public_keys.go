@@ -7,8 +7,8 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/osx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/osx"
 )
 
 // PublicKeysStore is the storage layer for public keys.

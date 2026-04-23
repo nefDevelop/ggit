@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"gogs.io/gogs/internal/context"
+	"github.com/nef734/ggit/internal/context"
 )
 
 var _ context.Locale = (*Locale)(nil)

@@ -19,13 +19,13 @@ import (
 
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/cryptox"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/gitx"
-	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/internal/strx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/gitx"
+	"github.com/nef734/ggit/internal/markup"
+	"github.com/nef734/ggit/internal/strx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 var (

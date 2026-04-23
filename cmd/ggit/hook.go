@@ -17,12 +17,12 @@ import (
 
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/email"
-	"gogs.io/gogs/internal/httplib"
-	"gogs.io/gogs/internal/osx"
-	reposervice "gogs.io/gogs/internal/services/repo"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/email"
+	"github.com/nef734/ggit/internal/httplib"
+	"github.com/nef734/ggit/internal/osx"
+	reposervice "github.com/nef734/ggit/internal/services/repo"
 )
 
 var (

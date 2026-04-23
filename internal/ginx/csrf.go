@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/strx"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 // CSRF returns a middleware that adds CSRF protection to the application.

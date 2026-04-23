@@ -9,9 +9,9 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/lazyregexp"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/lazyregexp"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 var labelColorPattern = lazyregexp.New("#([a-fA-F0-9]{6})")

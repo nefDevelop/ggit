@@ -10,9 +10,9 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/errx"
 
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // repoListFields are the columns used for listing repositories in the dashboard and explore pages.

@@ -9,9 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/lfsx"
-	"gogs.io/gogs/internal/strx"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/lfsx"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 const transferBasic = "basic"

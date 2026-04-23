@@ -4,7 +4,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 var _ errx.NotFound = (*Error)(nil)

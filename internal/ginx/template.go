@@ -9,8 +9,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"gogs.io/gogs/internal/conf"
-	internalTmpl "gogs.io/gogs/internal/template"
+	"github.com/nef734/ggit/internal/conf"
+	internalTmpl "github.com/nef734/ggit/internal/template"
 )
 
 // SetupTemplates configures Gin to use the same Go templates as Macaron did.

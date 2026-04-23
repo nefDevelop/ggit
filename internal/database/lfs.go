@@ -8,8 +8,8 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/lfsx"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/lfsx"
 )
 
 // LFSObject represents an LFS object.

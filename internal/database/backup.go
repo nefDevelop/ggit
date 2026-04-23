@@ -18,8 +18,8 @@ import (
 	"gorm.io/gorm/schema"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/osx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/osx"
 )
 
 // getTableType returns the type name of a table definition without package name,

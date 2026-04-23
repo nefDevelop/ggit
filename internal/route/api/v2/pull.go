@@ -5,12 +5,12 @@ import (
 	"os"
 	"time"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/gitx"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	issueservice "gogs.io/gogs/internal/services/issue"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/gitx"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	issueservice "github.com/nef734/ggit/internal/services/issue"
 )
 
 // ListPullRequests returns a list of pull requests for the repository.

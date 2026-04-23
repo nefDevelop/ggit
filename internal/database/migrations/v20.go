@@ -4,7 +4,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/cryptox"
+	"github.com/nef734/ggit/internal/cryptox"
 )
 
 func migrateAccessTokenToSHA256(db *gorm.DB) error {

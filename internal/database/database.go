@@ -14,8 +14,8 @@ import (
 	"gorm.io/gorm/schema"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/dbx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/dbx"
 )
 
 func newLogWriter() (logger.Writer, error) {

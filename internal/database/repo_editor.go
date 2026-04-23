@@ -18,13 +18,13 @@ import (
 	"github.com/gogs/git-module"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/cryptox"
-	"gogs.io/gogs/internal/gitx"
-	"gogs.io/gogs/internal/iox"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/pathx"
-	"gogs.io/gogs/internal/process"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/gitx"
+	"github.com/nef734/ggit/internal/iox"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/pathx"
+	"github.com/nef734/ggit/internal/process"
 )
 
 // BranchAlreadyExists represents an error when branch already exists.

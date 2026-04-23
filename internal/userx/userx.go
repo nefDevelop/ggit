@@ -17,10 +17,10 @@ import (
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/image/draw"
 
-	"gogs.io/gogs/internal/avatar"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/strx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/avatar"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/strx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 // DashboardURLPath returns the URL path to the user or organization dashboard.

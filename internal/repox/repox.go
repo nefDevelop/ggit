@@ -10,7 +10,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/conf"
+	"github.com/nef734/ggit/internal/conf"
 )
 
 // CloneLink represents different types of clone URLs of repository.

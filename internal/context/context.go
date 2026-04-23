@@ -13,10 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/template"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/template"
 )
 
 type Locale interface {

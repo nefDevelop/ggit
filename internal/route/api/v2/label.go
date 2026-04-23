@@ -3,9 +3,9 @@ package v2
 import (
 	"net/http"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 func toIssueLabel(l *database.Label) *apiv2types.IssueLabelResponse {

@@ -4,8 +4,8 @@ import (
 	"path"
 	"time"
 
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 func ToUserResponse(u *database.User) *types.UserResponse {

@@ -11,9 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/lfsx"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/lfsx"
 )
 
 func TestAuthenticate(t *testing.T) {

@@ -10,8 +10,8 @@ import (
 	"github.com/pquerna/otp/totp"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/cryptox"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/cryptox"
 )
 
 // TwoFactor is a 2FA token of a user.

@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"gogs.io/gogs/internal/authx"
-	"gogs.io/gogs/internal/conf"
+	"github.com/nef734/ggit/internal/authx"
+	"github.com/nef734/ggit/internal/conf"
 )
 
 func MetricsFilter() gin.HandlerFunc {

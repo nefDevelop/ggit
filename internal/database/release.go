@@ -12,8 +12,8 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/errx"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/errx"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // Release represents a release of repository.

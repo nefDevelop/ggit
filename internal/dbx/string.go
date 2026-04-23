@@ -3,7 +3,7 @@ package dbx
 import (
 	"fmt"
 
-	"gogs.io/gogs/internal/conf"
+	"github.com/nef734/ggit/internal/conf"
 )
 
 // Quote adds surrounding double quotes for all given arguments before being

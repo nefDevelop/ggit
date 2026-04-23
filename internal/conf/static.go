@@ -8,7 +8,7 @@ import (
 
 	"gopkg.in/ini.v1"
 
-	"gogs.io/gogs/conf"
+	"github.com/nef734/ggit/conf"
 )
 
 // ℹ️ README: This file contains static values that should only be set at initialization time.

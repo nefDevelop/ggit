@@ -12,8 +12,8 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 // Attachment represent a attachment of issue/comment/release.

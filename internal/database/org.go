@@ -8,9 +8,9 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/repox"
-	"gogs.io/gogs/internal/userx"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/repox"
+	"github.com/nef734/ggit/internal/userx"
 )
 
 var ErrOrgNotExist = errors.New("Organization does not exist")

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // EditRepoFile handles web-based file creation or editing.

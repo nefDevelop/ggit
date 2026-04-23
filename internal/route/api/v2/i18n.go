@@ -6,8 +6,8 @@ import (
 	"sync"
 
 	"gopkg.in/ini.v1"
-	"gogs.io/gogs/internal/context"
-	gogsconf "gogs.io/gogs/conf"
+	"github.com/nef734/ggit/internal/context"
+	gogsconf "github.com/nef734/ggit/conf"
 )
 
 var (

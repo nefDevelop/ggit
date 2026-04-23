@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"strings"
 
-	"gogs.io/gogs/internal/pathx"
+	"github.com/nef734/ggit/internal/pathx"
 )
 
 // ToWikiPageURL formats a string to corresponding wiki URL name.

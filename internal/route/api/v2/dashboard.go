@@ -3,10 +3,10 @@ package v2
 import (
 	"net/http"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // DashboardData represents the consolidated data for the user dashboard.

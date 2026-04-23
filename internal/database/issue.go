@@ -11,11 +11,11 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/markup"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/markup"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 var ErrMissingIssueNumber = errors.New("no issue number specified")

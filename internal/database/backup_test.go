@@ -11,12 +11,12 @@ import (
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/ldap"
-	"gogs.io/gogs/internal/cryptox"
-	"gogs.io/gogs/internal/dbtest"
-	"gogs.io/gogs/internal/lfsx"
-	"gogs.io/gogs/internal/testx"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/nef734/ggit/internal/lfsx"
+	"github.com/nef734/ggit/internal/testx"
 )
 
 func TestDumpAndImport(t *testing.T) {

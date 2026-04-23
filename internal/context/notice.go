@@ -6,10 +6,10 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/markup"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 // renderNoticeBanner checks if a notice banner file exists and loads the message to display

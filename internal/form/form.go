@@ -4,9 +4,9 @@ import (
 	"reflect"
 	"strings"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/lazyregexp"
-	"gogs.io/gogs/internal/strx"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/lazyregexp"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 const ErrAlphaDashDotSlash = "AlphaDashDotSlashError"

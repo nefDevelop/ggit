@@ -10,7 +10,7 @@ import "sync"
 
 // MockLoginSourceFileStore is a mock implementation of the
 // loginSourceFileStore interface (from the package
-// gogs.io/gogs/internal/database) used for unit testing.
+// github.com/nef734/ggit/internal/database) used for unit testing.
 type MockLoginSourceFileStore struct {
 	// SaveFunc is an instance of a mock function object controlling the
 	// behavior of the method Save.
@@ -70,7 +70,7 @@ func NewStrictMockLoginSourceFileStore() *MockLoginSourceFileStore {
 }
 
 // surrogateMockLoginSourceFileStore is a copy of the loginSourceFileStore
-// interface (from the package gogs.io/gogs/internal/database). It is
+// interface (from the package github.com/nef734/ggit/internal/database). It is
 // redefined here as it is unexported in the source package.
 type surrogateMockLoginSourceFileStore interface {
 	Save() error
@@ -404,7 +404,7 @@ func (c LoginSourceFileStoreSetGeneralFuncCall) Results() []interface{} {
 
 // MockLoginSourceFilesStore is a mock implementation of the
 // loginSourceFilesStore interface (from the package
-// gogs.io/gogs/internal/database) used for unit testing.
+// github.com/nef734/ggit/internal/database) used for unit testing.
 type MockLoginSourceFilesStore struct {
 	// GetByIDFunc is an instance of a mock function object controlling the
 	// behavior of the method GetByID.
@@ -477,7 +477,7 @@ func NewStrictMockLoginSourceFilesStore() *MockLoginSourceFilesStore {
 }
 
 // surrogateMockLoginSourceFilesStore is a copy of the loginSourceFilesStore
-// interface (from the package gogs.io/gogs/internal/database). It is
+// interface (from the package github.com/nef734/ggit/internal/database). It is
 // redefined here as it is unexported in the source package.
 type surrogateMockLoginSourceFilesStore interface {
 	GetByID(int64) (*LoginSource, error)

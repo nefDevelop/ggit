@@ -12,8 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
 )
 
 func TestCSRF(t *testing.T) {

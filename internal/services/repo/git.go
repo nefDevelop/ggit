@@ -12,13 +12,13 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 
-	embedConf "gogs.io/gogs/conf"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/process"
-	"gogs.io/gogs/internal/repox"
-	"gogs.io/gogs/internal/strx"
+	embedConf "github.com/nef734/ggit/conf"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/process"
+	"github.com/nef734/ggit/internal/repox"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 func getRepoInitFile(tp, name string) ([]byte, error) {

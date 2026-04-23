@@ -8,10 +8,10 @@ import (
 
 	"github.com/cockroachdb/errors"
 	gomail "github.com/wneessen/go-mail"
-	"gogs.io/gogs/internal/strx" // Asegúrate de importar strx
+	"github.com/nef734/ggit/internal/strx" // Asegúrate de importar strx
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
+	"github.com/nef734/ggit/internal/conf"
 )
 
 type message struct {

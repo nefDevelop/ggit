@@ -18,7 +18,7 @@ import (
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
 
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/database"
 )
 
 //go:generate go run main.go ../../../docs/dev/database_schema.md

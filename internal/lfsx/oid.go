@@ -3,7 +3,7 @@ package lfsx
 import (
 	"github.com/cockroachdb/errors"
 
-	"gogs.io/gogs/internal/lazyregexp"
+	"github.com/nef734/ggit/internal/lazyregexp"
 )
 
 // OID is an LFS object ID.

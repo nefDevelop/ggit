@@ -6,8 +6,8 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/database"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/database"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // IssueService define las operaciones de negocio para issues y pull requests.

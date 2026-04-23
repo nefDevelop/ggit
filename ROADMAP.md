@@ -47,7 +47,7 @@
 - [x] **Limpieza de Dependencias:** Eliminar rastro de Macaron (`inject`, `binding`) del `go.mod`.
 - [x] **Eliminar Mirrors:** Borrar la lógica de sincronización periódica de repos remotos.
 - [x] **Eliminar Migraciones Masivas:** Transformado en **Smart Clone** (solo clonado Git, sin APIs externas). [COMPLETO]
-- [-] **Eliminar LFS:** Quitar soporte para Large File Storage (`internal/lfsx`). (Pendiente de decisión - No eliminar aún).
+- [x] **Mantener LFS:** Decidido mantener el soporte para Large File Storage (`internal/lfsx`). [COMPLETO]
 - [x] **Update Checker:** Borrar la tarea que busca actualizaciones de Gogs. [COMPLETO]
 - [x] **Captcha:** Reemplazado por sistema dual ultra-ligero (**Honeypot** + **Pregunta Configurable**). [COMPLETO]
 
@@ -102,7 +102,7 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ## Fase 13: Rebranding e Identidad Final (En Proceso)
 
-- [ ] **Refactor de Nomenclatura:** Actualizar `gogs.io/gogs` a la nueva identidad en todo el core.
+- [x] **Refactor de Nomenclatura:** Actualizar `gogs.io/gogs` a la nueva identidad en todo el core. [COMPLETO]
 - [x] **Arquitectura de Inicialización Granular:** Desacoplado de README, Licencia y .gitignore en la creación de repositorios. [COMPLETO]
 - [x] **Multiselección de .gitignore:** Implementado sistema de chips para combinar múltiples plantillas en el primer commit. [COMPLETO]
 - [ ] **Identicons SVG (Client-side):** Implementar componente Svelte para generación determinista de avatares SVG basada en seed (correo/ID), eliminando el almacenamiento físico y permitiendo el uso de CSS `currentColor` (Adaptación automática de temas).

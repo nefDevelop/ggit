@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gogs.io/gogs/internal/osx"
+	"github.com/nef734/ggit/internal/osx"
 )
 
 func TestLocalStorage_storagePath(t *testing.T) {

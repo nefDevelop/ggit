@@ -3,8 +3,8 @@ package v2
 import (
 	"net/http"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // GetRepoTemplates returns the list of available .gitignore, License and Readme templates.

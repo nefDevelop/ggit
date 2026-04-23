@@ -10,9 +10,9 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/ldap"
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 // LoginSource represents an external way for authorizing users.

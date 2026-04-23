@@ -10,7 +10,7 @@ import (
 	"github.com/alecthomas/chroma/v2/lexers"
 	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/go-enry/go-enry/v2"
-	"gogs.io/gogs/internal/conf"
+	"github.com/nef734/ggit/internal/conf"
 )
 
 var highlightMapping = map[string]string{

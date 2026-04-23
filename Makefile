@@ -1,7 +1,7 @@
 .PHONY: dev backend frontend build rebuild clean help install sync test lint
 
 # Variables de compilación
-PKG_PATH := gogs.io/gogs/internal/conf
+PKG_PATH := github.com/nef734/ggit/internal/conf
 BUILD_TIME := $(shell date -u '+%Y-%m-%d %I:%M:%S %Z')
 BUILD_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown")
 TAGS := cert pam bindata

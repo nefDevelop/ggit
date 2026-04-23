@@ -11,12 +11,12 @@ import (
 	"github.com/go-enry/go-enry/v2"
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/markup"
-	reposervice "gogs.io/gogs/internal/services/repo"
-	"gogs.io/gogs/internal/template/highlight"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/markup"
+	reposervice "github.com/nef734/ggit/internal/services/repo"
+	"github.com/nef734/ggit/internal/template/highlight"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 // SearchRepoContents searches for a keyword in the repository using git grep.

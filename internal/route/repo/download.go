@@ -7,10 +7,10 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/gitx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/gitx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 func serveData(c *context.Context, name string, data []byte) error {

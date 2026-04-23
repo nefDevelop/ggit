@@ -10,9 +10,9 @@ import (
 	"gorm.io/gorm/logger"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/dbtest"
-	"gogs.io/gogs/internal/testx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/nef734/ggit/internal/testx"
 )
 
 func TestMain(m *testing.M) {

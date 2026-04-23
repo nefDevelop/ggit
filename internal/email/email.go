@@ -13,9 +13,9 @@ import (
 
 	"github.com/cockroachdb/errors"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/internal/osx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/markup"
+	"github.com/nef734/ggit/internal/osx"
 )
 
 const (

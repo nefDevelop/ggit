@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/gogs/git-module"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 )
 
 type Branch struct {

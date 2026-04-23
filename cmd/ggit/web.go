@@ -12,15 +12,15 @@ import (
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "gogs.io/gogs/docs"
+	_ "github.com/nef734/ggit/docs"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/ginx"
-	"gogs.io/gogs/internal/route"
-	apiv2 "gogs.io/gogs/internal/route/api/v2"
-	"gogs.io/gogs/internal/route/lfs"
-	"gogs.io/gogs/internal/route/repo"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/ginx"
+	"github.com/nef734/ggit/internal/route"
+	apiv2 "github.com/nef734/ggit/internal/route/api/v2"
+	"github.com/nef734/ggit/internal/route/lfs"
+	"github.com/nef734/ggit/internal/route/repo"
 )
 
 var webCommand = cli.Command{

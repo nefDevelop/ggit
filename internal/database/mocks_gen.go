@@ -9,11 +9,11 @@ package database
 import (
 	"sync"
 
-	auth "gogs.io/gogs/internal/auth"
+	auth "github.com/nef734/ggit/internal/auth"
 )
 
 // MockProvider is a mock implementation of the Provider interface (from the
-// package gogs.io/gogs/internal/auth) used for unit testing.
+// package github.com/nef734/ggit/internal/auth) used for unit testing.
 type MockProvider struct {
 	// AuthenticateFunc is an instance of a mock function object controlling
 	// the behavior of the method Authenticate.

@@ -11,10 +11,10 @@ import (
 	"github.com/cockroachdb/errors"
 	"gopkg.in/ini.v1"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/auth/ldap"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/osx"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/osx"
 )
 
 // loginSourceFilesStore is the in-memory interface for login source files stored on file system.

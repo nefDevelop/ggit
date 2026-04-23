@@ -13,17 +13,17 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/dbx"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/lazyregexp"
-	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/repox"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	"gogs.io/gogs/internal/strx"
-	"gogs.io/gogs/internal/userx"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/lazyregexp"
+	"github.com/nef734/ggit/internal/markup"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/repox"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/strx"
+	"github.com/nef734/ggit/internal/userx"
 )
 
 // userListFields are the columns used for listing users/organizations.

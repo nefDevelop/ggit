@@ -6,7 +6,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/dbx"
+	"github.com/nef734/ggit/internal/dbx"
 )
 
 // OrganizationsStore is the storage layer for organizations.

@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
-	"gogs.io/gogs/internal/archiver"
+	"github.com/nef734/ggit/internal/archiver"
 	"golang.org/x/image/draw"
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
@@ -26,18 +26,18 @@ import (
 
 	"github.com/gogs/git-module"
 
-	embedConf "gogs.io/gogs/conf"
-	"gogs.io/gogs/internal/avatar"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/markup"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/process"
-	"gogs.io/gogs/internal/repox"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
-	"gogs.io/gogs/internal/semverx"
-	"gogs.io/gogs/internal/strx"
-	"gogs.io/gogs/internal/sync"
+	embedConf "github.com/nef734/ggit/conf"
+	"github.com/nef734/ggit/internal/avatar"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/markup"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/process"
+	"github.com/nef734/ggit/internal/repox"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/semverx"
+	"github.com/nef734/ggit/internal/strx"
+	"github.com/nef734/ggit/internal/sync"
 )
 
 // RepoAvatarURLPrefix is used to identify a URL is to access repository avatar.

@@ -13,9 +13,9 @@ import (
 	"gopkg.in/ini.v1"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/conf"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/semverx"
+	"github.com/nef734/ggit/conf"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/semverx"
 )
 
 func init() {

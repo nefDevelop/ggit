@@ -18,10 +18,10 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/process"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/process"
 )
 
 const (

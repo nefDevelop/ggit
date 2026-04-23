@@ -16,8 +16,8 @@ import (
 
 	"github.com/gogs/chardet"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/i18nx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/i18nx"
 )
 
 // ShortSHA1 truncates SHA1 string length to at most 10.

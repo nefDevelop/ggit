@@ -1,10 +1,10 @@
 package services
 
 import (
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/services/auth"
-	"gogs.io/gogs/internal/services/issue"
-	"gogs.io/gogs/internal/services/repo"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/services/auth"
+	"github.com/nef734/ggit/internal/services/issue"
+	"github.com/nef734/ggit/internal/services/repo"
 )
 
 // Init inicializa todos los servicios de la aplicación.

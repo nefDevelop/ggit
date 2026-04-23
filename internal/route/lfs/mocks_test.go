@@ -10,12 +10,12 @@ import (
 	"context"
 	"sync"
 
-	database "gogs.io/gogs/internal/database"
-	lfsx "gogs.io/gogs/internal/lfsx"
+	database "github.com/nef734/ggit/internal/database"
+	lfsx "github.com/nef734/ggit/internal/lfsx"
 )
 
 // MockStore is a mock implementation of the Store interface (from the
-// package gogs.io/gogs/internal/route/lfs) used for unit testing.
+// package github.com/nef734/ggit/internal/route/lfs) used for unit testing.
 type MockStore struct {
 	// AuthenticateUserFunc is an instance of a mock function object
 	// controlling the behavior of the method AuthenticateUser.

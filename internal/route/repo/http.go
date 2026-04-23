@@ -16,13 +16,13 @@ import (
 	"github.com/gin-gonic/gin"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/conf"
-	gcontext "gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/lazyregexp"
-	"gogs.io/gogs/internal/pathx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/conf"
+	gcontext "github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/lazyregexp"
+	"github.com/nef734/ggit/internal/pathx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 type HTTPContext struct {

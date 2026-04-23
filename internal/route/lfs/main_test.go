@@ -8,7 +8,7 @@ import (
 
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/testx"
+	"github.com/nef734/ggit/internal/testx"
 )
 
 func TestMain(m *testing.M) {

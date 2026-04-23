@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/form"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/form"
 )
 
 // ListReleases returns a list of releases for the repository.

@@ -13,14 +13,14 @@ import (
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/auth"
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/dbx"
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/repox"
-	"gogs.io/gogs/internal/userx"
-	"gogs.io/gogs/public"
+	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/repox"
+	"github.com/nef734/ggit/internal/userx"
+	"github.com/nef734/ggit/public"
 )
 
 func TestUser_BeforeCreate(t *testing.T) {

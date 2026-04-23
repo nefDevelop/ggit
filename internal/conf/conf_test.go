@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/ini.v1"
 
-	"gogs.io/gogs/internal/testx"
+	"github.com/nef734/ggit/internal/testx"
 )
 
 func TestInit(t *testing.T) {

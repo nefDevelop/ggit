@@ -9,8 +9,8 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/cryptox"
-	"gogs.io/gogs/internal/errx"
+	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/errx"
 )
 
 // AccessToken is a personal access token.

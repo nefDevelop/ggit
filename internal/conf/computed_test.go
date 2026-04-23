@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gogs.io/gogs/internal/testx"
+	"github.com/nef734/ggit/internal/testx"
 )
 
 func TestIsProdMode(t *testing.T) {

@@ -7,10 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/repox"
-	"gogs.io/gogs/internal/strx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/repox"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 // ServeGoGet does quick responses for appropriate go-get meta with status OK

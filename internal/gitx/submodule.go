@@ -7,7 +7,7 @@ import (
 
 	"github.com/gogs/git-module"
 
-	"gogs.io/gogs/internal/lazyregexp"
+	"github.com/nef734/ggit/internal/lazyregexp"
 )
 
 var scpSyntax = lazyregexp.New(`^([a-zA-Z0-9_]+@)?([a-zA-Z0-9._-]+):(.*)$`)

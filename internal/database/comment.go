@@ -11,9 +11,9 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/markup"
-	apiv2types "gogs.io/gogs/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/markup"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // CommentType defines whether a comment is just a simple comment, an action (like close) or a reference.

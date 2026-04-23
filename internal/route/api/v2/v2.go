@@ -3,8 +3,8 @@ package v2
 import (
 	"github.com/gin-gonic/gin"
 
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/ginx"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/ginx"
 )
 
 // @title Ggit API v2

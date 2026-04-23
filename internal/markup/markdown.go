@@ -4,8 +4,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/lazyregexp"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/lazyregexp"
 )
 
 // IsMarkdownFile reports whether name looks like a Markdown file based on its extension.

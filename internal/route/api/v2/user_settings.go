@@ -11,11 +11,11 @@ import (
 	"github.com/pquerna/otp/totp"
 	log "unknwon.dev/clog/v2"
 
-	"gogs.io/gogs/internal/conf"
-	"gogs.io/gogs/internal/context"
-	"gogs.io/gogs/internal/database"
-	"gogs.io/gogs/internal/email"
-	"gogs.io/gogs/internal/userx"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/email"
+	"github.com/nef734/ggit/internal/userx"
 )
 
 type TwoFactorStatus struct {

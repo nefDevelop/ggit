@@ -6,8 +6,8 @@ import (
 
 	"github.com/cockroachdb/errors"
 
-	"gogs.io/gogs/internal/osx"
-	"gogs.io/gogs/internal/process"
+	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/process"
 )
 
 // cleanUpOpenSSHVersion cleans up the raw output of "ssh -V" and returns a clean version string.

@@ -10,8 +10,8 @@ import (
 	"github.com/gogs/git-module"
 	"gorm.io/gorm"
 
-	"gogs.io/gogs/internal/errx"
-	"gogs.io/gogs/internal/tool"
+	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 type Branch struct {
