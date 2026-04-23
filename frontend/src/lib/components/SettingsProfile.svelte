@@ -311,12 +311,8 @@
       <div class="dicebear-controls">
         <div class="styles-row">
           {#each dicebearStyles as style}
-            <button
-              class="style-item"
-              class:active={currentDicebearStyle === style}
-              onclick={() => (currentDicebearStyle = style)}
-            >
-              {style}
+            <button class="style-item" class:active={currentDicebearStyle === style} onclick={() => currentDicebearStyle = style}>
+              {style.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ')}
             </button>
           {/each}
         </div>
@@ -456,14 +452,17 @@
   }
 
   /* DiceBear Panel */
-  .dicebear-panel {
-    background: var(--surface-variant);
-    padding: 2rem;
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-    display: flex;
-    gap: 3rem;
-    align-items: center;
+  .dicebear-panel { 
+    background: var(--surface-variant); 
+    padding: 2.5rem; 
+    border: 1px solid var(--md-sys-color-outline-variant); 
+    display: flex; 
+    gap: 3rem; 
+    align-items: center; 
     animation: slideIn 0.4s ease-out;
+    border-radius: 3rem;
+    margin: 2rem;
+    box-shadow: var(--shadow-lg);
   }
   @keyframes slideIn {
     from {
@@ -475,20 +474,8 @@
       transform: translateY(0);
     }
   }
-  .dicebear-preview-box {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    border-radius: 2rem;
-    background: white;
-    padding: 10px;
-    box-shadow: var(--shadow-md);
-    flex-shrink: 0;
-  }
-  .dicebear-preview-box img {
-    width: 100%;
-    height: 100%;
-  }
+  .dicebear-preview-box { position: relative; width: 140px; height: 140px; border-radius: 3.5rem; background: white; padding: 15px; box-shadow: var(--shadow-lg); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .dicebear-preview-box img { width: 100%; height: 100%; border-radius: 2.5rem; }
   .shuffle-icon {
     position: absolute;
     bottom: -8px;

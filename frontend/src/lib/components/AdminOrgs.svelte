@@ -1,6 +1,10 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
+  import Avatar from './Avatar.svelte';
+  import { i18n } from '$lib/i18n.svelte';
   
   let orgs = $state<any[]>([]);
   let loading = $state(true);
@@ -23,46 +27,69 @@
   onMount(fetchOrgs);
 </script>
 
-<div class="admin-orgs island tonal">
+<Card class="admin-view-card" padding="lg">
   <header class="section-header">
-    <div class="title">
-      <span class="material-symbols-rounded">corporate_fare</span>
-      <h2>Organization Oversight</h2>
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">corporate_fare</span>
+      <div>
+        <h2>{i18n.t('admin.organizations')}</h2>
+        <p class="subtitle">Gestión y supervisión de las entidades organizacionales</p>
+      </div>
     </div>
   </header>
 
-  <div class="table-container">
+  <div class="modern-table-card">
     <table class="modern-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Organization</th>
-          <th>Full Name</th>
-          <th>Owner</th>
-          <th>Teams</th>
-          <th>Members</th>
-          <th>Actions</th>
+          <th>{i18n.t('organization')}</th>
+          <th>{i18n.t('settings.full_name')}</th>
+          <th>Métricas</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         {#if loading}
           {#each Array(5) as _}
             <tr class="skeleton-row">
-              <td colspan="7"><div class="skeleton-bar"></div></td>
+              <td colspan="5"><div class="skeleton-line"></div></td>
             </tr>
           {/each}
         {:else}
           {#each orgs as org}
-            <tr>
-              <td>{org.id}</td>
-              <td><b>{org.username}</b></td>
-              <td>{org.full_name || ''}</td>
-              <td>{org.owner?.username}</td>
-              <td>{org.num_teams}</td>
-              <td>{org.num_members}</td>
-              <td class="actions">
-                <a href="/org/{org.username}" class="icon-btn" title="View"><span class="material-symbols-rounded">visibility</span></a>
-                <button class="icon-btn danger" title="Delete"><span class="material-symbols-rounded">delete</span></button>
+            <tr class="hover-row">
+              <td class="id-cell">#{org.id}</td>
+              <td>
+                <div class="user-cell">
+                  <Avatar src={org.avatar_url} username={org.username} size={48} />
+                  <div class="names">
+                    <strong>{org.username}</strong>
+                    <span>Reg. {new Date(org.created_at).toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="full-name">{org.full_name || '—'}</span>
+              </td>
+              <td>
+                <div class="metrics-grid">
+                  <div class="metric">
+                    <span class="val">{org.num_teams}</span>
+                    <span class="lab">Equipos</span>
+                  </div>
+                  <div class="metric">
+                    <span class="val">{org.num_members}</span>
+                    <span class="lab">Miembros</span>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="action-row">
+                  <Button variant="ghost" size="sm" icon="visibility" href="/org/{org.username}" />
+                  <Button variant="ghost" size="sm" icon="edit" />
+                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" />
+                </div>
               </td>
             </tr>
           {/each}
@@ -70,26 +97,41 @@
       </tbody>
     </table>
   </div>
-</div>
+</Card>
 
 <style>
-  .admin-orgs { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; box-shadow: var(--shadow-xl); }
+  .admin-view-card { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(20px); border: 1px solid var(--md-sys-color-outline-variant); }
   
-  .section-header { display: flex; justify-content: space-between; align-items: center; }
-  .title { display: flex; align-items: center; gap: 0.75rem; }
-  .title span { font-size: 1.75rem; color: var(--primary-color); }
-  .title h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+  .section-header { margin-bottom: 3.5rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .table-container { overflow-x: auto; }
+  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); }
+  
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { padding: 1rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
-  .modern-table td { padding: 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem; }
+  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .modern-table td { padding: 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .modern-table tr:last-child td { border-bottom: none; }
 
-  .actions { display: flex; gap: 0.5rem; }
-  .icon-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; border-radius: 0.5rem; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; }
-  .icon-btn:hover { background: rgba(255,255,255,0.05); color: #fff; }
-  .icon-btn.danger:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  .id-cell { font-family: monospace; color: var(--text-muted); font-weight: 700; opacity: 0.5; }
 
-  .skeleton-bar { height: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
+  .user-cell { display: flex; align-items: center; gap: 1.25rem; }
+  .names { display: flex; flex-direction: column; }
+  .names strong { color: var(--text-color); line-height: 1.2; font-weight: 800; font-size: 1.1rem; }
+  .names span { font-size: 0.85rem; color: var(--text-muted); }
+
+  .full-name { font-weight: 600; color: var(--text-color); }
+
+  .metrics-grid { display: flex; gap: 2.5rem; }
+  .metric { display: flex; flex-direction: column; align-items: center; min-width: 60px; }
+  .metric .val { font-size: 1.25rem; font-weight: 900; color: var(--primary-color); }
+  .metric .lab { font-size: 0.7rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.05em; }
+
+  .action-row { display: flex; gap: 0.75rem; }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.15) !important; }
+
+  .skeleton-line { height: 2.5rem; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
 </style>

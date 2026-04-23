@@ -1,16 +1,14 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
+  import { i18n } from '$lib/i18n.svelte';
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
 
   let config = $state<any>(null);
   let loading = $state(true);
 
-  // Registration Security Settings
-  let regSecurity = $state({
-    enable: false,
-    question: "",
-    answer: "",
-  });
+  let regSecurity = $state({ enable: false, question: "", answer: "" });
   let savingSecurity = $state(false);
 
   async function fetchConfig() {
@@ -19,16 +17,11 @@
       const res = await apiFetch("/api/v2/admin/config");
       if (res.ok) {
         config = await res.json();
-        // Extract registration settings for editing
         regSecurity.enable = config.auth.EnableRegistrationQuestion;
         regSecurity.question = config.auth.RegistrationQuestion;
         regSecurity.answer = config.auth.RegistrationAnswer;
       }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      loading = false;
-    }
+    } catch (e) { console.error(e); } finally { loading = false; }
   }
 
   async function updateAuthSettings() {
@@ -43,322 +36,141 @@
           registration_answer: regSecurity.answer,
         }),
       });
-      if (res.ok) {
-        alert("Settings updated successfully!");
-        fetchConfig();
-      }
-    } catch (e) {
-      alert("Failed to update settings");
-    } finally {
-      savingSecurity = false;
-    }
+      if (res.ok) fetchConfig();
+    } catch (e) { console.error(e); } finally { savingSecurity = false; }
   }
 
   const sections = [
-    { key: "app", label: "Application" },
-    { key: "server", label: "Server" },
-    { key: "database", label: "Database" },
-    { key: "security", label: "Security" },
-    { key: "repository", label: "Repository" },
-    { key: "git", label: "Git" },
-    { key: "email", label: "Email" },
+    { key: "app", label: "Aplicación", icon: "apps" },
+    { key: "server", label: "Servidor", icon: "dns" },
+    { key: "database", label: "Base de Datos", icon: "storage" },
+    { key: "security", label: "Seguridad", icon: "security" },
+    { key: "repository", label: "Repositorios", icon: "book" },
+    { key: "git", label: "Git System", icon: "terminal" },
+    { key: "email", label: "Servicio de Correo", icon: "mail" },
   ];
 
   let testEmail = $state("");
   let sendingTest = $state(false);
-  let testMsg = $state({ text: "", type: "" });
 
   async function sendTestEmail() {
     if (!testEmail) return;
     sendingTest = true;
-    testMsg = { text: "", type: "" };
     try {
-      const res = await apiFetch("/api/v2/admin/config/test_email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: testEmail }),
-      });
-      if (res.ok) {
-        testMsg = { text: "Test email successfully sent!", type: "success" };
-      } else {
-        const data = await res.json();
-        testMsg = {
-          text: data.error || "Failed to send test email.",
-          type: "error",
-        };
-      }
-    } catch (e) {
-      testMsg = { text: "A network error occurred.", type: "error" };
-    } finally {
-      sendingTest = false;
-    }
+      await apiFetch("/api/v2/admin/config/test_email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: testEmail }) });
+    } catch (e) { console.error(e); } finally { sendingTest = false; }
   }
 
   onMount(fetchConfig);
 </script>
 
-<div class="admin-config">
+<Card class="admin-view-card" padding="lg">
   <header class="section-header">
-    <h2>Server Configuration</h2>
-    <p class="subtitle">
-      Read-only view of the <code>app.ini</code> configuration file.
-    </p>
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">settings</span>
+      <div>
+        <h2>Configuración del Sistema</h2>
+        <p class="subtitle">Estado detallado y ajustes del motor Ggit</p>
+      </div>
+    </div>
   </header>
 
   {#if loading}
-    <div class="skeleton-config"></div>
-  {:else if config}
-    <div class="config-sections">
+     <div class="skeleton-config"></div>
+  {:else}
+    <div class="config-stack">
       {#each sections as section}
-        <div class="config-card">
-          <h3 class="card-title">{section.label}</h3>
+        <div class="config-modular-section">
+          <div class="section-tag">
+            <span class="material-symbols-rounded">{section.icon}</span>
+            {section.label}
+          </div>
           <div class="config-grid">
             {#each Object.entries(config[section.key] || {}) as [label, value]}
-              <div class="config-item">
-                <span class="key">{label}</span>
-                <span class="val"
-                  >{typeof value === "object"
-                    ? JSON.stringify(value)
-                    : value}</span
-                >
+              <div class="config-tile tonal">
+                <span class="tile-key">{label}</span>
+                <span class="tile-val">{typeof value === 'object' ? JSON.stringify(value) : (value || '—')}</span>
               </div>
             {/each}
           </div>
         </div>
       {/each}
 
-      <div class="config-card tonal security-edit-section">
-        <h3 class="card-title">Registration Security</h3>
-        <div class="edit-content">
-          <p>
-            Configure a simple security question to prevent automated bot
-            registrations.
-          </p>
-
-          <div class="form-grid-edit">
-            <div class="field">
-              <label class="checkbox-label">
-                <input type="checkbox" bind:checked={regSecurity.enable} />
-                <span>Enable Security Question</span>
-              </label>
-            </div>
-
-            {#if regSecurity.enable}
-              <div class="field">
-                <label>Security Question</label>
-                <input
-                  type="text"
-                  placeholder="e.g. What is the name of this service?"
-                  bind:value={regSecurity.question}
-                />
-              </div>
-              <div class="field">
-                <label>Correct Answer</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Ggit"
-                  bind:value={regSecurity.answer}
-                />
-              </div>
-            {/if}
-          </div>
-
-          <div class="actions">
-            <button
-              class="btn btn-primary"
-              onclick={updateAuthSettings}
-              disabled={savingSecurity}
-            >
-              {savingSecurity ? "Saving..." : "Save Security Settings"}
-            </button>
-          </div>
+      <div class="special-action-card island">
+        <div class="action-header">
+           <span class="material-symbols-rounded">gpp_good</span>
+           <h4>Seguridad de Registro</h4>
         </div>
-      </div>
-
-      <div class="config-card tonal test-email-section">
-        <h3 class="card-title">Test Email Configuration</h3>
-        <div class="test-email-content">
-          <p>Send a test email to ensure your SMTP settings are correct.</p>
-          <div class="input-group">
-            <input
-              type="email"
-              placeholder="target@example.com"
-              bind:value={testEmail}
-            />
-            <button
-              class="btn btn-primary"
-              onclick={sendTestEmail}
-              disabled={sendingTest || !testEmail}
-            >
-              {sendingTest ? "Sending..." : "Send Test Mail"}
-            </button>
-          </div>
-          {#if testMsg.text}
-            <p class="status-msg" class:error={testMsg.type === "error"}>
-              {testMsg.text}
-            </p>
-          {/if}
+        <div class="action-body">
+           <p>Configura una pregunta de seguridad para evitar registros automatizados de bots.</p>
+           <div class="action-form">
+              <label class="premium-switch">
+                 <input type="checkbox" bind:checked={regSecurity.enable} />
+                 <span class="switch-slider"></span>
+                 <span class="switch-label">Habilitar Pregunta de Seguridad</span>
+              </label>
+              
+              {#if regSecurity.enable}
+                <div class="field-row">
+                  <div class="field">
+                    <label>Pregunta</label>
+                    <input type="text" bind:value={regSecurity.question} placeholder="Ej: ¿Cuál es el nombre de este servicio?" />
+                  </div>
+                  <div class="field">
+                    <label>Respuesta</label>
+                    <input type="text" bind:value={regSecurity.answer} placeholder="Ej: Ggit" />
+                  </div>
+                </div>
+              {/if}
+              <Button variant="primary" onclick={updateAuthSettings} disabled={savingSecurity}>
+                {savingSecurity ? 'Guardando...' : 'Guardar Ajustes de Seguridad'}
+              </Button>
+           </div>
         </div>
       </div>
     </div>
   {/if}
-</div>
+</Card>
 
 <style>
-  .admin-config {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
+  .admin-view-card { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(20px); border: 1px solid var(--md-sys-color-outline-variant); }
+  .section-header { margin-bottom: 4rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .section-header h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 800;
-  }
-  .subtitle {
-    color: var(--text-muted);
-    margin: 0.25rem 0 0 0;
-  }
+  .config-stack { display: flex; flex-direction: column; gap: 4rem; }
 
-  .config-sections {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  .config-card {
-    padding: 0;
-    overflow: hidden;
-  }
-  .card-title {
-    padding: 1rem 2rem;
-    margin: 0;
-    font-size: 1rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
+  .config-modular-section { display: flex; flex-direction: column; gap: 1.5rem; }
+  .section-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; }
+  .section-tag span { font-size: 1.25rem; }
 
-  .config-grid {
-    padding: 1.5rem 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  .config-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2rem;
-  }
-  .key {
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    opacity: 0.6;
-  }
-  .val {
-    font-size: 0.95rem;
-    font-family: monospace;
-    color: var(--text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+  .config-tile { padding: 1.25rem 1.75rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 0.25rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; }
+  .config-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.02); border-color: var(--primary-color); }
+  .tile-key { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; }
+  .tile-val { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .edit-content {
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .edit-content p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
-  .form-grid-edit {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-width: 500px;
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .field label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-muted);
-  }
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    cursor: pointer;
-    color: #fff !important;
-  }
-  .checkbox-label input {
-    width: 1.2rem;
-    height: 1.2rem;
-  }
-  .field input[type="text"] {
-    background: var(--md-sys-color-surface-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    color: #fff;
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
-    outline: none;
-  }
-  .field input:focus {
-    border-color: var(--primary-color);
-  }
+  .special-action-card { padding: 3rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
+  .action-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+  .action-header span { font-size: 2.5rem; color: var(--primary-color); }
+  .action-header h4 { margin: 0; font-size: 1.5rem; font-weight: 900; }
+  .action-body p { margin: 0 0 2rem 0; color: var(--text-muted); line-height: 1.6; }
+  
+  .action-form { display: flex; flex-direction: column; gap: 2rem; max-width: 600px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .field { display: flex; flex-direction: column; gap: 0.5rem; }
+  .field label { font-size: 0.8rem; font-weight: 800; color: var(--text-color); }
+  .field input { background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); }
 
-  .skeleton-config {
-    height: 600px;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.6;
-    }
-  }
+  .premium-switch { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
+  .premium-switch input { display: none; }
+  .switch-slider { width: 44px; height: 24px; background: var(--surface-variant); border-radius: 100px; position: relative; border: 1px solid var(--md-sys-color-outline-variant); transition: 0.3s; }
+  .switch-slider::before { content: ""; position: absolute; width: 18px; height: 18px; background: var(--text-muted); border-radius: 50%; left: 2px; top: 2px; transition: 0.3s; }
+  input:checked + .switch-slider { background: var(--primary-color); }
+  input:checked + .switch-slider::before { transform: translateX(20px); background: white; }
+  .switch-label { font-size: 0.95rem; font-weight: 700; color: var(--text-color); }
 
-  .test-email-content {
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .test-email-content p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
-  .input-group {
-    display: flex;
-    gap: 1rem;
-    max-width: 500px;
-  }
-  .input-group input {
-    flex: 1;
-    background: var(--md-sys-color-surface-variant);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    color: #fff;
-    padding: 0.6rem 1rem;
-    border-radius: 0.5rem;
-  }
-  .status-msg {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--color-success);
-  }
-  .status-msg.error {
-    color: var(--color-danger);
-  }
+  .skeleton-config { height: 600px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 </style>

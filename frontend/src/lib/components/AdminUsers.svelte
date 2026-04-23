@@ -5,7 +5,7 @@
   import Avatar from './Avatar.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
-  import Badge from './ui/Badge.svelte';
+  import { i18n } from '$lib/i18n.svelte';
   
   let users = $state<any[]>([]);
   let loading = $state(true);
@@ -57,9 +57,9 @@
   <header class="section-header">
     <div class="title">
       <span class="material-symbols-rounded">group</span>
-      <h2>User Management</h2>
+      <h2>{i18n.t('admin.users')}</h2>
     </div>
-    <Button onclick={() => editingUserId = 'new'} icon="person_add">New User</Button>
+    <Button onclick={() => editingUserId = 'new'} icon="person_add">{i18n.t('admin.create_user')}</Button>
   </header>
 
   {#if editingUserId}
@@ -70,89 +70,88 @@
          onCancel={() => editingUserId = null} 
        />
     </div>
-  {/if}
-
-  <div class="table-container">
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>User</th>
-          <th>Email</th>
-          <th>Joined</th>
-          <th>Admin</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#if loading}
-          {#each Array(5) as _}
-            <tr class="skeleton-row">
-              <td colspan="6"><div class="skeleton-bar"></div></td>
-            </tr>
-          {/each}
-        {:else}
-          {#each users as user}
-            <tr>
-              <td>{user.id}</td>
-              <td>
-                <div class="user-cell">
-                  <Avatar src={user.avatar_url} username={user.username} size={32} class="small-avatar" />
-                  <div class="names">
-                    <strong>{user.username}</strong>
-                    <span>{user.full_name || ''}</span>
+  {:else}
+    <div class="table-container">
+      <table class="modern-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>{i18n.t('username')}</th>
+            <th>{i18n.t('email')}</th>
+            <th>{i18n.t('user.join_on')}</th>
+            <th>Admin</th>
+            <th>{i18n.t('admin.save_user')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#if loading}
+            {#each Array(5) as _}
+              <tr class="skeleton-row">
+                <td colspan="6"><div class="skeleton-bar"></div></td>
+              </tr>
+            {/each}
+          {:else}
+            {#each users as user}
+              <tr>
+                <td>{user.id}</td>
+                <td>
+                  <div class="user-cell">
+                    <Avatar src={user.avatar_url} username={user.username} size={32} class="small-avatar" />
+                    <div class="names">
+                      <strong>{user.username}</strong>
+                      <span>{user.full_name || ''}</span>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>{user.email}</td>
-              <td>{new Date(user.created_at).toLocaleDateString()}</td>
-              <td>
-                <Button 
-                   size="sm"
-                   variant={user.is_admin ? 'primary' : 'secondary'}
-                   onclick={() => toggleAdmin(user)}
-                >
-                  {user.is_admin ? 'Admin' : 'User'}
-                </Button>
-              </td>
-              <td class="actions">
-                <Button variant="ghost" size="sm" icon="edit" onclick={() => editingUserId = user.id} />
-                <Button variant="ghost" size="sm" icon="delete" class="danger-icon" onclick={() => deleteUser(user.id)} />
-              </td>
-            </tr>
-          {/each}
-        {/if}
-      </tbody>
-    </table>
-  </div>
+                </td>
+                <td>{user.email}</td>
+                <td>{new Date(user.created_at).toLocaleDateString()}</td>
+                <td>
+                  <Button 
+                     size="sm"
+                     variant={user.is_admin ? 'primary' : 'secondary'}
+                     onclick={() => toggleAdmin(user)}
+                  >
+                    {user.is_admin ? 'Admin' : 'User'}
+                  </Button>
+                </td>
+                <td class="actions">
+                  <Button variant="ghost" size="sm" icon="edit" onclick={() => editingUserId = user.id} />
+                  <Button variant="ghost" size="sm" icon="delete" class="danger-icon" onclick={() => deleteUser(user.id)} />
+                </td>
+              </tr>
+            {/each}
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  {/if}
 </Card>
 
 <style>
-  .admin-users { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+  .admin-users { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; border-radius: 2.5rem; }
   
-  .section-header { display: flex; justify-content: space-between; align-items: center; }
-  .title { display: flex; align-items: center; gap: 0.75rem; }
-  .title span { font-size: 1.75rem; color: var(--md-sys-color-primary); }
-  .title h2 { margin: 0; font-size: 1.5rem; font-weight: 800; }
+  .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .title { display: flex; align-items: center; gap: 1rem; }
+  .title span { font-size: 2rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 0.75rem; border-radius: 1rem; }
+  .title h2 { margin: 0; font-size: 1.75rem; font-weight: 900; letter-spacing: -0.02em; }
 
-  .table-container { overflow-x: auto; }
+  .table-container { overflow-x: auto; border-radius: 1.5rem; background: rgba(var(--surface-rgb), 0.3); border: 1px solid var(--md-sys-color-outline-variant); }
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { padding: 1rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
-  .modern-table td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--md-sys-color-surface-variant); font-size: 0.95rem; }
+  .modern-table th { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; background: rgba(0,0,0,0.05); }
+  .modern-table td { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); font-size: 0.95rem; }
+  .modern-table tr:last-child td { border-bottom: none; }
 
   .user-cell { display: flex; align-items: center; gap: 1rem; }
-  .small-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--md-sys-color-background); border: 1px solid var(--md-sys-color-outline-variant); }
   .names { display: flex; flex-direction: column; }
-  .names strong { color: var(--md-sys-color-on-surface); line-height: 1.2; }
+  .names strong { color: var(--text-color); line-height: 1.2; font-weight: 700; }
   .names span { font-size: 0.8rem; color: var(--text-muted); }
 
-  .actions { display: flex; gap: 0.25rem; }
-  :global(.danger-icon:hover) { color: var(--color-danger) !important; }
+  .actions { display: flex; gap: 0.5rem; }
+  :global(.danger-icon:hover) { color: var(--error) !important; }
 
-  .skeleton-bar { height: 1.5rem; background: var(--md-sys-color-surface-variant); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
+  .skeleton-bar { height: 1.5rem; background: var(--surface-variant); border-radius: 0.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 
-  .editor-overlay { margin-bottom: 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 2rem; animation: slideDown 0.3s ease-out; }
-  @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .editor-overlay { animation: fadeIn 0.3s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 </style>
-

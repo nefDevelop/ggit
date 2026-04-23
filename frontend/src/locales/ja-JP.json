@@ -10,7 +10,17 @@
     "monitor": "Monitoring",
     "maintenance": "Maintenance",
     "audit_log": "Audit Log",
-    "notices": "System Notices"
+    "notices": "System Notices",
+    "account_activated": "Account Activated",
+    "add_new_member": "Add a new member to the platform.",
+    "admin_privileges": "Administrator Privileges",
+    "create_user": "Create New User",
+    "edit_user": "Edit User",
+    "max_repos": "Max Repositories",
+    "max_repos_helper": "-1 means system default",
+    "modifying_account": "Modifying account: %s",
+    "prohibit_login": "Prohibit Login",
+    "save_user": "Save User"
   },
   "admin_panel": "管理者パネル",
   "app_desc": "Go言語で実装したセルフホストGitサービス",

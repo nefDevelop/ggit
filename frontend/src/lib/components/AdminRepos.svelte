@@ -1,6 +1,10 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
+  import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
+  import Avatar from './Avatar.svelte';
+  import { i18n } from '$lib/i18n.svelte';
 
   let repos = $state<any[]>([]);
   let loading = $state(true);
@@ -21,94 +25,91 @@
   }
 
   async function deleteRepo(id: number, name: string) {
-    if (
-      !confirm(
-        `Are you sure you want to delete repository "${name}"? This action cannot be undone.`,
-      )
-    ) {
-      return;
-    }
+    if (!confirm(`Are you sure you want to delete repository "${name}"? This action cannot be undone.`)) return;
 
     try {
-      const res = await apiFetch(`/api/v2/admin/repos/${id}`, {
-        method: "DELETE",
-      });
+      const res = await apiFetch(`/api/v2/admin/repos/${id}`, { method: "DELETE" });
       if (res.ok) {
         repos = repos.filter((r) => r.id !== id);
-      } else {
-        alert("Failed to delete repository.");
       }
     } catch (e) {
       console.error(e);
-      alert("Error connecting to server.");
     }
   }
 
   onMount(fetchRepos);
 </script>
 
-<div class="admin-repos tonal">
+<Card class="admin-view-card" padding="lg">
   <header class="section-header">
-    <div class="title">
-      <span class="material-symbols-rounded">database</span>
-      <h2>Repository Oversight</h2>
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">database</span>
+      <div>
+        <h2>{i18n.t('admin.repositories')}</h2>
+        <p class="subtitle">Supervisión y gestión global de repositorios del sistema</p>
+      </div>
     </div>
   </header>
 
-  <div class="table-container">
+  <div class="modern-table-card">
     <table class="modern-table">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Repository</th>
-          <th>Owner</th>
-          <th>Stars</th>
-          <th>Forks</th>
-          <th>Private</th>
-          <th>Actions</th>
+          <th>{i18n.t('repository')}</th>
+          <th>Colaboradores</th>
+          <th>Estado</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
         {#if loading}
           {#each Array(5) as _}
             <tr class="skeleton-row">
-              <td colspan="7"><div class="skeleton-bar"></div></td>
+              <td colspan="5"><div class="skeleton-line"></div></td>
             </tr>
           {/each}
         {:else}
           {#each repos as repo}
-            <tr>
-              <td>{repo.id}</td>
+            <tr class="hover-row">
+              <td class="id-cell">#{repo.id}</td>
               <td>
-                <div class="repo-cell">
-                  <strong class="repo-name">{repo.name}</strong>
-                  <span class="repo-desc text-muted"
-                    >{repo.description || "No description"}</span
-                  >
+                <div class="repo-info-cell">
+                  <div class="repo-main">
+                    <span class="material-symbols-rounded repo-icon">{repo.is_private ? 'lock' : 'book'}</span>
+                    <a href="/{repo.owner?.username}/{repo.name}" class="repo-link">
+                      <span class="owner">{repo.owner?.username}</span>
+                      <span class="divider">/</span>
+                      <span class="name">{repo.name}</span>
+                    </a>
+                  </div>
+                  {#if repo.description}
+                    <p class="repo-description">{repo.description}</p>
+                  {/if}
                 </div>
               </td>
-              <td>{repo.owner?.username}</td>
-              <td>{repo.num_stars}</td>
-              <td>{repo.num_forks}</td>
               <td>
-                <span class="status-badge" class:private={repo.is_private}>
-                  {repo.is_private ? "Private" : "Public"}
+                <div class="repo-stats">
+                  <div class="stat">
+                    <span class="material-symbols-rounded">star</span>
+                    {repo.num_stars}
+                  </div>
+                  <div class="stat">
+                    <span class="material-symbols-rounded">fork_right</span>
+                    {repo.num_forks}
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="badge" class:private={repo.is_private}>
+                  {repo.is_private ? 'Privado' : 'Público'}
                 </span>
               </td>
-              <td class="actions">
-                <a
-                  href="/{repo.owner?.username}/{repo.name}"
-                  class="icon-btn"
-                  title="View"
-                  ><span class="material-symbols-rounded">visibility</span></a
-                >
-                <button
-                  class="icon-btn danger"
-                  title="Delete"
-                  onclick={() => deleteRepo(repo.id, repo.name)}
-                >
-                  <span class="material-symbols-rounded">delete</span>
-                </button>
+              <td>
+                <div class="action-row">
+                  <Button variant="ghost" size="sm" icon="visibility" href="/{repo.owner?.username}/{repo.name}" />
+                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteRepo(repo.id, repo.name)} />
+                </div>
               </td>
             </tr>
           {/each}
@@ -116,134 +117,49 @@
       </tbody>
     </table>
   </div>
-</div>
+</Card>
 
 <style>
-  .admin-repos {
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    box-shadow: var(--shadow-xl);
-  }
+  .admin-view-card { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(20px); border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .section-header { margin-bottom: 3.5rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  
+  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .title span {
-    font-size: 1.75rem;
-    color: var(--primary-color);
-  }
-  .title h2 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 800;
-  }
+  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+  
+  .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
+  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .modern-table tr:last-child td { border-bottom: none; }
 
-  .table-container {
-    overflow-x: auto;
-  }
-  .modern-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
-  }
-  .modern-table th {
-    padding: 1rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 800;
-  }
-  .modern-table td {
-    padding: 1.25rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-    font-size: 0.95rem;
-  }
+  .id-cell { font-family: monospace; color: var(--text-muted); font-weight: 700; opacity: 0.5; font-size: 0.9rem; }
 
-  .repo-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-  .repo-name {
-    font-size: 1rem;
-    color: #fff;
-    font-weight: 700;
-  }
-  .repo-desc {
-    font-size: 0.8rem;
-    opacity: 0.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
+  .repo-info-cell { display: flex; flex-direction: column; gap: 0.6rem; }
+  .repo-main { display: flex; align-items: center; gap: 1rem; }
+  .repo-icon { font-size: 1.5rem; color: var(--primary-color); opacity: 0.7; }
+  
+  .repo-link { text-decoration: none; display: flex; align-items: center; gap: 0.25rem; font-size: 1.2rem; }
+  .repo-link .owner { color: var(--text-muted); font-weight: 600; }
+  .repo-link .divider { color: var(--md-sys-color-outline); opacity: 0.4; }
+  .repo-link .name { color: var(--text-color); font-weight: 900; }
+  .repo-link:hover .name { color: var(--primary-color); text-decoration: underline; }
 
-  .status-badge {
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    background: rgba(34, 197, 94, 0.1);
-    color: #22c55e;
-  }
-  .status-badge.private {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-  }
+  .repo-description { margin: 0; font-size: 0.95rem; color: var(--text-muted); line-height: 1.5; max-width: 500px; }
 
-  .actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-  .icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0.4rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-  }
-  .icon-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-  }
-  .icon-btn.danger:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-  }
+  .repo-stats { display: flex; gap: 2rem; }
+  .stat { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 800; color: var(--text-muted); }
+  .stat span { font-size: 1.25rem; color: var(--primary-color); }
 
-  .skeleton-bar {
-    height: 1.5rem;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 0.5rem;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.6;
-    }
-    100% {
-      opacity: 0.3;
-    }
-  }
+  .badge { padding: 0.5rem 1rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; background: rgba(var(--primary-rgb), 0.12); color: var(--primary-color); border: 2px solid rgba(var(--primary-rgb), 0.2); }
+  .badge.private { background: rgba(var(--error-rgb), 0.12); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }
+
+  .action-row { display: flex; gap: 0.75rem; }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.15) !important; }
+
+  .skeleton-line { height: 2rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 </style>
