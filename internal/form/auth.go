@@ -2,8 +2,8 @@ package form
 
 type Authentication struct {
 	ID                int64
-	Type              int    `binding:"Range(2,6)"`
-	Name              string `binding:"Required;MaxSize(30)"`
+	Type              int    `valid:"Range(2,6)"`
+	Name              string `valid:"Required;MaxSize(30)"`
 	Host              string
 	Port              int
 	BindDN            string
@@ -28,11 +28,11 @@ type Authentication struct {
 	SMTPHost          string
 	SMTPPort          int
 	AllowedDomains    string
-	SecurityProtocol  int `binding:"Range(0,2)"`
+	SecurityProtocol  int `valid:"Range(0,2)"`
 	TLS               bool
 	SkipVerify        bool
 	PAMServiceName    string
-	GitHubAPIEndpoint string `form:"github_api_endpoint" binding:"Url"`
+	GitHubAPIEndpoint string `form:"github_api_endpoint" valid:"Url"`
 }
 
 func (f *Authentication) Validate(ctx ValidationContext, errs Errors) Errors {

@@ -13,6 +13,7 @@ import (
 	"gogs.io/gogs/internal/conf"
 	"gogs.io/gogs/internal/context"
 	"gogs.io/gogs/internal/database"
+	"gogs.io/gogs/internal/form"
 	"gogs.io/gogs/internal/osx"
 	"gogs.io/gogs/public"
 	"io/fs"
@@ -85,10 +86,16 @@ func Handle(h any) gin.HandlerFunc {
 						// Macaron ignored binding errors in many places or handled them in the handler
 						// For now, let's just proceed to stay close to legacy behavior
 					}
+					if f, ok := val.Interface().(form.Form); ok {
+						f.Validate(gctx, nil)
+					}
 					inputs[i] = val
 				} else if argType.Kind() == reflect.Struct {
 					val := reflect.New(argType).Elem()
 					if err := c.ShouldBind(val.Addr().Interface()); err != nil {
+					}
+					if f, ok := val.Addr().Interface().(form.Form); ok {
+						f.Validate(gctx, nil)
 					}
 					inputs[i] = val
 				} else {

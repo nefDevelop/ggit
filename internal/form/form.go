@@ -79,7 +79,7 @@ func Assign(form any, data map[string]any) {
 }
 
 func getRuleBody(field reflect.StructField, prefix string) string {
-	for rule := range strings.SplitSeq(field.Tag.Get("binding"), ";") {
+	for rule := range strings.SplitSeq(field.Tag.Get("valid"), ";") {
 		if strings.HasPrefix(rule, prefix) {
 			return rule[len(prefix) : len(rule)-1]
 		}

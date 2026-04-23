@@ -6,7 +6,7 @@ import (
 
 //nolint:staticcheck // Reason: needed for legacy code
 type Install struct {
-	DbType   string `binding:"Required"`
+	DbType   string `valid:"Required"`
 	DbHost   string
 	DbUser   string
 	DbPasswd string
@@ -15,21 +15,21 @@ type Install struct {
 	SSLMode  string
 	DbPath   string
 
-	AppName             string `binding:"Required" locale:"install.app_name"`
-	RepoRootPath        string `binding:"Required"`
-	RunUser             string `binding:"Required"`
-	Domain              string `binding:"Required"`
+	AppName             string `valid:"Required" locale:"install.app_name"`
+	RepoRootPath        string `valid:"Required"`
+	RunUser             string `valid:"Required"`
+	Domain              string `valid:"Required"`
 	SSHPort             int
 	UseBuiltinSSHServer bool
-	HTTPPort            string `binding:"Required"`
-	AppUrl              string `binding:"Required"`
-	LogRootPath         string `binding:"Required"`
+	HTTPPort            string `valid:"Required"`
+	AppUrl              string `valid:"Required"`
+	LogRootPath         string `valid:"Required"`
 	EnableConsoleMode   bool
 	DefaultBranch       string
 
 	SMTPHost        string
 	SMTPFrom        string
-	SMTPUser        string `binding:"OmitEmpty;MaxSize(254)" locale:"install.mailer_user"`
+	SMTPUser        string `valid:"OmitEmpty;MaxSize(254)" locale:"install.mailer_user"`
 	SMTPPasswd      string
 	RegisterConfirm bool
 	MailNotify      bool
@@ -38,10 +38,10 @@ type Install struct {
 	DisableRegistration bool
 	RequireSignInView   bool
 
-	AdminName          string `binding:"OmitEmpty;AlphaDashDot;MaxSize(30)" locale:"install.admin_name"`
-	AdminPasswd        string `binding:"OmitEmpty;MaxSize(255)" locale:"install.admin_password"`
+	AdminName          string `valid:"OmitEmpty;AlphaDashDot;MaxSize(30)" locale:"install.admin_name"`
+	AdminPasswd        string `valid:"OmitEmpty;MaxSize(255)" locale:"install.admin_password"`
 	AdminConfirmPasswd string
-	AdminEmail         string `binding:"OmitEmpty;MinSize(3);MaxSize(254);Include(@)" locale:"install.admin_email"`
+	AdminEmail         string `valid:"OmitEmpty;MinSize(3);MaxSize(254);Include(@)" locale:"install.admin_email"`
 }
 
 func (f *Install) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -56,9 +56,9 @@ func (f *Install) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/                         \/
 
 type Register struct {
-	UserName string `binding:"Required;AlphaDashDot;MaxSize(35)"`
-	Email    string `binding:"Required;Email;MaxSize(254)"`
-	Password string `binding:"Required;MaxSize(255)"`
+	UserName string `valid:"Required;AlphaDashDot;MaxSize(35)"`
+	Email    string `valid:"Required;Email;MaxSize(254)"`
+	Password string `valid:"Required;MaxSize(255)"`
 	Retype   string
 }
 
@@ -67,8 +67,8 @@ func (f *Register) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type SignIn struct {
-	UserName    string `binding:"Required;MaxSize(254)"`
-	Password    string `binding:"Required;MaxSize(255)"`
+	UserName    string `valid:"Required;MaxSize(254)"`
+	Password    string `valid:"Required;MaxSize(255)"`
 	LoginSource int64
 	Remember    bool
 }
@@ -85,10 +85,10 @@ func (f *SignIn) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/         \/                                   \/        \/        \/
 
 type UpdateProfile struct {
-	Name            string `binding:"Required;AlphaDashDot;MaxSize(35)"`
-	FullName        string `binding:"MaxSize(100)"`
-	Website         string `binding:"Url;MaxSize(100)"`
-	Location        string `binding:"MaxSize(50)"`
+	Name            string `valid:"Required;AlphaDashDot;MaxSize(35)"`
+	FullName        string `valid:"MaxSize(100)"`
+	Website         string `valid:"Url;MaxSize(100)"`
+	Location        string `valid:"MaxSize(50)"`
 	DisableNewsFeed bool   `json:"disable_news_feed"`
 }
 
@@ -110,7 +110,7 @@ func (f *Avatar) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type AddEmail struct {
-	Email string `binding:"Required;Email;MaxSize(254)"`
+	Email string `valid:"Required;Email;MaxSize(254)"`
 }
 
 func (f *AddEmail) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -118,8 +118,8 @@ func (f *AddEmail) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type ChangePassword struct {
-	OldPassword string `binding:"Required;MinSize(1);MaxSize(255)"`
-	Password    string `binding:"Required;MaxSize(255)"`
+	OldPassword string `valid:"Required;MinSize(1);MaxSize(255)"`
+	Password    string `valid:"Required;MaxSize(255)"`
 	Retype      string
 }
 
@@ -128,8 +128,8 @@ func (f *ChangePassword) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type AddSSHKey struct {
-	Title   string `binding:"Required;MaxSize(50)"`
-	Content string `binding:"Required"`
+	Title   string `valid:"Required;MaxSize(50)"`
+	Content string `valid:"Required"`
 }
 
 func (f *AddSSHKey) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -137,7 +137,7 @@ func (f *AddSSHKey) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type NewAccessToken struct {
-	Name string `binding:"Required"`
+	Name string `valid:"Required"`
 }
 
 func (f *NewAccessToken) Validate(ctx ValidationContext, errs Errors) Errors {

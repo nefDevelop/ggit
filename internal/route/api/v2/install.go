@@ -71,6 +71,14 @@ func PerformInstall(c *context.APIContext) {
 		return
 	}
 
+	if errs := f.Validate(c, nil); errs.Len() > 0 {
+		c.JSON(http.StatusBadRequest, map[string]any{
+			"message": errs[0].Classification,
+			"errors":  errs,
+		})
+		return
+	}
+
 	// Basic checks
 	if f.AppUrl != "" && f.AppUrl[len(f.AppUrl)-1] != '/' {
 		f.AppUrl += "/"

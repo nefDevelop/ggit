@@ -18,11 +18,11 @@ import (
 //         \/        \/                   \/        \/                        \/       \/ \/
 
 type CreateRepo struct {
-	UserID      int64  `binding:"Required"`
-	RepoName    string `binding:"Required;AlphaDashDot;MaxSize(100)"`
+	UserID      int64  `valid:"Required"`
+	RepoName    string `valid:"Required;AlphaDashDot;MaxSize(100)"`
 	Private     bool
 	Unlisted    bool
-	Description string `binding:"MaxSize(512)"`
+	Description string `valid:"MaxSize(512)"`
 	AutoInit    bool
 	Gitignores  string
 	License     string
@@ -34,14 +34,14 @@ func (f *CreateRepo) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type MigrateRepo struct {
-	CloneAddr    string `json:"clone_addr" binding:"Required"`
+	CloneAddr    string `json:"clone_addr" valid:"Required"`
 	AuthUsername string `json:"auth_username"`
 	AuthPassword string `json:"auth_password"`
-	UID          int64  `json:"uid" binding:"Required"`
-	RepoName     string `json:"repo_name" binding:"Required;AlphaDashDot;MaxSize(100)"`
+	UID          int64  `json:"uid" valid:"Required"`
+	RepoName     string `json:"repo_name" valid:"Required;AlphaDashDot;MaxSize(100)"`
 	Private      bool   `json:"private"`
 	Unlisted     bool   `json:"unlisted"`
-	Description  string `json:"description" binding:"MaxSize(512)"`
+	Description  string `json:"description" valid:"MaxSize(512)"`
 }
 
 func (f *MigrateRepo) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -86,9 +86,9 @@ func (f MigrateRepo) ParseRemoteAddr(user *database.User) (string, error) {
 }
 
 type RepoSetting struct {
-	RepoName      string `binding:"Required;AlphaDashDot;MaxSize(100)"`
-	Description   string `binding:"MaxSize(512)"`
-	Website       string `binding:"Url;MaxSize(100)"`
+	RepoName      string `valid:"Required;AlphaDashDot;MaxSize(100)"`
+	Description   string `valid:"MaxSize(512)"`
+	Website       string `valid:"Url;MaxSize(100)"`
 	Branch        string
 	Interval      int
 	Private       bool
@@ -167,8 +167,8 @@ func (f Webhook) ChooseEvents() bool {
 }
 
 type NewWebhook struct {
-	PayloadURL  string `binding:"Required;Url"`
-	ContentType int    `binding:"Required"`
+	PayloadURL  string `valid:"Required;Url"`
+	ContentType int    `valid:"Required"`
 	Secret      string
 	Webhook
 }
@@ -185,7 +185,7 @@ func (f *NewWebhook) Validate(ctx ValidationContext, errs Errors) Errors {
 //          \/     \/            \/
 
 type NewIssue struct {
-	Title       string `binding:"Required;MaxSize(255)"`
+	Title       string `valid:"Required;MaxSize(255)"`
 	LabelIDs    string `form:"label_ids"`
 	MilestoneID int64
 	AssigneeID  int64
@@ -199,7 +199,7 @@ func (f *NewIssue) Validate(ctx ValidationContext, errs Errors) Errors {
 
 type CreateComment struct {
 	Content string
-	Status  string `binding:"OmitEmpty;In(reopen,close)"`
+	Status  string `valid:"OmitEmpty;In(reopen,close)"`
 	Files   []string
 }
 
@@ -215,7 +215,7 @@ func (f *CreateComment) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/             \/     \/                   \/     \/
 
 type CreateMilestone struct {
-	Title    string `binding:"Required;MaxSize(50)"`
+	Title    string `valid:"Required;MaxSize(50)"`
 	Content  string
 	Deadline string
 }
@@ -233,8 +233,8 @@ func (f *CreateMilestone) Validate(ctx ValidationContext, errs Errors) Errors {
 
 type CreateLabel struct {
 	ID    int64
-	Title string `binding:"Required;MaxSize(50)" locale:"repo.issues.label_title"`
-	Color string `binding:"Required;Size(7)" locale:"repo.issues.label_color"`
+	Title string `valid:"Required;MaxSize(50)" locale:"repo.issues.label_title"`
+	Color string `valid:"Required;Size(7)" locale:"repo.issues.label_color"`
 }
 
 func (f *CreateLabel) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -242,7 +242,7 @@ func (f *CreateLabel) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type InitializeLabels struct {
-	TemplateName string `binding:"Required"`
+	TemplateName string `valid:"Required"`
 }
 
 func (f *InitializeLabels) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -257,9 +257,9 @@ func (f *InitializeLabels) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/     \/          \/     \/     \/     \/
 
 type NewRelease struct {
-	TagName    string `binding:"Required"`
-	Target     string `form:"tag_target" binding:"Required"`
-	Title      string `binding:"Required"`
+	TagName    string `valid:"Required"`
+	Target     string `form:"tag_target" valid:"Required"`
+	Title      string `valid:"Required"`
 	Content    string
 	Draft      string
 	Prerelease bool
@@ -272,7 +272,7 @@ func (f *NewRelease) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type EditRelease struct {
-	Title      string `binding:"Required"`
+	Title      string `valid:"Required"`
 	Content    string
 	Draft      string
 	Prerelease bool
@@ -292,8 +292,8 @@ func (f *EditRelease) Validate(ctx ValidationContext, errs Errors) Errors {
 
 type NewWiki struct {
 	OldTitle string
-	Title    string `binding:"Required"`
-	Content  string `binding:"Required"`
+	Title    string `valid:"Required"`
+	Content  string `valid:"Required"`
 	Message  string
 	CreatedAt string `json:"created_at"`
 }
@@ -311,12 +311,12 @@ func (f *NewWiki) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/      \/
 
 type EditRepoFile struct {
-	TreePath      string `binding:"Required;MaxSize(500)"`
-	Content       string `binding:"Required"`
-	CommitSummary string `binding:"MaxSize(100)"`
+	TreePath      string `valid:"Required;MaxSize(500)"`
+	Content       string `valid:"Required"`
+	CommitSummary string `valid:"MaxSize(100)"`
 	CommitMessage string
-	CommitChoice  string `binding:"Required;MaxSize(50)"`
-	NewBranchName string `binding:"AlphaDashDotSlash;MaxSize(100)"`
+	CommitChoice  string `valid:"Required;MaxSize(50)"`
+	NewBranchName string `valid:"AlphaDashDotSlash;MaxSize(100)"`
 	LastCommit    string
 	CreatedAt     string `json:"created_at"`
 }
@@ -346,11 +346,11 @@ func (f *EditPreviewDiff) Validate(ctx ValidationContext, errs Errors) Errors {
 //
 
 type UploadRepoFile struct {
-	TreePath      string `binding:"MaxSize(500)"`
-	CommitSummary string `binding:"MaxSize(100)"`
+	TreePath      string `valid:"MaxSize(500)"`
+	CommitSummary string `valid:"MaxSize(100)"`
 	CommitMessage string
-	CommitChoice  string `binding:"Required;MaxSize(50)"`
-	NewBranchName string `binding:"AlphaDashDot;MaxSize(100)"`
+	CommitChoice  string `valid:"Required;MaxSize(50)"`
+	NewBranchName string `valid:"AlphaDashDot;MaxSize(100)"`
 	Files         []string
 }
 
@@ -363,7 +363,7 @@ func (f *UploadRepoFile) IsNewBrnach() bool {
 }
 
 type RemoveUploadFile struct {
-	File string `binding:"Required;MaxSize(50)"`
+	File string `valid:"Required;MaxSize(50)"`
 }
 
 func (f *RemoveUploadFile) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -378,10 +378,10 @@ func (f *RemoveUploadFile) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/     \/          \/          \/
 
 type DeleteRepoFile struct {
-	CommitSummary string `binding:"MaxSize(100)"`
+	CommitSummary string `valid:"MaxSize(100)"`
 	CommitMessage string
-	CommitChoice  string `binding:"Required;MaxSize(50)"`
-	NewBranchName string `binding:"AlphaDashDot;MaxSize(100)"`
+	CommitChoice  string `valid:"Required;MaxSize(50)"`
+	NewBranchName string `valid:"AlphaDashDot;MaxSize(100)"`
 }
 
 func (f *DeleteRepoFile) Validate(ctx ValidationContext, errs Errors) Errors {

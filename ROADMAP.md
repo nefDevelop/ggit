@@ -25,7 +25,7 @@
 
 ---
 
-## Fase 10: Limpieza de "Grasa" Técnica (En Proceso)
+## Fase 10: Limpieza de "Grasa" Técnica (Completado)
 
 **Objetivo:** Reducir el binario y el ruido de fondo del sistema (CPU/RAM).
 
@@ -67,7 +67,7 @@
 
 ---
 
-## Fase 11: Estrategia "Docs-as-Code" (Nueva Wiki)
+## Fase 11: Estrategia "Docs-as-Code" (Nueva Wiki) (Completado)
 
 **Objetivo:** Eliminar la wiki tradicional a favor de contenido dentro del repositorio.
 
@@ -90,52 +90,19 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 
 
-## Fase 12: Funcionalidades de Precisión
+## Fase 12: Funcionalidades de Precisión (Completado)
 
 - [x] **Internacionalización (I18n):** Carga dinámica de JSON locales en Frontend.
-- [ ] **Búsqueda Avanzada de Repositorio:**
+- [x] **Búsqueda Avanzada de Repositorio:** [COMPLETO]
   - [x] Desactivar indexación profunda global (Bleve/CPU Killer).
   - [x] Implementar **Repo Search (On-demand):** Búsqueda interna vía `git grep` en tiempo real.
-- [ ] **Web File Management (CRUD):** Creación, subida (Drag & Drop) y borrado de archivos vía web.
+- [x] **Web File Management (CRUD):** Creación, subida (Drag & Drop) y borrado de archivos vía web. [COMPLETO]
 
 ---
 
-## Fase 13: Rebranding e Identidad Final
+## Fase 13: Rebranding e Identidad Final (En Proceso)
 
 - [ ] **Refactor de Nomenclatura:** Actualizar `gogs.io/gogs` a la nueva identidad en todo el core.
 - [x] **Rutas por defecto:** Cambiar carpetas de almacenamiento de `gogs-repositories` a `ggit-repositories`. [COMPLETO]
-- [ ] **Component Library:** Consolidar la librería de componentes Svelte (M3 Expressive).
+- [x] **Component Library:** Consolidar la librería de componentes Svelte (M3 Expressive). [COMPLETO]
 
----
-
-
-
-
-
-
-4. Caché del Sidebar por Commit
-
-- Análisis: Construir la jerarquía del menú desde los .md es costoso. Solo debería hacerse una vez por cada Push.
-- La mejor alternativa: github.com/hashicorp/golang-lru/v2
-  - Por qué: Es una caché en memoria LRU (Least Recently Used) genérica (usando Generics de Go 1.18+) ultrarrápida y segura para
-    concurrencia.
-  - La lógica sería: clave = RepoID_CommitSHA. Si un usuario entra a la Wiki, buscas esa clave en la LRU. Si el SHA del último
-    commit de la rama principal no ha cambiado, devuelves el Sidebar precalculado en $O(1)$. Si cambia (alguien hace push), la clave
-    antigua desaparecerá naturalmente de la caché.
-
-Resumen de viabilidad:
-GORM .Select() (Prioridad 🔥):
-
-Viabilidad: Total. Es la mejora con mayor impacto inmediato y menor riesgo.
-Acción: Refactorizar los endpoints de listas para no cargar columnas pesadas (como descripciones largas o configuraciones) si solo vamos a mostrar el nombre y el ID.
-Gestión de Procesos (Semaforización) (Prioridad ⚡):
-
-Viabilidad: Muy alta.
-Acción: Implementar un límite (semáforo) para procesos pesados como git grep. Esto evita que una ráfaga de usuarios consuma toda la RAM del sistema operativo simultáneamente.
-go-git/v5 para Metadatos (Prioridad 🛠):
-
-Viabilidad: Media/Alta.
-Acción: Usarlo específicamente para el escaneo de la carpeta /docs (Wiki) y el árbol de archivos rápido. Para operaciones pesadas (grep, diff), seguiremos usando procesos externos para no saturar el Heap de Go.
-Eliminación de Mirrors:
-
-Estado: Ya está prácticamente completado. He verificado que la lógica de sincronización ya no está en cron
