@@ -117,12 +117,16 @@
   async function saveDicebearAvatar() {
     saving = true;
     try {
-      const res = await apiFetch("/api/v2/user/settings/avatar/magic", {
+      const imgRes = await fetch(dicebearUrl);
+      const blob = await imgRes.blob();
+
+      const formData = new FormData();
+      const file = new File([blob], 'avatar.png', { type: 'image/png' });
+      formData.append('avatar', file);
+
+      const res = await apiFetch("/api/v2/user/settings/avatar", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          url: dicebearUrl,
-        }),
+        body: formData,
       });
       if (res.ok) {
         const data = await res.json();
