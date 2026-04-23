@@ -193,6 +193,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-radius: 1.5rem;
   }
   .card-header {
     padding: 1.5rem 2rem;
@@ -335,6 +336,7 @@
   .danger {
     margin-top: 2rem;
     border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 1.5rem;
   }
   .danger-body {
     padding: 2rem;

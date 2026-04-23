@@ -317,6 +317,21 @@
     color: white;
   }
 
+  .sidebar-header-minimal {
+    margin-bottom: 1.5rem;
+  }
+
+  .wiki-nav .empty-state {
+    margin-top: 1rem;
+    padding: 1.5rem;
+    background: var(--md-sys-color-surface-variant);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-align: center;
+    color: var(--text-muted);
+    border: 1px dashed var(--md-sys-color-outline-variant);
+  }
+
   .wiki-nav {
     display: flex;
     flex-direction: column;

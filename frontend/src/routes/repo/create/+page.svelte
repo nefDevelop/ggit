@@ -23,6 +23,37 @@
   let loading = $state(false);
   let gitignoreSearch = $state('');
 
+  const OS_NAMES = ['macos', 'windows', 'linux'];
+  const EDITOR_NAMES = ['visualstudiocode', 'jetbrains', 'vim', 'emacs', 'sublimetext', 'eclipse', 'netbeans', 'notepadpp', 'kate', 'cursor', 'zed', 'textmate', 'atom', 'sublime', 'code', 'clion', 'pycharm', 'webstorm', 'intellij'];
+  
+  let groupedGlobals = $derived.by(() => {
+    const search = gitignoreSearch.toLowerCase();
+    const filtered = global_ignores.filter(g => g.toLowerCase().includes(search));
+    
+    const security = filtered.filter(g => g.toLowerCase().includes('ggit'));
+    const oss = filtered.filter(g => {
+        const name = g.toLowerCase().replace('global/', '').replace('.gitignore', '');
+        return OS_NAMES.some(os => name.includes(os)) && !g.toLowerCase().includes('ggit');
+    });
+    const editors = filtered.filter(g => {
+        const name = g.toLowerCase().replace('global/', '').replace('.gitignore', '');
+        return EDITOR_NAMES.some(ed => name.includes(ed)) && !g.toLowerCase().includes('ggit');
+    });
+    const others = filtered.filter(g => {
+        const name = g.toLowerCase().replace('global/', '').replace('.gitignore', '');
+        return !g.toLowerCase().includes('ggit') && 
+               !OS_NAMES.some(os => name.includes(os)) && 
+               !EDITOR_NAMES.some(ed => name.includes(ed));
+    });
+
+    return [
+        { name: 'Seguridad y Estándar', icon: 'security', items: security, type: 'recommended', iconType: 'verified' },
+        { name: 'Sistemas Operativos', icon: 'desktop_windows', items: oss, iconType: 'public' },
+        { name: 'Editores e IDEs', icon: 'edit_square', items: editors, iconType: 'edit' },
+        { name: 'Otros Globales', icon: 'extension', items: others, iconType: 'public' }
+    ].filter(g => g.items.length > 0);
+  });
+
   async function loadTemplates() {
     try {
       const res = await apiFetch('/api/v2/repo/templates');
@@ -223,92 +254,78 @@
 
             <!-- MULTI-GITIGNORE OPTION -->
             <div class="init-item full">
-              <div class="section-label">
-                <span class="material-symbols-rounded">security</span>
-                <strong>Recomendados (Ggit Security & Global)</strong>
-              </div>
-              <div class="gitignore-chips">
-                {#each global_ignores.filter(g => g.toLowerCase().includes('ggit')) as g}
-                  <button 
-                    type="button"
-                    class="chip recommended" 
-                    title={g}
-                    class:active={selectedGitignores.includes(g)}
-                    onclick={() => {
-                      if (selectedGitignores.includes(g)) {
-                        selectedGitignores = selectedGitignores.filter(i => i !== g);
-                      } else {
-                        selectedGitignores = [...selectedGitignores, g];
-                      }
-                    }}
-                  >
-                    <span class="material-symbols-rounded">verified</span>
-                    {g.replace('global/', '').replace('.gitignore', '').replace(/_/g, ' ').trim()}
-                    {#if selectedGitignores.includes(g)}
-                      <span class="material-symbols-rounded">close</span>
-                    {/if}
-                  </button>
-                {/each}
-              </div>
-
-              <div class="section-label" style="margin-top: 1.5rem;">
-                <span class="material-symbols-rounded">public</span>
-                <strong>Globales (IDEs, OS, Sistemas)</strong>
-              </div>
-              <div class="gitignore-chips">
-                {#each global_ignores.filter(g => !g.toLowerCase().includes('ggit') && g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
-                  <button 
-                    type="button"
-                    class="chip" 
-                    title={g}
-                    class:active={selectedGitignores.includes(g)}
-                    onclick={() => {
-                      if (selectedGitignores.includes(g)) {
-                        selectedGitignores = selectedGitignores.filter(i => i !== g);
-                      } else {
-                        selectedGitignores = [...selectedGitignores, g];
-                      }
-                    }}
-                  >
-                    <span class="material-symbols-rounded">public</span>
-                    {g.replace('global/', '').replace('.gitignore', '')}
-                    {#if selectedGitignores.includes(g)}
-                      <span class="material-symbols-rounded">close</span>
-                    {/if}
-                  </button>
-                {/each}
-              </div>
-
-              <div class="section-label" style="margin-top: 1.5rem;">
-                <span class="material-symbols-rounded">terminal</span>
-                <strong>Por Lenguaje</strong>
+              <div class="init-header-row">
+                <div class="section-label">
+                  <span class="material-symbols-rounded">public</span>
+                  <strong>Templates Globales</strong>
+                </div>
                 <div class="search-box-mini">
                   <span class="material-symbols-rounded">search</span>
-                  <input type="text" bind:value={gitignoreSearch} placeholder="Buscar lenguaje..." />
+                  <input type="text" bind:value={gitignoreSearch} placeholder="Buscar templates..." />
                 </div>
               </div>
-              <div class="gitignore-chips">
-                {#each gitignores.filter(g => g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
-                  <button 
-                    type="button"
-                    class="chip" 
-                    title={g}
-                    class:active={selectedGitignores.includes(g)}
-                    onclick={() => {
-                      if (selectedGitignores.includes(g)) {
-                        selectedGitignores = selectedGitignores.filter(i => i !== g);
-                      } else {
-                        selectedGitignores = [...selectedGitignores, g];
-                      }
-                    }}
-                  >
-                    <span class="material-symbols-rounded">code</span>
-                    {g.replace('languages/', '').replace('.gitignore', '')}
-                    {#if selectedGitignores.includes(g)}
-                      <span class="material-symbols-rounded">close</span>
-                    {/if}
-                  </button>
-                {/each}
+
+              {#each groupedGlobals as group}
+                <div class="gitignore-group">
+                  <div class="group-label">
+                    <span class="material-symbols-rounded">{group.icon}</span>
+                    {group.name}
+                  </div>
+                  <div class="gitignore-chips">
+                    {#each group.items as g}
+                      <button 
+                        type="button"
+                        class="chip" 
+                        title={g}
+                        class:active={selectedGitignores.includes(g)}
+                        class:recommended={group.type === 'recommended'}
+                        onclick={() => {
+                          if (selectedGitignores.includes(g)) {
+                            selectedGitignores = selectedGitignores.filter(i => i !== g);
+                          } else {
+                            selectedGitignores = [...selectedGitignores, g];
+                          }
+                        }}
+                      >
+                        <span class="material-symbols-rounded">{group.iconType || 'public'}</span>
+                        {g.replace('global/', '').replace('.gitignore', '').replace(/_/g, ' ').trim()}
+                        {#if selectedGitignores.includes(g)}
+                          <span class="material-symbols-rounded">close</span>
+                        {/if}
+                      </button>
+                    {/each}
+                  </div>
+                </div>
+              {/each}
+
+              <div class="gitignore-group" style="margin-top: 1.5rem;">
+                <div class="group-label">
+                  <span class="material-symbols-rounded">terminal</span>
+                  <strong>Por Lenguaje</strong>
+                </div>
+                <div class="gitignore-chips">
+                  {#each gitignores.filter(g => g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
+                    <button 
+                      type="button"
+                      class="chip" 
+                      title={g}
+                      class:active={selectedGitignores.includes(g)}
+                      onclick={() => {
+                        if (selectedGitignores.includes(g)) {
+                          selectedGitignores = selectedGitignores.filter(i => i !== g);
+                        } else {
+                          selectedGitignores = [...selectedGitignores, g];
+                        }
+                      }}
+                    >
+                      <span class="material-symbols-rounded">code</span>
+                      {g.replace('languages/', '').replace('.gitignore', '')}
+                      {#if selectedGitignores.includes(g)}
+                        <span class="material-symbols-rounded">close</span>
+                      {/if}
+                    </button>
+                  {/each}
+                </div>
               </div>
 
               {#if selectedGitignores.length > 0}
@@ -532,12 +549,36 @@
     background: var(--surface-variant);
   }
 
-  .section-label {
+  .init-header-row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    color: var(--text-secondary);
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .init-header-row .section-label { margin-bottom: 0; }
+  .init-header-row .search-box-mini { margin-left: 2rem; }
+
+  .gitignore-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .group-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    padding-left: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .group-label span {
+    font-size: 1rem;
+    color: var(--primary-color);
   }
 
   .gitignore-chips {

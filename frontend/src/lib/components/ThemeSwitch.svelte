@@ -5,6 +5,7 @@
 
   const themes = [
     { id: 'default', name: 'Ggit Cobalt', color: '#0b57d0' },
+    { id: 'subtle', name: 'Subtle Slate', color: '#607d8b' },
     { id: 'expressive', name: 'MD3 Expressive', color: '#6750a4' },
     { id: 'nord', name: 'Nordic Frost', color: '#5e81ac' },
     { id: 'ayu', name: 'Ayu Mirage', color: '#ff9940' },

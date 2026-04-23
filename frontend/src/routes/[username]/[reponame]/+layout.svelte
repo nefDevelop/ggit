@@ -56,6 +56,18 @@
   );
 
   let showCloneDropdown = $state(false);
+  let cloneProtocol = $state<'https' | 'ssh'>('https');
+
+  onMount(() => {
+    fetchRepoInfo();
+    const saved = localStorage.getItem('clone-protocol');
+    if (saved === 'ssh' || saved === 'https') cloneProtocol = saved;
+  });
+
+  $effect(() => {
+    localStorage.setItem('clone-protocol', cloneProtocol);
+  });
+
   function copyCloneUrl(url: string) {
     navigator.clipboard.writeText(url);
     showCloneDropdown = false;
@@ -97,27 +109,62 @@
             {/if}
             
             <div class="clone-zone">
-              <button class="btn btn-sm btn-primary" onclick={() => showCloneDropdown = !showCloneDropdown}>
-                <span class="material-symbols-rounded">download</span>
-                Clone
-              </button>
+              <div class="split-btn-group">
+                <button class="btn btn-sm btn-primary main-clone-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                  <span class="material-symbols-rounded">download</span>
+                  Clone
+                </button>
+                <button class="btn btn-sm btn-primary arrow-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                  <span class="material-symbols-rounded">keyboard_arrow_down</span>
+                </button>
+              </div>
+
               {#if showCloneDropdown}
-                <div class="clone-dropdown tonal shadow-lg">
-                  <div class="clone-option">
-                    <span class="label">HTTPS</span>
-                    <code class="url">{repoData.clone_url}</code>
-                    <button class="copy-btn" onclick={() => copyCloneUrl(repoData.clone_url)}>
-                      <span class="material-symbols-rounded">content_copy</span>
-                    </button>
+                <div class="clone-dropdown tonal shadow-xl">
+                  <div class="dropdown-section">
+                    <div class="protocol-tabs">
+                      <button class="proto-btn" class:active={cloneProtocol === 'https'} onclick={() => cloneProtocol = 'https'}>HTTPS</button>
+                      <button class="proto-btn" class:active={cloneProtocol === 'ssh'} onclick={() => cloneProtocol = 'ssh'}>SSH</button>
                     </div>
-                    <div class="archive-section">
-                    <span class="dropdown-header">Download Source</span>
-                    <div class="archive-grid">
-                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-btn tonal">
+                    <div class="clone-copy-row">
+                      <code class="url-display">{cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url}</code>
+                      <button class="copy-action" onclick={() => copyCloneUrl(cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url)}>
+                        <span class="material-symbols-rounded">content_copy</span>
+                      </button>
+                    </div>
+                    <p class="protocol-hint">
+                      {cloneProtocol === 'https' ? 'Use Git or checkout with SVN using the web URL.' : 'Use a password-protected SSH key.'}
+                    </p>
+                  </div>
+
+                  <div class="dropdown-divider"></div>
+
+                  <div class="dropdown-section">
+                    <span class="section-title">Features</span>
+                    <div class="feature-list">
+                      <div class="feature-item" title="Git Large File Storage">
+                        <span class="material-symbols-rounded">database</span>
+                        <span>Git LFS enabled</span>
+                      </div>
+                      {#if repoData.has_submodules}
+                      <div class="feature-item">
+                        <span class="material-symbols-rounded">account_tree</span>
+                        <span>Submodules included</span>
+                      </div>
+                      {/if}
+                    </div>
+                  </div>
+
+                  <div class="dropdown-divider"></div>
+
+                  <div class="dropdown-section">
+                    <span class="section-title">Download Source</span>
+                    <div class="archive-grid-compact">
+                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-tile">
                         <span class="material-symbols-rounded">zip_box</span>
                         <span>ZIP</span>
                       </a>
-                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-btn tonal">
+                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-tile">
                         <span class="material-symbols-rounded">package</span>
                         <span>TAR.GZ</span>
                       </a>
@@ -193,31 +240,51 @@
   .tonal-search-bar { padding: 1.5rem 1.5rem 0.75rem; background: rgba(255,255,255,0.01); }
 
   .repo-identity-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; }
-  .breadcrumb-nav { display: flex; align-items: center; gap: 0.5rem; }
+  .breadcrumb-nav { display: flex; align-items: baseline; gap: 0.5rem; }
   .bc-item { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 1.1rem; }
-  .bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.25rem; }
-  .bc-home { color: var(--text-muted); display: flex; opacity: 0.6; }
+  h1.bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.25rem; margin: 0; }
+  .bc-home { color: var(--text-muted); display: flex; opacity: 0.6; align-self: center; }
   .bc-sep { opacity: 0.2; }
   .lock-icon { font-size: 1rem; color: var(--primary-color); margin-left: 0.5rem; }
 
   .repo-meta-actions { display: flex; align-items: center; gap: 1.5rem; }
   .license-tag { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
   .license-tag span { font-size: 1.1rem; }
-  .settings-link { color: var(--text-muted); display: flex; padding: 4px; transition: color 0.2s; }
+  .settings-link { color: var(--text-muted); display: flex; padding: 4px; transition: color 0.2s; text-decoration: none; }
   .settings-link:hover { color: var(--primary-color); }
 
   .clone-zone { position: relative; }
-  .clone-dropdown { position: absolute; top: calc(100% + 0.5rem); right: 0; width: 320px; z-index: 100; padding: 1rem; background: var(--md3-surface-2); border-radius: 1rem; border: 1px solid var(--border-color); }
-  .clone-option { display: flex; align-items: center; gap: 0.75rem; background: rgba(0,0,0,0.2); padding: 0.5rem; border-radius: 0.5rem; }
-  .clone-option code { flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; opacity: 0.7; }
-  .copy-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; }
+  .split-btn-group { display: flex; align-items: stretch; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); transition: transform 0.2s; }
+  .split-btn-group:hover { transform: translateY(-1px); }
+  .main-clone-btn { border-radius: 0; padding-right: 0.75rem; border-right: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
+  .arrow-btn { border-radius: 0; padding-left: 0.4rem; padding-right: 0.4rem; width: auto; }
+  .arrow-btn span { font-size: 1.25rem; }
 
-  .archive-section { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); }
-  .dropdown-header { display: block; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; letter-spacing: 0.05em; }
-  .archive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  .archive-btn { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.6rem; border-radius: 0.75rem; text-decoration: none; color: var(--text-color); font-size: 0.85rem; font-weight: 600; transition: all 0.2s; }
-  .archive-btn:hover { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); transform: translateY(-2px); }
-  .archive-btn span { font-size: 1.25rem; }
+  .clone-dropdown { position: absolute; top: calc(100% + 0.5rem); right: 0; width: 340px; z-index: 1000; padding: 1.25rem; background: var(--md3-surface-2); border-radius: 1.25rem; border: 1px solid var(--border-color); animation: slideUp 0.2s ease-out; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .dropdown-section { display: flex; flex-direction: column; gap: 0.75rem; }
+  .section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; letter-spacing: 0.05em; }
+  .dropdown-divider { height: 1px; background: var(--border-color); margin: 0.75rem -1.25rem; opacity: 0.5; }
+
+  .protocol-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.1); padding: 3px; border-radius: 10px; }
+  .proto-btn { flex: 1; border: none; background: transparent; color: var(--text-muted); padding: 0.4rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .proto-btn.active { background: var(--primary-color); color: white; }
+
+  .clone-copy-row { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
+  .url-display { flex: 1; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
+  .copy-action { background: transparent; border: none; color: var(--primary-color); cursor: pointer; display: flex; padding: 4px; border-radius: 6px; transition: background 0.2s; }
+  .copy-action:hover { background: rgba(var(--primary-rgb), 0.1); }
+  .protocol-hint { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
+
+  .feature-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .feature-item { display: flex; align-items: center; gap: 0.75rem; color: var(--text-color); font-size: 0.85rem; opacity: 0.9; }
+  .feature-item span:first-child { color: var(--primary-color); font-size: 1.1rem; }
+
+  .archive-grid-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .archive-tile { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem; background: rgba(var(--primary-rgb), 0.05); border: 1px solid var(--border-color); border-radius: 12px; text-decoration: none; color: var(--text-color); font-size: 0.8rem; font-weight: 700; transition: all 0.2s; }
+  .archive-tile:hover { background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary-color); }
+  .archive-tile span { font-size: 1.25rem; color: var(--primary-color); }
 
   .repo-header-region { background-color: var(--surface-variant); border-bottom: 1px solid var(--border-color); }
   .rich-tabs { display: flex; gap: 0.25rem; padding: 0 1rem; }

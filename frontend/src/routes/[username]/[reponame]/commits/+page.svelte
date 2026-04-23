@@ -70,10 +70,11 @@
         <div class="commit-row">
           <!-- Left: User Identity -->
           <div class="commit-avatar-cell">
-            <img 
-              src={c.user?.avatar_url || `https://api.dicebear.com/7.x/identicon/svg?seed=${author?.Email || author?.email || id}`} 
-              alt="" 
-              class="user-avatar" 
+            <Avatar 
+              src={c.user?.avatar_url} 
+              username={author?.Name || author?.name || "User"} 
+              seed={author?.Email || author?.email || id}
+              size={32} 
             />
           </div>
           

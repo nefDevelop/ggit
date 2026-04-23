@@ -111,6 +111,60 @@
 </div>
 
 <style>
+  .header-minimal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .pill-filter-group {
+    display: flex;
+    background: var(--md-sys-color-surface-variant);
+    padding: 0.25rem;
+    border-radius: 100px;
+  }
+
+  .tab-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1.25rem;
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .tab-pill.active {
+    background: var(--md-sys-color-surface-container);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-action-primary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1.25rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .btn-action-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
   .pulls-view {
     display: flex;
     flex-direction: column;

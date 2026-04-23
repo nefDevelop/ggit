@@ -8,6 +8,7 @@
 
   const themes = [
     { id: 'default', name: 'Ggit Dynamic', color: '#0b57d0' },
+    { id: 'subtle', name: 'Subtle Slate', color: '#607d8b' },
     { id: 'ayu', name: 'Ayu Sunrise', color: '#ffb454' },
     { id: 'monokai', name: 'Monokai Pro', color: '#a6e22e' },
     { id: 'nord', name: 'Nordic Frost', color: '#88c0d0' }
