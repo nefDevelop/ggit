@@ -5,13 +5,28 @@
   import { page } from '$app/state';
   import ThemeSwitch from '$lib/components/ThemeSwitch.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
+  import { userPrefs } from '$lib/settings.svelte';
 
   let showThemePanel = $state(false);
+  let userOrgs = $state<any[]>([]);
+
+  async function fetchUserOrgs() {
+    if (!authState.isAuthenticated) return;
+    try {
+      const res = await apiFetch('/api/v2/user/settings/orgs');
+      if (res.ok) userOrgs = await res.json();
+    } catch (e) {
+      console.error("Failed to load sidebar orgs", e);
+    }
+  }
+
+  $effect(() => {
+    if (authState.isAuthenticated) fetchUserOrgs();
+  });
 
   const navItems = $derived([
     { name: i18n.t('dashboard'), icon: 'grid_view', path: '/dashboard' },
     { name: i18n.t('explore'), icon: 'search', path: '/explore/repos' },
-    { name: i18n.t('organization'), icon: 'corporate_fare', path: '/explore/users' },
     ...(authState.user?.is_admin ? [
       { name: i18n.t('admin_panel'), icon: 'security', path: '/admin/users', isParent: true }
     ] : []),
@@ -89,6 +104,27 @@
         </div>
       {/if}
     {/each}
+
+    <!-- ORGANIZATIONS SECTION -->
+    {#if authState.isAuthenticated && userPrefs.current.showSidebarOrgs}
+      <div class="nav-section-title">
+        <span>{i18n.t('organizations') || 'Organizaciones'}</span>
+        <a href="/org/create" class="mini-add" title="Nueva Organización">
+          <span class="material-symbols-rounded">add</span>
+        </a>
+      </div>
+      <div class="nav-org-list">
+        {#each userOrgs as org}
+          <a href="/org/{org.username}" class="nav-item org-item" class:active={page.url.pathname === `/org/${org.username}`}>
+            <Avatar src={org.avatar_url} username={org.username} size={24} />
+            <span class="item-label">{org.full_name || org.username}</span>
+          </a>
+        {/each}
+        {#if userOrgs.length === 0}
+          <p class="nav-empty-hint">No eres parte de ninguna organización.</p>
+        {/if}
+      </div>
+    {/if}
   </div>
 
   <!-- THEME SELECTOR -->
@@ -229,6 +265,47 @@
 
   .nav-item.active .material-symbols-rounded {
     font-variation-settings: 'FILL' 1;
+  }
+
+  /* ORGANIZATIONS */
+  .nav-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .nav-org-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .org-item {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+
+  .mini-add {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: flex;
+  }
+  .mini-add:hover { color: var(--primary-color); }
+  .mini-add span { font-size: 1.25rem; }
+
+  .nav-empty-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 0.5rem 1.25rem;
+    opacity: 0.6;
+    font-style: italic;
   }
 
   /* SUB NAV */

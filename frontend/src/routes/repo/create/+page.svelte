@@ -21,6 +21,7 @@
   
   let errorMsg = $state('');
   let loading = $state(false);
+  let gitignoreSearch = $state('');
 
   async function loadTemplates() {
     try {
@@ -233,7 +234,35 @@
                 <strong>Recomendados (Ggit Security & Global)</strong>
               </div>
               <div class="gitignore-chips">
-                {#each global_ignores as g}
+                {#each global_ignores.filter(g => g.includes('_ggit')) as g}
+                  <button 
+                    type="button"
+                    class="chip recommended" 
+                    title={g}
+                    class:active={selectedGitignores.includes(g)}
+                    onclick={() => {
+                      if (selectedGitignores.includes(g)) {
+                        selectedGitignores = selectedGitignores.filter(i => i !== g);
+                      } else {
+                        selectedGitignores = [...selectedGitignores, g];
+                      }
+                    }}
+                  >
+                    <span class="material-symbols-rounded">verified</span>
+                    {g.replace('global/', '').replace('.gitignore', '').replace('_', ' ')}
+                    {#if selectedGitignores.includes(g)}
+                      <span class="material-symbols-rounded">close</span>
+                    {/if}
+                  </button>
+                {/each}
+              </div>
+
+              <div class="section-label" style="margin-top: 1.5rem;">
+                <span class="material-symbols-rounded">public</span>
+                <strong>Globales (IDEs, OS, Sistemas)</strong>
+              </div>
+              <div class="gitignore-chips">
+                {#each global_ignores.filter(g => !g.includes('_ggit') && g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
                   <button 
                     type="button"
                     class="chip" 
@@ -259,9 +288,13 @@
               <div class="section-label" style="margin-top: 1.5rem;">
                 <span class="material-symbols-rounded">terminal</span>
                 <strong>Por Lenguaje</strong>
+                <div class="search-box-mini">
+                  <span class="material-symbols-rounded">search</span>
+                  <input type="text" bind:value={gitignoreSearch} placeholder="Buscar lenguaje..." />
+                </div>
               </div>
               <div class="gitignore-chips">
-                {#each gitignores as g}
+                {#each gitignores.filter(g => g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
                   <button 
                     type="button"
                     class="chip" 
@@ -522,6 +555,29 @@
     padding: 0.5rem;
     background: rgba(0,0,0,0.05);
     border-radius: 1rem;
+    min-height: 50px;
+  }
+
+  .search-box-mini {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface-variant);
+    border: 1px solid var(--border-color);
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    margin-left: 1rem;
+  }
+
+  .search-box-mini span { font-size: 1.1rem; opacity: 0.5; }
+  .search-box-mini input {
+    background: transparent;
+    border: none;
+    font-size: 0.85rem;
+    color: var(--text-color);
+    width: 100%;
+    outline: none;
   }
 
   .chip {
@@ -544,6 +600,16 @@
     background: var(--primary-color);
     color: var(--on-primary);
     border-color: var(--primary-color);
+  }
+  .chip.recommended {
+     background: rgba(var(--primary-rgb), 0.08);
+     border-color: var(--primary-color);
+     color: var(--primary-color);
+     border-width: 2px;
+  }
+  .chip.recommended.active {
+     background: var(--primary-color);
+     color: var(--on-primary);
   }
 
   .selection-summary {

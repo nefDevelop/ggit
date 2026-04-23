@@ -313,6 +313,38 @@ func GetAdminOrgs(c *context.APIContext) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// CreateAdminOrg creates a new organization administratively.
+func CreateAdminOrg(c *context.APIContext) {
+	var f struct {
+		Username string `json:"username" binding:"required"`
+		FullName string `json:"full_name"`
+		OwnerID  int64  `json:"owner_id" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	owner, err := database.Handle.Users().GetByID(c.Req.Context(), f.OwnerID)
+	if err != nil {
+		c.StatusError(http.StatusNotFound, "Owner not found", err)
+		return
+	}
+
+	org := &database.User{
+		Name:     f.Username,
+		FullName: f.FullName,
+		Type:     database.UserTypeOrganization,
+	}
+
+	if err := database.CreateOrganization(org, owner); err != nil {
+		c.Error(err, "create organization")
+		return
+	}
+
+	c.JSON(http.StatusCreated, ToOrganizationResponse(org, owner))
+}
+
 // DeleteAdminRepo deletes a repository administratively.
 func DeleteAdminRepo(c *context.APIContext) {
 	repoID := c.ParamsInt64("id")

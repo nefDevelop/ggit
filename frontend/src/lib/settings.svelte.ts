@@ -8,6 +8,7 @@ export interface UserPreferences {
     branch: boolean;
     commits: boolean;
   };
+  showSidebarOrgs: boolean;
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -17,7 +18,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     wiki: true,
     branch: true,
     commits: true,
-  }
+  },
+  showSidebarOrgs: true
 };
 
 function createPreferences() {
@@ -45,6 +47,11 @@ function createPreferences() {
     },
     toggleRepoTab(tab: keyof UserPreferences['repoTabs']) {
       prefs.repoTabs[tab] = !prefs.repoTabs[tab];
+      if (browser) {
+        localStorage.setItem('ggit_user_preferences', JSON.stringify(prefs));
+      }
+    },
+    save() {
       if (browser) {
         localStorage.setItem('ggit_user_preferences', JSON.stringify(prefs));
       }

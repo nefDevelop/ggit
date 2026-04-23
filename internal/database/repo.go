@@ -135,7 +135,17 @@ func LoadRepoConfig() {
 	GlobalIgnores = loadFromSubdir("global")
 
 	sort.Strings(Gitignores)
-	sort.Strings(GlobalIgnores)
+	sort.Slice(GlobalIgnores, func(i, j int) bool {
+		iStart := strings.HasPrefix(path.Base(GlobalIgnores[i]), "_")
+		jStart := strings.HasPrefix(path.Base(GlobalIgnores[j]), "_")
+		if iStart && !jStart {
+			return true
+		}
+		if !iStart && jStart {
+			return false
+		}
+		return GlobalIgnores[i] < GlobalIgnores[j]
+	})
 	sort.Strings(Licenses)
 	sort.Strings(Readmes)
 	sort.Strings(LabelTemplates)
@@ -1860,6 +1870,9 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, count
 
 	repos = make([]*Repository, 0, opts.PageSize)
 
+	if Handle == nil || Handle.db == nil {
+		return nil, 0, errors.New("database handle is nil")
+	}
 	db := Handle.db.Table("repository AS repo")
 
 	// Attempt to find repositories that opts.UserID has access to,

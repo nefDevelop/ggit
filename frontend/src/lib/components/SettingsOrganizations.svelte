@@ -42,8 +42,15 @@
 
 <div class="settings-card island island-interactive">
   <header class="card-header">
-    <h3 class="card-title">Organizations</h3>
-    <p class="card-desc">Organizations you are a member of.</p>
+    <div class="header-main">
+      <div class="header-info">
+        <h3 class="card-title">Organizations</h3>
+        <p class="card-desc">Organizations you are a member of.</p>
+      </div>
+      <a href="/org/create" class="btn btn-primary btn-sm">
+        <span class="material-symbols-rounded">add</span> New Organization
+      </a>
+    </div>
   </header>
 
   <div class="card-body">
@@ -80,8 +87,9 @@
 <style>
   .settings-card { display: flex; flex-direction: column; }
   .card-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .header-main { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   .card-title { margin: 0; font-size: 1.25rem; font-weight: 700; }
-  .card-desc { margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
+  .card-desc { margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
 
   .card-body { padding: 1.5rem; }
 

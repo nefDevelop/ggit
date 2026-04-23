@@ -101,6 +101,28 @@
             <span class="slider"></span>
           </label>
         </div>
+
+        <div class="switch-row-item">
+          <div class="item-info">
+            <div class="title-with-icon">
+              <span class="material-symbols-rounded mini">corporate_fare</span>
+              <span class="label">Mostrar Organizaciones en Sidebar</span>
+            </div>
+            <p class="desc">Muestra u oculta la sección de tus organizaciones en la navegación lateral.</p>
+          </div>
+          
+          <label class="precision-switch">
+            <input 
+              type="checkbox" 
+              checked={userPrefs.current.showSidebarOrgs ?? true} 
+              onchange={() => {
+                userPrefs.current.showSidebarOrgs = !(userPrefs.current.showSidebarOrgs ?? true);
+                userPrefs.save();
+              }}
+            />
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 

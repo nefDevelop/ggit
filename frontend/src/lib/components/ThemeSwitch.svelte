@@ -42,24 +42,24 @@
 <div class="theme-panel island">
   <div class="panel-header">
     <h3>Interfaz y Diseño</h3>
-    <button class="close-btn" on:click={() => show = false}>
+    <button class="close-btn" onclick={() => show = false}>
       <span class="material-symbols-rounded">close</span>
     </button>
   </div>
 
   <div class="section">
-    <label>Esquema de Color</label>
+    <span class="section-title">Esquema de Color</span>
     <div class="scheme-toggle">
       <button 
         class:active={currentScheme === 'light'} 
-        on:click={() => setScheme('light')}
+        onclick={() => setScheme('light')}
       >
         <span class="material-symbols-rounded">light_mode</span>
         Claro
       </button>
       <button 
         class:active={currentScheme === 'dark'} 
-        on:click={() => setScheme('dark')}
+        onclick={() => setScheme('dark')}
       >
         <span class="material-symbols-rounded">dark_mode</span>
         Oscuro
@@ -68,13 +68,13 @@
   </div>
 
   <div class="section">
-    <label>Tonalidad de Acento</label>
+    <span class="section-title">Tonalidad de Acento</span>
     <div class="theme-grid">
       {#each themes as theme}
         <button 
           class="theme-option" 
           class:active={currentTheme === theme.id}
-          on:click={() => setTheme(theme.id)}
+          onclick={() => setTheme(theme.id)}
           title={theme.name}
         >
           <div class="color-preview" style="background-color: {theme.color}"></div>
@@ -122,7 +122,7 @@
     margin-bottom: 1.5rem;
   }
 
-  .section label {
+  .section .section-title {
     display: block;
     font-size: 0.8rem;
     font-weight: 600;

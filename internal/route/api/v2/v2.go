@@ -68,6 +68,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.DELETE("/repos/:id", ginx.Handle(LeaveUserRepository))
 
 			settings.GET("/orgs", ginx.Handle(GetUserOrganizations))
+			settings.POST("/orgs", ginx.Handle(CreateUserOrganization))
 			settings.DELETE("/orgs/:id", ginx.Handle(LeaveUserOrganization))
 
 			settings.DELETE("/account", ginx.Handle(DeleteUserAccount))
@@ -111,6 +112,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/repos", ginx.Handle(GetAdminRepos))
 		admin.DELETE("/repos/:id", ginx.Handle(DeleteAdminRepo))
 		admin.GET("/orgs", ginx.Handle(GetAdminOrgs))
+		admin.POST("/orgs", ginx.Handle(CreateAdminOrg))
 		admin.GET("/auths", ginx.Handle(GetAdminAuths))
 		admin.POST("/auths", ginx.Handle(CreateAdminAuth))
 		admin.GET("/auths/:id", ginx.Handle(GetAdminAuth))

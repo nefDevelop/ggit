@@ -449,6 +449,38 @@ func LeaveUserOrganization(c *context.APIContext) {
 	})
 }
 
+// CreateUserOrganization creates a new organization for the current user.
+func CreateUserOrganization(c *context.APIContext) {
+	var f struct {
+		Name     string `json:"username" binding:"required,max=35"`
+		FullName string `json:"full_name" binding:"max=100"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	org := &database.User{
+		Name:     f.Name,
+		FullName: f.FullName,
+		Type:     database.UserTypeOrganization,
+	}
+
+	if err := database.CreateOrganization(org, c.User); err != nil {
+		switch {
+		case database.IsErrUserAlreadyExist(err):
+			c.StatusError(http.StatusUnprocessableEntity, "Organization name has already been taken.", err)
+		case database.IsErrNameNotAllowed(err):
+			c.StatusError(http.StatusBadRequest, "Organization name is not allowed.", err)
+		default:
+			c.Error(err, "create organization")
+		}
+		return
+	}
+
+	c.JSON(http.StatusCreated, org)
+}
+
 // DeleteUserAccount deletes the current user's account.
 func DeleteUserAccount(c *context.APIContext) {
 	var payload struct {

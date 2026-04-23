@@ -161,9 +161,6 @@
   .actions-info { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
   .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
-  .copy-btn { opacity: 0; transform: translateX(10px); transition: all 0.2s ease; background: var(--primary-color); color: var(--on-primary); border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .repo-row:hover .copy-btn { opacity: 1; transform: translateX(0); }
-
   @media (max-width: 900px) {
     .repo-row { grid-template-columns: 1fr 100px; }
     .tech-info, .stats-info { display: none; }
