@@ -103,25 +103,36 @@ func LoadRepoConfig() {
 	Gitignores = []string{}
 	GlobalIgnores = []string{}
 
-	langPath := filepath.Join(conf.CustomDir(), "conf", "gitignore", "languages")
-	if osx.IsDir(langPath) {
-		entries, _ := os.ReadDir(langPath)
+	// Helper to load files from a subdirectory in both embedded and custom paths
+	loadFromSubdir := func(subdir string) []string {
+		var results []string
+		// 1. Load from embedded (built-in)
+		relPath := path.Join("gitignore", subdir)
+		entries, _ := embedConf.Files.ReadDir(relPath)
 		for _, entry := range entries {
 			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".gitignore") {
-				Gitignores = append(Gitignores, "languages/"+entry.Name())
+				results = append(results, path.Join(subdir, entry.Name()))
 			}
 		}
+
+		// 2. Load from custom directory (overrides/extras)
+		customPath := filepath.Join(conf.CustomDir(), "conf", "gitignore", subdir)
+		if osx.IsDir(customPath) {
+			customEntries, _ := os.ReadDir(customPath)
+			for _, entry := range customEntries {
+				if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".gitignore") {
+					name := path.Join(subdir, entry.Name())
+					if !slices.Contains(results, name) {
+						results = append(results, name)
+					}
+				}
+			}
+		}
+		return results
 	}
 
-	globalMapPath := filepath.Join(conf.CustomDir(), "conf", "gitignore", "global")
-	if osx.IsDir(globalMapPath) {
-		entries, _ := os.ReadDir(globalMapPath)
-		for _, entry := range entries {
-			if !entry.IsDir() && strings.HasSuffix(entry.Name(), ".gitignore") {
-				GlobalIgnores = append(GlobalIgnores, "global/"+entry.Name())
-			}
-		}
-	}
+	Gitignores = loadFromSubdir("languages")
+	GlobalIgnores = loadFromSubdir("global")
 
 	sort.Strings(Gitignores)
 	sort.Strings(GlobalIgnores)

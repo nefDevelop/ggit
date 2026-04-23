@@ -14,6 +14,7 @@ RUN apk --no-cache add build-base git linux-pam-dev
 WORKDIR /app/ggit
 COPY . .
 RUN ./docker/build/install-task.sh
+RUN chmod +x scripts/sync_templates.sh && ./scripts/sync_templates.sh
 # El tag bindata es vital para que las plantillas internas funcionen si falla el frontend
 RUN TAGS="cert pam bindata" task build
 
