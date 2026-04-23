@@ -20,6 +20,8 @@ type ModuleStore interface {
 	MergeBase(repoPath, base, head string, opts ...git.MergeBaseOptions) (string, error)
 	// RemoteRemove removes a remote from the repository in given path.
 	RemoteRemove(repoPath, name string, opts ...git.RemoteRemoveOptions) error
+	// Remotes returns a list of remotes of the repository in given path.
+	Remotes(repoPath string) ([]string, error)
 	// RepoTags returns a list of tags of the repository in given path.
 	RepoTags(repoPath string, opts ...git.TagsOptions) ([]string, error)
 
@@ -51,6 +53,10 @@ func (module) MergeBase(repoPath, base, head string, opts ...git.MergeBaseOption
 
 func (module) RemoteRemove(repoPath, name string, opts ...git.RemoteRemoveOptions) error {
 	return git.RemoteRemove(repoPath, name, opts...)
+}
+
+func (module) Remotes(repoPath string) ([]string, error) {
+	return git.Remotes(repoPath)
 }
 
 func (module) RepoTags(repoPath string, opts ...git.TagsOptions) ([]string, error) {

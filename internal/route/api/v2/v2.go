@@ -221,6 +221,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settingGroup.GET("/keys", ginx.Handle(ListRepoDeployKeys))
 			settingGroup.POST("/keys", ginx.Handle(AddRepoDeployKey))
 			settingGroup.DELETE("/keys/:id", ginx.Handle(DeleteRepoDeployKey))
+
+			settingGroup.GET("/remotes", ginx.Handle(ListRepoRemotes))
+			settingGroup.POST("/remotes", ginx.Handle(AddRepoRemote))
+			settingGroup.DELETE("/remotes/:name", ginx.Handle(DeleteRepoRemote))
 		}
 	}
 

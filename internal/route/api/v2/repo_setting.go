@@ -145,3 +145,43 @@ func DeleteRepository(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
+
+// ListRepoRemotes returns a list of remotes for the repository.
+func ListRepoRemotes(c *context.APIContext) {
+	remotes, err := c.Repo.GitRepo.Remotes()
+	if err != nil {
+		c.Error(err, "get remotes")
+		return
+	}
+	c.JSON(http.StatusOK, remotes)
+}
+
+// AddRepoRemote adds a new remote to the repository.
+func AddRepoRemote(c *context.APIContext) {
+	var f struct {
+		Name string `json:"name" binding:"required"`
+		URL  string `json:"url" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := c.Repo.GitRepo.RemoteAdd(f.Name, f.URL); err != nil {
+		c.Error(err, "add remote")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// DeleteRepoRemote deletes a remote from the repository.
+func DeleteRepoRemote(c *context.APIContext) {
+	name := c.Params("name")
+	if err := c.Repo.GitRepo.RemoteRemove(name); err != nil {
+		c.Error(err, "delete remote")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
