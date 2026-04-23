@@ -469,6 +469,8 @@ func (r *Repository) DeleteAvatar() error {
 //
 // Deprecated: Use APIFormat instead.
 func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission, user ...*User) *apiv2types.RepositoryResponse {
+	cloneLink := repox.NewCloneLink(r.Owner.Name, r.Name)
+
 	apiRepo := &apiv2types.RepositoryResponse{
 		ID:          r.ID,
 		Owner:       r.Owner.APIFormat(),
@@ -482,6 +484,8 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 		CreatedAt:   time.Unix(r.CreatedUnix, 0),
 		UpdatedAt:   time.Unix(r.UpdatedUnix, 0),
 		Permissions: permission,
+		CloneURL:    cloneLink.HTTPS,
+		SSHURL:      cloneLink.SSH,
 	}
 	if permission == nil {
 		p := &apiv2types.RepositoryPermission{Pull: true}

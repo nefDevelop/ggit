@@ -62,6 +62,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.DELETE("/tokens/:id", ginx.Handle(DeleteUserAccessToken))
 
 			settings.POST("/avatar", ginx.Handle(UpdateUserAvatar))
+			settings.POST("/avatar/magic", ginx.Handle(UpdateUserAvatar))
 			settings.DELETE("/avatar", ginx.Handle(DeleteUserAvatar))
 
 			settings.GET("/repos", ginx.Handle(GetUserRepositories))

@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/repox"
 
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
@@ -30,11 +31,12 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 	if len(opts) > 0 {
 		opt = opts[0]
 	}
-
 	var langs map[string]int64
 	if r.Languages != "" {
 		_ = json.Unmarshal([]byte(r.Languages), &langs)
 	}
+
+	cloneLink := repox.NewCloneLink(owner.Name, r.Name)
 
 	return &apiv2types.RepositoryResponse{
 		ID:            r.ID,
@@ -49,6 +51,8 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		OpenPulls:     r.NumOpenPulls,
 		IsPrivate:     r.IsPrivate,
 		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
+		CloneURL:      cloneLink.HTTPS,
+		SSHURL:        cloneLink.SSH,
 		DefaultBranch: r.DefaultBranch,
 		WikiFolderName: r.WikiFolderName,
 		CreatedAt:     time.Unix(r.CreatedUnix, 0),

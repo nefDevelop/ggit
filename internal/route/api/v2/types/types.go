@@ -51,6 +51,8 @@ type RepositoryResponse struct {
 	NumBranches   int                   `json:"num_branches"`
 	IsPrivate     bool                  `json:"is_private"`
 	HTMLURL       string                `json:"html_url"`
+	CloneURL      string                `json:"clone_url"`
+	SSHURL        string                `json:"ssh_url"`
 	DefaultBranch  string                `json:"default_branch"`
 	WikiFolderName string                `json:"wiki_folder_name"`
 	CreatedAt      time.Time             `json:"created_at"`

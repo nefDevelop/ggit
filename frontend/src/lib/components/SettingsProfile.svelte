@@ -20,27 +20,35 @@
   let loading = $state(true);
   let saving = $state(false);
 
-  // Magic Avatar (DiceBear)
-  let showDiceBear = $state(false);
-  let currentDicebearStyle = $state("identicon");
-  let dicebearSeed = $state(Math.random().toString(36).substring(7));
+  // DiceBear Logic
   const dicebearStyles = [
-    "identicon",
-    "bottts",
-    "avataaars",
-    "pixel-art",
     "adventurer",
-    "fun-emoji",
+    "adventurer-neutral",
+    "avataaars",
+    "avataaars-neutral",
+    "bottts",
+    "bottts-neutral",
+    "icons",
+    "lorelei",
+    "lorelei-neutral",
+    "micah",
+    "open-peeps",
+    "notionists",
+    "pixel-art",
+    "shapes",
+    "thumbs",
   ];
-
-  let dicebearUrl = $derived(
-    `https://api.dicebear.com/7.x/${currentDicebearStyle}/svg?seed=${dicebearSeed}`,
+  let currentDicebearStyle = $state("avataaars");
+  let dicebearSeed = $state("");
+  let showDiceBear = $state(false);
+  const dicebearUrl = $derived(
+    `https://api.dicebear.com/7.x/${currentDicebearStyle}/png?seed=${dicebearSeed || profile.username}`,
   );
 
   async function fetchProfile() {
     loading = true;
     try {
-      const res = await apiFetch("/api/v2/user/settings");
+      const res = await apiFetch("/api/v2/user/settings/profile");
       if (res.ok) {
         const data = await res.json();
         profile = data;
@@ -55,8 +63,8 @@
   async function saveProfile() {
     saving = true;
     try {
-      const res = await apiFetch("/api/v2/user/settings", {
-        method: "PATCH",
+      const res = await apiFetch("/api/v2/user/settings/profile", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           full_name: profile.full_name,
@@ -124,7 +132,7 @@
       const file = new File([blob], 'avatar.png', { type: 'image/png' });
       formData.append('avatar', file);
 
-      const res = await apiFetch("/api/v2/user/settings/avatar", {
+      const res = await apiFetch("/api/v2/user/settings/avatar/magic", {
         method: "POST",
         body: formData,
       });
@@ -164,38 +172,7 @@
     </div>
   </header>
 
-  {#if showDiceBear}
-    <div class="magic-avatar-panel island tonal">
-      <div class="dicebear-preview">
-        <div class="preview-shield">
-          <img src={dicebearUrl} alt="DiceBear Preview" />
-          <button
-            class="shuffle-btn"
-            onclick={() =>
-              (dicebearSeed = Math.random().toString(36).substring(7))}
-          >
-            <span class="material-symbols-rounded">casino</span>
-          </button>
-        </div>
-      </div>
-      <div class="dicebear-settings">
-        <div class="styles-grid">
-          {#each dicebearStyles as style}
-            <button
-              class="style-chip"
-              class:active={currentDicebearStyle === style}
-              onclick={() => (currentDicebearStyle = style)}
-            >
-              {style.replace("-", " ")}
-            </button>
-          {/each}
-        </div>
-        <Button variant="primary" onclick={saveDicebearAvatar} disabled={saving}>
-          Confirmar Avatar Mágico
-        </Button>
-      </div>
-    </div>
-  {/if}
+
 
   <div class="profile-layout-grid">
     <!-- AVATAR SIDE -->
@@ -304,6 +281,39 @@
       {/if}
     </div>
   </div>
+
+  {#if showDiceBear}
+    <div class="magic-avatar-panel island tonal" style="margin-top: 4rem;">
+      <div class="dicebear-preview">
+        <div class="preview-shield">
+          <img src={dicebearUrl} alt="DiceBear Preview" />
+          <button
+            class="shuffle-btn"
+            onclick={() =>
+              (dicebearSeed = Math.random().toString(36).substring(7))}
+          >
+            <span class="material-symbols-rounded">casino</span>
+          </button>
+        </div>
+      </div>
+      <div class="dicebear-settings">
+        <div class="styles-grid">
+          {#each dicebearStyles as style}
+            <button
+              class="style-chip"
+              class:active={currentDicebearStyle === style}
+              onclick={() => (currentDicebearStyle = style)}
+            >
+              {style.replace("-", " ")}
+            </button>
+          {/each}
+        </div>
+        <Button variant="primary" onclick={saveDicebearAvatar} disabled={saving}>
+          Confirmar Avatar Mágico
+        </Button>
+      </div>
+    </div>
+  {/if}
 </Card>
 
 <style>

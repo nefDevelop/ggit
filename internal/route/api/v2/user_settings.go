@@ -373,8 +373,8 @@ func UpdateUserAvatar(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"status": "ok",
-		"avatar": c.User.AvatarURL(),
+		"status":     "ok",
+		"avatar_url": c.User.AvatarURL(),
 	})
 }
 
