@@ -10,7 +10,7 @@ RUN npm run build
 
 # Etapa 2: Compilar el Backend (Go)
 FROM golang:1.26-alpine3.23 AS binarybuilder
-RUN apk --no-cache add build-base git linux-pam-dev
+RUN apk --no-cache add build-base git linux-pam-dev bash
 WORKDIR /app/ggit
 COPY . .
 RUN ./docker/build/install-task.sh
