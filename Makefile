@@ -36,7 +36,7 @@ dev: clean-ports
 # Compila y corre el backend
 backend: build
 	@echo "Arrancando Backend Go en http://localhost:3005 ..."
-	./ggit web -p 3005
+	./.bin/ggit web -p 3005
 
 # Corre el frontend de Svelte
 frontend:
@@ -46,12 +46,14 @@ frontend:
 # Compila el binario
 build:
 	@echo "Compilando Ggit (Commit: $(BUILD_COMMIT))..."
-	@go build -v -tags "$(TAGS)" -ldflags '$(LDFLAGS)' -o ggit ./cmd/ggit
+	@mkdir -p .bin
+	@go build -v -tags "$(TAGS)" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
 
 # Fuerza la recompilación completa
 rebuild:
 	@echo "Forzando recompilación completa (Commit: $(BUILD_COMMIT))..."
-	@go build -a -v -tags "$(TAGS)" -ldflags '$(LDFLAGS)' -o ggit ./cmd/ggit
+	@mkdir -p .bin
+	@go build -a -v -tags "$(TAGS)" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
 
 # Instalación de dependencias
 install:
@@ -66,4 +68,4 @@ test:
 # Limpieza
 clean:
 	@echo "Limpiando binarios..."
-	rm -f ggit
+	rm -rf .bin
