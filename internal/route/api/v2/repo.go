@@ -3,6 +3,7 @@ package v2
 import (
 	"bytes"
 	stdcontext "context"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -173,6 +174,11 @@ func GetRepoView(c *context.APIContext) {
 			"is_bare":    true,
 			"repository": c.Repo.Repository.APIFormat(c.Repo.Owner),
 		})
+		return
+	}
+
+	if c.Repo.Commit == nil {
+		c.NotFoundOrError(fmt.Errorf("repository commit not found"), "get tree entry")
 		return
 	}
 

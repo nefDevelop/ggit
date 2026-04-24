@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/gogs/git-module"
 )
 
 func Test_MigrateRepository(t *testing.T) {
@@ -76,6 +77,23 @@ func Test_MigrateRepository(t *testing.T) {
 		repo, err := MigrateRepository(owner, owner, opts)
 		require.NoError(t, err)
 		assert.False(t, repo.IsBare)
+
+		// 5. TEST: LOAD CODE CONTENT
+		gitRepo, err := git.Open(repo.RepoPath())
+		require.NoError(t, err)
+		
+		commit, err := gitRepo.CatFileCommit("main")
+		require.NoError(t, err)
+		
+		entry, err := commit.TreeEntry("README.md")
+		require.NoError(t, err)
+		
+		blob := entry.Blob()
+		require.NotNil(t, blob)
+		
+		data, err := blob.Bytes()
+		require.NoError(t, err)
+		assert.Equal(t, "# Test Repo", string(data), "File content should match the source")
 
 		dbRepo := new(Repository)
 		err = db.Where("id = ?", repo.ID).First(dbRepo).Error
