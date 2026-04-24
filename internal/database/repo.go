@@ -903,47 +903,32 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		return repo, errors.Newf("git clone failed to create config file (but returned success): %s", stderr)
 	}
 
-	// Check if repository is empty.
-	cmd := exec.Command("git", "log", "-1")
-	cmd.Dir = repoPath
-	output, err := cmd.CombinedOutput()
+	// Forcefully detect branches and IsBare status after clone
+	gitRepo, err := git.Open(repoPath)
 	if err != nil {
-		if strings.Contains(string(output), "fatal: bad default revision 'HEAD'") {
-			// Try to find any branch if HEAD is missing or broken
-			gitRepo, err := git.Open(repoPath)
-			if err == nil {
-				branches, _ := gitRepo.Branches()
-				if len(branches) > 0 {
-					repo.IsBare = false
-					repo.DefaultBranch = branches[0]
-					_, _ = git.SymbolicRef(repoPath, git.SymbolicRefOptions{
-						Name: "HEAD",
-						Ref:  git.RefsHeads + branches[0],
-					})
-					log.Info("Fixed missing HEAD for migrated repository %s: using %s", repo.FullName(), repo.DefaultBranch)
-				} else {
-					repo.IsBare = true
-				}
-			} else {
-				repo.IsBare = true
-			}
+		return repo, errors.Newf("open repository after clone: %v", err)
+	}
+
+	branches, _ := gitRepo.Branches()
+	if len(branches) > 0 {
+		repo.IsBare = false
+		refspec, err := gitRepo.SymbolicRef()
+		if err == nil {
+			repo.DefaultBranch = git.RefShortName(refspec)
 		} else {
-			return repo, errors.Newf("check bare: %v - %s", err, output)
+			repo.DefaultBranch = branches[0]
+			_, _ = git.SymbolicRef(repoPath, git.SymbolicRefOptions{
+				Name: "HEAD",
+				Ref:  git.RefsHeads + branches[0],
+			})
 		}
+		log.Info("Detected migrated repository %s: default branch %s, IsBare=false", repo.FullName(), repo.DefaultBranch)
+	} else {
+		repo.IsBare = true
+		log.Warn("Migrated repository %s has no branches, marking as Bare", repo.FullName())
 	}
 
 	if !repo.IsBare {
-		// Try to get HEAD branch and set it as default branch.
-		gitRepo, err := git.Open(repoPath)
-		if err != nil {
-			return repo, errors.Newf("open repository: %v", err)
-		}
-		refspec, err := gitRepo.SymbolicRef()
-		if err != nil {
-			return repo, errors.Newf("get HEAD branch: %v", err)
-		}
-		repo.DefaultBranch = git.RefShortName(refspec)
-
 		if err = repo.UpdateSize(); err != nil {
 			log.Error("UpdateSize [repo_id: %d]: %v", repo.ID, err)
 		}
