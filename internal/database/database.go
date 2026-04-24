@@ -57,7 +57,7 @@ var Tables = []any{
 	new(Team), new(TeamRepo), new(TeamUser), new(Topic), new(TwoFactor), new(TwoFactorRecoveryCode),
 	new(Upload), new(User),
 	new(Version),
-	new(Watch),
+	new(Watch), new(Webhook),
 }
 
 // NewConnection returns a new database connection with the given logger.
