@@ -1,5 +1,7 @@
-# Build artifacts
+# Binarios y artefactos de compilación
+ggit
 gogs
+*.test
 *.exe
 *.exe~
 *.dll
@@ -7,22 +9,28 @@ gogs
 *.dylib
 .bin/
 dist/
+schemadoc
 
-# Dependencies
+# Frontend
+frontend/node_modules/
+frontend/build/
+.svelte-kit/
+
+# Dependencias Go
 vendor/
 
-# Runtime data
-log/
+# Datos en tiempo real y logs (mantenemos las carpetas pero no el contenido pesado)
+log/*.log
+log/*/*.log
 custom/
-data/
+data/*
+!data/README.md
 
-# Configuration and application files
+# IDEs y Sistema
 .idea/
 .vscode/
 .task/
 .envrc
 .env
-
-# System junk
 .DS_Store
 Thumbs.db
