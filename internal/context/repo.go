@@ -301,16 +301,19 @@ func RepoRef() gin.HandlerFunc {
 
 				if len(branches) > 0 {
 					refName = branches[0]
+					log.Trace("Fallback to first branch: %s", refName)
 					// Update default branch if it was empty
 					if gctx.Repo.Repository.DefaultBranch == "" {
 						gctx.Repo.Repository.DefaultBranch = refName
 						_ = gctx.Repo.Repository.Update()
 					}
 				} else {
+					log.Warn("Repository %s/%s has no branches", gctx.Repo.Owner.Name, gctx.Repo.Repository.Name)
 					gctx.Error(fmt.Errorf("no branches found"), "get branches")
 					return
 				}
 			}
+			log.Trace("Resolved ref: %s, path: %s", refName, gctx.Repo.TreePath)
 			gctx.Repo.Commit, err = gctx.Repo.GitRepo.BranchCommit(refName)
 			if err != nil {
 				gctx.Error(err, "get branch commit")
@@ -342,6 +345,7 @@ func RepoRef() gin.HandlerFunc {
 					refName = gctx.Repo.Repository.DefaultBranch
 					gctx.Repo.TreePath = path
 				}
+				log.Trace("Path resolution matched: %v, ref: %s, path: %s", hasMatched, refName, gctx.Repo.TreePath)
 			}
 
 			if gctx.Repo.GitRepo.HasBranch(refName) {
