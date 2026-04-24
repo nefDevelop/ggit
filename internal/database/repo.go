@@ -938,6 +938,10 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		}
 	}
 
+	if err = Handle.db.Save(repo).Error; err != nil {
+		log.Error("Save migrated repository [repo_id: %d]: %v", repo.ID, err)
+	}
+
 	return CleanUpMigrateInfo(repo)
 }
 

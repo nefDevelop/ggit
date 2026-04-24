@@ -1,6 +1,7 @@
 package ginx
 
 import (
+	"mime"
 	"net/http"
 	"path/filepath"
 	"reflect"
@@ -139,6 +140,9 @@ func UseCombo(rg *gin.RouterGroup, path string) *Combo {
 }
 
 func setupStatic(r *Engine) {
+	// Ensure WOFF2 MIME type is registered (vital for Alpine-based containers)
+	_ = mime.AddExtensionType(".woff2", "font/woff2")
+
 	customPublic := filepath.Join(conf.CustomDir(), "public")
 	
 	serveStatic := func(prefix, path string) {
