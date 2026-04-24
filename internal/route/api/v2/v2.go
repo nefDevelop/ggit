@@ -162,10 +162,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 		wikiGroup := repo.Group("/wiki")
 		{
-			wikiGroup.GET("", ginx.Handle(ListWikiPages))
+			wikiGroup.GET("", ginx.Handle(GetWikiPage))
+			wikiGroup.GET("/*page", ginx.Handle(GetWikiPage))
 			wikiGroup.POST("", ginx.Handle(CreateWikiPage))
-			wikiGroup.GET("/:page", ginx.Handle(GetWikiPage))
-			wikiGroup.GET("/:page/history", ginx.Handle(GetWikiPageHistory))
 			wikiGroup.PUT("/:page", ginx.Handle(UpdateWikiPage))
 			wikiGroup.DELETE("/:page", ginx.Handle(DeleteWikiPage))
 		}

@@ -24,6 +24,7 @@ func GetRepoSettings(c *context.APIContext) {
 		"enable_issues": repo.EnableIssues,
 		"enable_pulls":  repo.EnablePulls,
 		"is_archived":   repo.IsArchived,
+		"wiki_folder_name": repo.WikiFolderName,
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -46,6 +47,7 @@ func UpdateRepoSettings(c *context.APIContext) {
 	repo.IsPrivate = f.Private
 	repo.IsUnlisted = f.Unlisted
 	repo.IsArchived = f.Archived
+	repo.WikiFolderName = f.WikiFolderName
 
 	if err := database.UpdateRepository(repo, visibilityChanged); err != nil {
 		c.Error(err, "update repository")

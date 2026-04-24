@@ -8,6 +8,9 @@ import (
 	"strings"
 	"sync"
 
+	"unknwon.dev/clog/v2"
+
+	"github.com/gin-gonic/gin"
 	"github.com/gogs/git-module"
 
 	"github.com/nef734/ggit/internal/context"
@@ -29,6 +32,7 @@ var wikiSidebarCache sync.Map // key: repo_id:commit_sha
 // ListWikiPages returns a tree of wiki pages (Markdown files in the configured wiki folder).
 func ListWikiPages(c *context.APIContext) {
 	branch := c.Repo.Repository.DefaultBranch
+	clog.Trace("Using branch for wiki: %s", branch)
 	commit, err := c.Repo.GitRepo.BranchCommit(branch)
 	if err != nil {
 		c.Error(err, "get branch commit")
@@ -39,6 +43,7 @@ func ListWikiPages(c *context.APIContext) {
 	if wikiFolder == "" {
 		wikiFolder = "docs"
 	}
+	clog.Trace("Listing wiki pages in folder: [ %s ]", wikiFolder)
 
 	cacheKey := fmt.Sprintf("%d:%s", c.Repo.Repository.ID, commit.ID.String())
 	if val, ok := wikiSidebarCache.Load(cacheKey); ok {
@@ -49,9 +54,13 @@ func ListWikiPages(c *context.APIContext) {
 	// Root scan
 	tree, err := commit.Subtree(wikiFolder)
 	if err != nil {
+		clog.Trace("Subtree(%s) failed: %v", wikiFolder, err)
 		// Fallback to .docs if docs doesn't exist and folder is default
 		if wikiFolder == "docs" {
 			tree, err = commit.Subtree(".docs")
+			if err != nil {
+				clog.Trace("Subtree(.docs) fallback also failed: %v", err)
+			}
 		}
 	}
 
@@ -74,9 +83,11 @@ func buildWikiTree(c *context.APIContext, tree *git.Tree, relPath string) []*Wik
 	if err != nil {
 		return nil
 	}
+	clog.Trace("buildWikiTree: found %d entries in relPath: '%s'", len(entries), relPath)
 
 	pages := make([]*WikiPage, 0, len(entries))
 	for _, entry := range entries {
+		clog.Trace("Processing wiki entry: %s (Type: %v)", entry.Name(), entry.Type())
 		if strings.HasPrefix(entry.Name(), ".") {
 			continue // ignore hidden
 		}
@@ -99,8 +110,9 @@ func buildWikiTree(c *context.APIContext, tree *git.Tree, relPath string) []*Wik
 			continue
 		}
 
-		if strings.HasSuffix(entry.Name(), ".md") {
-			name := strings.TrimSuffix(entry.Name(), ".md")
+		ext := strings.ToLower(path.Ext(entry.Name()))
+		if ext == ".md" || ext == ".mdx" {
+			name := strings.TrimSuffix(entry.Name(), path.Ext(entry.Name()))
 			
 			// Read frontmatter for title and order
 			title := name
@@ -121,11 +133,12 @@ func buildWikiTree(c *context.APIContext, tree *git.Tree, relPath string) []*Wik
 				}
 			}
 
+			fullPath := path.Join(relPath, name)
 			pages = append(pages, &WikiPage{
-				Name:  name,
+				Name:  fullPath,
 				Title: title,
 				Order: order,
-				URL:   database.ToWikiPageURL(path.Join(relPath, name)),
+				URL:   database.ToWikiPageURL(fullPath),
 			})
 		}
 	}
@@ -141,9 +154,23 @@ func sortWikiPages(pages []*WikiPage) {
 	})
 }
 
-// GetWikiPage returns the content of a single doc page.
 func GetWikiPage(c *context.APIContext) {
-	pagePath := c.Params("page")
+	pagePath := strings.TrimPrefix(c.Params("page"), "/")
+	clog.Trace("GetWikiPage params path: %s", pagePath)
+	if pagePath == "" {
+		ListWikiPages(c)
+		return
+	}
+
+	if strings.HasPrefix(pagePath, "history/") {
+		pagePath = strings.TrimPrefix(pagePath, "history/")
+		// Use a local variable to avoid affecting Gin's actual params if not needed,
+		// but GetWikiPageHistory uses c.Params("page") so we must update it.
+		c.Context.Context.Params = []gin.Param{{Key: "page", Value: "/" + pagePath}}
+		GetWikiPageHistory(c)
+		return
+	}
+
 	if pagePath == "" {
 		pagePath = "README"
 	}
@@ -162,10 +189,21 @@ func GetWikiPage(c *context.APIContext) {
 
 	// Try multiple paths
 	possiblePaths := []string{
+		path.Join(wikiFolder, pagePath),
 		path.Join(wikiFolder, pagePath+".md"),
+		path.Join(wikiFolder, pagePath+".mdx"),
+	}
+	if pagePath == "Home" {
+		possiblePaths = append(possiblePaths, path.Join(wikiFolder, "README.md"))
+		possiblePaths = append(possiblePaths, path.Join(wikiFolder, "README.mdx"))
 	}
 	if wikiFolder == "docs" {
 		possiblePaths = append(possiblePaths, path.Join(".docs", pagePath+".md"))
+		possiblePaths = append(possiblePaths, path.Join(".docs", pagePath+".mdx"))
+		if pagePath == "Home" {
+			possiblePaths = append(possiblePaths, path.Join(".docs", "README.md"))
+			possiblePaths = append(possiblePaths, path.Join(".docs", "README.mdx"))
+		}
 	}
 	
 	// Also try the name directly if it ends with .md or is a folder index
@@ -176,10 +214,28 @@ func GetWikiPage(c *context.APIContext) {
 
 	for _, p := range possiblePaths {
 		entry, err := commit.TreeEntry(p)
-		if err == nil && !entry.IsTree() {
-			blob = entry.Blob()
-			finalPath = p
-			break
+		if err == nil {
+			if entry.IsTree() {
+				// If it's a directory, try to find README inside
+				subtree, err := commit.Subtree(p)
+				if err == nil {
+					for _, subName := range []string{"README.md", "README.mdx", "index.md", "index.mdx"} {
+						subEntry, err := subtree.TreeEntry(subName)
+						if err == nil && !subEntry.IsTree() {
+							blob = subEntry.Blob()
+							finalPath = path.Join(p, subName)
+							break
+						}
+					}
+				}
+				if blob != nil {
+					break
+				}
+			} else {
+				blob = entry.Blob()
+				finalPath = p
+				break
+			}
 		}
 	}
 

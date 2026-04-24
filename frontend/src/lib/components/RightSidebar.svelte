@@ -50,6 +50,7 @@
   });
 </script>
 
+{#if loading || feeds.length > 0}
 <aside class="right-sidebar">
   <div class="sidebar-inner">
     <header class="sidebar-header">
@@ -63,11 +64,6 @@
       {#if loading}
         <div class="skeletons">
           {#each Array(6) as _}<div class="skeleton-item"></div>{/each}
-        </div>
-      {:else if feeds.length === 0}
-        <div class="empty-activity">
-          <span class="material-symbols-rounded">notifications_off</span>
-          <p>No activity yet</p>
         </div>
       {:else}
         <div class="activity-timeline">
@@ -100,6 +96,7 @@
     </div>
   </div>
 </aside>
+{/if}
 
 <style>
   .right-sidebar {
@@ -268,15 +265,4 @@
   @media (max-width: 1300px) {
     .right-sidebar { display: none; }
   }
-
-  .empty-activity {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 3rem 1rem;
-    opacity: 0.3;
-  }
-  .empty-activity span { font-size: 2.5rem; margin-bottom: 0.5rem; }
-  .empty-activity p { font-size: 0.8rem; font-weight: 600; }
 </style>

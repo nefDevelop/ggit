@@ -11,8 +11,11 @@
     X as Close, 
     Trash2 as Delete,
     ArrowLeft as ArrowBack,
-    MoreVertical as MoreVert
+    MoreVertical as MoreVert,
+    Folder,
+    ChevronRight
   } from 'lucide-svelte';
+  import { slide } from 'svelte/transition';
   
   let { path = 'Home' } = $props();
   const repo: any = getContext('repo');
@@ -57,7 +60,7 @@
 
   async function fetchHistory() {
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}/history`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/history/${path}`);
       if (res.ok) history = await res.json();
     } catch (e) {
       console.error('Failed to load history');
@@ -124,9 +127,15 @@
     path = 'New';
   }
 
+  let expandedFolders = $state<Record<string, boolean>>({});
+
+  function toggleFolder(folderPath: string) {
+    expandedFolders[folderPath] = !expandedFolders[folderPath];
+  }
+
   $effect(() => {
-    if (repo.data) {
-        fetchWiki();
+    if (repo.data && path) {
+      fetchWiki();
     }
   });
 
@@ -152,20 +161,45 @@
       </div>
       
       <nav class="wiki-nav">
-        {#each wikiPages as pageItem}
-          <a 
-            href="/{repo.data.owner.username}/{repo.data.name}/wiki/{pageItem.name}" 
-            class="nav-item"
-            class:active={path === pageItem.name}
-          >
-            <Description size={16} />
-            <span>{pageItem.name}</span>
-          </a>
-        {/each}
+        {@render renderTree(wikiPages)}
         {#if wikiPages.length === 0}
           <div class="empty-state">No hay páginas aún</div>
         {/if}
       </nav>
+
+{#snippet renderTree(items: any[], depth = 0, parentPath = '')}
+    {#each items as pageItem}
+      {@const fullPath = parentPath ? `${parentPath}/${pageItem.name}` : pageItem.name}
+      {#if pageItem.is_folder}
+        <div class="folder-section">
+          <button 
+            class="nav-item folder-label" 
+            style="padding-left: {depth * 0.75 + 0.8}rem"
+            onclick={() => toggleFolder(fullPath)}
+          >
+            <ChevronRight size={14} class="chevron {expandedFolders[fullPath] ? 'open' : ''}" />
+            <Folder size={14} class="opacity-60" />
+            <span>{pageItem.title}</span>
+          </button>
+          {#if expandedFolders[fullPath]}
+            <div class="folder-children" transition:slide>
+                {@render renderTree(pageItem.children || [], depth + 1, fullPath)}
+            </div>
+          {/if}
+        </div>
+      {:else}
+        <a 
+          href="/{repo.data.owner.username}/{repo.data.name}/wiki/{pageItem.name}" 
+          class="nav-item"
+          class:active={path === pageItem.name}
+          style="padding-left: {depth * 0.75 + 0.8}rem"
+        >
+          <Description size={14} class="opacity-60" />
+          <span>{pageItem.title || pageItem.name}</span>
+        </a>
+      {/if}
+    {/each}
+{/snippet}
     </aside>
 
     <!-- Content Area -->
@@ -284,39 +318,6 @@
     top: 1rem;
   }
 
-  .sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .sidebar-header h2 {
-    font-size: 1.25rem;
-    margin: 0;
-    font-weight: 600;
-  }
-
-  .btn-new {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: var(--md-sys-color-primary-container);
-    color: var(--md-sys-color-on-primary-container);
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-  }
-
-  .btn-new:hover {
-    transform: scale(1.05);
-    background: var(--md-sys-color-primary);
-    color: white;
-  }
-
   .sidebar-header-minimal {
     margin-bottom: 1.5rem;
   }
@@ -359,6 +360,40 @@
     background: var(--md-sys-color-primary-container);
     color: var(--md-sys-color-primary);
     font-weight: 600;
+  }
+
+  .folder-label {
+    cursor: pointer;
+    opacity: 0.8;
+    background: transparent !important;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+    width: 100%;
+    border: none;
+    text-align: left;
+  }
+
+  .chevron {
+    transition: transform 0.2s;
+  }
+
+  .chevron.open {
+    transform: rotate(90deg);
+  }
+
+  .folder-children {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    border-left: 1px solid var(--md-sys-color-outline-variant);
+    margin-left: 0.2rem;
+  }
+
+  :global(.opacity-60) {
+    opacity: 0.6;
   }
 
   /* Main Content */
@@ -616,6 +651,4 @@
         justify-content: space-between;
     }
   }
-
-  .w-full { width: 100%; }
 </style>

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	stdcontext "context"
 	"net/http"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -219,9 +220,10 @@ func getRepoDirectory(c *context.APIContext) {
 	log.Trace("getRepoDirectory: Entries took %v", time.Since(startEntries))
 
 	type entryData struct {
-		Name string `json:"name"`
-		Type string `json:"type"`
-		Size int64  `json:"size"`
+		Name       string         `json:"name"`
+		Type       string         `json:"type"`
+		Size       int64          `json:"size"`
+		LastCommit map[string]any `json:"last_commit,omitempty"`
 	}
 
 	apiEntries := make([]entryData, len(entries))
@@ -236,6 +238,21 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
+	for i := range apiEntries {
+		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: path.Join(c.Repo.TreePath, apiEntries[i].Name), MaxCount: 1})
+		if err == nil && len(lastCommit) > 0 {
+			apiEntries[i].LastCommit = map[string]any{
+				"id":      lastCommit[0].ID.String(),
+				"summary": lastCommit[0].Summary(),
+				"author": map[string]any{
+					"name":  lastCommit[0].Author.Name,
+					"email": lastCommit[0].Author.Email,
+					"when":  lastCommit[0].Author.When,
+				},
+			}
+		}
+	}
+
 	res := map[string]any{
 		"type":       "directory",
 		"entries":    apiEntries,
@@ -244,7 +261,6 @@ func getRepoDirectory(c *context.APIContext) {
 		"repository": c.Repo.Repository.APIFormat(c.Repo.Owner),
 	}
 
-	/* Temporarily disabled for performance testing
 	lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 	if err == nil && len(lastCommit) > 0 {
 		res["last_commit"] = map[string]any{
@@ -257,16 +273,16 @@ func getRepoDirectory(c *context.APIContext) {
 			},
 		}
 	}
-    */
 	log.Trace("Directory %s has %d entries", c.Repo.TreePath, len(apiEntries))
 
-	/* Temporarily disabled Readme detection for performance testing
+	// Readme detection
 	var readmeFile *git.Blob
 	for _, entry := range entries {
 		if entry.IsTree() || !markup.IsReadmeFile(entry.Name()) {
 			continue
 		}
 
+		var err error
 		readmeFile, err = tree.Blob(entry.Name())
 		if err != nil {
 			log.Error("Failed to get README blob: %v", err)
@@ -293,10 +309,8 @@ func getRepoDirectory(c *context.APIContext) {
 			}
 		}
 	}
-	*/
 
-	// Stats and Languages (Only on root) - Temporarily disabled for performance testing
-	/*
+	// Stats and Languages (Only on root)
 	if c.Repo.TreePath == "" {
 		stats := map[string]int64{}
 		count, _ := c.Repo.Commit.CommitsCount()
@@ -314,7 +328,6 @@ func getRepoDirectory(c *context.APIContext) {
 		_ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
 		res["languages"] = langStats
 	}
-	*/
 
 	c.JSON(http.StatusOK, res)
 }
@@ -394,15 +407,10 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	c.JSON(http.StatusOK, res)
 }
 
-type userCommit struct {
-	User *database.User `json:"user"`
-	*git.Commit
-}
-
 // matchUsersWithCommitEmails matches existing users using commit author emails.
-func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit) []*userCommit {
+func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit) []map[string]any {
 	emailToUsers := make(map[string]*database.User)
-	newCommits := make([]*userCommit, len(oldCommits))
+	newCommits := make([]map[string]any, len(oldCommits))
 	usersStore := database.Handle.Users()
 	for i := range oldCommits {
 		var u *database.User
@@ -413,9 +421,20 @@ func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit
 			u = v
 		}
 
-		newCommits[i] = &userCommit{
-			User:   u,
-			Commit: oldCommits[i],
+		newCommits[i] = map[string]any{
+			"user":    u,
+			"id":      oldCommits[i].ID.String(),
+			"message": oldCommits[i].Message,
+			"author": map[string]any{
+				"name":  oldCommits[i].Author.Name,
+				"email": oldCommits[i].Author.Email,
+				"when":  oldCommits[i].Author.When,
+			},
+			"committer": map[string]any{
+				"name":  oldCommits[i].Committer.Name,
+				"email": oldCommits[i].Committer.Email,
+				"when":  oldCommits[i].Committer.When,
+			},
 		}
 	}
 	return newCommits

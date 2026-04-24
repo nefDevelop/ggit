@@ -56,7 +56,7 @@ func Code(fileName, code string) []string {
 		style = styles.Fallback
 	}
 
-	formatter := html.New(html.WithClasses(false), html.PreventSurroundingPre(true))
+	formatter := html.New(html.WithClasses(true), html.PreventSurroundingPre(true))
 	iterator, err := lexer.Tokenise(nil, code)
 	if err != nil {
 		return splitLines(code)

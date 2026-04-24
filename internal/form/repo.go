@@ -110,6 +110,7 @@ type RepoSetting struct {
 	EnablePulls           bool `json:"enable_pulls"`
 	PullsIgnoreWhitespace bool `json:"pulls_ignore_whitespace"`
 	PullsAllowRebase      bool `json:"pulls_allow_rebase"`
+	WikiFolderName        string `json:"wiki_folder_name"`
 }
 
 func (f *RepoSetting) Validate(ctx ValidationContext, errs Errors) Errors {

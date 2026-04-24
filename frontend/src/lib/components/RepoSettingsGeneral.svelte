@@ -135,6 +135,17 @@
         />
       </div>
 
+      <div class="form-group">
+        <label for="wiki_folder">Wiki Folder</label>
+        <input
+          type="text"
+          id="wiki_folder"
+          bind:value={settings.wiki_folder_name}
+          placeholder="docs"
+        />
+        <p class="help-text">Directorio del repositorio que contiene los archivos Markdown de la Wiki.</p>
+      </div>
+
       <div class="options-grid">
         <label class="checkbox-container">
           <input type="checkbox" bind:checked={settings.private} />
@@ -270,6 +281,13 @@
     font-weight: 800;
     text-transform: uppercase;
     color: var(--text-muted);
+    padding-left: 0.25rem;
+  }
+  .help-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin-top: 0.25rem;
     padding-left: 0.25rem;
   }
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
+  import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
   import { getLanguageColor } from '$lib/utils/languages';
   import RepoSearchResults from './RepoSearchResults.svelte';
@@ -24,11 +25,20 @@
     return () => window.removeEventListener('ggit:search', handleSearch);
   });
 
+  let realPath = $derived(() => {
+    let p = path;
+    if (p.startsWith('src/')) {
+        const parts = p.split('/');
+        return parts.slice(2).join('/');
+    }
+    return p;
+  });
+
   async function fetchRepo() {
     loading = true;
     error = '';
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${path}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${realPath()}`);
       if (res.ok) {
         repoData = await res.json();
       } else {
@@ -42,6 +52,7 @@
   }
 
   $effect(() => {
+    // Re-fetch when the derived realPath changes or path changes
     fetchRepo();
   });
 
@@ -67,6 +78,9 @@
       }))
       .sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
   });
+
+  let showAllLanguages = $state(false);
+  let visibleLanguages = $derived(showAllLanguages ? langEntries() : langEntries().slice(0, 10));
 
   function timeAgo(dateInput: any) {
     if (!dateInput) return '';
@@ -131,25 +145,34 @@ git push -u origin main</code></pre>
             </div>
           {/if}
 
+          <!-- Mobile Only Language Bar -->
+          {#if langEntries().length > 0}
+            <div class="lang-bar mobile-only">
+               {#each langEntries() as lang}
+                 <div class="lang-progress" style="width: {lang.percent}%; background: {lang.color}" title="{lang.name}: {lang.percent}%"></div>
+               {/each}
+            </div>
+          {/if}
+
           <!-- File Content / Table -->
           <div class="content-view">
             {#if repoData.type === 'directory'}
               <table class="file-table">
                 <tbody>
                   {#each repoData.entries as entry}
-                    <tr class="file-row">
+                    <tr class="file-row clickable" onclick={() => goto(`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`)}>
                       <td class="name-cell">
                         <span class="material-symbols-rounded icon-{entry.type === 'tree' ? 'tree' : 'blob'}">
                           {entry.type === 'tree' ? 'folder' : 'description'}
                         </span>
-                        <a href="/{username}/{reponame}/src/{repoData.branch}/{path ? path + '/' : ''}{entry.name}">
+                        <a href="/{username}/{reponame}/src/{repoData.branch}/{realPath() ? realPath() + '/' : ''}{entry.name}" onclick={(e) => e.stopPropagation()}>
                           {entry.name}
                         </a>
                       </td>
                       <td class="msg-cell">
-                        <span class="msg-text">...</span>
+                        <span class="msg-text">{entry.last_commit?.summary || '...'}</span>
                       </td>
-                      <td class="date-cell">--</td>
+                      <td class="date-cell">{timeAgo(entry.last_commit?.author?.when) || '--'}</td>
                     </tr>
                   {/each}
                 </tbody>
@@ -164,12 +187,12 @@ git push -u origin main</code></pre>
                    </div>
                     <div class="file-tools">
                       {#if repoData.is_text_file}
-                        <a href="/{username}/{reponame}/_edit/{repoData.branch}/{path}" class="tool-btn">
+                        <a href="/{username}/{reponame}/_edit/{repoData.branch}/{realPath()}" class="tool-btn">
                           <span class="material-symbols-rounded">edit</span>
                         </a>
                       {/if}
-                      <a href="/api/v2/{username}/{reponame}/raw/{repoData.branch}/{path}" target="_blank" class="tool-btn">Raw</a>
-                      <a href="/api/v2/{username}/{reponame}/media/{repoData.branch}/{path}" class="tool-btn" download>
+                      <a href="/api/v2/{username}/{reponame}/raw/{repoData.branch}/{realPath()}" target="_blank" class="tool-btn">Raw</a>
+                      <a href="/api/v2/{username}/{reponame}/media/{repoData.branch}/{realPath()}" class="tool-btn" download>
                         <span class="material-symbols-rounded">download</span>
                       </a>
                     </div>
@@ -228,15 +251,15 @@ git push -u origin main</code></pre>
         <!-- Sidebar -->
         <aside class="side-column">
           {#if langEntries().length > 0}
-            <div class="side-section">
+            <div class="side-section desktop-only">
                 <h4 class="side-title">Languages</h4>
                 <div class="lang-bar">
                     {#each langEntries() as lang}
-                        <div class="lang-progress" style="width: {lang.percent}%; background: {lang.color}"></div>
+                        <div class="lang-progress" style="width: {lang.percent}%; background: {lang.color}" title="{lang.name}: {lang.percent}%"></div>
                     {/each}
                 </div>
                 <div class="lang-list">
-                    {#each langEntries() as lang}
+                    {#each visibleLanguages as lang}
                         <div class="lang-item">
                             <span class="dot" style="background: {lang.color}"></span>
                             <span class="name">{lang.name}</span>
@@ -244,6 +267,11 @@ git push -u origin main</code></pre>
                         </div>
                     {/each}
                 </div>
+                {#if langEntries().length > 10}
+                    <button class="lang-toggle" onclick={() => showAllLanguages = !showAllLanguages}>
+                        {showAllLanguages ? 'Show less' : `+ ${langEntries().length - 10} more`}
+                    </button>
+                {/if}
             </div>
           {/if}
 
@@ -294,6 +322,7 @@ git push -u origin main</code></pre>
   .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .file-row:last-child { border-bottom: none; }
   .file-row td { padding: 0.75rem 1rem; }
+  .file-row.clickable { cursor: pointer; }
   .file-row:hover { background: var(--surface-variant); }
 
   .name-cell { display: flex; align-items: center; gap: 0.75rem; min-width: 250px; }
@@ -333,11 +362,63 @@ git push -u origin main</code></pre>
   .side-column { display: flex; flex-direction: column; gap: 2.5rem; }
   .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
   .about-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-color); opacity: 0.8; }
-  .lang-bar { height: 8px; border-radius: 4px; overflow: hidden; display: flex; background: rgba(0,0,0,0.3); margin-bottom: 1rem; }
-  .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.8rem; margin-bottom: 0.4rem; }
+  
+  .lang-bar { 
+    height: 10px; 
+    border-radius: 5px; 
+    overflow: hidden; 
+    display: flex; 
+    background: rgba(0,0,0,0.3); 
+    margin-bottom: 1rem;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .mobile-only { display: none; margin-bottom: 1rem; }
+  .lang-progress {
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: help;
+  }
+  .lang-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .lang-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
   .lang-item .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .lang-item .name { flex: 1; font-weight: 600; }
-  .lang-item .percent { color: var(--text-muted); }
+  .lang-item .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lang-item .percent { color: var(--text-muted); opacity: 0.7; font-size: 0.75rem; margin-left: auto; }
+
+  .lang-toggle {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    opacity: 0.8;
+  }
+  .lang-toggle:hover { opacity: 1; text-decoration: underline; }
+
+  /* Responsive Adjustments */
+  @media (max-width: 900px) {
+    .technical-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .side-column {
+      gap: 1.5rem;
+    }
+    .lang-list, .lang-toggle, .desktop-only {
+      display: none; /* Hide the list and toggle entirely on mobile, rely on bar tooltips */
+    }
+    .mobile-only {
+      display: flex;
+    }
+  }
 
   /* Skeletons */
   .skeleton-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2.5rem; height: 400px; }
