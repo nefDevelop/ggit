@@ -53,10 +53,6 @@ BUG_TYPES = ["null pointer", "off-by-one error", "race condition", "memory leak"
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-class GgitClient:
-    """Un cliente para interactuar coa API v2 de Ggit."""
-
-
 def random_string(length=8):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
@@ -77,6 +73,8 @@ class GgitClient:
 
     def __init__(self, base_url: str, username: str, password: str):
         self.base_url = base_url.rstrip('/')
+        if not '/api/' in self.base_url:
+            self.base_url = f"{self.base_url}/api/v2"
         self.username = username
         self.session = requests.Session()
         self.session.auth = HTTPBasicAuth(username, password)
@@ -95,7 +93,7 @@ class GgitClient:
             raise
 
     def check_auth(self):
-        self._request("get", "user/check")
+        return self._request("get", "user/check")
 
     def create_repo(self, repo_name: str, is_private: bool = False) -> bool:
         payload = {
@@ -103,7 +101,7 @@ class GgitClient:
             "description": fake.sentence(nb_words=10),
             "private": is_private,
             "auto_init": True,
-            "created_at": random_date().isoformat()
+            "wiki_folder_name": "docs" # Aseguramos que use docs
         }
         try:
             self._request("post", "user/repos", json=payload)
@@ -133,14 +131,13 @@ class GgitClient:
 
     def create_pull_request(self, repo_name: str, title: str, body: str, head_branch: str, base_branch: str = "main") -> Optional[int]:
         payload = {
-            "title": title, "body": body, "head": head_branch, "base": base_branch,
-            "created_at": random_date().isoformat()
+            "title": title, "body": body, "head": head_branch, "base": base_branch
         }
         resp = self._request("post", f"{self.username}/{repo_name}/pulls", json=payload)
         return resp.json().get("index")
 
     def create_issue(self, repo_name: str, title: str, content: str, labels: Optional[List[str]] = None) -> Optional[int]:
-        payload = {"title": title, "content": content, "created_at": random_date().isoformat()}
+        payload = {"title": title, "content": content}
         if labels:
             payload["labels"] = labels
         resp = self._request("post", f"{self.username}/{repo_name}/issues", json=payload)
@@ -157,14 +154,9 @@ class GgitClient:
     def create_release(self, repo_name: str, tag: str, name: str, body: str, prerelease: bool = False):
         payload = {
             "tag_name": tag, "name": name, "body": body,
-            "draft": "false", "prerelease": prerelease
+            "draft": False, "prerelease": prerelease
         }
         self._request("post", f"{self.username}/{repo_name}/releases", json=payload)
-
-    def add_collaborator(self, repo_name: str, collaborator_name: str, permission: str = "write"):
-        payload = {"permission": permission}
-        self._request("post", f"{self.username}/{repo_name}/collaborators/{collaborator_name}", json=payload)
-
 
 def seed_repository(client: GgitClient, repo_name: str):
     logging.info(f"--- Seeding Repository: {repo_name} ---")
@@ -179,14 +171,70 @@ def seed_repository(client: GgitClient, repo_name: str):
     
     # 2. Create multiple branches
     branches = []
-    for _ in range(random.randint(1, 3)):
+    for _ in range(random.randint(1, 2)):
         branch_name = f"feature/{random_string(6)}"
         client.create_branch(repo_name, branch_name)
         branches.append(branch_name)
         logging.info(f"Created branch: {branch_name}")
     
-    # 3. Create commits on main branch
-    for _ in range(random.randint(2, 5)):
+    # 3. Create rich Wiki/Docs structure
+    docs_files = [
+        {
+            "path": "docs/Home.md", 
+            "content": f"# Welcome to {repo_name}\n\n{fake.paragraph(nb_sentences=5)}\n\nCheck out the [API Guide](api/v2/endpoints).",
+            "message": "docs: initialize home page"
+        },
+        {
+            "path": "docs/getting-started/installation.mdx",
+            "content": f"""# Installation Guide
+
+<Note>
+  Make sure you have Go 1.25+ installed before proceeding.
+</Note>
+
+## Quick Start
+```bash
+curl -sSL https://ggit.io/install | sh
+ggit init {repo_name}
+```
+
+## Manual Setup
+{fake.paragraph()}""",
+            "message": "docs: add installation guide"
+        },
+        {
+            "path": "docs/api/v2/endpoints.mdx",
+            "content": f"""# API Endpoints
+
+<Warning>
+  All requests must include a valid Bearer Token in the headers.
+</Warning>
+
+### Users
+`GET /api/v2/users`
+
+```json
+{{
+  "users": ["alice", "bob"],
+  "count": 2
+}}
+```
+
+### Repositories
+{fake.paragraph()}""",
+            "message": "docs: document api endpoints"
+        },
+        {
+            "path": "docs/dev/database-schema.md",
+            "content": f"## Database Schema\n\n{fake.paragraph()}\n\n![Schema](https://via.placeholder.com/600x400)",
+            "message": "docs: add database schema"
+        }
+    ]
+    client.create_commit(repo_name, docs_files)
+    logging.info("Created Doc-as-Code wiki structure in docs/")
+    
+    # 4. Create source code commits
+    for _ in range(random.randint(2, 4)):
         component = random.choice(COMPONENTS)
         message = random.choice(COMMIT_MESSAGES).format(
             component=component, 
@@ -197,65 +245,19 @@ def seed_repository(client: GgitClient, repo_name: str):
         )
         
         files = []
-        for _ in range(random.randint(1, 3)):
-            file_path = f"src/{random_string(8)}.{random.choice(['py', 'js', 'go', 'rs', 'java'])}"
+        for _ in range(random.randint(1, 2)):
+            file_path = f"src/{component}/{random_string(8)}.{random.choice(['go', 'py', 'js'])}"
             files.append({
                 "path": file_path,
-                "content": fake.paragraph(nb_sentences=random.randint(5, 20)),
+                "content": f"// {message}\npackage {component}\n\n{fake.paragraph()}",
                 "message": message,
                 "is_new": True
             })
-        
         client.create_commit(repo_name, files)
-        logging.info(f"Commit on main: {message[:50]}...")
-    
-    # 4. Create commits on feature branches
-    for branch in branches:
-        for _ in range(random.randint(1, 3)):
-            message = f"feat: implement {random.choice(FEATURES)}"
-            files = [{
-                "path": f"features/{random_string(10)}.md",
-                "content": fake.paragraph(nb_sentences=10),
-                "message": message,
-                "is_new": True
-            }]
-            client.create_commit(repo_name, files, branch=branch)
-            logging.info(f"Commit on {branch}: {message}")
-    
-    # 5. Create Pull Requests
-    for branch in branches:
-        if random.choice([True, False]):  # 50% chance to create PR for each branch
-            title = random.choice(PR_TITLES).format(
-                feature=random.choice(FEATURES),
-                bug_type=random.choice(BUG_TYPES),
-                component=random.choice(COMPONENTS),
-                topic=random.choice(TOPICS),
-                module=random.choice(MODULES)
-            )
-            body = f"""## Description
-{fake.paragraph()}
 
-## Changes made
-- {fake.sentence()}
-- {fake.sentence()}
-- {fake.sentence()}
-
-## Testing
-{fake.paragraph()}"""
-            
-            pr_index = client.create_pull_request(repo_name, title, body, branch)
-            if pr_index:
-                logging.info(f"Created PR #{pr_index}: {title}")
-                
-                # Add comments to PR
-                if random.choice([True, False]):
-                    time.sleep(0.5)
-                    client.add_issue_comment(repo_name, pr_index, f"Thanks for the contribution! I'll review this soon. {fake.sentence()}")
-                    logging.info(f"  -> Added comment to PR #{pr_index}")
-    
-    # 6. Create Issues
-    issues = []
-    for _ in range(random.randint(2, 4)):
+    # 5. Create Issues
+    issue_ids = []
+    for _ in range(random.randint(2, 3)):
         title = random.choice(ISSUE_TITLES).format(
             component=random.choice(COMPONENTS),
             action=random.choice(ACTIONS),
@@ -263,126 +265,48 @@ def seed_repository(client: GgitClient, repo_name: str):
             topic=random.choice(TOPICS),
             module=random.choice(MODULES)
         )
-        content = f"""## Description
-{fake.paragraph()}
+        issue_id = client.create_issue(repo_name, title, f"Check the docs at [[API Reference]]\n\n{fake.paragraph()}")
+        if issue_id:
+            issue_ids.append(issue_id)
+            # Add comments
+            client.add_issue_comment(repo_name, issue_id, f"I found a similar issue in repo #1. {fake.sentence()}")
 
-## Steps to reproduce
-1. {fake.sentence()}
-2. {fake.sentence()}
-3. {fake.sentence()}
+    # 6. Create PRs
+    for branch in branches:
+        title = f"feat: implement {random.choice(FEATURES)}"
+        pr_id = client.create_pull_request(repo_name, title, f"Closes #{random.choice(issue_ids) if issue_ids else 1}\n\n{fake.paragraph()}", branch)
+        if pr_id:
+            logging.info(f"Created PR #{pr_id}")
 
-## Expected behavior
-{fake.sentence()}
-
-## Actual behavior
-{fake.sentence()}
-
-## Environment
-- OS: {random.choice(['Ubuntu 22.04', 'macOS 14', 'Windows 11'])}
-- Version: {random.choice(['1.0.0', '1.1.0', '2.0.0'])}"""
-        
-        issue_idx = client.create_issue(repo_name, title, content)
-        if issue_idx:
-            issues.append(issue_idx)
-            logging.info(f"Created issue #{issue_idx}: {title[:50]}...")
-            
-            # Add comments to issues
-            for _ in range(random.randint(1, 3)):
-                time.sleep(0.3)
-                comment = random.choice([
-                    f"I can reproduce this. {fake.sentence()}",
-                    f"Looking into it. {fake.sentence()}",
-                    f"Thanks for reporting! {fake.sentence()}",
-                    f"Fixed in latest commit. {fake.sentence()}"
-                ])
-                client.add_issue_comment(repo_name, issue_idx, comment)
-                logging.info(f"  -> Added comment to issue #{issue_idx}")
-    
-    # 7. Create Wiki pages
-    wiki_pages = [
-        {"title": "Home", "content": f"# Welcome to {repo_name}\n\n{fake.paragraph(nb_sentences=5)}"},
-        {"title": "Getting Started", "content": f"## Installation\n```bash\npip install {repo_name}\n```\n\n## Usage\n{fake.paragraph()}"},
-        {"title": "API Reference", "content": f"## Endpoints\n\n### GET /api/v1/users\n{fake.paragraph()}\n\n### POST /api/v1/users\n{fake.paragraph()}"},
-        {"title": "Contributing", "content": f"We welcome contributions! Please read our guidelines.\n\n{fake.paragraph(nb_sentences=3)}"},
-        {"title": "FAQ", "content": f"### Question 1\n{fake.sentence()}\n\n### Answer\n{fake.paragraph()}\n\n### Question 2\n{fake.sentence()}\n\n### Answer\n{fake.paragraph()}"}
-    ]
-    
-    selected_pages = random.sample(wiki_pages, random.randint(2, len(wiki_pages)))
-    for page in selected_pages:
-        client.create_wiki_page(repo_name, page["title"], page["content"])
-        logging.info(f"Created wiki page: {page['title']}")
-    
-    # 8. Create Releases
-    releases = [
-        ("v1.0.0", "Initial Release", False),
-        ("v1.1.0", "Feature Update", False),
-        ("v2.0.0-beta", "Beta Release", True)
-    ]
-    
-    selected_releases = random.sample(releases, random.randint(1, 2))
-    for tag, name, prerelease in selected_releases:
-        body = f"""## What's Changed
-- {fake.sentence()}
-- {fake.sentence()}
-- {fake.sentence()}
-
-## Installation
-```bash\ngit clone {client.base_url.replace('/api/v2', '')}/{client.username}/{repo_name}.git
-cd {repo_name}
-git checkout {tag}
-```
-
-## Contributors
-- @{username}
-{fake.name() if random.choice([True, False]) else ''}
-
-**Full Changelog**: `http://localhost:3005/{username}/{repo_name}/compare/{tag}...v1.0.0`"""
-        
-        create_release(auth, username, repo_name, tag, name, body, prerelease)
-        print(f"[+] Created release: {name} ({tag}){' [prerelease]' if prerelease else ''}")
-    
-    print(f"[✓] Finished seeding {repo_name}")
+    # 7. Create a Release
+    client.create_release(repo_name, "v1.0.0", "Release One", f"### Changes\n- {fake.sentence()}\n- Fixed #{issue_ids[0] if issue_ids else 1}")
+    logging.info("Finished seeding repository")
 
 def main():
-    print("=== Ggit Test Data Generator ===")
-    print("Generates realistic test data for version control server testing\n")
+    parser = argparse.ArgumentParser(description="Ggit Test Data Generator")
+    parser.add_argument("--url", default="http://localhost:5555/api/v2", help="API URL")
+    parser.add_argument("--username", required=True, help="Your username")
+    parser.add_argument("--count", type=int, default=1, help="Number of repositories")
+    args = parser.parse_args()
+
+    password = getpass.getpass(f"Password for {args.username}: ")
     
-    username = input("Username: ")
-    password = getpass.getpass("Password: ")
+    client = GgitClient(args.url, args.username, password)
     
     try:
-        count = int(input("How many repositories to create? (e.g. 5): "))
-    except ValueError:
-        print("Invalid number")
+        client.check_auth()
+    except Exception:
+        print("[!] Authentication failed.")
         return
+
+    print(f"[+] Authenticated as {args.username}\n")
     
-    auth = HTTPBasicAuth(username, password)
-    
-    # Verify credentials
-    test_resp = requests.get(f"{BASE_URL}/user/check", auth=auth)
-    if test_resp.status_code != 200:
-        print(f"[!] Authentication failed: {test_resp.text}")
-        return
-    print(f"[+] Authenticated as {username}\n")
-    
-    # Generate repositories
-    for i in range(1, count + 1):
+    for i in range(args.count):
         repo_name = random_repo_name()
-        print(f"\n{'='*60}")
-        print(f"Repository {i}/{count}: {repo_name}")
-        print(f"{'='*60}")
-        
-        seed_repository(auth, username, repo_name)
-        
-        # Wait between repositories to avoid overwhelming the server
-        if i < count:
-            wait_time = random.uniform(1, 3)
-            print(f"\nWaiting {wait_time:.1f} seconds before next repository...")
-            time.sleep(wait_time)
-    
-    print("\n" + "="*60)
-    print("[✔] Done! All repositories have been seeded successfully.")
-    print(f"Generated {count} repositories with realistic data (branches, commits, PRs, issues, wiki, releases)")
+        print(f"\nRepository {i+1}/{args.count}: {repo_name}")
+        seed_repository(client, repo_name)
+        if i < args.count - 1:
+            time.sleep(1)
 
 if __name__ == "__main__":
     main()

@@ -12,9 +12,14 @@ import (
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer"
-	"github.com/yuin/goldmark/renderer/html"
+	gmhtml "github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
+
+	chtml "github.com/alecthomas/chroma/v2/formatters/html"
+	"github.com/alecthomas/chroma/v2/lexers"
+	"github.com/alecthomas/chroma/v2/styles"
+	"unknwon.dev/clog/v2"
 )
 
 // goldmarkRenderer is a Goldmark-based renderer.
@@ -37,12 +42,14 @@ func init() {
 			),
 		),
 		goldmark.WithRendererOptions(
-			html.WithHardWraps(),
-			html.WithXHTML(),
+			gmhtml.WithHardWraps(),
+			gmhtml.WithXHTML(),
+			gmhtml.WithUnsafe(),
 		),
 	)
 	goldmarkRenderer.Renderer().AddOptions(renderer.WithNodeRenderers(
-		util.Prioritized(&wikilinkRenderer{}, 100),
+		util.Prioritized(&wikilinkRenderer{}, 0),
+		util.Prioritized(&fencedCodeBlockRenderer{}, 0),
 	))
 }
 
@@ -53,11 +60,11 @@ func goldmarkRender(body []byte, urlPrefix string) []byte {
 	var buf bytes.Buffer
 	pc := parser.NewContext()
 	pc.Set(urlPrefixKey, urlPrefix)
-	
+
 	if err := goldmarkRenderer.Convert(body, &buf, parser.WithContext(pc)); err != nil {
 		return body
 	}
-	
+
 	return buf.Bytes()
 }
 
@@ -181,5 +188,62 @@ func (r *wikilinkRenderer) renderWikiLink(w util.BufWriter, source []byte, node 
 	_, _ = w.WriteString(`">`)
 	_, _ = w.WriteString(n.Label)
 	_, _ = w.WriteString(`</a>`)
+	return ast.WalkContinue, nil
+}
+
+// --- Fenced Code Block Extension (Chroma) ---
+
+type fencedCodeBlockRenderer struct{}
+
+func (r *fencedCodeBlockRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
+	reg.Register(ast.KindFencedCodeBlock, r.renderFencedCodeBlock)
+	reg.Register(ast.KindCodeBlock, r.renderFencedCodeBlock)
+}
+
+func (r *fencedCodeBlockRenderer) renderFencedCodeBlock(w util.BufWriter, source []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
+	if !entering {
+		return ast.WalkContinue, nil
+	}
+	var language string
+	var lines *text.Segments
+	if fb, ok := node.(*ast.FencedCodeBlock); ok {
+		language = string(fb.Language(source))
+		lines = fb.Lines()
+	} else if cb, ok := node.(*ast.CodeBlock); ok {
+		lines = cb.Lines()
+	}
+
+	clog.Trace("Rendering code block (lang: %s)", language)
+
+	var code bytes.Buffer
+	if lines != nil {
+		for i := 0; i < lines.Len(); i++ {
+			line := lines.At(i)
+			code.Write(line.Value(source))
+		}
+	}
+
+	lexer := lexers.Get(language)
+	if lexer == nil {
+		lexer = lexers.Fallback
+	}
+
+	style := styles.Get("github")
+	if style == nil {
+		style = styles.Fallback
+	}
+
+	formatter := chtml.New(chtml.WithClasses(true), chtml.WithLineNumbers(false))
+
+	iterator, err := lexer.Tokenise(nil, code.String())
+	if err != nil {
+		return ast.WalkStop, err
+	}
+
+	err = formatter.Format(w, style, iterator)
+	if err != nil {
+		return ast.WalkStop, err
+	}
+
 	return ast.WalkContinue, nil
 }

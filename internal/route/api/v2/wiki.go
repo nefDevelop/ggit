@@ -210,7 +210,6 @@ func GetWikiPage(c *context.APIContext) {
 	// but the UI usually sends the path without .md
 
 	var blob *git.Blob
-	var finalPath string
 
 	for _, p := range possiblePaths {
 		entry, err := commit.TreeEntry(p)
@@ -223,7 +222,6 @@ func GetWikiPage(c *context.APIContext) {
 						subEntry, err := subtree.TreeEntry(subName)
 						if err == nil && !subEntry.IsTree() {
 							blob = subEntry.Blob()
-							finalPath = path.Join(p, subName)
 							break
 						}
 					}
@@ -233,7 +231,6 @@ func GetWikiPage(c *context.APIContext) {
 				}
 			} else {
 				blob = entry.Blob()
-				finalPath = p
 				break
 			}
 		}
@@ -251,10 +248,9 @@ func GetWikiPage(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"name":         path.Base(pagePath),
-		"path":         pagePath,
-		"content":      string(p),
-		"content_html": string(markup.Render(markup.TypeMarkdown, p, c.Repo.RepoLink+"/src/"+branch+"/"+path.Dir(finalPath), nil)),
+		"name":    path.Base(pagePath),
+		"path":    pagePath,
+		"content": string(p),
 	})
 }
 

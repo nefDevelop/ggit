@@ -27,8 +27,13 @@ var sanitizer = &Sanitizer{
 // entire application lifecycle.
 func NewSanitizer() {
 	sanitizer.init.Do(func() {
-		// We only want to allow HighlightJS specific classes for code blocks
-		sanitizer.policy.AllowAttrs("class").Matching(lazyregexp.New(`^language-\w+$`).Regexp()).OnElements("code")
+		// We only want to allow HighlightJS and Chroma specific classes for code blocks
+		sanitizer.policy.AllowAttrs("class", "style").Matching(lazyregexp.New(`^language-\w+$`).Regexp()).OnElements("code")
+		sanitizer.policy.AllowAttrs("class", "style").OnElements("span", "pre", "div", "code")
+
+		// MDX-style custom tags and callouts
+		sanitizer.policy.AllowElements("Warning", "Note", "Tip", "Important", "Caution", "info", "notice")
+		sanitizer.policy.AllowAttrs("class", "type").OnElements("Warning", "Note", "Tip", "Important", "Caution")
 
 		// Checkboxes
 		sanitizer.policy.AllowAttrs("type").Matching(lazyregexp.New(`^checkbox$`).Regexp()).OnElements("input")

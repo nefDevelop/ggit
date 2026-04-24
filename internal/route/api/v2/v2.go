@@ -127,11 +127,11 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/audit-log", ginx.Handle(GetAdminAuditLog))
 	}
 
-	repo := r.Group("/:username/:reponame", context.RepoAssignment(), context.RepoRef())
+	repo := r.Group("/:username/:reponame", context.RepoAssignment())
 	{
-		repo.GET("/search", ginx.Handle(SearchRepoContents))
-		repo.GET("/view/*path", ginx.Handle(GetRepoView))
-		repo.GET("/commits/*path", ginx.Handle(GetRepoCommits))
+		repo.GET("/search", context.RepoRef(), ginx.Handle(SearchRepoContents))
+		repo.GET("/view/*path", context.RepoRef(), ginx.Handle(GetRepoView))
+		repo.GET("/commits/*path", context.RepoRef(), ginx.Handle(GetRepoCommits))
 		repo.GET("/watchers", ginx.Handle(GetRepoWatchers))
 		repo.GET("/stars", ginx.Handle(GetRepoStars))
 		repo.GET("/forks", ginx.Handle(GetRepoForks))
@@ -181,11 +181,11 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/branches", ginx.Handle(ListRepoBranches))
 		repo.DELETE("/branches/:branch", ginx.Handle(DeleteRepoBranch))
 
-		repo.GET("/archive/*name", ginx.Handle(GetRepoArchive))
+		repo.GET("/archive/*name", context.RepoRef(), ginx.Handle(GetRepoArchive))
 		repo.GET("/raw/:ref/*path", ginx.Handle(GetRepoRawFile))
 		repo.GET("/media/:ref/*path", ginx.Handle(GetRepoMediaFile))
 
-		repo.GET("/compare/*info", ginx.Handle(GetComparison))
+		repo.GET("/compare/*info", context.RepoRef(), ginx.Handle(GetComparison))
 
 		repo.GET("/labels", ginx.Handle(ListRepoLabels))
 		repo.POST("/labels", ginx.Handle(CreateRepoLabel))
@@ -201,8 +201,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 		editor := repo.Group("/editor")
 		{
-			editor.POST("/edit", ginx.Handle(EditRepoFile))
-			editor.POST("/delete", ginx.Handle(DeleteRepoFile))
+			editor.POST("/edit", context.RepoRef(), ginx.Handle(EditRepoFile))
+			editor.POST("/delete", context.RepoRef(), ginx.Handle(DeleteRepoFile))
 		}
 
 		settingGroup := repo.Group("/settings", context.RequireRepoAdmin())

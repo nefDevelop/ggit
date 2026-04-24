@@ -16,9 +16,36 @@
     ChevronRight
   } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
+  import { marked } from 'marked';
+  import DOMPurify from 'dompurify';
+  import hljs from 'highlight.js';
+  import 'highlight.js/styles/github.css';
   
   let { path = 'Home' } = $props();
   const repo: any = getContext('repo');
+  
+  // Configure marked
+  const renderer = new marked.Renderer();
+  renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
+    const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+    const highlighted = hljs.highlight(text, { language }).value;
+    return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+  };
+  marked.use({ renderer });
+
+  // Derived content
+  let contentHtml = $derived.by(() => {
+    if (!currentPage?.content) return '';
+    try {
+      const rawHtml = marked.parse(currentPage.content) as string;
+      return DOMPurify.sanitize(rawHtml, {
+        ADD_TAGS: ['Warning', 'Note', 'Tip', 'Important', 'Caution', 'info', 'notice'],
+        ADD_ATTR: ['type']
+      });
+    } catch (e) {
+      return '<p class="error">Error rendering markdown</p>';
+    }
+  });
   
   let wikiPages = $state<any[]>([]);
   let currentPage = $state<any>(null);
@@ -258,7 +285,7 @@
         <div class="wiki-body">
           {#if mode === 'view'}
             <div class="markdown-body">
-              {@html currentPage?.content_html || '<i>Cargando contenido...</i>'}
+              {@html contentHtml || '<i>Cargando contenido...</i>'}
             </div>
           {:else if mode === 'edit'}
             <div class="edit-area">
@@ -376,11 +403,11 @@
     text-align: left;
   }
 
-  .chevron {
+  :global(.chevron) {
     transition: transform 0.2s;
   }
 
-  .chevron.open {
+  :global(.chevron.open) {
     transform: rotate(90deg);
   }
 
@@ -631,10 +658,116 @@
     50% { opacity: 0.8; }
   }
 
+  /* Chroma Syntax Highlighting (GitHub style) */
+  :global(.markdown-body pre) {
+    background-color: #f6f8fa;
+    padding: 1.25rem;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(0,0,0,0.05);
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  :global(.chroma .k) { color: #d73a49; font-weight: bold; } /* Keyword */
+  :global(.chroma .kd) { color: #d73a49; } /* Keyword.Declaration */
+  :global(.chroma .kn) { color: #d73a49; } /* Keyword.Namespace */
+  :global(.chroma .kp) { color: #d73a49; } /* Keyword.Pseudo */
+  :global(.chroma .kr) { color: #d73a49; } /* Keyword.Reserved */
+  :global(.chroma .kt) { color: #d73a49; } /* Keyword.Type */
+  :global(.chroma .s) { color: #032f62; } /* String */
+  :global(.chroma .sc) { color: #032f62; } /* String.Char */
+  :global(.chroma .dl) { color: #032f62; } /* String.Delimiter */
+  :global(.chroma .sd) { color: #032f62; } /* String.Doc */
+  :global(.chroma .s2) { color: #032f62; } /* String.Double */
+  :global(.chroma .se) { color: #032f62; } /* String.Escape */
+  :global(.chroma .sh) { color: #032f62; } /* String.Heredoc */
+  :global(.chroma .si) { color: #032f62; } /* String.Interpol */
+  :global(.chroma .sx) { color: #032f62; } /* String.Other */
+  :global(.chroma .sr) { color: #032f62; } /* String.Regex */
+  :global(.chroma .s1) { color: #032f62; } /* String.Single */
+  :global(.chroma .ss) { color: #032f62; } /* String.Symbol */
+  :global(.chroma .c) { color: #6a737d; font-style: italic; } /* Comment */
+  :global(.chroma .cm) { color: #6a737d; font-style: italic; } /* Comment.Multiline */
+  :global(.chroma .c1) { color: #6a737d; font-style: italic; } /* Comment.Single */
+  :global(.chroma .cs) { color: #6a737d; font-weight: bold; font-style: italic; } /* Comment.Special */
+  :global(.chroma .cp) { color: #6a737d; font-weight: bold; } /* Comment.Preproc */
+  :global(.chroma .nf) { color: #6f42c1; font-weight: bold; } /* Name.Function */
+  :global(.chroma .nb) { color: #005cc5; } /* Name.Builtin */
+  :global(.chroma .nc) { color: #e36209; } /* Name.Class */
+  :global(.chroma .nv) { color: #e36209; } /* Name.Variable */
+  :global(.chroma .no) { color: #005cc5; } /* Name.Constant */
+  :global(.chroma .ni) { color: #6f42c1; } /* Name.Entity */
+  :global(.chroma .ne) { color: #e36209; } /* Name.Exception */
+  :global(.chroma .nn) { color: #d73a49; } /* Name.Namespace */
+  :global(.chroma .nt) { color: #22863a; } /* Name.Tag */
+  :global(.chroma .m) { color: #005cc5; font-weight: bold; } /* Literal.Number */
+  :global(.chroma .mb) { color: #005cc5; } /* Literal.Number.Bin */
+  :global(.chroma .mf) { color: #005cc5; } /* Literal.Number.Float */
+  :global(.chroma .mh) { color: #005cc5; } /* Literal.Number.Hex */
+  :global(.chroma .mi) { color: #005cc5; } /* Literal.Number.Integer */
+  :global(.chroma .mo) { color: #005cc5; } /* Literal.Number.Oct */
+  :global(.chroma .o) { color: #005cc5; font-weight: bold; } /* Operator */
+  :global(.chroma .ow) { color: #005cc5; font-weight: bold; } /* Operator.Word */
+
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  /* MDX Callouts */
+  :global(.markdown-body Warning), 
+  :global(.markdown-body Note), 
+  :global(.markdown-body Tip), 
+  :global(.markdown-body Important), 
+  :global(.markdown-body Caution),
+  :global(.markdown-body info),
+  :global(.markdown-body notice) {
+    display: block;
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 12px;
+    border-left: 6px solid;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  :global(.markdown-body Warning) {
+    background: #fff8e1;
+    border-color: #ffc107;
+    color: #856404;
+  }
+  :global(.markdown-body Warning::before) { content: "⚠️ Warning"; font-weight: 800; display: block; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; }
+
+  :global(.markdown-body Note), :global(.markdown-body info) {
+    background: #e3f2fd;
+    border-color: #2196f3;
+    color: #0c5460;
+  }
+  :global(.markdown-body Note::before) { content: "📝 Note"; font-weight: 800; display: block; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; }
+
+  :global(.markdown-body Tip), :global(.markdown-body notice) {
+    background: #e8f5e9;
+    border-color: #4caf50;
+    color: #155724;
+  }
+  :global(.markdown-body Tip::before) { content: "💡 Tip"; font-weight: 800; display: block; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; }
+
+  :global(.markdown-body Important) {
+    background: #f3e5f5;
+    border-color: #9c27b0;
+    color: #4a148c;
+  }
+  :global(.markdown-body Important::before) { content: "🚀 Important"; font-weight: 800; display: block; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; }
+
+  :global(.markdown-body Caution) {
+    background: #ffebee;
+    border-color: #f44336;
+    color: #721c24;
+  }
+  :global(.markdown-body Caution::before) { content: "🛑 Caution"; font-weight: 800; display: block; margin-bottom: 0.5rem; text-transform: uppercase; font-size: 0.75rem; }
 
   @media (max-width: 900px) {
     .wiki-grid {

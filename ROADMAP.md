@@ -194,3 +194,6 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 ---
 Migración Local (La más limpia): En la interfaz de "Migrar Repositorio", puedes usar una ruta local (ej: file:///ruta/a/tu/repo) y Ggit se encargará de crear el registro en la base de datos y copiar los archivos correctamente.
 Herramienta de "Adopción": Algunos administradores de Ggit tienen una opción en el panel de administración para "Escanear repositorios no registrados". Esto lee el disco y crea automáticamente los registros en la base de datos para las carpetas que encuentre "huérfanas".
+
+
+¿Te parece bien así o prefieres que intentemos montar una librería de renderizado en el frontend para experimentar?_ mini-summary: Evaluated the pros and cons of frontend vs. backend rendering for MDX. Recommended sticking with the current backend-driven approach for architectural consistency (mentions, issue linking) and performance (less JS payload). highlighted that the current hybrid solution provides MDX callouts and syntax highlighting while maintaining Ggit's core features. summary complete.
