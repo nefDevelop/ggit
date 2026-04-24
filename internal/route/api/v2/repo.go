@@ -182,6 +182,12 @@ func GetRepoView(c *context.APIContext) {
 		return
 	}
 
+	// For root directory, bypass TreeEntry check
+	if c.Repo.TreePath == "" {
+		getRepoDirectory(c)
+		return
+	}
+
 	entry, err := c.Repo.Commit.TreeEntry(c.Repo.TreePath)
 	if err != nil {
 		c.NotFoundOrError(err, "get tree entry")
@@ -232,9 +238,9 @@ func getRepoDirectory(c *context.APIContext) {
 		"repository": c.Repo.Repository.APIFormat(c.Repo.Owner),
 	}
 
-	// Last commit info for this path
-	lastCommit, _ := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
-	if len(lastCommit) > 0 {
+	// Last commit info for this path - make it safer
+	lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
+	if err == nil && len(lastCommit) > 0 {
 		res["last_commit"] = map[string]any{
 			"id":      lastCommit[0].ID.String(),
 			"summary": lastCommit[0].Summary(),
