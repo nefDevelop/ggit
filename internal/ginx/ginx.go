@@ -174,7 +174,6 @@ func setupStatic(r *Engine) {
 	
 	// Static Assets (Fonts, etc.)
 	r.Static("/fonts", filepath.Join("frontend", "build", "fonts"))
-	r.Static("/public/fonts", filepath.Join("public", "fonts"))
 }
 
 // ServeSPA serves the Svelte frontend entry point (index.html).
