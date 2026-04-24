@@ -111,8 +111,10 @@
   .tab-pill.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
   
   @media (max-width: 800px) {
-    .search-and-action-row { flex-wrap: wrap; }
+    .view-header-abstract { padding: 0 1rem 1.5rem; }
+    .search-and-action-row { flex-wrap: wrap; gap: 1rem; }
     .search-flex { min-width: 100%; order: 1; }
-    .actions-flex { order: 0; margin-left: auto; }
+    .actions-flex { order: 0; width: 100%; justify-content: flex-end; }
+    .view-mode-selector-row { overflow-x: auto; padding-bottom: 0.5rem; margin: 0 -1rem; padding-left: 1rem; }
   }
 </style>

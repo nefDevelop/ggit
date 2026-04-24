@@ -52,14 +52,20 @@
     border-radius: 2rem;
     font-size: 0.75rem;
     font-weight: 800;
-    white-space: nowrap;
     line-height: 1;
     border: 1px solid transparent;
     user-select: none;
+    max-width: 100%;
   }
 
   .badge-sm { padding: 0.15rem 0.5rem; font-size: 0.7rem; }
   .badge-md { padding: 0.25rem 0.75rem; font-size: 0.75rem; }
+
+  .badge :global(span) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
   .badge-neutral {
     background: var(--md-sys-color-surface-variant);

@@ -184,4 +184,23 @@
     padding-top: 1rem;
     border-top: 1px solid var(--md-sys-color-outline-variant);
   }
+
+  @media (max-width: 600px) {
+    .commit-panel {
+      padding: 1.25rem;
+      gap: 1rem;
+    }
+    .commit-header span {
+      font-size: 1.5rem;
+    }
+    .choice-text strong {
+      font-size: 0.85rem;
+    }
+    .commit-footer {
+      flex-direction: column;
+    }
+    .commit-footer button {
+      width: 100%;
+    }
+  }
 </style>

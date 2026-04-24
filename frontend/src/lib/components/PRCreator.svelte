@@ -310,12 +310,14 @@
     gap: 2rem;
     background: var(--md3-surface-1);
     border-radius: 1.5rem;
+    flex-wrap: wrap;
   }
   .selector-group {
     display: flex;
     align-items: flex-end;
     gap: 1rem;
     flex: 1;
+    min-width: 300px;
   }
   .repo-info,
   .repo-selector {
@@ -323,6 +325,7 @@
     flex-direction: column;
     gap: 0.25rem;
     flex: 1;
+    min-width: 0;
   }
   .label {
     font-size: 0.7rem;
@@ -343,6 +346,13 @@
     align-items: center;
     gap: 0.75rem;
     color: var(--text-muted);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .repo-name span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .repo-selector select {
     background: rgba(255, 255, 255, 0.02);
@@ -396,6 +406,35 @@
     gap: 2rem;
     align-items: start;
     animation: slideUp 0.4s ease-out;
+  }
+
+  @media (max-width: 1200px) {
+    .workspace-grid {
+      grid-template-columns: 1fr;
+    }
+    .creation-details {
+      padding: 1.5rem;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .comparison-bar {
+      padding: 1rem;
+      gap: 1rem;
+    }
+    .selector-group {
+      min-width: 100%;
+    }
+    .comparison-arrow {
+      width: 100%;
+      justify-content: center;
+      margin-top: 0;
+      transform: rotate(-90deg);
+    }
+    .comparison-status {
+      width: 100%;
+      justify-content: center;
+    }
   }
   @keyframes slideUp {
     from {

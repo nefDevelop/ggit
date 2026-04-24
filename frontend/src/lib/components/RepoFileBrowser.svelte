@@ -325,11 +325,50 @@ git push -u origin main</code></pre>
     background: rgba(255,255,255,0.03);
     border-radius: 0.5rem;
     margin-bottom: 1.5rem;
+    min-width: 0;
   }
-  .commit-avatar { width: 24px; height: 24px; background: var(--primary-color); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; color: var(--on-primary); }
-  .commit-msg { font-weight: 600; font-size: 0.95rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .commit-meta { display: flex; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
-  .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; }
+  .commit-avatar { width: 24px; height: 24px; background: var(--primary-color); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; color: var(--on-primary); flex-shrink: 0; }
+  .commit-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0;
+  }
+  .commit-msg { 
+    font-weight: 600; 
+    font-size: 0.95rem; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap;
+    flex: 1;
+  }
+  .commit-meta { 
+    display: flex; 
+    gap: 0.5rem; 
+    font-size: 0.8rem; 
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; flex-shrink: 0; }
+
+  @media (max-width: 600px) {
+    .last-commit-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .commit-info {
+      width: 100%;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+    .commit-meta {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
 
   /* Content */
   .content-view { 

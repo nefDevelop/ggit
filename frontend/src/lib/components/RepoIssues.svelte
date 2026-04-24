@@ -159,6 +159,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    min-width: 0;
   }
 
   .issue-title-row {
@@ -173,6 +174,10 @@
     font-weight: 700;
     color: var(--text-color);
     text-decoration: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
   }
   .issue-title:hover {
     color: var(--primary-color);

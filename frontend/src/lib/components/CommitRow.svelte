@@ -122,4 +122,21 @@
     align-items: center;
     gap: 0.5rem;
   }
+  @media (max-width: 600px) {
+    .commit-row {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .commit-content {
+      order: 1;
+      width: calc(100% - 40px);
+    }
+    .commit-actions {
+      order: 2;
+      width: 100%;
+      justify-content: flex-end;
+      padding-top: 0.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+    }
+  }
 </style>

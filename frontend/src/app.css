@@ -1248,12 +1248,13 @@ html, body {
     grid-column: 1 !important;
     margin: 0.5rem 0.5rem 80px 0.5rem !important;
     border-radius: 1.5rem !important;
+    height: calc(100vh - 90px);
   }
   #main-container-wrapper::after {
     border-radius: 1.5rem !important;
   }
   #main-content {
-    height: calc(100vh - 100px) !important;
+    height: 100% !important;
   }
 }
 
@@ -1298,6 +1299,18 @@ html, body {
 .island-body { 
   padding: 2rem; 
   flex: 1;
+}
+
+@media (max-width: 600px) {
+  .island-body, .island-header-search {
+    padding: 1.5rem 1rem !important;
+  }
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 h1, h2, h3, h4 {
