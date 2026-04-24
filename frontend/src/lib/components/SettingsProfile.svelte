@@ -42,7 +42,7 @@
   let dicebearSeed = $state("");
   let showDiceBear = $state(false);
   const dicebearUrl = $derived(
-    `https://api.dicebear.com/7.x/${currentDicebearStyle}/png?seed=${dicebearSeed || profile.username}`,
+    `https://api.dicebear.com/7.x/${currentDicebearStyle}/png?seed=${dicebearSeed || profile.username || 'ggit'}`,
   );
 
   async function fetchProfile() {
@@ -368,16 +368,16 @@
 
   .profile-layout-grid {
     display: grid;
-    grid-template-columns: 240px 1fr;
-    gap: 3rem;
+    grid-template-columns: 280px 1fr;
+    gap: 4rem;
     max-width: 100%;
     width: 100%;
     box-sizing: border-box;
   }
-  @media (max-width: 1100px) {
+  @media (max-width: 1200px) {
     .profile-layout-grid {
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 3rem;
     }
     .avatar-column { order: -1; }
   }
@@ -524,18 +524,23 @@
 
   .magic-avatar-panel {
     margin-bottom: 3rem;
-    padding: 2.5rem;
-    border-radius: 2.5rem;
+    padding: 2.5rem !important;
+    border-radius: 2.5rem !important;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 3rem;
-    border: 2px solid var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.03);
+    border: 2px solid var(--primary-color) !important;
+    background: rgba(var(--primary-rgb), 0.05) !important;
     animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  @media (max-width: 800px) {
-    .magic-avatar-panel { grid-template-columns: 1fr; padding: 1.5rem; gap: 2rem; border-radius: 1.5rem; }
-    .preview-shield { width: 120px; height: 120px; }
+  @media (max-width: 1000px) {
+    .magic-avatar-panel { 
+      grid-template-columns: 1fr; 
+      padding: 1.5rem !important; 
+      gap: 2rem; 
+      border-radius: 1.5rem !important; 
+      text-align: center;
+    }
   }
   @keyframes slideDown {
     from { opacity: 0; transform: translateY(-20px); }

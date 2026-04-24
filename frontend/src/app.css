@@ -1274,8 +1274,19 @@ html, body {
   box-sizing: border-box;
 }
 
+.island.tonal {
+  background-color: rgba(var(--primary-rgb), 0.05);
+  border: 1px solid rgba(var(--primary-rgb), 0.1);
+}
+
+.island.elevated {
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--md-sys-color-primary-container);
+}
+
 /* Integrated islands inside the main carved area */
-#main-content .island {
+#main-content .island:not(.tonal):not(.elevated) {
   background-color: transparent;
   border: none;
   border-bottom: 1px solid var(--border-base);
@@ -1285,7 +1296,7 @@ html, body {
   margin-bottom: 0;
 }
 
-#main-content .island:last-child {
+#main-content .island:not(.tonal):not(.elevated):last-child {
   border-bottom: none;
 }
 

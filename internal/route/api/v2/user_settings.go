@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"image/png"
+	"io"
 	"mime/multipart"
 	"net/http"
 
@@ -61,6 +62,7 @@ type AddSSHKey struct {
 // GetUserProfileSettings returns the current user's profile settings.
 func GetUserProfileSettings(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
+		"username":               c.User.Name,
 		"name":                   c.User.Name,
 		"full_name":              c.User.FullName,
 		"email":                  c.User.Email,
@@ -342,16 +344,21 @@ func UpdateUserAvatar(c *context.APIContext) {
 	var f struct {
 		Avatar *multipart.FileHeader `form:"avatar"`
 	}
+
 	// Try to bind as multipart form first
 	if err := c.Request.ParseMultipartForm(32 << 20); err == nil {
 		file, header, err := c.Req.FormFile("avatar")
 		if err == nil {
 			f.Avatar = header
 			_ = file.Close()
+			log.Trace("Multipart avatar file received: %s (size: %d)", header.Filename, header.Size)
+		} else if !errors.Is(err, http.ErrMissingFile) {
+			log.Error("Failed to get avatar from form: %v", err)
 		}
 	}
 
 	if f.Avatar != nil {
+		log.Trace("Processing avatar for user %d: %s", c.User.ID, f.Avatar.Filename)
 		content, err := f.Avatar.Open()
 		if err != nil {
 			c.StatusError(http.StatusInternalServerError, "Open avatar file failed", err)
@@ -359,8 +366,7 @@ func UpdateUserAvatar(c *context.APIContext) {
 		}
 		defer func() { _ = content.Close() }()
 
-		data := make([]byte, f.Avatar.Size)
-		_, err = content.Read(data)
+		data, err := io.ReadAll(content)
 		if err != nil {
 			c.StatusError(http.StatusInternalServerError, "Read avatar file failed", err)
 			return
@@ -370,6 +376,7 @@ func UpdateUserAvatar(c *context.APIContext) {
 			c.StatusError(http.StatusInternalServerError, "Use custom avatar failed", err)
 			return
 		}
+		log.Trace("Successfully updated avatar for user %d", c.User.ID)
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
