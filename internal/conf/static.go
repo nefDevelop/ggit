@@ -132,13 +132,6 @@ var (
 		PagingNum      int
 	}
 
-	// Markdown settings
-	Markdown struct {
-		EnableHardLineBreak bool
-		CustomURLSchemes    []string `ini:"CUSTOM_URL_SCHEMES"`
-		FileExtensions      []string
-	}
-
 	// Admin settings
 	Admin struct {
 		DisableRegularOrgCreation bool
@@ -306,12 +299,6 @@ type RepositoryOpts struct {
 	EnableRawFileRenderMode  bool
 	CommitsFetchConcurrency  int
 	DefaultBranch            string
-
-	// Repository editor settings
-	Editor struct {
-		LineWrapExtensions   []string
-		PreviewableFileModes []string
-	} `ini:"repository.editor"`
 
 	// Repository upload settings
 	Upload struct {

@@ -317,8 +317,6 @@ func Init(customConf string) error {
 		return errors.Wrap(err, "mapping [release] section")
 	} else if err = File.Section("webhook").MapTo(&Webhook); err != nil {
 		return errors.Wrap(err, "mapping [webhook] section")
-	} else if err = File.Section("markdown").MapTo(&Markdown); err != nil {
-		return errors.Wrap(err, "mapping [markdown] section")
 	} else if err = File.Section("admin").MapTo(&Admin); err != nil {
 		return errors.Wrap(err, "mapping [admin] section")
 	} else if err = File.Section("cron").MapTo(&Cron); err != nil {

@@ -55,7 +55,6 @@ type Comment struct {
 	CommitID        int64
 	Line            int64
 	Content         string `gorm:"type:TEXT"`
-	RenderedContent string `json:"-" gorm:"-"`
 
 	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64

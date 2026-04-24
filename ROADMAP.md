@@ -187,13 +187,16 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ---
 
-## ✅ PROYECTO COMPLETADO AL 99%
-*Ggit es ahora una versión moderna, ligera y premium de Gogs, con una arquitectura desacoplada y un diseño de vanguardia.*
+## Fase 19: Desacoplo de Renderizado (Markdown-as-Frontend) ✅
 
+**Objetivo:** Delegar el renderizado de Markdown completamente al cliente, convirtiendo el backend en un proveedor de datos puros.
+
+- [x] **Frontend Rendering Core:** Implementación de `MarkdownRenderer.svelte` para procesar Markdown en el navegador. [COMPLETO]
+- [x] **Limpieza de Modelos DB:** Eliminación de los campos `RenderedContent` en Issues, Comentarios y Milestone. [COMPLETO]
+- [x] **Poda de Configuración Backend:** Eliminación total de las secciones `[markdown]`, `[smartypants]` y `[repository.editor]` del `app.ini` y del core. [COMPLETO]
+- [x] **No-op Sanitization:** Desactivación de la sanitización en backend para evitar doble procesamiento y errores de paridad. [COMPLETO]
 
 ---
-Migración Local (La más limpia): En la interfaz de "Migrar Repositorio", puedes usar una ruta local (ej: file:///ruta/a/tu/repo) y Ggit se encargará de crear el registro en la base de datos y copiar los archivos correctamente.
-Herramienta de "Adopción": Algunos administradores de Ggit tienen una opción en el panel de administración para "Escanear repositorios no registrados". Esto lee el disco y crea automáticamente los registros en la base de datos para las carpetas que encuentre "huérfanas".
 
-
-¿Te parece bien así o prefieres que intentemos montar una librería de renderizado en el frontend para experimentar?_ mini-summary: Evaluated the pros and cons of frontend vs. backend rendering for MDX. Recommended sticking with the current backend-driven approach for architectural consistency (mentions, issue linking) and performance (less JS payload). highlighted that the current hybrid solution provides MDX callouts and syntax highlighting while maintaining Ggit's core features. summary complete.
+## ✅ PROYECTO COMPLETADO AL 100%
+*Ggit es ahora una plataforma de gestión de código ultra-ligera, premium y totalmente desacoplada.*

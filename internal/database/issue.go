@@ -30,7 +30,6 @@ type Issue struct {
 	Poster          *User       `json:"-" gorm:"-"`
 	Title           string      `gorm:"column:name;not null"`
 	Content         string      `gorm:"type:TEXT"`
-	RenderedContent string      `json:"-" gorm:"-"`
 	Labels          []*Label    `json:"-" gorm:"-"`
 	MilestoneID     int64       `gorm:"index"`
 	Milestone       *Milestone  `json:"-" gorm:"-"`

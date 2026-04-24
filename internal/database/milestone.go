@@ -19,7 +19,6 @@ type Milestone struct {
 	RepoID          int64  `gorm:"index"`
 	Name            string `gorm:"not null"`
 	Content         string `gorm:"type:TEXT"`
-	RenderedContent string `json:"-" gorm:"-"`
 	IsClosed        bool
 	NumIssues       int
 	NumClosedIssues int
