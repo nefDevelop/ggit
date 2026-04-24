@@ -225,13 +225,16 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 
 	apiEntries := make([]entryData, len(entries))
+	entryNames := make([]string, len(entries))
 	for i, e := range entries {
 		apiEntries[i] = entryData{
 			Name: e.Name(),
 			Type: string(e.Type()),
 			Size: e.Size(),
 		}
+		entryNames[i] = e.Name()
 	}
+	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
 	res := map[string]any{
 		"type":       "directory",
@@ -292,7 +295,8 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 	*/
 
-	// Stats and Languages (Only on root)
+	// Stats and Languages (Only on root) - Temporarily disabled for performance testing
+	/*
 	if c.Repo.TreePath == "" {
 		stats := map[string]int64{}
 		count, _ := c.Repo.Commit.CommitsCount()
@@ -310,6 +314,7 @@ func getRepoDirectory(c *context.APIContext) {
 		_ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
 		res["languages"] = langStats
 	}
+	*/
 
 	c.JSON(http.StatusOK, res)
 }
