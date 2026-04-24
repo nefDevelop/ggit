@@ -38,7 +38,7 @@ dev: clean-ports
 # Compila y corre el backend
 backend: build
 	@echo "Arrancando Backend Go en http://localhost:3005 ..."
-	@GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit web -c conf/app.ini -p 3005
+	@GGIT_WORK_DIR=$$(pwd) GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit web -c conf/app.ini -p 3005
 
 # Corre el frontend de Svelte
 frontend:
