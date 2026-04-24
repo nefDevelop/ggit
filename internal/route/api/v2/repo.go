@@ -3,7 +3,6 @@ package v2
 import (
 	"bytes"
 	stdcontext "context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/go-enry/go-enry/v2"
 	"github.com/gogs/git-module"
+	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
@@ -177,19 +177,17 @@ func GetRepoView(c *context.APIContext) {
 		return
 	}
 
-	if c.Repo.Commit == nil {
-		c.NotFoundOrError(fmt.Errorf("repository commit not found"), "get tree entry")
-		return
-	}
-
+	start := time.Now()
 	// For root directory, bypass TreeEntry check
 	if c.Repo.TreePath == "" {
 		getRepoDirectory(c)
+		log.Trace("GetRepoView (root) took %v", time.Since(start))
 		return
 	}
 
 	entry, err := c.Repo.Commit.TreeEntry(c.Repo.TreePath)
 	if err != nil {
+		log.Trace("TreeEntry error after %v: %v", time.Since(start), err)
 		c.NotFoundOrError(err, "get tree entry")
 		return
 	}
@@ -199,21 +197,26 @@ func GetRepoView(c *context.APIContext) {
 	} else {
 		getRepoFile(c, entry)
 	}
+	log.Trace("GetRepoView (%s) took %v", c.Repo.TreePath, time.Since(start))
 }
 
 func getRepoDirectory(c *context.APIContext) {
+	start := time.Now()
 	tree, err := c.Repo.Commit.Subtree(c.Repo.TreePath)
 	if err != nil {
 		c.Error(err, "get subtree")
 		return
 	}
+	log.Trace("getRepoDirectory: Subtree took %v", time.Since(start))
 
+	startEntries := time.Now()
 	entries, err := tree.Entries()
 	if err != nil {
 		c.Error(err, "list entries")
 		return
 	}
 	entries.Sort()
+	log.Trace("getRepoDirectory: Entries took %v", time.Since(startEntries))
 
 	type entryData struct {
 		Name string `json:"name"`
@@ -238,7 +241,7 @@ func getRepoDirectory(c *context.APIContext) {
 		"repository": c.Repo.Repository.APIFormat(c.Repo.Owner),
 	}
 
-	// Last commit info for this path - make it safer
+	/* Temporarily disabled for performance testing
 	lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 	if err == nil && len(lastCommit) > 0 {
 		res["last_commit"] = map[string]any{
@@ -251,14 +254,20 @@ func getRepoDirectory(c *context.APIContext) {
 			},
 		}
 	}
+    */
+	log.Trace("Directory %s has %d entries", c.Repo.TreePath, len(apiEntries))
 
-	// Readme detection and rendering
+	/* Temporarily disabled Readme detection for performance testing
 	var readmeFile *git.Blob
 	for _, entry := range entries {
 		if entry.IsTree() || !markup.IsReadmeFile(entry.Name()) {
 			continue
 		}
-		readmeFile = entry.Blob()
+
+		readmeFile, err = tree.Blob(entry.Name())
+		if err != nil {
+			log.Error("Failed to get README blob: %v", err)
+		}
 		break
 	}
 
@@ -281,6 +290,7 @@ func getRepoDirectory(c *context.APIContext) {
 			}
 		}
 	}
+	*/
 
 	// Stats and Languages (Only on root)
 	if c.Repo.TreePath == "" {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/cockroachdb/errors"
 	"github.com/editorconfig/editorconfig-core-go/v2"
@@ -274,12 +275,14 @@ func RepoRef() gin.HandlerFunc {
 		)
 
 		if gctx.Repo.GitRepo == nil {
+			startOpen := time.Now()
 			repoPath := database.RepoPath(gctx.Repo.Owner.Name, gctx.Repo.Repository.Name)
 			gctx.Repo.GitRepo, err = git.Open(repoPath)
 			if err != nil {
 				gctx.Error(err, "open repository")
 				return
 			}
+			log.Trace("git.Open took %v for %s", time.Since(startOpen), repoPath)
 		}
 
 		// In Gin, the "*" parameter is named differently depending on the route.
