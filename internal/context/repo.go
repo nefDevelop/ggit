@@ -292,7 +292,7 @@ func RepoRef() gin.HandlerFunc {
 
 		if path == "" {
 			refName = gctx.Repo.Repository.DefaultBranch
-			if !gctx.Repo.GitRepo.HasBranch(refName) {
+			if refName == "" || !gctx.Repo.GitRepo.HasBranch(refName) {
 				branches, err := gctx.Repo.GitRepo.Branches()
 				if err != nil {
 					gctx.Error(err, "get branches")
@@ -301,6 +301,11 @@ func RepoRef() gin.HandlerFunc {
 
 				if len(branches) > 0 {
 					refName = branches[0]
+					// Update default branch if it was empty
+					if gctx.Repo.Repository.DefaultBranch == "" {
+						gctx.Repo.Repository.DefaultBranch = refName
+						_ = gctx.Repo.Repository.Update()
+					}
 				} else {
 					log.Warn("Repository %s/%s has no branches but IsBare is false", gctx.Repo.Owner.Name, gctx.Repo.Repository.Name)
 					return
