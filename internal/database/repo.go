@@ -960,6 +960,13 @@ func CleanUpMigrateInfo(repo *Repository) (*Repository, error) {
 		return repo, errors.Newf("cleanUpMigrateGitConfig: %v", err)
 	}
 
+	_, stderr, err := process.ExecDir(-1,
+		repoPath, fmt.Sprintf("CleanUpMigrateInfo 'git update-server-info': %s", repoPath),
+		"git", "update-server-info")
+	if err != nil {
+		return repo, errors.Newf("CleanUpMigrateInfo 'git update-server-info': %s", stderr)
+	}
+
 	return repo, UpdateRepository(repo, false)
 }
 
