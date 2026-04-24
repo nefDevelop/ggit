@@ -909,7 +909,24 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		if strings.Contains(string(output), "fatal: bad default revision 'HEAD'") {
-			repo.IsBare = true
+			// Try to find any branch if HEAD is missing or broken
+			gitRepo, err := git.Open(repoPath)
+			if err == nil {
+				branches, _ := gitRepo.Branches()
+				if len(branches) > 0 {
+					repo.IsBare = false
+					repo.DefaultBranch = branches[0]
+					_, _ = git.SymbolicRef(repoPath, git.SymbolicRefOptions{
+						Name: "HEAD",
+						Ref:  git.RefsHeads + branches[0],
+					})
+					log.Info("Fixed missing HEAD for migrated repository %s: using %s", repo.FullName(), repo.DefaultBranch)
+				} else {
+					repo.IsBare = true
+				}
+			} else {
+				repo.IsBare = true
+			}
 		} else {
 			return repo, errors.Newf("check bare: %v - %s", err, output)
 		}
