@@ -74,6 +74,9 @@ var hooksTpls = map[git.HookName]string{
 func CreateDelegateHooks(repoPath string) error {
 	for _, name := range git.ServerSideHooks {
 		hookPath := filepath.Join(repoPath, "hooks", string(name))
+		if err := os.MkdirAll(filepath.Dir(hookPath), os.ModePerm); err != nil {
+			return errors.Newf("create hooks directory: %v", err)
+		}
 		if err := os.WriteFile(hookPath,
 			fmt.Appendf(nil, hooksTpls[name], conf.Repository.ScriptType, conf.AppPath(), conf.CustomConf),
 			os.ModePerm); err != nil {
