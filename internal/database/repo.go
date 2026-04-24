@@ -1576,8 +1576,8 @@ func updateRepository(tx *gorm.DB, repo *Repository, visibilityChanged bool) (er
 		repo.Website = repo.Website[:255]
 	}
 
-	if err = tx.Model(repo).Updates(repo).Error; err != nil {
-		return errors.Newf("update: %v", err)
+	if err = tx.Save(repo).Error; err != nil {
+		return errors.Newf("save: %v", err)
 	}
 
 	if visibilityChanged {
@@ -1627,7 +1627,7 @@ func updateRepository(tx *gorm.DB, repo *Repository, visibilityChanged bool) (er
 }
 
 func (r *Repository) Update() error {
-	return Handle.db.Model(r).Updates(r).Error
+	return Handle.db.Save(r).Error
 }
 
 func (r *Repository) UpdateCols(cols ...string) error {
