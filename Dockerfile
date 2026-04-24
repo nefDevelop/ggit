@@ -40,6 +40,9 @@ COPY docker ./docker
 COPY --from=binarybuilder /app/ggit/.bin/ggit .
 # Copiar el frontend compilado en la etapa 1
 COPY --from=frontendbuilder /app/ggit/frontend/build ./frontend/build
+# Copiar activos estáticos y configuración base
+COPY public ./public
+COPY conf ./conf
 
 RUN ./docker/build/finalize.sh
 

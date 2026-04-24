@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed img/*
+//go:embed img fonts
 var Files embed.FS
