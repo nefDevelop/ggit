@@ -124,10 +124,20 @@
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
+  @media (max-width: 600px) {
+    .section-header { margin-bottom: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { font-size: 0.9rem; }
+  }
+
   @media (max-width: 1024px) {
     .modern-table-card { border-radius: 1.5rem; }
+    .modern-table td { text-align: right; }
     .task-name, .spec-code, .time-stamp, .exec-pill, .pid-cell code, .proc-desc { text-align: right; }
-    .exec-pill { align-items: flex-end; }
+    .exec-pill { align-items: flex-end; margin-left: auto; }
+    .pid-cell code, .spec-code { display: inline-block; }
   }
 
   .monitor-layout { display: flex; flex-direction: column; gap: 4rem; }

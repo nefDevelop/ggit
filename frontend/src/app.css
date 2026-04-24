@@ -1265,6 +1265,13 @@ html, body {
   box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
   padding: 1.5rem;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.island * {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Integrated islands inside the main carved area */

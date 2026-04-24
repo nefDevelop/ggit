@@ -234,8 +234,8 @@
   @media (max-width: 600px) {
     .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
     .title-with-icon { flex-direction: column; gap: 1rem; }
-    .hero-icon { font-size: 2rem; padding: 0.75rem; }
-    h2 { font-size: 1.75rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    h2 { font-size: 1.5rem; }
   }
 
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }

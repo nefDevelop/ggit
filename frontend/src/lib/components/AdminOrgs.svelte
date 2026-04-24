@@ -134,6 +134,14 @@
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
+  @media (max-width: 600px) {
+    .section-header { margin-bottom: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { font-size: 0.9rem; }
+  }
+
   .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
 
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }

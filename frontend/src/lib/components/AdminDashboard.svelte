@@ -136,6 +136,14 @@
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
+  @media (max-width: 600px) {
+    .section-header { margin-bottom: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { font-size: 0.9rem; }
+  }
+
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
   
   .stat-premium-card { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }

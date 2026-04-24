@@ -359,10 +359,11 @@
 
   @media (max-width: 600px) {
     .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.75rem; }
-    .hero-icon { font-size: 2rem; padding: 0.75rem; }
-    .title-with-icon { gap: 1rem; }
-    .header-flex { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+    h2 { font-size: 1.5rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .header-flex { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .subtitle { font-size: 0.9rem; }
   }
 
   .profile-layout-grid {
@@ -370,6 +371,8 @@
     grid-template-columns: 240px 1fr;
     gap: 3rem;
     max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
   @media (max-width: 1100px) {
     .profile-layout-grid {
@@ -384,18 +387,20 @@
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
+    max-width: 100%;
   }
   .avatar-shield {
     position: relative;
     width: 200px;
     height: 200px;
+    max-width: 100%;
     border-radius: 5rem;
     overflow: hidden;
     border: 4px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-xl);
   }
   @media (max-width: 600px) {
-    .avatar-shield { width: 160px; height: 160px; border-radius: 3.5rem; }
+    .avatar-shield { width: 140px; height: 140px; border-radius: 3rem; }
   }
 
   .avatar-overlay {
@@ -452,15 +457,30 @@
     display: flex;
     flex-direction: column;
     gap: 3rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   @media (max-width: 800px) {
     .form-grid { grid-template-columns: 1fr; gap: 1.5rem; }
     .field.full-width { grid-column: auto; }
+    .settings-form { gap: 2rem; }
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .field.full-width {
+    grid-column: span 2;
   }
   .field label {
     font-size: 0.9rem;
@@ -476,6 +496,8 @@
     color: var(--text-color);
     font-size: 1.05rem;
     transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box;
   }
   .field input:focus {
     border-color: var(--primary-color);
