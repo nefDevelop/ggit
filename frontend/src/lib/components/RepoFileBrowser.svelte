@@ -6,6 +6,8 @@
   import { getLanguageColor } from '$lib/utils/languages';
   import RepoSearchResults from './RepoSearchResults.svelte';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
+  import hljs from 'highlight.js';
+  import 'highlight.js/styles/github-dark.css';
   
   let { path = '' } = $props();
   let username = $derived(page.params.username);
@@ -16,6 +18,18 @@
   let error = $state('');
   
   let searchQuery = $state('');
+
+  let highlightedLines = $derived(() => {
+    if (!repoData?.content || !repoData?.is_text_file) return [];
+    const language = repoData.name.split('.').pop() || '';
+    let html: string;
+    try {
+      html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
+    } catch (e) {
+      html = hljs.highlightAuto(repoData.content).value;
+    }
+    return html.split('\n');
+  });
 
   function handleSearch(e: any) {
     searchQuery = e.detail;
@@ -202,12 +216,12 @@ git push -u origin main</code></pre>
                    {#if repoData.is_text_file}
                       <div class="code-grid">
                         <div class="ln-col">
-                          {#each repoData.highlighted_content || [] as _, i}
+                          {#each highlightedLines() as _, i}
                             <span>{i + 1}</span>
                           {/each}
                         </div>
-                        <pre class="code-pre">
-                          {#each repoData.highlighted_content || [] as line}
+                        <pre class="code-pre hljs">
+                          {#each highlightedLines() as line}
                             <div class="line">{@html line || '&nbsp;'}</div>
                           {/each}
                         </pre>

@@ -10,11 +10,8 @@ import (
 	"github.com/urfave/cli/v3"
 	log "unknwon.dev/clog/v2"
 
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "github.com/nef734/ggit/docs"
-
 	"github.com/nef734/ggit/internal/conf"
+
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/ginx"
 	"github.com/nef734/ggit/internal/route"
@@ -73,9 +70,10 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	apiv2.RegisterRoutes(v2Group)
 
 	// Swagger UI
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	registerSwagger(r.Engine)
 
 	// SPA Routing
+
 	r.GET("/", ginx.ServeSPA)
 	r.NoRoute(ginx.ServeSPA)
 

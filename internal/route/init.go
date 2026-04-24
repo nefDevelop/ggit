@@ -14,7 +14,6 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
 	"github.com/nef734/ggit/internal/ssh"
-	"github.com/nef734/ggit/internal/template/highlight"
 	"github.com/nef734/ggit/internal/services"
 )
 
@@ -51,7 +50,6 @@ func GlobalInit(customConf string) error {
 	email.NewContext()
 
 	if conf.Security.InstallLock {
-		highlight.NewContext()
 		err := database.NewEngine()
 		if err != nil {
 			log.Fatal("Failed to initialize ORM engine: %v", err)

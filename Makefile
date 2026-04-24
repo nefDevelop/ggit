@@ -13,8 +13,10 @@ help:
 	@echo "  make dev       - Ejecuta backend y frontend en paralelo"
 	@echo "  make backend   - Ejecuta el servidor Ggit (puerto 3005)"
 	@echo "  make frontend  - Ejecuta el servidor de desarrollo Svelte (puerto 5555)"
-	@echo "  make build     - Compila el binario de Ggit"
-	@echo "  make sync      - Sincroniza plantillas de gitignore"
+	@echo "  make build             - Compila el binario de Ggit (Sin Swagger)"
+	@echo "  make build-swagger     - Compila con Swagger embebido (Pesado, offline)"
+	@echo "  make build-swagger-cdn - Compila con Swagger vía CDN (Ligero, online)"
+	@echo "  make sync              - Sincroniza plantillas de gitignore"
 	@echo "  make test      - Ejecuta los tests de Go"
 	@echo "  make install   - Instala las dependencias del frontend"
 
@@ -49,9 +51,21 @@ sync-i18n:
 
 # Compila el binario
 build:
-	@echo "Compilando Ggit (Commit: $(BUILD_COMMIT))..."
+	@echo "Compilando Ggit (Sin Swagger)..."
 	@mkdir -p .bin
 	@go build -v -tags "$(TAGS)" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+
+# Compila con Swagger embebido (Pesado, offline)
+build-swagger:
+	@echo "Compilando Ggit con Swagger embebido..."
+	@mkdir -p .bin
+	@go build -v -tags "$(TAGS) swagger" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+
+# Compila con Swagger CDN (Ligero, online)
+build-swagger-cdn:
+	@echo "Compilando Ggit con Swagger CDN..."
+	@mkdir -p .bin
+	@go build -v -tags "$(TAGS) swagger_cdn" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
 
 # Fuerza la recompilación completa
 rebuild:

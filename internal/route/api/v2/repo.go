@@ -16,10 +16,8 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/markup"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
-	"github.com/nef734/ggit/internal/template/highlight"
 	"github.com/nef734/ggit/internal/tool"
-)
-
+	)
 // SearchRepoContents searches for a keyword in the repository using git grep.
 func SearchRepoContents(c *context.APIContext) {
 	q := c.Query("q")
@@ -169,6 +167,11 @@ func CreateRepo(c *context.APIContext) {
 
 // GetRepoView returns the content of a file or directory in the repository.
 func GetRepoView(c *context.APIContext) {
+	if c.Repo == nil || c.Repo.Repository == nil {
+		c.Status(http.StatusNotFound)
+		return
+	}
+
 	if c.Repo.Repository.IsBare {
 		c.JSON(http.StatusOK, map[string]any{
 			"is_bare":    true,
@@ -376,7 +379,6 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	if tool.IsTextFile(p) {
 		content := string(p)
 		res["content"] = content
-		res["highlighted_content"] = highlight.Code(blob.Name(), content)
 
 		if markup.IsReadmeFile(blob.Name()) {
 			res["readme_content"] = string(p)

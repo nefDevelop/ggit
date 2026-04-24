@@ -5,7 +5,6 @@ go 1.25.9
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/semver/v3 v3.4.0
-	github.com/alecthomas/chroma/v2 v2.23.1
 	github.com/cockroachdb/errors v1.12.0
 	github.com/derision-test/go-mockgen/v2 v2.1.1
 	github.com/editorconfig/editorconfig-core-go/v2 v2.6.4
@@ -62,7 +61,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/djherbis/buffer v1.2.0 // indirect
 	github.com/djherbis/nio/v3 v3.0.1 // indirect
-	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect

@@ -15,7 +15,6 @@ import (
 	"github.com/gogs/git-module"
 
 	"github.com/nef734/ggit/internal/conf"
-	"github.com/nef734/ggit/internal/template/highlight"
 	"github.com/nef734/ggit/internal/tool"
 )
 
@@ -109,11 +108,6 @@ func diffsToHTML(diffs []diffmatchpatch.Diff, lineType git.DiffLineType) templat
 type DiffFile struct {
 	*git.DiffFile
 	Sections []*DiffSection
-}
-
-// HighlightClass returns the detected highlight class for the file.
-func (diffFile *DiffFile) HighlightClass() string {
-	return highlight.FileNameToHighlightClass(diffFile.Name)
 }
 
 // Diff is a wrapper to git.Diff with helper methods.
