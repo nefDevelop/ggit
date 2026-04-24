@@ -261,6 +261,9 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 func RepoRef() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		gctx := c.MustGet("context").(*Context)
+		if gctx.Repo.Repository == nil {
+			return
+		}
 		if gctx.Repo.Repository.IsBare {
 			return
 		}

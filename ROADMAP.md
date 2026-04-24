@@ -194,4 +194,3 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 ---
 Migración Local (La más limpia): En la interfaz de "Migrar Repositorio", puedes usar una ruta local (ej: file:///ruta/a/tu/repo) y Ggit se encargará de crear el registro en la base de datos y copiar los archivos correctamente.
 Herramienta de "Adopción": Algunos administradores de Ggit tienen una opción en el panel de administración para "Escanear repositorios no registrados". Esto lee el disco y crea automáticamente los registros en la base de datos para las carpetas que encuentre "huérfanas".
-Sincronización Manual: Se puede hacer por línea de comandos usando las herramientas de administración de Ggit.
