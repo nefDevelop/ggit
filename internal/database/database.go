@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -72,6 +73,13 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 		SlowThreshold: 100 * time.Millisecond,
 		LogLevel:      level,
 	})
+
+	// Ensure database directory exists
+	if conf.Database.Type == "sqlite3" {
+		if err := os.MkdirAll(filepath.Dir(conf.Database.Path), 0755); err != nil {
+			return nil, errors.Wrap(err, "create database directory")
+		}
+	}
 
 	db, err := dbx.OpenDB(
 		conf.Database,
