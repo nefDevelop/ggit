@@ -171,6 +171,9 @@ func setupStatic(r *Engine) {
 	// Svelte Build Static Files
 	svelteBuildDir := filepath.Join(conf.WorkDir(), "frontend/build")
 	r.Static("/_app", filepath.Join(svelteBuildDir, "_app"))
+	
+	// Static Assets (Fonts, etc.)
+	r.Static("/fonts", filepath.Join(conf.WorkDir(), "frontend/static/fonts"))
 }
 
 // ServeSPA serves the Svelte frontend entry point (index.html).
