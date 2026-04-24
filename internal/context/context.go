@@ -270,9 +270,11 @@ func (c *Context) Error(err error, msg string) {
 			"error":   msg,
 			"details": err.Error(),
 		})
+		c.Abort()
 		return
 	}
 	c.HTML(http.StatusInternalServerError, "status/500")
+	c.Abort()
 }
 
 func (c *Context) Errorf(err error, format string, args ...any) {
@@ -286,9 +288,11 @@ func (c *Context) StatusErrorf(status int, format string, args ...any) {
 	log.ErrorDepth(4, "%s", msg)
 	if strings.HasPrefix(c.Request.URL.Path, "/api/v2") {
 		c.JSON(status, map[string]any{"error": msg})
+		c.Abort()
 		return
 	}
 	c.HTML(status, "status/500")
+	c.Abort()
 }
 
 func (c *Context) BaseURL() string {

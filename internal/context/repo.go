@@ -307,7 +307,7 @@ func RepoRef() gin.HandlerFunc {
 						_ = gctx.Repo.Repository.Update()
 					}
 				} else {
-					log.Warn("Repository %s/%s has no branches but IsBare is false", gctx.Repo.Owner.Name, gctx.Repo.Repository.Name)
+					gctx.Error(fmt.Errorf("no branches found"), "get branches")
 					return
 				}
 			}

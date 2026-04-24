@@ -27,6 +27,7 @@ func (c *APIContext) StatusError(status int, msg string, err error) {
 		log.ErrorDepth(4, "%s: %v", msg, err)
 	}
 	c.JSON(status, map[string]string{"message": msg})
+	c.Abort()
 }
 
 func (c *APIContext) ErrorStatus(status int, err error) {
