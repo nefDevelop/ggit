@@ -178,15 +178,21 @@
 
   .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   .token-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  
+  @media (max-width: 800px) {
+    .token-row { flex-direction: column; align-items: stretch; padding: 1.5rem; gap: 1.5rem; }
+    .token-actions { display: flex; justify-content: flex-end; }
+  }
+
   .token-row:last-child { border-bottom: none; }
   .token-row:hover { background: rgba(255,255,255,0.02); }
 
-  .token-main { display: flex; align-items: center; gap: 1.5rem; }
-  .token-icon-wrap { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); }
+  .token-main { display: flex; align-items: center; gap: 1.5rem; min-width: 0; }
+  .token-icon-wrap { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); flex-shrink: 0; }
   .token-icon-wrap span { font-size: 2rem; }
 
-  .token-info { display: flex; flex-direction: column; gap: 0.4rem; }
-  .token-name { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
+  .token-info { display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; flex: 1; }
+  .token-name { font-size: 1.25rem; font-weight: 900; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .token-date { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 700; }
 
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
@@ -196,6 +202,11 @@
   /* FORM */
   .form-box { padding: 3rem; background: rgba(255,255,255,0.01); border-radius: 2.5rem; }
   .inline-input-layout { display: flex; align-items: flex-end; gap: 1.5rem; }
+  
+  @media (max-width: 600px) {
+    .form-box { padding: 1.5rem; }
+    .inline-input-layout { flex-direction: column; align-items: stretch; }
+  }
   .field { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
   .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 0.85rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; height: 3.5rem; }

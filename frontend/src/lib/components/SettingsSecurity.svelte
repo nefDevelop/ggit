@@ -230,8 +230,16 @@
   :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   
   .section-header { margin-bottom: 4rem; }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  @media (max-width: 600px) {
+    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
+    .title-with-icon { flex-direction: column; gap: 1rem; }
+    .hero-icon { font-size: 2rem; padding: 0.75rem; }
+    h2 { font-size: 1.75rem; }
+  }
+
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
@@ -243,20 +251,29 @@
 
   .island { border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.01); }
   .form-box { padding: 3rem; }
+  @media (max-width: 600px) {
+    .form-box { padding: 1.5rem; border-radius: 1.5rem; }
+  }
 
   .security-form { display: flex; flex-direction: column; gap: 2.5rem; }
   .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
-  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; }
+  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; box-sizing: border-box; }
   .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
-  .form-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
+  .form-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); gap: 1.5rem; }
+  @media (max-width: 800px) {
+    .form-footer { flex-direction: column; align-items: stretch; }
+    .form-footer button { width: 100%; order: 2; }
+    .status-alert { order: 1; }
+  }
   .status-alert { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; color: #10b981; }
   .status-alert.is-error { color: var(--error); }
 
   /* 2FA ENROLLMENT */
   .enrollment-box { padding: 3rem; }
+  @media (max-width: 600px) { .enrollment-box { padding: 1.5rem; border-radius: 1.5rem; } }
   .enrollment-box.is-protected { background: rgba(16, 185, 129, 0.03); border-color: rgba(16, 185, 129, 0.2); }
   
   .enrollment-header { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
@@ -268,27 +285,33 @@
   .status-text span { color: var(--text-muted); font-size: 1rem; }
 
   .recovery-view { margin-top: 2.5rem; padding: 2.5rem; background: #08080c; border-radius: 2rem; border: 1px solid #1a1a24; text-align: center; }
+  @media (max-width: 600px) { .recovery-view { padding: 1.5rem; } }
   .recovery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 2rem 0; }
+  @media (max-width: 500px) { .recovery-grid { grid-template-columns: 1fr; } }
   .recovery-grid code { background: #000; padding: 1rem; border-radius: 1rem; color: var(--primary-color); font-weight: 900; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; letter-spacing: 0.1em; border: 1px solid #222; }
 
   .enrollment-flow { margin-top: 3rem; }
   .steps-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .step-card { padding: 2rem; border-radius: 2rem; position: relative; }
+  @media (max-width: 600px) { .step-card { padding: 1.5rem; } }
   .step-num { position: absolute; top: 1.5rem; right: 1.5rem; width: 32px; height: 32px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; }
   .qr-wrap { background: white; padding: 1rem; border-radius: 1.5rem; width: fit-content; margin: 1.5rem auto; }
   .qr-wrap img { width: 180px; height: 180px; }
   .manual-code { text-align: center; }
-  .manual-code code { display: block; margin-top: 0.5rem; background: #000; padding: 0.75rem; border-radius: 0.75rem; color: var(--primary-color); font-weight: 800; }
+  .manual-code code { display: block; margin-top: 0.5rem; background: #000; padding: 0.75rem; border-radius: 0.75rem; color: var(--primary-color); font-weight: 800; word-break: break-all; }
 
   .verify-box { display: flex; flex-direction: column; gap: 1rem; margin: 2rem 0; }
-  .verify-box input { text-align: center; font-size: 2rem; font-weight: 950; letter-spacing: 0.3em; background: #000; border: 2px solid var(--primary-color); padding: 1rem; border-radius: 1.25rem; color: white; }
+  .verify-box input { text-align: center; font-size: 2rem; font-weight: 950; letter-spacing: 0.3em; background: #000; border: 2px solid var(--primary-color); padding: 1rem; border-radius: 1.25rem; color: white; width: 100%; box-sizing: border-box; }
+  @media (max-width: 600px) { .verify-box input { font-size: 1.5rem; letter-spacing: 0.2em; } }
 
   .manage-2fa { margin-top: 2.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 2.5rem; }
-  .actions-row { display: flex; gap: 1rem; }
+  .actions-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+  @media (max-width: 600px) { .actions-row button { width: 100%; } }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   @media (max-width: 900px) {
     .steps-row { grid-template-columns: 1fr; }
-    .enrollment-header { flex-direction: column; align-items: flex-start; }
+    .enrollment-header { flex-direction: column; align-items: stretch; text-align: center; }
+    .status-indicator { flex-direction: column; }
   }
 </style>

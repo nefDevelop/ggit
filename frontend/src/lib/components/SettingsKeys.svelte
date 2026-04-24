@@ -153,25 +153,30 @@
 
   .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   .key-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  
+  @media (max-width: 800px) {
+    .key-row { flex-direction: column; align-items: stretch; padding: 1.5rem; gap: 1.5rem; }
+    .key-actions { display: flex; justify-content: flex-end; }
+  }
+
   .key-row:last-child { border-bottom: none; }
   .key-row:hover { background: rgba(255,255,255,0.02); }
 
-  .key-main { display: flex; align-items: center; gap: 1.5rem; }
-  .key-type-icon { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); }
+  .key-main { display: flex; align-items: center; gap: 1.5rem; min-width: 0; }
+  .key-type-icon { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); flex-shrink: 0; }
   .key-type-icon span { font-size: 2rem; }
 
-  .key-info { display: flex; flex-direction: column; gap: 0.4rem; overflow: hidden; }
-  .key-title { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
-  .key-fingerprint { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #888; background: #111; padding: 0.3rem 0.75rem; border-radius: 8px; border: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400px; }
+  .key-info { display: flex; flex-direction: column; gap: 0.4rem; overflow: hidden; flex: 1; }
+  .key-title { font-size: 1.25rem; font-weight: 900; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .key-fingerprint { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #888; background: #111; padding: 0.3rem 0.75rem; border-radius: 8px; border: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
   .key-date { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 700; }
-
-  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
-
-  .empty-keys-box { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .empty-keys-box span { font-size: 3rem; opacity: 0.2; }
 
   /* ADD FORM */
   .form-box { padding: 3rem; background: rgba(255,255,255,0.01); }
+  @media (max-width: 600px) {
+    .form-box { padding: 1.5rem; }
+    .form-footer button { width: 100%; }
+  }
   .premium-key-form { display: flex; flex-direction: column; gap: 2rem; }
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }

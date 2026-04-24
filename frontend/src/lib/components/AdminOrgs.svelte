@@ -71,8 +71,8 @@
         {:else}
           {#each orgs as org}
             <tr class="hover-row">
-              <td class="id-cell">#{org.id}</td>
-              <td>
+              <td class="id-cell" data-label="ID">#{org.id}</td>
+              <td data-label={i18n.t('organization')}>
                 <div class="user-cell">
                   <Avatar src={org.avatar_url} username={org.username} size={48} />
                   <div class="names">
@@ -81,10 +81,10 @@
                   </div>
                 </div>
               </td>
-              <td>
+              <td data-label={i18n.t('settings.full_name')}>
                 <span class="full-name">{org.full_name || '—'}</span>
               </td>
-              <td>
+              <td data-label="Métricas">
                 <div class="metrics-grid">
                   <div class="metric">
                     <span class="val">{org.num_teams}</span>
@@ -96,7 +96,7 @@
                   </div>
                 </div>
               </td>
-              <td>
+              <td data-label="Acciones">
                 <div class="action-row">
                   <Button variant="ghost" size="sm" icon="visibility" href="/org/{org.username}" />
                   <Button variant="ghost" size="sm" icon="edit" onclick={() => editingOrg = org} />
@@ -122,19 +122,32 @@
 <style>
   :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   
-  .section-header { margin-bottom: 4rem; }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  @media (max-width: 600px) {
+    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
+    .title-with-icon { flex-direction: column; gap: 1rem; }
+  }
+
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
-  
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
+
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
   .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-  
+
   .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
   .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
   .modern-table tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 1024px) {
+    .modern-table-card { border-radius: 1.5rem; }
+    .user-cell { justify-content: flex-end; }
+    .metrics-grid { justify-content: flex-end; }
+    .action-row { justify-content: flex-end; }
+  }
+
 
   .id-cell { font-family: monospace; color: var(--text-muted); font-weight: 700; opacity: 0.5; }
 

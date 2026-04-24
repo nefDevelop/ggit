@@ -157,8 +157,14 @@
 <style>
   :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   .section-header { margin-bottom: 4rem; }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  @media (max-width: 600px) {
+    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
+    .title-with-icon { flex-direction: column; gap: 1rem; }
+  }
+
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
@@ -166,24 +172,27 @@
 
   .config-modular-section { display: flex; flex-direction: column; gap: 1.5rem; }
   
-  .section-tag-wrapper { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; }
+  .section-tag-wrapper { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; gap: 1rem; }
   .section-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: none; padding-bottom: 0; width: fit-content; }
   .section-tag span { font-size: 1.25rem; }
 
   .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
-  .config-tile { padding: 1.25rem 1.75rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 0.25rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; }
+  @media (max-width: 600px) {
+    .config-grid { grid-template-columns: 1fr; }
+    .config-tile { padding: 1rem; }
+  }
+  .config-tile { padding: 1.25rem 1.75rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 0.25rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; min-width: 0; }
   .config-tile:hover { transform: translateY(-3px); background: rgba(255,255,255,0.02); border-color: var(--primary-color); }
   .tile-key { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; }
   .tile-val { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   .special-action-card { padding: 3rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
-  .action-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
-  .action-header span { font-size: 2.5rem; color: var(--primary-color); }
-  .action-header h4 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .action-body p { margin: 0 0 2rem 0; color: var(--text-muted); line-height: 1.6; }
-  
-  .action-form { display: flex; flex-direction: column; gap: 2rem; max-width: 600px; }
-  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 600px) {
+    .special-action-card { padding: 1.5rem; border-radius: 1.5rem; }
+    .action-header span { font-size: 2rem; }
+    .action-header h4 { font-size: 1.25rem; }
+    .field-row { grid-template-columns: 1fr; }
+  }
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.8rem; font-weight: 800; color: var(--text-color); }
   .field input { background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); }

@@ -30,11 +30,13 @@
 
 <Card class="settings-premium-card" padding="lg">
   <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">monitoring</span>
-      <div>
-        <h2>Monitor del Sistema</h2>
-        <p class="subtitle">Tareas programadas, procesos activos y recursos</p>
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">monitoring</span>
+        <div>
+          <h2>Monitor del Sistema</h2>
+          <p class="subtitle">Tareas programadas, procesos activos y recursos</p>
+        </div>
       </div>
     </div>
   </header>
@@ -62,10 +64,10 @@
             <tbody>
               {#each monitorData.cron as task}
                 <tr class="hover-row">
-                  <td><strong class="task-name">{task.Description}</strong></td>
-                  <td><code class="spec-code">{task.Spec}</code></td>
-                  <td><span class="time-stamp">{formatTime(task.Next)}</span></td>
-                  <td>
+                  <td data-label="Descripción"><strong class="task-name">{task.Description}</strong></td>
+                  <td data-label="Intervalo"><code class="spec-code">{task.Spec}</code></td>
+                  <td data-label="Próxima Ejecución"><span class="time-stamp">{formatTime(task.Next)}</span></td>
+                  <td data-label="Estado">
                     <div class="exec-pill">
                       <span class="val">{task.ExecTimes}</span>
                       <span class="lab">Ejecs.</span>
@@ -96,9 +98,9 @@
             <tbody>
               {#each monitorData.processes as proc}
                 <tr class="hover-row">
-                  <td class="pid-cell"><code>{proc.PID}</code></td>
-                  <td class="proc-desc">{proc.Description}</td>
-                  <td><span class="time-stamp">{formatTime(proc.Start)}</span></td>
+                  <td class="pid-cell" data-label="PID"><code>{proc.PID}</code></td>
+                  <td class="proc-desc" data-label="Descripción del Proceso">{proc.Description}</td>
+                  <td data-label="Iniciado el"><span class="time-stamp">{formatTime(proc.Start)}</span></td>
                 </tr>
               {/each}
             </tbody>
@@ -112,10 +114,21 @@
 <style>
   :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   .section-header { margin-bottom: 4rem; }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  @media (max-width: 600px) {
+    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
+    .title-with-icon { flex-direction: column; gap: 1rem; }
+  }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
+
+  @media (max-width: 1024px) {
+    .modern-table-card { border-radius: 1.5rem; }
+    .task-name, .spec-code, .time-stamp, .exec-pill, .pid-cell code, .proc-desc { text-align: right; }
+    .exec-pill { align-items: flex-end; }
+  }
 
   .monitor-layout { display: flex; flex-direction: column; gap: 4rem; }
   .monitor-section { display: flex; flex-direction: column; gap: 1.5rem; }

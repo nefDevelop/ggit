@@ -83,26 +83,26 @@
         {:else}
           {#each auditLogs as log}
             <tr class="hover-row">
-              <td class="time-cell">{formatDate(log.created_at)}</td>
-              <td>
+              <td class="time-cell" data-label="Tiempo del Evento">{formatDate(log.created_at)}</td>
+              <td data-label="Acción Realizada">
                 <span class="op-capsule" style="--op-color: {getOpColor(log.op_type)}">
                   {log.op_name}
                 </span>
               </td>
-              <td>
+              <td data-label="Usuario Responsable">
                 <div class="actor-brand">
                   <span class="material-symbols-rounded">person</span>
                   <strong>{log.actor_name}</strong>
                 </div>
               </td>
-              <td class="repo-cell">
+              <td class="repo-cell" data-label="Entidad / Repositorio">
                 {#if log.repo_path}
                    <a href="/{log.repo_path}" class="repo-link">{log.repo_path}</a>
                 {:else}
                    <span class="muted-value">—</span>
                 {/if}
               </td>
-              <td>
+              <td data-label="Detalles Técnicos">
                 {#if log.content}
                    <code class="mini-snippet">{log.content.slice(0, 60)}{log.content.length > 60 ? '...' : ''}</code>
                 {:else}
@@ -130,8 +130,13 @@
   
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  @media (max-width: 600px) {
+    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
+    .title-with-icon { flex-direction: column; gap: 1rem; }
+  }
+
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
@@ -140,6 +145,12 @@
   .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
   .modern-table tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 1024px) {
+    .modern-table-card { border-radius: 1.5rem; }
+    .time-cell, .op-capsule, .actor-brand, .repo-link, .mini-snippet { text-align: right; }
+    .actor-brand { justify-content: flex-end; }
+  }
 
   .time-cell { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; opacity: 0.8; }
   

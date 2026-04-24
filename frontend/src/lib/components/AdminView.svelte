@@ -136,6 +136,7 @@
     width: 100%;
     position: relative;
     overflow: hidden;
+    min-width: 0;
   }
 
   .nav-item:hover {
@@ -152,6 +153,14 @@
 
   .nav-item span.material-symbols-rounded {
     font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .label-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
   }
 
   .active-indicator {
@@ -169,6 +178,7 @@
     flex-direction: column;
     gap: 3rem;
     animation: contentFade 0.5s ease-out;
+    min-width: 0;
   }
 
   @keyframes contentFade {
@@ -179,10 +189,39 @@
   @media (max-width: 1200px) {
     .admin-container {
       grid-template-columns: 1fr;
+      padding: 1.5rem;
+      gap: 2rem;
     }
     .admin-sidebar {
       position: relative;
       top: 0;
+      gap: 1.5rem;
     }
+    .admin-nav {
+      flex-direction: row;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+      margin: 0 -1.5rem;
+      padding-left: 1.5rem;
+      scrollbar-width: none;
+    }
+    .admin-nav::-webkit-scrollbar { display: none; }
+    .nav-item {
+      width: auto;
+      padding: 0.75rem 1.25rem;
+      border-radius: 100px;
+      flex-shrink: 0;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .nav-item:hover { transform: none; }
+    .active-indicator {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .sidebar-brand span { font-size: 1.75rem; }
+    .sidebar-title { font-size: 1.1rem; }
   }
 </style>

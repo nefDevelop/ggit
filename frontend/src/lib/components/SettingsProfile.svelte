@@ -357,6 +357,14 @@
     font-size: 1.1rem;
   }
 
+  @media (max-width: 600px) {
+    .section-header { margin-bottom: 2rem; }
+    h2 { font-size: 1.75rem; }
+    .hero-icon { font-size: 2rem; padding: 0.75rem; }
+    .title-with-icon { gap: 1rem; }
+    .header-flex { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  }
+
   .profile-layout-grid {
     display: grid;
     grid-template-columns: 240px 1fr;
@@ -368,6 +376,7 @@
       grid-template-columns: 1fr;
       gap: 2rem;
     }
+    .avatar-column { order: -1; }
   }
 
   .avatar-column {
@@ -385,6 +394,10 @@
     border: 4px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-xl);
   }
+  @media (max-width: 600px) {
+    .avatar-shield { width: 160px; height: 160px; border-radius: 3.5rem; }
+  }
+
   .avatar-overlay {
     position: absolute;
     inset: 0;
@@ -400,6 +413,12 @@
   .avatar-shield:hover .avatar-overlay {
     opacity: 1;
   }
+
+  @media (max-width: 1024px) {
+    .avatar-overlay { opacity: 1; background: rgba(0,0,0,0.3); align-items: flex-end; padding-bottom: 1rem; }
+    .overlay-btn { width: 40px; height: 40px; }
+  }
+
   .overlay-btn {
     width: 48px;
     height: 48px;
@@ -439,13 +458,9 @@
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .field.full-width {
-    grid-column: span 2;
+  @media (max-width: 800px) {
+    .form-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .field.full-width { grid-column: auto; }
   }
   .field label {
     font-size: 0.9rem;
@@ -495,6 +510,10 @@
     border: 2px solid var(--primary-color);
     background: rgba(var(--primary-rgb), 0.03);
     animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  @media (max-width: 800px) {
+    .magic-avatar-panel { grid-template-columns: 1fr; padding: 1.5rem; gap: 2rem; border-radius: 1.5rem; }
+    .preview-shield { width: 120px; height: 120px; }
   }
   @keyframes slideDown {
     from { opacity: 0; transform: translateY(-20px); }
