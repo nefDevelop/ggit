@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/gogs/git-module"
+	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
@@ -190,6 +191,17 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 
 		gitRepo, err := git.Open(database.RepoPath(ownerName, repoName))
 		if err != nil {
+			if gctx.IsLogged && (gctx.User.IsAdmin || gctx.User.ID == repo.OwnerID) {
+				log.Warn("Repository directory missing for %s/%s: %v", ownerName, repoName, err)
+				gctx.Data["Title"] = owner.Name + "/" + repo.Name
+				gctx.Data["Repository"] = repo
+				gctx.Data["Owner"] = gctx.Repo.Repository.Owner
+				gctx.Data["IsRepositoryOwner"] = gctx.Repo.IsOwner()
+				gctx.Data["IsRepositoryAdmin"] = gctx.Repo.IsAdmin()
+				gctx.Data["IsRepositoryWriter"] = gctx.Repo.IsWriter()
+				gctx.Data["IsBrokenRepo"] = true
+				return
+			}
 			gctx.Error(err, "open repository")
 			return
 		}

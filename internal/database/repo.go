@@ -821,7 +821,7 @@ func (r *Repository) SavePatch(index int64, patch []byte) error {
 func isRepositoryExist(tx *gorm.DB, u *User, repoName string) (bool, error) {
 	var count int64
 	err := tx.Model(new(Repository)).Where("owner_id = ? AND lower_name = ?", u.ID, strings.ToLower(repoName)).Count(&count).Error
-	return count > 0 && osx.IsDir(RepoPath(u.Name, repoName)), err
+	return count > 0 || osx.IsDir(RepoPath(u.Name, repoName)), err
 }
 
 // IsRepositoryExist returns true if the repository with given name under user has already existed.
