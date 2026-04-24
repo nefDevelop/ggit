@@ -405,6 +405,15 @@ func GetRepoCommits(c *context.APIContext) {
 		pageSize = 20
 	}
 
+	if c.Repo.Commit == nil {
+		c.JSON(http.StatusOK, map[string]any{
+			"commits":  []any{},
+			"page":     page,
+			"pageSize": pageSize,
+		})
+		return
+	}
+
 	commits, err := c.Repo.Commit.CommitsByPage(page, pageSize, git.CommitsByPageOptions{Path: c.Repo.TreePath})
 	if err != nil {
 		c.Error(err, "paging commits")

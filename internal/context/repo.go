@@ -299,7 +299,7 @@ func RepoRef() gin.HandlerFunc {
 				if len(branches) > 0 {
 					refName = branches[0]
 				} else {
-					// If no branches and not bare, something is wrong or it's empty
+					log.Warn("Repository %s/%s has no branches but IsBare is false", gctx.Repo.Owner.Name, gctx.Repo.Repository.Name)
 					return
 				}
 			}
