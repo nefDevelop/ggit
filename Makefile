@@ -53,19 +53,19 @@ sync-i18n:
 build:
 	@echo "Compilando Ggit (Sin Swagger)..."
 	@mkdir -p .bin
-	@go build -v -tags "$(TAGS)" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+	@go build -v -tags "$(shell echo $(TAGS) | tr ' ' ',')" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
 
 # Compila con Swagger embebido (Pesado, offline)
 build-swagger:
 	@echo "Compilando Ggit con Swagger embebido..."
 	@mkdir -p .bin
-	@go build -v -tags "$(TAGS) swagger" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+	@go build -v -tags "$(shell echo $(TAGS) swagger | tr ' ' ',')" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
 
 # Compila con Swagger CDN (Ligero, online)
 build-swagger-cdn:
 	@echo "Compilando Ggit con Swagger CDN..."
 	@mkdir -p .bin
-	@go build -v -tags "$(TAGS) swagger_cdn" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+	@go build -v -tags "$(shell echo $(TAGS) swagger_cdn | tr ' ' ',')" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
 
 # Fuerza la recompilación completa
 rebuild:

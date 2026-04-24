@@ -1,6 +1,6 @@
 # Binarios y artefactos de compilación
-ggit
-gogs
+/ggit
+/gogs
 *.test
 *.exe
 *.exe~
