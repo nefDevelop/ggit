@@ -346,11 +346,40 @@ git push -u origin main</code></pre>
   .file-row.clickable { cursor: pointer; }
   .file-row:hover { background: var(--surface-variant); }
 
-  .name-cell { display: flex; align-items: center; gap: 0.75rem; min-width: 250px; }
-  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 600; font-size: 0.95rem; }
+  .name-cell { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
+    min-width: 150px;
+    max-width: 300px;
+  }
+  .name-cell a { 
+    color: var(--text-color); 
+    text-decoration: none; 
+    font-weight: 600; 
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+  }
   .icon-tree { color: #facc15; font-size: 1.25rem; }
   .icon-blob { color: var(--text-muted); font-size: 1.25rem; }
-  .msg-cell { font-size: 0.85rem; color: var(--text-muted); opacity: 0.6; }
+  .msg-cell { 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    opacity: 0.6; 
+    max-width: 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .msg-text {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; }
 
   /* Viewer */

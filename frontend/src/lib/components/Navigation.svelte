@@ -304,6 +304,7 @@
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 600;
     font-size: 0.95rem;
+    min-width: 0;
   }
 
   .nav-item:hover {
@@ -316,8 +317,11 @@
     background: rgba(var(--primary-rgb), 0.08);
   }
 
-  .nav-item.active .material-symbols-rounded {
-    font-variation-settings: "FILL" 1;
+  .item-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
   }
 
   /* ORGANIZATIONS */
@@ -443,35 +447,52 @@
       bottom: 0;
       left: 0;
       z-index: 1000;
-      padding: 0 1rem;
+      padding: 0 0.5rem;
       background: var(--bg-color);
       border-top: 1px solid var(--md-sys-color-outline-variant);
       align-items: center;
       padding-bottom: env(safe-area-inset-bottom);
       height: calc(70px + env(safe-area-inset-bottom));
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+      justify-content: space-around;
     }
     .user-profile-summary,
     .brand-section-bottom,
     .item-label,
+    .nav-section-title,
+    .sub-nav-links,
+    .nav-empty-hint,
     span:not(.material-symbols-rounded) {
       display: none;
     }
     .nav-links {
       flex-direction: row;
-      width: 100%;
+      width: auto;
+      flex: 1;
       justify-content: space-around;
+      gap: 0;
     }
     .nav-item {
-      padding: 0.5rem;
+      padding: 0.75rem;
+      gap: 0;
+      justify-content: center;
+      flex: 1;
+    }
+    .nav-org-list {
+      display: none;
     }
     .theme-trigger-section {
       padding: 0;
       margin: 0;
+      flex: 1;
+      display: flex;
+      justify-content: center;
     }
     .appearance-btn {
       width: auto;
-      padding: 0.5rem;
+      padding: 0.75rem;
+      gap: 0;
+      justify-content: center;
     }
   }
 

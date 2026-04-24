@@ -108,8 +108,8 @@
     border-radius: 0.75rem;
     cursor: pointer;
     background: rgba(255, 255, 255, 0.02);
-    min-width: 200px;
-    width: 100%;
+    min-width: 120px;
+    max-width: 100%;
     transition: all 0.2s;
   }
   .selector-trigger:hover {
@@ -122,6 +122,9 @@
     text-align: left;
     font-weight: 600;
     font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .expand {
     font-size: 1.25rem;

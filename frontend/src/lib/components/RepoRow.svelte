@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getLanguageColor } from '$lib/utils/languages';
+  import { goto } from '$app/navigation';
 
   let { repo, isOlder = false } = $props();
 
@@ -37,10 +38,10 @@
   }
 </script>
 
-<div class="repo-row {isOlder ? 'older-row' : ''}">
+<div class="repo-row {isOlder ? 'older-row' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
   <div class="main-info">
     <div class="title-line">
-      <a href="/{repo.full_name}" class="repo-name">
+      <a href="/{repo.full_name}" class="repo-name" onclick={(e) => e.stopPropagation()}>
         {repo.name}
       </a>
       {#if repo.empty}
@@ -119,6 +120,8 @@
     gap: 1rem;
     position: relative;
     border: none;
+    cursor: pointer;
+    min-width: 0;
   }
 
   .repo-row:hover {
@@ -146,7 +149,19 @@
 
   .desc-line { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
   .status-icon { font-size: 1rem; color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
-  .repo-name { font-weight: 700; color: var(--primary-color); text-decoration: none; font-size: 1.1rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .repo-name { 
+    font-weight: 700; 
+    color: var(--primary-color); 
+    text-decoration: none; 
+    font-size: 1.1rem; 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .repo-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .badge-empty { font-size: 0.65rem; background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; font-weight: 800; letter-spacing: 0.05em; }
@@ -161,8 +176,15 @@
   .actions-info { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
   .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
+  @media (max-width: 1100px) {
+    .repo-row { 
+      grid-template-columns: 1fr 140px 120px; 
+    }
+    .stats-info { display: none; }
+  }
+
   @media (max-width: 900px) {
     .repo-row { grid-template-columns: 1fr 100px; }
-    .tech-info, .stats-info { display: none; }
+    .tech-info { display: none; }
   }
 </style>
