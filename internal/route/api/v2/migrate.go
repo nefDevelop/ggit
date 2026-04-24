@@ -52,10 +52,7 @@ func MigrateRepo(c *context.APIContext) {
 		}
 	}
 
-	remoteAddr := strings.TrimSpace(f.CloneAddr)
-	if strings.HasPrefix(remoteAddr, "git clone ") {
-		remoteAddr = strings.TrimPrefix(remoteAddr, "git clone ")
-	}
+	remoteAddr := strings.TrimPrefix(strings.TrimSpace(f.CloneAddr), "git clone ")
 
 	if strings.HasPrefix(remoteAddr, "http://") || strings.HasPrefix(remoteAddr, "https://") {
 		u, err := url.Parse(remoteAddr)
@@ -84,7 +81,12 @@ func MigrateRepo(c *context.APIContext) {
 				log.Error("DeleteRepository: %v", errDelete)
 			}
 		}
-		c.Error(err, "migrate repository")
+
+		if database.IsErrRepoAlreadyExist(err) {
+			c.StatusError(http.StatusConflict, err.Error(), err)
+		} else {
+			c.Error(err, "migrate repository")
+		}
 		return
 	}
 
