@@ -16,6 +16,8 @@
     (page.url.searchParams.get('mode') as 'new' | 'migrate') || 'new'
   );
 
+  let isArchived = $state(false);
+
   // Owners & Organizations
   let ownerID = $state(0);
   let organizations = $state<any[]>([]);
@@ -134,6 +136,7 @@
             private: isPrivate,
             unlisted: isUnlisted,
             auto_init: autoInit,
+            is_archived: isArchived,
             gitignores: selectedGitignores.join(','),
             license: selectedLicense,
             readme: includeReadme ? selectedReadme : ''
@@ -153,7 +156,8 @@
             website,
             default_branch: defaultBranch,
             private: isPrivate,
-            unlisted: isUnlisted
+            unlisted: isUnlisted,
+            is_archived: isArchived
           })
         });
       }
@@ -188,10 +192,10 @@
   </header>
 
   <main class="create-grid">
-    <div class="mode-selector tonal">
+    <div class="tabs-selector">
       <button 
         type="button" 
-        class="mode-btn" 
+        class="tab-item" 
         class:active={creationMode === 'new'} 
         onclick={() => creationMode = 'new'}
       >
@@ -200,7 +204,7 @@
       </button>
       <button 
         type="button" 
-        class="mode-btn" 
+        class="tab-item" 
         class:active={creationMode === 'migrate'} 
         onclick={() => creationMode = 'migrate'}
       >
@@ -348,6 +352,19 @@
             <div class="check-text">
               <strong>Repositorio no listado (Unlisted)</strong>
               <span>Ocultar de la página de exploración pública.</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="unlisted-wrapper">
+          <label class="fancy-checkbox" class:disabled={loading}>
+            <input type="checkbox" bind:checked={isArchived} disabled={loading} />
+            <div class="check-box">
+              <span class="material-symbols-rounded check-icon">check</span>
+            </div>
+            <div class="check-text">
+              <strong>Archivar repositorio</strong>
+              <span>Marcar como archivado desde el primer momento (solo lectura).</span>
             </div>
           </label>
         </div>
@@ -570,38 +587,39 @@
     gap: 2rem;
   }
 
-  .mode-selector {
+  .tabs-selector {
     display: flex;
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.25rem;
     background: var(--surface-variant);
-    border-radius: 1.5rem;
+    border-radius: 1.25rem;
     border: 1px solid var(--border-color);
+    width: fit-content;
+    margin: 0 auto;
   }
-
-  .mode-btn {
-    flex: 1;
+  
+  .tab-item {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.75rem;
-    padding: 1rem;
+    padding: 0.75rem 1.5rem;
     border: none;
     background: transparent;
     color: var(--text-muted);
     font-weight: 700;
     cursor: pointer;
     border-radius: 1rem;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
   }
-
-  .mode-btn.active {
+  
+  .tab-item.active {
     background: var(--bg-color);
     color: var(--primary-color);
     box-shadow: var(--shadow-sm);
   }
-
-  .mode-btn span { font-size: 1.25rem; }
+  
+  .tab-item span { font-size: 1.2rem; }
 
   .auth-grid {
     display: grid;

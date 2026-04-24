@@ -852,12 +852,13 @@ func (r *Repository) CloneLink() (cl *repox.CloneLink) {
 }
 
 type MigrateRepoOptions struct {
-	Name        string
-	Description string
-	IsPrivate   bool
-	IsUnlisted  bool
-	RemoteAddr  string
-	Website     string
+	Name          string
+	Description   string
+	IsPrivate     bool
+	IsUnlisted    bool
+	IsArchived    bool
+	RemoteAddr    string
+	Website       string
 	DefaultBranch string
 }
 
@@ -868,6 +869,7 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		Description:   opts.Description,
 		IsPrivate:     opts.IsPrivate,
 		IsUnlisted:    opts.IsUnlisted,
+		IsArchived:    opts.IsArchived,
 		Website:       opts.Website,
 		DefaultBranch: opts.DefaultBranch,
 	})
@@ -982,16 +984,17 @@ func initRepoCommit(tmpPath string, sig *git.Signature) (err error) {
 }
 
 type CreateRepoOptionsLegacy struct {
-	Name        string
-	Description string
-	Gitignores  string
-	License     string
-	Readme      string
-	Website     string
+	Name          string
+	Description   string
+	Gitignores    string
+	License       string
+	Readme        string
+	Website       string
 	DefaultBranch string
-	IsPrivate   bool
-	IsUnlisted  bool
-	AutoInit    bool
+	IsPrivate     bool
+	IsUnlisted    bool
+	IsArchived    bool
+	AutoInit      bool
 }
 
 func getRepoInitFile(tp, name string) ([]byte, error) {
@@ -1250,11 +1253,12 @@ func CreateRepository(doer, owner *User, opts CreateRepoOptionsLegacy) (_ *Repos
 		Description:  opts.Description,
 		Website:      opts.Website,
 		DefaultBranch: opts.DefaultBranch,
-		IsPrivate:    opts.IsPrivate,
-		IsUnlisted:   opts.IsUnlisted,
-		EnableWiki:   true,
-		EnableIssues: true,
-		EnablePulls:  true,
+		IsPrivate:     opts.IsPrivate,
+		IsUnlisted:    opts.IsUnlisted,
+		IsArchived:    opts.IsArchived,
+		EnableWiki:    true,
+		EnableIssues:  true,
+		EnablePulls:   true,
 	}
 
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {

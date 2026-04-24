@@ -61,6 +61,8 @@ var migrations = []Migration{
 	NewMigration("noop", func(*gorm.DB) error { return nil }),
 	// v22 -> v23:v0.13.0
 	NewMigration("add disable_news_feed to user table", addDisableNewsFeedToUser),
+	// v23 -> v24:v0.13.0
+	NewMigration("add is_archived to repository table", addIsArchivedToRepository),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")

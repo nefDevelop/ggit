@@ -107,7 +107,7 @@
                 <div class="btn-group">
                   <a class="btn-action-primary" href="/repo/create">
                       <span class="material-symbols-rounded">add</span>
-                      <span>New Project</span>
+                      <span>Nuevo Repositorio</span>
                   </a>
                   <a class="btn-action-primary" href="/repo/create?mode=migrate" title="Migrate or Clone Repository">
                       <span class="material-symbols-rounded">cloud_download</span>

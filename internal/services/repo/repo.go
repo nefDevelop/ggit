@@ -41,6 +41,7 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 			Gitignores:    opts.Gitignores,
 			License:       opts.License,
 			Readme:        opts.Readme,
+			IsArchived:    opts.IsArchived,
 			EnableWiki:    true,
 			EnableIssues:  true,
 			EnablePulls:   true,

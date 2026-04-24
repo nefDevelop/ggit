@@ -114,6 +114,7 @@ func CreateRepo(c *context.APIContext) {
 		Gitignores    string    `json:"gitignores"`
 		License       string    `json:"license"`
 		Readme        string    `json:"readme"`
+		IsArchived    bool      `json:"is_archived"`
 		CreatedAt     time.Time `json:"created_at"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
@@ -154,6 +155,7 @@ func CreateRepo(c *context.APIContext) {
 		Gitignores:    f.Gitignores,
 		License:       f.License,
 		Readme:        f.Readme,
+		IsArchived:    f.IsArchived,
 		CreatedAt:     f.CreatedAt,
 	})
 	if err != nil {

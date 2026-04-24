@@ -100,6 +100,7 @@ type CreateRepoOptions struct {
 	WikiFolderName string
 	EnableIssues   bool
 	EnablePulls    bool
+	IsArchived     bool
 	Fork           bool
 	ForkID         int64
 	CreatedAt      time.Time
@@ -138,10 +139,11 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 		IsUnlisted:    opts.IsUnlisted,
 		EnableWiki:    opts.EnableWiki,
 		WikiFolderName: opts.WikiFolderName,
-		EnableIssues:  opts.EnableIssues,
-		EnablePulls:   opts.EnablePulls,
-		IsFork:        opts.Fork,
-		ForkID:        opts.ForkID,
+		EnableIssues:   opts.EnableIssues,
+		EnablePulls:    opts.EnablePulls,
+		IsArchived:     opts.IsArchived,
+		IsFork:         opts.Fork,
+		ForkID:         opts.ForkID,
 	}
 	if !opts.CreatedAt.IsZero() {
 		repo.CreatedUnix = opts.CreatedAt.Unix()

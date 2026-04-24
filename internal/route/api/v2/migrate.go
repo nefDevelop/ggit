@@ -20,8 +20,9 @@ type MigrateRepoForm struct {
 	RepoName     string `json:"repo_name" binding:"required,max=100"`
 	Private      bool   `json:"private"`
 	Unlisted     bool   `json:"unlisted"`
-	Description  string `json:"description" binding:"max=512"`
-	Website      string `json:"website" binding:"max=100"`
+	Description   string `json:"description" binding:"max=512"`
+	IsArchived    bool   `json:"is_archived"`
+	Website       string `json:"website" binding:"max=100"`
 	DefaultBranch string `json:"default_branch" binding:"max=100"`
 }
 
@@ -69,9 +70,10 @@ func MigrateRepo(c *context.APIContext) {
 	repo, err := database.MigrateRepository(c.User, ctxUser, database.MigrateRepoOptions{
 		Name:        f.RepoName,
 		Description: f.Description,
-		IsPrivate:   f.Private || conf.Repository.ForcePrivate,
-		IsUnlisted:  f.Unlisted,
-		Website:     f.Website,
+		IsPrivate:     f.Private || conf.Repository.ForcePrivate,
+		IsUnlisted:    f.Unlisted,
+		IsArchived:    f.IsArchived,
+		Website:       f.Website,
 		DefaultBranch: f.DefaultBranch,
 		RemoteAddr:  remoteAddr,
 	})

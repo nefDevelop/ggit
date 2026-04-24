@@ -10,8 +10,9 @@ type CreateOptions struct {
 	Readme      string
 	Website      string
 	DefaultBranch string
-	IsPrivate    bool
-	IsUnlisted   bool
-	AutoInit     bool
-	CreatedAt    time.Time
+	IsPrivate     bool
+	IsUnlisted    bool
+	IsArchived    bool
+	AutoInit      bool
+	CreatedAt     time.Time
 }
