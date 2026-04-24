@@ -138,7 +138,6 @@
 </div>
 
 <style>
-  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   .section-header { margin-bottom: 4rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
   .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }

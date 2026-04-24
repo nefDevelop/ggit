@@ -126,7 +126,6 @@
 </Card>
 
 <style>
-  :global(.settings-premium-card) { border-radius: 3rem; background: rgba(var(--surface-rgb), 0.5); backdrop-filter: blur(24px); border: 1px solid var(--md-sys-color-outline-variant); }
   
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }

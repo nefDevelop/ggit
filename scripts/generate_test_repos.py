@@ -131,7 +131,7 @@ class GgitClient:
 
     def create_pull_request(self, repo_name: str, title: str, body: str, head_branch: str, base_branch: str = "main") -> Optional[int]:
         payload = {
-            "title": title, "body": body, "head": head_branch, "base": base_branch
+            "title": title, "content": body, "head_branch": head_branch, "base_branch": base_branch
         }
         resp = self._request("post", f"{self.username}/{repo_name}/pulls", json=payload)
         return resp.json().get("index")

@@ -317,13 +317,6 @@
 </Card>
 
 <style>
-  :global(.settings-premium-card) {
-    border-radius: 3rem;
-    background: rgba(var(--surface-rgb), 0.5);
-    backdrop-filter: blur(24px);
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
-
   .section-header {
     margin-bottom: 4rem;
   }
@@ -532,6 +525,7 @@
     border: 2px solid var(--primary-color) !important;
     background: rgba(var(--primary-rgb), 0.05) !important;
     animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 900px;
   }
   @media (max-width: 1000px) {
     .magic-avatar-panel { 
