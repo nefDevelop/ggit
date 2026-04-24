@@ -190,6 +190,7 @@
       position: relative;
       top: 0;
       gap: 1.5rem;
+      z-index: 10;
     }
     .settings-nav {
       flex-direction: row;
@@ -198,6 +199,7 @@
       margin: 0 -1rem;
       padding-left: 1rem;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
     .settings-nav::-webkit-scrollbar { display: none; }
     .nav-item {

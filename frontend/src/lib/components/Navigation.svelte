@@ -455,6 +455,10 @@
       height: calc(70px + env(safe-area-inset-bottom));
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
       justify-content: space-around;
+      pointer-events: none;
+    }
+    .nav-links, .theme-trigger-section {
+      pointer-events: auto;
     }
     .user-profile-summary,
     .brand-section-bottom,

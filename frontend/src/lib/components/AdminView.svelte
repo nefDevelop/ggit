@@ -196,6 +196,7 @@
       position: relative;
       top: 0;
       gap: 1.5rem;
+      z-index: 10;
     }
     .admin-nav {
       flex-direction: row;
@@ -204,6 +205,7 @@
       margin: 0 -1.5rem;
       padding-left: 1.5rem;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
     .admin-nav::-webkit-scrollbar { display: none; }
     .nav-item {
