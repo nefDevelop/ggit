@@ -890,13 +890,17 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 	}
 
 	migrateTimeout := time.Duration(conf.Git.Timeout.Migrate) * time.Second
-
 	RemoveAllWithNotice("Repository path erase before creation", repoPath)
-	if err = git.Clone(opts.RemoteAddr, repoPath, git.CloneOptions{
-		Quiet:   true,
-		Timeout: migrateTimeout,
-	}); err != nil {
-		return repo, errors.Newf("clone: %v", err)
+
+	var stderr string
+	if _, stderr, err = process.ExecTimeout(migrateTimeout,
+		fmt.Sprintf("MigrateRepository (git clone): %s", repoPath),
+		"git", "clone", "--mirror", opts.RemoteAddr, repoPath); err != nil {
+		return repo, errors.Newf("clone: %v - %s", err, stderr)
+	}
+
+	if !osx.IsFile(filepath.Join(repoPath, "config")) {
+		return repo, errors.Newf("git clone failed to create config file (but returned success): %s", stderr)
 	}
 
 	// Check if repository is empty.
