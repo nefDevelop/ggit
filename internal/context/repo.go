@@ -334,9 +334,14 @@ func RepoRef() gin.HandlerFunc {
 					break
 				}
 			}
-			if !hasMatched && len(parts[0]) == 40 {
-				refName = parts[0]
-				gctx.Repo.TreePath = strings.Join(parts[1:], "/")
+			if !hasMatched {
+				if len(parts[0]) == 40 {
+					refName = parts[0]
+					gctx.Repo.TreePath = strings.Join(parts[1:], "/")
+				} else {
+					refName = gctx.Repo.Repository.DefaultBranch
+					gctx.Repo.TreePath = path
+				}
 			}
 
 			if gctx.Repo.GitRepo.HasBranch(refName) {
