@@ -1256,7 +1256,7 @@ func (err ErrReachLimitOfRepo) Error() string {
 func CreateRepository(doer, owner *User, opts CreateRepoOptionsLegacy) (_ *Repository, err error) {
 	repoPath := RepoPath(owner.Name, opts.Name)
 	if osx.Exist(repoPath) {
-		return nil, errors.Errorf("repository directory already exists: %s", repoPath)
+		return nil, ErrRepoAlreadyExist{args: errx.Args{"ownerID": owner.ID, "name": opts.Name}}
 	}
 	if !doer.CanCreateRepo() {
 		return nil, ErrReachLimitOfRepo{Limit: doer.MaxNumRepos()}
