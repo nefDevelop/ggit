@@ -932,6 +932,10 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 		if err = repo.UpdateSize(); err != nil {
 			log.Error("UpdateSize [repo_id: %d]: %v", repo.ID, err)
 		}
+
+		if _, _, err := process.ExecDir(-1, repoPath, "git", "update-server-info"); err != nil {
+			log.Error("Failed to update-server-info for %s: %v", repo.FullName(), err)
+		}
 	}
 
 	return CleanUpMigrateInfo(repo)
