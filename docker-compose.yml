@@ -3,15 +3,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - BUILD_TARGET=build-swagger-cdn
     restart: always
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - GIN_MODE=release
     ports:
       - "3005:3005"
       - "10022:22"
     volumes:
-      - ./data/ggit:/data
-    environment:
-      - PUID=1000
-      - PGID=1000
+      - ./data:/data
     networks:
       - ggit-network
 

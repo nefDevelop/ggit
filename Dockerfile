@@ -9,11 +9,12 @@ RUN sed -i "s|import adapter from '@sveltejs/adapter-auto'|import adapter from '
 RUN npm run build
 
 # Etapa 2: Compilar el Backend (Go)
-FROM golang:1.26-alpine3.23 AS binarybuilder
+FROM golang:1.25-alpine3.21 AS binarybuilder
 RUN apk --no-cache add build-base git linux-pam-dev bash make
 WORKDIR /app/ggit
 COPY . .
-RUN make sync build
+ARG BUILD_TARGET=build-swagger-cdn
+RUN make sync ${BUILD_TARGET}
 
 # Etapa 3: Imagen Final (Alpine)
 FROM alpine:3.23
