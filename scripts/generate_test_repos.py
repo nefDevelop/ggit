@@ -112,11 +112,11 @@ class GgitClient:
                 return True
             return False
 
-    def create_branch(self, repo_name: str, branch_name: str, base_branch: str = "main"):
+    def create_branch(self, repo_name: str, branch_name: str, base_branch: str = "master"):
         payload = {"old_ref_name": base_branch, "new_ref_name": branch_name}
         self._request("post", f"{self.username}/{repo_name}/branches", json=payload)
 
-    def create_commit(self, repo_name: str, files: List[Dict[str, Any]], branch: str = "main"):
+    def create_commit(self, repo_name: str, files: List[Dict[str, Any]], branch: str = "master"):
         for file_info in files:
             payload = {
                 "tree_path": file_info["path"],
@@ -129,7 +129,7 @@ class GgitClient:
             self._request("post", f"{self.username}/{repo_name}/editor/edit", json=payload)
             time.sleep(0.1)
 
-    def create_pull_request(self, repo_name: str, title: str, body: str, head_branch: str, base_branch: str = "main") -> Optional[int]:
+    def create_pull_request(self, repo_name: str, title: str, body: str, head_branch: str, base_branch: str = "master") -> Optional[int]:
         payload = {
             "title": title, "content": body, "head_branch": head_branch, "base_branch": base_branch
         }

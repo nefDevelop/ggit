@@ -179,6 +179,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		}
 
 		repo.GET("/branches", ginx.Handle(ListRepoBranches))
+		repo.POST("/branches", ginx.Handle(CreateRepoBranch))
 		repo.DELETE("/branches/:branch", ginx.Handle(DeleteRepoBranch))
 
 		repo.GET("/archive/*name", context.RepoRef(), ginx.Handle(GetRepoArchive))

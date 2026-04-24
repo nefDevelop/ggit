@@ -108,3 +108,35 @@ func DeleteRepoBranch(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
+
+// CreateRepoBranch creates a new branch in the repository.
+func CreateRepoBranch(c *context.APIContext) {
+	var f struct {
+		OldRefName string `json:"old_ref_name" binding:"required"`
+		NewRefName string `json:"new_ref_name" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if !c.Repo.GitRepo.HasBranch(f.OldRefName) && !c.Repo.GitRepo.HasTag(f.OldRefName) && len(f.OldRefName) != 40 {
+		c.StatusError(http.StatusUnprocessableEntity, "Old ref name does not exist.", nil)
+		return
+	}
+
+	if c.Repo.GitRepo.HasBranch(f.NewRefName) {
+		c.StatusError(http.StatusUnprocessableEntity, "Branch already exists.", nil)
+		return
+	}
+
+	if err := c.Repo.Repository.CreateNewBranch(f.OldRefName, f.NewRefName); err != nil {
+		c.Error(err, "create branch")
+		return
+	}
+
+	c.JSON(http.StatusCreated, map[string]any{
+		"status": "ok",
+		"name": f.NewRefName,
+	})
+}
