@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import DiffViewer from '$lib/components/DiffViewer.svelte';
+  import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
   
   let { index } = $props();
   const repo: any = getContext('repo');
@@ -112,23 +113,29 @@
     <div class="pull-content-body">
       {#if activeView === 'conversation'}
         <div class="conversation-timeline">
-            <div class="timeline-item-flat">
-               <div class="item-header"><strong>{pull.user?.username}</strong> commented</div>
-               <div class="item-body markdown-body">
-                 {@html pull.body_html || pull.body}
-               </div>
-            </div>
+             <div class="timeline-item-flat">
+                <div class="item-header"><strong>{pull.user?.username}</strong> commented</div>
+                <div class="item-body">
+                  <MarkdownRenderer 
+                    content={pull.body} 
+                    repoContext={{owner: repo.data.owner.username, name: repo.data.name}}
+                  />
+                </div>
+             </div>
 
-            {#each comments as comment}
-              <div class="timeline-item-flat">
-                <div class="item-header">
-                  <strong>{comment.user?.username}</strong> commented on {new Date(comment.created_at).toLocaleDateString()}
-                </div>
-                <div class="item-body markdown-body">
-                  {@html comment.body_html || comment.body}
-                </div>
-              </div>
-            {/each}
+             {#each comments as comment}
+               <div class="timeline-item-flat">
+                 <div class="item-header">
+                   <strong>{comment.user?.username}</strong> commented on {new Date(comment.created_at).toLocaleDateString()}
+                 </div>
+                 <div class="item-body">
+                   <MarkdownRenderer 
+                     content={comment.body} 
+                     repoContext={{owner: repo.data.owner.username, name: repo.data.name}}
+                   />
+                 </div>
+               </div>
+             {/each}
 
             <div class="comment-composer island tonal">
               <textarea bind:value={newComment} placeholder="Leave a comment..."></textarea>

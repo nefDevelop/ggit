@@ -1,7 +1,6 @@
 package v2
 
 import (
-	"bytes"
 	stdcontext "context"
 	"net/http"
 	"path"
@@ -293,19 +292,9 @@ func getRepoDirectory(c *context.APIContext) {
 	if readmeFile != nil {
 		p, err := readmeFile.Bytes()
 		if err == nil && tool.IsTextFile(p) {
-			var rendered []byte
-			treeLink := c.Repo.RepoLink + "/src/" + c.Repo.BranchName + "/" + c.Repo.TreePath
-			switch markup.Detect(readmeFile.Name()) {
-			case markup.TypeMarkdown:
-				rendered = markup.Markdown(p, treeLink, c.Repo.Repository.ComposeMetas())
-			case markup.TypeOrgMode:
-				rendered = markup.OrgMode(p, treeLink, c.Repo.Repository.ComposeMetas())
-			default:
-				rendered = bytes.ReplaceAll(p, []byte("\n"), []byte(`<br>`))
-			}
 			res["readme"] = map[string]any{
 				"name":    readmeFile.Name(),
-				"content": string(rendered),
+				"content": string(p),
 			}
 		}
 	}
@@ -390,17 +379,7 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 		res["highlighted_content"] = highlight.Code(blob.Name(), content)
 
 		if markup.IsReadmeFile(blob.Name()) {
-			treeLink := c.Repo.RepoLink + "/src/" + c.Repo.BranchName + "/" + c.Repo.TreePath
-			var rendered []byte
-			switch markup.Detect(blob.Name()) {
-			case markup.TypeMarkdown:
-				rendered = markup.Markdown(p, treeLink, c.Repo.Repository.ComposeMetas())
-			case markup.TypeOrgMode:
-				rendered = markup.OrgMode(p, treeLink, c.Repo.Repository.ComposeMetas())
-			default:
-				rendered = bytes.ReplaceAll(p, []byte("\n"), []byte(`<br>`))
-			}
-			res["readme_rendered"] = string(rendered)
+			res["readme_content"] = string(p)
 		}
 	}
 

@@ -229,8 +229,6 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		}
 	}
 
-	r.POST("/markdown", ginx.Handle(RenderMarkdown))
-	r.POST("/markdown/raw", ginx.Handle(RenderMarkdownRaw))
 
 	orgs := r.Group("/orgs")
 	{

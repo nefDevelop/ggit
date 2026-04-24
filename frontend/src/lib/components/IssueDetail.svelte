@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import Avatar from "$lib/components/Avatar.svelte";
+  import MarkdownRenderer from "$lib/components/ui/MarkdownRenderer.svelte";
 
   let { index } = $props();
   const repo: any = getContext("repo");
@@ -120,8 +121,11 @@
                 issue.created_at,
               )}
             </div>
-            <div class="item-body markdown-body">
-              {@html issue.body_html || issue.body}
+            <div class="item-body">
+              <MarkdownRenderer 
+                content={issue.body} 
+                repoContext={{owner: repo.data.owner.username, name: repo.data.name}}
+              />
             </div>
           </div>
         </div>
@@ -143,8 +147,11 @@
                   comment.created_at,
                 )}
               </div>
-              <div class="item-body markdown-body">
-                {@html comment.body_html || comment.body}
+              <div class="item-body">
+                <MarkdownRenderer 
+                  content={comment.body} 
+                  repoContext={{owner: repo.data.owner.username, name: repo.data.name}}
+                />
               </div>
             </div>
           </div>

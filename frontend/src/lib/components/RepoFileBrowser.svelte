@@ -5,6 +5,7 @@
   import { onMount, getContext } from 'svelte';
   import { getLanguageColor } from '$lib/utils/languages';
   import RepoSearchResults from './RepoSearchResults.svelte';
+  import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   
   let { path = '' } = $props();
   let username = $derived(page.params.username);
@@ -219,14 +220,17 @@ git push -u origin main</code></pre>
                    {/if}
                 </div>
 
-                {#if repoData.readme_rendered}
+                {#if repoData.readme_content}
                    <div class="file-readme-integrated">
                       <header class="readme-header small">
                          <span class="material-symbols-rounded">menu_book</span>
                          README Preview
                       </header>
-                      <div class="readme-content markdown-body">
-                         {@html repoData.readme_rendered}
+                      <div class="readme-content">
+                         <MarkdownRenderer 
+                            content={repoData.readme_content} 
+                            repoContext={{owner: username, name: reponame}}
+                         />
                       </div>
                    </div>
                 {/if}
@@ -241,8 +245,11 @@ git push -u origin main</code></pre>
                     <span class="material-symbols-rounded">menu_book</span>
                     {repoData.readme.name}
                 </header>
-                <div class="readme-content markdown-body">
-                    {@html repoData.readme.content}
+                <div class="readme-content">
+                    <MarkdownRenderer 
+                      content={repoData.readme.content} 
+                      repoContext={{owner: username, name: reponame}}
+                    />
                 </div>
             </div>
           {/if}
@@ -356,7 +363,7 @@ git push -u origin main</code></pre>
   .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
   .readme-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); background: var(--surface-variant); }
   .readme-header.small { padding: 0.75rem 1.25rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
-  .readme-content { padding: 2.5rem; }
+  .readme-content { padding: 1.5rem; }
 
   /* Sidebar */
   .side-column { display: flex; flex-direction: column; gap: 2.5rem; }

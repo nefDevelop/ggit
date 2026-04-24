@@ -12,7 +12,6 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/editorconfig/editorconfig-core-go/v2"
-	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/transform"
 	log "unknwon.dev/clog/v2"
@@ -23,7 +22,6 @@ import (
 	"github.com/nef734/ggit/internal/cryptox"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/gitx"
-	"github.com/nef734/ggit/internal/markup"
 	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/tool"
 )
@@ -70,7 +68,9 @@ func FuncMap() []template.FuncMap {
 			"AvatarLink":       tool.AvatarLink,
 			"AppendAvatarSize": tool.AppendAvatarSize,
 			"Safe":             Safe,
-			"Sanitize":         bluemonday.UGCPolicy().Sanitize,
+			"Sanitize": func(s string) string {
+				return s
+			},
 			"Str2HTML":         Str2HTML,
 			"NewLine2br":       NewLine2br,
 			"TimeSince":        tool.TimeSince,
@@ -136,7 +136,7 @@ func Safe(raw string) template.HTML {
 }
 
 func Str2HTML(raw string) template.HTML {
-	return template.HTML(markup.Sanitize(raw))
+	return template.HTML(raw)
 }
 
 // NewLine2br simply replaces "\n" to "<br>".
@@ -171,10 +171,10 @@ func ToUTF8WithErr(content []byte) (string, error) {
 	return result, err
 }
 
-// RenderCommitMessage renders commit message with special links.
-func RenderCommitMessage(full bool, msg, urlPrefix string, metas map[string]string) string {
+// RenderCommitMessage renders commit message.
+func RenderCommitMessage(full bool, msg, _ string, _ map[string]string) string {
 	cleanMsg := template.HTMLEscapeString(msg)
-	fullMessage := string(markup.RenderIssueIndexPattern([]byte(cleanMsg), urlPrefix, metas))
+	fullMessage := cleanMsg
 	msgLines := strings.Split(strings.TrimSpace(fullMessage), "\n")
 	numLines := len(msgLines)
 	if numLines == 0 {

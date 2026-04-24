@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { page } from "$app/state";
+  import MarkdownRenderer from "$lib/components/ui/MarkdownRenderer.svelte";
 
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
@@ -88,8 +89,11 @@
               </div>
             </header>
 
-            <div class="markdown-body">
-              {@html rel.Note}
+            <div class="release-note-body">
+              <MarkdownRenderer 
+                 content={rel.Note} 
+                 repoContext={{owner: username, name: reponame}}
+              />
             </div>
 
             <footer class="release-assets">

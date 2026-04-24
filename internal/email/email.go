@@ -14,7 +14,6 @@ import (
 	"github.com/cockroachdb/errors"
 
 	"github.com/nef734/ggit/internal/conf"
-	"github.com/nef734/ggit/internal/markup"
 	"github.com/nef734/ggit/internal/osx"
 )
 
@@ -49,7 +48,7 @@ func render(tpl string, data map[string]any) (string, error) {
 				return time.Now().Year()
 			},
 			"Str2HTML": func(raw string) template.HTML {
-				return template.HTML(markup.Sanitize(raw))
+				return template.HTML(raw)
 			},
 		})
 
@@ -225,7 +224,7 @@ func composeTplData(subject, body, link string) map[string]any {
 
 func composeIssueMessage(issue Issue, repo Repository, doer User, tplName string, tos []string, info string) (*message, error) {
 	subject := issue.MailSubject()
-	body := string(markup.Markdown([]byte(issue.Content()), repo.HTMLURL(), repo.ComposeMetas()))
+	body := issue.Content()
 	data := composeTplData(subject, body, issue.HTMLURL())
 	data["Doer"] = doer
 	content, err := render(tplName, data)

@@ -5,7 +5,6 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
-	"github.com/nef734/ggit/internal/markup"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	issueservice "github.com/nef734/ggit/internal/services/issue"
 )
@@ -43,7 +42,6 @@ func ListIssues(c *context.APIContext) {
 	apiIssues := make([]*apiv2types.IssueResponse, len(issues))
 	for i, issue := range issues {
 		apiIssues[i] = issue.APIFormat()
-		apiIssues[i].BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
 	}
 
 	c.JSON(http.StatusOK, apiIssues)
@@ -77,7 +75,6 @@ func CreateIssue(c *context.APIContext) {
 	}
 
 	apiIssue := issue.APIFormat()
-	apiIssue.BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
 
 	c.JSON(http.StatusCreated, apiIssue)
 }
@@ -91,8 +88,6 @@ func GetIssue(c *context.APIContext) {
 	}
 
 	res := issue.APIFormat()
-	res.BodyHTML = string(markup.Render(markup.TypeMarkdown, issue.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
-
 	c.JSON(http.StatusOK, res)
 }
 
@@ -163,7 +158,6 @@ func GetIssueComments(c *context.APIContext) {
 	apiComments := make([]*apiv2types.IssueCommentResponse, len(comments))
 	for i, comment := range comments {
 		apiComments[i] = comment.APIFormat()
-		apiComments[i].BodyHTML = string(markup.Render(markup.TypeMarkdown, comment.Content, c.Repo.RepoLink, c.Repo.Repository.ComposeMetas()))
 	}
 
 	c.JSON(http.StatusOK, apiComments)
