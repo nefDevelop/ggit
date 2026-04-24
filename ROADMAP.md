@@ -201,29 +201,3 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 ## ✅ PROYECTO COMPLETADO AL 100%
 *Ggit es ahora una plataforma de gestión de código ultra-ligera, premium y totalmente desacoplada.*
 
-
----
- github.com/nef734/ggit/cmd/ggit
-73.14 # github.com/nef734/ggit/cmd/ggit
-73.14 cmd/ggit/web.go:73:2: undefined: registerSwagger
-73.25 make: *** [Makefile:68: build-swagger-cdn] Error 1
-------
-[+] up 0/1
- ⠙ Image ggit-ggit Building                                                            76.5s
-Dockerfile:17
-
---------------------
-
-  15 |     COPY . .
-
-  16 |     ARG BUILD_TARGET=build-swagger-cdn
-
-  17 | >>> RUN make sync ${BUILD_TARGET}
-
-  18 |
-
-  19 |     # Etapa 3: Imagen Final (Alpine)
-
---------------------
-
-failed to solve: process "/bin/sh -c make sync ${BUILD_TARGET}" did not complete successfully: exit code: 2

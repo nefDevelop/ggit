@@ -13,6 +13,10 @@ func init() {
 			c.Redirect(301, "/swagger/index.html")
 		})
 
+		r.GET("/swagger/doc.json", func(c *gin.Context) {
+			c.File("docs/swagger.json")
+		})
+
 		r.GET("/swagger/*any", func(c *gin.Context) {
 			c.Header("Content-Type", "text/html")
 			html := `
@@ -43,10 +47,6 @@ func init() {
 			</body>
 			</html>`
 			c.String(200, html)
-		})
-
-		r.GET("/swagger/doc.json", func(c *gin.Context) {
-			c.File("docs/swagger.json")
 		})
 	}
 }
