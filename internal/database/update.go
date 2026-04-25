@@ -82,6 +82,10 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 		return errors.Newf("UpdateSize: %v", err)
 	}
 
+	if err = repo.UpdateCounters(); err != nil {
+		return errors.Newf("UpdateCounters: %v", err)
+	}
+
 	// Push tags
 	if strings.HasPrefix(opts.FullRefspec, git.RefsTags) {
 		err := Handle.Actions().PushTag(ctx,

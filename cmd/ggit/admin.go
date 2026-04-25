@@ -28,6 +28,7 @@ to make automatic initialization process more smoothly`,
 			&subcmdRewriteAuthorizedKeys,
 			&subcmdSyncRepositoryHooks,
 			&subcmdReinitMissingRepositories,
+			&subcmdUpdateRepositoryCounters,
 		},
 	}
 
@@ -122,6 +123,18 @@ to make automatic initialization process more smoothly`,
 		Action: adminDashboardOperation(
 			database.ReinitMissingRepositories,
 			"All repository records that lost Git files have been reinitialized successfully",
+		),
+		Flags: []cli.Flag{
+			stringFlag("config, c", "", "Custom configuration file path"),
+		},
+	}
+
+	subcmdUpdateRepositoryCounters = cli.Command{
+		Name:  "update-repository-counters",
+		Usage: "Update NumCommits and NumBranches for all repositories",
+		Action: adminDashboardOperation(
+			database.UpdateAllRepositoryCounters,
+			"All repository counters have been updated successfully",
 		),
 		Flags: []cli.Flag{
 			stringFlag("config, c", "", "Custom configuration file path"),

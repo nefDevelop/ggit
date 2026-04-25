@@ -49,6 +49,8 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		NumWatches:    r.NumWatches,
 		OpenIssues:    r.NumOpenIssues,
 		OpenPulls:     r.NumOpenPulls,
+		NumCommits:    r.NumCommits,
+		NumBranches:   r.NumBranches,
 		IsPrivate:     r.IsPrivate,
 		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
 		CloneURL:      cloneLink.HTTPS,

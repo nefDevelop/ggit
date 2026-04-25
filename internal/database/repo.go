@@ -239,6 +239,8 @@ type Repository struct {
 	NumClosedMilestones int `gorm:"not null;default:0"`
 	NumOpenMilestones   int `gorm:"-" json:"-"`
 	NumTags             int `gorm:"-" json:"-"`
+	NumCommits          int64
+	NumBranches         int
 
 	IsPrivate bool
 	IsFork    bool
@@ -561,6 +563,46 @@ func (r *Repository) UpdateSize() error {
 
 	r.Size = countObject.Size + countObject.SizePack
 	return Handle.db.Model(r).Select("size").Updates(r).Error
+}
+
+// UpdateCounters updates the NumCommits and NumBranches of the repository.
+func (r *Repository) UpdateCounters() error {
+	gitRepo, err := git.Open(r.RepoPath())
+	if err != nil {
+		return errors.Newf("open repository: %v", err)
+	}
+
+	r.NumBranches = 0
+	branches, err := gitRepo.Branches()
+	if err == nil {
+		r.NumBranches = len(branches)
+	}
+
+	r.NumCommits = 0
+	if r.DefaultBranch != "" && gitRepo.HasBranch(r.DefaultBranch) {
+		commit, err := gitRepo.BranchCommit(r.DefaultBranch)
+		if err == nil {
+			r.NumCommits, _ = commit.CommitsCount()
+		}
+	}
+
+	return Handle.db.Model(r).Select("num_branches", "num_commits").Updates(r).Error
+}
+
+// UpdateAllRepositoryCounters updates NumCommits and NumBranches for all repositories.
+func UpdateAllRepositoryCounters() error {
+	var repos []*Repository
+	if err := Handle.db.Find(&repos).Error; err != nil {
+		return err
+	}
+
+	for _, repo := range repos {
+		if err := repo.UpdateCounters(); err != nil {
+			log.Error("UpdateCounters [repo_id: %d]: %v", repo.ID, err)
+			continue
+		}
+	}
+	return nil
 }
 
 // ComposeMetas composes a map of metas for rendering SHA1 URL and external issue tracker URL.
