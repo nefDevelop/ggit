@@ -63,7 +63,7 @@ func CreateRelease(c *context.APIContext) {
 		TagName:      f.TagName,
 		Target:       f.Target,
 		Note:         f.Content,
-		IsDraft:      len(f.Draft) > 0,
+		IsDraft:      f.Draft,
 		IsPrerelease: f.Prerelease,
 	}
 
@@ -101,10 +101,10 @@ func UpdateRelease(c *context.APIContext) {
 		return
 	}
 
-	isPublish := rel.IsDraft && f.Draft == ""
+	isPublish := rel.IsDraft && !f.Draft
 	rel.Title = f.Title
 	rel.Note = f.Content
-	rel.IsDraft = len(f.Draft) > 0
+	rel.IsDraft = f.Draft
 	rel.IsPrerelease = f.Prerelease
 
 	if err := database.UpdateRelease(c.User, c.Repo.GitRepo, rel, isPublish, f.Files); err != nil {

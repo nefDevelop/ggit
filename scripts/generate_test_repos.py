@@ -151,9 +151,9 @@ class GgitClient:
         payload = {"title": title, "content": content}
         self._request("post", f"{self.username}/{repo_name}/wiki", json=payload)
 
-    def create_release(self, repo_name: str, tag: str, name: str, body: str, prerelease: bool = False):
+    def create_release(self, repo_name: str, tag: str, name: str, body: str, target: str = "master", prerelease: bool = False):
         payload = {
-            "tag_name": tag, "name": name, "body": body,
+            "tag_name": tag, "target": target, "name": name, "body": body,
             "draft": False, "prerelease": prerelease
         }
         self._request("post", f"{self.username}/{repo_name}/releases", json=payload)
@@ -279,7 +279,8 @@ ggit init {repo_name}
             logging.info(f"Created PR #{pr_id}")
 
     # 7. Create a Release
-    client.create_release(repo_name, "v1.0.0", "Release One", f"### Changes\n- {fake.sentence()}\n- Fixed #{issue_ids[0] if issue_ids else 1}")
+    target_branch = branches[0] if branches else "master"
+    client.create_release(repo_name, "v1.0.0", "Release One", f"### Changes\n- {fake.sentence()}\n- Fixed #{issue_ids[0] if issue_ids else 1}", target=target_branch)
     logging.info("Finished seeding repository")
 
 def main():

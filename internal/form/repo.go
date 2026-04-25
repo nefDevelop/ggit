@@ -259,14 +259,14 @@ func (f *InitializeLabels) Validate(ctx ValidationContext, errs Errors) Errors {
 //         \/     \/          \/     \/     \/     \/
 
 type NewRelease struct {
-	TagName    string `valid:"Required"`
-	Target     string `form:"tag_target" valid:"Required"`
-	Title      string `valid:"Required"`
-	Content    string
-	Draft      string
-	Prerelease bool
-	Files      []string
-	CreatedAt  string `json:"created_at"`
+	TagName    string   `json:"tag_name" valid:"Required"`
+	Target     string   `json:"target" form:"tag_target" valid:"Required"`
+	Title      string   `json:"name" valid:"Required"`
+	Content    string   `json:"body"`
+	Draft      bool     `json:"draft"`
+	Prerelease bool     `json:"prerelease"`
+	Files      []string `json:"files"`
+	CreatedAt  string   `json:"created_at"`
 }
 
 func (f *NewRelease) Validate(ctx ValidationContext, errs Errors) Errors {
@@ -274,11 +274,11 @@ func (f *NewRelease) Validate(ctx ValidationContext, errs Errors) Errors {
 }
 
 type EditRelease struct {
-	Title      string `valid:"Required"`
-	Content    string
-	Draft      string
-	Prerelease bool
-	Files      []string
+	Title      string   `json:"name" valid:"Required"`
+	Content    string   `json:"body"`
+	Draft      bool     `json:"draft"`
+	Prerelease bool     `json:"prerelease"`
+	Files      []string `json:"files"`
 }
 
 func (f *EditRelease) Validate(ctx ValidationContext, errs Errors) Errors {
