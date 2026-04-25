@@ -579,8 +579,17 @@ func (r *Repository) UpdateCounters() error {
 	}
 
 	r.NumCommits = 0
-	if r.DefaultBranch != "" && gitRepo.HasBranch(r.DefaultBranch) {
+	if r.DefaultBranch == "" {
+		r.DefaultBranch = "main" // Fallback to main
+	}
+	
+	if gitRepo.HasBranch(r.DefaultBranch) {
 		commit, err := gitRepo.BranchCommit(r.DefaultBranch)
+		if err == nil {
+			r.NumCommits, _ = commit.CommitsCount()
+		}
+	} else if gitRepo.HasBranch("master") {
+		commit, err := gitRepo.BranchCommit("master")
 		if err == nil {
 			r.NumCommits, _ = commit.CommitsCount()
 		}
