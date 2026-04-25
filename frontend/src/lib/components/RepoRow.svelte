@@ -83,11 +83,11 @@
   </div>
 
   <div class="stats-info">
-    <div class="stat-item dim" title="Commits">
+    <div class="stat-item {repo.num_commits > 0 ? 'active' : 'dim'}" title="Commits">
       <span class="material-symbols-rounded">history</span>
       {repo.num_commits || 0}
     </div>
-    <div class="stat-item dim" title="Branches">
+    <div class="stat-item {repo.num_branches > 0 ? 'active' : 'dim'}" title="Branches">
       <span class="material-symbols-rounded">account_tree</span>
       {repo.num_branches || 0}
     </div>
