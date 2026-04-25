@@ -12,6 +12,11 @@ RUN npm run build
 FROM golang:1.26-alpine3.23 AS binarybuilder
 RUN apk --no-cache add build-base git linux-pam-dev bash make
 WORKDIR /app/ggit
+
+# Optimizar caché: Descargar dependencias antes de copiar todo el código
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . .
 ARG BUILD_TARGET=build-swagger-cdn
 RUN make sync ${BUILD_TARGET}
