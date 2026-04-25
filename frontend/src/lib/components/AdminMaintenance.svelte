@@ -154,8 +154,9 @@
   @media (max-width: 1100px) { .ops-layout { grid-template-columns: 1fr; } }
 
   .ops-grid { display: flex; flex-direction: column; gap: 1rem; }
-  .op-bubble { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; border-radius: 2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid var(--md-sys-color-outline-variant); }
+  .op-bubble { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; border-radius: 2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 0; }
   .op-bubble:hover { transform: translateX(8px); background: rgba(255,255,255,0.02); border-color: var(--primary-color); }
+  :global(#main-content) .op-bubble.island { border-bottom: none !important; }
   .op-icon { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .op-icon span { font-size: 2rem; }
   .op-text { flex: 1; }
