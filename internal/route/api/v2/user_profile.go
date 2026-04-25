@@ -5,6 +5,7 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // GetUserProfile returns the public profile of a user.
@@ -38,11 +39,13 @@ func GetUserPublicRepositories(c *context.APIContext) {
 		return
 	}
 
-	for _, repo := range repos {
+	apiRepos := make([]*apiv2types.RepositoryResponse, len(repos))
+	for i, repo := range repos {
 		_ = repo.LoadAttributes()
+		apiRepos[i] = repo.APIFormat(repo.MustOwner())
 	}
 
-	c.JSON(http.StatusOK, repos)
+	c.JSON(http.StatusOK, apiRepos)
 }
 
 // GetUserStars returns a list of repositories starred by the given user.
@@ -60,9 +63,11 @@ func GetUserStars(c *context.APIContext) {
 		return
 	}
 
-	for _, repo := range repos {
+	apiRepos := make([]*apiv2types.RepositoryResponse, len(repos))
+	for i, repo := range repos {
 		_ = repo.LoadAttributes()
+		apiRepos[i] = repo.APIFormat(repo.MustOwner())
 	}
 
-	c.JSON(http.StatusOK, repos)
+	c.JSON(http.StatusOK, apiRepos)
 }

@@ -97,6 +97,13 @@
   let showAllLanguages = $state(false);
   let visibleLanguages = $derived(showAllLanguages ? langEntries() : langEntries().slice(0, 10));
 
+  let sidebarCollapsed = $state(false);
+
+  function toggleSidebar() {
+    sidebarCollapsed = !sidebarCollapsed;
+    localStorage.setItem('repo-sidebar-collapsed', sidebarCollapsed.toString());
+  }
+
   function timeAgo(dateInput: any) {
     if (!dateInput) return '';
     const date = new Date(dateInput);
@@ -110,6 +117,12 @@
     if (days < 30) return `${days}d ago`;
     return date.toLocaleDateString();
   }
+
+  onMount(() => {
+    window.addEventListener('ggit:search', handleSearch);
+    sidebarCollapsed = localStorage.getItem('repo-sidebar-collapsed') === 'true';
+    return () => window.removeEventListener('ggit:search', handleSearch);
+  });
 </script>
 
 <div class="workspace-area">
@@ -142,7 +155,7 @@ git push -u origin main</code></pre>
         </div>
       </div>
     {:else}
-      <div class="technical-grid">
+      <div class="technical-grid" class:sidebar-collapsed={sidebarCollapsed}>
         <!-- Main Explorer / Code -->
         <div class="main-column">
           <!-- Last Commit Bar -->
@@ -156,7 +169,12 @@ git push -u origin main</code></pre>
                     <span class="time">{timeAgo(repoData.last_commit.author?.when)}</span>
                 </span>
                 </div>
-                <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
+                <div class="commit-actions-right">
+                  <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
+                  <button class="btn-sidebar-toggle" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
+                    <span class="material-symbols-rounded">{sidebarCollapsed ? 'side_navigation' : 'right_panel_close'}</span>
+                  </button>
+                </div>
             </div>
           {/if}
 
@@ -210,6 +228,9 @@ git push -u origin main</code></pre>
                       <a href="/api/v2/{username}/{reponame}/media/{repoData.branch}/{realPath()}" class="tool-btn" download>
                         <span class="material-symbols-rounded">download</span>
                       </a>
+                      <button class="tool-btn btn-sidebar-toggle-inline" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
+                        <span class="material-symbols-rounded">{sidebarCollapsed ? 'side_navigation' : 'right_panel_close'}</span>
+                      </button>
                     </div>
                 </div>
                 <div class="code-box">
@@ -270,7 +291,7 @@ git push -u origin main</code></pre>
         </div>
 
         <!-- Sidebar -->
-        <aside class="side-column">
+        <aside class="side-column" class:hidden-sidebar={sidebarCollapsed}>
           {#if langEntries().length > 0}
             <div class="side-section desktop-only">
                 <h4 class="side-title">Languages</h4>
@@ -313,6 +334,12 @@ git push -u origin main</code></pre>
     display: grid;
     grid-template-columns: 1fr 280px;
     gap: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .technical-grid.sidebar-collapsed {
+    grid-template-columns: 1fr 0px;
+    gap: 0;
   }
 
   .main-column { display: flex; flex-direction: column; min-width: 0; }
@@ -351,6 +378,32 @@ git push -u origin main</code></pre>
     flex-shrink: 0;
   }
   .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; flex-shrink: 0; }
+
+  .commit-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+
+  .btn-sidebar-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    padding: 2px;
+    opacity: 0.5;
+    transition: all 0.2s;
+  }
+  .btn-sidebar-toggle:hover {
+    opacity: 1;
+    color: var(--primary-color);
+    transform: scale(1.1);
+  }
+  .btn-sidebar-toggle span {
+    font-size: 1.25rem;
+  }
 
   @media (max-width: 600px) {
     .last-commit-bar {
@@ -433,6 +486,8 @@ git push -u origin main</code></pre>
   .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.95rem; color: var(--text-color); }
   .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.35rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
   .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+  .btn-sidebar-toggle-inline { padding: 0.35rem 0.5rem; }
+  .btn-sidebar-toggle-inline span { font-size: 1.1rem; }
 
   .code-box { background: #010409; }
   .code-grid { display: grid; grid-template-columns: 50px 1fr; }
@@ -448,7 +503,8 @@ git push -u origin main</code></pre>
   .readme-content { padding: 1.5rem; }
 
   /* Sidebar */
-  .side-column { display: flex; flex-direction: column; gap: 2.5rem; }
+  .side-column { display: flex; flex-direction: column; gap: 2.5rem; overflow: hidden; }
+  .side-column.hidden-sidebar { opacity: 0; pointer-events: none; }
   .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
   .about-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-color); opacity: 0.8; }
   

@@ -163,11 +163,11 @@
                     <span class="section-title">Download Source</span>
                     <div class="archive-grid-compact">
                       <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-tile">
-                        <span class="material-symbols-rounded">zip_box</span>
+                        <span class="material-symbols-rounded">folder_zip</span>
                         <span>ZIP</span>
                       </a>
                       <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-tile">
-                        <span class="material-symbols-rounded">package</span>
+                        <span class="material-symbols-rounded">inventory_2</span>
                         <span>TAR.GZ</span>
                       </a>
                     </div>
@@ -296,7 +296,7 @@
   .archive-grid-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   .archive-tile { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem; background: rgba(var(--primary-rgb), 0.05); border: 1px solid var(--border-color); border-radius: 12px; text-decoration: none; color: var(--text-color); font-size: 0.8rem; font-weight: 700; transition: all 0.2s; }
   .archive-tile:hover { background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary-color); }
-  .archive-tile span { font-size: 1.25rem; color: var(--primary-color); }
+  .archive-tile .material-symbols-rounded { font-size: 1.25rem; color: var(--primary-color); }
 
   .repo-header-region { background-color: var(--surface-variant); border-bottom: 1px solid var(--border-color); }
   .rich-tabs { display: flex; gap: 0.25rem; padding: 0 1rem; }
