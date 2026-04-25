@@ -567,8 +567,12 @@ func (r *Repository) UpdateSize() error {
 
 // UpdateCounters updates the NumCommits and NumBranches of the repository.
 func (r *Repository) UpdateCounters() error {
-	gitRepo, err := git.Open(r.RepoPath())
+	repoPath := r.RepoPath()
+	log.Trace("Updating counters for %s at %s", r.FullName(), repoPath)
+
+	gitRepo, err := git.Open(repoPath)
 	if err != nil {
+		log.Error("Failed to open repository %s: %v", repoPath, err)
 		return errors.Newf("open repository: %v", err)
 	}
 
@@ -576,25 +580,32 @@ func (r *Repository) UpdateCounters() error {
 	branches, err := gitRepo.Branches()
 	if err == nil {
 		r.NumBranches = len(branches)
+	} else {
+		log.Error("Failed to get branches for %s: %v", r.FullName(), err)
 	}
 
 	r.NumCommits = 0
 	if r.DefaultBranch == "" {
-		r.DefaultBranch = "main" // Fallback to main
+		r.DefaultBranch = "main"
 	}
 	
 	if gitRepo.HasBranch(r.DefaultBranch) {
 		commit, err := gitRepo.BranchCommit(r.DefaultBranch)
 		if err == nil {
 			r.NumCommits, _ = commit.CommitsCount()
+		} else {
+			log.Error("Failed to get branch commit for %s (%s): %v", r.FullName(), r.DefaultBranch, err)
 		}
 	} else if gitRepo.HasBranch("master") {
 		commit, err := gitRepo.BranchCommit("master")
 		if err == nil {
 			r.NumCommits, _ = commit.CommitsCount()
 		}
+	} else {
+		log.Trace("No branch main or master found for %s", r.FullName())
 	}
 
+	log.Trace("Result for %s: %d branches, %d commits", r.FullName(), r.NumBranches, r.NumCommits)
 	return Handle.db.Model(r).Select("num_branches", "num_commits").Updates(r).Error
 }
 
