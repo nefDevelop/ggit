@@ -1917,13 +1917,13 @@ func GetUserRepositories(opts *UserRepoOptions) ([]*Repository, error) {
 	db = db.Limit(opts.PageSize).Offset((opts.Page - 1) * opts.PageSize)
 
 	repos := make([]*Repository, 0, opts.PageSize)
-	return repos, db.Select("id, owner_id, name, lower_name, description, is_private, is_unlisted, updated_unix, default_branch, wiki_folder_name, num_stars, num_forks, num_watches, num_issues, num_closed_issues, num_pulls, num_closed_pulls").Find(&repos).Error
+	return repos, db.Select("id, owner_id, name, lower_name, description, is_private, is_unlisted, updated_unix, default_branch, wiki_folder_name, num_stars, num_forks, num_watches, num_issues, num_closed_issues, num_pulls, num_closed_pulls, num_commits, num_branches").Find(&repos).Error
 }
 
 // GetRecentUpdatedRepositories returns the list of repositories that are recently updated.
 func GetRecentUpdatedRepositories(page, pageSize int) (repos []*Repository, err error) {
 	err = Handle.db.Limit(pageSize).Offset((page-1)*pageSize).
-		Select("id, owner_id, name, lower_name, description, is_private, is_unlisted, updated_unix, default_branch, wiki_folder_name, num_stars, num_forks, num_watches").
+		Select("id, owner_id, name, lower_name, description, is_private, is_unlisted, updated_unix, default_branch, wiki_folder_name, num_stars, num_forks, num_watches, num_commits, num_branches").
 		Where("is_private=?", false).Order("updated_unix DESC").Find(&repos).Error
 	return repos, err
 }
