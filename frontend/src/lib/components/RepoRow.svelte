@@ -114,22 +114,23 @@
     display: grid;
     grid-template-columns: 1fr 140px 220px 120px;
     align-items: center;
-    padding: 1rem 1.25rem;
+    padding: 1.15rem 1.5rem;
     background: transparent;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    gap: 1rem;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    gap: 1.25rem;
     position: relative;
     border: none;
     cursor: pointer;
     min-width: 0;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
+  .repo-row:last-child { border-bottom: none; }
+
   .repo-row:hover {
-    background: var(--md3-surface-3);
-    transform: scale(1.005) translateX(4px);
-    border-radius: 2rem;
-    box-shadow: 0 10px 20px -10px rgba(0,0,0,0.15);
+    background: rgba(var(--primary-rgb), 0.05);
     z-index: 10;
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.1);
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }

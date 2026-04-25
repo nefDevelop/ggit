@@ -17,6 +17,7 @@ func EditRepoFile(c *context.APIContext) {
 		CommitMessage string `json:"commit_message"`
 		IsNewFile     bool   `json:"is_new_file"`
 		LastCommitID  string `json:"last_commit_id"`
+		Branch        string `json:"branch"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -35,9 +36,14 @@ func EditRepoFile(c *context.APIContext) {
 		message += "\n\n" + f.CommitMessage
 	}
 
+	targetBranch := f.Branch
+	if targetBranch == "" {
+		targetBranch = c.Repo.BranchName
+	}
+
 	err := c.Repo.Repository.UpdateRepoFile(c.User, database.UpdateRepoFileOptions{
 		OldBranch:   c.Repo.BranchName,
-		NewBranch:   c.Repo.BranchName,
+		NewBranch:   targetBranch,
 		OldTreeName: f.TreePath,
 		NewTreeName: f.TreePath,
 		Message:     message,

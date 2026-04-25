@@ -92,7 +92,7 @@ func GetRepoMediaFile(c *context.APIContext) {
 
 func serveRawFile(c *context.APIContext, isMedia bool) {
 	refName := c.Params("ref")
-	treePath := c.Params("*")
+	treePath := strings.TrimPrefix(c.Params("*"), "/")
 
 	gitRepo := c.Repo.GitRepo
 	var (

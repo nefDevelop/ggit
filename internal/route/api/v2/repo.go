@@ -3,7 +3,6 @@ package v2
 import (
 	stdcontext "context"
 	"net/http"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -17,7 +16,8 @@ import (
 	"github.com/nef734/ggit/internal/markup"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
-	)
+)
+
 // SearchRepoContents searches for a keyword in the repository using git grep.
 func SearchRepoContents(c *context.APIContext) {
 	q := c.Query("q")
@@ -97,7 +97,6 @@ func SearchRepoContents(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, results)
 }
-
 
 // CreateRepo creates a new repository for the authenticated user.
 func CreateRepo(c *context.APIContext) {
@@ -240,20 +239,24 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
-	for i := range apiEntries {
-		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: path.Join(c.Repo.TreePath, apiEntries[i].Name), MaxCount: 1})
-		if err == nil && len(lastCommit) > 0 {
-			apiEntries[i].LastCommit = map[string]any{
-				"id":      lastCommit[0].ID.String(),
-				"summary": lastCommit[0].Summary(),
-				"author": map[string]any{
-					"name":  lastCommit[0].Author.Name,
-					"email": lastCommit[0].Author.Email,
-					"when":  lastCommit[0].Author.When,
-				},
+	// Fetching last commit for each entry is extremely slow in a loop.
+	// We'll skip it for now to ensure fast directory browsing.
+	/*
+		for i := range apiEntries {
+			lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: path.Join(c.Repo.TreePath, apiEntries[i].Name), MaxCount: 1})
+			if err == nil && len(lastCommit) > 0 {
+				apiEntries[i].LastCommit = map[string]any{
+					"id":      lastCommit[0].ID.String(),
+					"summary": lastCommit[0].Summary(),
+					"author": map[string]any{
+						"name":  lastCommit[0].Author.Name,
+						"email": lastCommit[0].Author.Email,
+						"when":  lastCommit[0].Author.When,
+					},
+				}
 			}
 		}
-	}
+	*/
 
 	res := map[string]any{
 		"type":       "directory",
@@ -315,10 +318,9 @@ func getRepoDirectory(c *context.APIContext) {
 		stats["tags"] = int64(len(tags))
 		res["stats"] = stats
 
-		// Language distribution
-		langStats := make(map[string]int64)
-		_ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
-		res["languages"] = langStats
+		// TODO: Use cached language stats from database instead of walking the tree every time.
+		// _ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
+		res["languages"] = map[string]int64{}
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -453,4 +455,3 @@ func GetRepoCommits(c *context.APIContext) {
 		"pageSize": pageSize,
 	})
 }
-

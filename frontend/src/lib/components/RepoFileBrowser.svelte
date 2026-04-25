@@ -159,7 +159,7 @@ git push -u origin main</code></pre>
         <!-- Main Explorer / Code -->
         <div class="main-column">
           <!-- Last Commit Bar -->
-          {#if repoData.last_commit}
+          {#if repoData.last_commit && repoData.type !== 'file'}
             <div class="last-commit-bar">
                 <div class="commit-avatar">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
                 <div class="commit-info">
@@ -218,7 +218,7 @@ git push -u origin main</code></pre>
                      <span class="filename">{repoData.name}</span>
                      <span class="filesize">{formatSize(repoData.size)}</span>
                    </div>
-                    <div class="file-tools">
+                    <div class="file-tools side-by-side">
                       {#if repoData.is_text_file}
                         <a href="/{username}/{reponame}/_edit/{repoData.branch}/{realPath()}" class="tool-btn">
                           <span class="material-symbols-rounded">edit</span>
@@ -486,15 +486,18 @@ git push -u origin main</code></pre>
   .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.95rem; color: var(--text-color); }
   .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.35rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
   .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+  .file-tools.side-by-side { display: flex; align-items: center; gap: 0.5rem; }
   .btn-sidebar-toggle-inline { padding: 0.35rem 0.5rem; }
   .btn-sidebar-toggle-inline span { font-size: 1.1rem; }
 
-  .code-box { background: #010409; }
+  .code-box { background: var(--md-sys-color-surface-container-lowest); }
   .code-grid { display: grid; grid-template-columns: 50px 1fr; }
   .ln-col { border-right: 1px solid rgba(255,255,255,0.08); padding: 1.25rem 0; text-align: right; background: rgba(255,255,255,0.01); }
   .ln-col span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.25; padding-right: 1rem; line-height: 1.5; }
   .code-pre { margin: 0; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.5; color: #e6edf3; }
-  .line { white-space: pre-wrap; }
+  .code-pre.hljs { background: transparent; }
+  .line { white-space: pre-wrap; transition: background 0.2s; }
+  .line:hover { background: rgba(255,255,255,0.05); }
 
   /* Readme */
   .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
