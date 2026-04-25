@@ -153,12 +153,7 @@
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
   .header-actions { display: flex; gap: 0.75rem; }
 
-  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.5rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-  .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
-  .modern-table tr:last-child td { border-bottom: none; }
-  
+
   .clickable { cursor: pointer; transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
   .clickable:hover { background: rgba(255,255,255,0.03); }
 

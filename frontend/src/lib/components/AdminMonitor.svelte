@@ -145,12 +145,6 @@
   .section-tag { font-size: 0.75rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
   .section-tag span { font-size: 1.25rem; }
 
-  .modern-table-card { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 2.25rem; overflow: hidden; background: rgba(0,0,0,0.15); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-  .modern-table { width: 100%; border-collapse: collapse; text-align: left; }
-  .modern-table th { padding: 1.5rem; background: rgba(var(--primary-rgb), 0.03); color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.15em; font-weight: 900; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .modern-table td { padding: 1.75rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
-  .modern-table tr:last-child td { border-bottom: none; }
-
   .task-name { font-size: 1.05rem; color: var(--text-color); font-weight: 800; }
   .spec-code { font-family: 'JetBrains Mono', monospace; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.4rem 0.75rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700; }
   .time-stamp { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }

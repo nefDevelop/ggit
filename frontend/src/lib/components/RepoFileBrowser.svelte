@@ -431,7 +431,7 @@ git push -u origin main</code></pre>
     overflow: hidden; 
     box-shadow: var(--shadow-sm);
   }
-  .file-table { width: 100%; border-collapse: collapse; }
+  .file-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
   .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .file-row:last-child { border-bottom: none; }
   .file-row td { padding: 0.75rem 1rem; }

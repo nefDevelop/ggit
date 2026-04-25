@@ -1339,7 +1339,50 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+.modern-table-card { 
+  border: 1px solid var(--md-sys-color-outline-variant); 
+  border-radius: 2.25rem; 
+  overflow: hidden; 
+  background: rgba(0,0,0,0.15); 
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); 
+  margin-top: 1rem; 
+}
+
+.modern-table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  text-align: left; 
+}
+
+.modern-table th { 
+  padding: 1.5rem; 
+  background: rgba(var(--primary-rgb), 0.03); 
+  color: var(--text-muted); 
+  font-size: 0.8rem; 
+  text-transform: uppercase; 
+  letter-spacing: 0.15em; 
+  font-weight: 900; 
+  border-bottom: 1px solid var(--md-sys-color-outline-variant); 
+}
+
+.modern-table td { 
+  padding: 1.75rem 1.5rem; 
+  border-bottom: 1px solid var(--md-sys-color-outline-variant); 
+  vertical-align: middle; 
+}
+
+.modern-table tr:last-child td { 
+  border-bottom: none; 
+}
+
+.modern-table .hover-row:hover {
+  background: rgba(var(--primary-rgb), 0.05);
+}
+
 @media (max-width: 1024px) {
+  .modern-table-card {
+    border-radius: 1.5rem;
+  }
   .modern-table thead {
     display: none;
   }
@@ -1820,7 +1863,6 @@ h2::after {
 .line-clamp-1 {
   display: -webkit-box;
   -webkit-line-clamp: 1;
-  line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1828,7 +1870,6 @@ h2::after {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1836,7 +1877,6 @@ h2::after {
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
-  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
