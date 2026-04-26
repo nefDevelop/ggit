@@ -142,7 +142,8 @@
 
   .danger { border: 1px solid rgba(239, 68, 68, 0.2); }
   .danger-body { padding: 2rem; }
-  .danger-item { display: flex; justify-content: space-between; align-items: center; }
+  .danger-item { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  @media (max-width: 600px) { .danger-item { flex-direction: column; align-items: flex-start; } }
   .danger-text strong { color: #ef4444; font-size: 1.1rem; display: block; margin-bottom: 0.25rem; }
   .danger-text p { color: var(--text-muted); margin: 0; font-size: 0.9rem; }
 

@@ -69,9 +69,9 @@
     </div>
   </header>
 
-  <div class="modular-stack">
+  <div class="flex-col gap-xl">
     {#if generatedToken}
-      <div class="generated-alert island">
+      <div class="generated-alert break-words">
         <div class="alert-top">
            <span class="material-symbols-rounded">security_update_good</span>
            <div class="alert-text">
@@ -91,12 +91,12 @@
     {/if}
 
     <!-- TOKENS LIST -->
-    <div class="config-module">
+    <div class="flex-col gap-md">
       <div class="module-tag">
         <span class="material-symbols-rounded">format_list_bulleted</span>
         Mis Tokens Activos
       </div>
-      <div class="island tonal-list">
+      <div class="tonal-list">
         {#if loading}
           <div class="skeleton-tokens"></div>
         {:else if tokens.length === 0}
@@ -126,19 +126,19 @@
     </div>
 
     <!-- GENERATE FORM -->
-    <div class="config-module">
+    <div class="flex-col gap-md">
       <div class="module-tag">
         <span class="material-symbols-rounded">add_circle</span>
         Generar Nuevo Token
       </div>
-      <div class="island form-box">
+      <div class="form-box">
         <form onsubmit={(e) => { e.preventDefault(); createToken(); }} class="premium-token-form">
-          <div class="inline-input-layout">
-             <div class="field">
+          <div class="inline-input-layout w-full">
+             <div class="field w-full">
                 <label>Nombre del Propósito</label>
-                <input type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required />
+                <input type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required class="w-full" />
              </div>
-             <Button type="submit" variant="primary" icon="key" disabled={submitting || !newTokenName}>
+             <Button type="submit" variant="primary" icon="key" disabled={submitting || !newTokenName} class="w-full sm:w-auto">
                 {submitting ? 'Generando...' : 'Generar Token'}
              </Button>
           </div>
@@ -155,6 +155,7 @@
   
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  @media (max-width: 600px) { .header-flex { flex-direction: column; align-items: flex-start; gap: 1rem; } }
   @media (max-width: 600px) {
     .section-header { margin-bottom: 2rem; }
     h2 { font-size: 1.5rem; }

@@ -116,6 +116,7 @@
   
   form { display: flex; flex-direction: column; gap: 2rem; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }

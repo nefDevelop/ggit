@@ -85,6 +85,7 @@
 
   form { padding: 2rem; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
   .col-span-2 { grid-column: span 2; }
 
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }

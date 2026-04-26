@@ -29,6 +29,10 @@
 }
 
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   background-color: var(--bg-color);
   color: var(--text-color);

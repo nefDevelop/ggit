@@ -166,6 +166,7 @@
   .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   
   .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  @media (max-width: 600px) { .toggle-row { flex-direction: column; align-items: flex-start; padding: 1.5rem; gap: 1.5rem; } }
   .toggle-row:last-child { border-bottom: none; }
   .toggle-row:hover { background: rgba(255,255,255,0.02); }
 

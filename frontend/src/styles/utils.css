@@ -68,5 +68,16 @@
 .gap-lg { gap: 2rem; }
 .gap-xl { gap: 3rem; }
 
-.w-full { width: 100%; }
-.h-full { height: 100%; }
+.w-full { width: 100%; box-sizing: border-box; }
+.h-full { height: 100%; box-sizing: border-box; }
+
+.break-words {
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+  max-width: 100%;
+}

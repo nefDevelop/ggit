@@ -202,6 +202,7 @@
   .state-select { background: var(--surface-variant); border: 1px solid var(--border-color); color: var(--text-color); padding: 0.5rem; border-radius: 8px; font-weight: 700; }
 
   .editor-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  @media (max-width: 600px) { .editor-form { grid-template-columns: 1fr; } }
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field.full-width { grid-column: span 2; }
   .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }

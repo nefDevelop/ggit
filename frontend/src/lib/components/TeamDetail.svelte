@@ -394,6 +394,11 @@
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
   }
+  @media (max-width: 800px) {
+    .management-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 
   .management-card {
     padding: 0;

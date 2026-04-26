@@ -275,6 +275,11 @@
     grid-template-columns: 1fr 1fr;
     gap: 1.5rem;
   }
+  @media (max-width: 600px) {
+    .field-row {
+      grid-template-columns: 1fr;
+    }
+  }
 
   .field {
     display: flex;

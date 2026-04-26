@@ -301,6 +301,8 @@
     font-family: inherit;
     font-size: 1rem;
     transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
   }
   textarea {
     min-height: 80px;
@@ -317,6 +319,11 @@
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-top: 1rem;
+  }
+  @media (max-width: 800px) {
+    .options-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .checkbox-container {

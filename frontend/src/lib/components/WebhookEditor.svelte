@@ -191,6 +191,7 @@
   .events-picker label { font-size: 0.9rem; font-weight: 600; }
   
   .events-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  @media (max-width: 600px) { .events-grid { grid-template-columns: 1fr; } }
   .event-card { display: flex; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; cursor: pointer; transition: all 0.2s; }
   .event-card:hover { background: rgba(255,255,255,0.05); }
   .event-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }

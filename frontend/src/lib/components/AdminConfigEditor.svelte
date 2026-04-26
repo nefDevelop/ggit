@@ -94,6 +94,7 @@
   .form-scroll-area { padding: 2rem; overflow-y: auto; flex: 1; mask-image: linear-gradient(to bottom, transparent, black 20px, black calc(100% - 20px), transparent); }
   
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; padding: 1rem 0; }
+  @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
 
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .form-group label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.8; }

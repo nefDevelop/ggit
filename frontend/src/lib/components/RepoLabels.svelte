@@ -146,6 +146,7 @@
 
   .label-editor { margin-bottom: 2rem; }
   .editor-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; align-items: flex-end; margin-bottom: 2rem; }
+  @media (max-width: 800px) { .editor-grid { grid-template-columns: 1fr; gap: 1rem; } }
   
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
