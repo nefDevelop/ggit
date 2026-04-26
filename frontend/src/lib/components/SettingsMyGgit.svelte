@@ -157,16 +157,30 @@
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
+  @media (max-width: 600px) {
+    .section-header { margin-bottom: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { font-size: 0.9rem; }
+  }
+
   .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  @media (max-width: 600px) {
+    .modular-stack { gap: 2rem; }
+  }
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
   
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
   .module-tag span { font-size: 1.25rem; }
 
   .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  @media (max-width: 600px) {
+    .tonal-list { border-radius: 1.25rem; }
+  }
   
   .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
-  @media (max-width: 600px) { .toggle-row { flex-direction: column; align-items: flex-start; padding: 1.5rem; gap: 1.5rem; } }
+  @media (max-width: 600px) { .toggle-row { flex-direction: column; align-items: stretch; padding: 1rem 1.25rem; gap: 1rem; } }
   .toggle-row:last-child { border-bottom: none; }
   .toggle-row:hover { background: rgba(255,255,255,0.02); }
 
@@ -186,7 +200,6 @@
   .language-card { padding: 1rem; }
 
   @media (max-width: 600px) {
-    .toggle-row { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; }
     .premium-switch { align-self: flex-end; }
   }
 </style>

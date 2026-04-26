@@ -79,6 +79,8 @@
     align-items: start;
     padding: 1rem 0;
     min-height: 80vh;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .settings-sidebar {
@@ -185,6 +187,7 @@
     .settings-premium-container {
       grid-template-columns: 1fr;
       padding: 0 1rem;
+      gap: 2rem;
     }
     .settings-sidebar {
       position: relative;
@@ -214,10 +217,20 @@
     .active-indicator {
       display: none;
     }
+    .settings-content {
+      gap: 2rem;
+    }
   }
 
   @media (max-width: 600px) {
     .sidebar-brand span { font-size: 1.75rem; }
     .sidebar-title { font-size: 1.1rem; }
+    .settings-premium-container {
+      padding: 0 0.5rem;
+      gap: 1.5rem;
+    }
+    .settings-content {
+      gap: 1.5rem;
+    }
   }
 </style>

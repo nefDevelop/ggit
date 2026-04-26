@@ -34,7 +34,7 @@
   function applyScheme(schemeId: string) {
     currentScheme = schemeId;
     localStorage.setItem('color-scheme', schemeId);
-    
+
     if (schemeId === 'dark' || (schemeId === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.setAttribute('data-color-scheme', 'dark');
     } else {
@@ -111,7 +111,7 @@
 </Card>
 
 <style>
-  
+
   .section-header { margin-bottom: 4rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
   .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
@@ -133,11 +133,11 @@
   }
   .scheme-modular-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.03); border-color: var(--primary-color); }
   .scheme-modular-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); box-shadow: var(--shadow-xl); }
-  
+
   .scheme-icon-box { width: 64px; height: 64px; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); display: flex; align-items: center; justify-content: center; color: var(--primary-color); }
   .scheme-icon-box span { font-size: 2.5rem; }
   .scheme-name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
-  
+
   .active-dot { position: absolute; top: 1.5rem; right: 1.5rem; width: 12px; height: 12px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 0 15px var(--primary-color); }
 
   /* Theme Grid */
@@ -154,11 +154,20 @@
   .theme-info { display: flex; flex-direction: column; flex: 1; text-align: left; }
   .theme-info .name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
   .theme-info .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); opacity: 0.6; }
-  
+
   .check-icon { color: var(--primary-color); font-size: 1.75rem; }
 
   @media (max-width: 800px) {
+    .section-header { margin-bottom: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { font-size: 0.9rem; }
+
+    .modular-stack { gap: 2rem; }
     .scheme-grid { grid-template-columns: 1fr; }
     .theme-modular-grid { grid-template-columns: 1fr; }
+    .scheme-modular-card { padding: 1.5rem; border-radius: 1.5rem; }
+    .theme-modular-tile { padding: 1rem; border-radius: 1.5rem; }
   }
 </style>

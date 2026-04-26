@@ -66,5 +66,10 @@
   .p-sm { padding: 1rem; }
   .p-md { padding: 1.5rem; }
   .p-lg { padding: 2.5rem; }
+
+  @media (max-width: 768px) {
+    .p-md { padding: 1rem; }
+    .p-lg { padding: 1.25rem; }
+  }
 </style>
 

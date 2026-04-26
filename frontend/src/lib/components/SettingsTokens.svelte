@@ -174,21 +174,30 @@
   .module-tag span { font-size: 1.25rem; }
 
   .generated-alert { padding: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); display: flex; flex-direction: column; gap: 2rem; animation: slideDown 0.4s; }
+  @media (max-width: 600px) { .generated-alert { padding: 1.5rem; gap: 1.5rem; } }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
   .alert-top { display: flex; align-items: center; gap: 1.5rem; }
   .alert-top span { font-size: 3rem; color: var(--primary-color); }
+  @media (max-width: 600px) { .alert-top span { font-size: 2rem; } }
   .alert-text strong { display: block; font-size: 1.25rem; font-weight: 950; }
   .alert-text p { margin: 0.25rem 0 0; color: var(--text-muted); }
 
   .token-display { display: flex; align-items: center; gap: 1.5rem; background: #08080c; border: 1px solid #1a1a24; padding: 1rem 1.5rem; border-radius: 1.5rem; }
+  @media (max-width: 600px) { .token-display { padding: 0.75rem 1rem; border-radius: 1rem; gap: 0.75rem; } }
   .token-display code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #6ee7b7; word-break: break-all; }
+  @media (max-width: 600px) { .token-display code { font-size: 1rem; } }
 
   .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  @media (max-width: 600px) { .tonal-list { border-radius: 1.25rem; } }
   .token-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
   
   @media (max-width: 800px) {
     .token-row { flex-direction: column; align-items: stretch; padding: 1.5rem; gap: 1.5rem; }
     .token-actions { display: flex; justify-content: flex-end; }
+  }
+
+  @media (max-width: 600px) {
+    .token-row { padding: 1rem 1.25rem; gap: 1rem; }
   }
 
   .token-row:last-child { border-bottom: none; }

@@ -374,6 +374,11 @@
     }
     .avatar-column { order: -1; }
   }
+  @media (max-width: 600px) {
+    .profile-layout-grid {
+      gap: 1.5rem;
+    }
+  }
 
   .avatar-column {
     display: flex;
@@ -514,6 +519,14 @@
     padding-top: 2.5rem;
     border-top: 1px solid var(--md-sys-color-outline-variant);
   }
+  @media (max-width: 600px) {
+    .form-footer {
+      padding-top: 1.5rem;
+    }
+    .form-footer :global(button) {
+      width: 100%;
+    }
+  }
 
   .magic-avatar-panel {
     margin-bottom: 3rem;
@@ -526,6 +539,8 @@
     background: rgba(var(--primary-rgb), 0.05) !important;
     animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     max-width: 900px;
+    width: 100%;
+    box-sizing: border-box;
   }
   @media (max-width: 1000px) {
     .magic-avatar-panel { 
@@ -548,6 +563,9 @@
 
   .dicebear-settings { display: flex; flex-direction: column; gap: 1.5rem; }
   .styles-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  @media (max-width: 600px) {
+    .styles-grid { justify-content: center; }
+  }
   .style-chip { padding: 0.5rem 1rem; border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.85rem; text-transform: capitalize; }
   .style-chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
