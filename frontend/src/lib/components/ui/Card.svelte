@@ -47,6 +47,9 @@
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--md-sys-color-on-surface);
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .bg-lowest { background: var(--md-sys-color-surface-container-lowest); }
