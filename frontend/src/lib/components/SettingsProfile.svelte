@@ -513,6 +513,15 @@
     max-width: 100%;
     box-sizing: border-box;
   }
+  @media (max-width: 600px) {
+    .field input {
+      padding: 0.75rem 1rem;
+    }
+    .title-with-icon {
+      gap: 1rem;
+    }
+  }
+
   .field input:focus {
     border-color: var(--primary-color);
     outline: none;

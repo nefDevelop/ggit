@@ -176,6 +176,9 @@
     gap: 3rem;
     animation: contentFade 0.5s ease-out;
     min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   @keyframes contentFade {

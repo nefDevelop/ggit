@@ -16,4 +16,10 @@
     margin: 0 auto;
     padding: 2rem;
   }
+
+  @media (max-width: 600px) {
+    .page-container {
+      padding: 1rem 0.5rem;
+    }
+  }
 </style>
