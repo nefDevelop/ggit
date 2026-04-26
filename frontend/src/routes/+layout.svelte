@@ -8,6 +8,7 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import RightSidebar from '$lib/components/RightSidebar.svelte';
 	import GlobalDialog from '$lib/components/GlobalDialog.svelte';
+	import GlobalToast from '$lib/components/GlobalToast.svelte';
 	import { page } from '$app/stores';
 
 	let { children } = $props();
@@ -77,4 +78,5 @@
     {/if}
 
     <GlobalDialog />
+    <GlobalToast />
 </div>

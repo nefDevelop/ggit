@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import { 
     FileText as Description, 
@@ -101,7 +102,7 @@
   }
 
   async function handleDelete() {
-    if (!confirm('Are you sure you want to delete this page?')) return;
+    if (!await dialog.confirm('Are you sure you want to delete this page?')) return;
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`, {
         method: 'DELETE'

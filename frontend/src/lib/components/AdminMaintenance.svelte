@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from "$lib/i18n.svelte";
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
 
@@ -41,7 +42,7 @@
 
   async function runOperation(op: any) {
     if (runningOp !== null) return;
-    if (!confirm(`Are you sure you want to run: ${op.name}?`)) return;
+    if (!await dialog.confirm(`Are you sure you want to run: ${op.name}?`)) return;
     runningOp = op.id;
     logActivity(`Starting: ${op.name}...`, "info");
     try {

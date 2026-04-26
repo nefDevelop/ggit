@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import TableSkeleton from './ui/TableSkeleton.svelte';
 
   let auditLogs = $state<any[]>([]);
   let loading = $state(true);
@@ -73,11 +74,7 @@
       </thead>
       <tbody>
         {#if loading && auditLogs.length === 0}
-          {#each Array(5) as _}
-            <tr class="skeleton-row">
-              <td colspan="5"><div class="skeleton-line"></div></td>
-            </tr>
-          {/each}
+          <TableSkeleton columns={5} rows={5} />
         {:else if auditLogs.length === 0}
           <tr><td colspan="5" class="empty-state">No se han encontrado registros de auditoría históricos.</td></tr>
         {:else}
@@ -171,5 +168,4 @@
   :global(.load-more-btn) { width: auto; min-width: 300px; border-radius: 1.5rem !important; }
 
   .empty-state { padding: 5rem; text-align: center; color: var(--text-muted); font-weight: 700; opacity: 0.5; }
-  .skeleton-line { height: 2rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
 </style>

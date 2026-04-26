@@ -3,6 +3,7 @@
   import { onMount, getContext } from "svelte";
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
+  import { dialog } from "$lib/dialog.svelte";
   import { Trash2, Plus, Globe, Shield } from "lucide-svelte";
 
   const repo: any = getContext("repo");
@@ -61,7 +62,7 @@
   }
 
   async function deleteRemote(name: string) {
-    if (!confirm(`¿Estás seguro de eliminar el remoto "${name}"?`)) return;
+    if (!await dialog.confirm(`¿Estás seguro de eliminar el remoto "${name}"?`)) return;
     deleting = name;
     try {
       const res = await apiFetch(

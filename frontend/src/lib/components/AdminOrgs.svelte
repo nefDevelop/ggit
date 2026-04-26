@@ -1,11 +1,13 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import Avatar from './Avatar.svelte';
   import AdminOrgEditor from './AdminOrgEditor.svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import TableSkeleton from './ui/TableSkeleton.svelte';
   
   let orgs = $state<any[]>([]);
   let loading = $state(true);
@@ -27,7 +29,7 @@
   }
 
   async function deleteOrg(id: number) {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta organización? Todos sus contenidos serán eliminados permanentemente.')) return;
+    if (!await dialog.confirm('¿Estás seguro de que deseas eliminar esta organización? Todos sus contenidos serán eliminados permanentemente.')) return;
     try {
       const res = await apiFetch(`/api/v2/admin/users/${id}`, { method: 'DELETE' });
       if (res.ok) fetchOrgs();
@@ -63,11 +65,7 @@
       </thead>
       <tbody>
         {#if loading}
-          {#each Array(5) as _}
-            <tr class="skeleton-row">
-              <td colspan="5"><div class="skeleton-line"></div></td>
-            </tr>
-          {/each}
+          <TableSkeleton columns={5} rows={5} />
         {:else}
           {#each orgs as org}
             <tr class="hover-row">
@@ -164,6 +162,4 @@
 
   .action-row { display: flex; gap: 0.75rem; }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.15) !important; }
-
-  .skeleton-line { height: 2.5rem; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
 </style>

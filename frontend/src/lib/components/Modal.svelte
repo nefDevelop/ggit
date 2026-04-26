@@ -6,9 +6,10 @@
     title: string;
     children?: any;
     onclose: () => void;
+    maxWidth?: string;
   }
 
-  let { show, title, children, onclose }: Props = $props();
+  let { show, title, children, onclose, maxWidth = "600px" }: Props = $props();
 
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "Escape" && show) onclose();
@@ -28,7 +29,7 @@
 
   <!-- MODAL CONTENT -->
   <div class="modal-wrapper" transition:fly={{ y: 20, duration: 300 }}>
-    <div class="modal-card tonal">
+    <div class="modal-card tonal" style="max-width: {maxWidth}">
       <header class="modal-header">
         <h3>{title}</h3>
         <button class="close-btn" onclick={onclose}>

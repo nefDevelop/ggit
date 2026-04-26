@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
 
@@ -55,7 +56,7 @@
   }
 
   async function deleteLabel(id: number) {
-    if (!confirm('Are you sure you want to delete this label?')) return;
+    if (!await dialog.confirm('Are you sure you want to delete this label?')) return;
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/labels/${id}`, {
         method: 'DELETE'

@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import Modal from "./Modal.svelte";
@@ -28,7 +29,7 @@
   }
 
   async function deleteNotice(id: number) {
-    if (!confirm("¿Eliminar este aviso?")) return;
+    if (!await dialog.confirm("¿Eliminar este aviso?")) return;
     try {
       const res = await apiFetch(`/api/v2/admin/notices/${id}`, { method: "DELETE" });
       if (res.ok) fetchNotices();
@@ -36,7 +37,7 @@
   }
 
   async function clearAll() {
-    if (!confirm("¿Seguro que quieres borrar TODOS los avisos?")) return;
+    if (!await dialog.confirm("¿Seguro que quieres borrar TODOS los avisos?")) return;
     try {
       const res = await apiFetch(`/api/v2/admin/notices`, { method: "DELETE" });
       if (res.ok) fetchNotices();

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
+  import { dialog } from '$lib/dialog.svelte';
   import { page } from "$app/state";
   import Avatar from "$lib/components/Avatar.svelte";
   import { goto } from "$app/navigation";
@@ -56,7 +57,7 @@
 
   async function deleteTeam() {
     if (
-      !confirm(
+      !await dialog.confirm(
         "Are you sure you want to delete this team? This action is permanent.",
       )
     )

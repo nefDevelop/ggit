@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
 
@@ -48,7 +49,7 @@
   }
 
   async function deleteToken(id: number) {
-    if (!confirm('¿Seguro que quieres eliminar este token?')) return;
+    if (!await dialog.confirm('¿Seguro que quieres eliminar este token?')) return;
     try {
       const res = await apiFetch(`/api/v2/user/settings/tokens/${id}`, { method: 'DELETE' });
       if (res.ok) tokens = tokens.filter(t => t.id !== id);

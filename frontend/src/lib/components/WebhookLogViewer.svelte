@@ -36,26 +36,14 @@
 </script>
 
 <div class="webhook-logs">
-  <header class="modal-header">
-    <div class="title-zone">
-      <span class="material-symbols-rounded">history</span>
-      <div class="title-meta">
-        <h3>Delivery History</h3>
-        <code>{hook.url}</code>
-      </div>
-    </div>
-    <div class="header-actions">
-        <button class="btn btn-icon btn-tonal" onclick={fetchLogs} title="Refresh">
-          <span class="material-symbols-rounded">refresh</span>
-        </button>
-        <button class="btn-close" onclick={() => onclose()}>
-          <span class="material-symbols-rounded">close</span>
-        </button>
-    </div>
-  </header>
-
   <div class="modal-body-split">
      <aside class="logs-sidebar">
+        <header class="sidebar-header">
+           <span class="url-hint">{hook.url}</span>
+           <button class="btn-icon-minimal" onclick={fetchLogs} title="Refresh">
+             <span class="material-symbols-rounded">refresh</span>
+           </button>
+        </header>
         {#if loading}
           <div class="skeleton-logs">
             {#each Array(5) as _}
@@ -147,15 +135,10 @@
 </div>
 
 <style>
-  .webhook-logs { display: flex; flex-direction: column; height: 100%; }
+  .webhook-logs { display: flex; flex-direction: column; height: 100%; margin: -2rem; }
   
-  .modal-header { padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .title-zone { display: flex; align-items: center; gap: 1rem; }
-  .title-zone span { font-size: 2rem; color: var(--primary-color); }
-  .title-meta h3 { margin: 0; font-size: 1.15rem; font-weight: 800; }
-  .title-meta code { font-size: 0.8rem; opacity: 0.6; }
-  
-  .header-actions { display: flex; align-items: center; gap: 1rem; }
+  .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.05); }
+  .url-hint { font-size: 0.75rem; opacity: 0.5; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
 
   .modal-body-split { display: grid; grid-template-columns: 350px 1fr; height: 700px; max-height: 80vh; overflow: hidden; }
 
@@ -200,4 +183,10 @@
 
   .empty-logs { padding: 3rem; text-align: center; color: var(--text-muted); }
   .empty-logs span { font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; }
+
+  .skeleton-log-item { height: 60px; background: rgba(255,255,255,0.05); margin: 0.5rem 1rem; border-radius: 0.5rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+
+  .btn-icon-minimal { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; padding: 0.25rem; border-radius: 50%; transition: all 0.2s; }
+  .btn-icon-minimal:hover { background: rgba(255,255,255,0.05); color: var(--text-color); }
 </style>

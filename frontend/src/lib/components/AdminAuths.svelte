@@ -2,8 +2,10 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import TableSkeleton from './ui/TableSkeleton.svelte';
 
   let sources = $state<any[]>([]);
   let loading = $state(true);
@@ -17,7 +19,7 @@
   }
 
   async function deleteAuth(id: number) {
-    if (!confirm("¿Seguro que quieres eliminar este origen de autenticación?")) return;
+    if (!await dialog.confirm("¿Seguro que quieres eliminar este origen de autenticación?")) return;
     try {
       const res = await apiFetch(`/api/v2/admin/auths/${id}`, { method: "DELETE" });
       if (res.ok) fetchAuths();
@@ -54,11 +56,7 @@
       </thead>
       <tbody>
         {#if loading}
-          {#each Array(3) as _}
-            <tr class="skeleton-row">
-              <td colspan="5"><div class="skeleton-line"></div></td>
-            </tr>
-          {/each}
+          <TableSkeleton columns={5} rows={3} />
         {:else if sources.length === 0}
           <tr>
             <td colspan="5" class="empty-state">No hay orígenes de autenticación configurados.</td>
@@ -132,5 +130,4 @@
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 1.1rem; opacity: 0.5; }
-  .skeleton-line { height: 2rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
 </style>

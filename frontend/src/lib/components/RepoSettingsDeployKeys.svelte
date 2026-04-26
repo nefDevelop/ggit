@@ -1,6 +1,11 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
+  import Modal from "$lib/components/Modal.svelte";
+  import Input from "$lib/components/ui/Input.svelte";
+  import Checkbox from "$lib/components/ui/Checkbox.svelte";
+  import { dialog } from "$lib/dialog.svelte";
+  import { toast } from "$lib/toast.svelte";
 
   const repo: any = getContext("repo");
 
@@ -49,18 +54,18 @@
         newKey = { title: "", key: "", read_only: true };
       } else {
         const data = await res.json();
-        alert(data.message || "Failed to add deploy key.");
+        toast.error(data.message || "Failed to add deploy key.");
       }
     } catch (e) {
       console.error(e);
-      alert("An error occurred while adding the key.");
+      toast.error("An error occurred while adding the key.");
     } finally {
       isSubmitting = false;
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Are you sure you want to delete this deploy key?")) return;
+    if (!(await dialog.confirm("Are you sure you want to delete this deploy key?"))) return;
 
     try {
       const res = await apiFetch(
@@ -159,80 +164,56 @@
     </div>
   {/if}
 
-  {#if showModal}
-    <div class="modal-overlay" onclick={() => (showModal = false)}>
-      <div class="modal-content" onclick={(e) => e.stopPropagation()}>
-        <header class="modal-header">
-          <h3>Add Deploy Key</h3>
-          <button class="btn-icon" onclick={() => (showModal = false)}>
-            <span class="material-symbols-rounded">close</span>
-          </button>
-        </header>
+  <Modal show={showModal} title="Add Deploy Key" onclose={() => (showModal = false)}>
+    <form
+      onsubmit={(e) => {
+        e.preventDefault();
+        handleAdd();
+      }}
+      style="display: flex; flex-direction: column; gap: 1.5rem;"
+    >
+      <Input
+        label="Title"
+        bind:value={newKey.title}
+        placeholder="e.g. CI Server"
+        required
+      />
 
-        <form
-          class="modal-body"
-          onsubmit={(e) => {
-            e.preventDefault();
-            handleAdd();
-          }}
+      <Input
+        label="Public Key Content"
+        bind:value={newKey.key}
+        placeholder="ssh-rsa AAAAB3Nza..."
+        required
+        multiline
+        rows={5}
+      />
+
+      <Checkbox
+        bind:checked={newKey.read_only}
+        label="Read-only"
+        description="If enabled, this key will not be able to push to the repository."
+      />
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-tonal"
+          onclick={() => (showModal = false)}>Cancel</button
         >
-          <div class="form-group">
-            <label for="title">Title</label>
-            <input
-              type="text"
-              id="title"
-              bind:value={newKey.title}
-              placeholder="e.g. CI Server"
-              required
-              class=" tonal"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="key">Public Key Content</label>
-            <textarea
-              id="key"
-              bind:value={newKey.key}
-              placeholder="ssh-rsa AAAAB3Nza..."
-              required
-              rows="5"
-              class=" tonal"
-            ></textarea>
-          </div>
-
-          <div class="form-group checkbox-group">
-            <label class="checkbox-container">
-              <input type="checkbox" bind:checked={newKey.read_only} />
-              <span class="checkmark"></span>
-              Allow write access
-              <p class="checkbox-hint">
-                If unchecked, this key will have push permissions.
-              </p>
-            </label>
-          </div>
-
-          <footer class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-tonal"
-              onclick={() => (showModal = false)}>Cancel</button
-            >
-            <button
-              type="submit"
-              class="btn btn-primary"
-              disabled={isSubmitting}
-            >
-              {#if isSubmitting}
-                <span class="spinner"></span>
-              {:else}
-                Add Key
-              {/if}
-            </button>
-          </footer>
-        </form>
-      </div>
-    </div>
-  {/if}
+        <button
+          type="submit"
+          class="btn btn-primary"
+          disabled={isSubmitting}
+        >
+          {#if isSubmitting}
+            <span class="spinner"></span>
+          {:else}
+            Add Key
+          {/if}
+        </button>
+      </footer>
+    </form>
+  </Modal>
 </div>
 
 <style>
@@ -374,129 +355,6 @@
     color: var(--text-muted);
     max-width: 400px;
     margin-bottom: 1rem;
-  }
-
-  /* Modal Styles */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-  .modal-content {
-    background: var(--md3-surface-2);
-    border-radius: 1.5rem;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    width: 100%;
-    max-width: 600px;
-    box-shadow: var(--shadow-2xl);
-  }
-
-  .modal-header {
-    padding: 1.5rem 2rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .modal-header h3 {
-    margin: 0;
-  }
-
-  .modal-body {
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .form-group label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-muted);
-  }
-  .form-group input,
-  .form-group textarea {
-    border: 1px solid transparent;
-    padding: 1rem;
-    border-radius: 1rem;
-    font-family: inherit;
-    transition: border 0.2s;
-  }
-  .form-group input:focus,
-  .form-group textarea:focus {
-    border-color: var(--primary-color);
-    outline: none;
-  }
-
-  .checkbox-group {
-    padding-top: 0.5rem;
-  }
-  .checkbox-container {
-    display: block;
-    position: relative;
-    padding-left: 2.5rem;
-    cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    user-select: none;
-  }
-  .checkbox-container input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-  .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 1.5rem;
-    width: 1.5rem;
-    background-color: var(--md3-surface-1);
-    border: 2px solid var(--md-sys-color-outline-variant);
-    border-radius: 0.4rem;
-    transition: all 0.2s;
-  }
-  .checkbox-container:hover input ~ .checkmark {
-    border-color: var(--primary-color);
-  }
-  .checkbox-container input:checked ~ .checkmark {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-  }
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 8px;
-    top: 3px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-  }
-  .checkbox-container input:checked ~ .checkmark:after {
-    display: block;
-  }
-
-  .checkbox-hint {
-    margin: 0.25rem 0 0 0;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    font-weight: 400;
   }
 
   .modal-footer {

@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import Avatar from './Avatar.svelte';
@@ -22,7 +23,7 @@
   }
 
   async function leaveOrg(id: number, name: string) {
-    if (!confirm(`¿Estás seguro de que quieres abandonar la organización ${name}?`)) return;
+    if (!await dialog.confirm(`¿Estás seguro de que quieres abandonar la organización ${name}?`)) return;
     try {
       const res = await apiFetch(`/api/v2/user/settings/orgs/${id}`, { method: "DELETE" });
       if (res.ok) {

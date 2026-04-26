@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import ReleaseEditor from './ReleaseEditor.svelte';
   import Button from './ui/Button.svelte';
@@ -54,7 +55,7 @@
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Are you sure you want to delete this release? This will also remove the associated Git tag if it was created through Ggit.")) return;
+    if (!await dialog.confirm("Are you sure you want to delete this release? This will also remove the associated Git tag if it was created through Ggit.")) return;
     
     try {
       const res = await apiFetch(`/api/v2/${username}/${reponame}/releases/${id}`, {

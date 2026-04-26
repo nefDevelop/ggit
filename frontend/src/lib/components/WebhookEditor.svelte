@@ -1,6 +1,9 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { getContext } from 'svelte';
+  import Input from "$lib/components/ui/Input.svelte";
+  import Select from "$lib/components/ui/Select.svelte";
+  import { toast } from "$lib/toast.svelte";
 
   let { hook = null, onclose } = $props();
   const repo: any = getContext('repo');
@@ -22,6 +25,11 @@
     { id: 'issue_comment', label: 'Issue Comments', desc: 'Created, edited, or deleted.' },
     { id: 'pull_request', label: 'Pull Requests', desc: 'Opened, closed, reopened, edited, merged, etc.' },
     { id: 'release', label: 'Releases', desc: 'Published, edited, or deleted.' },
+  ];
+
+  const contentTypeOptions = [
+    { value: 'json', label: 'application/json' },
+    { value: 'form', label: 'application/x-www-form-urlencoded' }
   ];
 
   function toggleEvent(id: string) {
@@ -77,7 +85,7 @@
         method: 'POST'
       });
       if (res.ok) {
-        alert('Test delivery triggered successfully!');
+        toast.success('Test delivery triggered successfully!');
       }
     } finally {
       submitting = false;
@@ -86,42 +94,33 @@
 </script>
 
 <div class="webhook-editor">
-  <header class="modal-header">
-    <div class="title-zone">
-      <span class="material-symbols-rounded">webhook</span>
-      <h3>{hook ? 'Edit Webhook' : 'Add New Webhook'}</h3>
-    </div>
-    <button class="btn-close" onclick={() => onclose()}>
-      <span class="material-symbols-rounded">close</span>
-    </button>
-  </header>
-
   <form onsubmit={(e) => { e.preventDefault(); handleSave(); }}>
     <div class="form-body">
-      <div class="field">
-        <label for="url">Payload URL</label>
-        <input id="url" type="url" bind:value={url} placeholder="https://example.com/postreceive" required />
-        <p class="helper">The URL that will receive the POST requests.</p>
-      </div>
+      <Input
+        label="Payload URL"
+        type="url"
+        bind:value={url}
+        placeholder="https://example.com/postreceive"
+        required
+      />
+      <p class="helper">The URL that will receive the POST requests.</p>
 
-      <div class="form-row">
-        <div class="field">
-          <label for="content-type">Content Type</label>
-          <select id="content-type" bind:value={contentType}>
-            <option value="json">application/json</option>
-            <option value="form">application/x-www-form-urlencoded</option>
-          </select>
-        </div>
-      </div>
+      <Select
+        label="Content Type"
+        options={contentTypeOptions}
+        bind:value={contentType}
+      />
 
-      <div class="field">
-        <label for="secret">Secret</label>
-        <input id="secret" type="password" bind:value={secret} placeholder="Optional secret for HMAC verification" />
-        <p class="helper">Used to generate a signature in <code>X-Ggit-Signature-256</code> header.</p>
-      </div>
+      <Input
+        label="Secret"
+        type="password"
+        bind:value={secret}
+        placeholder="Optional secret for HMAC verification"
+      />
+      <p class="helper">Used to generate a signature in <code>X-Ggit-Signature-256</code> header.</p>
 
       <div class="events-picker">
-        <label>Which events would you like to trigger this webhook?</label>
+        <label class="section-label">Which events would you like to trigger this webhook?</label>
         <div class="events-grid">
           {#each availableEvents as ev}
             <label class="event-card" class:active={events.includes(ev.id)}>
@@ -170,25 +169,13 @@
 <style>
   .webhook-editor { display: flex; flex-direction: column; }
   
-  .modal-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .title-zone { display: flex; align-items: center; gap: 0.75rem; }
-  .title-zone span { color: var(--primary-color); }
-  .title-zone h3 { margin: 0; font-size: 1.25rem; font-weight: 700; }
+  .form-body { display: flex; flex-direction: column; gap: 1.5rem; }
   
-  .btn-close { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; padding: 0.25rem; border-radius: 50%; }
-  .btn-close:hover { background: rgba(255,255,255,0.05); color: var(--text-color); }
+  .helper { margin: -0.5rem 0 0 0.25rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; }
 
-  .form-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
-  
-  .field { display: flex; flex-direction: column; gap: 0.5rem; }
-  .field label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .field input, .field select { background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant); color: #fff; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 1rem; width: 100%; transition: border-color 0.2s; }
-  .field input:focus { border-color: var(--primary-color); outline: none; }
-  
-  .helper { margin: 0; font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; }
+  .section-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
 
   .events-picker { display: flex; flex-direction: column; gap: 1rem; }
-  .events-picker label { font-size: 0.9rem; font-weight: 600; }
   
   .events-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   @media (max-width: 600px) { .events-grid { grid-template-columns: 1fr; } }
@@ -208,7 +195,7 @@
 
   .error-msg { color: #f87171; font-weight: 600; font-size: 0.9rem; }
 
-  .modal-footer { padding: 1.5rem 2rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.1); }
+  .modal-footer { margin-top: 2rem; padding-top: 1.5rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .spacer { flex: 1; }
   
   .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }

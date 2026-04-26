@@ -5,6 +5,7 @@
   import Avatar from './Avatar.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
+  import TableSkeleton from './ui/TableSkeleton.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import { dialog } from '$lib/dialog.svelte';
   
@@ -91,11 +92,7 @@
         </thead>
         <tbody>
           {#if loading}
-            {#each Array(5) as _}
-              <tr class="skeleton-row">
-                <td colspan="6"><div class="skeleton-line"></div></td>
-              </tr>
-            {/each}
+            <TableSkeleton columns={6} rows={5} />
           {:else}
             {#each users as user}
               <tr class="hover-row">
@@ -179,6 +176,4 @@
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.03); }
-
-  .skeleton-line { height: 2.5rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
 </style>

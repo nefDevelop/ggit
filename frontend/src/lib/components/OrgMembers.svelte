@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api";
+  import { dialog } from '$lib/dialog.svelte';
   import Avatar from "$lib/components/Avatar.svelte";
 
   let { orgName } = $props();
@@ -28,7 +29,7 @@
 
   async function removeMember(username: string) {
     if (
-      !confirm(
+      !await dialog.confirm(
         `Are you sure you want to remove ${username} from the organization?`,
       )
     )

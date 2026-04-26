@@ -5,6 +5,8 @@
   import Button from './ui/Button.svelte';
   import Avatar from './Avatar.svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
+  import TableSkeleton from './ui/TableSkeleton.svelte';
 
   let repos = $state<any[]>([]);
   let loading = $state(true);
@@ -25,7 +27,7 @@
   }
 
   async function deleteRepo(id: number, name: string) {
-    if (!confirm(`Are you sure you want to delete repository "${name}"? This action cannot be undone.`)) return;
+    if (!await dialog.confirm(`Are you sure you want to delete repository "${name}"? This action cannot be undone.`)) return;
 
     try {
       const res = await apiFetch(`/api/v2/admin/repos/${id}`, { method: "DELETE" });
@@ -64,11 +66,7 @@
       </thead>
       <tbody>
         {#if loading}
-          {#each Array(5) as _}
-            <tr class="skeleton-row">
-              <td colspan="5"><div class="skeleton-line"></div></td>
-            </tr>
-          {/each}
+          <TableSkeleton columns={5} rows={5} />
         {:else}
           {#each repos as repo}
             <tr class="hover-row">
@@ -172,7 +170,4 @@
 
   .action-row { display: flex; gap: 0.75rem; }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.15) !important; }
-
-  .skeleton-line { height: 2rem; background: var(--surface-variant); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 </style>

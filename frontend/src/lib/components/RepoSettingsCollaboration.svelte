@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Avatar from './Avatar.svelte';
   
   const repo: any = getContext('repo');
@@ -45,7 +46,7 @@
   }
 
   async function removeCollaborator(username: string) {
-    if (!confirm(`Remove ${username} as collaborator?`)) return;
+    if (!await dialog.confirm(`Remove ${username} as collaborator?`)) return;
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators/${username}`, {
         method: 'DELETE'

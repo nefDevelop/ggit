@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { dialog } from '$lib/dialog.svelte';
   
   let { orgName } = $props();
   
@@ -42,7 +43,7 @@
   }
 
   async function deleteOrg() {
-    if (!confirm('Are you absolutely sure you want to delete this organization? This action is permanent.')) return;
+    if (!await dialog.confirm('Are you absolutely sure you want to delete this organization? This action is permanent.')) return;
     
     saving = true;
     try {

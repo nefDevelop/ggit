@@ -82,13 +82,10 @@
 <!-- ---
 
 title: Instalacion
-order: 2 
+order: 2
 
 ---
 se puede poner en todos el order, con 1 solo ya se posiciona todos los de la carpeta. si no esta puesto por orden alfabetico.  -->
-
-
-
 
 ## Fase 12: Funcionalidades de Precisión (Completado)
 
@@ -114,12 +111,14 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 **Objetivo:** Automatizar y securizar la creación de repositorios eliminando dependencias de terceros y plantillas obsoletas.
 
 ### Automatización y Backend
+
 - [x] **Script de Sincronización:** Creado `scripts/sync_templates.sh` que descarga y organiza `github/gitignore`.
 - [x] **Categorización Inteligente:** Estructura de carpetas `/languages` y `/global` implementada en el core.
 - [x] **Ggit Standard Base:** Creado `_ggit_security.gitignore` incluyendo protección para `.env`, logs y claves.
 - [x] **Concatenador de Plantillas:** El backend ahora puede recibir una lista de plantillas y fusionarlas en el commit inicial.
 
 ### Experiencia de Usuario (Frontend)
+
 - [x] **Selector de Inicialización Granular:** Desacoplado README/Licencia/Gitignore con lógica independiente.
 - [x] **Multi-select Chips:** Interfaz moderna de etiquetas para selección múltiple de plantillas.
 - [x] **Fixed TS/CSS:** Errores de tipado y alertas de accesibilidad (autofocus) resueltos.
@@ -129,11 +128,13 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 **Objetivo:** Eliminar deuda técnica de Gogs y reducir el peso del binario final para un rendimiento superior.
 
 ### Limpieza de Recursos
+
 - [x] **Eliminación de Activos Obsoletos:** Borrados 5.6MB de emojis en PNG y archivos de traducción huérfanos (`localeBORRAR`).
 - [x] **Emojis Nativos (Unicode):** Activada extensión de emojis en Goldmark para usar caracteres de sistema, eliminando dependencia de imágenes.
 - [x] **Optimización de Imágenes:** Reducción de peso en activos estáticos de la carpeta `public/img`.
 
 ### Refactorización del Core y DevOps
+
 - [x] **Eliminación de FastCGI:** Limpiado soporte para el protocolo FCGI en el arranque del servidor (`web.go`).
 - [x] **Markdown Puro:** Eliminada configuración y lógica de Smartypants para evitar transformaciones de texto indeseadas.
 - [x] **Orquestación Unificada (Makefile):** Migración completa de `Taskfile.yml` a un `Makefile` profesional con inyección de metadatos (BuildTime/Commit).
@@ -148,19 +149,22 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 **Objetivo:** Unificar la identidad visual de todas las áreas de configuración bajo un estándar premium de alta gama.
 
 ### Refactorización Administrativa (10 Categorías)
-- [x] **Modular Island UI:** Implementada arquitectura de "islas" con radios de `3rem` y *glassmorphism* avanzado.
+
+- [x] **Modular Island UI:** Implementada arquitectura de "islas" con radios de `3rem` y _glassmorphism_ avanzado.
 - [x] **Iconografía HERO:** Estandarización de iconos de gran formato para mejorar la jerarquía visual en todas las secciones.
 - [x] **AdminAuditLog [NUEVO]:** Creación del componente de registro de auditoría integrado en el panel de administración.
 - [x] **Monitor & Mantenimiento:** Refactor de vistas críticas con consolas de actividad y métricas en tiempo real.
 
 ### Refactorización de Configuración de Usuario (9 Categorías)
+
 - [x] **Simetría Visual:** Aplicado el mismo lenguaje de diseño del Admin a todas las secciones de configuración de usuario.
 - [x] **UserSettings Orchestrator:** Rediseño de la barra lateral con indicadores activos y transiciones tonales.
 - [x] **Magic Avatar 2.0:** Integración optimizada del selector de avatares deterministas (DiceBear) con previsualización premium.
 
 ### Coherencia de Sistema
+
 - [x] **Unificación de Componentes:** Uso sistemático de `Card.svelte` y `Button.svelte` en todo el ecosistema de ajustes.
-- [x] **QA de Sincro## Fase 17: Depuración de Funcionalidades Sociales ✅
+- [x] \*\*QA de Sincro## Fase 17: Depuración de Funcionalidades Sociales ✅
 
 **Objetivo:** Simplificar la plataforma eliminando funciones de "red social" innecesarias para centrarse en la gestión de código.
 
@@ -198,27 +202,15 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ---
 
-  1. Estandarización Total de la UI
-  Acabamos de unificar los diálogos, pero hay que seguir con:
-   * Sistema de Notificaciones (Toasts): Sustituir los alert() informativos por notificaciones no intrusivas que
-     aparezcan en una esquina.
-   * Componentes de Formulario: Crear componentes Input, Select y Checkbox únicos que gestionen la validación de forma
-     automática.
+## Fase 20: Estabilidad y Estandarización de UI (EN PROCESO)
 
-  2. Gestión de Errores Centralizada
-   * Implementar un interceptor en api.ts que capture errores globales (401 no autorizado, 500 error de servidor) y
-     muestre un mensaje coherente sin que el componente individual tenga que preocuparse por ello.
+**Objetivo:** Eliminar la deuda técnica visual y asegurar una experiencia de usuario robusta y coherente.
 
-  3. Testing Automatizado
-  Esta es la mayor carencia actual para garantizar estabilidad:
-   * Backend: Aumentar la cobertura de tests unitarios en internal/database y internal/app.
-   * Frontend: Implementar tests de integración (con Vitest) y tests E2E (con Playwright) para los flujos críticos
-     (login, creación de repo, borrado de usuario).
-
-  4. Validaciones de Datos (Schema Validation)
-   * Usar librerías como Zod en el frontend para validar los datos de los formularios antes de enviarlos a la API,
-     evitando errores de tipo "undefined" en tiempo de ejecución.
-
-  5. Estados de Carga y "Empty States"
-   * Generalizar el uso de Skeletons (como los que vi en AdminUsers.svelte) en todas las tablas y vistas para que la app
-     no parezca "rota" mientras espera datos de la API.
+- [x] **Sistema de Diálogos Global:** Sustitución de `alert/confirm/prompt` nativos por componentes M3.
+- [x] **Sistema de Notificaciones (Toasts):** Implementación de avisos no intrusivos globales.
+- [x] **Componentes de Formulario Unificados:** Creación de `Checkbox`, `Select` e `Input` reutilizables.
+- [x] **Gestión de Errores Centralizada:** Interceptores en la capa de API para feedback automático.
+- [x] **Validación de Datos (Zod):** Implementar esquemas de validación en el cliente.
+- [x] **Estandarización de Skeletons:** Estados de carga coherentes en todas las tablas y paneles.
+- [x] **Unificar**: optimizar los css, y componentes. reutilizar componentes etc. [COMPLETO]
+- [x] **Testing de Regresión:** Configurar Playwright para flujos críticos. [CONFIGURADO]

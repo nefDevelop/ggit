@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api";
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
 
@@ -91,7 +92,7 @@
   }
 
   async function disable2FA() {
-    if (!confirm("¿Seguro que quieres deshabilitar el 2FA? Tu cuenta será menos segura.")) return;
+    if (!await dialog.confirm("¿Seguro que quieres deshabilitar el 2FA? Tu cuenta será menos segura.")) return;
     try {
       const res = await apiFetch("/api/v2/user/settings/security/two_factor", { method: "DELETE" });
       if (res.ok) {

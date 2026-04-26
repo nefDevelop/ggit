@@ -3,6 +3,9 @@
   import { onMount, getContext } from 'svelte';
   import WebhookEditor from './WebhookEditor.svelte';
   import WebhookLogViewer from './WebhookLogViewer.svelte';
+  import Modal from '$lib/components/Modal.svelte';
+  import TableSkeleton from '$lib/components/ui/TableSkeleton.svelte';
+  import { dialog } from '$lib/dialog.svelte';
 
   const repo: any = getContext('repo');
   
@@ -45,7 +48,7 @@
   }
 
   async function handleDelete(id: number) {
-    if (!confirm('Are you sure you want to delete this webhook?')) return;
+    if (!await dialog.confirm('Are you sure you want to delete this webhook?')) return;
     
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/hooks/${id}`, {
@@ -77,9 +80,12 @@
   </div>
 
   {#if loading}
-    <div class="skeleton-list">
-      <div class="skeleton-row tonal"></div>
-      <div class="skeleton-row tonal"></div>
+    <div class="hooks-list-flat">
+      <table style="width: 100%;">
+        <tbody>
+          <TableSkeleton columns={1} rows={3} />
+        </tbody>
+      </table>
     </div>
   {:else if error}
     <div class="error-msg">{error}</div>
@@ -126,27 +132,30 @@
     </div>
   {/if}
 
-  {#if showEditor}
-    <div class="modal-overlay" onclick={() => handleEditorClose()}>
-      <div class="modal-content" onclick={e => e.stopPropagation()}>
-        <WebhookEditor 
-          hook={editingHook} 
-          onclose={handleEditorClose} 
-        />
-      </div>
-    </div>
-  {/if}
+  <Modal 
+    show={showEditor} 
+    title={editingHook ? 'Edit Webhook' : 'Add New Webhook'} 
+    onclose={() => handleEditorClose()}
+  >
+    <WebhookEditor 
+      hook={editingHook} 
+      onclose={handleEditorClose} 
+    />
+  </Modal>
 
-  {#if showingLogsFor}
-    <div class="modal-overlay" onclick={() => showingLogsFor = null}>
-      <div class="modal-content logs-modal" onclick={e => e.stopPropagation()}>
-        <WebhookLogViewer 
-          hook={showingLogsFor} 
-          onclose={() => showingLogsFor = null} 
-        />
-      </div>
-    </div>
-  {/if}
+  <Modal 
+    show={!!showingLogsFor} 
+    title="Webhook Logs" 
+    onclose={() => showingLogsFor = null}
+    maxWidth="1000px"
+  >
+    {#if showingLogsFor}
+      <WebhookLogViewer 
+        hook={showingLogsFor} 
+        onclose={() => showingLogsFor = null} 
+      />
+    {/if}
+  </Modal>
 </div>
 
 <style>
@@ -177,13 +186,6 @@
 
   .empty-state-flat { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-state-flat span { font-size: 3rem; }
-
-  .skeleton-row { height: 80px; width: 100%; border-bottom: 1px solid var(--md-sys-color-outline-variant); animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
-  
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
-  .modal-content { background: var(--md3-surface-1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl); }
-  .modal-content.logs-modal { max-width: 1000px; }
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
