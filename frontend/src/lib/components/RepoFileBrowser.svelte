@@ -54,7 +54,7 @@
   async function fetchRepo() {
     const currentPath = realPath();
     if (lastFetched.user === username && lastFetched.repo === reponame && lastFetched.path === currentPath) return;
-    lastFetched = { user: username, repo: reponame, path: currentPath };
+    lastFetched = { user: username || '', repo: reponame || '', path: currentPath || '' };
     
     loading = true;
     error = '';
@@ -169,14 +169,18 @@ git push -u origin main</code></pre>
             <div class="last-commit-bar">
                 <div class="commit-avatar">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
                 <div class="commit-info">
-                <span class="commit-msg">{repoData.last_commit.summary}</span>
+                <a href="/{username}/{reponame}/commit/{repoData.last_commit.id}" class="commit-msg-link">
+                  <span class="commit-msg">{repoData.last_commit.summary}</span>
+                </a>
                 <span class="commit-meta">
                     <span class="author">{repoData.last_commit.author?.name}</span>
                     <span class="time">{timeAgo(repoData.last_commit.author?.when)}</span>
                 </span>
                 </div>
                 <div class="commit-actions-right">
-                  <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
+                  <a href="/{username}/{reponame}/commit/{repoData.last_commit.id}" class="sha-link">
+                    <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
+                  </a>
                   <button class="btn-sidebar-toggle" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
                     <span class="material-symbols-rounded">{sidebarCollapsed ? 'side_navigation' : 'right_panel_close'}</span>
                   </button>
@@ -384,6 +388,22 @@ git push -u origin main</code></pre>
     flex-shrink: 0;
   }
   .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; flex-shrink: 0; }
+
+  .commit-msg-link, .sha-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+  }
+  .commit-msg-link:hover .commit-msg {
+    color: var(--primary-color);
+    text-decoration: underline;
+  }
+  .sha-link:hover .sha {
+    color: var(--primary-color);
+    opacity: 1;
+    text-decoration: underline;
+  }
 
   .commit-actions-right {
     display: flex;

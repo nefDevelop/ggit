@@ -83,7 +83,9 @@
           <!-- Middle: Message & Meta -->
           <div class="commit-info-cell">
             <div class="commit-header">
-              <span class="commit-message">{String(message || '').split('\n')[0]}</span>
+              <a href="/{username}/{reponame}/commit/{id}" class="commit-message-link">
+                <span class="commit-message">{String(message || '').split('\n')[0]}</span>
+              </a>
               {#if String(message || '').split('\n').length > 1}
                 <span class="material-symbols-rounded more-icon">more_horiz</span>
               {/if}
@@ -98,10 +100,12 @@
 
           <!-- Right: Technical context -->
           <div class="commit-actions-cell">
-            <div class="id-tag">
-              <span class="material-symbols-rounded mini">fingerprint</span>
-              <code class="sha-text">{truncateSHA(id)}</code>
-            </div>
+            <a href="/{username}/{reponame}/commit/{id}" class="id-tag-link">
+              <div class="id-tag">
+                <span class="material-symbols-rounded mini">fingerprint</span>
+                <code class="sha-text">{truncateSHA(id)}</code>
+              </div>
+            </a>
             <button class="btn-icon">
               <span class="material-symbols-rounded">folder_zip</span>
             </button>
@@ -182,9 +186,20 @@
     border-radius: 20px;
     border: 1px solid var(--border-color);
     color: var(--primary-color);
+    transition: all 0.2s;
   }
+  .id-tag:hover { background: var(--primary-color); color: white; }
   .id-tag .mini { font-size: 0.9rem; opacity: 0.7; }
   .sha-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; }
+
+  .commit-message-link, .id-tag-link {
+    text-decoration: none;
+    color: inherit;
+  }
+  .commit-message-link:hover .commit-message {
+    color: var(--primary-color);
+    text-decoration: underline;
+  }
 
   .btn-icon {
     background: transparent;

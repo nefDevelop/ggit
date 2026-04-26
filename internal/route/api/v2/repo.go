@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-enry/go-enry/v2"
+
 	"github.com/gogs/git-module"
 	log "unknwon.dev/clog/v2"
 
@@ -326,26 +326,7 @@ func getRepoDirectory(c *context.APIContext) {
 	c.JSON(http.StatusOK, res)
 }
 
-func walkTreeForStats(tree *git.Tree, langStats map[string]int64) error {
-	entries, _ := tree.Entries()
-	for _, entry := range entries {
-		if entry.IsTree() {
-			subtree, err := tree.Subtree(entry.Name())
-			if err == nil {
-				_ = walkTreeForStats(subtree, langStats)
-			}
-			continue
-		}
-		if enry.IsVendor(entry.Name()) || enry.IsDotFile(entry.Name()) {
-			continue
-		}
-		lang, _ := enry.GetLanguageByExtension(entry.Name())
-		if lang != "" {
-			langStats[lang] += entry.Size()
-		}
-	}
-	return nil
-}
+
 
 func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	blob := entry.Blob()
