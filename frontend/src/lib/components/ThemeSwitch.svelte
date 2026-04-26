@@ -40,6 +40,7 @@
 </script>
 
 {#if show}
+<div class="theme-backdrop" onclick={() => show = false}></div>
 <div class="theme-panel island">
   <div class="panel-header">
     <h3>Interfaz y Diseño</h3>
@@ -88,6 +89,13 @@
 {/if}
 
 <style>
+  .theme-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: transparent;
+  }
+
   .theme-panel {
     position: fixed;
     bottom: 80px;

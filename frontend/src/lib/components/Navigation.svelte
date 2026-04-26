@@ -41,6 +41,8 @@
       name: i18n.t("settings_title"),
       icon: "manage_accounts",
       path: "/user/settings",
+      isParent: true,
+      isSettings: true,
     },
   ]);
 
@@ -92,7 +94,20 @@
     },
   ]);
 
+  const settingsSubItems = $derived([
+    { name: i18n.t("settings.profile") || "Profile", icon: "person", path: "/user/settings?tab=profile" },
+    { name: i18n.t("settings.my_ggit") || "My Ggit", icon: "grid_view", path: "/user/settings?tab=myggit" },
+    { name: i18n.t("settings.appearance") || "Appearance", icon: "palette", path: "/user/settings?tab=appearance" },
+    { name: i18n.t("settings.emails") || "Emails", icon: "mail", path: "/user/settings?tab=emails" },
+    { name: i18n.t("settings.security") || "Security", icon: "security", path: "/user/settings?tab=security" },
+    { name: i18n.t("settings.ssh_keys") || "SSH Keys", icon: "key", path: "/user/settings?tab=keys" },
+    { name: i18n.t("settings.access_tokens") || "Tokens", icon: "token", path: "/user/settings?tab=tokens" },
+    { name: i18n.t("settings.repositories") || "Repositories", icon: "book", path: "/user/settings?tab=repos" },
+    { name: i18n.t("settings.organizations") || "Organizations", icon: "corporate_fare", path: "/user/settings?tab=orgs" },
+  ]);
+
   const isAdminPath = $derived(page.url.pathname.startsWith("/admin"));
+  const isSettingsPath = $derived(page.url.pathname.startsWith("/user/settings"));
 
   function getCsrfToken() {
     if (typeof document === "undefined") return "";
@@ -137,19 +152,19 @@
         href={item.path}
         class="nav-item"
         class:active={page.url.pathname === item.path ||
-          (item.isParent && isAdminPath)}
+          (item.isParent && (isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings))}
       >
         <span class="material-symbols-rounded">{item.icon}</span>
         <span class="item-label">{item.name}</span>
       </a>
 
-      {#if item.isParent && isAdminPath}
+      {#if item.isParent && ((isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings))}
         <div class="sub-nav-links">
-          {#each adminSubItems as sub}
+          {#each (item.isSettings ? settingsSubItems : adminSubItems) as sub}
             <a
               href={sub.path}
               class="sub-nav-item"
-              class:active={page.url.pathname === sub.path}
+              class:active={page.url.pathname === sub.path || page.url.search === sub.path.substring(sub.path.indexOf('?'))}
             >
               <span class="material-symbols-rounded">{sub.icon}</span>
               <span class="item-label">{sub.name}</span>
@@ -374,10 +389,10 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    padding-left: 2rem;
+    padding-left: 0.75rem;
     margin: 0.25rem 0;
     border-left: 1px solid var(--md-sys-color-outline-variant);
-    margin-left: 2rem;
+    margin-left: 1.25rem;
   }
 
   .sub-nav-item {

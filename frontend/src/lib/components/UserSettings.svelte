@@ -10,8 +10,14 @@
   import SettingsMyGgit from "./SettingsMyGgit.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import ChipNavigation from "./ui/ChipNavigation.svelte";
+  import { page } from "$app/state";
+  import { goto } from "$app/navigation";
 
-  let activeTab = $state("profile");
+  let activeTab = $derived(page.url.searchParams.get("tab") || "profile");
+
+  function setTab(id: string) {
+    goto(`?tab=${id}`, { replaceState: true });
+  }
 
   const tabs = [
     { id: "profile", label: i18n.t("settings.profile"), icon: "person" },
@@ -27,29 +33,6 @@
 </script>
 
 <div class="settings-premium-container">
-  <!-- Desktop Sidebar -->
-  <aside class="settings-sidebar">
-    <div class="sidebar-brand">
-       <span class="material-symbols-rounded">manage_accounts</span>
-       <h3 class="sidebar-title">{i18n.t("settings.user_settings")}</h3>
-    </div>
-    <nav class="settings-nav">
-      {#each tabs as tab}
-        <button
-          class="nav-item"
-          class:active={activeTab === tab.id}
-          onclick={() => (activeTab = tab.id)}
-        >
-          <span class="material-symbols-rounded">{tab.icon}</span>
-          <span class="label-text">{tab.label}</span>
-          {#if activeTab === tab.id}
-             <div class="active-indicator"></div>
-          {/if}
-        </button>
-      {/each}
-    </nav>
-  </aside>
-
   <!-- Mobile Chip Rail -->
   <div class="mobile-nav-wrapper">
     <ChipNavigation 
@@ -57,7 +40,7 @@
       activeId={activeTab} 
       title={i18n.t("settings.user_settings")} 
       titleIcon="manage_accounts"
-      onSelect={(id) => activeTab = id} 
+      onSelect={(id) => setTab(id)} 
     />
   </div>
 
@@ -86,104 +69,17 @@
 
 <style>
   .settings-premium-container {
-    display: grid;
-    grid-template-columns: 320px minmax(0, 1fr);
-    gap: 3rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
     min-height: 80vh;
     max-width: 100%;
     box-sizing: border-box;
-  }
-
-  .settings-sidebar {
-    position: sticky;
-    top: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
+    padding: 1rem 0;
   }
 
   .mobile-nav-wrapper {
     display: none;
-  }
-
-  .sidebar-brand {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding-left: 1rem;
-  }
-  .sidebar-brand span {
-    font-size: 2.25rem;
-    color: var(--primary-color);
-  }
-
-  .sidebar-title {
-    font-size: 1.25rem;
-    font-weight: 900;
-    margin: 0;
-    letter-spacing: -0.02em;
-    color: var(--text-color);
-  }
-
-  .settings-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 1rem 1.5rem;
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.05rem;
-    font-weight: 700;
-    text-align: left;
-    cursor: pointer;
-    border-radius: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 100%;
-    position: relative;
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  .nav-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-color);
-    transform: translateX(8px);
-  }
-
-  .nav-item.active {
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary-color);
-    box-shadow: 0 4px 15px rgba(var(--primary-rgb), 0.05);
-  }
-
-  .nav-item span.material-symbols-rounded {
-    font-size: 1.5rem;
-    flex-shrink: 0;
-  }
-
-  .label-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-  }
-
-  .active-indicator {
-    position: absolute;
-    left: 0;
-    top: 25%;
-    bottom: 25%;
-    width: 4px;
-    background: var(--primary-color);
-    border-radius: 0 4px 4px 0;
   }
 
   .settings-content {
@@ -204,12 +100,7 @@
 
   @media (max-width: 1100px) {
     .settings-premium-container {
-      grid-template-columns: minmax(0, 1fr);
       padding: 0;
-      gap: 2rem;
-    }
-    .settings-sidebar {
-      display: none;
     }
     .mobile-nav-wrapper {
       display: block;
@@ -220,8 +111,6 @@
   }
 
   @media (max-width: 600px) {
-    .sidebar-brand span { font-size: 1.75rem; }
-    .sidebar-title { font-size: 1.1rem; }
     .settings-premium-container {
       padding: 0 0.5rem;
       gap: 1.5rem;
