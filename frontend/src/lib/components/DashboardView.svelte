@@ -111,7 +111,7 @@
                       <span class="material-symbols-rounded">add</span>
                       <span class="hide-mobile">Nuevo Repositorio</span>
                   </a>
-                  <a class="btn-action-primary" href="/repo/create?mode=migrate" title="Migrate or Clone Repository">
+                  <a class="btn-action-primary" href="/repo/create?mode=migrate" title="Clonar Repositorio Remoto">
                       <span class="material-symbols-rounded">cloud_download</span>
                   </a>
                 </div>

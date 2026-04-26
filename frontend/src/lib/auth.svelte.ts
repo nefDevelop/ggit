@@ -33,7 +33,7 @@ export async function checkAuth() {
 
 export async function checkInstallation() {
 	try {
-		const res = await apiFetch('/api/v2/install/settings');
+		const res = await apiFetch('/api/v2/install/settings', { silent: true });
 		// 403 Forbidden means it's already installed.
 		// 200 OK means it's NOT installed yet.
 		if (res.status === 403) {
