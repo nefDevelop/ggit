@@ -53,7 +53,7 @@
   });
 
   let activeTab = $derived(
-    currentPath.includes('/commits') ? 'commits' :
+    currentPath.includes('/commits') || currentPath.includes('/commit/') ? 'commits' :
     currentPath.includes('/issues') ? 'issues' :
     currentPath.includes('/pulls') ? 'pulls' :
     currentPath.includes('/wiki') ? 'wiki' :

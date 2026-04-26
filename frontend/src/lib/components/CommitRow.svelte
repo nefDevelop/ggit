@@ -1,5 +1,12 @@
 <script lang="ts">
+  import { toast } from "$lib/toast.svelte";
+  import { page } from '$app/state';
+
   let { commit, minimalist = false } = $props();
+
+  let copied = $state(false);
+  let username = $derived(page.params.username);
+  let reponame = $derived(page.params.reponame);
 
   function timeAgo(dateStr: string) {
     if (!dateStr) return "unknown";
@@ -16,9 +23,20 @@
     if (minutes > 0) return `${minutes}m ago`;
     return "just now";
   }
+
+  function copyHash(e: Event) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(commit.id);
+      copied = true;
+      toast.success("Commit hash copiado al portapapeles", 2000);
+      setTimeout(() => copied = false, 2000);
+    }
+  }
 </script>
 
-<div class="commit-row tonal hover-lift" class:minimalist>
+<a href="/{username}/{reponame}/commit/{commit.id}" class="commit-row tonal hover-lift" class:minimalist>
   <div class="commit-avatar">
     {commit.author?.name?.[0] || "U"}
   </div>
@@ -30,14 +48,14 @@
     </div>
   </div>
   <div class="commit-actions">
-    <code class="sha">{commit.id?.slice(0, 7)}</code>
+    <code class="sha" title="Copiar" onclick={copyHash} style="cursor: pointer;">{commit.id?.slice(0, 7)}</code>
     {#if !minimalist}
-      <button class="btn btn-icon" onclick={() => navigator.clipboard.writeText(commit.id)} title="Copy Hash">
-        <span class="material-symbols-rounded">content_copy</span>
+      <button class="btn btn-icon" onclick={copyHash} title="Copy Hash">
+        <span class="material-symbols-rounded">{copied ? 'check' : 'content_copy'}</span>
       </button>
     {/if}
   </div>
-</div>
+</a>
 
 <style>
   .commit-row {
@@ -48,6 +66,9 @@
     border: 1px solid var(--md-sys-color-outline-variant);
     margin-bottom: 0.5rem;
     background: transparent;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
   }
 
   .minimalist {
