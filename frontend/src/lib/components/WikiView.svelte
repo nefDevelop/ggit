@@ -259,12 +259,11 @@
 
         <div class="wiki-body">
           {#if mode === 'view'}
-              <MarkdownRenderer 
-                content={currentPage?.content} 
-                repoContext={{owner: repo.owner.name, name: repo.name}} 
+              <MarkdownRenderer
+                content={currentPage?.content}
+                repoContext={{owner: repo?.data?.owner?.username || repo?.owner?.username || repo?.owner?.name || '', name: repo?.data?.name || repo?.name || ''}}
               />
-          {:else if mode === 'edit'}
-            <div class="edit-area">
+          {:else if mode === 'edit'}            <div class="edit-area">
                 <textarea 
                     class="wiki-editor" 
                     bind:value={editContent} 

@@ -16,7 +16,12 @@
   let loading = $state(true);
   let error = $state('');
 
+  let lastFetched = { user: '', repo: '' };
+
   async function fetchRepoInfo() {
+    if (lastFetched.user === username && lastFetched.repo === reponame) return;
+    lastFetched = { user: username, repo: reponame };
+
     loading = true;
     error = '';
     try {
@@ -37,7 +42,7 @@
     }
   }
 
-  onMount(() => {
+  $effect(() => {
     fetchRepoInfo();
   });
 
@@ -61,7 +66,6 @@
   let cloneProtocol = $state<'https' | 'ssh'>('https');
 
   onMount(() => {
-    fetchRepoInfo();
     const saved = localStorage.getItem('clone-protocol');
     if (saved === 'ssh' || saved === 'https') cloneProtocol = saved;
   });

@@ -49,11 +49,17 @@
     return p;
   });
 
+  let lastFetched = { user: '', repo: '', path: '' };
+
   async function fetchRepo() {
+    const currentPath = realPath();
+    if (lastFetched.user === username && lastFetched.repo === reponame && lastFetched.path === currentPath) return;
+    lastFetched = { user: username, repo: reponame, path: currentPath };
+    
     loading = true;
     error = '';
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${realPath()}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${currentPath}`);
       if (res.ok) {
         repoData = await res.json();
       } else {
