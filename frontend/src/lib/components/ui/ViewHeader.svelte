@@ -112,9 +112,9 @@
   
   @media (max-width: 800px) {
     .view-header-abstract { padding: 0 1rem 1.5rem; }
-    .search-and-action-row { flex-wrap: wrap; gap: 1rem; }
-    .search-flex { min-width: 100%; order: 1; }
-    .actions-flex { order: 0; width: 100%; justify-content: flex-end; }
+    .search-and-action-row { flex-wrap: nowrap; gap: 0.75rem; }
+    .search-flex { min-width: 0; flex: 1; order: 0; }
+    .actions-flex { order: 1; width: auto; justify-content: flex-end; }
     .view-mode-selector-row { overflow-x: auto; padding-bottom: 0.5rem; margin: 0 -1rem; padding-left: 1rem; }
   }
 </style>

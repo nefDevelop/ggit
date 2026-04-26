@@ -77,6 +77,7 @@
   input:focus, textarea:focus {
     border-color: var(--md-sys-color-primary);
     background: var(--md-sys-color-surface-container-highest);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.15);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%);
   }
 

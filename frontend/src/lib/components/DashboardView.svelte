@@ -23,7 +23,7 @@
   const oneWeekAgo = $derived(Date.now() - (7 * 24 * 60 * 60 * 1000));
   const allRepos = $derived([...data.repositories, ...data.collaborative]);
   
-  const filteredRepos = $derived(() => {
+  const filteredRepos = $derived.by(() => {
     if (!searchQuery) return allRepos;
     const q = searchQuery.toLowerCase();
     return allRepos.filter(r => 
@@ -38,9 +38,11 @@
     older?: any[];
   }
 
-  const groupedRepos = $derived((): GroupedRepos => {
-    const repos = searchQuery ? filteredRepos() : allRepos;
-    if (viewMode === 'list') return { all: repos };
+  const groupedRepos = $derived.by((): GroupedRepos => {
+    const repos = filteredRepos;
+    if (viewMode === 'list') {
+      return { all: [...repos].sort((a, b) => a.name.localeCompare(b.name)) };
+    }
     return {
       recent: repos.filter(r => new Date(r.updated_at).getTime() > oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
       older: repos.filter(r => new Date(r.updated_at).getTime() <= oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
@@ -107,7 +109,7 @@
                 <div class="btn-group">
                   <a class="btn-action-primary" href="/repo/create">
                       <span class="material-symbols-rounded">add</span>
-                      <span>Nuevo Repositorio</span>
+                      <span class="hide-mobile">Nuevo Repositorio</span>
                   </a>
                   <a class="btn-action-primary" href="/repo/create?mode=migrate" title="Migrate or Clone Repository">
                       <span class="material-symbols-rounded">cloud_download</span>
@@ -130,17 +132,17 @@
             {:else}
                 <div class="flat-repo-list">
                 {#if viewMode === 'temporal'}
-                    {#each groupedRepos().recent || [] as repo}
+                    {#each groupedRepos.recent || [] as repo}
                         <RepoRow {repo} />
                     {/each}
-                    {#if (groupedRepos().older?.length ?? 0) > 0}
+                    {#if (groupedRepos.older?.length ?? 0) > 0}
                         <div class="divider-text">Older Projects</div>
-                        {#each groupedRepos().older || [] as repo}
+                        {#each groupedRepos.older || [] as repo}
                             <RepoRow {repo} isOlder={true} />
                         {/each}
                     {/if}
                 {:else}
-                    {#each groupedRepos().all || [] as repo}
+                    {#each groupedRepos.all || [] as repo}
                         <RepoRow {repo} />
                     {/each}
                 {/if}
@@ -193,4 +195,8 @@
   .skeleton-list { display: flex; flex-direction: column; gap: 1px; background: var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
   .skeleton-row { height: 80px; background: var(--bg-color); animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+  @media (max-width: 600px) {
+    .hide-mobile { display: none; }
+  }
 </style>
