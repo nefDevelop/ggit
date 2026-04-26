@@ -58,7 +58,7 @@
   viewBox="0 0 100 100"
   xmlns="http://www.w3.org/2000/svg"
   class="identicon"
-  style="background: {bgColor};"
+  style="background: {bgColor}; max-width: 100%; height: auto;"
 >
   <defs>
     <clipPath id="circle-clip">

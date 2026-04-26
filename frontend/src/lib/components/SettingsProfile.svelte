@@ -404,9 +404,12 @@
     border: 4px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-xl);
     box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   @media (max-width: 600px) {
-    .avatar-shield { width: 140px; height: 140px; border-radius: 3rem; }
+    .avatar-shield { width: 120px; height: 120px; border-radius: 3rem; }
   }
 
   .avatar-overlay {
