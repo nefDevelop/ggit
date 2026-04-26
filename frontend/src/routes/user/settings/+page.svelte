@@ -12,14 +12,14 @@
 
 <style>
   .page-container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2rem 4rem;
   }
 
-  @media (max-width: 600px) {
+  @media (max-width: 1024px) {
     .page-container {
-      padding: 1rem 0.5rem;
+      padding: 1rem;
     }
   }
 </style>

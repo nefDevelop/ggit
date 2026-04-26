@@ -90,7 +90,6 @@
     grid-template-columns: 320px minmax(0, 1fr);
     gap: 3rem;
     align-items: start;
-    padding: 1rem 0;
     min-height: 80vh;
     max-width: 100%;
     box-sizing: border-box;
@@ -206,7 +205,7 @@
   @media (max-width: 1100px) {
     .settings-premium-container {
       grid-template-columns: minmax(0, 1fr);
-      padding: 0 1rem;
+      padding: 0;
       gap: 2rem;
     }
     .settings-sidebar {
