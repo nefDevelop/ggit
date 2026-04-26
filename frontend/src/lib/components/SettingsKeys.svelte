@@ -65,14 +65,14 @@
     </div>
   </header>
 
-  <div class="modular-stack">
+  <div class="flex-col gap-xl">
     <!-- KEYS LIST -->
-    <div class="config-module">
+    <div class="flex-col gap-md">
       <div class="module-tag">
         <span class="material-symbols-rounded">vpn_key</span>
         Llaves Activas
       </div>
-      <div class="island tonal-list">
+      <div class="tonal-list">
         {#if loading}
            <div class="skeleton-keys"></div>
         {:else if keys.length === 0}
@@ -103,13 +103,13 @@
     </div>
 
     <!-- ADD KEY FORM -->
-    <div class="config-module">
+    <div class="flex-col gap-md">
       <div class="module-tag">
         <span class="material-symbols-rounded">add_link</span>
         Añadir Nueva Clave
       </div>
-      <div class="island form-box">
-        <form onsubmit={(e) => { e.preventDefault(); addKey(); }} class="premium-key-form">
+      <div class="form-box">
+        <form onsubmit={(e) => { e.preventDefault(); addKey(); }} class="flex-col gap-md">
            <div class="field">
               <label>Título de la Clave</label>
               <input type="text" bind:value={newKeyTitle} placeholder="Ej: Portátil Trabajo" required />
@@ -151,9 +151,6 @@
     .title-with-icon { gap: 0.75rem; }
     .subtitle { font-size: 0.9rem; }
   }
-
-  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
-  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
   .module-tag span { font-size: 1.25rem; }

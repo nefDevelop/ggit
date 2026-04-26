@@ -26,20 +26,6 @@
   border-color: var(--md-sys-color-primary-container);
 }
 
-#main-content .island:not(.tonal):not(.elevated):not(.tonal-list) {
-  background-color: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border-base);
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  margin-bottom: 0;
-}
-
-#main-content .island:not(.tonal):not(.elevated):not(.tonal-list):last-child {
-  border-bottom: none;
-}
-
 .island-interactive:hover {
   background-color: var(--bg-interactive);
 }

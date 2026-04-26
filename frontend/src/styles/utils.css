@@ -50,3 +50,23 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* Flexbox Layout & Spacing Utilities */
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.gap-xs { gap: 0.5rem; }
+.gap-sm { gap: 1rem; }
+.gap-md { gap: 1.5rem; }
+.gap-lg { gap: 2rem; }
+.gap-xl { gap: 3rem; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
