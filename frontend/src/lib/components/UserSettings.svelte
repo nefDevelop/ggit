@@ -9,6 +9,7 @@
   import SettingsOrganizations from "./SettingsOrganizations.svelte";
   import SettingsMyGgit from "./SettingsMyGgit.svelte";
   import { i18n } from "$lib/i18n.svelte";
+  import ChipNavigation from "./ui/ChipNavigation.svelte";
 
   let activeTab = $state("profile");
 
@@ -26,6 +27,7 @@
 </script>
 
 <div class="settings-premium-container">
+  <!-- Desktop Sidebar -->
   <aside class="settings-sidebar">
     <div class="sidebar-brand">
        <span class="material-symbols-rounded">manage_accounts</span>
@@ -47,6 +49,17 @@
       {/each}
     </nav>
   </aside>
+
+  <!-- Mobile Chip Rail -->
+  <div class="mobile-nav-wrapper">
+    <ChipNavigation 
+      items={tabs} 
+      activeId={activeTab} 
+      title={i18n.t("settings.user_settings")} 
+      titleIcon="manage_accounts"
+      onSelect={(id) => activeTab = id} 
+    />
+  </div>
 
   <main class="settings-content">
     {#if activeTab === "profile"}
@@ -89,6 +102,10 @@
     display: flex;
     flex-direction: column;
     gap: 3rem;
+  }
+
+  .mobile-nav-wrapper {
+    display: none;
   }
 
   .sidebar-brand {
@@ -193,32 +210,10 @@
       gap: 2rem;
     }
     .settings-sidebar {
-      position: relative;
-      top: 0;
-      gap: 1.5rem;
-      z-index: 10;
-    }
-    .settings-nav {
-      flex-direction: row;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      margin: 0 -1rem;
-      padding-left: 1rem;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-    .settings-nav::-webkit-scrollbar { display: none; }
-    .nav-item {
-      width: auto;
-      padding: 0.75rem 1.25rem;
-      border-radius: 100px;
-      flex-shrink: 0;
-      gap: 0.5rem;
-      font-size: 0.95rem;
-    }
-    .nav-item:hover { transform: none; }
-    .active-indicator {
       display: none;
+    }
+    .mobile-nav-wrapper {
+      display: block;
     }
     .settings-content {
       gap: 2rem;
