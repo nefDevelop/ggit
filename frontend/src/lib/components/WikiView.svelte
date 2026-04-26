@@ -46,10 +46,10 @@
         currentPage = await pageRes.json();
         editContent = currentPage.content;
         editTitle = currentPage.name;
-      } else if (path === 'Home' || path === '') {
-        currentPage = { name: 'Home', content: '# Welcome to the Wiki\n\nThis is your repository\'s wiki. Start documenting!' };
-        editContent = currentPage.content;
-        editTitle = 'Home';
+      } else if (wikiPages.length === 0) {
+        currentPage = null;
+        editContent = '';
+        editTitle = '';
       } else {
         error = 'Wiki page not found.';
       }
@@ -259,10 +259,19 @@
 
         <div class="wiki-body">
           {#if mode === 'view'}
-              <MarkdownRenderer
-                content={currentPage?.content}
-                repoContext={{owner: repo?.data?.owner?.username || repo?.owner?.username || repo?.owner?.name || '', name: repo?.data?.name || repo?.name || ''}}
-              />
+              {#if currentPage}
+                <MarkdownRenderer
+                  content={currentPage?.content}
+                  repoContext={{owner: repo?.data?.owner?.username || repo?.owner?.username || repo?.owner?.name || '', name: repo?.data?.name || repo?.name || ''}}
+                />
+              {:else}
+                <div class="empty-wiki-state">
+                  <span class="material-symbols-rounded" style="font-size: 4rem; opacity: 0.5;">menu_book</span>
+                  <h2 style="margin: 0.5rem 0;">Wiki Vacía</h2>
+                  <p style="margin-bottom: 1.5rem;">Este repositorio aún no tiene documentación.</p>
+                  <Button variant="primary" onclick={startNew} icon="add">Crear Primera Página</Button>
+                </div>
+              {/if}
           {:else if mode === 'edit'}            <div class="edit-area">
                 <textarea 
                     class="wiki-editor" 
@@ -524,6 +533,17 @@
   .wiki-body {
     padding: 2rem;
     flex: 1;
+  }
+
+  .empty-wiki-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 400px;
+    text-align: center;
+    color: var(--text-muted);
   }
 
   /* Edit Area */
