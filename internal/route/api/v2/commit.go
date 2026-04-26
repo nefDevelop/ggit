@@ -26,7 +26,7 @@ func GetSingleCommit(c *context.APIContext) {
 	// For diff, we need the parent commit if it exists.
 	// We can use gitx.RepoDiff but we need the base commit.
 	var base string
-	if commit.ParentCount() > 0 {
+	if commit.ParentsCount() > 0 {
 		parent, err := commit.Parent(0)
 		if err == nil {
 			base = parent.ID.String()
