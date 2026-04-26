@@ -92,15 +92,6 @@ func GetDashboardFeeds(c *context.APIContext) {
 		return
 	}
 
-	// Filter for technical events: Pushes (ActionCommitRepo = 5) and Merges (ActionMergePullRequest = 11)
-	technicalActions := make([]*database.Action, 0, len(actions))
-	for _, act := range actions {
-		if act.OpType == database.ActionCommitRepo || act.OpType == database.ActionMergePullRequest {
-			technicalActions = append(technicalActions, act)
-		}
-	}
-	actions = technicalActions
-
 	// Prepare avatars for the feed
 	unameAvatars := make(map[string]string)
 	for _, act := range actions {

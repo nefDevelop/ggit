@@ -106,9 +106,9 @@
                 <code class="sha-text">{truncateSHA(id)}</code>
               </div>
             </a>
-            <button class="btn-icon">
+            <a href="/api/v2/{username}/{reponame}/archive/{id}.zip" class="btn-icon" download title="Download ZIP at this commit">
               <span class="material-symbols-rounded">folder_zip</span>
-            </button>
+            </a>
           </div>
         </div>
       {/each}

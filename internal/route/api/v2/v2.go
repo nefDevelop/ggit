@@ -258,5 +258,6 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		users.GET("/:username", ginx.Handle(GetUserProfile))
 		users.GET("/:username/repos", ginx.Handle(GetUserPublicRepositories))
 		users.GET("/:username/stars", ginx.Handle(GetUserStars))
+		users.GET("/:username/orgs", ginx.Handle(GetUserPublicOrganizations))
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/repox"
 	"github.com/nef734/ggit/internal/userx"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 var ErrOrgNotExist = errors.New("Organization does not exist")
@@ -174,6 +175,18 @@ func CreateOrganization(org, owner *User) (err error) {
 
 		return nil
 	})
+}
+
+// APIFormatOrg returns the API format of an organization.
+func (org *User) APIFormatOrg() *apiv2types.OrganizationResponse {
+	return &apiv2types.OrganizationResponse{
+		ID:          org.ID,
+		Username:    org.Name,
+		FullName:    org.FullName,
+		Description: org.Description,
+		NumTeams:    org.NumTeams,
+		NumMembers:  org.NumMembers,
+	}
 }
 
 // GetOrgByName returns organization by given name.

@@ -71,3 +71,29 @@ func GetUserStars(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, apiRepos)
 }
+
+// GetUserPublicOrganizations returns a list of public organizations for the given user.
+func GetUserPublicOrganizations(c *context.APIContext) {
+	username := c.Params("username")
+	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	if err != nil {
+		c.NotFoundOrError(err, "get user by username")
+		return
+	}
+
+	orgs, err := database.Handle.Organizations().List(c.Req.Context(), database.ListOrgsOptions{
+		MemberID:              user.ID,
+		IncludePrivateMembers: c.IsLogged && (c.User.ID == user.ID || c.User.IsAdmin),
+	})
+	if err != nil {
+		c.Error(err, "list user organizations")
+		return
+	}
+
+	apiOrgs := make([]*apiv2types.OrganizationResponse, len(orgs))
+	for i, org := range orgs {
+		apiOrgs[i] = org.APIFormatOrg()
+	}
+
+	c.JSON(http.StatusOK, apiOrgs)
+}

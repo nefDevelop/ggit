@@ -318,12 +318,36 @@ func getRepoDirectory(c *context.APIContext) {
 		stats["tags"] = int64(len(tags))
 		res["stats"] = stats
 
-		// TODO: Use cached language stats from database instead of walking the tree every time.
-		// _ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
-		res["languages"] = map[string]int64{}
+		// Fetch language stats by walking the tree
+		langStats := make(map[string]int64)
+		_ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
+		res["languages"] = langStats
 	}
 
 	c.JSON(http.StatusOK, res)
+}
+
+func walkTreeForStats(tree *git.Tree, langStats map[string]int64) error {
+	entries, _ := tree.Entries()
+	for _, entry := range entries {
+		if entry.IsTree() {
+			subtree, err := tree.Subtree(entry.Name())
+			if err == nil {
+				_ = walkTreeForStats(subtree, langStats)
+			}
+			continue
+		}
+		// Basic language detection by extension for now
+		ext := ""
+		if strings.Contains(entry.Name(), ".") {
+			parts := strings.Split(entry.Name(), ".")
+			ext = parts[len(parts)-1]
+		}
+		if ext != "" {
+			langStats[ext] += entry.Size()
+		}
+	}
+	return nil
 }
 
 
