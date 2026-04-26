@@ -99,7 +99,7 @@
         </div>
       </div>
       <div class="issue-subtitle">
-        <strong>{issue.user?.username}</strong> opened this issue {timeAgo(
+        <a href="/{issue.user?.username}" class="user-link">{issue.user?.username}</a> opened this issue {timeAgo(
           issue.created_at,
         )} · {issue.comments} comments
       </div>
@@ -117,7 +117,7 @@
           />
           <div class="item-card-flat">
             <div class="item-header">
-              <strong>{issue.user?.username}</strong> commented {timeAgo(
+              <a href="/{issue.user?.username}" class="user-link">{issue.user?.username}</a> commented {timeAgo(
                 issue.created_at,
               )}
             </div>
@@ -143,7 +143,7 @@
             />
             <div class="item-card-flat">
               <div class="item-header">
-                <strong>{comment.user?.username}</strong> commented {timeAgo(
+                <a href="/{comment.user?.username}" class="user-link">{comment.user?.username}</a> commented {timeAgo(
                   comment.created_at,
                 )}
               </div>
@@ -426,6 +426,16 @@
     color: var(--text-muted);
     font-size: 0.85rem;
     opacity: 0.5;
+  }
+
+  .user-link {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 800;
+  }
+  .user-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
   }
 
   /* Markdown adjustment */

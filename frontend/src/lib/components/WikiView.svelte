@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { goto } from '$app/navigation';
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import { 
@@ -89,7 +90,8 @@
 
       if (res.ok) {
         const data = await res.json();
-        window.location.href = `/${repo.data.owner.username}/${repo.data.name}/wiki/${data.url || editTitle}`;
+        goto(`/${repo.data.owner.username}/${repo.data.name}/wiki/${data.url || editTitle}`);
+        mode = 'view';
       } else {
         const data = await res.json();
         error = data.message || 'Error saving page';
@@ -108,7 +110,7 @@
         method: 'DELETE'
       });
       if (res.ok) {
-        window.location.href = `/${repo.data.owner.username}/${repo.data.name}/wiki`;
+        goto(`/${repo.data.owner.username}/${repo.data.name}/wiki`);
       }
     } catch (e) {
       error = 'Failed to delete page';
@@ -126,7 +128,6 @@
     currentPage = null;
     editTitle = '';
     editContent = '';
-    path = 'New';
   }
 
   let expandedFolders = $state<Record<string, boolean>>({});

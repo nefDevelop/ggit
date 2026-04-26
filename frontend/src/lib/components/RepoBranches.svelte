@@ -43,7 +43,7 @@
         <div class="branch-main-info">
           <span class="material-symbols-rounded branch-icon-acc">stars</span>
           <div class="branch-name-stack">
-            <span class="branch-name-text">{data.default.name}</span>
+            <a href="/{username}/{reponame}/src/branch/{data.default.name}" class="branch-name-text">{data.default.name}</a>
             <div class="badges-row">
               <span class="badge-v2 primary">Primary</span>
               {#if data.default.is_protected}
@@ -65,7 +65,7 @@
             <div class="branch-main-info">
               <span class="material-symbols-rounded branch-icon">fork_right</span>
               <div class="branch-name-stack">
-                <span class="branch-name-text">{branch.name}</span>
+                <a href="/{username}/{reponame}/src/branch/{branch.name}" class="branch-name-text">{branch.name}</a>
                 {#if branch.is_protected}
                   <span class="badge-v2 protected">Protected</span>
                 {/if}
@@ -90,7 +90,7 @@
             <div class="branch-main-info">
               <span class="material-symbols-rounded branch-icon">history</span>
               <div class="branch-name-stack">
-                <span class="branch-name-text">{branch.name}</span>
+                <a href="/{username}/{reponame}/src/branch/{branch.name}" class="branch-name-text">{branch.name}</a>
               </div>
             </div>
             <div class="branch-meta-info">
@@ -146,7 +146,8 @@
   .branch-icon-acc { font-size: 1.25rem; color: var(--primary-color); }
   
   .branch-name-stack { display: flex; align-items: center; gap: 0.75rem; }
-  .branch-name-text { font-weight: 800; font-size: 1.05rem; color: var(--text-color); }
+  .branch-name-text { font-weight: 800; font-size: 1.05rem; color: var(--text-color); text-decoration: none; transition: color 0.2s; }
+  .branch-name-text:hover { color: var(--primary-color); }
   .commit-shorthand { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; font-weight: 500; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   .badges-row { display: flex; gap: 0.5rem; }

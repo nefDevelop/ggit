@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
   const reponame = $derived(page.params.reponame);
   const isRepoContext = $derived(!!reponame);
@@ -12,6 +13,11 @@
     if (e.key === '/' && document.activeElement?.tagName !== 'INPUT') {
       e.preventDefault();
       searchInput?.focus();
+    }
+    if (e.key === 'Enter' && query.trim()) {
+      if (!page.url.pathname.startsWith('/explore')) {
+        goto(`/explore/repos?q=${encodeURIComponent(query)}`);
+      }
     }
   }
 
@@ -33,6 +39,7 @@
     <input 
       bind:this={searchInput}
       bind:value={query}
+      onkeydown={handleKeydown}
       placeholder={isRepoContext ? `Search in ${reponame}...` : 'Search repositories...'} 
       class="global-search-input"
     />

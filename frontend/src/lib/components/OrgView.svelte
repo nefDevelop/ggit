@@ -4,6 +4,8 @@
   import OrgMembers from "./OrgMembers.svelte";
   import { apiFetch } from "$lib/api";
   import Avatar from "$lib/components/Avatar.svelte";
+  import RepoRow from "$lib/components/RepoRow.svelte";
+  import Card from "$lib/components/ui/Card.svelte";
 
   let { orgName } = $props();
 
@@ -29,7 +31,7 @@
 
   async function fetchRepos() {
     try {
-      const res = await apiFetch(`/api/v2/user/settings/repos?uid=${org.id}`); // Reusing user repos logic
+      const res = await apiFetch(`/api/v2/users/${orgName}/repos`);
       if (res.ok) repos = await res.json();
     } catch (e) {
       console.error(e);
@@ -105,14 +107,18 @@
 
     <main class="org-content">
       {#if activeTab === "repos"}
-        <div class="repos-grid">
+        <div class="repos-stack">
           {#each repos as repo}
-            <!-- Assuming a generic repo card style -->
-            <div class="repo-card tonal hover-lift">
-              <strong>{repo.name}</strong>
-              <p>{repo.description || ""}</p>
-            </div>
+            <Card hover variant="low" padding="none" class="repo-row-card">
+              <RepoRow {repo} />
+            </Card>
           {/each}
+          {#if repos.length === 0}
+            <div class="empty-repos island tonal">
+              <span class="material-symbols-rounded">folder_off</span>
+              <p>Esta organización aún no tiene repositorios públicos.</p>
+            </div>
+          {/if}
         </div>
       {:else if activeTab === "teams"}
         <OrgTeams {orgName} />
@@ -221,18 +227,25 @@
     font-size: 0.75rem;
   }
 
-  .repos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .repo-card {
-    padding: 1.5rem;
+  .repos-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    border: 1px solid var(--md-sys-color-outline-variant);
+    gap: 1rem;
   }
+  :global(.repo-row-card) {
+    border-radius: 1.25rem !important;
+  }
+
+  .empty-repos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem;
+    gap: 1rem;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  .empty-repos span { font-size: 3rem; opacity: 0.3; }
 
   .skeleton-org {
     height: 600px;

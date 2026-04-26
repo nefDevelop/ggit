@@ -23,22 +23,35 @@
 
   function formatAction(act: any) {
     try {
+      const actorLink = `<a href="/${act.act_user_name}" class="repo-link">${act.act_user_name}</a>`;
+      const repoLink = `<a href="/${act.repo_user_name}/${act.repo_name}" class="repo-link">${act.repo_name}</a>`;
+      
       switch (act.op_type) {
-        case 1: 
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">add_box</span> <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
-        case 5: // ActionCommitRepo
+        case 1: // CreateRepo
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">add_box</span> created repo ${repoLink}</span>`;
+        case 5: // CommitRepo
           const pushData = JSON.parse(act.content);
           return `
             <div class="action-summary">
-              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len}</span>
+              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len} commits</span>
               <span class="action-pill"><span class="material-symbols-rounded mini">fork_right</span> ${act.ref_name}</span>
-              <span class="repo-link-wrap">in <a href="/${act.repo_user_name}/${act.repo_name}" class="repo-link">${act.repo_name}</a></span>
+              <span class="repo-link-wrap">in ${repoLink}</span>
             </div>
           `;
-        case 11: // ActionMergePullRequest
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">call_merge</span> merged into <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
+        case 6: // CreateBranch
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">fork_right</span> created branch <span class="action-pill">${act.ref_name}</span> in ${repoLink}</span>`;
+        case 10: // CreateIssue
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">error</span> opened issue <a href="/${act.repo_user_name}/${act.repo_name}/issues/${act.content}" class="repo-link">#${act.content}</a> in ${repoLink}</span>`;
+        case 11: // MergePullRequest
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">call_merge</span> merged PR into ${repoLink}</span>`;
+        case 12: // CommentIssue
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">chat_bubble</span> commented on issue in ${repoLink}</span>`;
+        case 13: // CloseIssue
+          return `<span class="action-summary"><span class="material-symbols-rounded mini">check_circle</span> closed issue in ${repoLink}</span>`;
+        case 17: // ClosePull
+           return `<span class="action-summary"><span class="material-symbols-rounded mini">cancel</span> closed PR in ${repoLink}</span>`;
         default:
-          return act.content || 'activity';
+          return `<span class="action-summary">${act.content || 'activity'} in ${repoLink}</span>`;
       }
     } catch (e) {
       return act.content;

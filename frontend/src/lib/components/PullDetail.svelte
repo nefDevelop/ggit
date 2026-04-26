@@ -94,7 +94,7 @@
          </div>
        </div>
        <div class="subtitle">
-         <strong>{pull.user?.username}</strong> wants to merge into <code>{pull.pull_request?.base_branch}</code> from <code>{pull.pull_request?.head_branch}</code>
+         <a href="/{pull.user?.username}" class="user-link">{pull.user?.username}</a> wants to merge into <code>{pull.pull_request?.base_branch}</code> from <code>{pull.pull_request?.head_branch}</code>
        </div>
     </header>
 
@@ -114,7 +114,7 @@
       {#if activeView === 'conversation'}
         <div class="conversation-timeline">
              <div class="timeline-item-flat">
-                <div class="item-header"><strong>{pull.user?.username}</strong> commented</div>
+                <div class="item-header"><a href="/{pull.user?.username}" class="user-link">{pull.user?.username}</a> commented</div>
                 <div class="item-body">
                   <MarkdownRenderer 
                     content={pull.body} 
@@ -126,7 +126,7 @@
              {#each comments as comment}
                <div class="timeline-item-flat">
                  <div class="item-header">
-                   <strong>{comment.user?.username}</strong> commented on {new Date(comment.created_at).toLocaleDateString()}
+                   <a href="/{comment.user?.username}" class="user-link">{comment.user?.username}</a> commented on {new Date(comment.created_at).toLocaleDateString()}
                  </div>
                  <div class="item-body">
                    <MarkdownRenderer 
@@ -192,4 +192,14 @@
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
   .error-msg { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2rem; border-radius: 1rem; text-align: center; font-weight: 700; }
+
+  .user-link {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 800;
+  }
+  .user-link:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+  }
 </style>

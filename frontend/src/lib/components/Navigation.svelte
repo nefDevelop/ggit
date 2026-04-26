@@ -26,7 +26,7 @@
 
   const navItems = $derived([
     { name: i18n.t("dashboard"), icon: "grid_view", path: "/dashboard" },
-    { name: i18n.t("explore"), icon: "search", path: "/explore/repos" },
+    { name: i18n.t("explore"), icon: "search", path: "/explore/repos", isParent: true, isExplore: true },
     ...(authState.user?.is_admin
       ? [
           {
@@ -105,9 +105,16 @@
     { name: i18n.t("settings.repositories") || "Repositories", icon: "book", path: "/user/settings?tab=repos" },
     { name: i18n.t("settings.organizations") || "Organizations", icon: "corporate_fare", path: "/user/settings?tab=orgs" },
   ]);
+  
+  const exploreSubItems = $derived([
+    { name: i18n.t("explore.repos") || "Repositories", icon: "book", path: "/explore/repos" },
+    { name: i18n.t("explore.users") || "Users", icon: "person_search", path: "/explore/users" },
+    { name: i18n.t("explore.organizations") || "Organizations", icon: "corporate_fare", path: "/explore/orgs" },
+  ]);
 
   const isAdminPath = $derived(page.url.pathname.startsWith("/admin"));
   const isSettingsPath = $derived(page.url.pathname.startsWith("/user/settings"));
+  const isExplorePath = $derived(page.url.pathname.startsWith("/explore"));
 
   function getCsrfToken() {
     if (typeof document === "undefined") return "";
@@ -152,19 +159,19 @@
         href={item.path}
         class="nav-item"
         class:active={page.url.pathname === item.path ||
-          (item.isParent && (isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings))}
+          (item.isParent && ((isAdminPath && !item.isSettings && !item.isExplore) || (isSettingsPath && item.isSettings) || (isExplorePath && item.isExplore)))}
       >
         <span class="material-symbols-rounded">{item.icon}</span>
         <span class="item-label">{item.name}</span>
       </a>
 
-      {#if item.isParent && ((isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings))}
+      {#if item.isParent && ((isAdminPath && !item.isSettings && !item.isExplore) || (isSettingsPath && item.isSettings) || (isExplorePath && item.isExplore))}
         <div class="sub-nav-links">
-          {#each (item.isSettings ? settingsSubItems : adminSubItems) as sub}
+          {#each (item.isSettings ? settingsSubItems : item.isExplore ? exploreSubItems : adminSubItems) as sub}
             <a
               href={sub.path}
               class="sub-nav-item"
-              class:active={page.url.pathname === sub.path || page.url.search === sub.path.substring(sub.path.indexOf('?'))}
+              class:active={page.url.pathname === sub.path || (sub.path.includes('?') && page.url.search === sub.path.substring(sub.path.indexOf('?')))}
             >
               <span class="material-symbols-rounded">{sub.icon}</span>
               <span class="item-label">{sub.name}</span>

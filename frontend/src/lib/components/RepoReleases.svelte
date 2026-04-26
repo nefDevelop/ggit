@@ -135,10 +135,10 @@
                  </div>
 
                  <div class="meta-row">
-                   <span class="tag clickable" title="View tag on Git">
+                   <a href={`/${username}/${reponame}/src/tag/${release.tag_name}`} class="tag clickable" title="View tag on Git">
                      <span class="material-symbols-rounded">sell</span>
                      {release.tag_name}
-                   </span>
+                   </a>
                    {#if release.target}
                      <span class="target">
                        <span class="material-symbols-rounded">merge_type</span>
