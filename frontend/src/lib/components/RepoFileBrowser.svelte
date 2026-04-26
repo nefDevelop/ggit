@@ -456,6 +456,7 @@ git push -u origin main</code></pre>
     border-radius: 0.75rem; 
     overflow: hidden; 
     box-shadow: var(--shadow-sm);
+    overflow-x: auto;
   }
   .file-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
   .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
@@ -480,6 +481,7 @@ git push -u origin main</code></pre>
     overflow: hidden;
     text-overflow: ellipsis;
     flex: 1;
+    min-width: 0;
   }
   .icon-tree { color: #facc15; font-size: 1.25rem; }
   .icon-blob { color: var(--text-muted); font-size: 1.25rem; }
@@ -516,13 +518,13 @@ git push -u origin main</code></pre>
   .btn-sidebar-toggle-inline { padding: 0.35rem 0.5rem; }
   .btn-sidebar-toggle-inline span { font-size: 1.1rem; }
 
-  .code-box { background: var(--md-sys-color-surface-container-lowest); }
-  .code-grid { display: grid; grid-template-columns: 50px 1fr; }
+  .code-box { background: var(--md-sys-color-surface-container-lowest); overflow-x: auto; }
+  .code-grid { display: grid; grid-template-columns: 50px 1fr; min-width: 600px; }
   .ln-col { border-right: 1px solid rgba(255,255,255,0.08); padding: 1.25rem 0; text-align: right; background: rgba(255,255,255,0.01); }
   .ln-col span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.25; padding-right: 1rem; line-height: 1.5; }
   .code-pre { margin: 0; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.5; color: #e6edf3; }
   .code-pre.hljs { background: transparent; }
-  .line { white-space: pre-wrap; transition: background 0.2s; }
+  .line { white-space: pre; transition: background 0.2s; }
   .line:hover { background: rgba(255,255,255,0.05); }
 
   /* Readme */

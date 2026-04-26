@@ -158,21 +158,21 @@
   
   .pull-detail-header { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 1.5rem; }
   .title-row { display: flex; align-items: center; gap: 1.5rem; }
-  .title-row h1 { margin: 0; font-size: 1.75rem; font-weight: 800; }
+  .title-row h1 { margin: 0; font-size: 1.75rem; font-weight: 800; line-height: 1.2; }
   .index { color: var(--text-muted); font-weight: 400; }
   
   .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.25rem; border-radius: 2rem; background: var(--success); color: var(--on-primary); font-weight: 700; font-size: 0.9rem; }
   .status-pill.merged { background: var(--primary); }
   
-  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; }
+  .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5; }
   .subtitle code { background: var(--surface-variant); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); }
 
   .pull-tabs-bar { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1rem; }
-  .nav-tab { background: transparent; border: none; padding: 0.85rem 1.25rem; color: var(--text-muted); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s; position: relative; }
-  .nav-tab:hover { color: var(--text-color); background: var(--surface-variant); }
-  .nav-tab.active { color: var(--primary-color); }
-  .nav-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--primary-color); }
-  .nav-tab .count { font-size: 0.7rem; background: var(--surface-2); padding: 2px 6px; border-radius: 10px; opacity: 0.7; }
+  .tab-pill { background: transparent; border: none; padding: 0.85rem 1.25rem; color: var(--text-muted); font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s; position: relative; }
+  .tab-pill:hover { color: var(--text-color); background: var(--surface-variant); }
+  .tab-pill.active { color: var(--primary-color); }
+  .tab-pill.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--primary-color); }
+  .tab-pill .count { font-size: 0.7rem; background: var(--surface-2); padding: 2px 6px; border-radius: 10px; opacity: 0.7; }
 
   .timeline-item-flat { 
     border: 1px solid var(--md-sys-color-outline-variant); 

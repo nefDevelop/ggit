@@ -20,7 +20,7 @@
 
   async function fetchRepoInfo() {
     if (lastFetched.user === username && lastFetched.repo === reponame) return;
-    lastFetched = { user: username, repo: reponame };
+    lastFetched = { user: username || '', repo: reponame || '' };
 
     loading = true;
     error = '';
@@ -256,9 +256,9 @@
   .tonal-search-bar { padding: 1.5rem 1.5rem 0.75rem; background: rgba(255,255,255,0.01); }
 
   .repo-identity-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; }
-  .breadcrumb-nav { display: flex; align-items: baseline; gap: 0.5rem; }
+  .breadcrumb-nav { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
   .bc-item { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 1.1rem; }
-  h1.bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.25rem; margin: 0; }
+  h1.bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.25rem; margin: 0; word-break: break-all; }
   .bc-home { color: var(--text-muted); display: flex; opacity: 0.6; align-self: center; }
   .bc-sep { opacity: 0.2; }
   .lock-icon { font-size: 1rem; color: var(--primary-color); margin-left: 0.5rem; }
@@ -303,7 +303,8 @@
   .archive-tile .material-symbols-rounded { font-size: 1.25rem; color: var(--primary-color); }
 
   .repo-header-region { background-color: var(--surface-variant); border-bottom: 1px solid var(--border-color); }
-  .rich-tabs { display: flex; gap: 0.25rem; padding: 0 1rem; }
+  .rich-tabs { display: flex; gap: 0.25rem; padding: 0 1rem; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .rich-tabs::-webkit-scrollbar { display: none; }
   .tab { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; border-radius: 0.75rem 0.75rem 0 0; margin-bottom: -1px; }
   .tab:hover { color: var(--text-color); background: rgba(0,0,0,0.03); }
   .tab.active { color: var(--primary-color); background: var(--bg-color); position: relative; border: 1px solid var(--border-color); border-bottom-color: var(--bg-color); }
@@ -313,10 +314,16 @@
 
   @media (max-width: 800px) {
     .tab:not(.active) .tab-label, .tab:not(.active) .tab-count { display: none; }
-    .tab { padding: 0.85rem 1rem; }
+    .tab { padding: 0.85rem 1rem; flex-shrink: 0; }
+    .repo-identity-bar { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .repo-meta-actions { width: 100%; justify-content: space-between; }
+    .clone-dropdown { width: calc(100vw - 3rem); right: -1.5rem; }
   }
 
   .master-body { flex: 1; overflow-y: auto; padding: 2rem; background: var(--bg-color); }
+  @media (max-width: 600px) {
+    .master-body { padding: 1rem; }
+  }
   .skeleton-master { flex: 1; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
   .error-tonal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: #f87171; }

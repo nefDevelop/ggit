@@ -241,6 +241,7 @@
     margin: 0;
     font-size: 2rem;
     font-weight: 800;
+    line-height: 1.2;
   }
   .index-tag {
     color: var(--text-muted);
@@ -271,6 +272,13 @@
     grid-template-columns: 1fr 280px;
     gap: 3rem;
   }
+  @media (max-width: 1000px) {
+    .issue-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sidebar { order: -1; }
+  }
 
   .timeline {
     display: flex;
@@ -295,7 +303,7 @@
     position: relative;
     z-index: 1;
   }
-  .item-avatar {
+  :global(.item-avatar) {
     width: 3rem;
     height: 3rem;
     background: var(--md3-surface-2);
@@ -308,7 +316,7 @@
     border: 2px solid var(--md3-surface-2);
     box-shadow: 0 0 0 4px var(--bg-color);
   }
-  .item-avatar.pulse {
+  :global(.item-avatar.pulse) {
     animation: borderPulse 2s infinite;
   }
   @keyframes borderPulse {

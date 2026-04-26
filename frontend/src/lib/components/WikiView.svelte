@@ -325,6 +325,11 @@
     gap: 1.5rem;
     align-items: start;
   }
+  @media (max-width: 900px) {
+    .wiki-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 
   /* Sidebar */
   .wiki-sidebar {
@@ -335,17 +340,6 @@
 
   .sidebar-header-minimal {
     margin-bottom: 1.5rem;
-  }
-
-  .wiki-nav .empty-state {
-    margin-top: 1rem;
-    padding: 1.5rem;
-    background: var(--md-sys-color-surface-variant);
-    border-radius: 12px;
-    font-size: 0.85rem;
-    text-align: center;
-    color: var(--text-muted);
-    border: 1px dashed var(--md-sys-color-outline-variant);
   }
 
   .wiki-nav {
@@ -449,6 +443,7 @@
     display: flex;
     align-items: center;
     gap: 2rem;
+    max-width: 100%;
   }
 
   .tab-group {
@@ -456,7 +451,10 @@
     padding: 0.25rem;
     border-radius: 100px;
     display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
+  .tab-group::-webkit-scrollbar { display: none; }
 
   .tab-btn {
     padding: 0.4rem 1.25rem;
