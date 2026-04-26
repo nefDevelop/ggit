@@ -151,6 +151,7 @@
     .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
     .title-with-icon { gap: 0.75rem; }
     .subtitle { font-size: 0.9rem; }
+    .editor-overlay { padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2rem; }
   }
 
   @media (max-width: 1024px) {
