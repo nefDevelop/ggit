@@ -7,6 +7,7 @@
 	import { goto } from '$app/navigation';
 	import Navigation from '$lib/components/Navigation.svelte';
 	import RightSidebar from '$lib/components/RightSidebar.svelte';
+	import GlobalDialog from '$lib/components/GlobalDialog.svelte';
 	import { page } from '$app/stores';
 
 	let { children } = $props();
@@ -74,4 +75,6 @@
     {#if authState.isAuthenticated && isDashboard}
         <RightSidebar />
     {/if}
+
+    <GlobalDialog />
 </div>

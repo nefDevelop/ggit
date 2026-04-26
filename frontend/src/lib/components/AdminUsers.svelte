@@ -6,6 +6,7 @@
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import { dialog } from '$lib/dialog.svelte';
   
   let users = $state<any[]>([]);
   let loading = $state(true);
@@ -41,7 +42,7 @@
   }
 
   async function deleteUser(id: number) {
-    if (!confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción es IRREVERSIBLE.')) return;
+    if (!await dialog.confirm('¿Estás seguro de que deseas eliminar este usuario? Esta acción es IRREVERSIBLE.')) return;
     try {
       const res = await apiFetch(`/api/v2/admin/users/${id}`, { method: 'DELETE' });
       if (res.ok) fetchUsers();

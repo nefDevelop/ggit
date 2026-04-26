@@ -198,6 +198,27 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ---
 
-## ✅ PROYECTO COMPLETADO AL 100%
-*Ggit es ahora una plataforma de gestión de código ultra-ligera, premium y totalmente desacoplada.*
+  1. Estandarización Total de la UI
+  Acabamos de unificar los diálogos, pero hay que seguir con:
+   * Sistema de Notificaciones (Toasts): Sustituir los alert() informativos por notificaciones no intrusivas que
+     aparezcan en una esquina.
+   * Componentes de Formulario: Crear componentes Input, Select y Checkbox únicos que gestionen la validación de forma
+     automática.
 
+  2. Gestión de Errores Centralizada
+   * Implementar un interceptor en api.ts que capture errores globales (401 no autorizado, 500 error de servidor) y
+     muestre un mensaje coherente sin que el componente individual tenga que preocuparse por ello.
+
+  3. Testing Automatizado
+  Esta es la mayor carencia actual para garantizar estabilidad:
+   * Backend: Aumentar la cobertura de tests unitarios en internal/database y internal/app.
+   * Frontend: Implementar tests de integración (con Vitest) y tests E2E (con Playwright) para los flujos críticos
+     (login, creación de repo, borrado de usuario).
+
+  4. Validaciones de Datos (Schema Validation)
+   * Usar librerías como Zod en el frontend para validar los datos de los formularios antes de enviarlos a la API,
+     evitando errores de tipo "undefined" en tiempo de ejecución.
+
+  5. Estados de Carga y "Empty States"
+   * Generalizar el uso de Skeletons (como los que vi en AdminUsers.svelte) en todas las tablas y vistas para que la app
+     no parezca "rota" mientras espera datos de la API.

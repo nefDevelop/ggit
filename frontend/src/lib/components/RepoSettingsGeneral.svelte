@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { goto } from "$app/navigation";
+  import { dialog } from "$lib/dialog.svelte";
 
   const repo: any = getContext("repo");
   let settings = $state<any>({});
