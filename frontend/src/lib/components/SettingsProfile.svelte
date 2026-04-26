@@ -324,11 +324,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   .title-with-icon {
     display: flex;
     align-items: center;
     gap: 2rem;
+    min-width: 0;
   }
   .hero-icon {
     font-size: 3rem;
@@ -377,6 +382,7 @@
   @media (max-width: 600px) {
     .profile-layout-grid {
       gap: 1.5rem;
+      padding: 0;
     }
   }
 
@@ -386,6 +392,7 @@
     align-items: center;
     gap: 1.5rem;
     max-width: 100%;
+    box-sizing: border-box;
   }
   .avatar-shield {
     position: relative;
@@ -396,6 +403,7 @@
     overflow: hidden;
     border: 4px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-xl);
+    box-sizing: border-box;
   }
   @media (max-width: 600px) {
     .avatar-shield { width: 140px; height: 140px; border-radius: 3rem; }
@@ -449,6 +457,11 @@
     background: rgba(var(--primary-rgb), 0.1);
     padding: 0.4rem 1rem;
     border-radius: 100px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
   }
 
   .settings-form {
@@ -456,11 +469,12 @@
     flex-direction: column;
     gap: 3rem;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
   .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: 2rem;
     width: 100%;
     box-sizing: border-box;
@@ -475,6 +489,7 @@
     flex-direction: column;
     gap: 0.75rem;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
   .field.full-width {
@@ -495,6 +510,7 @@
     font-size: 1.05rem;
     transition: all 0.3s;
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
   }
   .field input:focus {
