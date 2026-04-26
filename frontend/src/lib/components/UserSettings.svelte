@@ -74,7 +74,7 @@
 <style>
   .settings-premium-container {
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 320px minmax(0, 1fr);
     gap: 3rem;
     align-items: start;
     padding: 1rem 0;
@@ -188,7 +188,7 @@
 
   @media (max-width: 1100px) {
     .settings-premium-container {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       padding: 0 1rem;
       gap: 2rem;
     }

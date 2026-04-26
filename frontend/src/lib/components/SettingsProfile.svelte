@@ -366,7 +366,7 @@
 
   .profile-layout-grid {
     display: grid;
-    grid-template-columns: 280px 1fr;
+    grid-template-columns: 280px minmax(0, 1fr);
     gap: 4rem;
     max-width: 100%;
     width: 100%;
@@ -374,7 +374,7 @@
   }
   @media (max-width: 1200px) {
     .profile-layout-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr);
       gap: 3rem;
     }
     .avatar-column { order: -1; }

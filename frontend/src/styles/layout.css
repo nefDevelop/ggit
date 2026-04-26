@@ -78,6 +78,9 @@
     margin: 0.5rem 0.5rem 80px 0.5rem !important;
     border-radius: 1.5rem !important;
     height: calc(100vh - 90px);
+    max-width: calc(100vw - 1rem);
+    width: calc(100vw - 1rem);
+    box-sizing: border-box;
   }
   #main-container-wrapper::after {
     border-radius: 1.5rem !important;
