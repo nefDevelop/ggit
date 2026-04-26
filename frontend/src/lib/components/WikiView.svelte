@@ -39,7 +39,7 @@
     error = '';
     try {
       const listRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki`);
-      if (listRes.ok) wikiPages = await listRes.json();
+      if (listRes.ok) wikiPages = (await listRes.json()) || [];
       
       const pageRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`);
       if (pageRes.ok) {
@@ -153,8 +153,9 @@
 </script>
 
 <div class="wiki-container">
-  <div class="wiki-grid">
+  <div class="wiki-grid" style={wikiPages.length === 0 ? 'display: block;' : ''}>
     <!-- Sidebar -->
+    {#if wikiPages.length > 0}
     <aside class="wiki-sidebar">
       <div class="sidebar-header-minimal">
         <Button class="w-full" onclick={startNew} icon="add">
@@ -164,9 +165,6 @@
       
       <nav class="wiki-nav">
         {@render renderTree(wikiPages)}
-        {#if wikiPages.length === 0}
-          <div class="empty-state">No hay páginas aún</div>
-        {/if}
       </nav>
 
 {#snippet renderTree(items: any[], depth = 0, parentPath = '')}
@@ -203,6 +201,7 @@
     {/each}
 {/snippet}
     </aside>
+    {/if}
 
     <!-- Content Area -->
     <main class="wiki-main">
@@ -212,6 +211,7 @@
             <div class="skeleton-body"></div>
         </div>
       {:else}
+        {#if wikiPages.length > 0 || mode !== 'view'}
         <header class="wiki-content-header">
           <div class="header-left">
             {#if mode === 'edit'}
@@ -222,6 +222,7 @@
           </div>
 
           <div class="header-right">
+            {#if mode === 'view' || mode === 'history'}
             <div class="tab-group">
                 <button class="tab-btn" class:active={mode === 'view'} onclick={() => mode = 'view'}>
                     Página
@@ -230,6 +231,7 @@
                     Historial
                 </button>
             </div>
+            {/if}
             
             <div class="action-group">
                 {#if mode === 'view'}
@@ -238,7 +240,7 @@
                         Editar
                     </button>
                 {:else if mode === 'edit'}
-                    <button class="btn-icon-text variant" onclick={() => mode = 'view'}>
+                    <button class="btn-icon-text variant" onclick={() => { if (wikiPages.length === 0) { mode = 'view'; } else { mode = 'view'; } }}>
                         <Close size={16} />
                         Cancelar
                     </button>
@@ -248,7 +250,7 @@
                     </button>
                 {/if}
                 
-                {#if mode === 'view' && path !== 'Home'}
+                {#if mode === 'view' && path !== 'Home' && wikiPages.length > 0}
                     <button class="btn-danger-icon" onclick={handleDelete} title="Eliminar Página">
                         <Delete size={18} />
                     </button>
@@ -256,8 +258,9 @@
             </div>
           </div>
         </header>
+        {/if}
 
-        <div class="wiki-body">
+        <div class="wiki-body" style={wikiPages.length === 0 && mode === 'view' ? 'padding: 0; display: flex; align-items: center; justify-content: center; min-height: 60vh;' : ''}>
           {#if mode === 'view'}
               {#if currentPage}
                 <MarkdownRenderer

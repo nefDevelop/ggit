@@ -1,10 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/state';
-
   let { commit, minimalist = false } = $props();
-
-  let username = $derived(page.params.username);
-  let reponame = $derived(page.params.reponame);
 
   function timeAgo(dateStr: string) {
     if (!dateStr) return "unknown";
@@ -23,7 +18,7 @@
   }
 </script>
 
-<a href="/{username}/{reponame}/commit/{commit.id}" class="commit-row tonal hover-lift" class:minimalist>
+<div class="commit-row tonal hover-lift" class:minimalist>
   <div class="commit-avatar">
     {commit.author?.name?.[0] || "U"}
   </div>
@@ -37,12 +32,12 @@
   <div class="commit-actions">
     <code class="sha">{commit.id?.slice(0, 7)}</code>
     {#if !minimalist}
-      <button class="btn btn-icon" onclick={(e) => { e.preventDefault(); navigator.clipboard.writeText(commit.id); }}>
+      <button class="btn btn-icon" onclick={() => navigator.clipboard.writeText(commit.id)} title="Copy Hash">
         <span class="material-symbols-rounded">content_copy</span>
       </button>
     {/if}
   </div>
-</a>
+</div>
 
 <style>
   .commit-row {
@@ -52,9 +47,7 @@
     padding: 0.75rem 1.25rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     margin-bottom: 0.5rem;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
+    background: transparent;
   }
 
   .minimalist {
