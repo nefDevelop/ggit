@@ -26,7 +26,6 @@
     prohibit_login: false,
     allow_git_hook: false,
     allow_import_local: false,
-    password: "",
   });
 
   let loading = $state(false);

@@ -8,7 +8,7 @@
     branch?: string;
   }
 
-  let { query = '', branch = 'HEAD' } = $props<Props>();
+  let { query = '', branch = 'HEAD' }: Props = $props();
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
 

@@ -96,12 +96,12 @@
 <div class="webhook-editor">
   <form onsubmit={(e) => { e.preventDefault(); handleSave(); }}>
     <div class="form-body">
-      <Input
-        label="Payload URL"
-        type="url"
-        bind:value={url}
+      <Input 
+        label="Payload URL" 
+        bind:value={url} 
         placeholder="https://example.com/postreceive"
-        required
+      />
+
       />
       <p class="helper">The URL that will receive the POST requests.</p>
 

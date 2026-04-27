@@ -215,8 +215,6 @@
                       type="number" 
                       label="Aprobaciones requeridas" 
                       bind:value={protection.required_approvals} 
-                      min="0" 
-                      max="10"
                     />
                   </div>
                 </div>

@@ -220,7 +220,7 @@
         <DiffViewer 
           {diff} 
           allowComments={!pull.pull_request?.merged}
-          comments={reviews.flatMap(r => (r.comments || []).map(c => ({...c, reviewer: r.reviewer})))}
+          comments={reviews.flatMap((r: any) => (r.comments || []).map((c: any) => ({...c, reviewer: r.reviewer})))}
           onAddComment={addInlineComment}
         />
       {/if}

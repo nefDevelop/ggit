@@ -23,7 +23,7 @@
 
 <div class="avatar-container {className}" style="width: 100%; height: auto; max-width: {size}px; max-height: {size}px;">
   {#if useIdenticon}
-    <Identicon seed={finalSeed} size="100%" />
+    <Identicon seed={finalSeed} size={Number(size)} />
   {:else}
     <img src={src} alt={username} class="avatar-img" />
   {/if}

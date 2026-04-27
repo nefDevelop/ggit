@@ -172,19 +172,18 @@
       }}
       style="display: flex; flex-direction: column; gap: 1.5rem;"
     >
-      <Input
-        label="Title"
-        bind:value={newKey.title}
+      <Input 
+        label="Key Name" 
+        bind:value={newKey.title} 
         placeholder="e.g. CI Server"
-        required
+      />
+      <Input 
+        label="Key Content" 
+        bind:value={newKey.key} 
+        placeholder="ssh-rsa AAAAB3Nza..."
+        multiline
       />
 
-      <Input
-        label="Public Key Content"
-        bind:value={newKey.key}
-        placeholder="ssh-rsa AAAAB3Nza..."
-        required
-        multiline
         rows={5}
       />
 

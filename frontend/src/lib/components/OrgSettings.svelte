@@ -146,7 +146,7 @@
             <p>Sube una imagen personalizada para tu organización.</p>
           </header>
           <div class="action-buttons">
-            <Button variant="tonal" icon="upload" onclick={() => document.getElementById('org-avatar-input')?.click()}>
+            <Button variant="outline" icon="upload" onclick={() => document.getElementById('org-avatar-input')?.click()}>
               Subir Imagen
             </Button>
             {#if org.use_custom_avatar}
@@ -192,7 +192,8 @@
   {/if}
 </Card>
 
-<Card padding="none" class="settings-premium-card danger-card" style="margin-top: 3rem;">
+<div style="margin-top: 3rem;">
+<Card padding="none" class="settings-premium-card danger-card">
   <header class="section-header-premium danger">
     <div class="title-with-icon">
       <span class="material-symbols-rounded hero-icon danger">heart_broken</span>
@@ -215,6 +216,7 @@
     </div>
   </div>
 </Card>
+</div>
 
 <style>
   .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }

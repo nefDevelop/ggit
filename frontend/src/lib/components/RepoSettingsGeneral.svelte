@@ -8,6 +8,7 @@
   import Checkbox from "./ui/Checkbox.svelte";
   import Input from "./ui/Input.svelte";
   import Avatar from "./Avatar.svelte";
+  import Button from "./ui/Button.svelte";
 
   const repo: any = getContext("repo");
   let settings = $state<any>({});
@@ -85,7 +86,10 @@
     const result = RepositorySchema.safeParse(settings);
     if (!result.success) {
       result.error.issues.forEach(err => {
-        errors[err.path[0]] = err.message;
+        const key = err.path[0];
+        if (typeof key === 'string') {
+          errors[key] = err.message;
+        }
       });
       toast.error("Por favor, corrige los errores en el formulario.");
       return;
@@ -185,7 +189,7 @@
             <p>Sube una imagen personalizada para este repositorio.</p>
           </header>
           <div class="action-buttons">
-            <Button variant="tonal" icon="upload" onclick={() => document.getElementById('repo-avatar-input')?.click()}>
+            <Button variant="outline" icon="upload" onclick={() => document.getElementById('repo-avatar-input')?.click()}>
               Subir Imagen
             </Button>
             {#if settings.use_custom_avatar}
@@ -209,7 +213,6 @@
           label="Repository Name" 
           bind:value={settings.name} 
           error={errors.name}
-          required 
         />
         <Input 
           label="Website" 

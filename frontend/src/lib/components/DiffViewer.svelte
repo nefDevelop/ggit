@@ -28,7 +28,7 @@
   }
 
   function getLineComments(fileName: string, lineNum: number) {
-    return comments.filter(c => c.tree_path === fileName && c.line === lineNum);
+    return comments.filter((c: any) => c.tree_path === fileName && c.line === lineNum);
   }
 
   const getLineClass = (type: number) => {
