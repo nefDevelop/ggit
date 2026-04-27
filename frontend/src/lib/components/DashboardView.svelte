@@ -76,7 +76,7 @@
   });
 </script>
 
-<div class="dashboard-layout">
+<div class="dashboard-layout" class:has-sidebar={data.organizations.length > 0}>
     <div class="dashboard-main-content">
         <ViewHeader 
             bind:activeTab={viewMode}
@@ -128,8 +128,8 @@
         </div>
     </div>
 
-    <aside class="dashboard-sidebar">
-        {#if data.organizations.length > 0}
+    {#if data.organizations.length > 0}
+        <aside class="dashboard-sidebar">
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
                     <span class="material-symbols-rounded">corporate_fare</span>
@@ -137,25 +137,28 @@
                 </header>
                 <div class="org-grid">
                     {#each data.organizations as org}
-                        <a href="/org/${org.username}" class="org-chip" title={org.full_name || org.username}>
+                        <a href="/org/{org.username}" class="org-chip" title={org.full_name || org.username}>
                             <img src={org.avatar_url} alt={org.username} />
                         </a>
                     {/each}
                 </div>
             </div>
-        {/if}
-    </aside>
+        </aside>
+    {/if}
 </div>
 
 <style>
-  .dashboard-layout { 
-    display: grid; 
-    grid-template-columns: 1fr 320px;
+  .dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 2rem;
-    height: 100%; 
+    height: 100%;
     padding-right: 1.5rem;
   }
 
+  .dashboard-layout.has-sidebar {
+    grid-template-columns: 1fr 320px;
+  }
   .dashboard-main-content { 
     display: flex; 
     flex-direction: column; 
