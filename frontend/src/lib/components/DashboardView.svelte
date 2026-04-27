@@ -161,17 +161,21 @@
     padding-left: 1.5rem;
     padding-right: 1.5rem;
     width: 100%;
+    box-sizing: border-box;
+    flex: 1 1 100%;
   }
 
   .dashboard-main-content { 
     display: flex; 
     flex-direction: column; 
-    flex: 1;
+    flex: 1 1 100%;
+    width: 100%;
     min-width: 0;
   }
 
   .repository-stream {
     padding: 0 0 4rem;
+    width: 100%;
   }
 
   .dashboard-sidebar {
