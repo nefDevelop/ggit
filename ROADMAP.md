@@ -402,3 +402,8 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 - [ ] **Background FS Check:** Tarea programada que valida que cada registro en la DB tenga su correspondiente carpeta `.git` en disco.
 - [ ] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes al detectar un acceso al repositorio.
 - [ ] **Dangling Objects Cleanup:** Identificar y limpiar archivos de base de datos vinculados a repositorios borrados por errores de sistema.
+
+
+
+
+- [ ] los contadores de dashboard, si es de hoy, parpadean, (estado leido), sino estandar

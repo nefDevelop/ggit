@@ -63,7 +63,6 @@
   });
 </script>
 
-{#if loading || feeds.length > 0}
 <aside class="right-sidebar">
   <div class="sidebar-inner">
     <header class="sidebar-header">
@@ -78,7 +77,7 @@
         <div class="skeletons">
           {#each Array(6) as _}<div class="skeleton-item"></div>{/each}
         </div>
-      {:else}
+      {:else if feeds.length > 0}
         <div class="activity-timeline">
           {#each feeds as act}
             <div class="activity-entry">
@@ -105,11 +104,15 @@
             </div>
           {/each}
         </div>
+      {:else}
+        <div class="empty-activity">
+          <span class="material-symbols-rounded">history</span>
+          <p>No activity yet</p>
+        </div>
       {/if}
     </div>
   </div>
 </aside>
-{/if}
 
 <style>
   .right-sidebar {
@@ -274,6 +277,28 @@
   }
 
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+
+  .empty-activity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 4rem 1rem;
+    color: var(--text-muted);
+    opacity: 0.5;
+    text-align: center;
+  }
+
+  .empty-activity span {
+    font-size: 3rem;
+  }
+
+  .empty-activity p {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+  }
 
   @media (max-width: 1300px) {
     .right-sidebar { display: none; }
