@@ -214,3 +214,55 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 - [x] **Estandarización de Skeletons:** Estados de carga coherentes en todas las tablas y paneles.
 - [x] **Unificar**: optimizar los css, y componentes. reutilizar componentes etc. [COMPLETO]
 - [x] **Testing de Regresión:** Configurar Playwright para flujos críticos. [CONFIGURADO]
+
+---
+
+## Fase 21: Robustez y Ecosistema (Siguiente Nivel) 🚀
+
+**Objetivo:** Convertir Ggit en una plataforma de desarrollo profesional completa, más allá de un simple servidor de Git.
+
+### 1. Code Review & Branch Protection (Calidad de Código)
+- [ ] **Protección de Ramas:** Implementar reglas para evitar pushes directos a `main/master` y requerir PRs.
+- [ ] **Review Workflow:** Sistema de aprobaciones (Approve/Request Changes) en Pull Requests.
+- [ ] **Comentarios en Línea:** Capacidad de comentar directamente en el diff del código durante una revisión.
+- [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes o falta de aprobaciones.
+
+### 2. CI/CD & Automatización (Integración Woodpecker/Drone) <- A FUTURO
+- [ ] **Infraestructura de Estados (Commit Status):**
+  - [ ] **Modelo DB:** Crear tabla `commit_statuses` para persistir estados (pending, success, error, failure) vinculados a un SHA.
+  - [ ] **API v2 Endpoints:**
+    - `POST /api/v2/repos/:owner/:repo/statuses/:sha`: Para que el CI reporte resultados.
+    - `GET /api/v2/repos/:owner/:repo/commits/:ref/statuses`: Para consultar el estado desde el UI.
+  - [ ] **UI Integration:** Mostrar iconos de estado ✅/❌/⏳ en la lista de archivos, historial de commits y Pull Requests.
+- [ ] **Identidad & Conectividad (OAuth2 Provider):**
+  - [ ] Implementar flujo de **OAuth2 / OIDC** para que Woodpecker/Drone puedan autenticar usuarios mediante `ggit`.
+  - [ ] Endpoint de descubrimiento `.well-known/openid-configuration`.
+- [ ] **Webhooks Seguros:**
+  - [ ] Implementar firma de payloads mediante secreto compartido (`HMAC-SHA256`) en la cabecera `X-Ggit-Signature`.
+  - [ ] **Webhooks de Organización:** Permitir disparar eventos para todos los repositorios de una organización.
+
+### 3. Observabilidad & APM (Estabilidad Real)
+
+- [ ] **Activación de Prometheus:** Conectar el `MetricsFilter` al router de Gin y exponer `/metrics`.
+- [ ] **Instrumentación OpenTelemetry:** Añadir rastreo (tracing) básico para identificar cuellos de botella en operaciones Git pesadas.
+- [ ] **Health Checks:** Endpoint `/health` detallado para orquestadores como Kubernetes o Docker Compose.
+
+### 4. Gestión de Proyectos & Colaboración
+- [ ] **Tableros Kanban:** Implementar "Ggit Boards" simples para gestionar Issues por columnas (Todo, In Progress, Done).
+- [ ] **Búsqueda Global de Código:** Sistema de indexación bajo demanda (tipo `zoekt` o similar) para buscar texto en todos los repositorios del servidor.
+- [ ] **Dependencias de Issues:** Capacidad de marcar que un Issue bloquea a otro.
+
+### 5. Seguridad & Cumplimiento (Confianza Total)
+- [ ] **Verificación de Firmas GPG:**
+  - [ ] Permitir a los usuarios subir sus llaves GPG públicas.
+  - [ ] Validar firmas en commits y mostrar el sello "Verified" en el UI.
+- [ ] **Escaneo de Secretos:** Detectar accidentalmente claves API o tokens en los pushes (pre-receive hooks).
+- [ ] **Soporte OIDC:** Implementar OpenID Connect como estándar para el inicio de sesión único (SSO) empresarial.
+
+### 6. Gestión de Recursos & Resiliencia
+- [ ] **Cuotas de Almacenamiento:** Implementar límites de disco configurables por usuario y por repositorio.
+- [ ] **LFS File Locking:** Implementar la API de bloqueo de archivos para evitar conflictos de edición en binarios.
+- [ ] **Backups Automatizados (Cloud Sync):**
+  - [ ] Crear sistema de rotación de backups.
+  - [ ] Integrar subida automática a almacenamiento S3/R2 o compatible mediante `rclone`.
+- [ ] **Auditoría Extendida:** Registrar cambios en permisos de colaboradores y visibilidad de repositorios en el Audit Log.
