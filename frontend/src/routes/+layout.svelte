@@ -31,6 +31,7 @@
 	});
 
 	const isDashboard = $derived($page.url.pathname === '/' || $page.url.pathname === '/dashboard');
+	const showRightSidebar = $derived(authState.isAuthenticated && isDashboard && !authState.user?.disable_news_feed);
 </script>
 
 <svelte:head>
@@ -54,7 +55,7 @@
 	</script>
 </svelte:head>
 
-<div id="app-layout" class:has-right-sidebar={authState.isAuthenticated && isDashboard}>
+<div id="app-layout" class:has-right-sidebar={showRightSidebar}>
 	{#if authState.isAuthenticated}
         <div class="navigation-sidebar">
 		    <Navigation />
@@ -73,7 +74,7 @@
         </main>
     </div>
 
-    {#if authState.isAuthenticated && isDashboard}
+    {#if showRightSidebar}
         <RightSidebar />
     {/if}
 
