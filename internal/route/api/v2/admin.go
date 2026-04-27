@@ -230,9 +230,11 @@ func CreateAdminUser(c *context.APIContext) {
 		FullName      string `json:"full_name"`
 		Website       string `json:"website"`
 		Location      string `json:"location"`
-		Activated     bool   `json:"activated"`
-		Admin         bool   `json:"admin"`
-		ProhibitLogin bool   `json:"prohibit_login"`
+		Activated        bool   `json:"activated"`
+		Admin            bool   `json:"admin"`
+		ProhibitLogin    bool   `json:"prohibit_login"`
+		AllowGitHook     bool   `json:"allow_git_hook"`
+		AllowImportLocal bool   `json:"allow_import_local"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -240,13 +242,15 @@ func CreateAdminUser(c *context.APIContext) {
 	}
 
 	user, err := database.Handle.Users().Create(c.Req.Context(), f.Username, f.Email, database.CreateUserOptions{
-		Password:      f.Password,
-		FullName:      f.FullName,
-		Website:       f.Website,
-		Location:      f.Location,
-		Activated:     f.Activated,
-		Admin:         f.Admin,
-		ProhibitLogin: f.ProhibitLogin,
+		Password:         f.Password,
+		FullName:         f.FullName,
+		Website:          f.Website,
+		Location:         f.Location,
+		Activated:        f.Activated,
+		Admin:            f.Admin,
+		ProhibitLogin:    f.ProhibitLogin,
+		AllowGitHook:     f.AllowGitHook,
+		AllowImportLocal: f.AllowImportLocal,
 	})
 	if err != nil {
 		c.Error(err, "create user")
@@ -365,9 +369,11 @@ func UpdateAdminUser(c *context.APIContext) {
 		Website         *string `json:"website"`
 		Location        *string `json:"location"`
 		MaxRepoCreation *int    `json:"max_repo_creation"`
-		IsActivated     *bool   `json:"activated"`
-		IsAdmin         *bool   `json:"admin"`
-		ProhibitLogin   *bool   `json:"prohibit_login"`
+		IsActivated      *bool   `json:"activated"`
+		IsAdmin          *bool   `json:"admin"`
+		ProhibitLogin    *bool   `json:"prohibit_login"`
+		AllowGitHook     *bool   `json:"allow_git_hook"`
+		AllowImportLocal *bool   `json:"allow_import_local"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -375,13 +381,15 @@ func UpdateAdminUser(c *context.APIContext) {
 	}
 
 	opts := database.UpdateUserOptions{
-		FullName:        f.FullName,
-		Website:         f.Website,
-		Location:        f.Location,
-		MaxRepoCreation: f.MaxRepoCreation,
-		IsActivated:     f.IsActivated,
-		IsAdmin:         f.IsAdmin,
-		ProhibitLogin:   f.ProhibitLogin,
+		FullName:         f.FullName,
+		Website:          f.Website,
+		Location:         f.Location,
+		MaxRepoCreation:  f.MaxRepoCreation,
+		IsActivated:      f.IsActivated,
+		IsAdmin:          f.IsAdmin,
+		ProhibitLogin:    f.ProhibitLogin,
+		AllowGitHook:     f.AllowGitHook,
+		AllowImportLocal: f.AllowImportLocal,
 	}
 
 	if err := database.Handle.Users().Update(c.Req.Context(), userID, opts); err != nil {

@@ -20,6 +20,10 @@ func ToUserResponse(u *database.User) *types.UserResponse {
 		AvatarURL:       u.AvatarURL(),
 		IsAdmin:         u.IsAdmin,
 		DisableNewsFeed: u.DisableNewsFeed,
+		ProhibitLogin:    u.ProhibitLogin,
+		AllowGitHook:     u.AllowGitHook,
+		AllowImportLocal: u.AllowImportLocal,
+		MaxRepoCreation:  u.MaxRepoCreation,
 		CreatedAt:       time.Unix(u.CreatedUnix, 0),
 	}
 }

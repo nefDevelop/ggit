@@ -250,9 +250,11 @@ type CreateUserOptions struct {
 	LoginName     string
 	Location      string
 	Website       string
-	Activated     bool
-	Admin         bool
-	ProhibitLogin bool
+	Activated        bool
+	Admin            bool
+	ProhibitLogin    bool
+	AllowGitHook     bool
+	AllowImportLocal bool
 }
 
 type ErrUserAlreadyExist struct {
@@ -341,8 +343,11 @@ func (s *UsersStore) Create(ctx context.Context, username, email string, opts Cr
 		Location:        opts.Location,
 		Website:         opts.Website,
 		MaxRepoCreation: -1,
-		IsActive:        isActivated,
-		IsAdmin:         isAdmin,
+		IsActive:         isActivated,
+		IsAdmin:          isAdmin,
+		AllowGitHook:     opts.AllowGitHook,
+		AllowImportLocal: opts.AllowImportLocal,
+		ProhibitLogin:    opts.ProhibitLogin,
 		Avatar:          "",
 		AvatarEmail:     email,
 	}

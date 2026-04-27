@@ -24,6 +24,9 @@
     activated: true,
     admin: false,
     prohibit_login: false,
+    allow_git_hook: false,
+    allow_import_local: false,
+    password: "",
   });
 
   let loading = $state(false);
@@ -47,6 +50,8 @@
           activated: data.is_activated,
           admin: data.is_admin,
           prohibit_login: data.prohibit_login || false,
+          allow_git_hook: data.allow_git_hook || false,
+          allow_import_local: data.allow_import_local || false,
           password: "", 
         };
       }
@@ -186,6 +191,22 @@
               <div class="check-info">
                 <span class="label">{i18n.t('admin.prohibit_login')}</span>
                 <span class="desc">Bloquear el acceso a este usuario.</span>
+              </div>
+            </label>
+
+            <label class="premium-checkbox" class:checked={user.allow_git_hook}>
+              <input type="checkbox" bind:checked={user.allow_git_hook} />
+              <div class="check-info">
+                <span class="label">Permitir Git Hooks</span>
+                <span class="desc">El usuario podrá gestionar scripts de servidor.</span>
+              </div>
+            </label>
+
+            <label class="premium-checkbox" class:checked={user.allow_import_local}>
+              <input type="checkbox" bind:checked={user.allow_import_local} />
+              <div class="check-info">
+                <span class="label">Importación Local</span>
+                <span class="desc">Permitir migrar repositorios desde el disco local.</span>
               </div>
             </label>
           </div>

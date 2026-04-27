@@ -13,11 +13,16 @@ type UserResponse struct {
 	Username        string `json:"username"`
 	FullName        string `json:"full_name"`
 	Email           string `json:"email"`
-	AvatarURL       string `json:"avatar_url"`
-	IsAdmin         bool   `json:"is_admin"`
-	DisableNewsFeed bool   `json:"disable_news_feed"`
+	AvatarURL       string    `json:"avatar_url"`
+	IsAdmin         bool      `json:"is_admin"`
+	DisableNewsFeed bool      `json:"disable_news_feed"`
+	ProhibitLogin    bool      `json:"prohibit_login"`
+	AllowGitHook     bool      `json:"allow_git_hook"`
+	AllowImportLocal bool      `json:"allow_import_local"`
+	MaxRepoCreation  int       `json:"max_repo_creation"`
 	CreatedAt       time.Time `json:"created_at"`
-}
+	}
+
 
 // UserEmailResponse represents an email address of a user.
 type UserEmailResponse struct {
