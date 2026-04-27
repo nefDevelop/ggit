@@ -76,7 +76,7 @@
   });
 </script>
 
-<div class="dashboard-layout" class:has-sidebar={data.organizations.length > 0}>
+<div class="dashboard-layout" class:has-sidebar={data.organizations.length > 0 && !authState.user?.disable_news_feed}>
     <div class="dashboard-main-content">
         <ViewHeader 
             bind:activeTab={viewMode}
@@ -128,7 +128,7 @@
         </div>
     </div>
 
-    {#if data.organizations.length > 0}
+    {#if data.organizations.length > 0 && !authState.user?.disable_news_feed}
         <aside class="dashboard-sidebar">
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
