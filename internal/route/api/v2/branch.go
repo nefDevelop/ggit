@@ -137,6 +137,83 @@ func CreateRepoBranch(c *context.APIContext) {
 
 	c.JSON(http.StatusCreated, map[string]any{
 		"status": "ok",
-		"name": f.NewRefName,
+		"name":   f.NewRefName,
 	})
+}
+
+// GetBranchProtection returns protection rules for a branch.
+func GetBranchProtection(c *context.APIContext) {
+	branchName := c.Params("branch")
+	pb, err := database.GetProtectBranchOfRepoByName(c.Repo.Repository.ID, branchName)
+	if err != nil {
+		if database.IsErrBranchNotExist(err) {
+			c.JSON(http.StatusOK, map[string]any{"protected": false})
+		} else {
+			c.Error(err, "get protect branch")
+		}
+		return
+	}
+	c.JSON(http.StatusOK, pb)
+}
+
+// UpdateBranchProtection updates protection rules for a branch.
+func UpdateBranchProtection(c *context.APIContext) {
+	branchName := c.Params("branch")
+	var f struct {
+		Protected              bool   `json:"protected"`
+		RequirePullRequest     bool   `json:"require_pull_request"`
+		EnableWhitelist        bool   `json:"enable_whitelist"`
+		WhitelistUserIDs       string `json:"whitelist_user_ids"`
+		WhitelistTeamIDs       string `json:"whitelist_team_ids"`
+		RequiredApprovals      int    `json:"required_approvals"`
+		EnableMergeWhitelist   bool   `json:"enable_merge_whitelist"`
+		MergeWhitelistUserIDs  string `json:"merge_whitelist_user_ids"`
+		MergeWhitelistTeamIDs  string `json:"merge_whitelist_team_ids"`
+		BlockOnOutdatedBranch bool   `json:"block_on_outdated_branch"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	pb, err := database.GetProtectBranchOfRepoByName(c.Repo.Repository.ID, branchName)
+	if err != nil && !database.IsErrBranchNotExist(err) {
+		c.Error(err, "get protect branch")
+		return
+	}
+
+	if pb == nil {
+		pb = &database.ProtectBranch{
+			RepoID: c.Repo.Repository.ID,
+			Name:   branchName,
+		}
+	}
+
+	pb.Protected = f.Protected
+	pb.RequirePullRequest = f.RequirePullRequest
+	pb.EnableWhitelist = f.EnableWhitelist
+	pb.WhitelistUserIDs = f.WhitelistUserIDs
+	pb.WhitelistTeamIDs = f.WhitelistTeamIDs
+	pb.RequiredApprovals = f.RequiredApprovals
+	pb.EnableMergeWhitelist = f.EnableMergeWhitelist
+	pb.MergeWhitelistUserIDs = f.MergeWhitelistUserIDs
+	pb.MergeWhitelistTeamIDs = f.MergeWhitelistTeamIDs
+	pb.BlockOnOutdatedBranch = f.BlockOnOutdatedBranch
+
+	if err := database.UpdateProtectBranch(pb); err != nil {
+		c.Error(err, "update protect branch")
+		return
+	}
+
+	c.JSON(http.StatusOK, pb)
+}
+
+// DeleteBranchProtection deletes protection rules for a branch.
+func DeleteBranchProtection(c *context.APIContext) {
+	branchName := c.Params("branch")
+	if err := database.DeleteProtectBranch(c.Repo.Repository.ID, branchName); err != nil {
+		c.Error(err, "delete protect branch")
+		return
+	}
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }

@@ -109,6 +109,12 @@ type ProtectBranch struct {
 	EnableWhitelist    bool
 	WhitelistUserIDs   string `gorm:"type:TEXT"`
 	WhitelistTeamIDs   string `gorm:"type:TEXT"`
+
+	RequiredApprovals      int
+	EnableMergeWhitelist   bool
+	MergeWhitelistUserIDs  string `gorm:"type:TEXT"`
+	MergeWhitelistTeamIDs  string `gorm:"type:TEXT"`
+	BlockOnOutdatedBranch bool
 }
 
 // GetProtectBranchOfRepoByName returns *ProtectBranch by branch name in given repository.
@@ -131,6 +137,11 @@ func IsBranchOfRepoRequirePullRequest(repoID int64, name string) bool {
 		return false
 	}
 	return protectBranch.Protected && protectBranch.RequirePullRequest
+}
+
+// DeleteProtectBranch deletes branch protection options.
+func DeleteProtectBranch(repoID int64, name string) error {
+	return Handle.db.Where("repo_id = ? AND name = ?", repoID, name).Delete(new(ProtectBranch)).Error
 }
 
 // UpdateProtectBranch saves branch protection options.

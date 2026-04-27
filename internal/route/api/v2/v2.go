@@ -65,6 +65,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.DELETE("/sessions", ginx.Handle(DeleteOtherUserLoginSessions))
 			settings.DELETE("/sessions/:id", ginx.Handle(DeleteUserLoginSession))
 
+			settings.GET("/blocks", ginx.Handle(GetBlockedUsers))
+			settings.POST("/blocks/:username", ginx.Handle(BlockUser))
+			settings.DELETE("/blocks/:username", ginx.Handle(UnblockUser))
+
 			settings.POST("/avatar", ginx.Handle(UpdateUserAvatar))
 			settings.POST("/avatar/magic", ginx.Handle(UpdateUserAvatar))
 			settings.DELETE("/avatar", ginx.Handle(DeleteUserAvatar))
@@ -163,6 +167,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			pullGroup.GET("/:index", ginx.Handle(GetPullRequest))
 			pullGroup.GET("/:index/diff", ginx.Handle(GetPullRequestDiff))
 			pullGroup.POST("/:index/merge", ginx.Handle(MergePullRequest))
+			pullGroup.GET("/:index/protection", ginx.Handle(GetPullRequestProtection))
+			pullGroup.GET("/:index/reviews", ginx.Handle(ListPullReviews))
+			pullGroup.POST("/:index/reviews", ginx.Handle(CreatePullReview))
+			pullGroup.POST("/:index/reviews/:id/comments", ginx.Handle(AddPullReviewComment))
 		}
 
 		wikiGroup := repo.Group("/wiki")
@@ -186,6 +194,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/branches", ginx.Handle(ListRepoBranches))
 		repo.POST("/branches", ginx.Handle(CreateRepoBranch))
 		repo.DELETE("/branches/:branch", ginx.Handle(DeleteRepoBranch))
+		repo.GET("/branches/:branch/protection", ginx.Handle(GetBranchProtection))
+		repo.PUT("/branches/:branch/protection", ginx.Handle(UpdateBranchProtection))
+		repo.DELETE("/branches/:branch/protection", ginx.Handle(DeleteBranchProtection))
 
 		repo.GET("/archive/*name", context.RepoRef(), ginx.Handle(GetRepoArchive))
 		repo.GET("/raw/:ref/*path", ginx.Handle(GetRepoRawFile))

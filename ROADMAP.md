@@ -174,12 +174,12 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ---
 
-## Fase 18: Refinado de Gestión y Conectividad Final (EN PROCESO)
+## Fase 18: Refinado de Gestión y Conectividad Final (Completado) ✅
 
 **Objetivo:** Cerrar brechas entre el frontend y el backend, y asegurar que todas las acciones administrativas sean funcionales.
 
-- [ ] **Gestión de Usuarios Bloqueados:**
-  - [ ] Implementar vista en `UserSettings.svelte` para gestionar la lista negra personal.
+- [x] **Gestión de Usuarios Bloqueados:** [COMPLETO]
+  - [x] Implementar vista en `UserSettings.svelte` para gestionar la lista negra personal.
 - [x] **Zona de Peligro (Organizaciones):**
   - [x] Conectar el botón de eliminación en `OrgSettings.svelte` con el endpoint de borrado del backend.
 - [x] **Administración de Organizaciones Glocal:**
@@ -202,7 +202,7 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 ---
 
-## Fase 20: Estabilidad y Estandarización de UI (EN PROCESO)
+## Fase 20: Estabilidad y Estandarización de UI (Completado) 💎
 
 **Objetivo:** Eliminar la deuda técnica visual y asegurar una experiencia de usuario robusta y coherente.
 
@@ -294,23 +294,53 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 **Objetivo:** Asegurar que ninguna funcionalidad útil del Gogs original se haya quedado "huérfana" o incompleta en la migración a Svelte.
 
 ### 1. Auditoría de Paridad (UI Gap Analysis)
-- [x] **Mapeo de Rutas Legacy:** Revisar las antiguas plantillas `.tmpl` de Gogs para identificar opciones de configuración, botones o vistas que falten en el nuevo frontend de Svelte. [COMPLETO]
+- [x] **Mapeo de Rutas Legacy:** Revisar las antiguas plantillas `.tmpl` de Gogs para identificar opciones de configuración faltantes. [COMPLETO]
   - [x] Sincronización de opciones de Repository (Public Wiki/Issues, Manual Merge, Repo Avatar).
   - [x] Sincronización de opciones de User (AvatarEmail, DisableNewsFeed).
-- [x] **Completado de Componentes "Cortos":** Identificar componentes Svelte que están visualmente presentes pero cuyas acciones (botones, formularios) aún no llaman a la API o tienen lógica parcial. [COMPLETO]
+  - [x] Sincronización de opciones de Organization (Private Org, Org Avatar).
+  - [x] Sincronización de opciones de Admin (AllowGitHook, AllowImportLocal en User Editor).
+- [ ] **Funcionalidades de Repositorio "Huérfanas":**
+  - [ ] **Gestión de Colaboradores:** Interfaz para añadir usuarios por nombre y asignar roles.
+  - [ ] **Deploy Keys:** Interfaz para claves SSH exclusivas del repositorio.
+  - [ ] **Server-side Git Hooks:** Editor de scripts para hooks de Git en el servidor.
+  - [ ] **Gestión de Ramas:** Listado de ramas, borrado y selección de rama por defecto.
+  - [x] **Branch Protection:** Configuración de reglas de protección para ramas críticas. [COMPLETO]
+  - [ ] **Mirror Settings:** Configuración de sincronización para repositorios espejo.
+  - [ ] **LFS Management:** Visualización y control de objetos Large File Storage.
+- [ ] **Gestión de Organizaciones Avanzada:**
+  - [ ] **Team Editor:** Interfaz detallada para añadir miembros y repositorios a un equipo.
+  - [ ] **Gestión de Miembros:** Cambiar roles (Propietario vs Miembro) y expulsión masiva.
+- [ ] **Motor de Migración e Importación:**
+  - [ ] **Wizard de Migración:** UI para importar desde GitHub/GitLab/Gitea usando tokens y clones espejo.
+  - [ ] **Importación de Metadatos:** Capacidad de importar Issues y Labels durante la migración inicial.
+- [ ] **UI de Metadatos de Issues:**
+  - [ ] **Label Manager:** Editor de etiquetas dinámico (colores M3).
+  - [ ] **Milestone Planner:** Gestión de hitos y progreso porcentual.
+- [ ] **Integraciones de Webhooks:**
+  - [ ] **Payload Presets:** UI específica para webhooks de Slack, Discord y MS Teams.
+  - [ ] **Webhook Tester:** Botón para disparar eventos de prueba (Test Delivery).
+  - [ ] **Delivery Log:** Historial de envíos con re-intento manual (Redeliver).
+- [x] **Completado de Componentes "Cortos":** Identificar componentes Svelte que están visualmente presentes pero cuya acciones aún no llaman a la API. [COMPLETO]
 
 ### 2. Sincronización API-Frontend
-- [x] **Wiki Externa (Legacy Link):** Reinstaurar la capacidad de redirigir la pestaña Wiki a una URL externa. [COMPLETO - Backend/Frontend]
+- [x] **Wiki Externa (Legacy Link):** Reinstaurar la capacidad de redirigir la pestaña Wiki a una URL externa. [COMPLETO]
 - [ ] **Wiki Onboarding:** Mostrar una guía visual y plantillas sugeridas cuando la carpeta de la wiki (`/docs`) está vacía.
-- [ ] **Soporte _sidebar.md:** Implementar renderizado automático del archivo `_sidebar.md` como menú lateral global si no se detecta configuración vía Frontmatter.
+- [ ] **Soporte _sidebar.md:** Implementar renderizado automático del archivo `_sidebar.md` como menú lateral global.
 - [x] **Consolidación de API v2:** Asegurar que todos los campos de los modelos de base de datos sean editables vía API. [COMPLETO]
-- [x] **Reconexión de Flags de Repositorio:** Verificar que opciones como "Hacer este repositorio privado", "Habilitar Issues", "Habilitar Wiki", etc., funcionen bidireccionalmente entre el backend y los nuevos componentes Svelte. [COMPLETO]
+- [x] **Reconexión de Flags de Repositorio:** Verificar que opciones de visibilidad y módulos funcionen bidireccionalmente. [COMPLETO]
 
 ### 3. Validación de Flujos Completos
+- [ ] **Vistas de Código Avanzadas:**
+  - [ ] **Blame View:** Implementar la vista de autoría línea por línea.
+  - [ ] **Compare & Pull Request Flow:** UI para comparar ramas y previsualizar diffs antes de crear PRs.
+  - [ ] **Historias de Archivo:** Navegación optimizada por el historial de un solo archivo.
+- [ ] **Funcionalidades Sociales & Feed:**
+  - [ ] **RSS/Atom Feeds:** Re-habilitar los endpoints de feed para actividad global y de repo.
+  - [ ] **Buscador Global (Explore):** Filtros avanzados por lenguaje y popularidad.
 - [ ] **Ciclo de Vida de Issues/PRs:** Asegurar que todas las acciones (cerrar, reabrir, etiquetar, asignar) estén operativas al 100% en la nueva interfaz.
-- [x] **Gestión de Sesiones Activas:** Implementar vista para listar y revocar sesiones de usuario (navegadores/dispositivos) desde el panel de seguridad. [COMPLETO]
-- [x] **Danger Zone de Usuario:** Implementar el flujo de borrado permanente de cuenta con confirmación de seguridad. [COMPLETO]
-- [x] **Configuraciones de Seguridad Avanzadas:** Reconectar opciones de borrado de cuenta, cambio de visibilidad y transferencia de propiedad que suelen ser las más delicadas y propensas a quedar "incompletas". [COMPLETO]
+- [x] **Gestión de Sesiones Activas:** Implementar vista para listar y revocar sesiones de usuario (navegadores/dispositivos). [COMPLETO]
+- [x] **Danger Zone de Usuario:** Implementar el flujo de borrado permanente de cuenta. [COMPLETO]
+- [x] **Configuraciones de Seguridad Avanzadas:** Reconectar opciones de borrado de cuenta, visibilidad y transferencia. [COMPLETO]
 
 ---
 
@@ -320,6 +350,55 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 
 - [x] **Gestión de Sesiones (DB Store):** Implementar almacenamiento de sesiones en base de datos para persistencia entre reinicios. [COMPLETO]
 - [x] **Migraciones Atómicas:** Implementar sistema de migraciones v26 para cambios en el esquema de sesiones. [COMPLETO]
-- [ ] **Auditoría de Índices:** Revisar y optimizar los índices de las tablas críticas (UserRepository, Actions, Issues) para mejorar el rendimiento de las consultas.
-- [ ] **Consolidación de Repositorios (Store Pattern):** Unificar todos los accesos a la base de datos bajo el patrón `Store` para facilitar el testing y el mantenimiento.
+- [ ] **Auditoría de Índices:** Revisar y optimizar los índices de las tablas críticas (UserRepository, Actions, Issues).
+- [ ] **Consolidación de Repositorios (Store Pattern):** Unificar todos los accesos a la base de datos bajo el patrón `Store`.
 
+---
+
+## Fase 25: Paridad de Infraestructura y Auth (Final Sync) 🔐
+
+**Objetivo:** Completar las herramientas de administración de bajo nivel y autenticación corporativa.
+
+- [ ] **Gestión de Fuentes de Autenticación:** Interfaz en el panel de administración para añadir/editar LDAP, OAuth2 (GitHub, Google), y PAM.
+- [ ] **Release Assets & Management:**
+  - [ ] **Upload Center:** Interfaz para subir binarios y archivos a cada Release.
+  - [ ] **Release States:** Soporte para estados "Borrador" y "Pre-release".
+- [ ] **Monitorización Administrativa:**
+  - [ ] **Cron Scheduler:** Vista para monitorizar y ejecutar manualmente tareas programadas.
+  - [ ] **Process Tracker:** Listado de procesos Git activos en el servidor para diagnóstico.
+  - [ ] **System Notices:** Centro de avisos globales del sistema para comunicación con usuarios.
+- [ ] **Mantenimiento de Repositorios:** Implementar los botones de "Regenerar hooks" y "Resincronizar llaves" en la administración.
+- [ ] **Branding & Personalización:**
+  - [ ] **Instance Customizer:** UI para subir logotipos, favicon y editar textos del footer.
+  - [ ] **Global Injection:** Editor para CSS y JavaScript personalizado del lado del cliente.
+- [ ] **Red y Seguridad de Bajo Nivel:**
+  - [ ] **SSH Embedded Server:** Configuración de interfaz, puerto y llaves del servidor SSH.
+  - [ ] **Reverse Proxy Config:** Gestión de Trusted Proxies y detección de IPs reales.
+- [ ] **Ajustes Globales Dinámicos:** Permitir que los ajustes de `app.ini` editables vía UI se apliquen en caliente o notifiquen reinicio.
+- [ ] **Exportación de Datos:** Botón para generar un backup portable de un repositorio o una organización completa.
+
+---
+
+## Fase 21: Robustez y Ecosistema (Siguiente Nivel) 🚀
+
+**Objetivo:** Convertir Ggit en una plataforma de desarrollo profesional completa.
+
+### 1. Code Review & Branch Protection
+- [x] **Protección de Ramas:** Implementar reglas para evitar pushes directos a `main/master` y requerir PRs. [COMPLETO]
+- [x] **Review Workflow:** Sistema de aprobaciones (Approve/Request Changes) en Pull Requests. [COMPLETO]
+- [x] **Comentarios en Línea:** Capacidad de comentar directamente en el diff del código. [COMPLETO]
+
+### 2. CI/CD & Automatización (Integración Woodpecker/Drone)
+- [ ] **Commit Status API:** Modelo DB y API para reportar resultados de CI (iconos ✅/❌ en el UI).
+- [ ] **OAuth2 Provider:** Implementar flujo OIDC para que el CI pueda autenticar usuarios vía `ggit`.
+- [ ] **Webhooks Seguros:** Firma de payloads mediante HMAC-SHA256.
+
+---
+
+## Fase 22: Integridad y Autocuración 🛡️
+
+**Objetivo:** Garantizar que los datos del servidor y el disco estén siempre sincronizados.
+
+- [ ] **Background FS Check:** Tarea programada que valida que cada registro en la DB tenga su correspondiente carpeta `.git` en disco.
+- [ ] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes al detectar un acceso al repositorio.
+- [ ] **Dangling Objects Cleanup:** Identificar y limpiar archivos de base de datos vinculados a repositorios borrados por errores de sistema.

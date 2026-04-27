@@ -8,14 +8,27 @@
     Layers,
     FileText,
     Settings,
+    MessageSquarePlus
   } from "lucide-svelte";
+  import ReviewCommentComposer from "./ReviewCommentComposer.svelte";
+  import MarkdownRenderer from "./ui/MarkdownRenderer.svelte";
 
-  let { diff } = $props<{ diff: any }>();
+  let { diff, allowComments = false, comments = [], onAddComment } = $props<{ 
+    diff: any, 
+    allowComments?: boolean, 
+    comments?: any[],
+    onAddComment?: (file: string, line: number, content: string) => void
+  }>();
 
   let collapsedFiles = $state<Record<string, boolean>>({});
+  let activeComposer = $state<{ file: string, line: number } | null>(null);
 
   function toggleFile(name: string) {
     collapsedFiles[name] = !collapsedFiles[name];
+  }
+
+  function getLineComments(fileName: string, lineNum: number) {
+    return comments.filter(c => c.tree_path === fileName && c.line === lineNum);
   }
 
   const getLineClass = (type: number) => {
@@ -89,17 +102,53 @@
             {#each file.Sections as section}
               <div class="diff-section">
                 {#each section.Lines as line}
-                  <div class="diff-line {getLineClass(line.Type)}">
-                    <div class="line-num line-num-left">
-                      {line.LeftLine || ""}
+                  <div class="diff-line-wrapper">
+                    <div class="diff-line {getLineClass(line.Type)}">
+                      <div class="line-num line-num-left">
+                        {line.LeftLine || ""}
+                      </div>
+                      <div class="line-num line-num-right">
+                        {#if allowComments && line.RightLine}
+                          <button 
+                            class="add-comment-btn" 
+                            onclick={() => activeComposer = { file: file.Name, line: line.RightLine }}
+                          >
+                            <MessageSquarePlus size={14} />
+                          </button>
+                        {/if}
+                        {line.RightLine || ""}
+                      </div>
+                      <div class="line-sign">{getLineSign(line.Type)}</div>
+                      <div class="line-code">
+                        <pre><code>{line.Content}</code></pre>
+                      </div>
                     </div>
-                    <div class="line-num line-num-right">
-                      {line.RightLine || ""}
-                    </div>
-                    <div class="line-sign">{getLineSign(line.Type)}</div>
-                    <div class="line-code">
-                      <pre><code>{line.Content}</code></pre>
-                    </div>
+
+                    <!-- Existing Comments -->
+                    {#if line.RightLine}
+                      {#each getLineComments(file.Name, line.RightLine) as comment}
+                        <div class="inline-comment-box tonal">
+                          <header class="comment-header">
+                             <strong>{comment.reviewer?.username || 'Usuario'}</strong>
+                             <span class="time">{new Date(comment.created_at || Date.now()).toLocaleTimeString()}</span>
+                          </header>
+                          <div class="comment-body">
+                             <MarkdownRenderer content={comment.content} />
+                          </div>
+                        </div>
+                      {/each}
+                    {/if}
+
+                    <!-- New Comment Composer -->
+                    {#if activeComposer?.file === file.Name && activeComposer?.line === line.RightLine}
+                      <ReviewCommentComposer 
+                        onSave={(content) => {
+                          onAddComment?.(file.Name, line.RightLine, content);
+                          activeComposer = null;
+                        }}
+                        onCancel={() => activeComposer = null}
+                      />
+                    {/if}
                   </div>
                 {/each}
               </div>
@@ -250,6 +299,63 @@
 
   .line-code pre {
     margin: 0;
+  }
+
+  .diff-line-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .line-num-right {
+    position: relative;
+  }
+
+  .add-comment-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) translateX(50%);
+    z-index: 10;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .diff-line:hover .add-comment-btn {
+    opacity: 1;
+  }
+
+  .inline-comment-box {
+    margin: 0.5rem 1rem 0.5rem 60px;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-surface-container);
+  }
+
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .comment-header strong {
+    color: var(--primary-color);
+  }
+
+  .comment-header .time {
+    color: var(--text-muted);
+    font-size: 0.75rem;
   }
 
   /* Colors */

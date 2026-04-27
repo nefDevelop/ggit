@@ -6,6 +6,7 @@
   import SettingsKeys from "./SettingsKeys.svelte";
   import SettingsTokens from "./SettingsTokens.svelte";
   import SettingsSessions from "./SettingsSessions.svelte";
+  import SettingsBlockedUsers from "./SettingsBlockedUsers.svelte";
   import SettingsRepositories from "./SettingsRepositories.svelte";
   import SettingsOrganizations from "./SettingsOrganizations.svelte";
   import SettingsMyGgit from "./SettingsMyGgit.svelte";
@@ -27,6 +28,7 @@
     { id: "emails", label: i18n.t("settings.emails"), icon: "mail" },
     { id: "security", label: i18n.t("settings.security"), icon: "security" },
     { id: "sessions", label: "Sesiones", icon: "devices" },
+    { id: "blocks", label: "Bloqueos", icon: "person_off" },
     { id: "keys", label: i18n.t("settings.ssh_keys"), icon: "key" },
     { id: "tokens", label: i18n.t("settings.access_tokens"), icon: "token" },
     { id: "repos", label: i18n.t("settings.repositories"), icon: "book" },
@@ -59,6 +61,8 @@
       <SettingsSecurity />
     {:else if activeTab === "sessions"}
       <SettingsSessions />
+    {:else if activeTab === "blocks"}
+      <SettingsBlockedUsers />
     {:else if activeTab === "keys"}
       <SettingsKeys />
     {:else if activeTab === "tokens"}

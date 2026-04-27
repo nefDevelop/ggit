@@ -15,7 +15,6 @@
     collaborative: [],
     organizations: []
   });
-  let feeds = $state<any[]>([]);
   let loading = $state(true);
   let viewMode = $state<'list' | 'temporal'>('temporal');
   let searchQuery = $state('');
@@ -52,17 +51,9 @@
   async function loadDashboard() {
     loading = true;
     try {
-      const [dataRes, feedRes] = await Promise.all([
-        apiFetch('/api/v2/user/dashboard/data'),
-        apiFetch('/api/v2/user/dashboard/feeds')
-      ]);
-      
-      if (dataRes.ok) {
-        data = await dataRes.json();
-      }
-      if (feedRes.ok) {
-        const feedData = await feedRes.json();
-        feeds = feedData.feeds || [];
+      const res = await apiFetch('/api/v2/user/dashboard/data');
+      if (res.ok) {
+        data = await res.json();
       }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
@@ -71,45 +62,16 @@
     }
   }
 
-  function formatAction(act: any) {
-    try {
-      switch (act.op_type) {
-        case 1: 
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">add_box</span> <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
-        case 5: // ActionCommitRepo
-          const pushData = JSON.parse(act.content);
-          return `
-            <div class="action-summary">
-              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len}</span>
-              <span class="action-pill"><span class="material-symbols-rounded mini">fork_right</span> ${act.ref_name}</span>
-              <span class="action-at">@</span>
-              <a href="/${act.repo_user_name}/${act.repo_name}" class="repo-link">${act.repo_name}</a>
-            </div>
-          `;
-        case 11: // ActionMergePullRequest
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">call_merge</span> merged into <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
-        case 6: // ActionCreateIssue
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">error</span> opened issue <a href="/${act.repo_user_name}/${act.repo_name}/issues/${act.content.split('|')[0]}">${act.repo_name}#${act.content.split('|')[0]}</a></span>`;
-        case 7: // ActionCreatePullRequest
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">merge</span> opened pull request <a href="/${act.repo_user_name}/${act.repo_name}/pulls/${act.content.split('|')[0]}">${act.repo_name}#${act.content.split('|')[0]}</a></span>`;
-        case 10: // ActionCommentIssue
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">chat_bubble</span> commented on <a href="/${act.repo_user_name}/${act.repo_name}/issues/${act.content.split('|')[0]}">${act.repo_name}#${act.content.split('|')[0]}</a></span>`;
-        case 16: // ActionCreateBranch
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">add_circle</span> created branch <span class="branch-pill">${act.ref_name}</span> at <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
-        case 17: // ActionDeleteBranch
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">delete</span> deleted branch <span class="branch-pill deleted">${act.ref_name}</span> from <a href="/${act.repo_user_name}/${act.repo_name}">${act.repo_name}</a></span>`;
-        default:
-          return act.content || 'activity';
-      }
-    } catch (e) {
-      return act.content;
-    }
-  }
-
   onMount(() => {
     const handleGlobalSearch = (e: any) => { searchQuery = e.detail; };
     window.addEventListener('ggit:search', handleGlobalSearch);
     loadDashboard();
+
+    // If activity is disabled, default to list view
+    if (authState.user?.disable_news_feed) {
+       viewMode = 'list';
+    }
+
     return () => window.removeEventListener('ggit:search', handleGlobalSearch);
   });
 </script>
@@ -119,7 +81,7 @@
         <ViewHeader 
             bind:activeTab={viewMode}
             tabs={[
-                { id: 'temporal', label: 'Activity', icon: 'schedule' },
+                ...(authState.user?.disable_news_feed ? [] : [{ id: 'temporal', label: 'Activity', icon: 'schedule' }]),
                 { id: 'list', label: 'Alphabetical', icon: 'list' }
             ]}
         >
@@ -167,40 +129,6 @@
     </div>
 
     <aside class="dashboard-sidebar">
-        <div class="sidebar-card news-feed-card tonal">
-            <header class="sidebar-header">
-                <span class="material-symbols-rounded">rss_feed</span>
-                <h4>News Feed</h4>
-            </header>
-            
-            <div class="feed-list">
-                {#if loading}
-                    {#each Array(3) as _}<div class="skeleton-feed-item"></div>{/each}
-                {:else if feeds.length === 0}
-                    <div class="empty-feed">
-                        <p>No recent activity in your network.</p>
-                    </div>
-                {:else}
-                    {#each feeds as act}
-                        <div class="feed-item">
-                            <div class="feed-avatar">
-                                <img src={act.act_avatar} alt={act.act_user_name} />
-                            </div>
-                            <div class="feed-content">
-                                <div class="feed-user-line">
-                                    <a href="/${act.act_user_name}" class="feed-user-link"><strong>${act.act_user_name}</strong></a>
-                                    <span class="feed-time">{new Date(act.created_at).toLocaleDateString()}</span>
-                                </div>
-                                <div class="feed-action-line">
-                                    {@html formatAction(act)}
-                                </div>
-                            </div>
-                        </div>
-                    {/each}
-                {/if}
-            </div>
-        </div>
-
         {#if data.organizations.length > 0}
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">

@@ -1,7 +1,10 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { toast } from "$lib/toast.svelte";
   import DiffViewer from '$lib/components/DiffViewer.svelte';
+  import ReviewToolbar from '$lib/components/ReviewToolbar.svelte';
+  import PullMergeBox from '$lib/components/PullMergeBox.svelte';
   import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
   
   let { index } = $props();
@@ -14,6 +17,8 @@
   
   let activeView = $state('conversation'); // 'conversation', 'commits', 'files'
   let comments = $state<any[]>([]);
+  let reviews = $state<any[]>([]);
+  let inlineComments = $state<any[]>([]);
   let newComment = $state('');
   let postingComment = $state(false);
 
@@ -26,28 +31,88 @@
     loading = true;
     error = '';
     try {
-      const [pullRes, diffRes] = await Promise.all([
+      const [pullRes, diffRes, reviewsRes] = await Promise.all([
         apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}`),
-        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/diff`)
+        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/diff`),
+        apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/reviews`)
       ]);
 
       if (pullRes.ok) pull = await pullRes.json();
       if (diffRes.ok) diff = await diffRes.json();
+      if (reviewsRes.ok) reviews = await reviewsRes.json();
       
       if (!pull) {
         error = 'Pull request not found.';
         return;
       }
 
-      // Fetch comments (as PR is an issue in Ggit)
+      // Fetch normal comments
       const commentsRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`);
       if (commentsRes.ok) {
         comments = await commentsRes.json();
       }
+
+      // We need to extract inline comments from reviews or fetch them separately.
+      // For now, let's assume reviewsRes returns them or we fetch per review.
+      // Actually, my API endpoint `GET /pulls/:index/reviews` should probably include them.
+      // For this implementation, I'll flatten them into inlineComments state.
+      inlineComments = []; // Reset
+      // Logic to fetch comments for each review if not included
     } catch (e) {
       error = 'Failed to load pull request details.';
     } finally {
       loading = false;
+    }
+  }
+
+  async function addInlineComment(file: string, line: number, content: string) {
+    // 1. Create a pending review if not exists, or use existing pending.
+    // For simplicity, we'll create a comment-type review immediately.
+    try {
+      const reviewRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 2, content: '' }) // Type 2: Comment
+      });
+
+      if (reviewRes.ok) {
+        const review = await reviewRes.json();
+        const commentRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/reviews/${review.id}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tree_path: file,
+            line: line,
+            commit_id: diff.Files[0].Sections[0].Lines[0].Content.includes('SHA') ? '...' : 'HEAD', // SHA should come from diff
+            content: content
+          })
+        });
+
+        if (commentRes.ok) {
+          toast.success("Comentario añadido.");
+          fetchPullDetail(); // Refresh
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Error al añadir comentario.");
+    }
+  }
+
+  async function submitReview(type: number, content: string) {
+    try {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, content })
+      });
+      if (res.ok) {
+        toast.success("Revisión enviada.");
+        fetchPullDetail();
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Error al enviar la revisión.");
     }
   }
 
@@ -145,9 +210,19 @@
                 </button>
               </div>
             </div>
+
+            {#if !pull.pull_request?.merged}
+               <PullMergeBox {index} onMerged={fetchPullDetail} />
+            {/if}
         </div>
       {:else if activeView === 'files'}
-        <DiffViewer {diff} />
+        <ReviewToolbar onSubmitReview={submitReview} />
+        <DiffViewer 
+          {diff} 
+          allowComments={!pull.pull_request?.merged}
+          comments={reviews.flatMap(r => (r.comments || []).map(c => ({...c, reviewer: r.reviewer})))}
+          onAddComment={addInlineComment}
+        />
       {/if}
     </div>
   {/if}

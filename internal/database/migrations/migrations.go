@@ -67,6 +67,10 @@ var migrations = []Migration{
 	NewMigration("add num_commits and num_branches to repository table", addNumCommitsAndBranchesToRepository),
 	// v25 -> v26:v0.13.0
 	NewMigration("create login_session table", createLoginSessionTable),
+	// v26 -> v27:v0.13.0
+	NewMigration("add branch protection and reviews", addBranchProtectionAndReviews),
+	// v27 -> v28:v0.13.0
+	NewMigration("create user_block table", createUserBlockTable),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")

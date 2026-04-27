@@ -233,3 +233,15 @@ func (db *DB) TwoFactors() *TwoFactorsStore {
 func (db *DB) Users() *UsersStore {
 	return newUsersStore(db.db)
 }
+
+func (db *DB) PullReviews() *PullReviewsStore {
+	return newPullReviewsStore(db.db)
+}
+
+func (db *DB) PullReviewComments() *PullReviewCommentsStore {
+	return newPullReviewCommentsStore(db.db)
+}
+
+func (db *DB) UserBlocks() *UserBlocksStore {
+	return newUserBlocksStore(db.db)
+}

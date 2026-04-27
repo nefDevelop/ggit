@@ -740,3 +740,52 @@ func DeleteUserLoginSession(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
+
+// GetBlockedUsers returns a list of users blocked by the current user.
+func GetBlockedUsers(c *context.APIContext) {
+	users, err := database.Handle.UserBlocks().ListByUserID(c.Req.Context(), c.User.ID)
+	if err != nil {
+		c.Error(err, "list blocked users")
+		return
+	}
+
+	res := make([]*apiv2types.UserResponse, len(users))
+	for i, u := range users {
+		res[i] = u.APIFormat()
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+// BlockUser blocks a user.
+func BlockUser(c *context.APIContext) {
+	username := c.Params("username")
+	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	if err != nil {
+		c.NotFoundOrError(err, "get user")
+		return
+	}
+
+	if err := database.Handle.UserBlocks().Block(c.Req.Context(), c.User.ID, user.ID); err != nil {
+		c.Error(err, "block user")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// UnblockUser unblocks a user.
+func UnblockUser(c *context.APIContext) {
+	username := c.Params("username")
+	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	if err != nil {
+		c.NotFoundOrError(err, "get user")
+		return
+	}
+
+	if err := database.Handle.UserBlocks().Unblock(c.Req.Context(), c.User.ID, user.ID); err != nil {
+		c.Error(err, "unblock user")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}

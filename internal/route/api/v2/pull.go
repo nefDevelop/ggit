@@ -97,6 +97,11 @@ func MergePullRequest(c *context.APIContext) {
 		return
 	}
 
+	if err = issue.PullRequest.CheckBranchProtection(c.Req.Context(), c.User); err != nil {
+		c.StatusError(http.StatusForbidden, err.Error(), err)
+		return
+	}
+
 	if err = issue.PullRequest.Merge(c.User, c.Repo.GitRepo, database.MergeStyleRegular, ""); err != nil {
 		c.Error(err, "merge pull request")
 		return
@@ -231,4 +236,145 @@ func CreatePullRequest(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusCreated, pullIssue)
+}
+
+// ListPullReviews returns all reviews for a pull request.
+func ListPullReviews(c *context.APIContext) {
+	idx := c.ParamsInt64("index")
+	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, idx)
+	if err != nil {
+		c.NotFoundOrError(err, "get issue")
+		return
+	}
+
+	reviews, err := database.Handle.PullReviews().ListByIssueID(c.Req.Context(), issue.ID)
+	if err != nil {
+		c.Error(err, "list reviews")
+		return
+	}
+
+	// We should probably load reviewers too.
+	for _, r := range reviews {
+		r.Reviewer, _ = database.Handle.Users().GetByID(c.Req.Context(), r.ReviewerID)
+		r.Comments, _ = database.Handle.PullReviewComments().ListByReviewID(c.Req.Context(), r.ID)
+	}
+
+	c.JSON(http.StatusOK, reviews)
+}
+
+// CreatePullReview creates a new review for a pull request.
+func CreatePullReview(c *context.APIContext) {
+	idx := c.ParamsInt64("index")
+	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, idx)
+	if err != nil {
+		c.NotFoundOrError(err, "get issue")
+		return
+	}
+
+	var f struct {
+		Type    int    `json:"type" binding:"required"` // 1: Approve, 2: Comment, 3: Reject
+		Content string `json:"content"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	review := &database.PullReview{
+		Type:       database.PullReviewType(f.Type),
+		ReviewerID: c.User.ID,
+		IssueID:    issue.ID,
+		Content:    f.Content,
+	}
+
+	if err := database.Handle.PullReviews().Create(c.Req.Context(), review); err != nil {
+		c.Error(err, "create review")
+		return
+	}
+
+	c.JSON(http.StatusCreated, review)
+}
+
+// AddPullReviewComment adds an inline comment to a review.
+func AddPullReviewComment(c *context.APIContext) {
+	idx := c.ParamsInt64("index")
+	reviewID := c.ParamsInt64("id")
+
+	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, idx)
+	if err != nil {
+		c.NotFoundOrError(err, "get issue")
+		return
+	}
+
+	var f struct {
+		TreePath string `json:"tree_path" binding:"required"`
+		Line     int64  `json:"line"`
+		CommitID string `json:"commit_id" binding:"required"`
+		Content  string `json:"content" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	comment := &database.PullReviewComment{
+		ReviewID: reviewID,
+		IssueID:  issue.ID,
+		TreePath: f.TreePath,
+		Line:     f.Line,
+		CommitID: f.CommitID,
+		Content:  f.Content,
+	}
+
+	if err := database.Handle.PullReviewComments().Create(c.Req.Context(), comment); err != nil {
+		c.Error(err, "create review comment")
+		return
+	}
+
+	c.JSON(http.StatusCreated, comment)
+}
+
+// GetPullRequestProtection returns the branch protection status for a pull request.
+func GetPullRequestProtection(c *context.APIContext) {
+	idx := c.ParamsInt64("index")
+	issue, err := database.GetIssueByIndex(c.Repo.Repository.ID, idx)
+	if err != nil {
+		c.NotFoundOrError(err, "get issue")
+		return
+	}
+
+	if !issue.IsPull {
+		c.NotFound()
+		return
+	}
+
+	if err = issue.LoadAttributes(); err != nil {
+		c.Error(err, "load attributes")
+		return
+	}
+
+	pb, err := database.GetProtectBranchOfRepoByName(issue.Repo.ID, issue.PullRequest.BaseBranch)
+	if err != nil && !database.IsErrBranchNotExist(err) {
+		c.Error(err, "get protect branch")
+		return
+	}
+
+	stats, err := database.Handle.PullReviews().GetReviewStatsByIssueID(c.Req.Context(), issue.ID)
+	if err != nil {
+		c.Error(err, "get review stats")
+		return
+	}
+
+	requiredApprovals := 0
+	if pb != nil && pb.Protected {
+		requiredApprovals = pb.RequiredApprovals
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"required_approvals": requiredApprovals,
+		"approvals":          stats.Approvals,
+		"rejections":         stats.Rejections,
+		"is_protected":       pb != nil && pb.Protected,
+		"mergeable":          stats.Rejections == 0 && stats.Approvals >= requiredApprovals,
+	})
 }

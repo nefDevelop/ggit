@@ -288,7 +288,7 @@
 
             <div class="field full-width">
               <Checkbox 
-                label="Ocultar feed de noticias" 
+                label="Ocultar actividad reciente" 
                 description="No mostrar actividades en tu panel de control."
                 bind:checked={profile.disable_news_feed}
               />
