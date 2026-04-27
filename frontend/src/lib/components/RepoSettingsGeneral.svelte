@@ -7,11 +7,13 @@
   import { RepositorySchema } from "$lib/schemas";
   import Checkbox from "./ui/Checkbox.svelte";
   import Input from "./ui/Input.svelte";
+  import Avatar from "./Avatar.svelte";
 
   const repo: any = getContext("repo");
   let settings = $state<any>({});
   let loading = $state(true);
   let saving = $state(false);
+  let avatarUploading = $state(false);
   let deleteConfirm = $state("");
   let errors = $state<Record<string, string>>({});
 
@@ -26,6 +28,53 @@
       console.error(e);
     } finally {
       loading = false;
+    }
+  }
+
+  async function updateAvatar(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (!target.files?.length) return;
+
+    avatarUploading = true;
+    const formData = new FormData();
+    formData.append("avatar", target.files[0]);
+
+    try {
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+      if (res.ok) {
+        toast.success("Avatar updated successfully!");
+        fetchSettings();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      avatarUploading = false;
+    }
+  }
+
+  async function deleteAvatar() {
+    if (!await dialog.confirm("¿Seguro que quieres eliminar el avatar del repositorio?")) return;
+    
+    avatarUploading = true;
+    try {
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`,
+        { method: "DELETE" },
+      );
+      if (res.ok) {
+        toast.success("Avatar deleted.");
+        fetchSettings();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      avatarUploading = false;
     }
   }
 
@@ -116,6 +165,45 @@
     <div class="skeleton-form"></div>
   {:else}
     <form class="settings-form" onsubmit={(e) => { e.preventDefault(); saveSettings(); }}>
+      <div class="avatar-settings-section">
+        <div class="avatar-preview-wrap">
+          <Avatar 
+            src={settings.avatar_url} 
+            username={settings.name} 
+            seed={settings.id?.toString()} 
+            size={120} 
+          />
+          {#if avatarUploading}
+            <div class="avatar-overlay">
+              <span class="material-symbols-rounded spin">sync</span>
+            </div>
+          {/if}
+        </div>
+        <div class="avatar-actions">
+          <header>
+            <h4>Avatar del Repositorio</h4>
+            <p>Sube una imagen personalizada para este repositorio.</p>
+          </header>
+          <div class="action-buttons">
+            <Button variant="tonal" icon="upload" onclick={() => document.getElementById('repo-avatar-input')?.click()}>
+              Subir Imagen
+            </Button>
+            {#if settings.use_custom_avatar}
+              <Button variant="ghost" icon="delete" class="danger-text" onclick={deleteAvatar}>
+                Eliminar
+              </Button>
+            {/if}
+            <input 
+              type="file" 
+              id="repo-avatar-input" 
+              accept="image/*" 
+              hidden 
+              onchange={updateAvatar} 
+            />
+          </div>
+        </div>
+      </div>
+
       <div class="form-grid">
         <Input 
           label="Repository Name" 
@@ -154,19 +242,9 @@
           bind:checked={settings.private} 
         />
         <Checkbox 
-          label="Issues" 
-          description="Lightweight issue tracking." 
-          bind:checked={settings.enable_issues} 
-        />
-        <Checkbox 
-          label="Pull Requests" 
-          description="Code reviews and merges." 
-          bind:checked={settings.enable_pulls} 
-        />
-        <Checkbox 
-          label="Wiki" 
-          description="Project documentation." 
-          bind:checked={settings.enable_wiki} 
+          label="Unlisted" 
+          description="No aparecerá en la exploración pública." 
+          bind:checked={settings.unlisted} 
         />
         <Checkbox 
           label="Archivar Repositorio" 
@@ -174,6 +252,114 @@
           bind:checked={settings.archived}
           class="archived-item"
         />
+      </div>
+
+      <div class="advanced-section">
+        <header class="section-header-inline">
+          <span class="material-symbols-rounded">description</span>
+          <h4>Configuración de Wiki</h4>
+        </header>
+        <div class="section-content">
+          <Checkbox 
+            label="Habilitar Wiki" 
+            description="Activar documentación del proyecto." 
+            bind:checked={settings.enable_wiki} 
+          />
+          {#if settings.enable_wiki}
+            <div class="nested-options">
+              <Input 
+                label="Nombre de Carpeta Wiki" 
+                bind:value={settings.wiki_folder_name} 
+                placeholder="docs" 
+              />
+              <Checkbox 
+                label="Permitir acceso público" 
+                description="Cualquiera puede ver la wiki, incluso si el repositorio es privado." 
+                bind:checked={settings.allow_public_wiki} 
+              />
+              <Checkbox 
+                label="Wiki Externa" 
+                description="Redirigir a una URL de documentación externa." 
+                bind:checked={settings.enable_external_wiki} 
+              />
+              {#if settings.enable_external_wiki}
+                <Input 
+                  label="URL de Wiki Externa" 
+                  bind:value={settings.external_wiki_url} 
+                  placeholder="https://docs.example.com" 
+                />
+              {/if}
+            </div>
+          {/if}
+        </div>
+      </div>
+
+      <div class="advanced-section">
+        <header class="section-header-inline">
+          <span class="material-symbols-rounded">bug_report</span>
+          <h4>Gestión de Issues</h4>
+        </header>
+        <div class="section-content">
+          <Checkbox 
+            label="Habilitar Issues" 
+            description="Seguimiento de tareas integrado." 
+            bind:checked={settings.enable_issues} 
+          />
+          {#if settings.enable_issues}
+            <div class="nested-options">
+              <Checkbox 
+                label="Permitir acceso público" 
+                description="Cualquiera puede ver los issues, incluso si el repositorio es privado." 
+                bind:checked={settings.allow_public_issues} 
+              />
+              <Checkbox 
+                label="Tracker Externo" 
+                description="Usar un sistema de seguimiento de errores externo (Jira, GitHub, etc)." 
+                bind:checked={settings.enable_external_tracker} 
+              />
+              {#if settings.enable_external_tracker}
+                <Input 
+                  label="URL de Tracker Externo" 
+                  bind:value={settings.external_tracker_url} 
+                  placeholder="https://jira.com/issues" 
+                />
+              {/if}
+            </div>
+          {/if}
+        </div>
+      </div>
+
+      <div class="advanced-section">
+        <header class="section-header-inline">
+          <span class="material-symbols-rounded">merge</span>
+          <h4>Pull Requests</h4>
+        </header>
+        <div class="section-content">
+          <Checkbox 
+            label="Habilitar Pull Requests" 
+            description="Revisiones de código y fusiones." 
+            bind:checked={settings.enable_pulls} 
+          />
+          {#if settings.enable_pulls}
+            <div class="nested-options">
+              <Checkbox 
+                label="Ignorar Espacios en Blanco" 
+                description="Ocultar cambios de espaciado en los diffs." 
+                bind:checked={settings.pulls_ignore_whitespace} 
+              />
+              <Checkbox 
+                label="Permitir Rebase" 
+                description="Habilitar rebase para commits de PR." 
+                bind:checked={settings.pulls_allow_rebase} 
+              />
+              <Checkbox 
+                label="Permitir Fusión Manual" 
+                description="Habilitar la capacidad de marcar PRs como fusionados manualmente." 
+                bind:checked={settings.pulls_allow_manual_merge} 
+              />
+            </div>
+          {/if}
+        </div>
       </div>
 
       <div class="form-actions">
@@ -229,6 +415,22 @@
 
   .settings-form { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
   
+  .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1rem; }
+  .avatar-preview-wrap { position: relative; border-radius: 50%; overflow: hidden; background: var(--md-sys-color-surface-container-highest); border: 2px solid var(--md-sys-color-outline-variant); flex-shrink: 0; }
+  .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; }
+  .spin { animation: spin 1s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  .avatar-actions { display: flex; flex-direction: column; gap: 1.5rem; }
+  .avatar-actions h4 { margin: 0; font-size: 1.25rem; font-weight: 900; }
+  .avatar-actions p { margin: 0; color: var(--text-muted); font-size: 1rem; }
+  .action-buttons { display: flex; gap: 1rem; align-items: center; }
+
+  @media (max-width: 600px) {
+    .avatar-settings-section { flex-direction: column; text-align: center; gap: 2rem; }
+    .action-buttons { justify-content: center; }
+  }
+
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   :global(.full-width) { grid-column: span 2; }
 
@@ -244,7 +446,15 @@
 
   .form-actions { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  .danger { margin-top: 3rem; border-color: var(--md-sys-color-error); background: rgba(var(--error-rgb), 0.02); }
+  .advanced-section { border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 2rem; }
+  .section-header-inline { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; color: var(--primary-color); }
+  .section-header-inline span { font-size: 1.5rem; opacity: 0.8; }
+  .section-header-inline h4 { margin: 0; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+  
+  .section-content { display: flex; flex-direction: column; gap: 1rem; }
+  .nested-options { margin-left: 2rem; padding-left: 1.5rem; border-left: 2px solid var(--md-sys-color-outline-variant); display: flex; flex-direction: column; gap: 1rem; }
+
+  .danger { margin-top: 4rem; border-color: var(--md-sys-color-error); background: rgba(var(--error-rgb), 0.02); }
   .danger-body { padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem; }
   
   .danger-item { display: flex; flex-direction: column; gap: 1.5rem; }

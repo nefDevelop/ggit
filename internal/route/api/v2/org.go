@@ -1,6 +1,8 @@
 package v2
 
 import (
+	"io"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/nef734/ggit/internal/context"
@@ -26,7 +28,19 @@ func GetOrg(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, org)
+	res := map[string]any{
+		"id":                org.ID,
+		"username":          org.Name,
+		"full_name":         org.FullName,
+		"description":       org.Description,
+		"website":           org.Website,
+		"location":          org.Location,
+		"avatar_url":        org.AvatarURL(),
+		"use_custom_avatar": org.UseCustomAvatar,
+		"private":           org.Type == database.UserTypeOrganizationPrivate,
+	}
+
+	c.JSON(http.StatusOK, res)
 }
 
 // UpdateOrg updates the organization profile.
@@ -43,6 +57,7 @@ func UpdateOrg(c *context.APIContext) {
 		Description string `json:"description"`
 		Website     string `json:"website"`
 		Location    string `json:"location"`
+		Private     *bool  `json:"private"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
@@ -54,6 +69,7 @@ func UpdateOrg(c *context.APIContext) {
 		Description: &f.Description,
 		Website:     &f.Website,
 		Location:    &f.Location,
+		IsPrivate:   f.Private,
 	}
 
 	if err := database.Handle.Users().Update(c.Req.Context(), org.ID, opts); err != nil {
@@ -357,4 +373,70 @@ func RemoveTeamRepo(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// UpdateOrgAvatar updates the organization avatar.
+func UpdateOrgAvatar(c *context.APIContext) {
+	orgName := c.Params("org")
+	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	if err != nil {
+		c.NotFoundOrError(err, "get organization")
+		return
+	}
+
+	var f struct {
+		Avatar *multipart.FileHeader `form:"avatar"`
+	}
+
+	if err := c.Request.ParseMultipartForm(32 << 20); err == nil {
+		file, header, err := c.Req.FormFile("avatar")
+		if err == nil {
+			f.Avatar = header
+			_ = file.Close()
+		}
+	}
+
+	if f.Avatar != nil {
+		content, err := f.Avatar.Open()
+		if err != nil {
+			c.Error(err, "open avatar file")
+			return
+		}
+		defer func() { _ = content.Close() }()
+
+		data, err := io.ReadAll(content)
+		if err != nil {
+			c.Error(err, "read avatar file")
+			return
+		}
+
+		if err := database.Handle.Users().UseCustomAvatar(c.Req.Context(), org.ID, data); err != nil {
+			c.Error(err, "upload avatar")
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status":     "ok",
+		"avatar_url": org.AvatarURL(),
+	})
+}
+
+// DeleteOrgAvatar deletes the organization avatar.
+func DeleteOrgAvatar(c *context.APIContext) {
+	orgName := c.Params("org")
+	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	if err != nil {
+		c.NotFoundOrError(err, "get organization")
+		return
+	}
+
+	if err := database.Handle.Users().DeleteCustomAvatar(c.Req.Context(), org.ID); err != nil {
+		c.Error(err, "delete avatar")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+	})
 }

@@ -7,6 +7,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"time"
 
 	"github.com/cockroachdb/errors"
 	"github.com/pquerna/otp/totp"
@@ -16,6 +17,7 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/userx"
 )
 
@@ -35,8 +37,10 @@ type ConfirmTwoFactorPayload struct {
 type EditProfile struct {
 	Name            string `json:"name" binding:"max=35"`
 	FullName        string `json:"full_name" binding:"max=100"`
+	Email           string `json:"email" binding:"omitempty,email,max=254"`
 	Website         string `json:"website" binding:"omitempty,url,max=100"`
 	Location        string `json:"location" binding:"max=50"`
+	AvatarEmail     string `json:"avatar_email" binding:"omitempty,email,max=254"`
 	DisableNewsFeed bool   `json:"disable_news_feed"`
 }
 
@@ -68,6 +72,7 @@ func GetUserProfileSettings(c *context.APIContext) {
 		"email":                  c.User.Email,
 		"website":                c.User.Website,
 		"location":               c.User.Location,
+		"avatar_email":           c.User.AvatarEmail,
 		"disable_news_feed":      c.User.DisableNewsFeed,
 		"enable_dicebear_avatar": conf.Picture.EnableDicebearAvatar,
 		"avatar_url":             c.User.AvatarURL(),
@@ -111,6 +116,7 @@ func UpdateUserProfileSettings(c *context.APIContext) {
 			FullName:        &f.FullName,
 			Website:         &f.Website,
 			Location:        &f.Location,
+			AvatarEmail:     &f.AvatarEmail,
 			DisableNewsFeed: &f.DisableNewsFeed,
 		},
 	)
@@ -664,4 +670,73 @@ func RegenerateTwoFactorRecoveryCodes(c *context.APIContext) {
 		"status":         "ok",
 		"recovery_codes": recoveryCodes,
 	})
+}
+
+// GetUserLoginSessions returns all active login sessions for the current user.
+func GetUserLoginSessions(c *context.APIContext) {
+	sessions, err := database.Handle.LoginSessions().ListByUserID(c.Req.Context(), c.User.ID)
+	if err != nil {
+		c.Error(err, "list login sessions")
+		return
+	}
+
+	currentSID := ""
+	if sid, ok := c.Session.Get("sid").(string); ok {
+		currentSID = sid
+	}
+
+	res := make([]*apiv2types.LoginSessionResponse, len(sessions))
+	for i, s := range sessions {
+		maskedSID := ""
+		if len(s.SID) > 8 {
+			maskedSID = s.SID[:4] + "...." + s.SID[len(s.SID)-4:]
+		}
+
+		res[i] = &apiv2types.LoginSessionResponse{
+			ID:          s.ID,
+			SID:         maskedSID,
+			UserAgent:   s.UserAgent,
+			RemoteAddr:  s.RemoteAddr,
+			Current:     s.SID == currentSID,
+			CreatedUnix: s.CreatedUnix,
+			UpdatedUnix: s.UpdatedUnix,
+			CreatedAt:   time.Unix(s.CreatedUnix, 0),
+			UpdatedAt:   time.Unix(s.UpdatedUnix, 0),
+		}
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+// DeleteOtherUserLoginSessions deletes all login sessions for the current user except the current one.
+func DeleteOtherUserLoginSessions(c *context.APIContext) {
+	sid, ok := c.Session.Get("sid").(string)
+	if !ok {
+		c.StatusError(http.StatusUnauthorized, "No active session found.", nil)
+		return
+	}
+
+	err := database.Handle.LoginSessions().DeleteOthersByUserID(c.Req.Context(), c.User.ID, sid)
+	if err != nil {
+		c.Error(err, "delete other login sessions")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// DeleteUserLoginSession deletes a specific login session for the current user.
+func DeleteUserLoginSession(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	if id <= 0 {
+		c.StatusError(http.StatusBadRequest, "Invalid session ID.", nil)
+		return
+	}
+
+	err := database.Handle.LoginSessions().DeleteByIDAndUserID(c.Req.Context(), id, c.User.ID)
+	if err != nil {
+		c.Error(err, "delete login session")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }

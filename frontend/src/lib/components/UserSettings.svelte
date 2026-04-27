@@ -5,6 +5,7 @@
   import SettingsEmails from "./SettingsEmails.svelte";
   import SettingsKeys from "./SettingsKeys.svelte";
   import SettingsTokens from "./SettingsTokens.svelte";
+  import SettingsSessions from "./SettingsSessions.svelte";
   import SettingsRepositories from "./SettingsRepositories.svelte";
   import SettingsOrganizations from "./SettingsOrganizations.svelte";
   import SettingsMyGgit from "./SettingsMyGgit.svelte";
@@ -25,6 +26,7 @@
     { id: "appearance", label: i18n.t("settings.appearance"), icon: "palette" },
     { id: "emails", label: i18n.t("settings.emails"), icon: "mail" },
     { id: "security", label: i18n.t("settings.security"), icon: "security" },
+    { id: "sessions", label: "Sesiones", icon: "devices" },
     { id: "keys", label: i18n.t("settings.ssh_keys"), icon: "key" },
     { id: "tokens", label: i18n.t("settings.access_tokens"), icon: "token" },
     { id: "repos", label: i18n.t("settings.repositories"), icon: "book" },
@@ -55,6 +57,8 @@
       <SettingsEmails />
     {:else if activeTab === "security"}
       <SettingsSecurity />
+    {:else if activeTab === "sessions"}
+      <SettingsSessions />
     {:else if activeTab === "keys"}
       <SettingsKeys />
     {:else if activeTab === "tokens"}

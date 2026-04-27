@@ -287,3 +287,39 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
 - [ ] **Timeouts Estrictos:** Asegurar que ningún proceso de Git (como un diff masivo o un grep global) pueda quedar colgado indefinidamente consumiendo CPU.
 - [ ] **Modo de Supervivencia (Read-only):** Switch automático a modo de "Solo Lectura" si el espacio en disco baja de un umbral crítico (ej. 50MB) para evitar corrupción de la base de datos SQLite.
 
+---
+
+## Fase 23: Paridad Funcional y Reconexión (Gogs-to-Svelte Sync) 🔗
+
+**Objetivo:** Asegurar que ninguna funcionalidad útil del Gogs original se haya quedado "huérfana" o incompleta en la migración a Svelte.
+
+### 1. Auditoría de Paridad (UI Gap Analysis)
+- [x] **Mapeo de Rutas Legacy:** Revisar las antiguas plantillas `.tmpl` de Gogs para identificar opciones de configuración, botones o vistas que falten en el nuevo frontend de Svelte. [COMPLETO]
+  - [x] Sincronización de opciones de Repository (Public Wiki/Issues, Manual Merge, Repo Avatar).
+  - [x] Sincronización de opciones de User (AvatarEmail, DisableNewsFeed).
+- [x] **Completado de Componentes "Cortos":** Identificar componentes Svelte que están visualmente presentes pero cuyas acciones (botones, formularios) aún no llaman a la API o tienen lógica parcial. [COMPLETO]
+
+### 2. Sincronización API-Frontend
+- [x] **Wiki Externa (Legacy Link):** Reinstaurar la capacidad de redirigir la pestaña Wiki a una URL externa. [COMPLETO - Backend/Frontend]
+- [ ] **Wiki Onboarding:** Mostrar una guía visual y plantillas sugeridas cuando la carpeta de la wiki (`/docs`) está vacía.
+- [ ] **Soporte _sidebar.md:** Implementar renderizado automático del archivo `_sidebar.md` como menú lateral global si no se detecta configuración vía Frontmatter.
+- [x] **Consolidación de API v2:** Asegurar que todos los campos de los modelos de base de datos sean editables vía API. [COMPLETO]
+- [x] **Reconexión de Flags de Repositorio:** Verificar que opciones como "Hacer este repositorio privado", "Habilitar Issues", "Habilitar Wiki", etc., funcionen bidireccionalmente entre el backend y los nuevos componentes Svelte. [COMPLETO]
+
+### 3. Validación de Flujos Completos
+- [ ] **Ciclo de Vida de Issues/PRs:** Asegurar que todas las acciones (cerrar, reabrir, etiquetar, asignar) estén operativas al 100% en la nueva interfaz.
+- [x] **Gestión de Sesiones Activas:** Implementar vista para listar y revocar sesiones de usuario (navegadores/dispositivos) desde el panel de seguridad. [COMPLETO]
+- [x] **Danger Zone de Usuario:** Implementar el flujo de borrado permanente de cuenta con confirmación de seguridad. [COMPLETO]
+- [x] **Configuraciones de Seguridad Avanzadas:** Reconectar opciones de borrado de cuenta, cambio de visibilidad y transferencia de propiedad que suelen ser las más delicadas y propensas a quedar "incompletas". [COMPLETO]
+
+---
+
+## Fase 24: Estandarización de la Capa de Datos (EN PROCESO) 🗄️
+
+**Objetivo:** Consolidar la estructura de la base de datos y asegurar que el esquema sea robusto y extensible.
+
+- [x] **Gestión de Sesiones (DB Store):** Implementar almacenamiento de sesiones en base de datos para persistencia entre reinicios. [COMPLETO]
+- [x] **Migraciones Atómicas:** Implementar sistema de migraciones v26 para cambios en el esquema de sesiones. [COMPLETO]
+- [ ] **Auditoría de Índices:** Revisar y optimizar los índices de las tablas críticas (UserRepository, Actions, Issues) para mejorar el rendimiento de las consultas.
+- [ ] **Consolidación de Repositorios (Store Pattern):** Unificar todos los accesos a la base de datos bajo el patrón `Store` para facilitar el testing y el mantenimiento.
+

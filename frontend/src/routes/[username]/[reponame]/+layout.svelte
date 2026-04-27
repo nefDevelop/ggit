@@ -207,15 +207,18 @@
             </a>
           {/if}
 
-          {#if userPrefs.current.repoTabs.issue}
-            <a href="/{username}/{reponame}/issues" class="tab" class:active={activeTab === 'issues'}>
+          {#if repoData.enable_issues && userPrefs.current.repoTabs.issue}
+            <a href={repoData.enable_external_tracker ? repoData.external_tracker_url : "/{username}/{reponame}/issues"} 
+               target={repoData.enable_external_tracker ? "_blank" : ""}
+               rel={repoData.enable_external_tracker ? "noopener noreferrer" : ""}
+               class="tab" class:active={activeTab === 'issues'}>
               <span class="material-symbols-rounded">error</span>
               <span class="tab-count">{repoData.open_issues_count || 0}</span>
               {#if activeTab === 'issues'}<span class="tab-label">Issues</span>{/if}
             </a>
           {/if}
 
-          {#if userPrefs.current.repoTabs.pr}
+          {#if repoData.enable_pulls && userPrefs.current.repoTabs.pr}
             <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
               <span class="material-symbols-rounded">merge</span>
               <span class="tab-count">{repoData.open_pulls_count || 0}</span>
@@ -223,8 +226,11 @@
             </a>
           {/if}
 
-          {#if userPrefs.current.repoTabs.wiki}
-            <a href="/{username}/{reponame}/wiki" class="tab" class:active={activeTab === 'wiki'}>
+          {#if repoData.enable_wiki && userPrefs.current.repoTabs.wiki}
+            <a href={repoData.enable_external_wiki ? repoData.external_wiki_url : "/{username}/{reponame}/wiki"} 
+               target={repoData.enable_external_wiki ? "_blank" : ""}
+               rel={repoData.enable_external_wiki ? "noopener noreferrer" : ""}
+               class="tab" class:active={activeTab === 'wiki'}>
               <span class="material-symbols-rounded">book</span>
               {#if activeTab === 'wiki'}<span class="tab-label">Wiki</span>{/if}
             </a>

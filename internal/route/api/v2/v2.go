@@ -61,6 +61,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.POST("/tokens", ginx.Handle(AddUserAccessToken))
 			settings.DELETE("/tokens/:id", ginx.Handle(DeleteUserAccessToken))
 
+			settings.GET("/sessions", ginx.Handle(GetUserLoginSessions))
+			settings.DELETE("/sessions", ginx.Handle(DeleteOtherUserLoginSessions))
+			settings.DELETE("/sessions/:id", ginx.Handle(DeleteUserLoginSession))
+
 			settings.POST("/avatar", ginx.Handle(UpdateUserAvatar))
 			settings.POST("/avatar/magic", ginx.Handle(UpdateUserAvatar))
 			settings.DELETE("/avatar", ginx.Handle(DeleteUserAvatar))
@@ -211,6 +215,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		{
 			settingGroup.GET("", ginx.Handle(GetRepoSettings))
 			settingGroup.PATCH("", ginx.Handle(UpdateRepoSettings))
+			settingGroup.POST("/avatar", ginx.Handle(UpdateRepoAvatar))
+			settingGroup.DELETE("/avatar", ginx.Handle(DeleteRepoAvatar))
 			settingGroup.POST("/transfer", ginx.Handle(TransferRepoOwnership))
 			settingGroup.DELETE("", ginx.Handle(DeleteRepository))
 
@@ -236,6 +242,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	{
 		orgs.GET("/:org", ginx.Handle(GetOrg))
 		orgs.PATCH("/:org", ginx.Handle(UpdateOrg))
+		orgs.POST("/:org/avatar", ginx.Handle(UpdateOrgAvatar))
+		orgs.DELETE("/:org/avatar", ginx.Handle(DeleteOrgAvatar))
 		orgs.DELETE("/:org", ginx.Handle(DeleteOrg))
 		orgs.GET("/:org/members", ginx.Handle(ListOrgMembers))
 		orgs.DELETE("/:org/members/:username", ginx.Handle(RemoveOrgMember))

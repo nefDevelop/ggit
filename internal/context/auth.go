@@ -173,20 +173,38 @@ func authenticatedUserID(store AuthStore, c *gin.Context, sess any) (_ int64, is
 
 	s := sess.(sessions.Session)
 	uid := s.Get("uid")
-	if uid == nil {
+	sid := s.Get("sid")
+	if uid == nil || sid == nil {
 		return 0, false
 	}
-	if id, ok := uid.(int64); ok {
-		_, err := store.GetUserByID(c.Request.Context(), id)
-		if err != nil {
-			if !database.IsErrUserNotExist(err) {
-				log.Error("Failed to get user by ID: %v", err)
-			}
-			return 0, false
-		}
-		return id, false
+
+	id, ok := uid.(int64)
+	if !ok {
+		return 0, false
 	}
-	return 0, false
+
+	sessionID, ok := sid.(string)
+	if !ok {
+		return 0, false
+	}
+
+	// Verify session in database
+	_, err := database.Handle.LoginSessions().GetBySID(c.Request.Context(), sessionID)
+	if err != nil {
+		// Session not found or revoked
+		s.Clear()
+		_ = s.Save()
+		return 0, false
+	}
+
+	_, err = store.GetUserByID(c.Request.Context(), id)
+	if err != nil {
+		if !database.IsErrUserNotExist(err) {
+			log.Error("Failed to get user by ID: %v", err)
+		}
+		return 0, false
+	}
+	return id, false
 }
 
 // authenticatedUser returns the user object of the authenticated user, along with two bool values

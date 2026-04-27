@@ -1,6 +1,8 @@
 package v2
 
 import (
+	"io"
+	"mime/multipart"
 	"net/http"
 	"strings"
 
@@ -13,18 +15,31 @@ import (
 func GetRepoSettings(c *context.APIContext) {
 	repo := c.Repo.Repository
 	res := map[string]any{
-		"id":            repo.ID,
-		"name":          repo.Name,
-		"description":   repo.Description,
-		"website":       repo.Website,
-		"private":       repo.IsPrivate,
-		"unlisted":      repo.IsUnlisted,
-		"archived":      repo.IsArchived,
-		"enable_wiki":   repo.EnableWiki,
-		"enable_issues": repo.EnableIssues,
-		"enable_pulls":  repo.EnablePulls,
-		"is_archived":   repo.IsArchived,
-		"wiki_folder_name": repo.WikiFolderName,
+		"id":                      repo.ID,
+		"name":                    repo.Name,
+		"description":             repo.Description,
+		"website":                 repo.Website,
+		"private":                 repo.IsPrivate,
+		"unlisted":                repo.IsUnlisted,
+		"archived":                repo.IsArchived,
+		"enable_wiki":             repo.EnableWiki,
+		"allow_public_wiki":       repo.AllowPublicWiki,
+		"enable_external_wiki":    repo.EnableExternalWiki,
+		"external_wiki_url":       repo.ExternalWikiURL,
+		"wiki_folder_name":        repo.WikiFolderName,
+		"enable_issues":           repo.EnableIssues,
+		"allow_public_issues":     repo.AllowPublicIssues,
+		"enable_external_tracker": repo.EnableExternalTracker,
+		"external_tracker_url":    repo.ExternalTrackerURL,
+		"external_tracker_format": repo.ExternalTrackerFormat,
+		"external_tracker_style":  repo.ExternalTrackerStyle,
+		"enable_pulls":            repo.EnablePulls,
+		"pulls_ignore_whitespace": repo.PullsIgnoreWhitespace,
+		"pulls_allow_rebase":      repo.PullsAllowRebase,
+		"pulls_allow_manual_merge": repo.PullsAllowManualMerge,
+		"default_branch":          repo.DefaultBranch,
+		"use_custom_avatar":       repo.UseCustomAvatar,
+		"avatar_url":              repo.AvatarLink(),
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -48,6 +63,23 @@ func UpdateRepoSettings(c *context.APIContext) {
 	repo.IsUnlisted = f.Unlisted
 	repo.IsArchived = f.Archived
 	repo.WikiFolderName = f.WikiFolderName
+
+	// Advanced settings
+	repo.EnableWiki = f.EnableWiki
+	repo.AllowPublicWiki = f.AllowPublicWiki
+	repo.EnableExternalWiki = f.EnableExternalWiki
+	repo.ExternalWikiURL = f.ExternalWikiURL
+	repo.EnableIssues = f.EnableIssues
+	repo.AllowPublicIssues = f.AllowPublicIssues
+	repo.EnableExternalTracker = f.EnableExternalTracker
+	repo.ExternalTrackerURL = f.ExternalTrackerURL
+	repo.ExternalTrackerFormat = f.TrackerURLFormat
+	repo.ExternalTrackerStyle = f.TrackerIssueStyle
+	repo.EnablePulls = f.EnablePulls
+	repo.PullsIgnoreWhitespace = f.PullsIgnoreWhitespace
+	repo.PullsAllowRebase = f.PullsAllowRebase
+	repo.PullsAllowManualMerge = f.PullsAllowManualMerge
+	repo.DefaultBranch = f.Branch
 
 	if err := database.UpdateRepository(repo, visibilityChanged); err != nil {
 		c.Error(err, "update repository")
@@ -207,4 +239,56 @@ func TransferRepoOwnership(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// UpdateRepoAvatar updates the repository avatar.
+func UpdateRepoAvatar(c *context.APIContext) {
+	var f struct {
+		Avatar *multipart.FileHeader `form:"avatar"`
+	}
+
+	if err := c.Request.ParseMultipartForm(32 << 20); err == nil {
+		file, header, err := c.Req.FormFile("avatar")
+		if err == nil {
+			f.Avatar = header
+			_ = file.Close()
+		}
+	}
+
+	if f.Avatar != nil {
+		content, err := f.Avatar.Open()
+		if err != nil {
+			c.Error(err, "open avatar file")
+			return
+		}
+		defer func() { _ = content.Close() }()
+
+		data, err := io.ReadAll(content)
+		if err != nil {
+			c.Error(err, "read avatar file")
+			return
+		}
+
+		if err := c.Repo.Repository.UploadAvatar(data); err != nil {
+			c.Error(err, "upload avatar")
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status":     "ok",
+		"avatar_url": c.Repo.Repository.AvatarLink(),
+	})
+}
+
+// DeleteRepoAvatar deletes the repository avatar.
+func DeleteRepoAvatar(c *context.APIContext) {
+	if err := c.Repo.Repository.DeleteAvatar(); err != nil {
+		c.Error(err, "delete avatar")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+	})
 }

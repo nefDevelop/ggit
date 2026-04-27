@@ -33,6 +33,19 @@ type UserAccessTokenResponse struct {
 	Sha1 string `json:"sha1"`
 }
 
+// LoginSessionResponse represents a login session of a user.
+type LoginSessionResponse struct {
+	ID          int64     `json:"id"`
+	SID         string    `json:"sid"` // Masked or truncated
+	UserAgent   string    `json:"user_agent"`
+	RemoteAddr  string    `json:"remote_addr"`
+	Current     bool      `json:"current"`
+	CreatedUnix int64     `json:"created_unix"`
+	UpdatedUnix int64     `json:"updated_unix"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
 // REPOSITORY MODELS
 
 // RepositoryResponse represents a repository in the API v2.
@@ -55,6 +68,17 @@ type RepositoryResponse struct {
 	SSHURL        string                `json:"ssh_url"`
 	DefaultBranch  string                `json:"default_branch"`
 	WikiFolderName string                `json:"wiki_folder_name"`
+	EnableWiki            bool   `json:"enable_wiki"`
+	EnableExternalWiki    bool   `json:"enable_external_wiki"`
+	ExternalWikiURL       string `json:"external_wiki_url"`
+	EnableIssues          bool   `json:"enable_issues"`
+	EnableExternalTracker bool   `json:"enable_external_tracker"`
+	ExternalTrackerURL    string `json:"external_tracker_url"`
+	ExternalTrackerFormat string `json:"external_tracker_format"`
+	ExternalTrackerStyle  string `json:"external_tracker_style"`
+	EnablePulls           bool   `json:"enable_pulls"`
+	PullsIgnoreWhitespace bool   `json:"pulls_ignore_whitespace"`
+	PullsAllowRebase      bool   `json:"pulls_allow_rebase"`
 	CreatedAt      time.Time             `json:"created_at"`
 	UpdatedAt     time.Time             `json:"updated_at"`
 	Permissions   *RepositoryPermission `json:"permissions,omitempty"`

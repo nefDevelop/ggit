@@ -65,6 +65,8 @@ var migrations = []Migration{
 	NewMigration("add is_archived to repository table", addIsArchivedToRepository),
 	// v24 -> v25:v0.13.0
 	NewMigration("add num_commits and num_branches to repository table", addNumCommitsAndBranchesToRepository),
+	// v25 -> v26:v0.13.0
+	NewMigration("create login_session table", createLoginSessionTable),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")

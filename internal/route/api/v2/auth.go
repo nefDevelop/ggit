@@ -13,6 +13,7 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
 	authservice "github.com/nef734/ggit/internal/services/auth"
+	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/tool"
 	"github.com/nef734/ggit/internal/userx"
 	log "unknwon.dev/clog/v2"
@@ -83,6 +84,14 @@ func Login(c *context.APIContext) {
 
 	c.Session.Set("uid", u.ID)
 	c.Session.Set("uname", u.Name)
+
+	sid, _ := strx.RandomChars(32)
+	c.Session.Set("sid", sid)
+	_, err = database.Handle.LoginSessions().Create(c.Req.Context(), u.ID, sid, c.Request.UserAgent(), c.ClientIP())
+	if err != nil {
+		log.Error("Failed to create login session: %v", err)
+	}
+
 	if err := c.Session.Save(); err != nil {
 		c.Error(err, "save session")
 		return
@@ -113,6 +122,11 @@ func CheckAuth(c *context.APIContext) {
 
 // Logout terminates the current session.
 func Logout(c *context.APIContext) {
+	sid := c.Session.Get("sid")
+	if sessionID, ok := sid.(string); ok {
+		_ = database.Handle.LoginSessions().DeleteBySID(c.Req.Context(), sessionID)
+	}
+
 	c.Session.Clear()
 	_ = c.Session.Save()
 	c.SetCookie(conf.Security.CookieUsername, "", -1, conf.Server.Subpath)
@@ -261,6 +275,14 @@ func LoginTwoFactor(c *context.APIContext) {
 
 	c.Session.Set("uid", u.ID)
 	c.Session.Set("uname", u.Name)
+
+	sid, _ := strx.RandomChars(32)
+	c.Session.Set("sid", sid)
+	_, err = database.Handle.LoginSessions().Create(c.Req.Context(), u.ID, sid, c.Request.UserAgent(), c.ClientIP())
+	if err != nil {
+		log.Error("Failed to create login session: %v", err)
+	}
+
 	c.Session.Delete("twoFactorRemember")
 	c.Session.Delete("twoFactorUserID")
 

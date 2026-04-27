@@ -752,12 +752,22 @@ type UpdateUserOptions struct {
 	AvatarEmail *string
 
 	DisableNewsFeed *bool
+
+	IsPrivate *bool
 }
 
 // Update updates fields for the given user.
 func (s *UsersStore) Update(ctx context.Context, userID int64, opts UpdateUserOptions) error {
 	updates := map[string]any{
 		"updated_unix": s.db.NowFunc().Unix(),
+	}
+
+	if opts.IsPrivate != nil {
+		if *opts.IsPrivate {
+			updates["type"] = UserTypeOrganizationPrivate
+		} else {
+			updates["type"] = UserTypeOrganization
+		}
 	}
 
 	if opts.LoginSource != nil {
@@ -1060,6 +1070,7 @@ type UserType int
 const (
 	UserTypeIndividual UserType = iota // NOTE: Historic reason to make it starts at 0.
 	UserTypeOrganization
+	UserTypeOrganizationPrivate
 )
 
 // User represents the object of an individual or an organization.
@@ -1138,7 +1149,11 @@ func (u *User) IsLocal() bool {
 
 // IsOrganization returns true if the user is an organization.
 func (u *User) IsOrganization() bool {
-	return u.Type == UserTypeOrganization
+	return u.Type == UserTypeOrganization || u.Type == UserTypeOrganizationPrivate
+}
+
+func (u *User) IsPrivateOrganization() bool {
+	return u.Type == UserTypeOrganizationPrivate
 }
 
 // APIFormat returns the API format of a user.

@@ -48,7 +48,7 @@ var Tables = []any{
 	new(EmailAddress),
 	new(HookTask),
 	new(Issue), new(IssueLabel), new(IssueUser),
-	new(Label), new(LFSObject), new(LoginSource),
+	new(Label), new(LFSObject), new(LoginSession), new(LoginSource),
 	new(Milestone),
 	new(Notice),
 	new(OrgUser),
@@ -196,6 +196,10 @@ var loadedLoginSourceFilesStore loginSourceFilesStore
 
 func (db *DB) LoginSources() *LoginSourcesStore {
 	return newLoginSourcesStore(db.db, loadedLoginSourceFilesStore)
+}
+
+func (db *DB) LoginSessions() *LoginSessionsStore {
+	return newLoginSessionsStore(db.db)
 }
 
 func (db *DB) Notices() *NoticesStore {

@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { authState } from "$lib/auth.svelte";
   import Avatar from "./Avatar.svelte";
+  import Checkbox from "./ui/Checkbox.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
@@ -13,6 +14,8 @@
     email: "",
     website: "",
     location: "",
+    avatar_email: "",
+    disable_news_feed: false,
     avatar_url: "",
     use_custom_avatar: false,
   });
@@ -70,6 +73,8 @@
           full_name: profile.full_name,
           website: profile.website,
           location: profile.location,
+          avatar_email: profile.avatar_email,
+          disable_news_feed: profile.disable_news_feed,
         }),
       });
       if (res.ok) {
@@ -261,13 +266,31 @@
               />
             </div>
 
-            <div class="field full-width">
+            <div class="field">
               <label for="location">{i18n.t("settings.location")}</label>
               <input
                 id="location"
                 type="text"
                 bind:value={profile.location}
                 placeholder="Ciudad, País"
+              />
+            </div>
+
+            <div class="field">
+              <label for="avatar_email">Correo de Avatar (Gravatar)</label>
+              <input
+                id="avatar_email"
+                type="email"
+                bind:value={profile.avatar_email}
+                placeholder="email@example.com"
+              />
+            </div>
+
+            <div class="field full-width">
+              <Checkbox 
+                label="Ocultar feed de noticias" 
+                description="No mostrar actividades en tu panel de control."
+                bind:checked={profile.disable_news_feed}
               />
             </div>
           </div>
