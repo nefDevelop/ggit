@@ -266,3 +266,24 @@ se puede poner en todos el order, con 1 solo ya se posiciona todos los de la car
   - [ ] Crear sistema de rotación de backups.
   - [ ] Integrar subida automática a almacenamiento S3/R2 o compatible mediante `rclone`.
 - [ ] **Auditoría Extendida:** Registrar cambios en permisos de colaboradores y visibilidad de repositorios en el Audit Log.
+
+---
+
+## Fase 22: Integridad y Autocuración (Pilar de Robustez) 🛡️
+
+**Objetivo:** Garantizar que Ggit sea "incapaz de fallar" o corromper datos, incluso en condiciones adversas (cortes de luz, hardware limitado, alta carga).
+
+### 1. Consistencia Atómica (DB + FS)
+- [ ] **Coordinación de Transacciones:** Implementar lógica de "Two-Phase Commit" simplificada para asegurar que un cambio en la base de datos solo se consolide si la operación de Git en disco fue exitosa.
+- [ ] **Rollback de Sistema de Archivos:** Capacidad de revertir cambios manuales en el sistema de archivos si la transacción de la base de datos falla.
+
+### 2. Autodiagnóstico y Mantenimiento Proactivo
+- [ ] **Ggit Health Sentinel:** Tarea en segundo plano que ejecuta `git fsck` en todos los repositorios de forma rotativa para detectar corrupción de objetos.
+- [ ] **Optimización Automática de SQLite:** Programar `PRAGMA optimize`, `VACUUM` y `REINDEX` periódicos para mantener la base de datos ágil y sin fragmentación.
+- [ ] **Verificación de Checksums:** Almacenar y verificar checksums de archivos críticos de configuración y hooks.
+
+### 3. Blindaje de Recursos (Anti-OOM)
+- [ ] **Process Throttling:** Implementar un limitador de procesos Git concurrentes basado en la RAM disponible (vital para Raspberry Pi).
+- [ ] **Timeouts Estrictos:** Asegurar que ningún proceso de Git (como un diff masivo o un grep global) pueda quedar colgado indefinidamente consumiendo CPU.
+- [ ] **Modo de Supervivencia (Read-only):** Switch automático a modo de "Solo Lectura" si el espacio en disco baja de un umbral crítico (ej. 50MB) para evitar corrupción de la base de datos SQLite.
+
