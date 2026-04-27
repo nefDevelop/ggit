@@ -39,10 +39,14 @@
 
   const groupedRepos = $derived.by((): GroupedRepos => {
     const repos = filteredRepos;
-    if (viewMode === 'list') {
-      return { all: [...repos].sort((a, b) => a.name.localeCompare(b.name)) };
+    const all = [...repos].sort((a, b) => a.name.localeCompare(b.name));
+    
+    if (viewMode !== 'temporal') {
+      return { all };
     }
+
     return {
+      all, // Siempre lo proveemos por seguridad
       recent: repos.filter(r => new Date(r.updated_at).getTime() > oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
       older: repos.filter(r => new Date(r.updated_at).getTime() <= oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     };
@@ -67,12 +71,14 @@
     window.addEventListener('ggit:search', handleGlobalSearch);
     loadDashboard();
 
-    // If activity is disabled, default to list view
-    if (authState.user?.disable_news_feed) {
-       viewMode = 'list';
-    }
-
     return () => window.removeEventListener('ggit:search', handleGlobalSearch);
+  });
+
+  // Mantenemos sincronizado el viewMode de forma reactiva
+  $effect(() => {
+    if (authState.user?.disable_news_feed && viewMode !== 'list') {
+      viewMode = 'list';
+    }
   });
 </script>
 
