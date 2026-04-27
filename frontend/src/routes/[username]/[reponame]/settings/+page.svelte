@@ -5,6 +5,7 @@
   import RepoSettingsWebhooks from '$lib/components/RepoSettingsWebhooks.svelte';
   import RepoSettingsDeployKeys from '$lib/components/RepoSettingsDeployKeys.svelte';
   import RepoSettingsRemotes from '$lib/components/RepoSettingsRemotes.svelte';
+  import ChipNavigation from '$lib/components/ui/ChipNavigation.svelte';
 
   const repo: any = getContext('repo');
   let activeTab = $state('general');
@@ -23,6 +24,16 @@
 </svelte:head>
 
 <div class="settings-container">
+  <div class="mobile-nav-wrapper">
+    <ChipNavigation 
+      items={tabs} 
+      activeId={activeTab} 
+      title="Repository Settings"
+      titleIcon="settings"
+      onSelect={(id) => activeTab = id} 
+    />
+  </div>
+
   <aside class="settings-sidebar tonal">
     <h3 class="sidebar-title">Repository Settings</h3>
     <nav class="settings-nav">
@@ -140,5 +151,33 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+  }
+
+  .mobile-nav-wrapper {
+    display: none;
+  }
+
+  @media (max-width: 1024px) {
+    .settings-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      padding-bottom: calc(160px + env(safe-area-inset-bottom));
+    }
+    .settings-sidebar {
+      display: none;
+    }
+    .mobile-nav-wrapper {
+      display: block;
+      position: fixed;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 0;
+      right: 0;
+      z-index: 999;
+      background: var(--bg-color);
+      padding: 0.5rem 0.5rem 0;
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+    }
   }
 </style>
