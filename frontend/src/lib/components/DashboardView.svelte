@@ -76,7 +76,7 @@
   });
 </script>
 
-<div class="dashboard-layout" class:has-sidebar={data.organizations.length > 0 && !authState.user?.disable_news_feed}>
+<div class="dashboard-layout">
     <div class="dashboard-main-content">
         <ViewHeader 
             bind:activeTab={viewMode}
@@ -149,19 +149,17 @@
 
 <style>
   .dashboard-layout {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
     gap: 2rem;
     height: 100%;
+    padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
 
-  .dashboard-layout.has-sidebar {
-    grid-template-columns: 1fr 320px;
-  }
   .dashboard-main-content { 
     display: flex; 
     flex-direction: column; 
+    flex: 1;
     min-width: 0;
   }
 
@@ -170,6 +168,8 @@
   }
 
   .dashboard-sidebar {
+    width: 320px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -317,7 +317,6 @@
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
   @media (max-width: 1100px) {
-    .dashboard-layout { grid-template-columns: 1fr; }
     .dashboard-sidebar { display: none; }
   }
 
