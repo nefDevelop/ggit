@@ -7,6 +7,7 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	log "unknwon.dev/clog/v2"
 )
 
 // DashboardData represents the consolidated data for the user dashboard.
@@ -18,6 +19,13 @@ type DashboardData struct {
 
 // GetDashboardData returns the initial data needed for the dashboard.
 func GetDashboardData(c *context.APIContext) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error("Panic in GetDashboardData: %v", err)
+			c.StatusError(http.StatusInternalServerError, "Internal Server Error", nil)
+		}
+	}()
+
 	ctxUser := c.User
 	if ctxUser == nil {
 		c.StatusError(http.StatusUnauthorized, "User must be logged in", nil)
@@ -25,6 +33,7 @@ func GetDashboardData(c *context.APIContext) {
 	}
 
 	// 1. Get Personal Repositories
+	log.Trace("GetDashboardData: Fetching personal repositories for user %d", ctxUser.ID)
 	repos, err := database.GetUserRepositories(
 		&database.UserRepoOptions{
 			UserID:   ctxUser.ID,
@@ -46,12 +55,15 @@ func GetDashboardData(c *context.APIContext) {
 	}
 
 	// 2. Get Collaborative Repositories
+	log.Trace("GetDashboardData: Fetching collaborative repositories for user %d", ctxUser.ID)
 	collaborative, err := database.Handle.Repositories().GetByCollaboratorID(c.Req.Context(), ctxUser.ID, conf.UI.User.RepoPagingNum, "updated_unix DESC")
 	if err != nil {
 		c.Error(err, "get collaborative repositories")
 		return
 	}
+	log.Trace("GetDashboardData: Loading attributes for %d collaborative repos", len(collaborative))
 	_ = database.RepositoryList(collaborative).LoadAttributes()
+	
 	apiCollaborative := make([]*apiv2types.RepositoryResponse, 0, len(collaborative))
 	for _, r := range collaborative {
 		if r == nil {
@@ -61,6 +73,7 @@ func GetDashboardData(c *context.APIContext) {
 	}
 
 	// 4. Get Organizations
+	log.Trace("GetDashboardData: Fetching organizations for user %d", ctxUser.ID)
 	orgs, err := database.Handle.Organizations().List(
 		c.Req.Context(),
 		database.ListOrgsOptions{
@@ -80,6 +93,7 @@ func GetDashboardData(c *context.APIContext) {
 		apiOrgs = append(apiOrgs, o.APIFormat())
 	}
 
+	log.Trace("GetDashboardData: Returning consolidated data")
 	c.JSON(http.StatusOK, DashboardData{
 		Repositories:     apiRepos,
 		Collaborative:    apiCollaborative,

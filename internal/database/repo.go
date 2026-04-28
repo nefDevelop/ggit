@@ -1927,7 +1927,7 @@ func GetUserRepositories(opts *UserRepoOptions) ([]*Repository, error) {
 	db = db.Limit(opts.PageSize).Offset((opts.Page - 1) * opts.PageSize)
 
 	repos := make([]*Repository, 0, opts.PageSize)
-	return repos, db.Select("id, owner_id, name, lower_name, description, is_private, is_unlisted, updated_unix, default_branch, wiki_folder_name, num_stars, num_forks, num_watches, num_issues, num_closed_issues, num_pulls, num_closed_pulls, num_commits, num_branches").Find(&repos).Error
+	return repos, db.Select("id, owner_id, name, lower_name, description, website, is_private, is_unlisted, is_fork, is_bare, updated_unix, created_unix, default_branch, wiki_folder_name, enable_wiki, enable_issues, enable_pulls, num_stars, num_forks, num_watches, num_issues, num_closed_issues, num_pulls, num_closed_pulls, num_commits, num_branches, last_commit_unix, last_issue_unix, last_pull_unix, last_branch_unix, last_health_check_unix, commits_since_check").Find(&repos).Error
 }
 
 // GetRecentUpdatedRepositories returns the list of repositories that are recently updated.
