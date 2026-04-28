@@ -44,7 +44,7 @@ func (s *CommitStatuses) Create(ctx context.Context, status *CommitStatus) error
 func (s *CommitStatuses) GetLatestBySHA(ctx context.Context, repoID int64, sha string) ([]*CommitStatus, error) {
 	// Get only the latest status for each context
 	var statuses []*CommitStatus
-	subQuery := s.db.Select("MAX(id)").Table("commit_statuses").
+	subQuery := s.db.Select("MAX(id)").Table("commit_status").
 		Where("repo_id = ? AND sha = ?", repoID, sha).
 		Group("context")
 	
