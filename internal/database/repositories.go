@@ -27,6 +27,9 @@ type RepositoryAPIFormatOptions struct {
 
 // APIFormat returns the API format of a repository.
 func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) *apiv2types.RepositoryResponse {
+	if owner == nil {
+		owner = NewGhostUser()
+	}
 	var opt RepositoryAPIFormatOptions
 	if len(opts) > 0 {
 		opt = opts[0]

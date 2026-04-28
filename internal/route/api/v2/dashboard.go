@@ -18,7 +18,11 @@ type DashboardData struct {
 
 // GetDashboardData returns the initial data needed for the dashboard.
 func GetDashboardData(c *context.APIContext) {
-	ctxUser := c.User // For now, we only support personal dashboard in v2
+	ctxUser := c.User
+	if ctxUser == nil {
+		c.StatusError(http.StatusUnauthorized, "User must be logged in", nil)
+		return
+	}
 
 	// 1. Get Personal Repositories
 	repos, err := database.GetUserRepositories(
@@ -33,9 +37,12 @@ func GetDashboardData(c *context.APIContext) {
 		c.Error(err, "get user repositories")
 		return
 	}
-	apiRepos := make([]*apiv2types.RepositoryResponse, len(repos))
-	for i, r := range repos {
-		apiRepos[i] = r.APIFormat(ctxUser)
+	apiRepos := make([]*apiv2types.RepositoryResponse, 0, len(repos))
+	for _, r := range repos {
+		if r == nil {
+			continue
+		}
+		apiRepos = append(apiRepos, r.APIFormat(ctxUser))
 	}
 
 	// 2. Get Collaborative Repositories
@@ -45,9 +52,12 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 	_ = database.RepositoryList(collaborative).LoadAttributes()
-	apiCollaborative := make([]*apiv2types.RepositoryResponse, len(collaborative))
-	for i, r := range collaborative {
-		apiCollaborative[i] = r.APIFormat(r.MustOwner())
+	apiCollaborative := make([]*apiv2types.RepositoryResponse, 0, len(collaborative))
+	for _, r := range collaborative {
+		if r == nil {
+			continue
+		}
+		apiCollaborative = append(apiCollaborative, r.APIFormat(r.MustOwner()))
 	}
 
 	// 4. Get Organizations
@@ -62,9 +72,12 @@ func GetDashboardData(c *context.APIContext) {
 		c.Error(err, "list organizations")
 		return
 	}
-	apiOrgs := make([]*apiv2types.UserResponse, len(orgs))
-	for i, o := range orgs {
-		apiOrgs[i] = o.APIFormat()
+	apiOrgs := make([]*apiv2types.UserResponse, 0, len(orgs))
+	for _, o := range orgs {
+		if o == nil {
+			continue
+		}
+		apiOrgs = append(apiOrgs, o.APIFormat())
 	}
 
 	c.JSON(http.StatusOK, DashboardData{
@@ -76,14 +89,18 @@ func GetDashboardData(c *context.APIContext) {
 
 // GetDashboardFeeds returns the activity feed for the dashboard.
 func GetDashboardFeeds(c *context.APIContext) {
-	if c.User.DisableNewsFeed {
+	ctxUser := c.User
+	if ctxUser == nil {
+		c.StatusError(http.StatusUnauthorized, "User must be logged in", nil)
+		return
+	}
+
+	if ctxUser.DisableNewsFeed {
 		c.JSON(http.StatusOK, map[string]any{
 			"feeds": []any{},
 		})
 		return
 	}
-
-	ctxUser := c.User
 	afterID := c.QueryInt64("after_id")
 
 	actions, err := database.Handle.Actions().ListByUser(c.Req.Context(), ctxUser.ID, c.User.ID, afterID, false)
