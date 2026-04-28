@@ -163,6 +163,11 @@ type DB struct {
 // single-thread process).
 var Handle *DB
 
+// GormDB returns the underlying gorm.DB instance.
+func (db *DB) GormDB() *gorm.DB {
+	return db.db
+}
+
 // WithTransaction returns a new DB handler with the given transaction.
 func (db *DB) WithTransaction(tx *gorm.DB) *DB {
 	return &DB{db: tx}

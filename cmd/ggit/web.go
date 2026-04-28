@@ -14,10 +14,12 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/ginx"
+	"github.com/nef734/ggit/internal/monitoring"
 	"github.com/nef734/ggit/internal/route"
 	apiv2 "github.com/nef734/ggit/internal/route/api/v2"
 	"github.com/nef734/ggit/internal/route/lfs"
 	"github.com/nef734/ggit/internal/route/repo"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 var webCommand = cli.Command{
@@ -41,6 +43,22 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	}
 
 	r := ginx.New()
+
+	// Monitoring & Tracing
+	if conf.Prometheus.Enabled {
+		r.Use(monitoring.PrometheusMiddleware())
+		r.GET("/metrics", monitoring.PrometheusHandler())
+	}
+	r.GET("/health", monitoring.HealthCheckHandler)
+
+	// OpenTelemetry Tracing
+	shutdown, err := monitoring.InitTracing()
+	if err != nil {
+		log.Error("Failed to initialize tracing: %v", err)
+	} else {
+		defer shutdown(stdctx.Background())
+		r.Use(otelgin.Middleware("ggit"))
+	}
 
 	// Git HTTP
 	repoHTTP := r.Group("/:username/:reponame", repo.HTTPContexter(repo.NewStore()))
