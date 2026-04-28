@@ -109,7 +109,7 @@
   const exploreSubItems = $derived([
     { name: i18n.t("explore.repos") || "Repositories", icon: "book", path: "/explore/repos" },
     { name: i18n.t("explore.users") || "Users", icon: "person_search", path: "/explore/users" },
-    { name: i18n.t("explore.organizations") || "Organizations", icon: "corporate_fare", path: "/explore/orgs" },
+    { name: i18n.t("explore.organizations") || "Organizations", icon: "corporate_fare", path: "/explore/organizations" },
   ]);
 
   const isAdminPath = $derived(page.url.pathname.startsWith("/admin"));

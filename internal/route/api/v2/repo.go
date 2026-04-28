@@ -166,6 +166,7 @@ func CreateRepo(c *context.APIContext) {
 
 // GetRepoView returns the content of a file or directory in the repository.
 func GetRepoView(c *context.APIContext) {
+	log.Trace("GetRepoView: repo=%v, path=%q", c.Repo.Repository != nil, c.Repo.TreePath)
 	if c.Repo == nil || c.Repo.Repository == nil {
 		c.Status(http.StatusNotFound)
 		return

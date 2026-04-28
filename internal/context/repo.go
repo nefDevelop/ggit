@@ -388,6 +388,7 @@ func RepoRef() gin.HandlerFunc {
 					return
 				}
 			} else {
+				log.Trace("RepoRef: refName %q not found in branches, tags, or as a valid commit SHA", refName)
 				gctx.NotFound()
 				return
 			}
