@@ -276,8 +276,15 @@
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .premium-checkbox input { display: none; }
+  .premium-checkbox input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+    pointer-events: none;
+  }
   .premium-checkbox:hover { background: rgba(255,255,255,0.05); transform: translateY(-2px); }
+  .premium-checkbox:active { transform: scale(0.98); background: rgba(255,255,255,0.08); }
   .premium-checkbox.checked { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.08); box-shadow: var(--shadow-md); }
   .premium-checkbox.danger.checked { border-color: var(--error); background: rgba(var(--error-rgb), 0.08); }
   

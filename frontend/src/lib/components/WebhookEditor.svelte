@@ -190,10 +190,17 @@
   
   .events-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   @media (max-width: 600px) { .events-grid { grid-template-columns: 1fr; } }
-  .event-card { display: flex; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; cursor: pointer; transition: all 0.2s; }
+  .event-card { display: flex; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
   .event-card:hover { background: rgba(255,255,255,0.05); }
+  .event-card:active { transform: scale(0.98); background: rgba(255,255,255,0.08); }
   .event-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
-  .event-card input { margin-top: 0.2rem; }
+  .event-card input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+    pointer-events: none;
+  }
   
   .event-content { display: flex; flex-direction: column; gap: 0.1rem; }
   .event-content strong { font-size: 0.9rem; }

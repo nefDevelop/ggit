@@ -49,6 +49,7 @@
       });
       if (res.ok) {
         toast.success("Security settings updated.");
+        fetchData();
       }
     } catch (e) {
       console.error(e);
@@ -98,7 +99,7 @@
       <div class="header-content">
         <span class="material-symbols-rounded guardian-icon">shield</span>
         <div>
-          <h3>Secret Guardian 🛡️</h3>
+          <h3>Secret Guardian</h3>
           <p>Protección proactiva contra la subida de secretos, API keys y archivos sensibles.</p>
         </div>
       </div>
@@ -106,7 +107,7 @@
         <Checkbox 
           label="Habilitar Guardián" 
           bind:checked={data.enabled} 
-          onchange={saveSettings}
+          onchange={() => saveSettings()}
         />
       </div>
     </header>

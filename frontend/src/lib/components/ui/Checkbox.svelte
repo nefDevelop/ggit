@@ -15,10 +15,12 @@
   }
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<label class="checkbox-container {className}" onclick={toggle}>
-  <input type="checkbox" {checked} />
+<label class="checkbox-container {className}">
+  <input 
+    type="checkbox" 
+    bind:checked={checked} 
+    onchange={() => onchange?.(checked)}
+  />
   <span class="checkmark" class:checked>
     {#if checked}
       <span class="material-symbols-rounded">check</span>
@@ -50,12 +52,15 @@
     background: var(--md-sys-color-surface-container-high);
     border-color: var(--md-sys-color-outline-variant);
   }
+  .checkbox-container:active {
+    transform: scale(0.98);
+    background: var(--md-sys-color-surface-container-highest);
+  }
 
   input {
-    visibility: hidden;
-    width: 0;
-    height: 0;
+    opacity: 0;
     position: absolute;
+    cursor: pointer;
   }
 
   .checkmark {

@@ -183,14 +183,16 @@
   @media (max-width: 600px) { .toggle-row { flex-direction: column; align-items: stretch; padding: 1rem 1.25rem; gap: 1rem; } }
   .toggle-row:last-child { border-bottom: none; }
   .toggle-row:hover { background: rgba(255,255,255,0.02); }
+  .toggle-row:active { background: rgba(255,255,255,0.05); }
 
   .row-info { flex: 1; display: flex; flex-direction: column; gap: 0.3rem; }
   .row-title { display: flex; align-items: center; gap: 1rem; font-size: 1.15rem; font-weight: 800; color: var(--text-color); }
   .row-title span { color: var(--primary-color); opacity: 0.7; font-size: 1.5rem; }
   .row-desc { font-size: 0.95rem; color: var(--text-muted); margin: 0; line-height: 1.5; }
 
-  .premium-switch { position: relative; display: inline-block; width: 52px; height: 28px; flex-shrink: 0; cursor: pointer; }
-  .premium-switch input { opacity: 0; width: 0; height: 0; }
+  .premium-switch { position: relative; display: inline-block; width: 52px; height: 28px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s; }
+  .premium-switch:active { transform: scale(0.9); }
+  .premium-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
   .switch-slider { position: absolute; inset: 0; background: var(--surface-variant); border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   .switch-slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: var(--text-muted); border-radius: 50%; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   

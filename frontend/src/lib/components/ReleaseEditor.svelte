@@ -445,10 +445,19 @@
     display: flex;
     gap: 1rem;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
+    user-select: none;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
   }
   .checkbox-row:hover {
-    opacity: 0.8;
+    background: rgba(255,255,255,0.05);
+  }
+  .checkbox-row:active {
+    transform: scale(0.98);
+  }
+  .checkbox-row input {
+    margin-top: 0.25rem;
   }
   .checkbox-row input {
     width: 1.25rem;
