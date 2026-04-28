@@ -2848,3 +2848,20 @@ func (r *Repository) recalculateAccesses(e Engine) error {
 func (r *Repository) RecalculateAccesses() error {
 	return r.recalculateAccesses(Handle.db)
 }
+// CleanupDanglingRepositories deletes records from the database that no longer have a corresponding repository on disk.
+func CleanupDanglingRepositories() error {
+	var repos []*Repository
+	if err := Handle.db.Find(&repos).Error; err != nil {
+		return err
+	}
+
+	for _, repo := range repos {
+		if !osx.IsDir(repo.RepoPath()) {
+			log.Warn("Repository %s (ID: %d) has no directory on disk, deleting record", repo.FullName(), repo.ID)
+			if err := DeleteRepository(repo.OwnerID, repo.ID); err != nil {
+				log.Error("Failed to delete dangling repository [%d]: %v", repo.ID, err)
+			}
+		}
+	}
+	return nil
+}

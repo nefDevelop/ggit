@@ -669,6 +669,8 @@ func (t *HookTask) deliver() {
 		Header("X-Gogs-Delivery", t.UUID).
 		Header("X-Gogs-Signature", t.Signature).
 		Header("X-Gogs-Event", string(t.EventType)).
+		Header("X-Hub-Signature-256", "sha256="+t.Signature).
+		Header("X-Ggit-Signature", t.Signature).
 		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: conf.Webhook.SkipTLSVerify})
 
 	switch t.ContentType {

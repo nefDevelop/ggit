@@ -29,6 +29,12 @@
       }))
       .sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
   });
+  
+  const isNew = $derived(() => {
+    if (!repo?.updated_at) return false;
+    const date = new Date(repo.updated_at);
+    return (Date.now() - date.getTime()) < (24 * 60 * 60 * 1000);
+  });
 
   let copied = $state(false);
   function copyToClipboard(text: string) {
@@ -38,7 +44,10 @@
   }
 </script>
 
-<div class="repo-row {isOlder ? 'older-row' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
+<div class="repo-row {isOlder ? 'older-row' : ''} {isNew() ? 'new-update' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
+  {#if isNew()}
+    <span class="new-dot-indicator"></span>
+  {/if}
   <div class="main-info">
     <div class="title-line">
       <a href="/{repo.full_name}" class="repo-name" onclick={(e) => e.stopPropagation()}>
@@ -131,6 +140,30 @@
     background: rgba(var(--primary-rgb), 0.05);
     z-index: 10;
     box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .new-update {
+    border-left: 3px solid var(--primary-color);
+  }
+
+  .new-dot-indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 0 12px var(--primary-color);
+    animation: pulse-dot 2s infinite;
+    z-index: 5;
+  }
+
+  @keyframes pulse-dot {
+    0% { transform: translateY(-50%) scale(1); opacity: 1; }
+    50% { transform: translateY(-50%) scale(1.6); opacity: 0.4; }
+    100% { transform: translateY(-50%) scale(1); opacity: 1; }
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }

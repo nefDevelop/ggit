@@ -162,6 +162,21 @@ func InitTracing() (func(context.Context) error, error) {
 		)),
 	)
 	otel.SetTracerProvider(tp)
-
 	return tp.Shutdown, nil
+}
+
+// SurvivalModeMiddleware blocks write requests if disk space is critical.
+func SurvivalModeMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodHead && c.Request.Method != http.MethodOptions {
+			usage, err := disk.Usage(conf.Repository.Root)
+			if err == nil && usage.UsedPercent > 95 {
+				c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{
+					"error": "Survival Mode: Disk space is critical (>95%). Write operations are blocked.",
+				})
+				return
+			}
+		}
+		c.Next()
+	}
 }
