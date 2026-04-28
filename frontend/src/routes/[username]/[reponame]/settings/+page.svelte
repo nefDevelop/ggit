@@ -26,13 +26,11 @@
     { id: 'janitor', label: 'Janitor', icon: 'mop' }
   ];
 
-  const visibleTabs = $derived(() => {
-    let t = [...tabs];
-    if (authState.user?.is_admin || authState.user?.allow_git_hook) {
-      t.push({ id: 'git_hooks', label: 'Git Hooks', icon: 'terminal' });
-    }
-    return t;
-  });
+  const visibleTabs = $derived(
+    (authState.user?.is_admin || authState.user?.allow_git_hook)
+      ? [...tabs, { id: 'git_hooks', label: 'Git Hooks', icon: 'terminal' }]
+      : tabs
+  );
 </script>
 
 <svelte:head>
@@ -42,7 +40,7 @@
 <div class="settings-container">
   <div class="mobile-nav-wrapper">
     <ChipNavigation 
-      items={visibleTabs()} 
+      items={visibleTabs} 
       activeId={activeTab} 
       title="Repository Settings"
       titleIcon="settings"
@@ -53,7 +51,7 @@
   <aside class="settings-sidebar tonal">
     <h3 class="sidebar-title">Repository Settings</h3>
     <nav class="settings-nav">
-      {#each visibleTabs() as tab}
+      {#each visibleTabs as tab}
         <button 
           class="nav-item" 
           class:active={activeTab === tab.id}
