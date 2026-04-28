@@ -298,6 +298,7 @@
             class="toggle-switch" 
             class:active={!profile.disable_news_feed} 
             onclick={() => { profile.disable_news_feed = !profile.disable_news_feed; handleUpdate(); }}
+            aria-label="Toggle Activity Feed"
           >
             <div class="toggle-handle"></div>
           </button>

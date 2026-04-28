@@ -136,8 +136,8 @@
         <form onsubmit={(e) => { e.preventDefault(); createToken(); }} class="premium-token-form">
           <div class="inline-input-layout w-full">
              <div class="field w-full">
-                <label>Nombre del Propósito</label>
-                <input type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required class="w-full" />
+                <label for="newTokenName">Nombre del Propósito</label>
+                <input id="newTokenName" type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required class="w-full" />
              </div>
              <Button type="submit" variant="primary" icon="key" disabled={submitting || !newTokenName} class="w-full sm:w-auto">
                 {submitting ? 'Generando...' : 'Generar Token'}

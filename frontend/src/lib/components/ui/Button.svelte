@@ -58,6 +58,7 @@
     {/if}
   </a>
 {:else}
+  <button 
     {type} 
     {disabled} 
     {title}

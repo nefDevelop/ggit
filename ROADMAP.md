@@ -211,7 +211,6 @@
 - [ ] **Gestión de Fuentes de Auth:** UI para LDAP, OAuth2 (GitHub, Google) y PAM.
 - [ ] **Release Management:** Upload center para binarios y estados de release (Draft/Pre).
 - [ ] **Monitorización Admin:** Cron scheduler y process tracker en el panel admin.
-- [ ] **Branding Global:** Instance customizer para logos, favicons y custom CSS/JS.
 - [x] **Respaldo de Metadatos:** Exportación ligera de DB y adjuntos (sin repositorios).
 - [x] **Adopción de Repositorios:** Función para vincular carpetas Git existentes a la DB.
 ---
@@ -224,7 +223,6 @@
 | **Dangling Objects Cleanup** | 22 | Completado | Bajo | Script para eliminar registros de DB que ya no tienen repo en disco. |
 | **Modo Supervivencia** | 22 | Completado | Despreciable | Lógica de bloqueo de escritura basada en umbral de espacio en disco. |
 | **Dashboard Leído** | 22 | Completado | Despreciable | Implementación de animaciones CSS/Svelte para estados de lectura. |
-| **Branding Global** | 25 | Baja | Despreciable | Interfaz simple para modificar logos y estilos personalizados. |
 | **OIDC (OpenID Connect)** | 10 | Media | Bajo | Integración de cliente estándar para autenticación externa. |
 | **Merge Checks** | 21 | Media | Bajo | Validación de hilos de conversación resueltos antes de permitir merge. |
 | **Commit Status API** | 21 | Media | Bajo | Creación de endpoints y modelos para reportes de CI externos. |
