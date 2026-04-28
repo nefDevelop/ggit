@@ -309,12 +309,10 @@ func getRepoDirectory(c *context.APIContext) {
 	// Stats and Languages (Only on root)
 	if c.Repo.TreePath == "" {
 		stats := map[string]int64{}
-		count, _ := c.Repo.Commit.CommitsCount()
-		stats["commits"] = count
+		stats["commits"] = c.Repo.Repository.NumCommits
+		stats["branches"] = int64(c.Repo.Repository.NumBranches)
 
-		branches, _ := c.Repo.Repository.GetBranches()
-		stats["branches"] = int64(len(branches))
-
+		// Tags are usually fast, but we can also cache them if needed.
 		tags, _ := c.Repo.GitRepo.Tags()
 		stats["tags"] = int64(len(tags))
 		res["stats"] = stats
