@@ -149,6 +149,11 @@ func HealthCheckHandler(c *gin.Context) {
 
 // InitTracing initializes OpenTelemetry tracing.
 func InitTracing() (func(context.Context) error, error) {
+	// Only enable stdout tracing if explicitly requested via environment variable
+	if os.Getenv("GGIT_TRACE_STDOUT") != "true" {
+		return func(context.Context) error { return nil }, nil
+	}
+
 	exporter, err := stdouttrace.New(stdouttrace.WithPrettyPrint())
 	if err != nil {
 		return nil, err
