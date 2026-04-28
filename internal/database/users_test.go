@@ -286,7 +286,7 @@ func usersChangeUsername(t *testing.T, ctx context.Context, s *UsersStore) {
 	require.NoError(t, err)
 	defer func() { _ = os.RemoveAll(tempServerAppDataPath) }()
 
-	repo, err := newReposStore(s.db).Create(
+	repo, err := NewRepositoriesStore(s.db).Create(
 		ctx,
 		alice.ID,
 		CreateRepoOptions{
@@ -454,7 +454,7 @@ func usersDeleteCustomAvatar(t *testing.T, ctx context.Context, s *UsersStore) {
 }
 
 func usersDeleteByID(t *testing.T, ctx context.Context, s *UsersStore) {
-	reposStore := newReposStore(s.db)
+	reposStore := NewRepositoriesStore(s.db)
 
 	t.Run("user still has repository ownership", func(t *testing.T) {
 		alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
@@ -658,7 +658,7 @@ func usersDeleteInactivated(t *testing.T, ctx context.Context, s *UsersStore) {
 	// User with repository ownership should be skipped
 	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
 	require.NoError(t, err)
-	reposStore := newReposStore(s.db)
+	reposStore := NewRepositoriesStore(s.db)
 	_, err = reposStore.Create(ctx, alice.ID, CreateRepoOptions{Name: "repo1"})
 	require.NoError(t, err)
 

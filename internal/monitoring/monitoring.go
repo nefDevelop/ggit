@@ -91,6 +91,7 @@ type HealthStatus struct {
 	Database  string                 `json:"database"`
 	Disk      map[string]interface{} `json:"disk"`
 	Memory    map[string]interface{} `json:"memory"`
+	Survival  bool                   `json:"survival_mode"`
 	Timestamp time.Time              `json:"timestamp"`
 }
 
@@ -141,6 +142,7 @@ func HealthCheckHandler(c *gin.Context) {
 		Database:  dbStatus,
 		Disk:      diskInfo,
 		Memory:    memInfo,
+		Survival:  diskInfo["used_percent"].(float64) > 95,
 		Timestamp: time.Now(),
 	})
 }

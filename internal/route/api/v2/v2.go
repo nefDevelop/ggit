@@ -133,6 +133,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.DELETE("/notices", ginx.Handle(ClearAdminNotices))
 
 		admin.GET("/audit-log", ginx.Handle(GetAdminAuditLog))
+		admin.GET("/repos/unmanaged", ginx.Handle(GetAdminUnmanagedRepos))
+		admin.POST("/repos/adopt", ginx.Handle(AdoptAdminRepo))
+		admin.POST("/repos/:id/check-integrity", ginx.Handle(CheckAdminRepoIntegrity))
+		admin.GET("/backup/export", ginx.Handle(ExportAdminBackup))
 	}
 
 	repo := r.Group("/:username/:reponame", context.RepoAssignment())

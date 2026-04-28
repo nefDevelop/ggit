@@ -163,6 +163,10 @@ type DB struct {
 // single-thread process).
 var Handle *DB
 
+func (db *DB) DB() *gorm.DB {
+	return db.db
+}
+
 // GormDB returns the underlying gorm.DB instance.
 func (db *DB) GormDB() *gorm.DB {
 	return db.db
@@ -224,7 +228,7 @@ func (db *DB) PublicKey() *PublicKeysStore {
 }
 
 func (db *DB) Repositories() *RepositoriesStore {
-	return newReposStore(db.db)
+	return NewRepositoriesStore(db.db)
 }
 
 func (db *DB) Issues() *IssuesStore {
@@ -236,7 +240,7 @@ func (db *DB) TwoFactors() *TwoFactorsStore {
 }
 
 func (db *DB) Users() *UsersStore {
-	return newUsersStore(db.db)
+	return NewUsersStore(db.db)
 }
 
 func (db *DB) PullReviews() *PullReviewsStore {

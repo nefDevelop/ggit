@@ -18,6 +18,9 @@ import (
 	"github.com/nef734/ggit/internal/email"
 	"github.com/nef734/ggit/internal/process"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/services/backup"
+	"github.com/nef734/ggit/internal/services/health"
+	"github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
 )
 
@@ -584,4 +587,67 @@ func ClearAdminNotices(c *context.APIContext) {
 		return
 	}
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
+}
+
+// GetAdminUnmanagedRepos returns a list of repositories on disk that are not in the database.
+func GetAdminUnmanagedRepos(c *context.APIContext) {
+	unmanaged, err := repo.Repos.ListUnmanagedRepositories(c.Req.Context())
+	if err != nil {
+		c.Error(err, "list unmanaged repositories")
+		return
+	}
+	c.JSONSuccess(unmanaged)
+}
+
+// AdoptAdminRepo adopts an unmanaged repository folder into the database.
+func AdoptAdminRepo(c *context.APIContext) {
+	var f struct {
+		OwnerName string `json:"owner_name" binding:"required"`
+		RepoName  string `json:"repo_name" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	r, err := repo.Repos.AdoptRepository(c.Req.Context(), f.OwnerName, f.RepoName)
+	if err != nil {
+		c.Error(err, "adopt repository")
+		return
+	}
+
+	c.JSONSuccess(ToRepositoryResponse(r))
+}
+
+// CheckAdminRepoIntegrity forces an integrity check on a repository.
+func CheckAdminRepoIntegrity(c *context.APIContext) {
+	repoID := c.ParamsInt64("id")
+	r, err := database.GetRepositoryByID(repoID)
+	if err != nil {
+		c.Error(err, "get repository")
+		return
+	}
+
+	if err := health.Sentinel.RunIntegrityCheck(c.Req.Context(), r); err != nil {
+		c.Error(err, "run integrity check")
+		return
+	}
+
+	c.NoContent()
+}
+
+// ExportAdminBackup generates and downloads a metadata backup.
+func ExportAdminBackup(c *context.APIContext) {
+	path, err := backup.CreateMetadataBackup()
+	if err != nil {
+		c.Error(err, "create backup")
+		return
+	}
+
+	c.File(path)
+	
+	// Cleanup old backups in the background
+	go func() {
+		_ = backup.CleanupOldBackups()
+	}()
 }

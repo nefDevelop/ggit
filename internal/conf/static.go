@@ -33,6 +33,12 @@ var (
 var CustomConf string
 
 var (
+	HealthCheck struct {
+		ActivityCooldownDays int
+		MaxCommits           int
+		IdleCheckDays        int
+	}
+
 	// Security settings
 	Security struct {
 		InstallLock             bool

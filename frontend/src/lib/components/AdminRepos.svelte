@@ -39,17 +39,31 @@
     }
   }
 
+  async function checkIntegrity(id: number, name: string) {
+    if (!await dialog.confirm(`¿Seguro que quieres forzar una verificación de integridad (git fsck) en "${name}"?`)) return;
+    
+    try {
+      const res = await apiFetch(`/api/v2/admin/repos/${id}/check-integrity`, { method: "POST" });
+      if (res.ok) {
+        dialog.alert(`Verificación de integridad iniciada para "${name}".`);
+      }
+    } catch (e) { console.error(e); }
+  }
+
   onMount(fetchRepos);
 </script>
 
 <Card class="settings-premium-card" padding="lg">
   <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">database</span>
-      <div>
-        <h2>{i18n.t('admin.repositories')}</h2>
-        <p class="subtitle">Supervisión y gestión global de repositorios del sistema</p>
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">database</span>
+        <div>
+          <h2>{i18n.t('admin.repositories')}</h2>
+          <p class="subtitle">Supervisión y gestión global de repositorios del sistema</p>
+        </div>
       </div>
+      <Button variant="primary" icon="add_box" href="/admin/repos/adoption">Adopción de Repos</Button>
     </div>
   </header>
 
@@ -106,6 +120,7 @@
               <td data-label="Acciones">
                 <div class="action-row">
                   <Button variant="ghost" size="sm" icon="visibility" href="/{repo.owner?.username}/{repo.name}" />
+                  <Button variant="ghost" size="sm" icon="health_and_safety" onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad" />
                   <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteRepo(repo.id, repo.name)} />
                 </div>
               </td>

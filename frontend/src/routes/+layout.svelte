@@ -13,6 +13,20 @@
 
 	let { children } = $props();
 
+	let isSurvivalMode = $state(false);
+
+	async function checkSystemHealth() {
+		try {
+			const res = await fetch('/health');
+			if (res.ok) {
+				const health = await res.json();
+				isSurvivalMode = health.survival_mode;
+			}
+		} catch (e) {
+			console.error("Health check failed", e);
+		}
+	}
+
 	onMount(async () => {
 		await checkAuth();
 		const installed = await checkInstallation();
@@ -28,6 +42,10 @@
 		// Cargar el idioma guardado o el del navegador
 		const savedLocale = localStorage.getItem('ggit-locale') || navigator.language || 'es-ES';
 		i18n.init(savedLocale);
+
+		checkSystemHealth();
+		const healthInterval = setInterval(checkSystemHealth, 30000);
+		return () => clearInterval(healthInterval);
 	});
 
 	const isDashboard = $derived($page.url.pathname === '/' || $page.url.pathname === '/dashboard');
@@ -63,6 +81,12 @@
 	{/if}
 
     <div id="main-container-wrapper">
+		{#if isSurvivalMode}
+			<div class="survival-mode-banner">
+				<span class="material-symbols-rounded">warning</span>
+				<p><strong>Modo Supervivencia Activo:</strong> El espacio en disco es crítico. Las operaciones de escritura están bloqueadas temporalmente.</p>
+			</div>
+		{/if}
         <main id="main-content">
             {#if authState.loading}
                 <div class="initial-loading">
@@ -81,3 +105,24 @@
     <GlobalDialog />
     <GlobalToast />
 </div>
+
+<style>
+	.survival-mode-banner {
+		background: var(--md-sys-color-error-container);
+		color: var(--md-sys-color-on-error-container);
+		padding: 0.75rem 1.5rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		border-bottom: 1px solid var(--md-sys-color-error);
+		animation: slide-down 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		z-index: 100;
+	}
+	.survival-mode-banner p { margin: 0; font-size: 0.9rem; font-weight: 600; }
+	.survival-mode-banner span { color: var(--error); }
+
+	@keyframes slide-down {
+		from { transform: translateY(-100%); }
+		to { transform: translateY(0); }
+	}
+</style>

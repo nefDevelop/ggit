@@ -60,6 +60,7 @@ type RepositoryResponse struct {
 	FullName    string        `json:"full_name"`
 	Description string        `json:"description"`
 	Owner       *UserResponse `json:"owner"`
+	AvatarURL   string        `json:"avatar_url"`
 	NumStars      int                   `json:"num_stars"`
 	NumForks      int                   `json:"num_forks"`
 	NumWatches    int                   `json:"num_watches"`
@@ -89,6 +90,15 @@ type RepositoryResponse struct {
 	Permissions   *RepositoryPermission `json:"permissions,omitempty"`
 	Parent        *RepositoryResponse   `json:"parent,omitempty"`
 	Topics        []string              `json:"topics"`
+	
+	// Activity Timestamps
+	LastCommitAt   time.Time `json:"last_commit_at"`
+	LastIssueAt    time.Time `json:"last_issue_at"`
+	LastPullAt     time.Time `json:"last_pull_at"`
+	LastBranchAt   time.Time `json:"last_branch_at"`
+
+	// Sentinel Info
+	LastHealthCheckAt time.Time `json:"last_health_check_at"`
 }
 
 // RepositoryBranchResponse represents a branch in a repository.

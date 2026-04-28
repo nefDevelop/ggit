@@ -173,14 +173,13 @@
 
 ### 4. Gestión de Proyectos
 - [ ] **Tableros Kanban:** Gestión de Issues por columnas (Todo, In Progress, Done).
-- [ ] **Búsqueda Global de Código:** Indexación bajo demanda para buscar texto en todo el servidor.
 
 ---
 
 ## Fase 22: Integridad y Autocuración 🛡️
 **Objetivo:** Garantizar la consistencia entre Base de Datos y Sistema de Archivos.
 - [ ] **Consistencia Atómica:** Lógica de "Two-Phase Commit" para operaciones Git + DB.
-- [ ] **Ggit Health Sentinel:** Tarea en segundo plano para ejecutar `git fsck` rotativo.
+- [x] **Ggit Health Sentinel:** Tarea en segundo plano para ejecutar `git fsck` rotativo.
 - [ ] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes.
 - [x] **Dangling Objects Cleanup:** Identificar y limpiar rastro de archivos de repositorios borrados.
 - [ ] **Blindaje Anti-OOM:** Limitador de procesos Git concurrentes basado en RAM disponible.
@@ -213,36 +212,37 @@
 - [ ] **Release Management:** Upload center para binarios y estados de release (Draft/Pre).
 - [ ] **Monitorización Admin:** Cron scheduler y process tracker en el panel admin.
 - [ ] **Branding Global:** Instance customizer para logos, favicons y custom CSS/JS.
-- [ ] **Exportación Portable:** Backup de repositorios/organizaciones en un click.
+- [x] **Respaldo de Metadatos:** Exportación ligera de DB y adjuntos (sin repositorios).
+- [x] **Adopción de Repositorios:** Función para vincular carpetas Git existentes a la DB.
 ---
 
 ## Estimación de Dificultad (Tareas Pendientes)
 
-| Tarea | Fase | Dificultad | Explicación |
-| :--- | :---: | :---: | :--- |
-| **Webhooks Seguros** | 21 | Completado | Implementar firmas HMAC-SHA256 en las cabeceras de salida. |
-| **Dangling Objects Cleanup** | 22 | Completado | Script para eliminar registros de DB que ya no tienen repo en disco. |
-| **Modo Supervivencia** | 22 | Completado | Lógica de bloqueo de escritura basada en umbral de espacio en disco. |
-| **Dashboard Leído** | 22 | Completado | Implementación de animaciones CSS/Svelte para estados de lectura. |
-| **Branding Global** | 25 | Baja | Interfaz simple para modificar logos y estilos personalizados. |
-| **OIDC (OpenID Connect)** | 10 | Media | Integración de cliente estándar para autenticación externa. |
-| **Merge Checks** | 21 | Media | Validación de hilos de conversación resueltos antes de permitir merge. |
-| **Commit Status API** | 21 | Media | Creación de endpoints y modelos para reportes de CI externos. |
-| **Ggit Health Sentinel** | 22 | Media | Orquestación de `git fsck` periódico sin degradar el rendimiento. |
-| **Self-Healing Hooks** | 22 | Media | Detección y recreación automática de scripts de hooks faltantes. |
-| **Blindaje Anti-OOM** | 22 | Media | Limitador de concurrencia dinámico basado en la RAM disponible. |
-| **Ggit Credential Helper** | 22 | Media | Sistema de cifrado y almacenamiento para tokens de remotos HTTP. |
-| **Gestión de Colaboradores** | 23 | Media | Nueva UI de búsqueda y gestión de roles granulares. |
-| **Deploy Keys & Git Hooks** | 23 | Media | Editores web con validación de sintaxis y seguridad en servidor. |
-| **Label & Milestone Manager** | 23 | Media | Refactorización de gestión de metadatos a componentes Material 3. |
-| **Webhook Tester & Logs** | 23 | Media | Sistema de reintentos y visualización de payloads de entrega. |
-| **Auditoría de Índices** | 24 | Media | Optimización de consultas críticas mediante índices SQLite precisos. |
-| **Fuentes de Auth UI** | 25 | Media | Interfaz administrativa para configurar proveedores LDAP/OAuth2. |
-| **Release Management** | 25 | Media | Lógica de subida y persistencia de activos binarios en lanzamientos. |
-| **Monitorización Admin** | 25 | Media | Consola de control para tareas cron y procesos Git activos. |
-| **Exportación Portable** | 25 | Media | Empaquetado atómico de base de datos y archivos Git para backups. |
-| **OAuth2/OIDC Provider** | 21 | Alta | Implementar Ggit como proveedor de identidad completo (Server-side). |
-| **Tableros Kanban** | 21 | Alta | Sistema interactivo de gestión de estados con drag-and-drop. |
-| **Búsqueda Global** | 21 | Alta | Indexación profunda de código con alto consumo de recursos. |
-| **Consistencia Atómica** | 22 | Alta | Coordinación de transacciones (2PC) entre SQLite y el sistema de archivos. |
-| **Pattern Store** | 24 | Alta | Refactorización estructural de toda la capa de persistencia del sistema. |
+| Tarea | Fase | Dificultad | Consumo RAM | Explicación |
+| :--- | :---: | :---: | :---: | :--- |
+| **Webhooks Seguros** | 21 | Completado | Despreciable | Implementar firmas HMAC-SHA256 en las cabeceras de salida. |
+| **Dangling Objects Cleanup** | 22 | Completado | Bajo | Script para eliminar registros de DB que ya no tienen repo en disco. |
+| **Modo Supervivencia** | 22 | Completado | Despreciable | Lógica de bloqueo de escritura basada en umbral de espacio en disco. |
+| **Dashboard Leído** | 22 | Completado | Despreciable | Implementación de animaciones CSS/Svelte para estados de lectura. |
+| **Branding Global** | 25 | Baja | Despreciable | Interfaz simple para modificar logos y estilos personalizados. |
+| **OIDC (OpenID Connect)** | 10 | Media | Bajo | Integración de cliente estándar para autenticación externa. |
+| **Merge Checks** | 21 | Media | Bajo | Validación de hilos de conversación resueltos antes de permitir merge. |
+| **Commit Status API** | 21 | Media | Bajo | Creación de endpoints y modelos para reportes de CI externos. |
+| **Ggit Health Sentinel** | 22 | Media | Alto | Orquestación de `git fsck` periódico sin degradar el rendimiento. |
+| **Self-Healing Hooks** | 22 | Media | Bajo | Detección y recreación automática de scripts de hooks faltantes. |
+| **Blindaje Anti-OOM** | 22 | Media | Medio | Limitador de concurrencia dinámico basado en la RAM disponible. |
+| **Ggit Credential Helper** | 22 | Media | Bajo | Sistema de cifrado y almacenamiento para tokens de remotos HTTP. |
+| **Gestión de Colaboradores** | 23 | Media | Bajo | Nueva UI de búsqueda y gestión de roles granulares. |
+| **Deploy Keys & Git Hooks** | 23 | Media | Bajo | Editores web con validación de sintaxis y seguridad en servidor. |
+| **Label & Milestone Manager** | 23 | Media | Bajo | Refactorización de gestión de metadatos a componentes Material 3. |
+| **Webhook Tester & Logs** | 23 | Media | Medio | Sistema de reintentos y visualización de payloads de entrega. |
+| **Auditoría de Índices** | 24 | Media | Medio | Optimización de consultas críticas mediante índices SQLite precisos. |
+| **Fuentes de Auth UI** | 25 | Media | Bajo | Interfaz administrativa para configurar proveedores LDAP/OAuth2. |
+| **Release Management** | 25 | Media | Medio | Lógica de subida y persistencia de activos binarios en lanzamientos. |
+| **Monitorización Admin** | 25 | Media | Bajo | Consola de control para tareas cron y procesos Git activos. |
+| **Respaldo de Metadatos** | 25 | Baja | Bajo | Exportación ligera de DB y adjuntos (sin repositorios). |
+| **Adopción de Repositorios** | 22 | Media | Bajo | Función para vincular carpetas Git existentes a la DB. |
+| **OAuth2/OIDC Provider** | 21 | Alta | Medio | Implementar Ggit como proveedor de identidad completo (Server-side). |
+| **Tableros Kanban** | 21 | Alta | Medio | Sistema interactivo de gestión de estados con drag-and-drop. |
+| **Consistencia Atómica** | 22 | Alta | Medio | Coordinación de transacciones (2PC) entre SQLite y el sistema de archivos. |
+| **Pattern Store** | 24 | Alta | Medio | Refactorización estructural de toda la capa de persistencia del sistema. |

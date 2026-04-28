@@ -43,7 +43,7 @@ func TestOrgs(t *testing.T) {
 }
 
 func orgsList(t *testing.T, ctx context.Context, s *OrganizationsStore) {
-	usersStore := newUsersStore(s.db)
+	usersStore := NewUsersStore(s.db)
 	alice, err := usersStore.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
 	require.NoError(t, err)
 	bob, err := usersStore.Create(ctx, "bob", "bob@example.com", CreateUserOptions{})
@@ -114,7 +114,7 @@ func orgsList(t *testing.T, ctx context.Context, s *OrganizationsStore) {
 
 func organizationsSearchByName(t *testing.T, ctx context.Context, s *OrganizationsStore) {
 	// TODO: Use Orgs.Create to replace SQL hack when the method is available.
-	usersStore := newUsersStore(s.db)
+	usersStore := NewUsersStore(s.db)
 	org1, err := usersStore.Create(ctx, "org1", "org1@example.com", CreateUserOptions{FullName: "Acme Corp"})
 	require.NoError(t, err)
 	org2, err := usersStore.Create(ctx, "org2", "org2@example.com", CreateUserOptions{FullName: "Acme Corp 2"})

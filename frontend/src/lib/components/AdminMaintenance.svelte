@@ -22,6 +22,7 @@
     { id: 6, name: "Resync Repository Hooks", icon: "link", color: "#3b82f6", desc: "Resync all Git hooks across all repositories." },
     { id: 8, name: "Resync Repository Stats", icon: "query_stats", color: "#06b6d4", desc: "Update repository sizes, issues and other system-wide counters." },
     { id: 9, name: "Git Health Check (FSCK)", icon: "health_and_safety", color: "#f97316", desc: 'Run "git fsck" to verify object integrity across all repositories.' },
+    { id: 10, name: "Metadata Backup", icon: "cloud_download", color: "#ec4899", desc: "Download a ZIP archive with the database, attachments and avatars." },
   ];
 
   async function fetchStats() {
@@ -43,8 +44,34 @@
   async function runOperation(op: any) {
     if (runningOp !== null) return;
     if (!await dialog.confirm(`Are you sure you want to run: ${op.name}?`)) return;
+    
     runningOp = op.id;
     logActivity(`Starting: ${op.name}...`, "info");
+
+    if (op.id === 10) {
+      try {
+        const res = await fetch("/api/v2/admin/backup/export");
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ggit-metadata-backup-${new Date().toISOString().split('T')[0]}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          logActivity(`Completed: ${op.name}`, "success");
+        } else {
+          logActivity(`Failed: ${op.name} - Server error`, "error");
+        }
+      } catch (e) {
+        logActivity(`Network error: ${op.name}`, "error");
+      } finally {
+        runningOp = null;
+      }
+      return;
+    }
+
     try {
       const res = await apiFetch("/api/v2/admin/operations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ op: op.id }) });
       if (res.ok) { logActivity(`Completed: ${op.name}`, "success"); await fetchStats(); }

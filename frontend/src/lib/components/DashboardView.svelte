@@ -87,7 +87,12 @@
         <ViewHeader 
             bind:activeTab={viewMode}
             tabs={[
-                ...(authState.user?.disable_news_feed ? [] : [{ id: 'temporal', label: 'Activity', icon: 'schedule' }]),
+                ...(authState.user?.disable_news_feed ? [] : [{ 
+                    id: 'temporal', 
+                    label: 'Activity', 
+                    icon: 'schedule',
+                    hasBadge: (groupedRepos.recent?.length ?? 0) > 0 && (groupedRepos.recent?.some(r => (Date.now() - new Date(r.updated_at).getTime()) < (24 * 60 * 60 * 1000)))
+                }]),
                 { id: 'list', label: 'Alphabetical', icon: 'list' }
             ]}
         >

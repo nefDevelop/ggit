@@ -39,7 +39,7 @@ type UsersStore struct {
 	db *gorm.DB
 }
 
-func newUsersStore(db *gorm.DB) *UsersStore {
+func NewUsersStore(db *gorm.DB) *UsersStore {
 	return &UsersStore{db: db}
 }
 
@@ -996,7 +996,7 @@ func (s *UsersStore) MarkEmailActivated(ctx context.Context, userID int64, email
 			return errors.Wrap(err, "mark email activated")
 		}
 
-		return newUsersStore(tx).Update(ctx, userID, UpdateUserOptions{GenerateNewRands: true})
+		return NewUsersStore(tx).Update(ctx, userID, UpdateUserOptions{GenerateNewRands: true})
 	})
 }
 

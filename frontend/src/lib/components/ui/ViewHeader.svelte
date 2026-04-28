@@ -6,6 +6,7 @@
     id: string;
     label: string;
     icon: string;
+    hasBadge?: boolean;
   }
 
   interface Props {
@@ -48,8 +49,13 @@
             class:active={activeTab === tab.id}
             onclick={() => activeTab = tab.id}
           >
-            <span class="material-symbols-rounded mini">{tab.icon}</span>
-            {tab.label}
+            <div class="tab-content-wrapper">
+              <span class="material-symbols-rounded mini">{tab.icon}</span>
+              {tab.label}
+              {#if tab.hasBadge}
+                <span class="tab-badge-dot"></span>
+              {/if}
+            </div>
           </button>
         {/each}
       </nav>
@@ -110,6 +116,31 @@
   .tab-pill:hover { background: var(--md-sys-color-surface-container-low); color: var(--text-color); }
   .tab-pill.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
   
+  .tab-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+  }
+
+  .tab-badge-dot {
+    width: 6px;
+    height: 6px;
+    background: #ff5252;
+    border-radius: 50%;
+    position: absolute;
+    top: -2px;
+    right: -8px;
+    box-shadow: 0 0 8px #ff5252;
+    animation: pulse-badge 2s infinite;
+  }
+
+  @keyframes pulse-badge {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
   @media (max-width: 800px) {
     .view-header-abstract { padding: 0 1rem 1.5rem; }
     .search-and-action-row { flex-wrap: nowrap; gap: 0.75rem; }

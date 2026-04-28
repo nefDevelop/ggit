@@ -241,7 +241,7 @@ func reposGetByName(t *testing.T, ctx context.Context, s *RepositoriesStore) {
 func reposStar(t *testing.T, ctx context.Context, s *RepositoriesStore) {
 	repo1, err := s.Create(ctx, 1, CreateRepoOptions{Name: "repo1"})
 	require.NoError(t, err)
-	usersStore := newUsersStore(s.db)
+	usersStore := NewUsersStore(s.db)
 	alice, err := usersStore.Create(ctx, "alice", "alice@example.com", CreateUserOptions{})
 	require.NoError(t, err)
 
@@ -305,7 +305,7 @@ func reposListWatches(t *testing.T, ctx context.Context, s *RepositoriesStore) {
 }
 
 func reposWatch(t *testing.T, ctx context.Context, s *RepositoriesStore) {
-	reposStore := newReposStore(s.db)
+	reposStore := NewRepositoriesStore(s.db)
 	repo1, err := reposStore.Create(ctx, 1, CreateRepoOptions{Name: "repo1"})
 	require.NoError(t, err)
 
@@ -325,7 +325,7 @@ func reposHasForkedBy(t *testing.T, ctx context.Context, s *RepositoriesStore) {
 	has := s.HasForkedBy(ctx, 1, 2)
 	assert.False(t, has)
 
-	_, err := newReposStore(s.db).Create(
+	_, err := NewRepositoriesStore(s.db).Create(
 		ctx,
 		2,
 		CreateRepoOptions{

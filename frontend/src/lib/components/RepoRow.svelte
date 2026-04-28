@@ -36,6 +36,14 @@
     return (Date.now() - date.getTime()) < (24 * 60 * 60 * 1000);
   });
 
+  const recentThresh = 24 * 60 * 60 * 1000; // 24 hours
+  const isRecentCommit = $derived(() => repo.last_commit_at && (Date.now() - new Date(repo.last_commit_at).getTime()) < recentThresh);
+  const isRecentIssue = $derived(() => repo.last_issue_at && (Date.now() - new Date(repo.last_issue_at).getTime()) < recentThresh);
+  const isRecentPull = $derived(() => repo.last_pull_at && (Date.now() - new Date(repo.last_pull_at).getTime()) < recentThresh);
+  const isRecentBranch = $derived(() => repo.last_branch_at && (Date.now() - new Date(repo.last_branch_at).getTime()) < recentThresh);
+
+  let avatarError = $state(false);
+
   let copied = $state(false);
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
@@ -48,6 +56,16 @@
   {#if isNew()}
     <span class="new-dot-indicator"></span>
   {/if}
+  
+  <div class="repo-avatar-container">
+    {#if repo.avatar_url && !avatarError}
+      <img src={repo.avatar_url} alt={repo.name} class="repo-avatar" onerror={() => avatarError = true} />
+    {/if}
+    <div class="repo-icon-placeholder" style="background-color: {getLanguageColor(repo.language || 'Plain Text')}20; color: {getLanguageColor(repo.language || 'Plain Text')}">
+      <span class="material-symbols-rounded">inventory_2</span>
+    </div>
+  </div>
+
   <div class="main-info">
     <div class="title-line">
       <a href="/{repo.full_name}" class="repo-name" onclick={(e) => e.stopPropagation()}>
@@ -93,19 +111,19 @@
 
   <div class="stats-info">
     <div class="stat-item {repo.num_commits > 0 ? 'active' : 'dim'}" title="Commits">
-      <span class="material-symbols-rounded">history</span>
+      <span class="material-symbols-rounded {isRecentCommit() ? 'blink-active' : ''}">history</span>
       {repo.num_commits || 0}
     </div>
     <div class="stat-item {repo.num_branches > 0 ? 'active' : 'dim'}" title="Branches">
-      <span class="material-symbols-rounded">account_tree</span>
+      <span class="material-symbols-rounded {isRecentBranch() ? 'blink-active' : ''}">account_tree</span>
       {repo.num_branches || 0}
     </div>
     <div class="stat-item {repo.open_issues_count > 0 ? 'active' : 'dim'}" title="Issues">
-      <span class="material-symbols-rounded">error</span>
+      <span class="material-symbols-rounded {isRecentIssue() ? 'blink-active' : ''}">error</span>
       {repo.open_issues_count || 0}
     </div>
     <div class="stat-item {repo.open_pulls_count > 0 ? 'active' : 'dim'}" title="Pull Requests">
-      <span class="material-symbols-rounded">merge</span>
+      <span class="material-symbols-rounded {isRecentPull() ? 'blink-active' : ''}">merge</span>
       {repo.open_pulls_count || 0}
     </div>
   </div>
@@ -121,7 +139,7 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 1fr 140px 220px 120px;
+    grid-template-columns: 56px 1fr 140px 220px 120px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -140,6 +158,39 @@
     background: rgba(var(--primary-rgb), 0.05);
     z-index: 10;
     box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .repo-avatar-container {
+    width: 48px;
+    height: 48px;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--md-sys-color-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+
+  .repo-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+  }
+
+  .repo-icon-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    z-index: 1;
   }
 
   .new-update {
@@ -164,6 +215,16 @@
     0% { transform: translateY(-50%) scale(1); opacity: 1; }
     50% { transform: translateY(-50%) scale(1.6); opacity: 0.4; }
     100% { transform: translateY(-50%) scale(1); opacity: 1; }
+  }
+
+  /* BLINK ANIMATIONS FOR COUNTERS */
+  @keyframes activity-blink {
+    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0px var(--primary-color)); }
+    50% { opacity: 0.7; transform: scale(1.1); filter: drop-shadow(0 0 5px var(--primary-color)); color: var(--primary-color); }
+  }
+
+  .blink-active {
+    animation: activity-blink 1.5s infinite ease-in-out;
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }
@@ -229,20 +290,20 @@
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 1fr 140px 180px 100px; 
+      grid-template-columns: 56px 1fr 140px 180px 100px; 
     }
     .stats-info { gap: 0.75rem; }
   }
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 1fr 140px 100px; 
+      grid-template-columns: 56px 1fr 140px 100px; 
     }
     .stats-info { display: none; }
   }
 
   @media (max-width: 800px) {
-    .repo-row { grid-template-columns: 1fr 80px; }
+    .repo-row { grid-template-columns: 56px 1fr 80px; }
     .tech-info { display: none; }
   }
 </style>

@@ -271,6 +271,16 @@ type Repository struct {
 	PrimaryLanguage string `gorm:"type:VARCHAR(32)"`
 	Languages       string `gorm:"type:TEXT"`
 
+	// Sentinel & Integrity
+	LastHealthCheckUnix int64 `gorm:"not null;default:0"`
+	CommitsSinceCheck   int   `gorm:"not null;default:0"`
+
+	// Activity Timestamps for Dashboard Blink
+	LastCommitUnix int64 `gorm:"not null;default:0"`
+	LastIssueUnix  int64 `gorm:"not null;default:0"`
+	LastPullUnix   int64 `gorm:"not null;default:0"`
+	LastBranchUnix int64 `gorm:"not null;default:0"`
+
 	ForkID   int64
 	BaseRepo *Repository `gorm:"-" json:"-"`
 

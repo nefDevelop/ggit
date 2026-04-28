@@ -243,12 +243,19 @@ func Init(customConf string) error {
 	}
 	Attachment.Path = ensureAbs(Attachment.Path)
 
-	// *************************
-	// ----- Time settings -----
-	// *************************
-
 	if err = File.Section("time").MapTo(&Time); err != nil {
 		return errors.Wrap(err, "mapping [time] section")
+	}
+
+	// *******************************
+	// ----- HealthCheck settings ----
+	// *******************************
+
+	HealthCheck.ActivityCooldownDays = 2
+	HealthCheck.MaxCommits = 1000
+	HealthCheck.IdleCheckDays = 15
+	if err = File.Section("health_check").MapTo(&HealthCheck); err != nil {
+		return errors.Wrap(err, "mapping [health_check] section")
 	}
 
 	Time.FormatLayout = map[string]string{

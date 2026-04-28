@@ -11,6 +11,7 @@
     children?: Snippet;
     icon?: string;
     href?: string;
+    title?: string;
   }
 
   let { 
@@ -22,7 +23,8 @@
     onclick,
     children,
     icon,
-    href
+    href,
+    title
   }: Props = $props();
 
   const variants: Record<NonNullable<Props['variant']>, string> = {
@@ -44,6 +46,7 @@
 {#if href}
   <a 
     {href}
+    {title}
     class="btn {variants[variant]} {sizes[size]} {className}" 
     onclick={(e) => !disabled && onclick?.(e as any)}
   >
@@ -55,9 +58,9 @@
     {/if}
   </a>
 {:else}
-  <button 
     {type} 
     {disabled} 
+    {title}
     class="btn {variants[variant]} {sizes[size]} {className}" 
     {onclick}
   >
