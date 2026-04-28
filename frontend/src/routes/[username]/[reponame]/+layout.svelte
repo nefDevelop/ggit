@@ -5,6 +5,8 @@
   import GlobalSearch from '$lib/components/GlobalSearch.svelte';
   import { userPrefs } from '$lib/settings.svelte';
   
+  import { fade } from 'svelte/transition';
+  
   let { children } = $props();
   
   let username = $derived(page.params.username);
@@ -22,7 +24,8 @@
     if (lastFetched.user === username && lastFetched.repo === reponame) return;
     lastFetched = { user: username || '', repo: reponame || '' };
 
-    loading = true;
+    // Only show loading if we don't have data yet
+    if (!repoData) loading = true;
     error = '';
     try {
       const repoRes = await apiFetch(`/api/v2/${username}/${reponame}/view/`);
@@ -81,8 +84,8 @@
 </script>
 
 <div class="workspace-shell">
-  {#if loading}
-    <div class="skeleton-master tonal"></div>
+  {#if loading && !repoData}
+    <div class="skeleton-master tonal" out:fade={{ duration: 150 }}></div>
   {:else if error}
     <div class="tonal error-tonal">
       <span class="material-symbols-rounded">error</span>
