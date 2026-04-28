@@ -154,6 +154,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/watchers", ginx.Handle(GetRepoWatchers))
 		repo.GET("/stars", ginx.Handle(GetRepoStars))
 		repo.GET("/forks", ginx.Handle(GetRepoForks))
+		repo.GET("/statuses/:sha", ginx.Handle(GetCommitStatuses))
+		repo.POST("/statuses/:sha", ginx.Handle(CreateCommitStatus))
 
 		issueGroup := repo.Group("/issues")
 		{

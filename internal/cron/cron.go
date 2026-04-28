@@ -51,6 +51,17 @@ func NewContext() {
 			go database.DeleteOldRepositoryArchives()
 		}
 	}
+	if conf.Cron.SyncRepoHooks.Enabled {
+		entry, err = c.AddFunc("Sync repository hooks", conf.Cron.SyncRepoHooks.Schedule, database.SyncRepoHooks)
+		if err != nil {
+			log.Fatal("Cron.(sync repository hooks): %v", err)
+		}
+		if conf.Cron.SyncRepoHooks.RunAtStart {
+			entry.Prev = time.Now()
+			entry.ExecTimes++
+			go database.SyncRepoHooks()
+		}
+	}
 	c.Start()
 }
 

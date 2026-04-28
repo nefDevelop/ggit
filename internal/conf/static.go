@@ -165,6 +165,11 @@ var (
 			Schedule   string
 			OlderThan  time.Duration
 		} `ini:"cron.repo_archive_cleanup"`
+		SyncRepoHooks struct {
+			Enabled    bool
+			RunAtStart bool
+			Schedule   string
+		} `ini:"cron.sync_repo_hooks"`
 	}
 
 	// Git settings
@@ -177,6 +182,7 @@ var (
 		MaxDiffLines         int      `ini:"MAX_GIT_DIFF_LINES"`
 		MaxDiffLineChars     int      `ini:"MAX_GIT_DIFF_LINE_CHARACTERS"`
 		GCArgs               []string `ini:"GC_ARGS" delim:" "`
+		MaxConcurrency       int
 		Timeout              struct {
 			Migrate int
 			Clone   int

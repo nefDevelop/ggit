@@ -14,6 +14,7 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/gitutil"
 	"github.com/nef734/ggit/internal/markup"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
@@ -52,7 +53,9 @@ func SearchRepoContents(c *context.APIContext) {
 	}
 	defer tool.ReleaseSemaphore(tool.GitGrepSemaphore)
 
+	gitutil.Acquire()
 	output, err := git.NewCommand(args...).RunInDir(c.Repo.Repository.RepoPath())
+	gitutil.Release()
 	if err != nil {
 		// git grep returns exit code 1 if no matches found
 		c.JSON(http.StatusOK, []any{})
@@ -438,4 +441,53 @@ func GetRepoCommits(c *context.APIContext) {
 		"page":     page,
 		"pageSize": pageSize,
 	})
+}
+
+func GetCommitStatuses(c *context.APIContext) {
+	sha := c.Params(":sha")
+	statuses, err := database.Handle.CommitStatuses().GetLatestBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)
+	if err != nil {
+		c.Error(err, "get latest statuses")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"statuses": statuses,
+		"combined": database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha),
+	})
+}
+
+func CreateCommitStatus(c *context.APIContext) {
+	sha := c.Params(":sha")
+	var form struct {
+		State       database.CommitStatusState `json:"state" binding:"required"`
+		TargetURL   string                     `json:"target_url"`
+		Description string                     `json:"description"`
+		Context     string                     `json:"context"`
+	}
+	if err := c.ShouldBindJSON(&form); err != nil {
+		c.Error(err, "parse json")
+		return
+	}
+
+	if form.Context == "" {
+		form.Context = "default"
+	}
+
+	status := &database.CommitStatus{
+		RepoID:      c.Repo.Repository.ID,
+		SHA:         sha,
+		State:       form.State,
+		TargetURL:   form.TargetURL,
+		Description: form.Description,
+		Context:     form.Context,
+		CreatorID:   c.User.ID,
+	}
+
+	if err := database.Handle.CommitStatuses().Create(c.Req.Context(), status); err != nil {
+		c.Error(err, "create status")
+		return
+	}
+
+	c.JSON(http.StatusCreated, status)
 }

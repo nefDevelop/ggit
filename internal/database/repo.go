@@ -2216,7 +2216,22 @@ const (
 	taskNameGitFSCK          = "git_fsck"
 	taskNameCheckRepoStats   = "check_repos_stats"
 	taskNameCleanOldArchives = "clean_old_archives"
+	taskNameSyncHooks        = "sync_repo_hooks"
 )
+
+// SyncRepoHooks rewrites all repositories' hooks to ensure they are up-to-date.
+func SyncRepoHooks() {
+	if taskStatusTable.IsRunning(taskNameSyncHooks) {
+		return
+	}
+	taskStatusTable.Start(taskNameSyncHooks)
+	defer taskStatusTable.Stop(taskNameSyncHooks)
+
+	log.Trace("Doing: SyncRepoHooks")
+	if err := SyncRepositoryHooks(); err != nil {
+		log.Error("SyncRepoHooks: %v", err)
+	}
+}
 
 // GitFsck calls 'git fsck' to check repository health.
 func GitFsck() {

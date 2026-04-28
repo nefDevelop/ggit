@@ -298,6 +298,8 @@ func Init(customConf string) error {
 		return errors.Wrap(err, "mapping [i18n] section")
 	}
 	I18n.dateLangs = File.Section("i18n.datelang").KeysHash()
+	
+	Git.MaxConcurrency = 50
 
 	// *************************
 	// ----- LFS settings -----

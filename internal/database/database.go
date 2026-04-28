@@ -43,7 +43,7 @@ func newLogWriter() (logger.Writer, error) {
 // ⚠️ WARNING: This list is meant to be read-only.
 var Tables = []any{
 	new(Access), new(AccessToken), new(Action), new(Attachment),
-	new(Collaboration), new(Comment),
+	new(Collaboration), new(Comment), new(CommitStatus),
 	new(DeployKey),
 	new(EmailAddress),
 	new(HookTask),

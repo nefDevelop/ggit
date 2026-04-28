@@ -254,18 +254,17 @@
 
 
 ### Estabilidad y Robustez (Inmediato)
-- [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes.
-- [ ] **Commit Status API:** Integración de estados de CI externos.
-- [ ] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos.
-- [ ] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico.
-- [ ] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco.
+- [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes. NO
+- [ ] **Commit Status API:** Integración de estados de CI externos. SI
+- [ ] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos. SI
+- [ ] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico. SI
+- [ ] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco. SI
 
 ### Conectividad y Ecosistema (Medio Plazo)
 - [ ] **OIDC (OpenID Connect):** Soporte estándar para login externo.
-- [ ] **Ggit Credential Helper:** Almacenamiento seguro de credenciales para remotos HTTP.
-- [ ] **Pattern Store:** Refactorización de la capa de acceso a datos (Clean Architecture).
+- [ ] **Ggit Credential Helper:** Almacenamiento seguro de credenciales para remotos HTTP. 
+- [ ] **Pattern Store:** Refactorización de la capa de acceso a datos (Clean Architecture). SI
 
 ### Funcionalidades Avanzadas (Largo Plazo / 2.0)
 - [ ] **Tableros Kanban:** Gestión visual de issues.
-- [ ] **OAuth2/OIDC Provider:** Convertir Ggit en un proveedor de identidad.
 - [ ] **Consistencia Atómica (2PC):** Coordinación estricta entre DB y sistema de archivos.
