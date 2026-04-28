@@ -2,6 +2,7 @@ package v2
 
 import (
 	stdcontext "context"
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -317,36 +318,15 @@ func getRepoDirectory(c *context.APIContext) {
 		stats["tags"] = int64(len(tags))
 		res["stats"] = stats
 
-		// Fetch language stats by walking the tree
+		// Fetch language stats from database cache
 		langStats := make(map[string]int64)
-		_ = walkTreeForStats(c.Repo.Commit.Tree, langStats)
+		if c.Repo.Repository.Languages != "" {
+			_ = json.Unmarshal([]byte(c.Repo.Repository.Languages), &langStats)
+		}
 		res["languages"] = langStats
 	}
 
 	c.JSON(http.StatusOK, res)
-}
-
-func walkTreeForStats(tree *git.Tree, langStats map[string]int64) error {
-	entries, _ := tree.Entries()
-	for _, entry := range entries {
-		if entry.IsTree() {
-			subtree, err := tree.Subtree(entry.Name())
-			if err == nil {
-				_ = walkTreeForStats(subtree, langStats)
-			}
-			continue
-		}
-		// Basic language detection by extension for now
-		ext := ""
-		if strings.Contains(entry.Name(), ".") {
-			parts := strings.Split(entry.Name(), ".")
-			ext = parts[len(parts)-1]
-		}
-		if ext != "" {
-			langStats[ext] += entry.Size()
-		}
-	}
-	return nil
 }
 
 
