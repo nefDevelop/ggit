@@ -9,6 +9,7 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/form"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // GetRepoSettings returns the repository settings.
@@ -118,6 +119,33 @@ func AddRepoCollaborator(c *context.APIContext) {
 	})
 }
 
+// UpdateRepoCollaborator updates the collaborator's access mode.
+func UpdateRepoCollaborator(c *context.APIContext) {
+	userName := c.Params("collaborator")
+	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
+	if err != nil {
+		c.NotFoundOrError(err, "get user by name")
+		return
+	}
+
+	var f struct {
+		Mode int `json:"mode" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if err = c.Repo.Repository.ChangeCollaborationAccessMode(u.ID, database.AccessMode(f.Mode)); err != nil {
+		c.Error(err, "change collaboration access mode")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+	})
+}
+
 // DeleteRepoCollaborator deletes a collaborator from the repository.
 func DeleteRepoCollaborator(c *context.APIContext) {
 	userName := c.Params("collaborator")
@@ -144,7 +172,54 @@ func GetRepoHooks(c *context.APIContext) {
 		c.Error(err, "get webhooks")
 		return
 	}
-	c.JSON(http.StatusOK, ws)
+	
+	resp := make([]*apiv2types.WebhookResponse, len(ws))
+	for i, w := range ws {
+		resp[i] = ToWebhookResponse(w)
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+// GetRepoHookHistory returns the delivery history for a specific webhook.
+func GetRepoHookHistory(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	page := c.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	tasks, err := database.HookTasks(id, page)
+	if err != nil {
+		c.Error(err, "get hook tasks")
+		return
+	}
+
+	resp := make([]*apiv2types.WebhookHistoryResponse, len(tasks))
+	for i, t := range tasks {
+		resp[i] = ToWebhookHistoryResponse(t)
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
+// RedeliverRepoHookTask redelivers a specific webhook task.
+func RedeliverRepoHookTask(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	uuid := c.Params("uuid")
+
+	task, err := database.GetHookTaskOfWebhookByUUID(id, uuid)
+	if err != nil {
+		c.Error(err, "get hook task")
+		return
+	}
+
+	if err := database.RedeliverHookTask(task); err != nil {
+		c.Error(err, "redeliver hook task")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+	})
 }
 
 // DeleteRepoHook deletes a webhook from the repository.

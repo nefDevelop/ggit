@@ -3,18 +3,39 @@
   import { onMount } from "svelte";
   import BranchSelector from "./BranchSelector.svelte";
 
-  let { username, reponame, release = null, onSaved, onCancel } = $props();
+  let { 
+    username, 
+    reponame, 
+    release = null, 
+    onSaved = (data?: any) => {}, 
+    onCancel = () => {} 
+  } = $props<{
+    username?: string;
+    reponame?: string;
+    release?: any;
+    onSaved?: (data?: any) => void;
+    onCancel?: () => void;
+  }>();
 
-  let title = $state(release?.title || "");
-  let tagName = $state(release?.tag_name || "");
-  let target = $state(release?.target || "master");
-  let note = $state(release?.note || "");
-  let isDraft = $state(release?.is_draft || false);
-  let isPrerelease = $state(release?.is_prerelease || false);
+  let title = $state("");
+  let tagName = $state("");
+  let target = $state("master");
+  let note = $state("");
+  let isDraft = $state(false);
+  let isPrerelease = $state(false);
+  let attachments = $state([] as any[]);
 
+  $effect(() => {
+    title = release?.title || "";
+    tagName = release?.tag_name || "";
+    target = release?.target || target;
+    note = release?.note || "";
+    isDraft = release?.is_draft || false;
+    isPrerelease = release?.is_prerelease || false;
+    attachments = (release?.attachments || []) as any[];
+  });
   let branches = $state([] as any[]);
   let tags = $state([] as any[]);
-  let attachments = $state((release?.attachments || []) as any[]);
   let uploading = $state(false);
   let saving = $state(false);
 

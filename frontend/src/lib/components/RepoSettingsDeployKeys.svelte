@@ -4,6 +4,7 @@
   import Modal from "$lib/components/Modal.svelte";
   import Input from "$lib/components/ui/Input.svelte";
   import Checkbox from "$lib/components/ui/Checkbox.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
 
@@ -102,10 +103,9 @@
         without needing a user account.
       </p>
     </div>
-    <button class="btn btn-primary" onclick={() => (showModal = true)}>
-      <span class="material-symbols-rounded">add</span>
+    <Button variant="primary" icon="add" onclick={() => (showModal = true)}>
       Add Key
-    </button>
+    </Button>
   </header>
 
   {#if loading}
@@ -123,9 +123,9 @@
       <span class="material-symbols-rounded size-xl">vpn_key</span>
       <h3>No Deploy Keys</h3>
       <p>You haven't configured any deploy keys for this repository yet.</p>
-      <button class="btn btn-tonal" onclick={() => (showModal = true)}
-        >Add your first deploy key</button
-      >
+      <Button variant="secondary" onclick={() => (showModal = true)}>
+        Add your first deploy key
+      </Button>
     </div>
   {:else}
     <div class="keys-list">
@@ -182,8 +182,6 @@
         bind:value={newKey.key} 
         placeholder="ssh-rsa AAAAB3Nza..."
         multiline
-      />
-
         rows={5}
       />
 
@@ -194,22 +192,16 @@
       />
 
       <footer class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-tonal"
-          onclick={() => (showModal = false)}>Cancel</button
-        >
-        <button
+        <Button variant="ghost" onclick={() => (showModal = false)}>
+          Cancel
+        </Button>
+        <Button
           type="submit"
-          class="btn btn-primary"
-          disabled={isSubmitting}
+          variant="primary"
+          loading={isSubmitting}
         >
-          {#if isSubmitting}
-            <span class="spinner"></span>
-          {:else}
-            Add Key
-          {/if}
-        </button>
+          Add Key
+        </Button>
       </footer>
     </form>
   </Modal>

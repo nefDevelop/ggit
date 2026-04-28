@@ -179,23 +179,25 @@
 ## Fase 22: Integridad y Autocuración 🛡️
 **Objetivo:** Garantizar la consistencia entre Base de Datos y Sistema de Archivos.
 - [ ] **Consistencia Atómica:** Lógica de "Two-Phase Commit" para operaciones Git + DB.
-- [x] **Ggit Health Sentinel:** Tarea en segundo plano para ejecutar `git fsck` rotativo.
+- [x] **Ggit Health Sentinel:** Orquestación de `git fsck` automático basado en actividad.
 - [ ] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes.
 - [x] **Dangling Objects Cleanup:** Identificar y limpiar rastro de archivos de repositorios borrados.
 - [ ] **Blindaje Anti-OOM:** Limitador de procesos Git concurrentes basado en RAM disponible.
 - [x] **Modo Supervivencia:** Switch a "Solo Lectura" si el espacio en disco es crítico.
 - [x] **Dashboard Leído:** Animación de parpadeo en contadores de dashboard para items nuevos.
 - [ ] **Ggit Credential Helper:** Almacenamiento seguro para tokens de remotos HTTP.
+- [x] **Secret Guardian 🛡️:** Detección proactiva de secretos (API keys, .env) en tiempo de push.
 
 ---
 
 ## Fase 23: Paridad Funcional (Gogs-to-Svelte Sync) 🔗
 **Objetivo:** Recuperar funcionalidades útiles del legado en la nueva interfaz.
 - [x] **Auditoría de Paridad UI:** Sincronización de opciones de Repo, User y Org.
-- [ ] **Gestión de Colaboradores:** Interfaz para añadir usuarios y asignar roles.
-- [ ] **Deploy Keys & Git Hooks:** Editores web para claves y scripts de servidor.
-- [ ] **Label & Milestone Manager:** Editores dinámicos para metadatos de Issues.
-- [ ] **Webhook Tester & Logs:** Herramientas de diagnóstico para integraciones.
+- [x] **Gestión de Colaboradores:** Interfaz para añadir usuarios y asignar roles (Read, Write, Admin).
+- [x] **Deploy Keys:** Editor de llaves de despliegue para CI/CD.
+- [x] **Git Hooks Manager:** Editor de scripts del lado del servidor para automatización avanzada.
+- [x] **Label & Milestone Manager:** Editores dinámicos para metadatos de Issues.
+- [x] **Webhook Tester & Logs:** Herramientas de diagnóstico para integraciones.
 
 ---
 
@@ -208,9 +210,9 @@
 ---
 
 ## Fase 25: Infraestructura y Auth Final 🔐
-- [ ] **Gestión de Fuentes de Auth:** UI para LDAP, OAuth2 (GitHub, Google) y PAM.
-- [ ] **Release Management:** Upload center para binarios y estados de release (Draft/Pre).
-- [ ] **Monitorización Admin:** Cron scheduler y process tracker en el panel admin.
+- [x] **Gestión de Fuentes de Auth:** UI para LDAP, OAuth2 (GitHub, Google) y PAM.
+- [x] **Release Management:** Upload center para binarios y estados de release (Draft/Pre).
+- [x] **Monitorización Admin:** Cron scheduler y process tracker en el panel admin.
 - [x] **Respaldo de Metadatos:** Exportación ligera de DB y adjuntos (sin repositorios).
 - [x] **Adopción de Repositorios:** Función para vincular carpetas Git existentes a la DB.
 ---
@@ -226,21 +228,44 @@
 | **OIDC (OpenID Connect)** | 10 | Media | Bajo | Integración de cliente estándar para autenticación externa. |
 | **Merge Checks** | 21 | Media | Bajo | Validación de hilos de conversación resueltos antes de permitir merge. |
 | **Commit Status API** | 21 | Media | Bajo | Creación de endpoints y modelos para reportes de CI externos. |
-| **Ggit Health Sentinel** | 22 | Media | Alto | Orquestación de `git fsck` periódico sin degradar el rendimiento. |
+| **Ggit Health Sentinel** | 22 | Completado | Alto | Orquestación de `git fsck` periódico sin degradar el rendimiento. |
 | **Self-Healing Hooks** | 22 | Media | Bajo | Detección y recreación automática de scripts de hooks faltantes. |
 | **Blindaje Anti-OOM** | 22 | Media | Medio | Limitador de concurrencia dinámico basado en la RAM disponible. |
 | **Ggit Credential Helper** | 22 | Media | Bajo | Sistema de cifrado y almacenamiento para tokens de remotos HTTP. |
-| **Gestión de Colaboradores** | 23 | Media | Bajo | Nueva UI de búsqueda y gestión de roles granulares. |
-| **Deploy Keys & Git Hooks** | 23 | Media | Bajo | Editores web con validación de sintaxis y seguridad en servidor. |
-| **Label & Milestone Manager** | 23 | Media | Bajo | Refactorización de gestión de metadatos a componentes Material 3. |
-| **Webhook Tester & Logs** | 23 | Media | Medio | Sistema de reintentos y visualización de payloads de entrega. |
+| **Gestión de Colaboradores** | 23 | Completado | Bajo | Nueva UI de búsqueda y gestión de roles granulares. |
+| **Deploy Keys & Git Hooks** | 23 | Completado | Bajo | Editores web con validación de sintaxis y seguridad en servidor. |
+| **Label & Milestone Manager** | 23 | Completado | Bajo | Refactorización de gestión de metadatos a componentes Material 3. |
+| **Webhook Tester & Logs** | 23 | Completado | Medio | Sistema de reintentos y visualización de payloads de entrega. |
 | **Auditoría de Índices** | 24 | Media | Medio | Optimización de consultas críticas mediante índices SQLite precisos. |
-| **Fuentes de Auth UI** | 25 | Media | Bajo | Interfaz administrativa para configurar proveedores LDAP/OAuth2. |
-| **Release Management** | 25 | Media | Medio | Lógica de subida y persistencia de activos binarios en lanzamientos. |
-| **Monitorización Admin** | 25 | Media | Bajo | Consola de control para tareas cron y procesos Git activos. |
-| **Respaldo de Metadatos** | 25 | Baja | Bajo | Exportación ligera de DB y adjuntos (sin repositorios). |
-| **Adopción de Repositorios** | 22 | Media | Bajo | Función para vincular carpetas Git existentes a la DB. |
+| **Fuentes de Auth UI** | 25 | Completado | Bajo | Interfaz administrativa para configurar proveedores LDAP/OAuth2. |
+| **Release Management** | 25 | Completado | Medio | Lógica de subida y persistencia de activos binarios en lanzamientos. |
+| **Monitorización Admin** | 25 | Completado | Bajo | Consola de control para tareas cron y procesos Git activos. |
+| **Respaldo de Metadatos** | 25 | Completado | Bajo | Exportación ligera de DB y adjuntos (sin repositorios). |
+| **Adopción de Repositorios** | 22 | Completado | Bajo | Función para vincular carpetas Git existentes a la DB. |
 | **OAuth2/OIDC Provider** | 21 | Alta | Medio | Implementar Ggit como proveedor de identidad completo (Server-side). |
 | **Tableros Kanban** | 21 | Alta | Medio | Sistema interactivo de gestión de estados con drag-and-drop. |
 | **Consistencia Atómica** | 22 | Alta | Medio | Coordinación de transacciones (2PC) entre SQLite y el sistema de archivos. |
 | **Pattern Store** | 24 | Alta | Medio | Refactorización estructural de toda la capa de persistencia del sistema. |
+
+- [x] **Analisis de basura y de seguridad**: 
+---
+
+## 🚩 Pendientes (Priorizados para 1.x)
+
+
+### Estabilidad y Robustez (Inmediato)
+- [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes.
+- [ ] **Commit Status API:** Integración de estados de CI externos.
+- [ ] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos.
+- [ ] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico.
+- [ ] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco.
+
+### Conectividad y Ecosistema (Medio Plazo)
+- [ ] **OIDC (OpenID Connect):** Soporte estándar para login externo.
+- [ ] **Ggit Credential Helper:** Almacenamiento seguro de credenciales para remotos HTTP.
+- [ ] **Pattern Store:** Refactorización de la capa de acceso a datos (Clean Architecture).
+
+### Funcionalidades Avanzadas (Largo Plazo / 2.0)
+- [ ] **Tableros Kanban:** Gestión visual de issues.
+- [ ] **OAuth2/OIDC Provider:** Convertir Ggit en un proveedor de identidad.
+- [ ] **Consistencia Atómica (2PC):** Coordinación estricta entre DB y sistema de archivos.

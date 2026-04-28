@@ -54,6 +54,7 @@ var Tables = []any{
 	new(OrgUser),
 	new(ProtectBranch), new(ProtectBranchWhitelist), new(PublicKey), new(PullRequest),
 	new(Release), new(Repository), new(RepoTopic),
+	new(SecretPattern),
 	new(Star),
 	new(Team), new(TeamRepo), new(TeamUser), new(Topic), new(TwoFactor), new(TwoFactorRecoveryCode),
 	new(Upload), new(User),
@@ -139,6 +140,12 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 
 	// Initialize the database handle.
 	Handle = &DB{db: db}
+
+	// Initialize default secret patterns
+	if err := Handle.SecretPatterns().InitDefaultPatterns(context.Background()); err != nil {
+		return nil, errors.Wrap(err, "initialize default secret patterns")
+	}
+
 	return db, nil
 }
 

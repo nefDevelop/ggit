@@ -270,6 +270,34 @@ type AuthSourceResponse struct {
 	TypeName    string    `json:"type_name"`
 	IsActivated bool      `json:"is_activated"`
 	CreatedAt   time.Time `json:"created_at"`
+	RawConfig   string    `json:"raw_config,omitempty"`
+}
+
+// WebhookResponse represents a webhook in the API v2.
+type WebhookResponse struct {
+	ID          int64             `json:"id"`
+	URL         string            `json:"url"`
+	ContentType string            `json:"content_type"`
+	Secret      string            `json:"secret"`
+	Events      []string          `json:"events"`
+	IsSSL       bool              `json:"is_ssl"`
+	IsActive    bool              `json:"is_active"`
+	LastStatus  int               `json:"last_status"`
+	Updated     time.Time         `json:"updated_at"`
+}
+
+// WebhookHistoryResponse represents a delivery task of a webhook.
+type WebhookHistoryResponse struct {
+	ID              int64     `json:"id"`
+	UUID            string    `json:"uuid"`
+	EventType       string    `json:"event_type"`
+	IsSucceed       bool      `json:"is_succeed"`
+	Delivered       time.Time `json:"delivered_at"`
+	RequestHeaders  map[string]string `json:"request_headers"`
+	RequestBody     string            `json:"request_body"`
+	ResponseHeaders map[string]string `json:"response_headers"`
+	ResponseBody    string            `json:"response_body"`
+	ResponseStatus  int               `json:"response_status"`
 }
 
 // NoticeResponse represents a system notice in the API v2.

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import Button from './ui/Button.svelte';
 
   let { hook, onclose } = $props();
   const repo: any = getContext('repo');
@@ -14,7 +15,7 @@
   async function fetchLogs() {
     loading = true;
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/hooks/${hook.id}/logs`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/hooks/${hook.id}/history`);
       if (res.ok) {
         logs = await res.json();
       } else {
@@ -27,8 +28,21 @@
     }
   }
 
-  function formatDate(ts: number) {
-    const d = new Date(ts / 1000); // Microseconds to milliseconds
+  async function redeliver(uuid: string) {
+    try {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/hooks/${hook.id}/redeliver/${uuid}`, {
+        method: 'POST'
+      });
+      if (res.ok) {
+        fetchLogs();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function formatDate(iso: string) {
+    const d = new Date(iso);
     return d.toLocaleString();
   }
 
@@ -63,18 +77,18 @@
               <button 
                 class="log-item" 
                 class:active={selectedLog?.id === log.id}
-                class:success={log.succeed}
-                class:failure={!log.succeed}
+                class:success={log.is_succeed}
+                class:failure={!log.is_succeed}
                 onclick={() => selectedLog = log}
               >
                 <span class="material-symbols-rounded status-icon">
-                  {log.succeed ? 'check_circle' : 'error'}
+                  {log.is_succeed ? 'check_circle' : 'error'}
                 </span>
                 <div class="log-info">
                    <div class="log-top">
                      <span class="uuid">{log.uuid.substring(0, 8)}</span>
-                     {#if log.status}
-                       <span class="status-code">{log.status}</span>
+                     {#if log.response_status}
+                       <span class="status-code">{log.response_status}</span>
                      {/if}
                    </div>
                    <div class="log-bottom">
@@ -91,32 +105,46 @@
      <main class="log-details">
         {#if selectedLog}
            <div class="details-content">
+              <header class="details-header">
+                <div class="header-main">
+                  <h3>Detalles del Envío</h3>
+                  <span class="full-uuid">UUID: {selectedLog.uuid}</span>
+                </div>
+                <Button variant="secondary" size="sm" icon="replay" onclick={() => redeliver(selectedLog.uuid)}>
+                  Reenviar
+                </Button>
+              </header>
+
               <section class="details-section">
                 <h4>Request</h4>
                 <div class="code-block">
                   <div class="headers">
-                    {#each Object.entries(selectedLog.request.headers) as [key, val]}
+                    {#each Object.entries(selectedLog.request_headers) as [key, val]}
                       <div class="header-row"><strong>{key}:</strong> {val}</div>
                     {/each}
+                  </div>
+                  <div class="body-preview">
+                     <h5>Payload</h5>
+                     <pre>{selectedLog.request_body || '(Empty body)'}</pre>
                   </div>
                 </div>
               </section>
 
               <section class="details-section">
                 <h4>Response</h4>
-                {#if selectedLog.response}
+                {#if selectedLog.response_status}
                   <div class="code-block">
-                    <div class="status-line" class:success={selectedLog.succeed} class:failure={!selectedLog.succeed}>
-                        HTTP/1.1 {selectedLog.response.status}
+                    <div class="status-line" class:success={selectedLog.is_succeed} class:failure={!selectedLog.is_succeed}>
+                        HTTP/1.1 {selectedLog.response_status}
                     </div>
                     <div class="headers">
-                      {#each Object.entries(selectedLog.response.headers) as [key, val]}
+                      {#each Object.entries(selectedLog.response_headers) as [key, val]}
                         <div class="header-row"><strong>{key}:</strong> {val}</div>
                       {/each}
                     </div>
                     <div class="body-preview">
                        <h5>Body</h5>
-                       <pre>{selectedLog.response.body || '(Empty body)'}</pre>
+                       <pre>{selectedLog.response_body || '(Empty body)'}</pre>
                     </div>
                   </div>
                 {:else}
@@ -127,7 +155,7 @@
         {:else}
            <div class="no-selection">
               <span class="material-symbols-rounded">ads_click</span>
-              <p>Select a delivery to view details</p>
+              <p>Selecciona un envío para ver los detalles</p>
            </div>
         {/if}
      </main>
@@ -166,8 +194,13 @@
   .no-selection { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--text-muted); opacity: 0.5; }
   .no-selection span { font-size: 4rem; }
 
-  .details-content { display: flex; flex-direction: column; gap: 2.5rem; }
-  .details-section h4 { margin: 0 0 1rem 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 0.5rem; }
+  .details-content { display: flex; flex-direction: column; gap: 2rem; }
+  
+  .details-header { display: flex; justify-content: space-between; align-items: center; background: rgba(var(--primary-rgb), 0.05); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(var(--primary-rgb), 0.1); }
+  .header-main h3 { margin: 0; font-size: 1.25rem; font-weight: 800; }
+  .full-uuid { font-size: 0.75rem; opacity: 0.5; font-family: monospace; }
+
+  .details-section h4 { margin: 0 0 1rem 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 0.5rem; font-weight: 800; }
   
   .code-block { background: #000; border-radius: 1rem; padding: 1.5rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.85rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .header-row { margin-bottom: 0.2rem; white-space: pre-wrap; word-break: break-all; }

@@ -8,7 +8,8 @@
     disabled = false,
     class: className = '',
     multiline = false,
-    rows = 3
+    rows = 3,
+    icon = ''
   } = $props();
 </script>
 
@@ -17,7 +18,11 @@
     <label class="label">{label}</label>
   {/if}
   
-  <div class="input-container {error ? 'has-error' : ''}">
+  <div class="input-container {error ? 'has-error' : ''} {icon ? 'with-icon' : ''}">
+    {#if icon}
+      <span class="material-symbols-rounded input-icon">{icon}</span>
+    {/if}
+    
     {#if multiline}
       <textarea 
         bind:value 
@@ -58,6 +63,21 @@
   .input-container {
     position: relative;
     width: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 1.25rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .with-icon input, .with-icon textarea {
+    padding-left: 2.75rem;
   }
 
   input, textarea {

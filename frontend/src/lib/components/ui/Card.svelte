@@ -7,6 +7,7 @@
     padding?: 'none' | 'sm' | 'md' | 'lg';
     hover?: boolean;
     variant?: 'lowest' | 'low' | 'container' | 'high' | 'highest';
+    tonal?: boolean;
   }
 
   let { 
@@ -14,7 +15,8 @@
     children,
     padding = 'md',
     hover = false,
-    variant = 'container'
+    variant = 'container',
+    tonal = false
   }: Props = $props();
 
   const paddings: Record<NonNullable<Props['padding']>, string> = {
@@ -33,7 +35,7 @@
   };
 </script>
 
-<div class="card {paddings[padding]} {variants[variant]} {hover ? 'hoverable' : ''} {className}">
+<div class="card {paddings[padding]} {variants[variant]} {hover ? 'hoverable' : ''} {tonal ? 'tonal' : ''} {className}">
   {#if children}
     {@render children()}
   {/if}
@@ -57,6 +59,7 @@
   .bg-container { background: var(--md-sys-color-surface-container); }
   .bg-high { background: var(--md-sys-color-surface-container-high); }
   .bg-highest { background: var(--md-sys-color-surface-container-highest); }
+  .tonal { background: rgba(var(--primary-rgb), 0.05); }
 
   .hoverable:hover {
     transform: translateY(-4px);

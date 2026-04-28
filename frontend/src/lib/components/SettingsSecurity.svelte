@@ -337,17 +337,9 @@
   .section-header {
     margin-bottom: 4rem;
   }
-  .header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-  }
   @media (max-width: 600px) {
-    .header-flex {
-      flex-direction: column;
-      align-items: stretch;
-      text-align: center;
+    .section-header {
+      margin-bottom: 2rem;
     }
     .title-with-icon {
       flex-direction: column;

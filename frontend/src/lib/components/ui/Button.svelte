@@ -5,6 +5,7 @@
     variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'outline';
     size?: 'sm' | 'md' | 'lg';
     type?: 'button' | 'submit' | 'reset';
+    loading?: boolean;
     disabled?: boolean;
     class?: string;
     onclick?: (e: MouseEvent) => void;
@@ -18,6 +19,7 @@
     variant = 'primary', 
     size = 'md', 
     type = 'button', 
+    loading = false,
     disabled = false, 
     class: className = '',
     onclick,
@@ -60,16 +62,20 @@
 {:else}
   <button 
     {type} 
-    {disabled} 
+    disabled={disabled || loading} 
     {title}
     class="btn {variants[variant]} {sizes[size]} {className}" 
-    {onclick}
+    onclick={(e) => !loading && onclick?.(e)}
   >
-    {#if icon}
-      <span class="material-symbols-rounded">{icon}</span>
-    {/if}
-    {#if children}
-      {@render children()}
+    {#if loading}
+      <span class="spinner"></span>
+    {:else}
+      {#if icon}
+        <span class="material-symbols-rounded">{icon}</span>
+      {/if}
+      {#if children}
+        {@render children()}
+      {/if}
     {/if}
   </button>
 {/if}
@@ -158,5 +164,19 @@
   .material-symbols-rounded { 
     font-size: 1.25rem; 
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+
+  .spinner {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 </style>

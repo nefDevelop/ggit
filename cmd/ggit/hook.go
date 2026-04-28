@@ -22,6 +22,7 @@ import (
 	"github.com/nef734/ggit/internal/email"
 	"github.com/nef734/ggit/internal/httplib"
 	"github.com/nef734/ggit/internal/osx"
+	"github.com/nef734/ggit/internal/services/guardian"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 )
 
@@ -123,6 +124,32 @@ func runHookPreReceive(_ context.Context, cmd *cli.Command) error {
 			fail("Internal error", "Failed to detect force push: %v", err)
 		} else if len(output) > 0 {
 			fail(fmt.Sprintf("Branch '%s' is protected from force push", branchName), "")
+		}
+
+		// Secret Guardian Scan
+		violations, err := guardian.ScanPush(context.Background(), repoID, oldCommitID, newCommitID)
+		if err != nil {
+			log.Error("Guardian Scan Error: %v", err)
+		} else if len(violations) > 0 {
+			repo, _ := database.GetRepositoryByID(repoID)
+			if repo.EnableSecretGuardian && repo.SecretGuardianStrict {
+				fmt.Fprintln(os.Stderr, "------------------------------------------------------------")
+				fmt.Fprintln(os.Stderr, "🛡️  GGIT SECRET GUARDIAN: PUSH RECHAZADO")
+				fmt.Fprintln(os.Stderr, "Se han detectado posibles secretos o información sensible:")
+				for _, v := range violations {
+					if v.LineNum > 0 {
+						fmt.Fprintf(os.Stderr, " - [%s] %s (Línea %d)\n", v.Pattern, v.FileName, v.LineNum)
+					} else {
+						fmt.Fprintf(os.Stderr, " - [%s] %s\n", v.Pattern, v.FileName)
+					}
+				}
+				fmt.Fprintln(os.Stderr, "Por seguridad, elimina esta información antes de reintentar.")
+				fmt.Fprintln(os.Stderr, "------------------------------------------------------------")
+				os.Exit(1)
+			} else if repo.EnableSecretGuardian {
+				// Warn but allow (Not implemented: Background notification)
+				fmt.Fprintln(os.Stderr, "⚠️  ADVERTENCIA: Se han detectado posibles secretos en este push.")
+			}
 		}
 	}
 

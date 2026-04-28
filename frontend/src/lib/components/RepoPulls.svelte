@@ -177,112 +177,13 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .pulls-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .filter-bar {
-    display: flex;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.25rem;
-    border-radius: 0.75rem;
-  }
-
-  .filter-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-  }
-
-  .filter-btn.active {
-    color: var(--text-color);
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .pulls-list {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .pull-row {
-    display: flex;
-    padding: 1rem 1.5rem;
-    gap: 1rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .pull-row:last-child {
-    border-bottom: none;
-  }
-
-  .pull-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .pull-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text-color);
-    text-decoration: none;
-  }
-
-  .pull-title:hover {
-    color: var(--primary-color);
-  }
-
-  .label-tag {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.1rem 0.6rem;
-    border-radius: 2rem;
-    color: white;
-  }
-
-  .pull-meta {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .pull-comments-count {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-
-  .loading-state, .empty-state {
+  .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 4rem;
     gap: 1rem;
     color: var(--text-muted);
-  }
-
-  .spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid rgba(255,255,255,0.1);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s infinite linear;
   }
 
   @keyframes spin {

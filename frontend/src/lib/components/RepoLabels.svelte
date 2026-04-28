@@ -4,6 +4,7 @@
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
+  import Input from './ui/Input.svelte';
 
   const repo: any = getContext('repo');
   let labels = $state<any[]>([]);
@@ -86,22 +87,25 @@
 
   {#if showEditor}
     <Card class="label-editor tonal" padding="lg">
-      <h3>{editingLabel ? 'Edit Label' : 'Create New Label'}</h3>
+      <h3 class="editor-title">{editingLabel ? 'Edit Label' : 'Create New Label'}</h3>
       <div class="editor-grid">
-        <div class="field">
-          <label for="name">Label Name</label>
-          <input id="name" type="text" bind:value={newName} placeholder="e.g. bug, improvement..." />
-        </div>
-        <div class="field">
-          <label for="color">Color</label>
+        <Input 
+          label="Label Name" 
+          bind:value={newName} 
+          placeholder="e.g. bug, improvement..." 
+        />
+        
+        <div class="color-field">
+          <label class="color-label" for="native-color-picker">Color</label>
           <div class="color-picker-row">
-            <input id="color" type="color" bind:value={newColor} />
-            <input type="text" bind:value={newColor} placeholder="#444444" />
+            <input type="color" bind:value={newColor} class="native-picker" id="native-color-picker" />
+            <Input bind:value={newColor} placeholder="#444444" />
           </div>
         </div>
+
         <div class="preview-zone">
-          <label>Preview</label>
-          <div class="label-preview" style="background: {newColor}">
+          <label class="preview-label" for="label-preview-box">Preview</label>
+          <div class="label-preview" id="label-preview-box" style="background: {newColor}">
             {newName || 'Label Preview'}
           </div>
         </div>
@@ -125,7 +129,7 @@
       </div>
     {:else}
       {#each labels as label}
-        <Card class="label-row tonal" padding="none">
+        <Card class="label-row" tonal={true} padding="none">
           <div class="label-info">
             <span class="label-tag" style="background: {label.color}">
               {label.name}
@@ -145,25 +149,25 @@
   .repo-labels { display: flex; flex-direction: column; gap: 2rem; }
   .section-actions { display: flex; justify-content: flex-end; }
 
-  .label-editor { margin-bottom: 2rem; }
-  .editor-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; align-items: flex-end; margin-bottom: 2rem; }
-  @media (max-width: 800px) { .editor-grid { grid-template-columns: 1fr; gap: 1rem; } }
+  .editor-title { margin-top: 0; margin-bottom: 1.5rem; font-weight: 800; color: var(--primary-color); }
+  .editor-grid { display: grid; grid-template-columns: 2fr 1.5fr 1fr; gap: 2rem; align-items: flex-end; margin-bottom: 2rem; }
+  @media (max-width: 800px) { .editor-grid { grid-template-columns: 1fr; gap: 1.5rem; } }
   
-  .field { display: flex; flex-direction: column; gap: 0.5rem; }
-  .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-  .field input { background: var(--surface-variant); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px; color: var(--text-color); }
+  .color-field { display: flex; flex-direction: column; gap: 0.5rem; }
+  .color-label, .preview-label { font-size: 0.9rem; font-weight: 600; color: var(--md-sys-color-on-surface-variant); margin-left: 0.25rem; }
 
-  .color-picker-row { display: flex; gap: 0.5rem; }
-  .color-picker-row input[type="color"] { width: 48px; padding: 0; border: none; background: transparent; cursor: pointer; }
+  .color-picker-row { display: flex; gap: 0.5rem; align-items: flex-end; }
+  .native-picker { width: 48px; height: 48px; padding: 0; border: 1px solid var(--border-color); background: transparent; cursor: pointer; border-radius: 8px; flex-shrink: 0; }
 
   .label-preview { 
-    height: 38px; 
+    height: 48px; 
     display: flex; 
     align-items: center; 
+    justify-content: center;
     padding: 0 1rem; 
-    border-radius: 4px; 
+    border-radius: 8px; 
     color: white; 
-    font-weight: 700; 
+    font-weight: 800; 
     text-transform: uppercase; 
     font-size: 0.75rem; 
     letter-spacing: 0.05em;

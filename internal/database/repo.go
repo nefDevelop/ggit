@@ -272,6 +272,14 @@ type Repository struct {
 	PrimaryLanguage string `gorm:"type:VARCHAR(32)"`
 	Languages       string `gorm:"type:TEXT"`
 
+	// Secret Guardian
+	EnableSecretGuardian bool `gorm:"not null;default:FALSE"`
+	SecretGuardianStrict bool `gorm:"not null;default:TRUE"`
+
+	// Janitor
+	JanitorReport        string `gorm:"type:TEXT"`
+	JanitorLastCheckUnix int64  `gorm:"not null;default:0"`
+
 	// Sentinel & Integrity
 	LastHealthCheckUnix int64 `gorm:"not null;default:0"`
 	CommitsSinceCheck   int   `gorm:"not null;default:0"`

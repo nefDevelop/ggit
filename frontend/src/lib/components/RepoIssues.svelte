@@ -57,10 +57,23 @@
       </button>
     </div>
     
-    <a href="./issues/new" class="btn-action-primary">
-      <span class="material-symbols-rounded">add</span>
-      New Issue
-    </a>
+    <div class="actions-group">
+      <div class="nav-links">
+        <a href="/{repo.data.owner.username}/{repo.data.name}/labels" class="btn-ghost">
+          <span class="material-symbols-rounded">label</span>
+          Labels
+        </a>
+        <a href="/{repo.data.owner.username}/{repo.data.name}/milestones" class="btn-ghost">
+          <span class="material-symbols-rounded">event</span>
+          Milestones
+        </a>
+      </div>
+      
+      <a href="/{repo.data.owner.username}/{repo.data.name}/issues/new" class="btn-action-primary">
+        <span class="material-symbols-rounded">add</span>
+        New Issue
+      </a>
+    </div>
   </div>
 
   {#if loading}
@@ -129,6 +142,39 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .actions-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-ghost {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+  .btn-ghost:hover {
+    background: var(--surface-variant);
+  }
+  .btn-ghost .material-symbols-rounded {
+    font-size: 1.2rem;
+    opacity: 0.7;
   }
 
   .filter-pill-bar {

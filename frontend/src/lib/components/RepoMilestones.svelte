@@ -5,6 +5,8 @@
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import Badge from './ui/Badge.svelte';
+  import Input from './ui/Input.svelte';
+  import Select from './ui/Select.svelte';
 
   const repo: any = getContext('repo');
   let milestones = $state<any[]>([]);
@@ -19,6 +21,11 @@
     due_on: '',
     state: 'open'
   });
+
+  const stateOptions = [
+    { value: 'open', label: 'Open' },
+    { value: 'closed', label: 'Closed' }
+  ];
 
   async function fetchMilestones() {
     loading = true;
@@ -108,27 +115,37 @@
   {#if showEditor}
     <Card class="milestone-editor tonal" padding="lg">
       <header class="editor-header">
-        <h3>{editingMilestone ? 'Edit Milestone' : 'Create New Milestone'}</h3>
+        <h3 class="editor-title">{editingMilestone ? 'Edit Milestone' : 'Create New Milestone'}</h3>
         {#if editingMilestone}
-          <select bind:value={form.state} class="state-select">
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
-          </select>
+          <div class="state-picker">
+            <Select 
+              label="State" 
+              bind:value={form.state} 
+              options={stateOptions} 
+            />
+          </div>
         {/if}
       </header>
       
       <div class="editor-form">
-        <div class="field">
-          <label for="title">Title</label>
-          <input id="title" type="text" bind:value={form.title} placeholder="e.g. Version 1.0.0" />
-        </div>
-        <div class="field">
-          <label for="due">Due Date (Optional)</label>
-          <input id="due" type="date" bind:value={form.due_on} />
-        </div>
-        <div class="field full-width">
-          <label for="desc">Description</label>
-          <textarea id="desc" bind:value={form.description} placeholder="What should be completed in this milestone?"></textarea>
+        <Input 
+          label="Title" 
+          bind:value={form.title} 
+          placeholder="e.g. Version 1.0.0" 
+        />
+        <Input 
+          label="Due Date (Optional)" 
+          type="date" 
+          bind:value={form.due_on} 
+        />
+        <div class="full-width">
+          <Input 
+            label="Description" 
+            multiline 
+            rows={4} 
+            bind:value={form.description} 
+            placeholder="What should be completed in this milestone?" 
+          />
         </div>
       </div>
 
@@ -198,17 +215,15 @@
   .repo-milestones { display: flex; flex-direction: column; gap: 2rem; }
   .section-actions { display: flex; justify-content: flex-end; }
 
-  .milestone-editor { margin-bottom: 2rem; }
-  .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-  .state-select { background: var(--surface-variant); border: 1px solid var(--border-color); color: var(--text-color); padding: 0.5rem; border-radius: 8px; font-weight: 700; }
+  .editor-title { margin: 0; font-weight: 800; color: var(--primary-color); }
+  .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 2rem; }
+  .state-picker { width: 180px; }
 
   .editor-form { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-  @media (max-width: 600px) { .editor-form { grid-template-columns: 1fr; } }
-  .field { display: flex; flex-direction: column; gap: 0.5rem; }
-  .field.full-width { grid-column: span 2; }
-  .field label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
-  .field input, .field textarea { background: var(--surface-variant); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px; color: var(--text-color); font-family: inherit; }
-  .field textarea { height: 100px; resize: none; }
+  @media (max-width: 600px) { .editor-form { grid-template-columns: 1fr; } .editor-header { flex-direction: column; align-items: flex-start; } .state-picker { width: 100%; } }
+  
+  .full-width { grid-column: span 2; }
+  @media (max-width: 600px) { .full-width { grid-column: span 1; } }
 
   .editor-footer { display: flex; justify-content: flex-end; gap: 1rem; }
 

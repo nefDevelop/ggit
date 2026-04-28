@@ -5,17 +5,30 @@
   import Select from "$lib/components/ui/Select.svelte";
   import { toast } from "$lib/toast.svelte";
 
-  let { hook = null, onclose } = $props();
+  let { 
+    hook = null, 
+    onclose = (success: boolean = false) => {} 
+  } = $props<{
+    hook?: any;
+    onclose?: (success?: boolean) => void;
+  }>();
   const repo: any = getContext('repo');
 
-  let url = $state(hook?.url || '');
-  let contentType = $state(hook?.content_type || 'json');
-  let secret = $state(hook?.secret || '');
-  let active = $state(hook ? hook.active : true);
+  let url = $state("");
+  let contentType = $state("json");
+  let secret = $state("");
+  let active = $state(true);
+  let events = $state(['push'] as string[]);
 
-  let events = $state((hook?.events || ['push']) as string[]);
+  $effect(() => {
+    url = hook?.url || "";
+    contentType = hook?.content_type || "json";
+    secret = hook?.secret || "";
+    active = hook ? hook.active : true;
+    events = (hook?.events || ["push"]) as string[];
+  });
 
-  let submitting = $state(false);  let error = $state('');
+  let submitting = $state(false);  let error = $state("");
 
   const availableEvents = [
     { id: 'push', label: 'Push Events', desc: 'Any git push to the repository.' },
@@ -100,8 +113,6 @@
         label="Payload URL" 
         bind:value={url} 
         placeholder="https://example.com/postreceive"
-      />
-
       />
       <p class="helper">The URL that will receive the POST requests.</p>
 

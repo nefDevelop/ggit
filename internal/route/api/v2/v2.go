@@ -137,6 +137,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.POST("/repos/adopt", ginx.Handle(AdoptAdminRepo))
 		admin.POST("/repos/:id/check-integrity", ginx.Handle(CheckAdminRepoIntegrity))
 		admin.GET("/backup/export", ginx.Handle(ExportAdminBackup))
+
+		admin.GET("/security/guardian/patterns", ginx.Handle(GetAdminGuardianPatterns))
+		admin.POST("/security/guardian/patterns", ginx.Handle(AddAdminGuardianPattern))
+		admin.DELETE("/security/guardian/patterns/:id", ginx.Handle(DeleteAdminGuardianPattern))
 	}
 
 	repo := r.Group("/:username/:reponame", context.RepoAssignment())
@@ -238,9 +242,12 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 			settingGroup.GET("/collaborators", ginx.Handle(GetRepoCollaborators))
 			settingGroup.POST("/collaborators/:collaborator", ginx.Handle(AddRepoCollaborator))
+			settingGroup.PATCH("/collaborators/:collaborator", ginx.Handle(UpdateRepoCollaborator))
 			settingGroup.DELETE("/collaborators/:collaborator", ginx.Handle(DeleteRepoCollaborator))
 
 			settingGroup.GET("/hooks", ginx.Handle(GetRepoHooks))
+			settingGroup.GET("/hooks/:id/history", ginx.Handle(GetRepoHookHistory))
+			settingGroup.POST("/hooks/:id/redeliver/:uuid", ginx.Handle(RedeliverRepoHookTask))
 			settingGroup.DELETE("/hooks/:id", ginx.Handle(DeleteRepoHook))
 
 			settingGroup.GET("/keys", ginx.Handle(ListRepoDeployKeys))
@@ -250,6 +257,28 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settingGroup.GET("/remotes", ginx.Handle(ListRepoRemotes))
 			settingGroup.POST("/remotes", ginx.Handle(AddRepoRemote))
 			settingGroup.DELETE("/remotes/:name", ginx.Handle(DeleteRepoRemote))
+
+			gitHooks := settingGroup.Group("/hooks/git", context.GitHookService())
+			{
+				gitHooks.GET("", ginx.Handle(ListRepoGitHooks))
+				gitHooks.GET("/:name", ginx.Handle(GetRepoGitHook))
+				gitHooks.PATCH("/:name", ginx.Handle(UpdateRepoGitHook))
+			}
+
+			guardian := settingGroup.Group("/security/guardian")
+			{
+				guardian.GET("", ginx.Handle(GetRepoGuardianSettings))
+				guardian.PATCH("", ginx.Handle(UpdateRepoGuardianSettings))
+				guardian.POST("/patterns", ginx.Handle(AddRepoGuardianPattern))
+				guardian.DELETE("/patterns/:id", ginx.Handle(DeleteRepoGuardianPattern))
+			}
+
+			janitor := settingGroup.Group("/janitor")
+			{
+				janitor.GET("/report", ginx.Handle(GetJanitorReport))
+				janitor.POST("/scan", ginx.Handle(RunJanitorScan))
+				janitor.POST("/cleanup", ginx.Handle(PerformJanitorCleanup))
+			}
 		}
 	}
 

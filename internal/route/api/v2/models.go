@@ -71,6 +71,57 @@ func ToAuthSourceResponse(s *database.LoginSource) *types.AuthSourceResponse {
 		TypeName:    s.TypeName(),
 		IsActivated: s.IsActived,
 		CreatedAt:   s.Created,
+		RawConfig:   s.Config,
+	}
+}
+
+func ToWebhookResponse(w *database.Webhook) *types.WebhookResponse {
+	if w == nil {
+		return nil
+	}
+	return &types.WebhookResponse{
+		ID:          w.ID,
+		URL:         w.URL,
+		ContentType: w.ContentType.Name(),
+		Secret:      w.Secret,
+		Events:      w.EventsArray(),
+		IsSSL:       w.IsSSL,
+		IsActive:    w.IsActive,
+		LastStatus:  int(w.LastStatus),
+		Updated:     w.Updated,
+	}
+}
+
+func ToWebhookHistoryResponse(t *database.HookTask) *types.WebhookHistoryResponse {
+	if t == nil {
+		return nil
+	}
+	
+	reqHeaders := make(map[string]string)
+	if t.RequestInfo != nil {
+		reqHeaders = t.RequestInfo.Headers
+	}
+	
+	respHeaders := make(map[string]string)
+	respStatus := 0
+	respBody := ""
+	if t.ResponseInfo != nil {
+		respHeaders = t.ResponseInfo.Headers
+		respStatus = t.ResponseInfo.Status
+		respBody = t.ResponseInfo.Body
+	}
+
+	return &types.WebhookHistoryResponse{
+		ID:              t.ID,
+		UUID:            t.UUID,
+		EventType:       string(t.EventType),
+		IsSucceed:       t.IsSucceed,
+		Delivered:       time.Unix(0, t.Delivered),
+		RequestHeaders:  reqHeaders,
+		RequestBody:     t.PayloadContent,
+		ResponseHeaders: respHeaders,
+		ResponseBody:    respBody,
+		ResponseStatus:  respStatus,
 	}
 }
 

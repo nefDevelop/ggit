@@ -3,14 +3,27 @@
   import { onMount, getContext } from "svelte";
   import Avatar from "$lib/components/Avatar.svelte";
   import MarkdownRenderer from "$lib/components/ui/MarkdownRenderer.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
+  import Select from "$lib/components/ui/Select.svelte";
 
   let { index } = $props();
   const repo: any = getContext("repo");
 
   let issue = $state<any>(null);
   let comments = $state<any[]>([]);
+  let allLabels = $state<any[]>([]);
+  let allMilestones = $state<any[]>([]);
   let loading = $state(true);
   let error = $state("");
+
+  let showLabelEditor = $state(false);
+  let showMilestoneEditor = $state(false);
+
+  let labelOptions = $derived(allLabels.map((l: any) => ({ value: l.id, label: l.name })));
+  let milestoneOptions = $derived([
+    { value: 0, label: 'No Milestone' },
+    ...allMilestones.map(m => ({ value: m.id, label: m.title }))
+  ]);
 
   let newCommentBody = $state("");
   let submitting = $state(false);
@@ -19,18 +32,26 @@
     loading = true;
     error = "";
     try {
-      const [issueRes, commentsRes] = await Promise.all([
+      const [issueRes, commentsRes, labelsRes, milestonesRes] = await Promise.all([
         apiFetch(
           `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}`,
         ),
         apiFetch(
           `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`,
         ),
+        apiFetch(
+            `/api/v2/${repo.data.owner.username}/${repo.data.name}/labels`,
+        ),
+        apiFetch(
+            `/api/v2/${repo.data.owner.username}/${repo.data.name}/milestones`,
+        ),
       ]);
 
       if (issueRes.ok && commentsRes.ok) {
         issue = await issueRes.json();
         comments = await commentsRes.json();
+        if (labelsRes.ok) allLabels = await labelsRes.json();
+        if (milestonesRes.ok) allMilestones = await milestonesRes.json();
       } else {
         error = "Issue not found.";
       }
@@ -62,6 +83,25 @@
       console.error(e);
     } finally {
       submitting = false;
+    }
+  }
+
+  async function updateIssue(patch: any) {
+    try {
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        },
+      );
+      if (res.ok) {
+        const updated = await res.json();
+        issue = updated;
+      }
+    } catch (e) {
+      console.error(e);
     }
   }
 
@@ -185,7 +225,10 @@
 
       <aside class="sidebar">
         <div class="side-item">
-          <h4 class="side-title">Assignee</h4>
+          <div class="side-header">
+            <h4 class="side-title">Assignee</h4>
+            <Button variant="ghost" icon="settings" size="sm" />
+          </div>
           <div class="side-val">
             {#if issue.assignee}
               <div class="user-pill">
@@ -201,16 +244,79 @@
             {/if}
           </div>
         </div>
+
         <div class="side-item">
-          <h4 class="side-title">Labels</h4>
-          <div class="side-val labels-grid">
-            {#each issue.labels || [] as label}
-              <span class="label-tag" style="background: {label.color}">
-                {label.name}
-              </span>
-            {/each}
-            {#if !issue.labels?.length}
-              <span class="muted">None yet</span>
+          <div class="side-header">
+            <h4 class="side-title">Labels</h4>
+            <Button 
+              variant="ghost" 
+              icon={showLabelEditor ? "close" : "settings"} 
+              size="sm" 
+              onclick={() => showLabelEditor = !showLabelEditor} 
+            />
+          </div>
+          <div class="side-val">
+            {#if showLabelEditor}
+              <div class="editor-popover">
+                <Select 
+                  options={[{value: 0, label: 'Add Label...'}, ...labelOptions.filter(opt => !issue.labels?.some((l: any) => l.id === opt.value))]} 
+                  value={0}
+                  onchange={(id) => {
+                    if (id === 0) return;
+                    const newLabels = [...(issue.labels || []).map((l: any) => l.id), id];
+                    updateIssue({ label_ids: newLabels });
+                  }}
+                />
+              </div>
+            {/if}
+            <div class="labels-grid">
+              {#each issue.labels || [] as label}
+                <span class="label-tag" style="background: {label.color}">
+                  {label.name}
+                  {#if showLabelEditor}
+                    <button class="remove-label" onclick={() => {
+                      const newLabels = issue.labels.filter((l: any) => l.id !== label.id).map((l: any) => l.id);
+                      updateIssue({ label_ids: newLabels });
+                    }}>×</button>
+                  {/if}
+                </span>
+              {/each}
+              {#if !issue.labels?.length && !showLabelEditor}
+                <span class="muted">None yet</span>
+              {/if}
+            </div>
+          </div>
+        </div>
+
+        <div class="side-item">
+          <div class="side-header">
+            <h4 class="side-title">Milestone</h4>
+            <Button 
+              variant="ghost" 
+              icon={showMilestoneEditor ? "close" : "settings"} 
+              size="sm" 
+              onclick={() => showMilestoneEditor = !showMilestoneEditor} 
+            />
+          </div>
+          <div class="side-val">
+            {#if showMilestoneEditor}
+              <div class="editor-popover">
+                <Select 
+                  options={milestoneOptions} 
+                  value={issue.milestone?.id || 0}
+                  onchange={(id) => {
+                    updateIssue({ milestone_id: id === 0 ? -1 : id }); // -1 usually means remove in some APIs, or 0. Check Gogs API.
+                    showMilestoneEditor = false;
+                  }}
+                />
+              </div>
+            {:else if issue.milestone}
+              <div class="milestone-pill">
+                <span class="material-symbols-rounded mini">event</span>
+                {issue.milestone.title}
+              </div>
+            {:else}
+              <span class="muted">No milestone</span>
             {/if}
           </div>
         </div>
@@ -400,20 +506,44 @@
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
     padding-bottom: 1.5rem;
   }
+  .side-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
   .side-title {
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-muted);
-    margin-bottom: 1rem;
+    margin: 0;
   }
-  .user-pill {
+  
+  .editor-popover {
+    margin-bottom: 1rem;
+    animation: slideDown 0.2s ease-out;
+  }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .user-pill, .milestone-pill {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     font-weight: 600;
     font-size: 0.9rem;
+    background: var(--surface-variant);
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    width: fit-content;
+  }
+  .milestone-pill .mini {
+    font-size: 1.1rem;
+    opacity: 0.7;
   }
 
   .labels-grid {
@@ -424,16 +554,38 @@
   .label-tag {
     font-size: 0.75rem;
     font-weight: 700;
-    padding: 0.1rem 0.6rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 2rem;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .remove-label {
+    background: rgba(0, 0, 0, 0.2);
+    border: none;
+    color: white;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 0;
+  }
+  .remove-label:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 
   .muted {
     color: var(--text-muted);
     font-size: 0.85rem;
     opacity: 0.5;
+    padding-left: 0.25rem;
   }
 
   .user-link {

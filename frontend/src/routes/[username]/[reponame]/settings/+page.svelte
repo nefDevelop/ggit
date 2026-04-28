@@ -6,7 +6,11 @@
   import RepoSettingsWebhooks from '$lib/components/RepoSettingsWebhooks.svelte';
   import RepoSettingsDeployKeys from '$lib/components/RepoSettingsDeployKeys.svelte';
   import RepoSettingsRemotes from '$lib/components/RepoSettingsRemotes.svelte';
+  import RepoSettingsGitHooks from '$lib/components/RepoSettingsGitHooks.svelte';
+  import RepoSettingsSecurity from '$lib/components/RepoSettingsSecurity.svelte';
+  import RepoSettingsJanitor from '$lib/components/RepoSettingsJanitor.svelte';
   import ChipNavigation from '$lib/components/ui/ChipNavigation.svelte';
+  import { authState } from '$lib/auth.svelte';
 
   const repo: any = getContext('repo');
   let activeTab = $state('general');
@@ -17,8 +21,18 @@
     { id: 'branches', label: 'Branches', icon: 'call_split' },
     { id: 'remotes', label: 'Remotes', icon: 'sync' },
     { id: 'webhooks', label: 'Webhooks', icon: 'webhook' },
-    { id: 'keys', label: 'Deploy Keys', icon: 'vpn_key' }
+    { id: 'keys', label: 'Deploy Keys', icon: 'vpn_key' },
+    { id: 'security', label: 'Seguridad', icon: 'shield' },
+    { id: 'janitor', label: 'Janitor', icon: 'mop' }
   ];
+
+  const visibleTabs = $derived(() => {
+    let t = [...tabs];
+    if (authState.user?.is_admin || authState.user?.allow_git_hook) {
+      t.push({ id: 'git_hooks', label: 'Git Hooks', icon: 'terminal' });
+    }
+    return t;
+  });
 </script>
 
 <svelte:head>
@@ -28,7 +42,7 @@
 <div class="settings-container">
   <div class="mobile-nav-wrapper">
     <ChipNavigation 
-      items={tabs} 
+      items={visibleTabs()} 
       activeId={activeTab} 
       title="Repository Settings"
       titleIcon="settings"
@@ -39,7 +53,7 @@
   <aside class="settings-sidebar tonal">
     <h3 class="sidebar-title">Repository Settings</h3>
     <nav class="settings-nav">
-      {#each tabs as tab}
+      {#each visibleTabs() as tab}
         <button 
           class="nav-item" 
           class:active={activeTab === tab.id}
@@ -65,6 +79,12 @@
         <RepoSettingsWebhooks />
     {:else if activeTab === 'keys'}
         <RepoSettingsDeployKeys />
+    {:else if activeTab === 'git_hooks'}
+        <RepoSettingsGitHooks />
+    {:else if activeTab === 'security'}
+        <RepoSettingsSecurity />
+    {:else if activeTab === 'janitor'}
+        <RepoSettingsJanitor />
     {/if}
   </main>
 </div>
@@ -132,20 +152,7 @@
     color: var(--primary-color);
   }
 
-  .nav-item.disabled {
-    opacity: 0.4;
-    cursor: default;
-    position: relative;
-  }
 
-  .nav-item .badge {
-    margin-left: auto;
-    background: rgba(255,255,255,0.1);
-    font-size: 0.65rem;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-    font-weight: 800;
-  }
 
   .nav-item span {
     font-size: 1.25rem;

@@ -5,17 +5,32 @@
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import AdminAuthEditor from './AdminAuthEditor.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
 
   let sources = $state<any[]>([]);
   let loading = $state(true);
+  let editing = $state(false);
+  let selectedSource = $state<any>(null);
 
   async function fetchAuths() {
     loading = true;
+    editing = false;
+    selectedSource = null;
     try {
       const res = await apiFetch("/api/v2/admin/auths");
       if (res.ok) sources = await res.json();
     } catch (e) { console.error(e); } finally { loading = false; }
+  }
+
+  function editSource(source: any) {
+    selectedSource = source;
+    editing = true;
+  }
+
+  function newSource() {
+    selectedSource = null;
+    editing = true;
   }
 
   async function deleteAuth(id: number) {
@@ -29,19 +44,26 @@
   onMount(fetchAuths);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">lock_person</span>
-        <div>
-          <h2>Fuentes de Autenticación</h2>
-          <p class="subtitle">Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos</p>
+{#if editing}
+  <AdminAuthEditor 
+    source={selectedSource} 
+    onSave={fetchAuths} 
+    onCancel={() => editing = false} 
+  />
+{:else}
+  <Card class="settings-premium-card" padding="lg">
+    <header class="section-header">
+      <div class="header-flex">
+        <div class="title-with-icon">
+          <span class="material-symbols-rounded hero-icon">lock_person</span>
+          <div>
+            <h2>Fuentes de Autenticación</h2>
+            <p class="subtitle">Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos</p>
+          </div>
         </div>
+        <Button variant="primary" icon="add_moderator" onclick={newSource}>Nueva Fuente</Button>
       </div>
-      <Button variant="primary" icon="add_moderator">Nueva Fuente</Button>
-    </div>
-  </header>
+    </header>
 
   <div class="modern-table-card">
     <table class="modern-table">
@@ -88,7 +110,7 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <Button variant="ghost" size="sm" icon="settings" />
+                  <Button variant="ghost" size="sm" icon="settings" onclick={() => editSource(source)} />
                   <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteAuth(source.id)} />
                 </div>
               </td>
@@ -99,6 +121,7 @@
     </table>
   </div>
 </Card>
+{/if}
 
 <style>
   

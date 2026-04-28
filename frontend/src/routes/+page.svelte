@@ -85,6 +85,7 @@
     margin-bottom: 1rem;
     background: linear-gradient(135deg, var(--on-primary), var(--primary-color));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
     letter-spacing: -0.03em;

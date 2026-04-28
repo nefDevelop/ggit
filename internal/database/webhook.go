@@ -649,6 +649,17 @@ func TestWebhook(repo *Repository, event HookEventType, p apiv2types.WebhookPayl
 	return prepareHookTasks(tx, repo, event, p, []*Webhook{webhook})
 }
 
+// RedeliverHookTask resets the delivery status of a task and adds it back to the queue.
+func RedeliverHookTask(t *HookTask) error {
+	t.IsDelivered = false
+	t.IsSucceed = false
+	if err := UpdateHookTask(t); err != nil {
+		return err
+	}
+	go HookQueue.Add(t.RepoID)
+	return nil
+}
+
 func (t *HookTask) deliver() {
 	payloadURL, err := url.Parse(t.URL)
 	if err != nil {

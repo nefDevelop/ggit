@@ -111,13 +111,14 @@
       </div>
       <div class="form-box">
         <form onsubmit={(e) => { e.preventDefault(); addKey(); }} class="flex-col gap-md">
-           <div class="field">
-              <label>Título de la Clave</label>
-              <input type="text" bind:value={newKeyTitle} placeholder="Ej: Portátil Trabajo" required />
+            <div class="field">
+              <label for="ssh-key-title">Título de la Clave</label>
+              <input id="ssh-key-title" type="text" bind:value={newKeyTitle} placeholder="Ej: Portátil Trabajo" required />
            </div>
            <div class="field">
-              <label>Contenido (Key Content)</label>
+              <label for="ssh-key-content">Contenido (Key Content)</label>
               <textarea 
+                id="ssh-key-content"
                 bind:value={newKeyContent} 
                 placeholder="Comienza con 'ssh-rsa', 'ssh-ed25519'..." 
                 required
@@ -189,7 +190,6 @@
     .form-box { padding: 1.5rem; }
     .form-footer button { width: 100%; }
   }
-  .premium-key-form { display: flex; flex-direction: column; gap: 2rem; }
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
   .field input, .field textarea { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; }
