@@ -26,7 +26,10 @@
     loading = true;
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/security/guardian`);
-      if (res.ok) data = await res.json();
+      if (res.ok) {
+        const json = await res.json();
+        data = { ...json, patterns: json.patterns || [] };
+      }
     } catch (e) {
       console.error(e);
     } finally {

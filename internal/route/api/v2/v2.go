@@ -137,6 +137,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.POST("/repos/adopt", ginx.Handle(AdoptAdminRepo))
 		admin.POST("/repos/:id/check-integrity", ginx.Handle(CheckAdminRepoIntegrity))
 		admin.GET("/backup/export", ginx.Handle(ExportAdminBackup))
+		admin.GET("/janitor", ginx.Handle(GetAdminJanitorStats))
 
 		admin.GET("/security/guardian/patterns", ginx.Handle(GetAdminGuardianPatterns))
 		admin.POST("/security/guardian/patterns", ginx.Handle(AddAdminGuardianPattern))

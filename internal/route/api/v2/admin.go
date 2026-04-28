@@ -651,3 +651,43 @@ func ExportAdminBackup(c *context.APIContext) {
 		_ = backup.CleanupOldBackups()
 	}()
 }
+// GetAdminJanitorStats returns a summary of janitor reports for all repositories.
+func GetAdminJanitorStats(c *context.APIContext) {
+	repos, err := database.RepositoriesWithUsers(1, 1000)
+	if err != nil {
+		c.Error(err, "list repositories")
+		return
+	}
+
+	type JanitorStat struct {
+		ID          int64  `json:"id"`
+		Name        string `json:"name"`
+		Owner       string `json:"owner"`
+		Waste       int64  `json:"waste"`
+		LastCheck   int64  `json:"last_check"`
+		IssuesCount int    `json:"issues_count"`
+	}
+
+	stats := make([]JanitorStat, 0)
+	for _, r := range repos {
+		if r.JanitorReport == "" {
+			continue
+		}
+		
+		var report struct {
+			TotalWaste int64 `json:"total_waste"`
+			Issues     []any `json:"issues"`
+		}
+		_ = json.Unmarshal([]byte(r.JanitorReport), &report)
+
+		stats = append(stats, JanitorStat{
+			ID:          r.ID,
+			Name:        r.Name,
+			Owner:       r.MustOwner().Name,
+			Waste:       report.TotalWaste,
+			LastCheck:   r.JanitorLastCheckUnix,
+			IssuesCount: len(report.Issues),
+		})
+	}
+	c.JSONSuccess(stats)
+}

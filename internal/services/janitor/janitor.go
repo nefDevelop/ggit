@@ -77,6 +77,11 @@ var patterns = map[string]string{
 	"coverage": "Code coverage report",
 	".nyc_output": "Istanbul/nyc coverage data",
 	"htmlcov": "Python coverage report",
+	
+	// Security (Files)
+	"*.pem": "Private key file (Sensitive)",
+	"*.key": "Private key file (Sensitive)",
+	".env": "Environment configuration (Sensitive)",
 }
 
 // Scan analyzes the repository tree.

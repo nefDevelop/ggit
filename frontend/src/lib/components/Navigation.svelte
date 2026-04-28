@@ -88,6 +88,16 @@
       path: "/admin/audit_log",
     },
     {
+      name: i18n.t("admin.security") || "Seguridad",
+      icon: "shield",
+      path: "/admin/security",
+    },
+    {
+      name: i18n.t("admin.janitor") || "Janitor",
+      icon: "mop",
+      path: "/admin/janitor",
+    },
+    {
       name: i18n.t("admin.notices") || "Notices",
       icon: "notifications",
       path: "/admin/notices",

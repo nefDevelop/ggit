@@ -63,9 +63,9 @@ func (s *SecretPatternsStore) InitDefaultPatterns(ctx context.Context) error {
 			IsGlobal:    true,
 		},
 		{
-			Name:        "SSH Private Key",
+			Name:        "Private Key",
 			Regex:       `-----BEGIN (RSA|OPENSSH|DSA|EC|PGP) PRIVATE KEY-----`,
-			Description: "Private SSH/PGP key files",
+			Description: "Archivos de clave privada SSH/PGP",
 			IsGlobal:    true,
 		},
 		{
@@ -75,15 +75,27 @@ func (s *SecretPatternsStore) InitDefaultPatterns(ctx context.Context) error {
 			IsGlobal:    true,
 		},
 		{
+			Name:        "Google Cloud API Key",
+			Regex:       `AIza[0-9A-Za-z\\-_]{35}`,
+			Description: "Google Cloud Platform API Key",
+			IsGlobal:    true,
+		},
+		{
+			Name:        "Firebase Secret",
+			Regex:       `firebase-adminsdk-[a-z0-9]+-[a-z0-9]+\.json`,
+			Description: "Firebase Admin SDK credentials file",
+			IsGlobal:    true,
+		},
+		{
 			Name:        ".env File",
 			Regex:       `\.env$`,
-			Description: "Environment configuration files",
+			Description: "Archivos de configuración de entorno (secrets)",
 			IsGlobal:    true,
 		},
 		{
 			Name:        "Generic Secret",
 			Regex:       `(?i)(api_key|apikey|secret|password|auth_token|token)(.{0,20})?['\"][0-9a-zA-Z]{16,128}['\"]`,
-			Description: "Generic secret/token pattern",
+			Description: "Patrón genérico de secretos en código",
 			IsGlobal:    true,
 		},
 	}

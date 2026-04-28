@@ -121,11 +121,15 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 	// https://github.com/gogs/gogs/issues/6091. Therefore, only use it to create new
 	// tables, and do customize migration with future changes.
 	for _, table := range Tables {
-		if db.Migrator().HasTable(table) {
+		name := strings.TrimPrefix(fmt.Sprintf("%T", table), "*database.")
+		
+		// NOTE: AutoMigrate is safe to run on existing tables to add missing columns.
+		// We only skip it if it's not a Repository table and already exists, 
+		// but for Repository we MUST ensure new features are migrated.
+		if db.Migrator().HasTable(table) && name != "Repository" {
 			continue
 		}
 
-		name := strings.TrimPrefix(fmt.Sprintf("%T", table), "*database.")
 		err = db.Migrator().AutoMigrate(table)
 		if err != nil {
 			return nil, errors.Wrapf(err, "auto migrate %q", name)
