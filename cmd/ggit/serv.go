@@ -212,6 +212,13 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 					user.Name, requestMode, repoFullName)
 			}
 		}
+
+		// Panic Button (Maintenance Mode)
+		if repo.IsMaintenance {
+			if key.IsDeployKey() || (user != nil && !user.IsAdmin) {
+				fail("Maintenance mode active", "Repository %s is in maintenance mode (Panic Button active). Only administrators can push.", repoFullName)
+			}
+		}
 	} else {
 		// Check if the key can access to the repository in case of it is a deploy key (a deploy keys != user key).
 		// A deploy key doesn't represent a signed in user, so in a site with Auth.RequireSignInView enabled,

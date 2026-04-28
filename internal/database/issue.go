@@ -681,10 +681,19 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 		return err
 	}
 
+	now := time.Now().Unix()
 	if opts.IsPull {
-		err = tx.Model(new(Repository)).Where("id = ?", opts.Issue.RepoID).Update("num_pulls", gorm.Expr("num_pulls + 1")).Error
+		err = tx.Model(new(Repository)).Where("id = ?", opts.Issue.RepoID).Updates(map[string]interface{}{
+			"num_pulls":      gorm.Expr("num_pulls + 1"),
+			"last_pull_unix": now,
+			"updated_unix":   now,
+		}).Error
 	} else {
-		err = tx.Model(new(Repository)).Where("id = ?", opts.Issue.RepoID).Update("num_issues", gorm.Expr("num_issues + 1")).Error
+		err = tx.Model(new(Repository)).Where("id = ?", opts.Issue.RepoID).Updates(map[string]interface{}{
+			"num_issues":      gorm.Expr("num_issues + 1"),
+			"last_issue_unix": now,
+			"updated_unix":    now,
+		}).Error
 	}
 	if err != nil {
 		return err

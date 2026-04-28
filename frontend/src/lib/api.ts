@@ -38,16 +38,18 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
   try {
     const response = await fetch(url, options);
     
-    // Intentar extraer JSON de forma segura
+    // Intentar extraer texto y JSON de forma segura
     let data: any = null;
-    const contentType = response.headers.get("content-type");
-    if (contentType && contentType.includes("application/json")) {
-      try {
-        const text = await response.text();
-        if (text) data = JSON.parse(text);
-      } catch (e) {
-        console.error("Error parsing JSON response", e);
+    let textBody: string = "";
+    
+    try {
+      textBody = await response.text();
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json") && textBody) {
+        data = JSON.parse(textBody);
       }
+    } catch (e) {
+      console.error("Error reading or parsing response", e);
     }
 
     if (!response.ok && !options.silent) {
@@ -64,20 +66,22 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
       }
     }
 
-    // Devolvemos un proxy de la respuesta que incluye el data ya parseado
-    // para mantener compatibilidad con el código existente que usa .json()
+    // Devolvemos un objeto que imita la interfaz de Response pero con data pre-parseado
     return {
-      ...response,
       ok: response.ok,
       status: response.status,
+      statusText: response.statusText,
       headers: response.headers,
+      url: response.url,
       data, // El JSON ya parseado
-      json: async () => data, // Mock de .json() para compatibilidad
-      text: async () => JSON.stringify(data)
+      json: async () => data, 
+      text: async () => textBody || JSON.stringify(data),
+      // Añadimos el original por si alguien necesita acceder a propiedades específicas
+      raw: response 
     };
   } catch (error) {
     if (!options.silent) {
-      toast.error("Error de conexión. Verifica tu internet.");
+      toast.error("Error de conexión. Verifica que el servidor esté encendido.");
     }
     throw error;
   }

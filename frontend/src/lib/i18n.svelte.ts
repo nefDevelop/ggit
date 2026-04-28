@@ -14,16 +14,58 @@ export const i18n = {
   async init(lang: string = "en-US") {
     loading = true;
     try {
-      // Vite dividirá cada JSON en un archivo (chunk) separado
-      const module = await import(`../locales/${lang}.json`);
-      dictionary = module.default || module;
-      currentLocale = lang;
+      // Intentar cargar el idioma solicitado
+      // Si es un código corto (ej: 'es'), intentar buscar el más apropiado
+      let targetLang = lang;
+      
+      // Mapeo básico de redundancia para códigos cortos comunes
+      const fallbacks: Record<string, string> = {
+        'es': 'es-ES',
+        'en': 'en-US',
+        'zh': 'zh-CN',
+        'pt': 'pt-BR',
+        'fr': 'fr-FR',
+        'de': 'de-DE'
+      };
+
+      if (fallbacks[targetLang]) {
+        targetLang = fallbacks[targetLang];
+      }
+
+      try {
+        const module = await import(`../locales/${targetLang}.json`);
+        dictionary = module.default || module;
+        currentLocale = targetLang;
+      } catch (e) {
+        console.warn(`No se encontró el idioma específico: ${targetLang}, intentando fallback...`);
+        // Si falló el específico, intentar con el genérico si era un código largo
+        if (targetLang.includes('-')) {
+          const generic = targetLang.split('-')[0];
+          if (fallbacks[generic]) {
+            const module = await import(`../locales/${fallbacks[generic]}.json`);
+            dictionary = module.default || module;
+            currentLocale = fallbacks[generic];
+          } else {
+            throw e; // Re-lanzar si no hay más opciones
+          }
+        } else {
+          throw e;
+        }
+      }
 
       if (typeof window !== "undefined") {
-        localStorage.setItem("ggit-locale", lang);
+        localStorage.setItem("ggit-locale", currentLocale);
       }
     } catch (e) {
-      console.error(`No se pudo cargar el idioma: ${lang}`, e);
+      console.error(`Error crítico cargando idioma ${lang}:`, e);
+      // Fallback definitivo a inglés si todo falla
+      try {
+        const module = await import(`../locales/en-US.json`);
+        dictionary = module.default || module;
+        currentLocale = "en-US";
+      } catch (inner) {
+        console.error("No se pudo cargar ni siquiera el idioma de fallback (en-US)");
+      }
     } finally {
       loading = false;
     }

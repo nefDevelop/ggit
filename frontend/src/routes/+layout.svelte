@@ -1,6 +1,7 @@
 <script lang="ts">
 	import favicon from "$lib/assets/favicon.svg";
 	import "../app.css";
+	import { apiFetch } from "$lib/api";
 	import { authState, checkAuth, checkInstallation } from "$lib/auth.svelte";
 	import { i18n } from "$lib/i18n.svelte";
 	import { onMount } from "svelte";
@@ -17,13 +18,13 @@
 
 	async function checkSystemHealth() {
 		try {
-			const res = await fetch("/health");
+			const res = await apiFetch("/health", { silent: true });
 			if (res.ok) {
-				const health = await res.json();
-				isSurvivalMode = health.survival_mode;
+				const health = res.data;
+				isSurvivalMode = health?.survival_mode || false;
 			}
 		} catch (e) {
-			console.error("Health check failed", e);
+			// Silent fail for health check
 		}
 	}
 
@@ -32,6 +33,13 @@
 			await checkAuth();
 			const installed = await checkInstallation();
 
+			// Cargar el idioma guardado o el del navegador
+			const savedLocale =
+				localStorage.getItem("ggit-locale") ||
+				navigator.language ||
+				"es-ES";
+			await i18n.init(savedLocale);
+
 			// Redirection Logic
 			const path = $page.url.pathname;
 			if (!installed && path !== "/install") {
@@ -39,13 +47,6 @@
 			} else if (installed && path === "/install") {
 				goto("/");
 			}
-
-			// Cargar el idioma guardado o el del navegador
-			const savedLocale =
-				localStorage.getItem("ggit-locale") ||
-				navigator.language ||
-				"es-ES";
-			i18n.init(savedLocale);
 
 			checkSystemHealth();
 		};

@@ -3,6 +3,7 @@ package context
 import (
 	"bytes"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -144,6 +145,16 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 		gctx.Repo.RepoLink = repo.Link()
 		gctx.Data["RepoLink"] = gctx.Repo.RepoLink
 		gctx.Data["RepoRelPath"] = gctx.Repo.Owner.Name + "/" + gctx.Repo.Repository.Name
+
+		if repo.IsMaintenance && c.Request.Method != "GET" && c.Request.Method != "HEAD" && c.Request.Method != "OPTIONS" {
+			// Only allow admins to perform write operations in maintenance mode
+			if !gctx.IsLogged || !gctx.User.IsAdmin {
+				c.AbortWithStatusJSON(http.StatusServiceUnavailable, map[string]string{
+					"error": "This repository is in maintenance mode (Panic Button active). Only administrators can perform write operations.",
+				})
+				return
+			}
+		}
 
 		// Admin has super access
 		if gctx.IsLogged && gctx.User.IsAdmin {

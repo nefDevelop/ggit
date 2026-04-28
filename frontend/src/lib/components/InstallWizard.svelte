@@ -62,9 +62,11 @@
           <div class="field">
             <label for="db_type">Database Type</label>
             <select id="db_type" bind:value={form.db_type}>
-              {#each settings.db_types as type}
-                <option value={type}>{type}</option>
-              {/each}
+              {#if settings?.db_types}
+                {#each settings.db_types as type}
+                  <option value={type}>{type}</option>
+                {/each}
+              {/if}
             </select>
           </div>
           <div class="field">

@@ -249,6 +249,7 @@ type Repository struct {
 	IsUnlisted bool `gorm:"not null;default:FALSE"`
 	IsBare     bool
 	IsArchived bool `gorm:"not null;default:FALSE"`
+	IsMaintenance bool `gorm:"not null;default:FALSE"`
 
 	// Advanced settings
 	EnableWiki            bool `gorm:"not null;default:TRUE"`
@@ -616,7 +617,17 @@ func (r *Repository) UpdateCounters() error {
 	}
 
 	log.Trace("Result for %s: %d branches, %d commits", r.FullName(), r.NumBranches, r.NumCommits)
-	return Handle.db.Model(r).Select("num_branches", "num_commits").Updates(r).Error
+	
+	now := time.Now().Unix()
+	updates := map[string]interface{}{
+		"num_branches":        r.NumBranches,
+		"num_commits":         r.NumCommits,
+		"last_commit_unix":    now,
+		"last_branch_unix":    now,
+		"commits_since_check": gorm.Expr("commits_since_check + 1"),
+		"updated_unix":        now,
+	}
+	return Handle.db.Model(r).Updates(updates).Error
 }
 
 // UpdateAllRepositoryCounters updates NumCommits and NumBranches for all repositories.
@@ -2216,6 +2227,36 @@ func GitFsck() {
 	}
 
 	for _, repo := range repos {
+		now := time.Now().Unix()
+		needsCheck := false
+
+		// 1. Mandatory check every 30 days
+		if now-repo.LastHealthCheckUnix >= 30*86400 {
+			needsCheck = true
+		}
+
+		// 2. Commit threshold check
+		if !needsCheck && conf.Cron.RepoHealthCheck.CommitThreshold > 0 && repo.CommitsSinceCheck >= conf.Cron.RepoHealthCheck.CommitThreshold {
+			// Anti-flood: at least 24h between checks triggered by commits
+			if now-repo.LastHealthCheckUnix >= 86400 {
+				needsCheck = true
+			}
+		}
+
+		// 3. Inactivity threshold check (if there was some activity and now it's idle)
+		if !needsCheck && conf.Cron.RepoHealthCheck.MaxDaysSinceActivity > 0 && repo.LastCommitUnix > 0 {
+			if now-repo.LastCommitUnix >= int64(conf.Cron.RepoHealthCheck.MaxDaysSinceActivity)*86400 {
+				// Only if we haven't checked since the last commit
+				if repo.LastHealthCheckUnix < repo.LastCommitUnix {
+					needsCheck = true
+				}
+			}
+		}
+
+		if !needsCheck {
+			continue
+		}
+
 		repoPath := repo.RepoPath()
 		err := git.Fsck(repoPath, git.FsckOptions{
 			CommandOptions: git.CommandOptions{
@@ -2223,16 +2264,24 @@ func GitFsck() {
 			},
 			Timeout: conf.Cron.RepoHealthCheck.Timeout,
 		})
+
+		// Update sentinel fields
+		updates := map[string]interface{}{
+			"last_health_check_unix": now,
+			"commits_since_check":    0,
+		}
 		if err != nil {
 			const fmtStr = "Failed to perform health check on repository %q: %v"
 			log.Warn(fmtStr, repoPath, err)
-			if err = Handle.Notices().Create(
+			_ = Handle.Notices().Create(
 				context.TODO(),
 				NoticeTypeRepository,
 				fmt.Sprintf(fmtStr, repoPath, err),
-			); err != nil {
-				log.Error("CreateRepositoryNotice: %v", err)
-			}
+			)
+		}
+
+		if err := Handle.db.Model(repo).Updates(updates).Error; err != nil {
+			log.Error("GitFsck (update sentinel): %v", err)
 		}
 	}
 }

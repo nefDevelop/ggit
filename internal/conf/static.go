@@ -146,11 +146,13 @@ var (
 	// Cron tasks
 	Cron struct {
 		RepoHealthCheck struct {
-			Enabled    bool
-			RunAtStart bool
-			Schedule   string
-			Timeout    time.Duration
-			Args       []string `delim:" "`
+			Enabled               bool
+			RunAtStart            bool
+			Schedule              string
+			Timeout               time.Duration
+			Args                  []string `delim:" "`
+			CommitThreshold       int      `ini:"COMMIT_THRESHOLD"`
+			MaxDaysSinceActivity  int      `ini:"MAX_DAYS_SINCE_ACTIVITY"`
 		} `ini:"cron.repo_health_check"`
 		CheckRepoStats struct {
 			Enabled    bool
