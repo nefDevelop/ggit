@@ -21,7 +21,7 @@
     goto(`?tab=${id}`, { replaceState: true });
   }
 
-  const tabs = [
+  const tabs = $derived([
     { id: "profile", label: i18n.t("settings.profile"), icon: "person" },
     { id: "myggit", label: i18n.t("settings.my_ggit"), icon: "grid_view" },
     { id: "appearance", label: i18n.t("settings.appearance"), icon: "palette" },
@@ -33,7 +33,7 @@
     { id: "tokens", label: i18n.t("settings.access_tokens"), icon: "token" },
     { id: "repos", label: i18n.t("settings.repositories"), icon: "book" },
     { id: "orgs", label: i18n.t("settings.organizations"), icon: "corporate_fare" },
-  ];
+  ]);
 </script>
 
 <div class="settings-premium-container">

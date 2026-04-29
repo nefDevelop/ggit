@@ -54,7 +54,7 @@
         {#if loading}
           <div class="skeleton-repos"></div>
         {:else if repos.length === 0}
-          <div class="empty-repos-box">
+          <div class="empty-state-box">
              <span class="material-symbols-rounded">folder_open</span>
              <p>Aún no tienes repositorios vinculados.</p>
              <Button variant="primary" href="/repo/create" icon="add">Crear Primer Repositorio</Button>
@@ -127,8 +127,6 @@
 
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
-  .empty-repos-box { padding: 5rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-  .empty-repos-box span { font-size: 4rem; opacity: 0.2; }
 
   .skeleton-repos { height: 300px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 </style>

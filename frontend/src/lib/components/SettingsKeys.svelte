@@ -77,7 +77,7 @@
         {#if loading}
            <div class="skeleton-keys"></div>
         {:else if keys.length === 0}
-           <div class="empty-keys-box">
+           <div class="empty-state-box">
               <span class="material-symbols-rounded">no_encryption</span>
               <p>No hay claves SSH configuradas.</p>
            </div>
@@ -201,4 +201,5 @@
   .skeleton-keys { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 
   .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 1.5rem; border-radius: 1rem; font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; border: 1px solid rgba(var(--error-rgb), 0.2); }
+
 </style>

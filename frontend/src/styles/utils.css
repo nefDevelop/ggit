@@ -81,3 +81,27 @@
   overflow-x: auto;
   max-width: 100%;
 }
+
+.empty-state-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  gap: 1.5rem;
+  color: var(--text-muted);
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.empty-state-box span {
+  font-size: 4rem;
+  opacity: 0.2;
+  color: var(--primary-color);
+}
+.empty-state-box p {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  opacity: 0.6;
+}

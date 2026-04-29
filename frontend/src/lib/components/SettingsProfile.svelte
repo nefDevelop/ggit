@@ -7,6 +7,14 @@
   import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
+  import { getAvailableLanguages } from '$lib/locales';
+
+  const availableLanguages = getAvailableLanguages();
+
+  function changeLanguage(event: Event) {
+    const select = event.currentTarget as HTMLSelectElement;
+    i18n.init(select.value);
+  }
 
   let profile = $state<any>({
     username: "",
@@ -280,6 +288,18 @@
                 placeholder="email@example.com"
               />
             </div>
+            <div class="field">
+              <label for="lang-select">{i18n.t("settings.language") || "Language"}</label>
+              <div class="select-wrapper">
+                <select id="lang-select" onchange={changeLanguage} value={i18n.locale}>
+                    {#each availableLanguages as lang}
+                        <option value={lang.code}>{lang.name}</option>
+                    {/each}
+                </select>
+                <span class="material-symbols-rounded dropdown-icon">expand_more</span>
+              </div>
+              <p class="hint">{i18n.t("settings.language_helper") || "Choose your preferred language for the interface."}</p>
+            </div>
 
           </div>
 
@@ -484,6 +504,43 @@
     .field input {
       padding: 0.75rem 1rem;
     }
+  }
+
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  .select-wrapper select {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid transparent;
+    padding: 1rem 1.5rem;
+    border-radius: 1.25rem;
+    color: var(--text-color);
+    font-size: 1.05rem;
+    transition: all 0.3s;
+    width: 100%;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+  .select-wrapper select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.1);
+  }
+  .dropdown-icon {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: transform 0.3s;
+  }
+  .select-wrapper select:focus + .dropdown-icon {
+    transform: translateY(-50%) rotate(180deg);
+    color: var(--primary-color);
   }
 
   .field input:focus {

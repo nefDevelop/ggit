@@ -100,6 +100,11 @@
       <div class="island tonal-list">
         {#if loading}
           <div class="skeleton-emails"></div>
+        {:else if emails.length === 0}
+           <div class="empty-state-box">
+              <span class="material-symbols-rounded">mail_lock</span>
+              <p>No hay direcciones de correo configuradas.</p>
+           </div>
         {:else}
           {#each emails as email}
             <div class="email-row" class:is-primary={email.is_primary}>

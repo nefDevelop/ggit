@@ -101,7 +101,7 @@
         {#if loading}
           <div class="skeleton-tokens"></div>
         {:else if tokens.length === 0}
-          <div class="empty-tokens-box">
+          <div class="empty-state-box">
              <span class="material-symbols-rounded">lock_open</span>
              <p>No has generado ningún token todavía.</p>
           </div>
@@ -210,8 +210,6 @@
   .token-date { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 700; }
 
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
-  .empty-tokens-box { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .empty-tokens-box span { font-size: 3rem; opacity: 0.2; }
 
   /* FORM */
   .form-box { padding: 3rem; background: rgba(255,255,255,0.01); border-radius: 2.5rem; }

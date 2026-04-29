@@ -5,13 +5,29 @@
 
   let currentTheme = $state('default');
   let currentScheme = $state('auto');
+  let customColor = $state('#0b57d0');
 
   const themes = [
-    { id: 'default', name: 'Ggit Dynamic', color: '#0b57d0' },
-    { id: 'subtle', name: 'Subtle Slate', color: '#607d8b' },
-    { id: 'ayu', name: 'Ayu Sunrise', color: '#ffb454' },
-    { id: 'monokai', name: 'Monokai Pro', color: '#a6e22e' },
-    { id: 'nord', name: 'Nordic Frost', color: '#88c0d0' }
+    { 
+      id: 'default', 
+      name: 'Ggit Dynamic', 
+      palette: ['#0b57d0', '#00639b', '#565e71', '#f0f2f5'] 
+    },
+    { 
+      id: 'ayu', 
+      name: 'Ayu Sunrise', 
+      palette: ['#ff9940', '#5c6166', '#73d031', '#fafafa'] 
+    },
+    { 
+      id: 'monokai', 
+      name: 'Monokai Pro', 
+      palette: ['#a6e22e', '#ccccc6', '#fd971f', '#272822'] 
+    },
+    { 
+      id: 'nord', 
+      name: 'Nordic Frost', 
+      palette: ['#5e81ac', '#81a1c1', '#88c0d0', '#eceff4'] 
+    }
   ];
 
   const schemes = [
@@ -23,12 +39,39 @@
   onMount(() => {
     currentTheme = localStorage.getItem('theme') || 'default';
     currentScheme = localStorage.getItem('color-scheme') || 'auto';
+    customColor = localStorage.getItem('custom-theme-color') || '#0b57d0';
+    
+    if (currentTheme === 'custom') {
+      applyCustomColor(customColor);
+    }
   });
 
   function applyTheme(themeId: string) {
     currentTheme = themeId;
     localStorage.setItem('theme', themeId);
     document.documentElement.setAttribute('data-theme', themeId);
+    
+    if (themeId !== 'custom') {
+      // Clear custom color overrides if switching to preset
+      document.documentElement.style.removeProperty('--primary-color');
+      document.documentElement.style.removeProperty('--primary-rgb');
+    } else {
+      applyCustomColor(customColor);
+    }
+  }
+
+  function applyCustomColor(hex: string) {
+    customColor = hex;
+    localStorage.setItem('custom-theme-color', hex);
+    
+    if (currentTheme === 'custom') {
+      document.documentElement.style.setProperty('--primary-color', hex);
+      // Simple hex to rgb conversion for the RGB variable
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+    }
   }
 
   function applyScheme(schemeId: string) {
@@ -95,16 +138,54 @@
             class:active={currentTheme === theme.id}
             onclick={() => applyTheme(theme.id)}
           >
-            <div class="color-disk shadow-sm" style="background-color: {theme.color};"></div>
+            <div class="palette-preview">
+               <div class="seed-color shadow-sm" style="background-color: {theme.palette[0]};"></div>
+               <div class="derived-dots">
+                  <div class="dot" style="background-color: {theme.palette[1]};"></div>
+                  <div class="dot" style="background-color: {theme.palette[2]};"></div>
+                  <div class="dot" style="background-color: {theme.palette[3]};"></div>
+               </div>
+            </div>
             <div class="theme-info">
               <span class="name">{theme.name}</span>
-              <span class="hex">{theme.color}</span>
+              <span class="hex">{theme.palette[0]}</span>
             </div>
             {#if currentTheme === theme.id}
                <span class="material-symbols-rounded check-icon">check_circle</span>
             {/if}
           </button>
         {/each}
+
+        <!-- CUSTOM THEME BOX -->
+        <button 
+          type="button" 
+          class="theme-modular-tile tonal custom-tile" 
+          class:active={currentTheme === 'custom'}
+          onclick={() => applyTheme('custom')}
+        >
+          <div class="palette-preview">
+             <div class="seed-color shadow-sm custom-preview" style="background-color: {customColor};">
+                <input 
+                  type="color" 
+                  bind:value={customColor} 
+                  oninput={(e) => applyCustomColor(e.currentTarget.value)} 
+                  title="Elegir color"
+                />
+             </div>
+             <div class="derived-dots">
+                <div class="dot auto"></div>
+                <div class="dot auto"></div>
+                <div class="dot auto"></div>
+             </div>
+          </div>
+          <div class="theme-info">
+            <span class="name">Personalizado</span>
+            <span class="hex">{customColor}</span>
+          </div>
+          {#if currentTheme === 'custom'}
+             <span class="material-symbols-rounded check-icon">check_circle</span>
+          {/if}
+        </button>
       </div>
     </div>
   </div>
@@ -144,18 +225,28 @@
   .theme-modular-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
   .theme-modular-tile {
     display: flex; align-items: center; gap: 1.5rem;
-    padding: 1.5rem 1.75rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant);
+    padding: 1.25rem 1.5rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant);
     background: rgba(0,0,0,0.1); transition: all 0.3s;
+    cursor: pointer;
+    text-align: left;
   }
   .theme-modular-tile:hover { transform: scale(1.02); background: rgba(255,255,255,0.02); border-color: var(--primary-color); }
   .theme-modular-tile.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
-  .color-disk { width: 3.5rem; height: 3.5rem; border-radius: 50%; border: 4px solid rgba(255,255,255,0.1); flex-shrink: 0; }
-  .theme-info { display: flex; flex-direction: column; flex: 1; text-align: left; }
-  .theme-info .name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
-  .theme-info .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); opacity: 0.6; }
+  .palette-preview { display: flex; align-items: center; gap: 0.75rem; position: relative; }
+  .seed-color { width: 3.5rem; height: 3.5rem; border-radius: 50%; border: 3px solid rgba(255,255,255,0.1); flex-shrink: 0; position: relative; overflow: hidden; }
+  
+  .derived-dots { display: flex; flex-direction: column; gap: 4px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.05); }
+  .dot.auto { background: var(--text-muted); opacity: 0.3; }
 
-  .check-icon { color: var(--primary-color); font-size: 1.75rem; }
+  .custom-preview input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+  .theme-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .theme-info .name { font-weight: 900; font-size: 1rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .theme-info .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); opacity: 0.6; }
+
+  .check-icon { color: var(--primary-color); font-size: 1.5rem; }
 
   @media (max-width: 800px) {
     .section-header { margin-bottom: 2rem; }
