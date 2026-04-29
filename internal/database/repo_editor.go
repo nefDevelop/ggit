@@ -552,6 +552,11 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 		return nil
 	}
 
+	// 🚨 SECURITY: Prevent Path Traversal
+	if strings.Contains(opts.TreePath, "..") || strings.HasPrefix(opts.TreePath, "/") {
+		return errors.Errorf("malicious tree path detected (path traversal): %q", opts.TreePath)
+	}
+
 	// 🚨 SECURITY: Prevent uploading files into the ".git" directory.
 	if isRepositoryGitPath(opts.TreePath) {
 		return errors.Errorf("bad tree path %q", opts.TreePath)
@@ -641,6 +646,14 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 				}),
 			},
 		},
+	)
+	if err != nil {
+		return errors.Newf("git push origin %s: %v", opts.NewBranch, err)
+	}
+
+	return DeleteUploads(uploads...)
+}
+
 	)
 	if err != nil {
 		return errors.Newf("git push origin %s: %v", opts.NewBranch, err)

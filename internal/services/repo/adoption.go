@@ -71,6 +71,11 @@ func (s *RepositoryService) ListUnmanagedRepositories(ctx context.Context) ([]*U
 
 // AdoptRepository links an existing folder on disk to the database.
 func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repoName string) (*database.Repository, error) {
+	// 🚨 SECURITY: Prevent Path Traversal & System Hijacking
+	if strings.Contains(repoName, "..") || strings.Contains(repoName, "/") || strings.Contains(repoName, "\\") {
+		return nil, errors.Newf("malicious or invalid repository name: %q", repoName)
+	}
+
 	owner, err := database.Handle.Users().GetByUsername(ctx, ownerName)
 	if err != nil {
 		return nil, errors.Wrap(err, "get owner")

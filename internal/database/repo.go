@@ -2932,6 +2932,13 @@ func (r *Repository) RecalculateAccesses() error {
 }
 // CleanupDanglingRepositories deletes records from the database that no longer have a corresponding repository on disk.
 func CleanupDanglingRepositories() error {
+	// SECURITY & SANITY CHECK: Ensure the main storage drive/mount is accessible.
+	// If the network drive fails, this prevents the system from assuming ALL repositories were deleted.
+	if !osx.IsDir(conf.Repository.Root) {
+		log.Error("CRITICAL: Repository root '%s' is not accessible. Aborting Dangling Cleanup to prevent data loss.", conf.Repository.Root)
+		return errors.Newf("repository root %s is unreachable (possible mount failure)", conf.Repository.Root)
+	}
+
 	var repos []*Repository
 	if err := Handle.db.Find(&repos).Error; err != nil {
 		return err

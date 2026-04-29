@@ -254,6 +254,7 @@
 
 
 ### Estabilidad y Robustez (Inmediato)
+- [ ] **Mitigación SSRF en Webhooks:** Filtro de IPs locales (127.0.0.1, 10.0.x, etc) en el Tester HTTP. URGENTE.
 - [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes. NO
 - [ ] **Commit Status API:** Integración de estados de CI externos. SI
 - [ ] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos. SI

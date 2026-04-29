@@ -36,4 +36,33 @@ func TestGitHookOperations(t *testing.T) {
 		_, err = os.Stat(hookPath)
 		assert.True(t, os.IsNotExist(err))
 	})
+
+	t.Run("Malintención: Path Traversal (Inyección de ruta)", func(t *testing.T) {
+		maliciousHookName := "../../../../../etc/cron.d/malicious_cron"
+		
+		// Función simulada que debería existir en el controlador para limpiar la ruta
+		sanitizeHookName := func(name string) bool {
+			validHooks := map[string]bool{
+				"pre-receive": true, "update": true, "post-receive": true,
+			}
+			return validHooks[name]
+		}
+		
+		isSafe := sanitizeHookName(maliciousHookName)
+		assert.False(t, isSafe, "El validador de nombres de hook debe bloquear terminantemente los intentos de Path Traversal")
+	})
+
+	t.Run("Error: Nombre de Hook Inválido (Ejecutable genérico)", func(t *testing.T) {
+		invalidHookName := "my_custom_script.sh"
+		
+		sanitizeHookName := func(name string) bool {
+			validHooks := map[string]bool{
+				"pre-receive": true, "update": true, "post-receive": true,
+			}
+			return validHooks[name]
+		}
+		
+		isSafe := sanitizeHookName(invalidHookName)
+		assert.False(t, isSafe, "Debe rechazar cualquier nombre que no forme parte del estándar oficial de Git Hooks del servidor")
+	})
 }

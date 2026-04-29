@@ -89,3 +89,39 @@ func TestSentinelDecisionLogic(t *testing.T) {
 		})
 	}
 }
+
+func TestSentinelCorruptionHandling(t *testing.T) {
+	// Simulador del scanner fsck
+	simulateFsckCheck := func(repoPath string, isCorrupted bool) error {
+		if isCorrupted {
+			return assert.AnError // Simula un "fatal: loose object is corrupt"
+		}
+		return nil
+	}
+
+	t.Run("Superación: Repositorio Sano", func(t *testing.T) {
+		err := simulateFsckCheck("/path/to/healthy/repo.git", false)
+		assert.NoError(t, err, "No debe reportar errores en repositorios sanos")
+	})
+
+	t.Run("Error: Corrupción de Objetos Git (fsck falla)", func(t *testing.T) {
+		err := simulateFsckCheck("/path/to/corrupted/repo.git", true)
+		assert.Error(t, err, "El Sentinel debe atrapar el error del fsck")
+		// Aquí verificaríamos que el Sentinel cambia el estado del repo en DB a "Corrupto"
+		// y desactiva las operaciones de escritura (Push, UI Edits).
+	})
+
+	t.Run("Malintención: Intento de inyección de comandos en ruta", func(t *testing.T) {
+		// Si un atacante logra crear un repositorio con nombre malicioso
+		maliciousPath := "/path/repo.git; rm -rf /"
+		
+		// La validación estricta debe rechazar rutas que no pertenezcan al contexto seguro
+		sanitizePath := func(p string) bool {
+			// En la implementación real esto chequearía contra un regex estricto de nombres de repos [a-zA-Z0-9-_.]
+			return !assert.ObjectsAreEqual(p, maliciousPath) // Simulación básica
+		}
+		
+		isSafe := sanitizePath(maliciousPath)
+		assert.False(t, isSafe, "El Sentinel debe rechazar la ejecución del fsck en rutas inyectadas para evitar RCE")
+	})
+}

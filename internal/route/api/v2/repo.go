@@ -45,7 +45,16 @@ func SearchRepoContents(c *context.APIContext) {
 	} else {
 		args = append(args, "-F")
 	}
-	args = append(args, "-e", q, ref)
+
+	// 🚨 SECURITY: Prevent Parameter Injection (e.g. "--open-files-in-pager=...")
+	// Force the end of command-line flags so Git interprets 'ref' ONLY as a revision.
+	// We append '-e', then the query, then '--', then the 'ref'.
+	// In 'git grep', the syntax is: git grep [options] [-e pattern] [--] [<rev>...] [[--] <path>...]
+	if strings.HasPrefix(ref, "-") {
+		c.Error(errors.New("invalid ref format"), "malicious ref detected")
+		return
+	}
+	args = append(args, "-e", q, ref, "--")
 
 	if err := tool.AcquireSemaphore(c.Req.Context(), tool.GitGrepSemaphore); err != nil {
 		c.Error(err, "acquire grep semaphore")
