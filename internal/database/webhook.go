@@ -675,6 +675,7 @@ func (t *HookTask) deliver() {
 
 	timeout := time.Duration(conf.Webhook.DeliverTimeout) * time.Second
 	req := httplib.Post(t.URL).SetTimeout(timeout, timeout).
+		SetDialerControl(netx.NewSafeControl(payloadURL.Hostname(), conf.Security.LocalNetworkAllowlist)).
 		Header("X-Github-Delivery", t.UUID).
 		Header("X-Github-Event", string(t.EventType)).
 		Header("X-Gogs-Delivery", t.UUID).

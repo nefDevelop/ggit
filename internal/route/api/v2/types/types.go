@@ -275,18 +275,37 @@ type AuthSourceResponse struct {
 
 // WebhookResponse represents a webhook in the API v2.
 type WebhookResponse struct {
-	ID          int64             `json:"id"`
-	URL         string            `json:"url"`
-	ContentType string            `json:"content_type"`
-	Secret      string            `json:"secret"`
-	Events      []string          `json:"events"`
-	IsSSL       bool              `json:"is_ssl"`
-	IsActive    bool              `json:"is_active"`
-	LastStatus  int               `json:"last_status"`
-	Updated     time.Time         `json:"updated_at"`
+	ID          int64    `json:"id"`
+	URL         string   `json:"url"`
+	ContentType string   `json:"content_type"`
+	Secret      string   `json:"secret"`
+	Events      []string `json:"events"`
+	IsSSL       bool     `json:"is_ssl"`
+	IsActive    bool     `json:"active"`
+	LastStatus  int      `json:"last_status"`
+	Updated     int64    `json:"updated"`
+}
+
+// CreateWebhookRequest represents a request to create a new webhook.
+type CreateWebhookRequest struct {
+	URL         string   `json:"url" binding:"required"`
+	ContentType string   `json:"content_type" binding:"required"`
+	Secret      string   `json:"secret"`
+	Active      bool     `json:"active"`
+	Events      []string `json:"events"`
+}
+
+// UpdateWebhookRequest represents a request to update an existing webhook.
+type UpdateWebhookRequest struct {
+	URL         string   `json:"url"`
+	ContentType string   `json:"content_type"`
+	Secret      string   `json:"secret"`
+	Active      *bool    `json:"active"`
+	Events      []string `json:"events"`
 }
 
 // WebhookHistoryResponse represents a delivery task of a webhook.
+
 type WebhookHistoryResponse struct {
 	ID              int64     `json:"id"`
 	UUID            string    `json:"uuid"`
@@ -318,6 +337,26 @@ type AuditLogResponse struct {
 	RepoPath  string    `json:"repo_path"`
 	Content   string    `json:"content"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+// CommitStatusResponse represents a commit status in the API v2.
+type CommitStatusResponse struct {
+	ID          int64     `json:"id"`
+	State       string    `json:"state"`
+	TargetURL   string    `json:"target_url"`
+	Description string    `json:"description"`
+	Context     string    `json:"context"`
+	Creator     *UserResponse `json:"creator"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+// CombinedCommitStatusResponse represents combined commit statuses for a SHA.
+type CombinedCommitStatusResponse struct {
+	State    string                  `json:"state"`
+	Statuses []*CommitStatusResponse `json:"statuses"`
+	Repo     *RepositoryResponse     `json:"repository"`
+	SHA      string                  `json:"sha"`
 }
 
 // SystemStatusResponse represents the system health statistics in the API v2.

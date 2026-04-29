@@ -73,6 +73,8 @@ var migrations = []Migration{
 	NewMigration("create user_block table", createUserBlockTable),
 	// v28 -> v29:v0.13.0
 	NewMigration("add activity timestamps and sentinel to repository table", addActivityTimestampsAndSentinelToRepository),
+	// v29 -> v30:v0.13.0
+	NewMigration("add optimized indexes to action and commit_status tables", addOptimizedIndexes),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")

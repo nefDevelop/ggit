@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"context"
 	"path"
 	"time"
 
@@ -88,7 +89,7 @@ func ToWebhookResponse(w *database.Webhook) *types.WebhookResponse {
 		IsSSL:       w.IsSSL,
 		IsActive:    w.IsActive,
 		LastStatus:  int(w.LastStatus),
-		Updated:     w.Updated,
+		Updated:     w.UpdatedUnix,
 	}
 }
 
@@ -210,5 +211,38 @@ func ToAuditLogResponse(a *database.Action) *types.AuditLogResponse {
 		RepoPath:  path.Join(a.RepoUserName, a.RepoName),
 		Content:   a.Content,
 		CreatedAt: time.Unix(a.CreatedUnix, 0),
+	}
+}
+
+func ToCommitStatusResponse(s *database.CommitStatus) *types.CommitStatusResponse {
+	if s == nil {
+		return nil
+	}
+
+	u, _ := database.Handle.Users().GetByID(context.Background(), s.CreatorID)
+
+	return &types.CommitStatusResponse{
+		ID:          s.ID,
+		State:       string(s.State),
+		TargetURL:   s.TargetURL,
+		Description: s.Description,
+		Context:     s.Context,
+		Creator:     ToUserResponse(u),
+		CreatedAt:   time.Unix(s.CreatedAt, 0),
+		UpdatedAt:   time.Unix(s.UpdatedAt, 0),
+	}
+}
+
+func ToCombinedCommitStatusResponse(repo *database.Repository, sha string, state database.CommitStatusState, statuses []*database.CommitStatus) *types.CombinedCommitStatusResponse {
+	respStatuses := make([]*types.CommitStatusResponse, len(statuses))
+	for i, s := range statuses {
+		respStatuses[i] = ToCommitStatusResponse(s)
+	}
+
+	return &types.CombinedCommitStatusResponse{
+		State:    string(state),
+		Statuses: respStatuses,
+		Repo:     ToRepositoryResponse(repo),
+		SHA:      sha,
 	}
 }

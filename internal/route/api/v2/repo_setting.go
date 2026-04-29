@@ -180,6 +180,121 @@ func GetRepoHooks(c *context.APIContext) {
 	c.JSON(http.StatusOK, resp)
 }
 
+func parseHookEvents(events []string, w *database.Webhook) {
+	w.HookEvent = &database.HookEvent{
+		ChooseEvents: true,
+	}
+	for _, e := range events {
+		switch e {
+		case "push":
+			w.Push = true
+		case "create":
+			w.Create = true
+		case "delete":
+			w.Delete = true
+		case "fork":
+			w.Fork = true
+		case "issues":
+			w.Issues = true
+		case "issue_comment":
+			w.IssueComment = true
+		case "pull_request":
+			w.PullRequest = true
+		case "release":
+			w.Release = true
+		}
+	}
+}
+
+// CreateRepoHook creates a new webhook for the repository.
+func CreateRepoHook(c *context.APIContext) {
+	var f apiv2types.CreateWebhookRequest
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	w := &database.Webhook{
+		RepoID:      c.Repo.Repository.ID,
+		URL:         f.URL,
+		ContentType: database.ToHookContentType(f.ContentType),
+		Secret:      f.Secret,
+		IsActive:    f.Active,
+	}
+	parseHookEvents(f.Events, w)
+
+	if err := database.CreateWebhook(w); err != nil {
+		c.Error(err, "create webhook")
+		return
+	}
+
+	c.JSON(http.StatusCreated, ToWebhookResponse(w))
+}
+
+// UpdateRepoHook updates a webhook for the repository.
+func UpdateRepoHook(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	var f apiv2types.UpdateWebhookRequest
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	w, err := database.GetWebhookOfRepoByID(c.Repo.Repository.ID, id)
+	if err != nil {
+		c.Error(err, "get webhook")
+		return
+	}
+
+	if f.URL != "" {
+		w.URL = f.URL
+	}
+	if f.ContentType != "" {
+		w.ContentType = database.ToHookContentType(f.ContentType)
+	}
+	if f.Secret != "" {
+		w.Secret = f.Secret
+	}
+	if f.Active != nil {
+		w.IsActive = *f.Active
+	}
+	if len(f.Events) > 0 {
+		parseHookEvents(f.Events, w)
+	}
+
+	if err = database.UpdateWebhook(w); err != nil {
+		c.Error(err, "update webhook")
+		return
+	}
+
+	c.JSON(http.StatusOK, ToWebhookResponse(w))
+}
+
+// TestRepoHook triggers a test delivery for a webhook.
+func TestRepoHook(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	
+	// Create a dummy push payload for testing
+	p := &apiv2types.WebhookPushPayload{
+		Ref: "refs/heads/master",
+		Before: "0000000000000000000000000000000000000000",
+		After: "0000000000000000000000000000000000000000",
+		Commits: []*apiv2types.WebhookPayloadCommit{},
+		Pusher: ToUserResponse(c.User),
+		Sender: ToUserResponse(c.User),
+		Repo: ToRepositoryResponse(c.Repo.Repository),
+	}
+
+	if err := database.TestWebhook(c.Repo.Repository, database.HookEventTypePush, p, id); err != nil {
+		c.Error(err, "test webhook")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"status": "ok",
+	})
+}
+
 // GetRepoHookHistory returns the delivery history for a specific webhook.
 func GetRepoHookHistory(c *context.APIContext) {
 	id := c.ParamsInt64("id")

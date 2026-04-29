@@ -49,13 +49,12 @@ func SearchRepoContents(c *context.APIContext) {
 
 	// 🚨 SECURITY: Prevent Parameter Injection (e.g. "--open-files-in-pager=...")
 	// Force the end of command-line flags so Git interprets 'ref' ONLY as a revision.
-	// We append '-e', then the query, then '--', then the 'ref'.
-	// In 'git grep', the syntax is: git grep [options] [-e pattern] [--] [<rev>...] [[--] <path>...]
+	// In 'git grep', the syntax is: git grep [options] [-e pattern] [--] [<rev>...]
 	if strings.HasPrefix(ref, "-") {
 		c.Error(errors.New("invalid ref format"), "malicious ref detected")
 		return
 	}
-	args = append(args, "-e", q, ref, "--")
+	args = append(args, "-e", q, "--", ref)
 
 	if err := tool.AcquireSemaphore(c.Req.Context(), tool.GitGrepSemaphore); err != nil {
 		c.Error(err, "acquire grep semaphore")
@@ -461,10 +460,8 @@ func GetCommitStatuses(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]any{
-		"statuses": statuses,
-		"combined": database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha),
-	})
+	state := database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)
+	c.JSON(http.StatusOK, ToCombinedCommitStatusResponse(c.Repo.Repository, sha, state, statuses))
 }
 
 func CreateCommitStatus(c *context.APIContext) {
@@ -477,6 +474,17 @@ func CreateCommitStatus(c *context.APIContext) {
 	}
 	if err := c.ShouldBindJSON(&form); err != nil {
 		c.Error(err, "parse json")
+		return
+	}
+
+	// Validate state
+	switch form.State {
+	case database.CommitStatusPending, database.CommitStatusSuccess,
+		database.CommitStatusError, database.CommitStatusFailure,
+		database.CommitStatusWarning:
+		// valid
+	default:
+		c.StatusError(http.StatusUnprocessableEntity, "Invalid commit status state.", nil)
 		return
 	}
 
@@ -499,5 +507,5 @@ func CreateCommitStatus(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, status)
+	c.JSON(http.StatusCreated, ToCommitStatusResponse(status))
 }

@@ -195,16 +195,16 @@
 - [x] **Auditoría de Paridad UI:** Sincronización de opciones de Repo, User y Org.
 - [x] **Gestión de Colaboradores:** Interfaz para añadir usuarios y asignar roles (Read, Write, Admin).
 - [x] **Deploy Keys:** Editor de llaves de despliegue para CI/CD.
-- [x] **Git Hooks Manager:** Editor de scripts del lado del servidor para automatización avanzada.
+- [x] **Git Hooks Manager:** Editor de scripts del lado del servidor para automatización avanzada. **Tested**.
 - [x] **Label & Milestone Manager:** Editores dinámicos para metadatos de Issues.
-- [x] **Webhook Tester & Logs:** Herramientas de diagnóstico para integraciones.
+- [x] **Webhook Tester & Logs:** Herramientas de diagnóstico para integraciones. **Tested**.
 
 ---
 
 ## Fase 24: Estandarización de la Capa de Datos 🗄️
 - [x] **Gestión de Sesiones (DB Store):** Almacenamiento persistente de sesiones en base de datos.
 - [x] **Migraciones Atómicas:** Sistema de migraciones v26 implementado.
-- [ ] **Auditoría de Índices:** Optimización de tablas críticas (UserRepository, Actions).
+- [x] **Auditoría de Índices:** Optimización de tablas críticas (UserRepository, Actions). **Tested**.
 - [ ] **Pattern Store:** Unificar accesos a DB bajo un patrón de repositorio común.
 
 ---
@@ -214,7 +214,8 @@
 - [x] **Release Management:** Upload center para binarios y estados de release (Draft/Pre).
 - [x] **Monitorización Admin:** Cron scheduler y process tracker en el panel admin.
 - [x] **Respaldo de Metadatos:** Exportación ligera de DB y adjuntos (sin repositorios).
-- [x] **Adopción de Repositorios:** Función para vincular carpetas Git existentes a la DB.
+- [x] **Adopción de Repositorios (Hardened 🛡️):** Función para vincular carpetas Git existentes con validación estricta de Path Traversal. **Tested**.
+- [x] **Seguridad de Búsqueda:** Mitigación de Parameter Injection en `git grep` mediante separadores de argumentos. **Tested**.
 ---
 
 ## Estimación de Dificultad (Tareas Pendientes)
@@ -236,7 +237,7 @@
 | **Deploy Keys & Git Hooks** | 23 | Completado | Bajo | Editores web con validación de sintaxis y seguridad en servidor. |
 | **Label & Milestone Manager** | 23 | Completado | Bajo | Refactorización de gestión de metadatos a componentes Material 3. |
 | **Webhook Tester & Logs** | 23 | Completado | Medio | Sistema de reintentos y visualización de payloads de entrega. |
-| **Auditoría de Índices** | 24 | Media | Medio | Optimización de consultas críticas mediante índices SQLite precisos. |
+| **Auditoría de Índices** | 24 | Completado | Medio | Optimización de consultas críticas mediante índices SQLite precisos. **Tested**. |
 | **Fuentes de Auth UI** | 25 | Completado | Bajo | Interfaz administrativa para configurar proveedores LDAP/OAuth2. |
 | **Release Management** | 25 | Completado | Medio | Lógica de subida y persistencia de activos binarios en lanzamientos. |
 | **Monitorización Admin** | 25 | Completado | Bajo | Consola de control para tareas cron y procesos Git activos. |
@@ -254,10 +255,10 @@
 
 
 ### Estabilidad y Robustez (Inmediato)
-- [ ] **Mitigación SSRF en Webhooks:** Filtro de IPs locales (127.0.0.1, 10.0.x, etc) en el Tester HTTP. URGENTE.
+- [x] **Mitigación SSRF en Webhooks:** Filtro de IPs locales (127.0.0.1, 10.0.x, etc) en el Tester HTTP. **Tested**.
 - [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes. NO
-- [ ] **Commit Status API:** Integración de estados de CI externos. SI
-- [ ] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos. SI
+- [x] **Commit Status API:** Integración de estados de CI externos. **Tested**.
+- [x] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos. **Tested**.
 - [ ] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico. SI
 - [ ] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco. SI
 

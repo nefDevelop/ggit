@@ -612,7 +612,7 @@ func AdoptAdminRepo(c *context.APIContext) {
 
 	r, err := repo.Repos.AdoptRepository(c.Req.Context(), f.OwnerName, f.RepoName)
 	if err != nil {
-		c.Error(err, "adopt repository")
+		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
 

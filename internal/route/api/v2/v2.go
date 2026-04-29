@@ -249,8 +249,11 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settingGroup.DELETE("/collaborators/:collaborator", ginx.Handle(DeleteRepoCollaborator))
 
 			settingGroup.GET("/hooks", ginx.Handle(GetRepoHooks))
+			settingGroup.POST("/hooks", ginx.Handle(CreateRepoHook))
 			settingGroup.GET("/hooks/:id/history", ginx.Handle(GetRepoHookHistory))
+			settingGroup.PATCH("/hooks/:id", ginx.Handle(UpdateRepoHook))
 			settingGroup.POST("/hooks/:id/redeliver/:uuid", ginx.Handle(RedeliverRepoHookTask))
+			settingGroup.POST("/hooks/:id/test", ginx.Handle(TestRepoHook))
 			settingGroup.DELETE("/hooks/:id", ginx.Handle(DeleteRepoHook))
 
 			settingGroup.GET("/keys", ginx.Handle(ListRepoDeployKeys))

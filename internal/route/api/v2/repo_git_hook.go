@@ -1,6 +1,7 @@
 package v2
 
 import (
+	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -39,6 +40,10 @@ func ListRepoGitHooks(c *context.APIContext) {
 // GetRepoGitHook returns a specific git hook for the repository.
 func GetRepoGitHook(c *context.APIContext) {
 	name := c.Params("name")
+	if !isSafeHookName(name) {
+		c.ErrorStatus(http.StatusBadRequest, errors.New("invalid or malicious git hook name"))
+		return
+	}
 	hookPath := filepath.Join(c.Repo.Repository.RepoPath(), "custom_hooks", name)
 	
 	content := ""
@@ -59,6 +64,10 @@ func GetRepoGitHook(c *context.APIContext) {
 // UpdateRepoGitHook updates a specific git hook for the repository.
 func UpdateRepoGitHook(c *context.APIContext) {
 	name := c.Params("name")
+	if !isSafeHookName(name) {
+		c.ErrorStatus(http.StatusBadRequest, errors.New("invalid or malicious git hook name"))
+		return
+	}
 	var f struct {
 		Content string `json:"content"`
 	}
@@ -84,4 +93,11 @@ func UpdateRepoGitHook(c *context.APIContext) {
 	}
 	
 	c.NoContent()
+}
+
+func isSafeHookName(name string) bool {
+	validHooks := map[string]bool{
+		"pre-receive": true, "update": true, "post-receive": true,
+	}
+	return validHooks[name]
 }

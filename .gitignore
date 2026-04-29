@@ -20,11 +20,17 @@ frontend/build/
 vendor/
 
 # Datos en tiempo real y logs (mantenemos las carpetas pero no el contenido pesado)
+/*.log
 log/*.log
 log/*/*.log
 custom/
 data/*
 !data/README.md
+
+# Test results and reports
+/frontend/playwright-report/
+/frontend/test-results/
+/ggit-repositories-test/
 
 # IDEs y Sistema
 .idea/

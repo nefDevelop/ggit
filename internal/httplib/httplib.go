@@ -19,11 +19,12 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
 var (
-	defaultSetting   = Settings{false, "GogsServer", 60 * time.Second, 60 * time.Second, nil, nil, nil, false}
+	defaultSetting   = Settings{false, "GogsServer", 60 * time.Second, 60 * time.Second, nil, nil, nil, false, nil}
 	defaultCookieJar http.CookieJar
 	settingMutex     sync.Mutex
 )
@@ -95,6 +96,7 @@ type Settings struct {
 	Proxy            func(*http.Request) (*url.URL, error)
 	Transport        http.RoundTripper
 	EnableCookie     bool
+	DialerControl    func(network, address string, c syscall.RawConn) error
 }
 
 // Request provides more useful methods for requesting a URL than http.Request.
@@ -148,6 +150,12 @@ func (r *Request) SetTimeout(connectTimeout, readWriteTimeout time.Duration) *Re
 // SetTLSClientConfig sets tls connection configurations if visiting https url.
 func (r *Request) SetTLSClientConfig(config *tls.Config) *Request {
 	r.setting.TLSClientConfig = config
+	return r
+}
+
+// SetDialerControl sets the dialer control function.
+func (r *Request) SetDialerControl(control func(network, address string, c syscall.RawConn) error) *Request {
+	r.setting.DialerControl = control
 	return r
 }
 
@@ -302,7 +310,7 @@ func (r *Request) getResponse() (*http.Response, error) {
 		trans = &http.Transport{
 			TLSClientConfig: r.setting.TLSClientConfig,
 			Proxy:           r.setting.Proxy,
-			DialContext:     TimeoutDialer(r.setting.ConnectTimeout, r.setting.ReadWriteTimeout),
+			DialContext:     SafeTimeoutDialer(r.setting.ConnectTimeout, r.setting.ReadWriteTimeout, r.setting.DialerControl),
 		}
 	} else {
 		// if r.transport is *http.Transport then set the settings.
@@ -314,7 +322,7 @@ func (r *Request) getResponse() (*http.Response, error) {
 				t.Proxy = r.setting.Proxy
 			}
 			if t.DialContext == nil {
-				t.DialContext = TimeoutDialer(r.setting.ConnectTimeout, r.setting.ReadWriteTimeout)
+				t.DialContext = SafeTimeoutDialer(r.setting.ConnectTimeout, r.setting.ReadWriteTimeout, r.setting.DialerControl)
 			}
 		}
 	}
@@ -413,13 +421,22 @@ func (r *Request) Response() (*http.Response, error) {
 	return r.getResponse()
 }
 
-// TimeoutDialer returns functions of connection dialer with timeout settings for http.Transport Dial field.
-func TimeoutDialer(cTimeout, rwTimeout time.Duration) func(ctx context.Context, net, addr string) (c net.Conn, err error) {
+// SafeTimeoutDialer returns functions of connection dialer with timeout settings and a control function.
+func SafeTimeoutDialer(cTimeout, rwTimeout time.Duration, control func(network, address string, c syscall.RawConn) error) func(ctx context.Context, net, addr string) (c net.Conn, err error) {
 	return func(ctx context.Context, netw, addr string) (net.Conn, error) {
-		conn, err := net.DialTimeout(netw, addr, cTimeout)
+		dialer := &net.Dialer{
+			Timeout: cTimeout,
+			Control: control,
+		}
+		conn, err := dialer.DialContext(ctx, netw, addr)
 		if err != nil {
 			return nil, err
 		}
 		return conn, conn.SetDeadline(time.Now().Add(rwTimeout))
 	}
+}
+
+// TimeoutDialer returns functions of connection dialer with timeout settings for http.Transport Dial field.
+func TimeoutDialer(cTimeout, rwTimeout time.Duration) func(ctx context.Context, net, addr string) (c net.Conn, err error) {
+	return SafeTimeoutDialer(cTimeout, rwTimeout, nil)
 }

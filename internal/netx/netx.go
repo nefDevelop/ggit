@@ -3,6 +3,7 @@ package netx
 import (
 	"fmt"
 	"net"
+	"syscall"
 )
 
 var localCIDRs []*net.IPNet
@@ -43,6 +44,16 @@ func init() {
 	}
 }
 
+// IsLocalIP returns true if given IP is a local network address.
+func IsLocalIP(ip net.IP) bool {
+	for _, cidr := range localCIDRs {
+		if cidr.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
 // IsBlockedLocalHostname returns true if given hostname is resolved to a local
 // network address that is implicitly blocked (i.e. not exempted from the
 // allowlist).
@@ -58,11 +69,32 @@ func IsBlockedLocalHostname(hostname string, allowlist []string) bool {
 		return true
 	}
 	for _, ip := range ips {
-		for _, cidr := range localCIDRs {
-			if cidr.Contains(ip) {
-				return true
-			}
+		if IsLocalIP(ip) {
+			return true
 		}
 	}
 	return false
+}
+
+// NewSafeControl returns a control function for net.Dialer that blocks local
+// network addresses unless the hostname is in the allowlist.
+func NewSafeControl(hostname string, allowlist []string) func(network, address string, c syscall.RawConn) error {
+	for _, allow := range allowlist {
+		if hostname == allow || allow == "*" {
+			return nil
+		}
+	}
+
+	return func(network, address string, c syscall.RawConn) error {
+		host, _, err := net.SplitHostPort(address)
+		if err != nil {
+			return err
+		}
+
+		ip := net.ParseIP(host)
+		if ip != nil && IsLocalIP(ip) {
+			return fmt.Errorf("address %q is a local network address that is implicitly blocked", address)
+		}
+		return nil
+	}
 }
