@@ -93,7 +93,7 @@ type ProtectBranchWhitelist struct {
 }
 
 // IsUserInProtectBranchWhitelist returns true if given user is in the whitelist of a branch in a repository.
-func IsUserInProtectBranchWhitelist(repoID, userID int64, branch string) bool {
+var IsUserInProtectBranchWhitelist = func(repoID, userID int64, branch string) bool {
 	var count int64
 	Handle.db.Model(new(ProtectBranchWhitelist)).Where("repo_id = ? AND user_id = ? AND name = ?", repoID, userID, branch).Count(&count)
 	return count > 0

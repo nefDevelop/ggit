@@ -22,6 +22,9 @@ func stringFlag(name, value, usage string) *cli.StringFlag {
 // configFromLineage walks the command lineage to find the --config flag value.
 // This is needed because subcommands may not directly see flags set on parent commands.
 func configFromLineage(cmd *cli.Command) string {
+	if cmd.IsSet("config") {
+		return cmd.String("config")
+	}
 	for _, c := range cmd.Lineage() {
 		if c.IsSet("config") {
 			return c.String("config")

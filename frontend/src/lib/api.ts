@@ -25,6 +25,9 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
   const method = (options.method || 'GET').toUpperCase();
   const mutableMethods = ['POST', 'PUT', 'DELETE', 'PATCH'];
 
+  // Ensure credentials (cookies) are sent even to different ports on localhost
+  options.credentials = options.credentials || 'include';
+
   if (mutableMethods.includes(method)) {
     const csrfToken = getCookie('XSRF-TOKEN');
     if (csrfToken) {

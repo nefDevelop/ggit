@@ -27,6 +27,8 @@ type Engine struct {
 func New() *Engine {
 	if conf.IsProdMode() {
 		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
 	}
 	r := &Engine{Engine: gin.New()}
 
@@ -34,6 +36,7 @@ func New() *Engine {
 		r.Use(gin.Logger())
 	}
 	r.Use(gin.Recovery())
+	r.Use(CORS())
 	if conf.Server.EnableGzip {
 		r.Use(gzip.Gzip(gzip.DefaultCompression))
 	}
@@ -41,11 +44,11 @@ func New() *Engine {
 	store := cookie.NewStore([]byte(conf.Security.SecretKey))
 	store.Options(sessions.Options{
 		Path:     "/",
-		Domain:   "", // "" significa el dominio actual (localhost)
+		Domain:   "",
 		MaxAge:   86400,
 		Secure:   false,
 		HttpOnly: true,
-		SameSite: 0, // 0 = Default (Lax en navegadores modernos, pero dejamos que el navegador decida)
+		SameSite: http.SameSiteLaxMode,
 	})
 	r.Use(sessions.Sessions("gogs_session", store))
 	r.Use(context.Contexter(context.NewStore()))

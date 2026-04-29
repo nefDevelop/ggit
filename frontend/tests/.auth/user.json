@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "gogs_session",
+      "value": "MTc3NzQ2MTM3MnxEWDhFQVFMX2dBQUJFQUVRQUFCNl80QUFBd1p6ZEhKcGJtY01CUUFEYzJsa0JuTjBjbWx1Wnd3aUFDQTVVR0V4ZUhwSk5XbFFUMnR0Wm1OWFIzWm9VMnB4ZEdaSFQybHJhbk5FVFFaemRISnBibWNNQlFBRGRXbGtCV2x1ZERZMEJBSUFBZ1p6ZEhKcGJtY01Cd0FGZFc1aGJXVUdjM1J5YVc1bkRBd0FDbWRuYVhRdFlXUnRhVzQ9fAw_nEVBSlnLNqBY0u7muwQR0mrz0jl5wqR2v7vaSw5z",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1777547772.246497,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3006",
+      "localStorage": [
+        {
+          "name": "ggit-locale",
+          "value": "en-US"
+        }
+      ]
+    }
+  ]
+}

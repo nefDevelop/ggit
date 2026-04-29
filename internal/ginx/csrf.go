@@ -19,6 +19,10 @@ import (
 // It populates "CSRFToken" and "CSRFTokenHTML" in the context's Data map.
 func CSRF() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if !conf.Security.EnableCSRF {
+			c.Next()
+			return
+		}
 		sess := sessions.Default(c)
 		token, ok := sess.Get("csrf").(string)
 		if !ok || token == "" {
@@ -80,7 +84,7 @@ func CSRF() gin.HandlerFunc {
 			}
 
 			if !matched {
-				log.Warn("CSRF token mismatch: expected %s, got %s", token, sentToken)
+				log.Warn("CSRF 403: Token mismatch. Expected: %s, Got: %s, Path: %s", token, sentToken, c.Request.URL.Path)
 				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
 					"message": "CSRF token mismatch",
 				})

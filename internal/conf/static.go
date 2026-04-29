@@ -50,6 +50,8 @@ var (
 		EnableLoginStatusCookie bool
 		LoginStatusCookieName   string
 		LocalNetworkAllowlist   []string `delim:","`
+		EnableCSRF              bool     `ini:"ENABLE_CSRF"`
+		CookieSameSite          string   `ini:"COOKIE_SAMESITE"`
 	}
 
 	// Email settings
@@ -231,7 +233,7 @@ type AuthOpts struct {
 	ActivateCodeLives         int
 	ResetPasswordCodeLives    int
 	RequireEmailConfirmation  bool
-	RequireSigninView         bool
+	RequireSigninView         bool `ini:"REQUIRE_SIGNIN_VIEW"`
 	DisableRegistration       bool
 
 	// Simple Captcha (Question/Math)

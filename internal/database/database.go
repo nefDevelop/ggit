@@ -77,6 +77,8 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 
 	// Ensure database directory exists
 	if conf.Database.Type == "sqlite3" {
+		absPath, _ := filepath.Abs(conf.Database.Path)
+		log.Trace("Opening SQLite3 database at: %s", absPath)
 		if err := os.MkdirAll(filepath.Dir(conf.Database.Path), 0755); err != nil {
 			return nil, errors.Wrap(err, "create database directory")
 		}

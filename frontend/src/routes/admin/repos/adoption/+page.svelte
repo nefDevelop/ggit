@@ -16,7 +16,7 @@
     try {
       const res = await apiFetch('/api/v2/admin/repos/unmanaged');
       if (res.ok) {
-        unmanaged = await res.json();
+        unmanaged = (await res.json()) || [];
       }
     } catch (e) {
       console.error(e);

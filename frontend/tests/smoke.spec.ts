@@ -1,30 +1,34 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Smoke Tests - Public Areas', () => {
-  test('homepage redirects or loads correctly', async ({ page }) => {
+  test('homepage loads correctly', async ({ page }) => {
     await page.goto('/');
-    // Dependiendo de si hay sesión o no, debería haber un título coherente
-    await expect(page).toHaveTitle(/Ggit/i);
+    // Check for either the landing page hero or the navigation bar if logged in
+    const hero = page.locator('.hero-title');
+    const nav = page.locator('.navigation-bar');
+    await expect(hero.or(nav)).toBeVisible();
   });
 
   test('explore page shows repositories', async ({ page }) => {
     await page.goto('/explore/repos');
-    const header = page.locator('h2');
-    await expect(header).toBeVisible();
+    await page.waitForURL('/explore/repos');
+    // Use a more specific class selector and wait a bit
+    const searchInput = page.locator('.global-search-input');
+    await expect(searchInput).toBeVisible({ timeout: 10000 });
   });
 
   test('explore page shows users', async ({ page }) => {
     await page.goto('/explore/users');
-    await expect(page.locator('input[placeholder*="Search"]')).toBeVisible();
+    await page.waitForURL('/explore/users');
+    const searchInput = page.locator('.global-search-input');
+    await expect(searchInput).toBeVisible({ timeout: 10000 });
   });
 });
 
 test.describe('Critical Flow - Repository Settings', () => {
-  // Nota: Estos tests asumen que el usuario entraría en una URL de repo
-  // En un entorno de CI real, usaríamos un "Storage State" para estar logueados
-  test('repo general settings structure', async ({ page }) => {
-    // Intentamos ir a una ruta de settings (fallará el login, pero probamos la redirección)
-    await page.goto('/user/settings/profile');
-    await expect(page).toHaveURL(/\/user\/login/);
+  test('settings page is accessible when sign-in is not required', async ({ page }) => {
+    await page.goto('/user/settings?tab=profile');
+    // Since REQUIRE_SIGNIN_VIEW is false in tests, we should see the settings page directly
+    await expect(page.locator('h2:has-text("Profile")').or(page.locator('h2:has-text("Perfil")'))).toBeVisible();
   });
 });

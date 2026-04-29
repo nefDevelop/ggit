@@ -17,8 +17,26 @@ test('crawler: navegar por todos los enlaces internos y detectar errores de recu
 
   // 2. Capturar errores de consola (Svelte suele loguear fallos críticos aquí)
   page.on('console', (msg) => {
+    const text = msg.text();
     if (msg.type() === 'error') {
-      errors.push(`[Console Error] en ${page.url()}: ${msg.text()}`);
+      // Ignorar el mensaje automático del navegador para recursos que ya manejamos en 'response'
+      if (text.includes('Failed to load resource') && text.includes('403')) return;
+      errors.push(`[Console Error] en ${page.url()}: ${text}`);
+    }
+  });
+
+  page.on('response', async response => {
+    const status = response.status();
+    const url = response.url();
+    if (status >= 400 && !url.includes('favicon') && !(status === 403 && url.includes('/api/v2/install/settings'))) {
+      let body = '';
+      try {
+        body = await response.text();
+      } catch (e) {
+        body = '<unable to read body>';
+      }
+      console.log(`[DEBUG] 403/Error on ${response.url()}: ${status} - Body: ${body}`);
+      errors.push(`[Network Error] en ${page.url()}: Failed to load resource: the server responded with a status of ${status} (${response.statusText()}) - Body: ${body.substring(0, 100)}`);
     }
   });
 

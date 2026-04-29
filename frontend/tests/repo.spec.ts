@@ -19,11 +19,11 @@ test.describe('Repository Management', () => {
   });
 
   test('should display correct clone URLs', async ({ page }) => {
-    // Vamos al repo que acabamos de crear (o uno conocido)
-    await page.goto(`/admin/${repoName}`); // Asumiendo que el dueño es admin
+    // Vamos al repo que acabamos de crear
+    await page.goto(`/ggit-admin/${repoName}`);
 
-    // Verificar que el botón de clonar está presente
-    const cloneButton = page.locator('button:has-text("Clone")');
+    // Verificar que el botón de clonar está presente (idioma flexible)
+    const cloneButton = page.locator('button:has-text("Clone")').or(page.locator('button:has-text("Clonar")'));
     await expect(cloneButton).toBeVisible();
 
     // Verificar que la URL de clonado HTTP es correcta

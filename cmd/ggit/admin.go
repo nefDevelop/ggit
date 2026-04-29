@@ -172,7 +172,27 @@ func runCreateUser(ctx context.Context, cmd *cli.Command) error {
 		},
 	)
 	if err != nil {
-		return errors.Wrap(err, "create user")
+		if !database.IsErrUserAlreadyExist(err) {
+			return errors.Wrap(err, "create user")
+		}
+
+		// If user already exists, update password and admin status to ensure test credentials are correct
+		u, err := database.Handle.Users().GetByUsername(ctx, cmd.String("name"))
+		if err != nil {
+			return errors.Wrap(err, "get existing user")
+		}
+
+		pass := cmd.String("password")
+		isAdmin := cmd.Bool("admin")
+		err = database.Handle.Users().Update(ctx, u.ID, database.UpdateUserOptions{
+			Password: &pass,
+			IsAdmin:  &isAdmin,
+		})
+		if err != nil {
+			return errors.Wrap(err, "update existing user")
+		}
+		fmt.Printf("User %q already existed, password and admin status have been updated.\n", u.Name)
+		return nil
 	}
 
 	fmt.Printf("New user %q has been successfully created!\n", user.Name)

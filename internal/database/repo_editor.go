@@ -653,11 +653,3 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 
 	return DeleteUploads(uploads...)
 }
-
-	)
-	if err != nil {
-		return errors.Newf("git push origin %s: %v", opts.NewBranch, err)
-	}
-
-	return DeleteUploads(uploads...)
-}

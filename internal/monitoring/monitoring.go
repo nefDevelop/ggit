@@ -114,6 +114,7 @@ func HealthCheckHandler(c *gin.Context) {
 
 	// Check Disk
 	diskInfo := make(map[string]interface{})
+	survival := false
 	usage, err := disk.Usage(conf.Repository.Root)
 	if err == nil {
 		diskInfo["total"] = usage.Total
@@ -121,6 +122,7 @@ func HealthCheckHandler(c *gin.Context) {
 		diskInfo["used_percent"] = usage.UsedPercent
 		if usage.UsedPercent > 95 {
 			status = "CRITICAL"
+			survival = true
 		}
 	} else {
 		diskInfo["error"] = err.Error()
@@ -130,10 +132,10 @@ func HealthCheckHandler(c *gin.Context) {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	memInfo := map[string]interface{}{
-		"alloc":      m.Alloc,
+		"alloc":       m.Alloc,
 		"total_alloc": m.TotalAlloc,
-		"sys":        m.Sys,
-		"num_gc":     m.NumGC,
+		"sys":         m.Sys,
+		"num_gc":      m.NumGC,
 	}
 
 	c.JSON(http.StatusOK, HealthStatus{
@@ -142,7 +144,7 @@ func HealthCheckHandler(c *gin.Context) {
 		Database:  dbStatus,
 		Disk:      diskInfo,
 		Memory:    memInfo,
-		Survival:  diskInfo["used_percent"].(float64) > 95,
+		Survival:  survival,
 		Timestamp: time.Now(),
 	})
 }

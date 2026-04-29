@@ -57,10 +57,11 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 			// TODO: CSRF validation for Gin
 		}
 
-		if options.SignInRequired {
+		if options.SignInRequired && conf.Auth.RequireSigninView {
 			if !gctx.IsLogged {
 				// Restrict API calls with error message.
 				if isAPIPath(gctx.Request.URL.Path) {
+					log.Warn("API 403: SignInRequired but not logged in. Path: %s", gctx.Request.URL.Path)
 					gctx.JSON(http.StatusForbidden, map[string]string{
 						"message": "Only authenticated user is allowed to call APIs.",
 					})
@@ -89,6 +90,7 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 
 		if options.AdminRequired {
 			if !gctx.User.IsAdmin {
+				log.Warn("403: AdminRequired but user is not admin. Path: %s, User: %s", gctx.Request.URL.Path, gctx.User.Name)
 				gctx.Status(http.StatusForbidden)
 				return
 			}

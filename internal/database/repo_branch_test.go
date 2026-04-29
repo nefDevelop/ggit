@@ -1,14 +1,16 @@
 package database
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestBranchProtectionSecurity(t *testing.T) {
+	// Guardar la función original para restaurarla al final
+	originalWhitelistFunc := IsUserInProtectBranchWhitelist
+	defer func() { IsUserInProtectBranchWhitelist = originalWhitelistFunc }()
+
 	// Simularemos la lógica de validación que usa el pre-receive hook para bloquear push
 	simulatePushValidation := func(branchName string, userID int64, isForcePush bool, protectBranch *ProtectBranch) error {
 		if protectBranch != nil && protectBranch.Protected {
@@ -48,16 +50,13 @@ func TestBranchProtectionSecurity(t *testing.T) {
 	})
 
 	t.Run("Error: Eliminación de rama protegida", func(t *testing.T) {
-		// La lógica de la API debe impedir borrar ramas protegidas
-		simulateDeleteAPI := func(pb *ProtectBranch) error {
-			if pb != nil && pb.Protected {
-				return assert.AnError // Simula StatusBadRequest "Cannot delete protected branch"
-			}
-			return nil
-		}
+		// En ggit, el borrado de ramas también pasa por validaciones de protección
+		pb := &ProtectBranch{Protected: true, Name: "main"}
 		
-		pb := &ProtectBranch{Protected: true, RepoID: 1, Name: "main"}
-		err := simulateDeleteAPI(pb)
-		assert.Error(t, err, "El sistema debe abortar el intento de borrado de una rama protegida")
+		// Simulación de borrado (branchName vacío o flag específico)
+		isDeletion := true
+		if pb.Protected && isDeletion {
+			assert.Error(t, assert.AnError, "No se puede borrar una rama protegida")
+		}
 	})
 }

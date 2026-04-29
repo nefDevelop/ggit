@@ -43,6 +43,19 @@ import (
 // RepoAvatarURLPrefix is used to identify a URL is to access repository avatar.
 const RepoAvatarURLPrefix = "repo-avatars"
 
+// IsValidRepoName returns true if the given name is a valid and safe repository name.
+func IsValidRepoName(name string) bool {
+	if len(name) == 0 || strings.Contains(name, "..") || strings.HasPrefix(name, ".") || strings.Contains(name, "/") || strings.Contains(name, "\\") {
+		return false
+	}
+	for _, r := range name {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && r != '-' && r != '_' && r != '.' {
+			return false
+		}
+	}
+	return true
+}
+
 // InvalidRepoReference represents an error when repository reference is invalid.
 type InvalidRepoReference struct {
 	Ref string
