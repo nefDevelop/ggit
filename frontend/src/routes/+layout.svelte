@@ -78,6 +78,19 @@
 
 				document.documentElement.setAttribute("data-theme", theme);
 
+				if (theme === "custom") {
+					const customColor = localStorage.getItem("custom-theme-color") || "#0b57d0";
+					document.documentElement.style.setProperty("--primary-color", customColor);
+					document.documentElement.style.setProperty("--md-sys-color-primary", customColor);
+					
+					if (customColor.startsWith("#")) {
+						const r = parseInt(customColor.slice(1, 3), 16);
+						const g = parseInt(customColor.slice(3, 5), 16);
+						const b = parseInt(customColor.slice(5, 7), 16);
+						document.documentElement.style.setProperty("--primary-rgb", `${r}, ${g}, ${b}`);
+					}
+				}
+
 				if (
 					scheme === "dark" ||
 					(scheme === "auto" &&

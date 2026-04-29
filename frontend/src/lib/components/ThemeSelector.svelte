@@ -54,6 +54,7 @@
     if (themeId !== 'custom') {
       // Clear custom color overrides if switching to preset
       document.documentElement.style.removeProperty('--primary-color');
+      document.documentElement.style.removeProperty('--md-sys-color-primary');
       document.documentElement.style.removeProperty('--primary-rgb');
     } else {
       applyCustomColor(customColor);
@@ -66,11 +67,15 @@
     
     if (currentTheme === 'custom') {
       document.documentElement.style.setProperty('--primary-color', hex);
+      document.documentElement.style.setProperty('--md-sys-color-primary', hex);
+      
       // Simple hex to rgb conversion for the RGB variable
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+      if (hex.startsWith('#')) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+      }
     }
   }
 
@@ -173,9 +178,9 @@
                 />
              </div>
              <div class="derived-dots">
-                <div class="dot auto"></div>
-                <div class="dot auto"></div>
-                <div class="dot auto"></div>
+                <div class="dot" style="background-color: color-mix(in srgb, {customColor}, white 40%);"></div>
+                <div class="dot" style="background-color: color-mix(in srgb, {customColor}, transparent 50%);"></div>
+                <div class="dot" style="background-color: color-mix(in srgb, {customColor}, black 20%);"></div>
              </div>
           </div>
           <div class="theme-info">
