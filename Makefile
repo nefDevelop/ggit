@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend build rebuild clean help install sync test lint test-e2e kill-e2e clean-ports
+.PHONY: dev backend frontend build build-swagger build-swagger-cdn rebuild clean help install sync test lint test-e2e kill-e2e clean-ports
 
 # Variables de compilación
 PKG_PATH := github.com/nef734/ggit/internal/conf
@@ -14,6 +14,8 @@ help:
 	@echo "  make backend   - Ejecuta el servidor Ggit (puerto 3005)"
 	@echo "  make frontend  - Ejecuta el servidor de desarrollo Svelte (puerto 5555)"
 	@echo "  make build             - Compila el binario de Ggit"
+	@echo "  make build-swagger     - Compila con Swagger embebido"
+	@echo "  make build-swagger-cdn - Compila con Swagger vía CDN"
 	@echo "  make test      - Ejecuta los tests de Go"
 	@echo "  make test-e2e  - Ejecuta los tests de Playwright (E2E)"
 	@echo "  make install   - Instala las dependencias"
@@ -48,6 +50,12 @@ build:
 	@echo "Compilando Ggit..."
 	@mkdir -p .bin
 	@go build -v -tags "$(shell echo $(TAGS) | tr ' ' ',')" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+
+build-swagger: TAGS += swagger
+build-swagger: build
+
+build-swagger-cdn: TAGS += swagger_cdn
+build-swagger-cdn: build
 
 # Tests
 test:

@@ -49,6 +49,7 @@ COPY --from=frontendbuilder /app/ggit/frontend/build ./frontend/build
 # Copiar activos estáticos y configuración base
 COPY public ./public
 COPY conf ./conf
+COPY docs ./docs
 
 RUN ./docker/build/finalize.sh
 
