@@ -57,7 +57,7 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 			// TODO: CSRF validation for Gin
 		}
 
-		if options.SignInRequired && conf.Auth.RequireSigninView {
+		if (options.SignInRequired || conf.Auth.RequireSigninView) && !isExemptPath(gctx.Request.URL.Path) {
 			if !gctx.IsLogged {
 				// Restrict API calls with error message.
 				if isAPIPath(gctx.Request.URL.Path) {
@@ -102,6 +102,47 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 
 func isAPIPath(url string) bool {
 	return strings.HasPrefix(url, "/api/")
+}
+
+func isExemptPath(path string) bool {
+	// Static assets
+	if strings.HasPrefix(path, "/public/") ||
+		strings.HasPrefix(path, "/img/") ||
+		strings.HasPrefix(path, "/_app/") ||
+		strings.HasPrefix(path, "/fonts/") ||
+		strings.HasPrefix(path, "/avatars/") ||
+		strings.HasPrefix(path, "/repo-avatars/") {
+		return true
+	}
+
+	// Health and robots
+	if path == "/health" || path == "/robots.txt" || path == "/favicon.ico" {
+		return true
+	}
+
+	// Auth paths
+	authPaths := []string{
+		"/user/login",
+		"/user/register",
+		"/user/forgot_password",
+		"/user/reset_password",
+		"/user/activate",
+		"/api/v2/user/login",
+		"/api/v2/user/register",
+		"/api/v2/user/forgot_password",
+		"/api/v2/user/reset_password",
+		"/api/v2/user/activate",
+		"/api/v2/i18n/",
+		"/api/v2/install/settings",
+	}
+
+	for _, p := range authPaths {
+		if strings.HasPrefix(path, p) {
+			return true
+		}
+	}
+
+	return false
 }
 
 type AuthStore interface {

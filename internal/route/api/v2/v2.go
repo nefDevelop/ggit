@@ -93,7 +93,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		user.POST("/repos/migrate", ginx.Handle(MigrateRepo))
 	}
 
-	explore := r.Group("/explore")
+	explore := r.Group("/explore", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{
 		explore.GET("/repos", ginx.Handle(ExploreRepos))
 		explore.GET("/repos/search", ginx.Handle(SearchRepos))
@@ -144,7 +144,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.DELETE("/security/guardian/patterns/:id", ginx.Handle(DeleteAdminGuardianPattern))
 	}
 
-	repo := r.Group("/:username/:reponame", context.RepoAssignment())
+	repo := r.Group("/:username/:reponame", context.Toggle(&context.ToggleOptions{SignInRequired: false}), context.RepoAssignment())
 	{
 		repo.GET("/search", context.RepoRef(), ginx.Handle(SearchRepoContents))
 		repo.GET("/view", context.RepoRef(), ginx.Handle(GetRepoView))
@@ -289,7 +289,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	}
 
 
-	orgs := r.Group("/orgs")
+	orgs := r.Group("/orgs", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{
 		orgs.GET("/:org", ginx.Handle(GetOrg))
 		orgs.PATCH("/:org", ginx.Handle(UpdateOrg))
@@ -312,7 +312,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		orgs.DELETE("/teams/:teamID/repos/:repoID", ginx.Handle(RemoveTeamRepo))
 	}
 
-	users := r.Group("/users")
+	users := r.Group("/users", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{
 		users.GET("/:username", ginx.Handle(GetUserProfile))
 		users.GET("/:username/repos", ginx.Handle(GetUserPublicRepositories))

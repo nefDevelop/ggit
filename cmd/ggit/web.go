@@ -92,9 +92,8 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	registerSwagger(r.Engine)
 
 	// SPA Routing
-
-	r.GET("/", ginx.ServeSPA)
-	r.NoRoute(ginx.ServeSPA)
+	r.GET("/", context.Toggle(&context.ToggleOptions{SignInRequired: false}), ginx.ServeSPA)
+	r.NoRoute(context.Toggle(&context.ToggleOptions{SignInRequired: false}), ginx.ServeSPA)
 
 	// Utils
 
