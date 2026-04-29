@@ -344,41 +344,6 @@
 
   .field-hint { font-size: 0.75rem; color: var(--text-muted); }
 
-  .toggle-group {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0,0,0,0.2);
-    padding: 1.25rem;
-    border-radius: 1rem;
-  }
-
-  .toggle-label { font-weight: 700; font-size: 1rem; }
-  .toggle-hint { font-size: 0.8rem; color: var(--text-muted); }
-
-  .toggle-switch {
-    width: 50px;
-    height: 28px;
-    background: var(--md3-surface-5);
-    border-radius: 14px;
-    position: relative;
-    cursor: pointer;
-    border: none;
-    transition: background 0.3s;
-  }
-  .toggle-switch.active { background: var(--primary-color); }
-  
-  .toggle-handle {
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    transition: transform 0.3s;
-  }
-  .toggle-switch.active .toggle-handle { transform: translateX(22px); }
 
   .success-message { color: #10b981; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }
   .error-message { color: #f87171; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }

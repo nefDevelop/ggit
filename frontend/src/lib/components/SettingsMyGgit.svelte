@@ -8,13 +8,15 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
 
-  const sections = [
+  type RepoTabKey = keyof (typeof userPrefs.current.repoTabs);
+
+  const sections = $derived<{ id: RepoTabKey, label: string, icon: string, desc: string }[]>([
     { id: 'pr', label: i18n.t('pull_requests'), icon: 'merge', desc: i18n.t('settings.pr_desc') },
     { id: 'issue', label: i18n.t('issues'), icon: 'error', desc: i18n.t('settings.issue_desc') },
     { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: 'menu_book', desc: i18n.t('settings.wiki_desc') },
     { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: 'fork_right', desc: i18n.t('settings.branch_desc') },
     { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: 'history', desc: i18n.t('settings.commits_desc') }
-  ] as const;
+  ]);
 
   let profile = $state<any>({ disable_news_feed: false });
 

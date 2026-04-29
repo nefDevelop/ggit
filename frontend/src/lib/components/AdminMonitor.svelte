@@ -51,33 +51,40 @@
           <span class="material-symbols-rounded">schedule</span>
           Tareas Cron
         </div>
-        <div class="modern-table-card">
-          <table class="modern-table">
-            <thead>
-              <tr>
-                <th>Descripción</th>
-                <th>Intervalo</th>
-                <th>Próxima Ejecución</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each monitorData.cron as task}
-                <tr class="hover-row">
-                  <td data-label="Descripción"><strong class="task-name">{task.Description}</strong></td>
-                  <td data-label="Intervalo"><code class="spec-code">{task.Spec}</code></td>
-                  <td data-label="Próxima Ejecución"><span class="time-stamp">{formatTime(task.Next)}</span></td>
-                  <td data-label="Estado">
-                    <div class="exec-pill">
-                      <span class="val">{task.ExecTimes}</span>
-                      <span class="lab">Ejecs.</span>
-                    </div>
-                  </td>
+        {#if monitorData.cron && monitorData.cron.length > 0}
+          <div class="modern-table-card">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Descripción</th>
+                  <th>Intervalo</th>
+                  <th>Próxima Ejecución</th>
+                  <th>Estado</th>
                 </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {#each monitorData.cron as task}
+                  <tr class="hover-row">
+                    <td data-label="Descripción"><strong class="task-name">{task.Description}</strong></td>
+                    <td data-label="Intervalo"><code class="spec-code">{task.Spec}</code></td>
+                    <td data-label="Próxima Ejecución"><span class="time-stamp">{formatTime(task.Next)}</span></td>
+                    <td data-label="Estado">
+                      <div class="exec-pill">
+                        <span class="val">{task.ExecTimes}</span>
+                        <span class="lab">Ejecs.</span>
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        {:else}
+          <div class="empty-monitor-state">
+            <span class="material-symbols-rounded">event_busy</span>
+            <p>No hay tareas programadas activas en este momento.</p>
+          </div>
+        {/if}
       </section>
 
       <!-- ACTIVE PROCESSES SECTION -->
@@ -86,26 +93,33 @@
           <span class="material-symbols-rounded">account_tree</span>
           Procesos en Ejecución
         </div>
-        <div class="modern-table-card">
-          <table class="modern-table">
-            <thead>
-              <tr>
-                <th>PID</th>
-                <th>Descripción del Proceso</th>
-                <th>Iniciado el</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each monitorData.processes as proc}
-                <tr class="hover-row">
-                  <td class="pid-cell" data-label="PID"><code>{proc.PID}</code></td>
-                  <td class="proc-desc" data-label="Descripción del Proceso">{proc.Description}</td>
-                  <td data-label="Iniciado el"><span class="time-stamp">{formatTime(proc.Start)}</span></td>
+        {#if monitorData.processes && monitorData.processes.length > 0}
+          <div class="modern-table-card">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>PID</th>
+                  <th>Descripción del Proceso</th>
+                  <th>Iniciado el</th>
                 </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {#each monitorData.processes as proc}
+                  <tr class="hover-row">
+                    <td class="pid-cell" data-label="PID"><code>{proc.PID}</code></td>
+                    <td class="proc-desc" data-label="Descripción del Proceso">{proc.Description}</td>
+                    <td data-label="Iniciado el"><span class="time-stamp">{formatTime(proc.Start)}</span></td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        {:else}
+          <div class="empty-monitor-state">
+            <span class="material-symbols-rounded">hourglass_empty</span>
+            <p>No hay procesos en segundo plano activos actualmente.</p>
+          </div>
+        {/if}
       </section>
     </div>
   {/if}
@@ -158,4 +172,8 @@
 
   .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 2.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
+
+  .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: rgba(0,0,0,0.1); border-radius: 2rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
+  .empty-monitor-state span { font-size: 3rem; opacity: 0.5; }
+  .empty-monitor-state p { margin: 0; font-size: 1.1rem; font-weight: 600; }
 </style>

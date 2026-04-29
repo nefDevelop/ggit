@@ -10,34 +10,28 @@
     }
 </script>
 
-<div class="switches-group">
-    <h4 class="group-title">{i18n.t('settings.internationalization') || 'Internationalization'}</h4>
-    <div class="switches-grid">
-        <div class="switch-row-item">
-            <div class="item-info">
-                <div class="title-with-icon">
-                    <span class="material-symbols-rounded mini">language</span>
-                    <span class="label">{i18n.t('language') || 'System Language'}</span>
-                </div>
-                <p class="desc">{i18n.t('settings.language_desc') || 'Choose your preferred language for the interface.'}</p>
+<div class="switches-grid">
+    <div class="switch-row-item">
+        <div class="item-info">
+            <div class="title-with-icon">
+                <span class="material-symbols-rounded mini">language</span>
+                <span class="label">{i18n.t('language') || 'System Language'}</span>
             </div>
-            
-            <div class="select-wrapper">
-                <select id="lang-select" onchange={changeLanguage} value={i18n.locale}>
-                    {#each availableLanguages as lang}
-                        <option value={lang.code}>{lang.name}</option>
-                    {/each}
-                </select>
-                <span class="material-symbols-rounded dropdown-icon">expand_more</span>
-            </div>
+            <p class="desc">{i18n.t('settings.language_desc') || 'Choose your preferred language for the interface.'}</p>
+        </div>
+        
+        <div class="select-wrapper">
+            <select id="lang-select" onchange={changeLanguage} value={i18n.locale}>
+                {#each availableLanguages as lang}
+                    <option value={lang.code}>{lang.name}</option>
+                {/each}
+            </select>
+            <span class="material-symbols-rounded dropdown-icon">expand_more</span>
         </div>
     </div>
 </div>
 
 <style>
-    .switches-group { display: flex; flex-direction: column; gap: 1rem; }
-    .group-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; padding-left: 0.5rem; }
-
     .switches-grid { display: flex; flex-direction: column; background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
     
     .switch-row-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 2rem; }
