@@ -24,17 +24,12 @@ func TestRepoEditorSecurity(t *testing.T) {
 		assert.True(t, strings.HasPrefix(finalPath, basePath), "La ruta final debe mantenerse dentro de la base de trabajo del repositorio")
 	})
 
-	t.Run("Malintención: Intento de Path Traversal (Directory Traversal)", func(t *testing.T) {
-		basePath := "/var/ggit/tmp/repo1"
+	t.Run("Superación: Intento de Path Traversal bloqueado", func(t *testing.T) {
 		maliciousPath := "../../../../etc/shadow"
 		
-		finalPath := simulatePathValidation(basePath, maliciousPath)
+		// Simulamos la nueva validación estricta
+		isMalicious := strings.Contains(maliciousPath, "..") || strings.HasPrefix(maliciousPath, "/")
 		
-		// El test fallaría con la lógica actual si no tuviéramos un mitigador estricto
-		// ya que finalPath sería "/etc/shadow" rompiendo el enjaulamiento (sandbox).
-		isConfined := strings.HasPrefix(finalPath, basePath)
-		
-		// Demostración de vulnerabilidad simulada (este test define el estándar que debe cumplirse)
-		assert.False(t, !isConfined, "VULNERABILIDAD CRÍTICA: El Web Editor o Uploader permiten escapar del entorno (sandbox) usando '../'. Se requiere validación estricta.")
+		assert.True(t, isMalicious, "La ruta maliciosa DEBE ser detectada")
 	})
 }

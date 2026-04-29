@@ -2,6 +2,7 @@ package conf
 
 import (
 	"bytes"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -10,6 +11,10 @@ import (
 
 	"github.com/nef734/ggit/internal/testx"
 )
+
+func init() {
+	_ = os.Setenv("GGIT_SKIP_RUN_USER_CHECK", "true")
+}
 
 func TestInit(t *testing.T) {
 	ini.PrettyFormat = false

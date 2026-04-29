@@ -123,8 +123,3 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	}
 	return server.ListenAndServe()
 }
-
-func configFromLineageDummy(cmd *cli.Command) string {
-	// Not used since we use the one from cmd.go
-	return ""
-}

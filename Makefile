@@ -60,7 +60,7 @@ build-swagger-cdn: build
 # Tests
 test:
 	@echo "Ejecutando tests..."
-	@go test -v ./...
+	@GGIT_SKIP_RUN_USER_CHECK=true go test -v ./...
 
 # Tests de Playwright (E2E)
 test-e2e: clean-ports build

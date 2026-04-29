@@ -17,8 +17,10 @@ import (
 )
 
 func TestCSRF(t *testing.T) {
+	t.Setenv("GGIT_SKIP_RUN_USER_CHECK", "true")
 	gin.SetMode(gin.TestMode)
 	conf.Security.SecretKey = "test-secret"
+	conf.Security.EnableCSRF = true
 
 	r := gin.New()
 	store := cookie.NewStore([]byte("secret"))

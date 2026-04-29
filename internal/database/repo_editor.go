@@ -143,8 +143,14 @@ type UpdateRepoFileOptions struct {
 
 // UpdateRepoFile adds or updates a file in repository.
 func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) error {
+	// 🚨 SECURITY: Prevent Path Traversal
+	if strings.Contains(opts.NewTreeName, "..") || strings.HasPrefix(opts.NewTreeName, "/") ||
+		strings.Contains(opts.OldTreeName, "..") || strings.HasPrefix(opts.OldTreeName, "/") {
+		return errors.Errorf("malicious tree path detected (path traversal): %q or %q", opts.OldTreeName, opts.NewTreeName)
+	}
+
 	// 🚨 SECURITY: Prevent uploading files into the ".git" directory.
-	if isRepositoryGitPath(opts.NewTreeName) {
+	if isRepositoryGitPath(opts.NewTreeName) || isRepositoryGitPath(opts.OldTreeName) {
 		return errors.Errorf("bad tree path %q", opts.NewTreeName)
 	}
 
@@ -246,6 +252,11 @@ func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) erro
 
 // GetDiffPreview produces and returns diff result of a file which is not yet committed.
 func (r *Repository) GetDiffPreview(branch, treePath, content string) (*gitx.Diff, error) {
+	// 🚨 SECURITY: Prevent Path Traversal
+	if strings.Contains(treePath, "..") || strings.HasPrefix(treePath, "/") {
+		return nil, errors.Errorf("malicious tree path detected (path traversal): %q", treePath)
+	}
+
 	// 🚨 SECURITY: Prevent uploading files into the ".git" directory.
 	if isRepositoryGitPath(treePath) {
 		return nil, errors.Errorf("bad tree path %q", treePath)
@@ -319,6 +330,11 @@ type DeleteRepoFileOptions struct {
 }
 
 func (r *Repository) DeleteRepoFile(doer *User, opts DeleteRepoFileOptions) (err error) {
+	// 🚨 SECURITY: Prevent Path Traversal
+	if strings.Contains(opts.TreePath, "..") || strings.HasPrefix(opts.TreePath, "/") {
+		return errors.Errorf("malicious tree path detected (path traversal): %q", opts.TreePath)
+	}
+
 	// 🚨 SECURITY: Prevent uploading files into the ".git" directory.
 	if isRepositoryGitPath(opts.TreePath) {
 		return errors.Errorf("bad tree path %q", opts.TreePath)

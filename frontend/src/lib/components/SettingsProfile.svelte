@@ -74,7 +74,6 @@
           website: profile.website,
           location: profile.location,
           avatar_email: profile.avatar_email,
-          disable_news_feed: profile.disable_news_feed,
         }),
       });
       if (res.ok) {
@@ -160,58 +159,54 @@
 <Card class="settings-premium-card" padding="lg">
   <header class="section-header">
     <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">person</span>
+      <div class="title-with-avatar">
+        <div class="avatar-shield-header">
+          <Avatar
+            src={profile.avatar_url}
+            username={profile.username}
+            size={80}
+          />
+          <div class="avatar-overlay">
+            <label class="overlay-btn-mini" title="Subir foto">
+              <span class="material-symbols-rounded">cloud_upload</span>
+              <input
+                type="file"
+                accept="image/*"
+                onchange={handleAvatarUpload}
+                hidden
+              />
+            </label>
+            {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
+              <button
+                class="overlay-btn-mini delete"
+                onclick={deleteAvatar}
+                title="Quitar foto"
+              >
+                <span class="material-symbols-rounded">delete</span>
+              </button>
+            {/if}
+          </div>
+        </div>
         <div>
           <h2>{i18n.t("settings.public_profile")}</h2>
           <p class="subtitle">{i18n.t("settings.public_profile_desc")}</p>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        icon="magic_button"
-        onclick={() => (showDiceBear = !showDiceBear)}
-      >
-        {showDiceBear ? "Cerrar selector" : "Avatar Mágico"}
-      </Button>
+      <div class="header-actions">
+        <Button
+          variant="ghost"
+          icon="magic_button"
+          onclick={() => (showDiceBear = !showDiceBear)}
+        >
+          {showDiceBear ? "Cerrar selector" : "Avatar Mágico"}
+        </Button>
+      </div>
     </div>
   </header>
 
 
 
-  <div class="profile-layout-grid">
-    <!-- AVATAR SIDE -->
-    <div class="avatar-column">
-      <div class="avatar-shield">
-        <Avatar
-          src={profile.avatar_url}
-          username={profile.username}
-          size={200}
-        />
-        <div class="avatar-overlay">
-          <label class="overlay-btn" title="Subir foto">
-            <span class="material-symbols-rounded">cloud_upload</span>
-            <input
-              type="file"
-              accept="image/*"
-              onchange={handleAvatarUpload}
-              hidden
-            />
-          </label>
-          {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
-            <button
-              class="overlay-btn delete"
-              onclick={deleteAvatar}
-              title="Quitar foto"
-            >
-              <span class="material-symbols-rounded">delete</span>
-            </button>
-          {/if}
-        </div>
-      </div>
-      <span class="username-tag">@{profile.username}</span>
-    </div>
-
+  <div class="profile-content-layout">
     <!-- FORM SIDE -->
     <div class="form-column">
       {#if loading}
@@ -286,13 +281,6 @@
               />
             </div>
 
-            <div class="field full-width">
-              <Checkbox 
-                label="Ocultar actividad reciente" 
-                description="No mostrar actividades en tu panel de control."
-                bind:checked={profile.disable_news_feed}
-              />
-            </div>
           </div>
 
           <div class="form-footer">
@@ -352,18 +340,61 @@
     max-width: 100%;
     box-sizing: border-box;
   }
-  .title-with-icon {
+  .title-with-avatar {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
     min-width: 0;
   }
-  .hero-icon {
-    font-size: 3rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.1);
-    padding: 1.25rem;
+  .avatar-shield-header {
+    position: relative;
+    width: 80px;
+    height: 80px;
     border-radius: 2rem;
+    overflow: hidden;
+    border: 3px solid var(--md-sys-color-outline-variant);
+    box-shadow: var(--shadow-lg);
+    background: var(--surface-variant);
+    flex-shrink: 0;
+  }
+  .avatar-shield-header:hover .avatar-overlay {
+    opacity: 1;
+  }
+
+  .avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(4px);
+  }
+
+  .overlay-btn-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: white;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s;
+  }
+  .overlay-btn-mini span {
+    font-size: 1.25rem;
+  }
+  .overlay-btn-mini:hover {
+    transform: scale(1.1);
+  }
+  .overlay-btn-mini.delete {
+    color: var(--error);
   }
 
   h2 {
@@ -381,58 +412,15 @@
   @media (max-width: 600px) {
     .section-header { margin-bottom: 2rem; }
     h2 { font-size: 1.5rem; }
-    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .header-flex { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .title-with-avatar { gap: 1rem; }
+    .avatar-shield-header { width: 60px; height: 60px; border-radius: 1.25rem; }
+    .header-flex { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
     .subtitle { font-size: 0.9rem; }
   }
 
-  .profile-layout-grid {
-    display: grid;
-    grid-template-columns: 280px minmax(0, 1fr);
-    gap: 4rem;
-    max-width: 100%;
+  .profile-content-layout {
     width: 100%;
     box-sizing: border-box;
-  }
-  @media (max-width: 1200px) {
-    .profile-layout-grid {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 3rem;
-    }
-    .avatar-column { order: -1; }
-  }
-  @media (max-width: 600px) {
-    .profile-layout-grid {
-      gap: 1.5rem;
-      padding: 0;
-    }
-  }
-
-  .avatar-column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  .avatar-shield {
-    position: relative;
-    width: 200px;
-    height: 200px;
-    max-width: 100%;
-    border-radius: 5rem;
-    overflow: hidden;
-    border: 4px solid var(--md-sys-color-outline-variant);
-    box-shadow: var(--shadow-xl);
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  @media (max-width: 600px) {
-    .avatar-shield { width: 120px; height: 120px; border-radius: 3rem; }
   }
 
   .avatar-overlay {
@@ -447,49 +435,6 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     backdrop-filter: blur(4px);
   }
-  .avatar-shield:hover .avatar-overlay {
-    opacity: 1;
-  }
-
-  @media (max-width: 1024px) {
-    .avatar-overlay { opacity: 1; background: rgba(0,0,0,0.3); align-items: flex-end; padding-bottom: 1rem; }
-    .overlay-btn { width: 40px; height: 40px; }
-  }
-
-  .overlay-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: white;
-    color: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: none;
-    transition: transform 0.2s;
-  }
-  .overlay-btn:hover {
-    transform: scale(1.1);
-  }
-  .overlay-btn.delete {
-    color: var(--error);
-  }
-
-  .username-tag {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.1);
-    padding: 0.4rem 1rem;
-    border-radius: 100px;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    box-sizing: border-box;
-  }
-
   .settings-form {
     display: flex;
     flex-direction: column;
@@ -507,7 +452,6 @@
   }
   @media (max-width: 800px) {
     .form-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-    .field.full-width { grid-column: auto; }
     .settings-form { gap: 2rem; }
   }
   .field {
@@ -517,9 +461,6 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-  }
-  .field.full-width {
-    grid-column: span 2;
   }
   .field label {
     font-size: 0.9rem;
@@ -542,9 +483,6 @@
   @media (max-width: 600px) {
     .field input {
       padding: 0.75rem 1rem;
-    }
-    .title-with-icon {
-      gap: 1rem;
     }
   }
 

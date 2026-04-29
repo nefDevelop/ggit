@@ -98,16 +98,15 @@
           full_name: profile.full_name,
           website: profile.website,
           location: profile.location,
-          disable_news_feed: profile.disable_news_feed
         })
       });
       if (res.ok) {
         message = 'Profile updated successfully.';
-        // Update global authState
-        authState.user.username = profile.username;
-        authState.user.full_name = profile.full_name;
-        authState.user.avatar_url = profile.avatar_url;
-        authState.user.disable_news_feed = profile.disable_news_feed;
+        if (authState.user) {
+          authState.user.username = profile.username;
+          authState.user.full_name = profile.full_name;
+          authState.user.avatar_url = profile.avatar_url;
+        }
       } else {
         const errData = await res.json();
         error = errData.message || 'Failed to update profile.';
@@ -192,32 +191,33 @@
   {:else}
     <div class="settings-grid">
       <section class="settings-section tonal profile-main-card">
-        <div class="profile-layout">
-          <div class="avatar-column">
-            <div class="avatar-container">
-              <img src={`${profile.avatar_url}${profile.avatar_url.includes('?') ? '&' : '?'}t=${avatarCacheBuster}`} alt="Current Avatar" class="profile-avatar" />
-              <div class="avatar-overlay">
-                <label class="overlay-action" title="Upload Photo">
-                  <span class="material-symbols-rounded">cloud_upload</span>
-                  <input type="file" accept="image/*" onchange={handleAvatarUpload} hidden />
-                </label>
-                {#if profile.use_custom_avatar}
-                  <button class="overlay-action delete" onclick={deleteAvatar} title="Remove Custom Avatar">
-                    <span class="material-symbols-rounded">delete</span>
-                  </button>
-                {/if}
-              </div>
+        <div class="section-header-with-avatar">
+          <div class="avatar-shield-header">
+            <img src={`${profile.avatar_url}${profile.avatar_url.includes('?') ? '&' : '?'}t=${avatarCacheBuster}`} alt="Current Avatar" class="profile-avatar" />
+            <div class="avatar-overlay">
+              <label class="overlay-action-mini" title="Upload Photo">
+                <span class="material-symbols-rounded">cloud_upload</span>
+                <input type="file" accept="image/*" onchange={handleAvatarUpload} hidden />
+              </label>
+              {#if profile.use_custom_avatar}
+                <button class="overlay-action-mini delete" onclick={deleteAvatar} title="Remove Custom Avatar">
+                  <span class="material-symbols-rounded">delete</span>
+                </button>
+              {/if}
             </div>
+          </div>
+          <div class="section-info">
+            <h2 class="section-title">Public Profile</h2>
             {#if profile.enable_dicebear_avatar}
-              <button class="magic-btn" class:active={showDiceBear} onclick={() => showDiceBear = !showDiceBear}>
+              <button class="magic-btn-mini" class:active={showDiceBear} onclick={() => showDiceBear = !showDiceBear}>
                 <span class="material-symbols-rounded">auto_fix_high</span>
                 {showDiceBear ? 'Hide Generator' : 'Magic Avatar'}
               </button>
             {/if}
           </div>
-
-          <div class="info-column">
-            <h2 class="section-title">Public Profile</h2>
+        </div>
+        
+        <div class="info-column">
             
             <div class="form-grid">
               <div class="form-group">
@@ -254,7 +254,6 @@
               {/if}
             </div>
           </div>
-        </div>
 
         {#if showDiceBear && profile.enable_dicebear_avatar}
           <div class="dicebear-expansion">
@@ -286,24 +285,6 @@
         {/if}
       </section>
 
-      <section class="settings-section tonal preferences-card">
-        <h2 class="section-title">Dashboard Preferences</h2>
-        
-        <div class="toggle-group">
-          <div class="toggle-info">
-            <span class="toggle-label">Enable Activity Feed</span>
-            <p class="toggle-hint">Show pushes and merges on your dashboard.</p>
-          </div>
-          <button 
-            class="toggle-switch" 
-            class:active={!profile.disable_news_feed} 
-            onclick={() => { profile.disable_news_feed = !profile.disable_news_feed; handleUpdate(); }}
-            aria-label="Toggle Activity Feed"
-          >
-            <div class="toggle-handle"></div>
-          </button>
-        </div>
-      </section>
 
       <ThemeSelector />
     </div>
@@ -403,33 +384,34 @@
   .error-message { color: #f87171; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }
 
   /* New Profile Card Layout */
+  /* New Profile Card Layout */
   .profile-main-card { padding: 2.5rem; }
-  .profile-layout { display: flex; gap: 3rem; }
+  .section-header-with-avatar { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border-color); }
   
-  .avatar-column { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-  .avatar-container { position: relative; width: 160px; height: 160px; border-radius: 3.5rem; overflow: hidden; border: 4px solid var(--md3-surface-2); box-shadow: var(--shadow-xl); background: var(--md3-surface-1); }
-  .profile-avatar { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .avatar-shield-header { position: relative; width: 80px; height: 80px; border-radius: 2rem; overflow: hidden; border: 3px solid var(--border-color); background: var(--md3-surface-1); flex-shrink: 0; }
+  .profile-avatar { width: 100%; height: 100%; object-fit: cover; }
   
-  .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.75rem; backdrop-filter: blur(2px); }
-  
-  .avatar-container:hover .avatar-overlay { opacity: 1; }
-  .avatar-container:hover .profile-avatar { transform: scale(1.15); }
+  .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); opacity: 0; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.5rem; backdrop-filter: blur(2px); }
+  .avatar-shield-header:hover .avatar-overlay { opacity: 1; }
 
-  .overlay-action { width: 42px; height: 42px; border-radius: 50%; background: white; color: var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-  .overlay-action:hover { transform: scale(1.15); }
-  .overlay-action.delete { color: #ef4444; }
+  .overlay-action-mini { width: 32px; height: 32px; border-radius: 50%; background: white; color: var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: transform 0.2s; }
+  .overlay-action-mini:hover { transform: scale(1.1); }
+  .overlay-action-mini.delete { color: #ef4444; }
+  .overlay-action-mini span { font-size: 1.2rem; }
 
-  .magic-btn { display: flex; align-items: center; gap: 0.5rem; background: var(--md3-surface-3); border: 1px solid var(--border-color); color: var(--text-color); padding: 0.6rem 1.2rem; border-radius: 100px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
-  .magic-btn:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); transform: translateY(-2px); }
-  .magic-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
+  .section-info { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .section-title { margin-bottom: 0 !important; }
 
-  .info-column { flex: 1; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+  .magic-btn-mini { display: flex; align-items: center; gap: 0.5rem; background: var(--md3-surface-3); border: 1px solid var(--border-color); color: var(--text-color); padding: 0.5rem 1rem; border-radius: 100px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+  .magic-btn-mini:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  .magic-btn-mini.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+
+  .info-column { width: 100%; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
 
   @media (max-width: 850px) {
-    .profile-layout { flex-direction: column; align-items: center; text-align: center; gap: 2rem; }
-    .avatar-column { width: 100%; }
-    .info-column { width: 100%; }
+    .section-header-with-avatar { flex-direction: column; text-align: center; gap: 1.5rem; }
+    .section-info { flex-direction: column; }
     .form-actions { justify-content: center; }
   }
 
