@@ -53,6 +53,8 @@
     };
   });
 
+  let feeds = $state<any[]>([]);
+
   async function loadDashboard() {
     loading = true;
     try {
@@ -60,11 +62,45 @@
       if (res.ok) {
         data = await res.json();
       }
+      
+      // Load feeds if enabled
+      if (!authState.user?.disable_news_feed) {
+        const feedRes = await apiFetch('/api/v2/user/dashboard/feeds');
+        if (feedRes.ok) {
+          const d = await feedRes.json();
+          feeds = d.feeds || [];
+        }
+      }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
     } finally {
       loading = false;
     }
+  }
+
+  function formatAction(action: any) {
+    const repoLink = `<a href="/${action.repo_user_name}/${action.repo_name}">${action.repo_name}</a>`;
+    const userLink = `<a href="/${action.act_user_name}">${action.act_user_name}</a>`;
+    
+    switch (action.op_type) {
+      case 1: return `${userLink} created ${repoLink}`;
+      case 5: 
+        const branch = action.ref_name ? `<span class="branch-pill">${action.ref_name}</span>` : '';
+        return `${userLink} pushed to ${branch} at ${repoLink}`;
+      case 6: return `${userLink} opened an issue in ${repoLink}`;
+      case 11: return `${userLink} merged a pull request in ${repoLink}`;
+      case 16: return `${userLink} created branch <span class="branch-pill">${action.ref_name}</span> at ${repoLink}`;
+      case 17: return `${userLink} deleted branch <span class="branch-pill deleted">${action.ref_name}</span> at ${repoLink}`;
+      default: return `${userLink} performed an action in ${repoLink}`;
+    }
+  }
+
+  function formatTime(unix: number) {
+    const diff = Date.now() - (unix * 1000);
+    if (diff < 60000) return 'Just now';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+    return new Date(unix * 1000).toLocaleDateString();
   }
 
   onMount(() => {
@@ -75,12 +111,6 @@
     return () => window.removeEventListener('ggit:search', handleGlobalSearch);
   });
 
-  // Mantenemos sincronizado el viewMode de forma reactiva
-  $effect(() => {
-    if (authState.user?.disable_news_feed && viewMode !== 'list') {
-      viewMode = 'list';
-    }
-  });
 </script>
 
 <div class="dashboard-layout">
@@ -88,12 +118,12 @@
         <ViewHeader 
             bind:activeTab={viewMode}
             tabs={[
-                ...(authState.user?.disable_news_feed ? [] : [{ 
+                { 
                     id: 'temporal', 
                     label: 'Activity', 
                     icon: 'schedule',
                     hasBadge: (groupedRepos.recent?.length ?? 0) > 0 && (groupedRepos.recent?.some(r => (Date.now() - new Date(r.updated_at).getTime()) < (24 * 60 * 60 * 1000)))
-                }]),
+                },
                 { id: 'list', label: 'Alphabetical', icon: 'list' }
             ]}
         >
@@ -140,8 +170,32 @@
         </div>
     </div>
 
-    {#if data.organizations.length > 0 && userPrefs.current.showSidebarOrgs}
-        <aside class="dashboard-sidebar">
+    <aside class="dashboard-sidebar">
+        {#if !authState.user?.disable_news_feed && feeds.length > 0}
+            <div class="sidebar-card tonal">
+                <header class="sidebar-header">
+                    <span class="material-symbols-rounded">rss_feed</span>
+                    <h4>Recent Activity</h4>
+                </header>
+                <div class="feed-list">
+                    {#each feeds as feed}
+                        <div class="feed-item">
+                            <div class="feed-avatar">
+                                <img src={feed.act_avatar} alt={feed.act_user_name} />
+                            </div>
+                            <div class="feed-content">
+                                <div class="feed-action-line action-summary">
+                                    {@html formatAction(feed)}
+                                </div>
+                                <div class="feed-time">{formatTime(feed.created_unix)}</div>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+
+        {#if data.organizations.length > 0 && userPrefs.current.showSidebarOrgs}
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
                     <span class="material-symbols-rounded">corporate_fare</span>
@@ -155,8 +209,8 @@
                     {/each}
                 </div>
             </div>
-        </aside>
-    {/if}
+        {/if}
+    </aside>
 </div>
 
 <style>

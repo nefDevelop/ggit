@@ -67,12 +67,12 @@ func CSRF() gin.HandlerFunc {
 
 			log.Trace("CSRF Check Path: %s", c.Request.URL.Path)
 
-			sentToken := c.PostForm("_csrf")
-			if sentToken == "" {
-				sentToken = c.GetHeader("X-CSRF-Token")
-			}
+			sentToken := c.GetHeader("X-CSRF-Token")
 			if sentToken == "" {
 				sentToken = c.GetHeader("X-Csrf-Token")
+			}
+			if sentToken == "" {
+				sentToken = c.PostForm("_csrf")
 			}
 
 			matched := false

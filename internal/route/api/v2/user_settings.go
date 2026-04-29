@@ -351,16 +351,14 @@ func UpdateUserAvatar(c *context.APIContext) {
 		Avatar *multipart.FileHeader `form:"avatar"`
 	}
 
-	// Try to bind as multipart form first
-	if err := c.Request.ParseMultipartForm(32 << 20); err == nil {
-		file, header, err := c.Req.FormFile("avatar")
-		if err == nil {
-			f.Avatar = header
-			_ = file.Close()
-			log.Trace("Multipart avatar file received: %s (size: %d)", header.Filename, header.Size)
-		} else if !errors.Is(err, http.ErrMissingFile) {
+	header, err := c.FormFile("avatar")
+	if err != nil {
+		if !errors.Is(err, http.ErrMissingFile) {
 			log.Error("Failed to get avatar from form: %v", err)
 		}
+	} else {
+		f.Avatar = header
+		log.Trace("Avatar file received: %s (size: %d)", header.Filename, header.Size)
 	}
 
 	if f.Avatar != nil {
