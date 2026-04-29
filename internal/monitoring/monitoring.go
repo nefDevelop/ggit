@@ -172,11 +172,19 @@ func InitTracing() (func(context.Context) error, error) {
 	return tp.Shutdown, nil
 }
 
+// DiskUsageFunc defines the function signature for checking disk usage.
+type DiskUsageFunc func(path string) (*disk.UsageStat, error)
+
 // SurvivalModeMiddleware blocks write requests if disk space is critical.
-func SurvivalModeMiddleware() gin.HandlerFunc {
+func SurvivalModeMiddleware(usageFunc ...DiskUsageFunc) gin.HandlerFunc {
+	f := disk.Usage
+	if len(usageFunc) > 0 && usageFunc[0] != nil {
+		f = usageFunc[0]
+	}
+
 	return func(c *gin.Context) {
 		if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodHead && c.Request.Method != http.MethodOptions {
-			usage, err := disk.Usage(conf.Repository.Root)
+			usage, err := f(conf.Repository.Root)
 			if err == nil && usage.UsedPercent > 95 {
 				c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{
 					"error": "Survival Mode: Disk space is critical (>95%). Write operations are blocked.",

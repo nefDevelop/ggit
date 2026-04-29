@@ -17,8 +17,8 @@ import (
 
 // Issue represents a finding by the Janitor.
 type Issue struct {
-	Type        string `json:"type"` // "system", "dependency", "build", "large_file"
-	Severity    string `json:"severity"` // "info", "warning", "critical"
+	Type        string `json:"type"`      // "system", "dependency", "build", "large_file", "security"
+	Severity    string `json:"severity"`  // "info", "warning", "critical"
 	Path        string `json:"path"`
 	Description string `json:"description"`
 	Size        int64  `json:"size"`
@@ -34,54 +34,68 @@ type Report struct {
 // Patterns for detection
 var patterns = map[string]string{
 	// System
-	".DS_Store": "macOS metadata file",
-	"Thumbs.db": "Windows thumbnail cache",
-	"desktop.ini": "Windows folder settings",
+	".DS_Store":       "macOS metadata file",
+	"Thumbs.db":       "Windows thumbnail cache",
+	"desktop.ini":     "Windows folder settings",
 	".Spotlight-V100": "macOS Spotlight index",
-	".Trashes": "macOS Trash folder",
-	
+	".Trashes":        "macOS Trash folder",
+
 	// Dependencies
-	"node_modules": "Node.js dependencies (should be in .gitignore)",
+	"node_modules":     "Node.js dependencies (should be in .gitignore)",
 	"bower_components": "Bower components",
-	"vendor": "Go/PHP dependencies (usually better to not commit)",
-	"venv": "Python virtual environment",
-	".venv": "Python virtual environment",
-	"env": "Python virtual environment",
-	"__pycache__": "Python bytecode cache",
-	".bundle": "Ruby bundle folder",
-	"jspm_packages": "JSPM packages",
-	
+	"vendor":           "Go/PHP dependencies (usually better to not commit)",
+	"venv":             "Python virtual environment",
+	".venv":            "Python virtual environment",
+	"env":              "Python virtual environment",
+	"__pycache__":      "Python bytecode cache",
+	".bundle":          "Ruby bundle folder",
+	"jspm_packages":    "JSPM packages",
+
 	// Build / Artifacts
-	"dist": "Build distribution folder",
-	"build": "Build output folder",
-	"bin": "Binary output folder",
-	"obj": "Object files folder",
-	"target": "Maven/Rust build target",
-	"out": "IDE output folder",
-	".next": "Next.js build folder",
-	".nuxt": "Nuxt.js build folder",
+	"dist":        "Build distribution folder",
+	"build":       "Build output folder",
+	"bin":         "Binary output folder",
+	"obj":         "Object files folder",
+	"target":      "Maven/Rust build target",
+	"out":         "IDE output folder",
+	".next":       "Next.js build folder",
+	".nuxt":       "Nuxt.js build folder",
 	".sass-cache": "Sass cache folder",
-	
+
 	// IDEs
-	".idea": "IntelliJ IDEA metadata",
-	".vscode": "Visual Studio Code settings",
-	"*.suo": "Visual Studio user options",
-	"*.user": "Visual Studio user project settings",
-	".project": "Eclipse project file",
+	".idea":     "IntelliJ IDEA metadata",
+	".vscode":   "Visual Studio Code settings",
+	"*.suo":     "Visual Studio user options",
+	"*.user":    "Visual Studio user project settings",
+	".project":  "Eclipse project file",
 	".settings": "Eclipse settings folder",
-	
+
 	// Logs & Coverage
-	"*.log": "Log file",
+	"*.log":          "Log file",
 	"npm-debug.log*": "npm debug log",
 	"yarn-error.log*": "yarn error log",
-	"coverage": "Code coverage report",
-	".nyc_output": "Istanbul/nyc coverage data",
-	"htmlcov": "Python coverage report",
-	
+	"coverage":       "Code coverage report",
+	".nyc_output":    "Istanbul/nyc coverage data",
+	"htmlcov":        "Python coverage report",
+
 	// Security (Files)
 	"*.pem": "Private key file (Sensitive)",
 	"*.key": "Private key file (Sensitive)",
-	".env": "Environment configuration (Sensitive)",
+	".env":  "Environment configuration (Sensitive)",
+}
+
+func getDirectorySize(path string) (int64, error) {
+	var size int64
+	err := filepath.Walk(path, func(_ string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return nil
+	})
+	return size, err
 }
 
 // Scan analyzes the repository tree.
@@ -100,7 +114,7 @@ func Scan(ctx context.Context, repoID int64) (*Report, error) {
 	if branch == "" {
 		branch = "main"
 	}
-	
+
 	if !gitRepo.HasBranch(branch) {
 		if gitRepo.HasBranch("master") {
 			branch = "master"
@@ -126,7 +140,7 @@ func Scan(ctx context.Context, repoID int64) (*Report, error) {
 
 	for _, entry := range entries {
 		name := path.Base(entry.Name())
-		
+
 		matchFound := false
 		foundDesc := ""
 		for pattern, desc := range patterns {
@@ -143,14 +157,17 @@ func Scan(ctx context.Context, repoID int64) (*Report, error) {
 			if entry.Type() == git.ObjectCommit {
 				continue
 			}
-			
+
 			issueType := "build"
 			if strings.Contains(foundDesc, "dependencies") || strings.Contains(foundDesc, "environment") {
 				issueType = "dependency"
 			} else if strings.Contains(foundDesc, "metadata") {
 				issueType = "system"
 			} else if strings.Contains(foundDesc, "IDE") || strings.Contains(foundDesc, "settings") {
-				issueType = "build" // or "ide"
+				issueType = "build"
+			} else if strings.Contains(foundDesc, "Sensitive") {
+				issueType = "security"
+				severity = "critical"
 			}
 
 			report.Issues = append(report.Issues, Issue{
@@ -158,19 +175,47 @@ func Scan(ctx context.Context, repoID int64) (*Report, error) {
 				Severity:    severity,
 				Path:        entry.Name(),
 				Description: foundDesc,
-				Size:        0,
+				Size:        entry.Size(),
 			})
 		}
-		
-		if entry.Type() == git.ObjectBlob && entry.Size() > 50*1024*1024 {
+
+		// Large file detection (Lowered to 10MB for better awareness)
+		if entry.Type() == git.ObjectBlob && entry.Size() > 10*1024*1024 {
+			// Check if it's a binary without extension (common in Go/C)
+			desc := "Large file detected (> 10MB)"
+			if !strings.Contains(path.Base(entry.Name()), ".") {
+				desc = "Possible compiled binary without extension"
+			}
+
 			report.Issues = append(report.Issues, Issue{
 				Type:        "large_file",
 				Severity:    "warning",
 				Path:        entry.Name(),
-				Description: "Large file detected (> 50MB)",
+				Description: desc,
 				Size:        entry.Size(),
 			})
 			report.TotalWaste += entry.Size()
+		}
+	}
+
+	// NEW: Deep History Scan
+	// We check for large objects in the entire Git history
+	idxPattern := filepath.Join(repo.RepoPath(), "objects", "pack", "*.idx")
+	matches, _ := filepath.Glob(idxPattern)
+	if len(matches) > 0 {
+		args := append([]string{"verify-pack", "-v"}, matches...)
+		stdout, _ := git.NewCommand(args...).RunInDir(repo.RepoPath())
+		if len(stdout) > 0 {
+			gitDirSize, _ := getDirectorySize(repo.RepoPath())
+			if gitDirSize > 100*1024*1024 { // If .git > 100MB, alert
+				report.Issues = append(report.Issues, Issue{
+					Type:        "system",
+					Severity:    "info",
+					Path:        ".git/",
+					Description: fmt.Sprintf("Large Git history detected (%d MB). Consider a deep cleanup.", gitDirSize/(1024*1024)),
+					Size:        gitDirSize,
+				})
+			}
 		}
 	}
 
@@ -190,10 +235,6 @@ func Cleanup(ctx context.Context, repoID int64, doer *database.User, paths []str
 		return err
 	}
 
-	// Use internal editor logic to handle the commit
-	// Since we need to delete multiple files, we'll implement a custom logic 
-	// inspired by repo_editor.go
-	
 	// 1. Prepare local copy
 	if err := repo.DiscardLocalRepoBranchChanges(repo.DefaultBranch); err != nil {
 		return err
@@ -202,7 +243,7 @@ func Cleanup(ctx context.Context, repoID int64, doer *database.User, paths []str
 	}
 
 	localPath := repo.LocalCopyPath()
-	
+
 	// 2. Remove files/folders
 	removedAny := false
 	for _, p := range paths {
@@ -221,8 +262,7 @@ func Cleanup(ctx context.Context, repoID int64, doer *database.User, paths []str
 		return fmt.Errorf("no files found to remove")
 	}
 
-	// 3. Update .gitignore (Suggestion logic)
-	// We'll append the unique patterns to .gitignore
+	// 3. Update .gitignore
 	gitignorePath := filepath.Join(localPath, ".gitignore")
 	existingGitignore := ""
 	if data, err := os.ReadFile(gitignorePath); err == nil {
@@ -287,4 +327,27 @@ func Cleanup(ctx context.Context, repoID int64, doer *database.User, paths []str
 			},
 		},
 	)
+}
+
+// DeepCleanup performs an aggressive garbage collection on the repository.
+// This is meant to be called from the Admin Panel.
+func DeepCleanup(ctx context.Context, repoID int64) error {
+	repo, err := database.GetRepositoryByID(repoID)
+	if err != nil {
+		return err
+	}
+
+	// 1. Run git gc --aggressive --prune=now
+	_, err = git.NewCommand("gc", "--aggressive", "--prune=now").RunInDir(repo.RepoPath())
+	if err != nil {
+		return fmt.Errorf("git gc: %v", err)
+	}
+
+	// 2. Update repository size in database
+	size, err := getDirectorySize(repo.RepoPath())
+	if err == nil {
+		return database.Handle.DB().Model(repo).Update("size", size).Error
+	}
+
+	return nil
 }
