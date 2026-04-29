@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
+  import { userPrefs } from '$lib/settings.svelte';
   import { onMount } from 'svelte';
   import RepoRow from './RepoRow.svelte';
   import GlobalSearch from './GlobalSearch.svelte';
@@ -139,7 +140,7 @@
         </div>
     </div>
 
-    {#if data.organizations.length > 0 && !authState.user?.disable_news_feed}
+    {#if data.organizations.length > 0 && userPrefs.current.showSidebarOrgs}
         <aside class="dashboard-sidebar">
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
