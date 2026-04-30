@@ -15,6 +15,7 @@
 
   let repoData = $state<any>(null);
   let gitStats = $state<any>({ commits: 0, branches: 0, tags: 0 });
+  let languages = $state<any>(null);
   let loading = $state(true);
   let error = $state('');
 
@@ -24,7 +25,6 @@
     if (lastFetched.user === username && lastFetched.repo === reponame) return;
     lastFetched = { user: username || '', repo: reponame || '' };
 
-    // Only show loading if we don't have data yet
     if (!repoData) loading = true;
     error = '';
     try {
@@ -34,6 +34,9 @@
         repoData = res.repository;
         if (res.stats) {
             gitStats = res.stats;
+        }
+        if (res.languages) {
+            languages = res.languages;
         }
       } else {
         error = 'Repository not found or access denied.';
@@ -52,6 +55,7 @@
   setContext('repo', {
     get data() { return repoData; },
     get stats() { return gitStats; },
+    get languages() { return languages; },
     get loading() { return loading; }
   });
 

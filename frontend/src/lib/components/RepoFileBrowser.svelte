@@ -73,7 +73,6 @@
   }
 
   $effect(() => {
-    // Re-fetch when the derived realPath changes or path changes
     fetchRepo();
   });
 
@@ -87,11 +86,13 @@
 
   const repoContext = getContext<any>('repo');
 
-  // Calculate language percentages
+  // Calculate language percentages - Fallback to global context if local repoData doesn't have them
   const langEntries = $derived(() => {
-    if (!repoData?.languages) return [];
-    const total = Object.values(repoData.languages as Record<string, number>).reduce((a, b) => a + b, 0);
-    return Object.entries(repoData.languages as Record<string, number>)
+    const langs = repoData?.languages || repoContext.data?.languages;
+    if (!langs) return [];
+    const total = Object.values(langs as Record<string, number>).reduce((a, b) => a + b, 0);
+    if (total === 0) return [];
+    return Object.entries(langs as Record<string, number>)
       .map(([name, bytes]) => ({
         name,
         percent: ((bytes / total) * 100).toFixed(1),
@@ -125,9 +126,7 @@
   }
 
   onMount(() => {
-    window.addEventListener('ggit:search', handleSearch);
     sidebarCollapsed = localStorage.getItem('repo-sidebar-collapsed') === 'true';
-    return () => window.removeEventListener('ggit:search', handleSearch);
   });
 </script>
 
@@ -167,15 +166,18 @@ git push -u origin main</code></pre>
           <!-- Last Commit Bar -->
           {#if repoData.last_commit && repoData.type !== 'file'}
             <div class="last-commit-bar">
-                <div class="commit-avatar">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
+                <div class="commit-avatar tonal">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
                 <div class="commit-info">
-                <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="commit-msg-link">
-                  <span class="commit-msg">{repoData.last_commit.summary}</span>
-                </a>
-                <span class="commit-meta">
-                    <span class="author">{repoData.last_commit.author?.name}</span>
-                    <span class="time">{timeAgo(repoData.last_commit.author?.when)}</span>
-                </span>
+                  <div class="commit-summary-row">
+                    <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="commit-msg-link">
+                      <span class="commit-msg">{repoData.last_commit.summary}</span>
+                    </a>
+                  </div>
+                  <div class="commit-meta-row">
+                      <span class="author">{repoData.last_commit.author?.name}</span>
+                      <span class="separator">committed</span>
+                      <span class="time">{timeAgo(repoData.last_commit.author?.when)}</span>
+                  </div>
                 </div>
                 <div class="commit-actions-right">
                   <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="sha-link">
@@ -213,9 +215,9 @@ git push -u origin main</code></pre>
                         </a>
                       </td>
                       <td class="msg-cell">
-                        <span class="msg-text">{entry.last_commit?.summary || '...'}</span>
+                        <span class="msg-text">{entry.last_commit?.summary || ''}</span>
                       </td>
-                      <td class="date-cell">{timeAgo(entry.last_commit?.author?.when) || '--'}</td>
+                      <td class="date-cell">{timeAgo(entry.last_commit?.author?.when) || ''}</td>
                     </tr>
                   {/each}
                 </tbody>
@@ -354,56 +356,62 @@ git push -u origin main</code></pre>
 
   .main-column { display: flex; flex-direction: column; min-width: 0; }
 
+  /* LAST COMMIT BAR */
   .last-commit-bar {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    padding: 0.75rem 1rem;
-    background: rgba(255,255,255,0.03);
-    border-radius: 0.5rem;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: var(--surface-variant);
+    border-radius: 1rem;
     margin-bottom: 1.5rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
     min-width: 0;
   }
-  .commit-avatar { width: 24px; height: 24px; background: var(--primary-color); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.7rem; color: var(--on-primary); flex-shrink: 0; }
+  .commit-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; border: 1px solid var(--md-sys-color-outline-variant); }
+  
   .commit-info {
     display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.2rem;
     flex: 1;
     min-width: 0;
   }
+  
+  .commit-summary-row { display: flex; align-items: center; min-width: 0; }
+  
   .commit-msg { 
-    font-weight: 600; 
+    font-weight: 700; 
     font-size: 0.95rem; 
+    color: var(--text-color);
     overflow: hidden; 
     text-overflow: ellipsis; 
     white-space: nowrap;
-    flex: 1;
+    display: block;
   }
-  .commit-meta { 
+  
+  .commit-meta-row { 
     display: flex; 
-    gap: 0.5rem; 
+    align-items: center;
+    gap: 0.4rem; 
     font-size: 0.8rem; 
     color: var(--text-muted);
-    flex-shrink: 0;
+    opacity: 0.8;
   }
-  .sha { font-family: monospace; opacity: 0.5; font-size: 0.8rem; flex-shrink: 0; }
+  .author { font-weight: 800; color: var(--text-color); }
+  .separator { opacity: 0.5; }
 
   .commit-msg-link, .sha-link {
     text-decoration: none;
     color: inherit;
-    display: flex;
-    align-items: center;
+    min-width: 0;
   }
   .commit-msg-link:hover .commit-msg {
     color: var(--primary-color);
     text-decoration: underline;
   }
-  .sha-link:hover .sha {
-    color: var(--primary-color);
-    opacity: 1;
-    text-decoration: underline;
-  }
+  .sha { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(var(--primary-rgb), 0.2); transition: all 0.2s; }
+  .sha-link:hover .sha { background: var(--primary-color); color: var(--on-primary); }
 
   .commit-actions-right {
     display: flex;
@@ -418,198 +426,136 @@ git push -u origin main</code></pre>
     color: var(--text-muted);
     cursor: pointer;
     display: flex;
-    padding: 2px;
-    opacity: 0.5;
+    padding: 6px;
+    border-radius: 8px;
     transition: all 0.2s;
   }
   .btn-sidebar-toggle:hover {
-    opacity: 1;
+    background: rgba(var(--primary-rgb), 0.1);
     color: var(--primary-color);
-    transform: scale(1.1);
   }
   .btn-sidebar-toggle span {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
   }
 
-  @media (max-width: 600px) {
-    .last-commit-bar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-    .commit-info {
-      width: 100%;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.25rem;
-    }
-    .commit-meta {
-      width: 100%;
-      justify-content: space-between;
-    }
-  }
-
-  /* Content */
+  /* FILE TABLE */
   .content-view { 
     background: var(--bg-color); 
     border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 0.75rem; 
+    border-radius: 1rem; 
     overflow: hidden; 
     box-shadow: var(--shadow-sm);
-    overflow-x: auto;
   }
-  .file-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  .file-table { width: 100%; border-collapse: collapse; }
   .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .file-row:last-child { border-bottom: none; }
-  .file-row td { padding: 0.75rem 1rem; }
+  .file-row td { padding: 0.85rem 1.25rem; vertical-align: middle; }
   .file-row.clickable { cursor: pointer; }
-  .file-row:hover { background: var(--surface-variant); }
+  .file-row:hover { background: rgba(var(--primary-rgb), 0.04); }
 
   .name-cell { 
     display: flex; 
     align-items: center; 
-    gap: 0.75rem; 
-    min-width: 150px;
-    max-width: 300px;
+    gap: 1rem; 
+    min-width: 200px;
   }
   .name-cell a { 
     color: var(--text-color); 
     text-decoration: none; 
-    font-weight: 600; 
+    font-weight: 700; 
     font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
-    min-width: 0;
   }
-  .icon-tree { color: #facc15; font-size: 1.25rem; }
-  .icon-blob { color: var(--text-muted); font-size: 1.25rem; }
+  .icon-tree { color: #facc15; font-size: 1.4rem; }
+  .icon-blob { color: var(--text-muted); font-size: 1.4rem; opacity: 0.7; }
+  
   .msg-cell { 
     font-size: 0.85rem; 
     color: var(--text-muted); 
-    opacity: 0.6; 
     max-width: 0;
-    width: 100%;
+    width: 60%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .msg-text {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    opacity: 0.7;
   }
-  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.5; }
+  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; white-space: nowrap; }
 
-  /* Viewer */
+  /* VIEWER */
   .file-header { 
     background: var(--surface-variant); 
-    padding: 0.75rem 1rem; 
+    padding: 0.85rem 1.25rem; 
     display: flex; 
     justify-content: space-between; 
     align-items: center;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
-  .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 700; font-size: 0.95rem; color: var(--text-color); }
-  .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.35rem 0.75rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; font-weight: 700; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-  .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+  .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.95rem; color: var(--text-color); }
+  .filesize { font-weight: 400; opacity: 0.5; font-size: 0.8rem; }
+  
+  .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.4rem 0.85rem; border-radius: 0.6rem; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+  .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
   .file-tools.side-by-side { display: flex; align-items: center; gap: 0.5rem; }
-  .btn-sidebar-toggle-inline { padding: 0.35rem 0.5rem; }
-  .btn-sidebar-toggle-inline span { font-size: 1.1rem; }
 
-  .code-box { background: var(--md-sys-color-surface-container-lowest); overflow-x: auto; }
-  .code-grid { display: grid; grid-template-columns: 50px 1fr; min-width: 600px; }
-  .ln-col { border-right: 1px solid rgba(255,255,255,0.08); padding: 1.25rem 0; text-align: right; background: rgba(255,255,255,0.01); }
-  .ln-col span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.25; padding-right: 1rem; line-height: 1.5; }
-  .code-pre { margin: 0; padding: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.5; color: #e6edf3; }
+  .code-box { background: #0d0e11; overflow-x: auto; }
+  .code-grid { display: grid; grid-template-columns: 60px 1fr; }
+  .ln-col { border-right: 1px solid rgba(255,255,255,0.05); padding: 1.5rem 0; text-align: right; background: rgba(255,255,255,0.01); }
+  .ln-col span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.3; padding-right: 1.25rem; line-height: 1.6; }
+  .code-pre { margin: 0; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.6; color: #e6edf3; }
   .code-pre.hljs { background: transparent; }
-  .line { white-space: pre; transition: background 0.2s; }
-  .line:hover { background: rgba(255,255,255,0.05); }
+  .line { white-space: pre; }
 
-  /* Readme */
-  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
-  .readme-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); background: var(--surface-variant); }
-  .readme-header.small { padding: 0.75rem 1.25rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
-  .readme-content { padding: 1.5rem; }
+  /* README */
+  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .readme-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); background: var(--surface-variant); }
+  .readme-header.small { padding: 1rem 1.5rem; }
+  .readme-content { padding: 2rem; line-height: 1.6; }
 
-  /* Sidebar */
-  .side-column { display: flex; flex-direction: column; gap: 2.5rem; overflow: hidden; }
+  /* SIDEBAR */
+  .side-column { display: flex; flex-direction: column; gap: 2.5rem; transition: opacity 0.3s; }
   .side-column.hidden-sidebar { opacity: 0; pointer-events: none; }
-  .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.75rem; }
-  .about-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-color); opacity: 0.8; }
+  .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 0.5rem; }
+  .about-text { font-size: 0.95rem; line-height: 1.6; color: var(--text-color); opacity: 0.85; }
   
   .lang-bar { 
-    height: 10px; 
-    border-radius: 5px; 
+    height: 12px; 
+    border-radius: 6px; 
     overflow: hidden; 
     display: flex; 
-    background: rgba(0,0,0,0.3); 
-    margin-bottom: 1rem;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.2); 
+    margin-bottom: 1.25rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
   }
-  .mobile-only { display: none; margin-bottom: 1rem; }
-  .lang-progress {
-    height: 100%;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: help;
-  }
-  .lang-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .lang-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; }
-  .lang-item .dot { width: 8px; height: 8px; border-radius: 50%; }
-  .lang-item .name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .lang-item .percent { color: var(--text-muted); opacity: 0.7; font-size: 0.75rem; margin-left: auto; }
+  .mobile-only { display: none; }
+  .lang-progress { height: 100%; transition: width 1s ease; }
+  .lang-list { display: flex; flex-direction: column; gap: 0.6rem; }
+  .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
+  .lang-item .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .lang-item .name { font-weight: 700; }
+  .lang-item .percent { color: var(--text-muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
 
-  .lang-toggle {
-    background: transparent;
-    border: none;
-    color: var(--primary-color);
-    font-size: 0.75rem;
-    font-weight: 700;
-    cursor: pointer;
-    padding: 0.5rem 0;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    opacity: 0.8;
-  }
-  .lang-toggle:hover { opacity: 1; text-decoration: underline; }
+  .lang-toggle { background: transparent; border: none; color: var(--primary-color); font-size: 0.8rem; font-weight: 800; cursor: pointer; padding: 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; }
+  .lang-toggle:hover { text-decoration: underline; }
 
-  /* Responsive Adjustments */
   @media (max-width: 900px) {
-    .technical-grid {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-    .side-column {
-      gap: 1.5rem;
-    }
-    .lang-list, .lang-toggle, .desktop-only {
-      display: none; /* Hide the list and toggle entirely on mobile, rely on bar tooltips */
-    }
-    .mobile-only {
-      display: flex;
-    }
+    .technical-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .mobile-only { display: flex; }
+    .desktop-only { display: none; }
   }
 
-  /* Skeletons */
-  .skeleton-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2.5rem; height: 400px; }
-  .skeleton-main { background: var(--md3-surface-2); border-radius: 1rem; animation: pulse 1.5s infinite; }
-  .skeleton-side { background: var(--md3-surface-2); border-radius: 1rem; animation: pulse 1.5s infinite; }
+  .skeleton-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2.5rem; height: 500px; }
+  .skeleton-main, .skeleton-side { background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
-  .empty-state { padding: 4rem 2rem; text-align: center; }
-  .empty-icon-ring { width: 64px; height: 64px; border: 2px dashed var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: var(--primary-color); }
-  .command-block { background: #000; padding: 1.5rem; border-radius: 0.75rem; text-align: left; margin-top: 2rem; }
-  .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.5rem; }
-  code { font-family: 'JetBrains Mono', monospace; }
+  .empty-state { padding: 5rem 2rem; text-align: center; }
+  .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--primary-color); }
+  .empty-icon-ring span { font-size: 2.5rem; }
+  .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.75rem; text-transform: uppercase; }
 
-  /* Markdown Body Overrides */
-  :global(.markdown-body) { color: var(--text-color); }
-  :global(.markdown-body h1, .markdown-body h2) { border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 0.3em; }
-  :global(.markdown-body pre) { background-color: rgba(0,0,0,0.3); border-radius: 6px; padding: 16px; }
+  :global(.markdown-body) { color: var(--text-color); font-size: 1rem; line-height: 1.7; }
 </style>
