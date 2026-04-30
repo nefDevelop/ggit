@@ -186,8 +186,8 @@
       </div>
 
       <div class="attachments-zone">
-        <label>Binary Attachments</label>
-        <div class="upload-area" class:uploading>
+        <label for="release-attachments">Binary Attachments</label>
+        <div id="release-attachments" class="upload-area" class:uploading>
           <span class="material-symbols-rounded">cloud_upload</span>
           <p>Drag and drop assets here, or <strong>browse</strong></p>
           <input type="file" multiple onchange={handleFileUpload} />

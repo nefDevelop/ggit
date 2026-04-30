@@ -218,7 +218,6 @@
         {/if}
     </aside>
     {/if}
-  .dashboard-layout.full-width { gap: 0; }
 </div>
 
 <style>
@@ -231,6 +230,10 @@
     width: 100%;
     box-sizing: border-box;
     flex: 1 1 100%;
+  }
+
+  .dashboard-layout.full-width {
+    gap: 0;
   }
 
   .dashboard-main-content { 
