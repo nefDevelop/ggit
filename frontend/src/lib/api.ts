@@ -1,5 +1,7 @@
 import { toast } from "./toast.svelte";
 
+let isRedirecting = false;
+
 /**
  * Get cookie value by name
  */
@@ -58,13 +60,20 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
     if (!response.ok && !options.silent) {
       let errorMessage = data?.message || data?.error || `Error: ${response.statusText || response.status}`;
 
+
+
       if (response.status === 401) {
-        toast.error("Sesión expirada. Por favor, vuelve a iniciar sesión.");
-        // Redirigir al login si no estamos ya allí
-        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
-          setTimeout(() => {
-            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-          }, 1500); // Esperar un poco para que vean el toast
+        if (!isRedirecting) {
+          isRedirecting = true;
+          toast.error("Sesión expirada. Por favor, vuelve a iniciar sesión.");
+          // Redirigir al login si no estamos ya allí
+          if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/user/login')) {
+            setTimeout(() => {
+              window.location.href = `/user/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+            }, 800); 
+          } else {
+             isRedirecting = false;
+          }
         }
       } else if (response.status === 403) {
         toast.error("No tienes permisos para realizar esta acción.");
