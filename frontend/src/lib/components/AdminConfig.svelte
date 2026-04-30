@@ -135,9 +135,11 @@
                   </div>
                 </div>
               {/if}
-              <Button variant="primary" onclick={updateAuthSettings} disabled={savingSecurity}>
-                {savingSecurity ? 'Guardando...' : 'Guardar Ajustes de Seguridad'}
-              </Button>
+              <div class="form-actions">
+                <Button variant="primary" onclick={updateAuthSettings} disabled={savingSecurity}>
+                  {savingSecurity ? 'Guardando...' : 'Guardar Ajustes de Seguridad'}
+                </Button>
+              </div>
            </div>
         </div>
       </div>
@@ -200,6 +202,14 @@
     .action-header h4 { font-size: 1.25rem; }
     .field-row { grid-template-columns: 1fr; }
   }
+  .action-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; color: var(--primary-color); }
+  .action-header span { font-size: 2.5rem; }
+  .action-header h4 { margin: 0; font-size: 1.5rem; font-weight: 900; }
+
+  .action-form { display: flex; flex-direction: column; gap: 2rem; margin-top: 1.5rem; }
+  .form-actions { display: flex; justify-content: flex-start; margin-top: 1rem; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.8rem; font-weight: 800; color: var(--text-color); }
   .field input { background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); }

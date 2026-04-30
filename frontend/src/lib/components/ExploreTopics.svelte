@@ -29,35 +29,40 @@
 </script>
 
 <div class="explore-topics">
-  {#if loading}
-    <div class="loading-grid">
-      {#each Array(8) as _}
-        <div class="skeleton-topic tonal"></div>
-      {/each}
-    </div>
-  {:else if topics.length === 0}
-    <div class="empty-state tonal">
-      <span class="material-symbols-rounded">tag_off</span>
-      <p>No topics found matching your search.</p>
-    </div>
-  {:else}
-    <div class="topics-grid">
-      {#each topics as topic}
-        <a href="/explore/repos?q=topic:{topic.Name}" class="topic-card tonal hover-lift">
-          <div class="topic-icon">
-            <span class="material-symbols-rounded">tag</span>
-          </div>
-          <div class="topic-info">
-            <strong>{topic.Name}</strong>
-            <span>{topic.RepoCount} Repositorios</span>
-          </div>
-        </a>
-      {/each}
-    </div>
-  {/if}
+  <div class="container">
+    {#if loading}
+      <div class="loading-grid">
+        {#each Array(8) as _}
+          <div class="skeleton-topic tonal"></div>
+        {/each}
+      </div>
+    {:else if topics.length === 0}
+      <div class="empty-state tonal">
+        <span class="material-symbols-rounded">tag_off</span>
+        <p>No topics found matching your search.</p>
+      </div>
+    {:else}
+      <div class="topics-grid">
+        {#each topics as topic}
+          <a href="/explore/repos?q=topic:{topic.Name}" class="topic-card tonal hover-lift">
+            <div class="topic-icon">
+              <span class="material-symbols-rounded">tag</span>
+            </div>
+            <div class="topic-info">
+              <strong>{topic.Name}</strong>
+              <span>{topic.RepoCount} Repositorios</span>
+            </div>
+          </a>
+        {/each}
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
+  .explore-topics { padding: 2rem 0; }
+  .container { max-width: 1200px; margin: 0 auto; width: 100%; }
+
   .topics-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 

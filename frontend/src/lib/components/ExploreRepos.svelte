@@ -12,17 +12,7 @@
   let selectedLang = $state('');
   let selectedTopic = $state('');
   let popularTopics = $state<any[]>([]);
-
-  const languages = [
-    { name: 'All', value: '' },
-    { name: 'Go', value: 'Go' },
-    { name: 'JavaScript', value: 'JavaScript' },
-    { name: 'TypeScript', value: 'TypeScript' },
-    { name: 'Python', value: 'Python' },
-    { name: 'Rust', value: 'Rust' },
-    { name: 'C++', value: 'C++' },
-    { name: 'Zig', value: 'Zig' },
-  ];
+  let languages = $state<{name: string, value: string}[]>([{ name: 'All', value: '' }]);
 
   async function fetchPopularTopics() {
     try {
@@ -30,6 +20,19 @@
       if (res.ok) {
         const data = await res.json();
         popularTopics = data.topics || [];
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function fetchLanguages() {
+    try {
+      const res = await apiFetch('/api/v2/explore/languages');
+      if (res.ok) {
+        const data = await res.json();
+        const serverLangs = (data.languages || []).map((l: string) => ({ name: l, value: l }));
+        languages = [{ name: 'All', value: '' }, ...serverLangs];
       }
     } catch (e) {
       console.error(e);
@@ -61,10 +64,11 @@
   onMount(() => {
     fetchRepos();
     fetchPopularTopics();
+    fetchLanguages();
   });
 </script>
 
-<div class="explore-repos-layout">
+<div class="explore-repos-layout" class:no-sidebar={languages.length <= 1 && popularTopics.length === 0}>
   <div class="explore-repos-main">
     {#if loading && repos.length === 0}
       <div class="skeleton-grid">
@@ -127,41 +131,46 @@
     {/if}
   </div>
 
-  <aside class="lang-sidebar tonal">
-    <h3 class="sidebar-title">Languages</h3>
-    <div class="lang-list">
-        {#each languages as lang}
-            <button 
-                class="lang-item" 
-                class:active={selectedLang === lang.value}
-                onclick={() => selectedLang = lang.value}
-            >
-                <span class="lang-dot" style="opacity: {selectedLang === lang.value ? 1 : 0.4}"></span>
-                {lang.name}
-            </button>
-        {/each}
-    </div>
+  {#if languages.length > 1 || popularTopics.length > 0}
+    <aside class="lang-sidebar tonal">
+      {#if languages.length > 1}
+        <h3 class="sidebar-title">Languages</h3>
+        <div class="lang-list">
+            {#each languages as lang}
+                <button 
+                    class="lang-item" 
+                    class:active={selectedLang === lang.value}
+                    onclick={() => selectedLang = lang.value}
+                >
+                    <span class="lang-dot" style="opacity: {selectedLang === lang.value ? 1 : 0.4}"></span>
+                    {lang.name}
+                </button>
+            {/each}
+        </div>
+      {/if}
 
-    {#if popularTopics.length > 0}
-      <h3 class="sidebar-title" style="margin-top: 2.5rem;">Topics</h3>
-      <div class="lang-list">
-          {#each popularTopics.slice(0, 10) as topic}
-              <button 
-                  class="lang-item" 
-                  class:active={selectedTopic === topic.Name}
-                  onclick={() => selectedTopic = topic.Name}
-              >
-                  <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: {selectedTopic === topic.Name ? 1 : 0.4}">tag</span>
-                  {topic.Name}
-              </button>
-          {/each}
-      </div>
-    {/if}
-  </aside>
+      {#if popularTopics.length > 0}
+        <h3 class="sidebar-title" style="margin-top: {languages.length > 1 ? '2.5rem' : '1rem'};">Topics</h3>
+        <div class="lang-list">
+            {#each popularTopics.slice(0, 10) as topic}
+                <button 
+                    class="lang-item" 
+                    class:active={selectedTopic === topic.Name}
+                    onclick={() => selectedTopic = topic.Name}
+                >
+                    <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: {selectedTopic === topic.Name ? 1 : 0.4}">tag</span>
+                    {topic.Name}
+                </button>
+            {/each}
+        </div>
+      {/if}
+    </aside>
+  {/if}
 </div>
 
 <style>
   .explore-repos-layout { display: grid; grid-template-columns: 1fr 220px; gap: 3rem; align-items: start; }
+  .explore-repos-layout.no-sidebar { grid-template-columns: 1fr; }
   .card-link { text-decoration: none; color: inherit; display: block; }
 
   /* SIDEBAR */

@@ -1993,6 +1993,16 @@ func GetUserAndCollaborativeRepositories(userID int64) ([]*Repository, error) {
 	return repos, nil
 }
 
+func ListPublicLanguages() ([]string, error) {
+	var languages []string
+	err := Handle.db.Model(&Repository{}).
+		Where("is_private = ? AND is_unlisted = ? AND primary_language != ?", false, false, "").
+		Distinct().
+		Order("primary_language ASC").
+		Pluck("primary_language", &languages).Error
+	return languages, err
+}
+
 type SearchRepoOptions struct {
 	Keyword  string
 	OwnerID  int64

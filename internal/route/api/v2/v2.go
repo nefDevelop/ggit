@@ -101,6 +101,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		explore.GET("/users", ginx.Handle(ExploreUsers))
 		explore.GET("/organizations", ginx.Handle(ExploreOrganizations))
 		explore.GET("/topics", ginx.Handle(ExploreTopics))
+		explore.GET("/languages", ginx.Handle(ExploreLanguages))
 	}
 
 	admin := r.Group("/admin", context.Toggle(&context.ToggleOptions{SignInRequired: true, AdminRequired: true}))

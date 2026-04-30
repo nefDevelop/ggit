@@ -34,53 +34,57 @@
 </script>
 
 <div class="explore-orgs">
-  {#if loading && orgs.length === 0}
-    <div class="skeletons">
-      {#each Array(6) as _}
-        <Card variant="low" class="skeleton-org" />
-      {/each}
-    </div>
-  {:else if orgs.length > 0}
-    <div class="orgs-grid">
-      {#each orgs as org}
-        <a href="/org/{org.username}" class="card-link">
-          <Card hover variant="low" padding="md" class="org-card">
-            <Avatar src={org.avatar_url} username={org.username} size={64} class="org-avatar" />
-            <div class="org-info">
-              <header>
-                 <strong class="org-name">{org.full_name || org.username}</strong>
-                 <span class="org-username">@{org.username}</span>
-              </header>
-              {#if org.description}
-                  <p class="org-desc">{org.description}</p>
-              {/if}
-              <div class="org-meta">
-                 {#if org.location}
-                   <Badge variant="ghost" icon="location_on" size="sm">
-                     {org.location}
-                   </Badge>
-                 {/if}
-                 {#if org.website}
-                    <Badge variant="ghost" icon="link" size="sm">
-                      {org.website.replace(/^https?:\/\//, '')}
-                    </Badge>
-                 {/if}
+  <div class="container">
+    {#if loading && orgs.length === 0}
+      <div class="skeletons">
+        {#each Array(6) as _}
+          <Card variant="low" class="skeleton-org" />
+        {/each}
+      </div>
+    {:else if orgs.length > 0}
+      <div class="orgs-grid">
+        {#each orgs as org}
+          <a href="/org/{org.username}" class="card-link">
+            <Card hover variant="low" padding="md" class="org-card">
+              <Avatar src={org.avatar_url} username={org.username} size={64} class="org-avatar" />
+              <div class="org-info">
+                <header>
+                   <strong class="org-name">{org.full_name || org.username}</strong>
+                   <span class="org-username">@{org.username}</span>
+                </header>
+                {#if org.description}
+                    <p class="org-desc">{org.description}</p>
+                {/if}
+                <div class="org-meta">
+                   {#if org.location}
+                     <Badge variant="ghost" icon="location_on" size="sm">
+                       {org.location}
+                     </Badge>
+                   {/if}
+                   {#if org.website}
+                      <Badge variant="ghost" icon="link" size="sm">
+                        {org.website.replace(/^https?:\/\//, '')}
+                      </Badge>
+                   {/if}
+                </div>
               </div>
-            </div>
-          </Card>
-        </a>
-      {/each}
-    </div>
-  {:else}
-    <div class="empty-state tonal">
-      <span class="material-symbols-rounded">corporate_fare</span>
-      <h3>No organizations found</h3>
-      <p>Try searching for a different organization name.</p>
-    </div>
-  {/if}
+            </Card>
+          </a>
+        {/each}
+      </div>
+    {:else}
+      <div class="empty-state tonal">
+        <span class="material-symbols-rounded">corporate_fare</span>
+        <h3>No organizations found</h3>
+        <p>Try searching for a different organization name.</p>
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
+  .explore-orgs { padding: 2rem 0; }
+  .container { max-width: 1200px; margin: 0 auto; width: 100%; }
   .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
   .card-link { text-decoration: none; color: inherit; display: block; }
   
@@ -112,4 +116,3 @@
   :global(.skeleton-org) { height: 140px; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container-low); }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 </style>
-

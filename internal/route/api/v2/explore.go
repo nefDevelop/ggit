@@ -198,3 +198,17 @@ func ExploreTopics(c *context.APIContext) {
 		"topics": topics,
 	})
 }
+
+// ExploreLanguages returns a list of unique languages from public repositories.
+func ExploreLanguages(c *context.APIContext) {
+	langs, err := database.ListPublicLanguages()
+	if err != nil {
+		c.Error(err, "list public languages")
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]any{
+		"ok":        true,
+		"languages": langs,
+	})
+}

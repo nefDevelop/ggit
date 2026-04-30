@@ -40,45 +40,48 @@
 </script>
 
 <div class="explore-users">
-  {#if loading && users.length === 0}
-    <div class="skeleton-list">
-      {#each Array(6) as _}
-        <div class="skeleton-row"></div>
-      {/each}
-    </div>
-  {:else if users.length > 0}
-    <div class="users-list">
-      {#each users as user}
-        <a href="/{user.username}" class="user-card tonal hover-lift">
-          <Avatar src={user.avatar_url} username={user.username} size={44} class="avatar" />
-          <div class="user-info">
-            <strong class="username">{user.username}</strong>
-            <span class="full-name">{user.full_name || 'No display name'}</span>
-          </div>
-          {#if user.location}
-            <div class="user-meta">
-              <span class="material-symbols-rounded">location_on</span>
-              {user.location}
+  <div class="container">
+    {#if loading && users.length === 0}
+      <div class="skeleton-list">
+        {#each Array(6) as _}
+          <div class="skeleton-row"></div>
+        {/each}
+      </div>
+    {:else if users.length > 0}
+      <div class="users-list">
+        {#each users as user}
+          <a href="/{user.username}" class="user-card tonal hover-lift">
+            <Avatar src={user.avatar_url} username={user.username} size={44} class="avatar" />
+            <div class="user-info">
+              <strong class="username">{user.username}</strong>
+              <span class="full-name">{user.full_name || 'No display name'}</span>
             </div>
-          {/if}
-          <div class="user-meta">
-            <span class="material-symbols-rounded">calendar_today</span>
-            Joined {new Date(user.created_at).getFullYear()}
-          </div>
-        </a>
-      {/each}
-    </div>
-  {:else}
-    <div class="empty-state">
-      <span class="material-symbols-rounded">person_off</span>
-      <h3>No users found</h3>
-      <p>Try searching for a different username.</p>
-    </div>
-  {/if}
+            {#if user.location}
+              <div class="user-meta">
+                <span class="material-symbols-rounded">location_on</span>
+                {user.location}
+              </div>
+            {/if}
+            <div class="user-meta">
+              <span class="material-symbols-rounded">calendar_today</span>
+              Joined {new Date(user.created_at).getFullYear()}
+            </div>
+          </a>
+        {/each}
+      </div>
+    {:else}
+      <div class="empty-state">
+        <span class="material-symbols-rounded">person_off</span>
+        <h3>No users found</h3>
+        <p>Try searching for a different username.</p>
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
-  .explore-users { padding: 1rem 0; }
+  .explore-users { padding: 2rem 0; }
+  .container { max-width: 1200px; margin: 0 auto; width: 100%; }
   .users-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; grid-auto-rows: min-content; }
   .user-card { 
     display: flex; 
