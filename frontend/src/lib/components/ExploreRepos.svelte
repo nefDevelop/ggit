@@ -174,8 +174,8 @@
   .card-link { text-decoration: none; color: inherit; display: block; }
 
   /* SIDEBAR */
-  .lang-sidebar { padding: 0.5rem; position: sticky; top: 2rem; background: var(--md-sys-color-surface-container-low); border-radius: 1.5rem; }
-  .sidebar-title { margin: 1rem 0 1rem 0.75rem; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--md-sys-color-on-surface-variant); opacity: 0.5; }
+  .lang-sidebar { padding: 1.5rem 0.75rem; position: sticky; top: 2rem; background: var(--md-sys-color-surface-container-low); border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .sidebar-title { margin: 0 0 1rem 0.75rem; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--md-sys-color-on-surface-variant); opacity: 0.5; }
   .lang-list { display: flex; flex-direction: column; gap: 0.2rem; }
   .lang-item { background: transparent; border: none; padding: 0.6rem 0.75rem; border-radius: 0.8rem; text-align: left; color: var(--md-sys-color-on-surface-variant); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; }
   .lang-item:hover { background: var(--md-sys-color-surface-variant); }
@@ -191,7 +191,7 @@
   .owner { opacity: 0.6; font-weight: 400; font-size: 0.9em; }
   .name { font-weight: 700; color: var(--md-sys-color-on-surface); }
 
-  .repo-desc { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); margin: 0; line-height: 1.5; flex: 1; opacity: 0.8; }
+  .repo-desc { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); margin: 0; line-height: 1.4; flex: 1; opacity: 0.8; }
 
   .repo-stats { display: flex; align-items: center; gap: 1.25rem; font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .stat { display: flex; align-items: center; gap: 0.3rem; font-weight: 700; opacity: 0.7; }
@@ -209,7 +209,8 @@
 
   @media (max-width: 900px) {
     .explore-repos-layout { grid-template-columns: 1fr; gap: 1.5rem; }
-    .lang-sidebar { position: static; }
+    .lang-sidebar { position: static; border-radius: 1.5rem; padding: 1.25rem; }
+    .sidebar-title { display: none; }
     .lang-list { flex-direction: row; flex-wrap: wrap; }
   }
 </style>

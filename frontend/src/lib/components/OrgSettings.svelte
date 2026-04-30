@@ -221,14 +221,25 @@
 <style>
   .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   .hero-icon.danger { color: var(--error); background: rgba(var(--error-rgb), 0.1); }
   
   h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
   .danger-text { color: var(--error); }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
+  @media (max-width: 600px) {
+    .section-header-premium { padding: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
+  }
+
   .settings-form { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
+  @media (max-width: 600px) {
+    .settings-form { padding: 1.5rem; gap: 1.5rem; }
+  }
   
   .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1rem; }
   .avatar-preview-wrap { position: relative; border-radius: 50%; overflow: hidden; background: var(--md-sys-color-surface-container-highest); border: 2px solid var(--md-sys-color-outline-variant); flex-shrink: 0; }

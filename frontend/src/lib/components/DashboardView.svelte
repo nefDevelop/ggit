@@ -259,7 +259,7 @@
   }
 
   .sidebar-card {
-    border-radius: 1.25rem;
+    border-radius: 2rem;
     padding: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
   }
@@ -399,6 +399,7 @@
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
   @media (max-width: 1100px) {
+    .dashboard-layout { padding: 0 1rem; }
     .dashboard-sidebar { display: none; }
   }
 

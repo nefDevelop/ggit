@@ -229,13 +229,6 @@
           multiline
           class="full-width"
         />
-
-        <Input 
-          label="Wiki Folder" 
-          bind:value={settings.wiki_folder_name} 
-          error={errors.wiki_folder_name}
-          placeholder="docs" 
-        />
       </div>
 
       <div class="options-grid">
@@ -432,6 +425,8 @@
   @media (max-width: 600px) {
     .avatar-settings-section { flex-direction: column; text-align: center; gap: 2rem; }
     .action-buttons { justify-content: center; }
+    .avatar-actions h4 { font-size: 1.1rem; }
+    .avatar-actions p { font-size: 0.85rem; }
   }
 
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -454,6 +449,12 @@
   .section-header-inline span { font-size: 1.5rem; opacity: 0.8; }
   .section-header-inline h4 { margin: 0; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
   
+  @media (max-width: 600px) {
+    .section-header-inline { gap: 0.5rem; margin-bottom: 1rem; }
+    .section-header-inline span { font-size: 1.1rem; }
+    .section-header-inline h4 { font-size: 0.9rem; }
+  }
+
   .section-content { display: flex; flex-direction: column; gap: 1rem; }
   .nested-options { margin-left: 2rem; padding-left: 1.5rem; border-left: 2px solid var(--md-sys-color-outline-variant); display: flex; flex-direction: column; gap: 1rem; }
 

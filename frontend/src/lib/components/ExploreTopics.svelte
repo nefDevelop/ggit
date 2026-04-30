@@ -61,6 +61,9 @@
 
 <style>
   .explore-topics { padding: 2rem 0; }
+  @media (max-width: 600px) {
+    .explore-topics { padding: 1rem; }
+  }
   .container { max-width: 1200px; margin: 0 auto; width: 100%; }
 
   .topics-grid { 

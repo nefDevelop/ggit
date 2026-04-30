@@ -142,4 +142,16 @@
   .chip-item span.material-symbols-rounded {
     font-size: 1.25rem;
   }
+
+  @media (max-width: 1024px) {
+    .chip-nav-header {
+      display: none;
+    }
+    .chip-nav-container {
+      gap: 0;
+    }
+    .chip-nav-rail {
+      padding-bottom: 0.5rem;
+    }
+  }
 </style>

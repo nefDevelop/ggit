@@ -198,6 +198,7 @@
       gap: 1.5rem;
       z-index: 10;
     }
+    .sidebar-brand { display: none; }
     .admin-nav {
       flex-direction: row;
       overflow-x: auto;
@@ -217,13 +218,14 @@
       font-size: 0.95rem;
     }
     .nav-item:hover { transform: none; }
+    .nav-item span.material-symbols-rounded { font-size: 1.25rem; }
     .active-indicator {
       display: none;
     }
   }
 
   @media (max-width: 600px) {
-    .sidebar-brand span { font-size: 1.75rem; }
-    .sidebar-title { font-size: 1.1rem; }
+    .sidebar-brand span { font-size: 1.25rem; }
+    .sidebar-title { font-size: 1rem; }
   }
 </style>

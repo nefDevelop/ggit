@@ -431,11 +431,11 @@
 
   @media (max-width: 600px) {
     .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.5rem; }
+    h2 { font-size: 1.25rem; }
     .title-with-avatar { gap: 1rem; }
-    .avatar-shield-header { width: 60px; height: 60px; border-radius: 1.25rem; }
-    .header-flex { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
-    .subtitle { font-size: 0.9rem; }
+    .avatar-shield-header { width: 50px; height: 50px; border-radius: 1rem; border-width: 2px; }
+    .header-flex { flex-direction: row; align-items: center; gap: 1rem; }
+    .subtitle { display: none; }
   }
 
   .profile-content-layout {
@@ -443,18 +443,6 @@
     box-sizing: border-box;
   }
 
-  .avatar-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(4px);
-  }
   .settings-form {
     display: flex;
     flex-direction: column;

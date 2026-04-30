@@ -9,7 +9,7 @@
   let loading = $state(true);
   let total = $state(0);
   let page = $state(1);
-
+ 
   async function fetchUsers() {
     loading = true;
     try {
@@ -81,6 +81,9 @@
 
 <style>
   .explore-users { padding: 2rem 0; }
+  @media (max-width: 600px) {
+    .explore-users { padding: 1rem; }
+  }
   .container { max-width: 1200px; margin: 0 auto; width: 100%; }
   .users-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; grid-auto-rows: min-content; }
   .user-card { 

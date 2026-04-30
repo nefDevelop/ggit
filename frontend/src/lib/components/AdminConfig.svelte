@@ -161,7 +161,7 @@
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {
     .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
-    .title-with-icon { flex-direction: column; gap: 1rem; }
+    .title-with-icon { flex-direction: row; gap: 1rem; align-items: center; }
   }
 
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
@@ -171,10 +171,10 @@
 
   @media (max-width: 600px) {
     .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.5rem; }
-    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
     .title-with-icon { gap: 0.75rem; }
-    .subtitle { font-size: 0.9rem; }
+    .subtitle { font-size: 0.8rem; display: none; }
   }
 
   .config-stack { display: flex; flex-direction: column; gap: 4rem; }
@@ -198,9 +198,10 @@
   .special-action-card { padding: 3rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
   @media (max-width: 600px) {
     .special-action-card { padding: 1.5rem; border-radius: 1.5rem; }
-    .action-header span { font-size: 2rem; }
-    .action-header h4 { font-size: 1.25rem; }
+    .action-header span { font-size: 1.5rem; }
+    .action-header h4 { font-size: 1.1rem; }
     .field-row { grid-template-columns: 1fr; }
+    .form-actions :global(button) { width: 100%; }
   }
   .action-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; color: var(--primary-color); }
   .action-header span { font-size: 2.5rem; }

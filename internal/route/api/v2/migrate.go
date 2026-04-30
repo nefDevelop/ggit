@@ -10,6 +10,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	reposervice "github.com/nef734/ggit/internal/services/repo"
 )
 
 type MigrateRepoForm struct {
@@ -30,7 +31,7 @@ type MigrateRepoForm struct {
 func MigrateRepo(c *context.APIContext) {
 	var f MigrateRepoForm
 	if err := c.ShouldBindJSON(&f); err != nil {
-		c.ErrorStatus(http.StatusBadRequest, err)
+		c.Error(err, "bind JSON")
 		return
 	}
 
@@ -91,5 +92,11 @@ func MigrateRepo(c *context.APIContext) {
 	}
 
 	log.Trace("Repository migrated [%d]: %s/%s", repo.ID, ctxUser.Name, f.RepoName)
+	
+	// Analyze languages after migration
+	if err := reposervice.UpdateRepositoryLanguages(repo); err != nil {
+		log.Error("UpdateRepositoryLanguages after migration: %v", err)
+	}
+
 	c.JSON(http.StatusCreated, repo.APIFormat(ctxUser))
 }

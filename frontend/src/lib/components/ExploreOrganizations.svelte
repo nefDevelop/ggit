@@ -84,6 +84,9 @@
 
 <style>
   .explore-orgs { padding: 2rem 0; }
+  @media (max-width: 600px) {
+    .explore-orgs { padding: 1rem; }
+  }
   .container { max-width: 1200px; margin: 0 auto; width: 100%; }
   .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
   .card-link { text-decoration: none; color: inherit; display: block; }

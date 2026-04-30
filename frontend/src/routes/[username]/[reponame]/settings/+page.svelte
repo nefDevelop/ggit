@@ -93,6 +93,7 @@
     grid-template-columns: 280px 1fr;
     gap: 2rem;
     align-items: start;
+    padding-bottom: 2rem;
     animation: fadeIn 0.3s ease-out;
   }
 
@@ -105,6 +106,7 @@
     padding: 1.5rem;
     position: sticky;
     top: 2rem;
+    border-radius: 2rem;
   }
 
   .sidebar-title {
@@ -149,8 +151,6 @@
     background: rgba(var(--primary-rgb), 0.1);
     color: var(--primary-color);
   }
-
-
 
   .nav-item span {
     font-size: 1.25rem;
