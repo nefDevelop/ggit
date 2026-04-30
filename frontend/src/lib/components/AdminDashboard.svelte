@@ -34,8 +34,8 @@
     <div class="skeleton-dashboard"></div>
   {:else if stats}
     <div class="stats-grid">
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #3b82f6">
+      <div class="stat-premium-card island tonal-hover role-primary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">group</span>
         </div>
         <div class="card-data">
@@ -44,8 +44,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #10b981">
+      <div class="stat-premium-card island tonal-hover role-secondary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">corporate_fare</span>
         </div>
         <div class="card-data">
@@ -54,8 +54,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #f59e0b">
+      <div class="stat-premium-card island tonal-hover role-tertiary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">book</span>
         </div>
         <div class="card-data">
@@ -64,8 +64,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #9c27b0">
+      <div class="stat-premium-card island tonal-hover role-primary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">vpn_key</span>
         </div>
         <div class="card-data">
@@ -74,8 +74,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #06b6d4">
+      <div class="stat-premium-card island tonal-hover role-tertiary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">star</span>
         </div>
         <div class="card-data">
@@ -84,8 +84,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #f43f5e">
+      <div class="stat-premium-card island tonal-hover role-error">
+        <div class="card-icon">
           <span class="material-symbols-rounded">notifications</span>
         </div>
         <div class="card-data">
@@ -94,8 +94,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #8b5cf6">
+      <div class="stat-premium-card island tonal-hover role-secondary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">merge_type</span>
         </div>
         <div class="card-data">
@@ -104,8 +104,8 @@
         </div>
       </div>
 
-      <div class="stat-premium-card island tonal-hover">
-        <div class="card-icon" style="--color: #ec4899">
+      <div class="stat-premium-card island tonal-hover role-primary">
+        <div class="card-icon">
           <span class="material-symbols-rounded">visibility</span>
         </div>
         <div class="card-data">
@@ -146,9 +146,19 @@
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
   
   .stat-premium-card { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }
-  .stat-premium-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.03); border-color: var(--primary-color); box-shadow: var(--shadow-xl); }
+  .stat-premium-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.03); box-shadow: var(--shadow-xl); }
+  
+  .stat-premium-card.role-primary:hover { border-color: var(--primary-color); }
+  .stat-premium-card.role-secondary:hover { border-color: var(--secondary); }
+  .stat-premium-card.role-tertiary:hover { border-color: var(--tertiary); }
+  .stat-premium-card.role-error:hover { border-color: var(--error); }
 
-  .card-icon { width: 64px; height: 64px; border-radius: 1.5rem; background: rgba(255,255,255,0.03); color: var(--color); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); }
+  .stat-premium-card.role-primary .card-icon { color: var(--primary-color); background: var(--md-sys-color-primary-container); }
+  .stat-premium-card.role-secondary .card-icon { color: var(--secondary); background: var(--md-sys-color-secondary-container); }
+  .stat-premium-card.role-tertiary .card-icon { color: var(--tertiary); background: var(--md-sys-color-tertiary-container); }
+  .stat-premium-card.role-error .card-icon { color: var(--error); background: var(--md-sys-color-error-container); }
+
+  .card-icon { width: 64px; height: 64px; border-radius: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--md-sys-color-outline-variant); }
   .card-icon span { font-size: 2.5rem; }
 
   .card-data { display: flex; flex-direction: column; gap: 0.1rem; }

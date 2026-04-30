@@ -431,8 +431,9 @@
   }
 
   .sub-nav-item.active {
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.08);
+    color: var(--md-sys-color-on-secondary-container);
+    background: var(--md-sys-color-secondary-container);
+    box-shadow: var(--shadow-sm);
   }
 
   .sub-nav-item .material-symbols-rounded {

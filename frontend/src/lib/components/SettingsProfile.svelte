@@ -534,8 +534,8 @@
   .field input:focus {
     border-color: var(--primary-color);
     outline: none;
-    background: rgba(var(--primary-rgb), 0.05);
-    box-shadow: 0 0 0 5px rgba(var(--primary-rgb), 0.15);
+    background: var(--md-sys-color-surface-container-high);
+    box-shadow: 0 0 0 4px var(--md-sys-color-primary-container);
   }
   .field input:disabled {
     opacity: 0.5;

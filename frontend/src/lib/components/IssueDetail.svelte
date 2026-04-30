@@ -360,13 +360,15 @@
     gap: 0.5rem;
     padding: 0.4rem 1.25rem;
     border-radius: 2rem;
-    color: var(--on-primary);
+    color: var(--md-sys-color-on-primary);
     font-weight: 700;
-    background: var(--success);
+    background: var(--md-sys-color-primary);
     font-size: 0.9rem;
+    box-shadow: var(--shadow-sm);
   }
   .status-pill.closed {
-    background: var(--error);
+    background: var(--tertiary);
+    color: var(--on-tertiary);
   }
   .issue-subtitle {
     color: var(--text-muted);
@@ -412,14 +414,14 @@
   :global(.item-avatar) {
     width: 3rem;
     height: 3rem;
-    background: var(--md3-surface-2);
+    background: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-on-secondary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--primary-color);
     flex-shrink: 0;
-    border: 2px solid var(--md3-surface-2);
+    border: 2px solid var(--md-sys-color-outline-variant);
     box-shadow: 0 0 0 4px var(--bg-color);
   }
   :global(.item-avatar.pulse) {
@@ -445,10 +447,11 @@
   }
   .item-header {
     padding: 0.75rem 1.25rem;
-    background: var(--surface-variant);
+    background: var(--md-sys-color-secondary-container);
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
     font-size: 0.85rem;
-    color: var(--text-muted);
+    color: var(--md-sys-color-on-secondary-container);
+    font-weight: 600;
   }
   .item-body {
     padding: 1.25rem;

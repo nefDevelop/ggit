@@ -90,14 +90,14 @@
   .shortcut-hint {
     font-size: 0.75rem;
     font-weight: 800;
-    color: var(--text-muted);
-    background: var(--bg-color);
+    color: var(--md-sys-color-on-secondary-container);
+    background: var(--md-sys-color-secondary-container);
     width: 20px;
     height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
-    opacity: 0.5;
+    opacity: 0.8;
   }
 </style>

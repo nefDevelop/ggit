@@ -32,8 +32,8 @@
   });
 
   function getStatusColor(pull: any) {
-    if (pull.pull_request?.merged) return '#8b5cf6'; // Purple for merged
-    return pull.is_closed ? '#f87171' : '#10b981';
+    if (pull.pull_request?.merged) return 'var(--tertiary)'; 
+    return pull.is_closed ? 'var(--md-sys-color-error)' : 'var(--primary-color)';
   }
 </script>
 
@@ -141,8 +141,8 @@
   }
 
   .tab-pill.active {
-    background: var(--md-sys-color-surface-container);
-    color: var(--primary-color);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
     box-shadow: var(--shadow-sm);
   }
 

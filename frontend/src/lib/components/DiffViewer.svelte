@@ -356,7 +356,7 @@
   }
 
   .comment-header strong {
-    color: var(--primary-color);
+    color: var(--secondary);
   }
 
   .comment-header .time {
