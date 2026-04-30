@@ -58,10 +58,10 @@ export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
   // PALETTE DEFINITIONS (Saturation approximated for MD3 Chroma)
   const palettes = {
     primary: { h, s: Math.max(seedHsl.s, 48) },
-    secondary: { h, s: 16 },
-    tertiary: { h: (h + 60) % 360, s: 24 },
-    neutral: { h, s: 10 }, // Increased saturation for visible tint
-    neutralVariant: { h, s: 12 },
+    secondary: { h, s: 16 }, // Official MD3 Tonal Spot Chroma
+    tertiary: { h: (h + 60) % 360, s: 24 }, // Official MD3 Tonal Spot Hue +60
+    neutral: { h, s: 6 }, 
+    neutralVariant: { h, s: 8 },
     error: { h: 0, s: 40 }
   };
 

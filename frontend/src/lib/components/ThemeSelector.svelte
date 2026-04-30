@@ -250,7 +250,7 @@
              <div class="derived-dots">
                 <div class="dot" style="background-color: {derivedPalette.secondary};" title="Secondary"></div>
                 <div class="dot" style="background-color: {derivedPalette.tertiary};" title="Tertiary"></div>
-                <div class="dot" style="background-color: {derivedPalette.primaryContainer};" title="Container"></div>
+                <div class="dot" style="background-color: {derivedPalette.background};" title="Background"></div>
              </div>
           </div>
           <div class="theme-info">
