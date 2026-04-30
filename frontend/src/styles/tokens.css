@@ -1035,3 +1035,49 @@
   --inner-shadow: inset 0 2px 12px rgba(0,0,0,0.4);
   --island-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
+
+/* CUSTOM THEME DYNAMIC MAPPINGS */
+[data-theme="custom"] {
+  --primary-color: var(--md-sys-color-primary);
+  --on-primary: var(--md-sys-color-on-primary);
+  --bg-color: var(--md-sys-color-background);
+  --md3-surface-container: var(--md-sys-color-surface-container);
+  --md3-surface-2: var(--md-sys-color-surface-container-low);
+  --md3-surface-3: var(--md-sys-color-surface-container-high);
+  --bg-canvas: var(--md-sys-color-background);
+  --bg-surface: var(--md-sys-color-surface-container);
+  --bg-elevated: var(--md3-surface-2);
+  --bg-interactive: var(--md-sys-color-surface-variant);
+  --border-base: var(--md-sys-color-outline-variant);
+  --border-strong: var(--md-sys-color-primary);
+  --text-base: var(--md-sys-color-on-surface);
+  --text-muted: var(--md-sys-color-on-surface-variant);
+  --text-inverse: var(--md-sys-color-on-primary);
+  --color-primary: var(--md-sys-color-primary);
+  
+  --primary: var(--md-sys-color-primary);
+  --primary-container: var(--md-sys-color-primary-container);
+  --on-primary-container: var(--md-sys-color-on-primary-container);
+  --secondary: var(--md-sys-color-secondary);
+  --on-secondary: var(--md-sys-color-on-secondary);
+  --secondary-container: var(--md-sys-color-secondary-container);
+  --on-secondary-container: var(--md-sys-color-on-secondary-container);
+  --tertiary: var(--md-sys-color-tertiary);
+  --on-tertiary: var(--md-sys-color-on-tertiary);
+  --tertiary-container: var(--md-sys-color-tertiary-container);
+  --on-tertiary-container: var(--md-sys-color-on-tertiary-container);
+  --error: var(--md-sys-color-error);
+  --on-error: var(--md-sys-color-on-error);
+  --error-container: var(--md-sys-color-error-container);
+  --on-error-container: var(--md-sys-color-on-error-container);
+  
+  --text-primary: var(--md-sys-color-on-surface);
+  --text-secondary: var(--md-sys-color-on-surface-variant);
+  --text-tertiary: var(--md-sys-color-outline);
+  --text-color: var(--text-primary);
+  --border-color: var(--md-sys-color-outline-variant);
+  --surface-variant: var(--md-sys-color-surface-variant);
+  --island-bg: var(--md-sys-color-surface-container);
+  --main-content-bg: var(--md-sys-color-surface-container-lowest);
+  --main-content-border: var(--md-sys-color-outline-variant);
+}

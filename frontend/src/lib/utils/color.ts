@@ -42,49 +42,63 @@ export function hslToHex(h: number, s: number, l: number): string {
 export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
   const hsl = hexToHsl(seedHex);
   
-  // Adjust for Dark Mode if needed
-  let primaryHsl = { ...hsl };
-  if (isDark) {
-    primaryHsl.s = Math.min(primaryHsl.s, 50);
-    primaryHsl.l = Math.max(primaryHsl.l, 75);
-  } else {
-    primaryHsl.l = Math.min(primaryHsl.l, 50); // Ensure primary is not too light for light mode
-  }
+  // PRIMARY
+  let p_h = hsl.h;
+  let p_s = isDark ? Math.min(hsl.s, 40) : Math.min(hsl.s, 100);
+  let p_l = isDark ? 80 : 40;
 
-  // SECONDARY: Same hue, lower saturation (Neutral-variant)
-  const secondaryHsl = { 
-    h: primaryHsl.h, 
-    s: Math.min(primaryHsl.s * 0.4, 20), 
-    l: isDark ? 80 : 40 
-  };
+  // SECONDARY (Neutral-variant)
+  let s_h = hsl.h;
+  let s_s = Math.min(hsl.s * 0.25, 16);
+  let s_l = isDark ? 80 : 45;
 
-  // TERTIARY: Hue shift +60, medium saturation
-  const tertiaryHsl = { 
-    h: (primaryHsl.h + 60) % 360, 
-    s: Math.min(primaryHsl.s * 0.7, 50), 
-    l: isDark ? 80 : 40 
-  };
+  // TERTIARY (Accent)
+  let t_h = (hsl.h + 60) % 360;
+  let t_s = Math.min(hsl.s * 0.5, 45);
+  let t_l = isDark ? 80 : 45;
 
-  const colors = {
-    primary: hslToHex(primaryHsl.h, primaryHsl.s, primaryHsl.l),
-    onPrimary: primaryHsl.l > 60 ? '#000000' : '#ffffff',
-    primaryContainer: hslToHex(primaryHsl.h, primaryHsl.s * 0.3, isDark ? 25 : 90),
-    onPrimaryContainer: hslToHex(primaryHsl.h, primaryHsl.s, isDark ? 90 : 15),
+  // NEUTRAL
+  let n_h = hsl.h;
+  let n_s = Math.min(hsl.s * 0.08, 6);
 
-    secondary: hslToHex(secondaryHsl.h, secondaryHsl.s, secondaryHsl.l),
-    onSecondary: secondaryHsl.l > 60 ? '#000000' : '#ffffff',
-    secondaryContainer: hslToHex(secondaryHsl.h, secondaryHsl.s * 0.5, isDark ? 30 : 92),
-    onSecondaryContainer: hslToHex(secondaryHsl.h, secondaryHsl.s, isDark ? 92 : 15),
+  const colors: Record<string, string> = {
+    // Core MD3
+    primary: hslToHex(p_h, p_s, p_l),
+    onPrimary: p_l > 60 ? '#001d31' : '#ffffff',
+    primaryContainer: hslToHex(p_h, p_s * 0.4, isDark ? 30 : 90),
+    onPrimaryContainer: hslToHex(p_h, p_s, isDark ? 90 : 15),
 
-    tertiary: hslToHex(tertiaryHsl.h, tertiaryHsl.s, tertiaryHsl.l),
-    onTertiary: tertiaryHsl.l > 60 ? '#000000' : '#ffffff',
-    tertiaryContainer: hslToHex(tertiaryHsl.h, tertiaryHsl.s * 0.5, isDark ? 30 : 92),
-    onTertiaryContainer: hslToHex(tertiaryHsl.h, tertiaryHsl.s, isDark ? 92 : 15),
+    secondary: hslToHex(s_h, s_s, s_l),
+    onSecondary: s_l > 60 ? '#1b1b1f' : '#ffffff',
+    secondaryContainer: hslToHex(s_h, s_s, isDark ? 30 : 90),
+    onSecondaryContainer: hslToHex(s_h, s_s, isDark ? 90 : 15),
+
+    tertiary: hslToHex(t_h, t_s, t_l),
+    onTertiary: t_l > 60 ? '#1b1b1f' : '#ffffff',
+    tertiaryContainer: hslToHex(t_h, t_s, isDark ? 30 : 90),
+    onTertiaryContainer: hslToHex(t_h, t_s, isDark ? 90 : 15),
+
+    error: isDark ? '#ffb4ab' : '#ba1a1a',
+    onError: isDark ? '#690005' : '#ffffff',
+    errorContainer: isDark ? '#93000a' : '#ffdad6',
+    onErrorContainer: isDark ? '#ffdad6' : '#410002',
+
+    background: isDark ? '#0d0e11' : '#f8f9ff',
+    onBackground: isDark ? '#e2e2e6' : '#1b1b1f',
+    surface: isDark ? '#0d0e11' : '#f8f9ff',
+    onSurface: isDark ? '#e2e2e6' : '#1b1b1f',
     
-    surfaceVariant: hslToHex(primaryHsl.h, Math.min(primaryHsl.s * 0.2, 10), isDark ? 30 : 95),
-    onSurfaceVariant: hslToHex(primaryHsl.h, 5, isDark ? 80 : 30),
-    outline: hslToHex(primaryHsl.h, 5, isDark ? 60 : 50),
-    outlineVariant: hslToHex(primaryHsl.h, 5, isDark ? 40 : 85),
+    surfaceVariant: hslToHex(n_h, n_s * 2, isDark ? 30 : 90),
+    onSurfaceVariant: isDark ? '#c4c6d0' : '#44474e',
+    
+    outline: isDark ? '#8e9099' : '#757780',
+    outlineVariant: isDark ? '#44474e' : '#c5c6d0',
+
+    surfaceContainerLowest: isDark ? '#0d0e11' : '#ffffff',
+    surfaceContainerLow: isDark ? '#1a1c1e' : '#f7f3f8',
+    surfaceContainer: isDark ? '#1b1d21' : '#ffffff',
+    surfaceContainerHigh: isDark ? '#252a2f' : '#f2f2f7',
+    surfaceContainerHighest: isDark ? '#30353b' : '#ebebed',
   };
 
   return colors;

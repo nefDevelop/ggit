@@ -57,22 +57,19 @@
       // Clear custom color overrides if switching to preset
       document.documentElement.style.removeProperty('--primary-color');
       document.documentElement.style.removeProperty('--md-sys-color-primary');
-      document.documentElement.style.removeProperty('--md-sys-color-on-primary');
-      document.documentElement.style.removeProperty('--md-sys-color-primary-container');
-      document.documentElement.style.removeProperty('--md-sys-color-on-primary-container');
-      document.documentElement.style.removeProperty('--md-sys-color-secondary');
-      document.documentElement.style.removeProperty('--md-sys-color-on-secondary');
-      document.documentElement.style.removeProperty('--md-sys-color-secondary-container');
-      document.documentElement.style.removeProperty('--md-sys-color-on-secondary-container');
-      document.documentElement.style.removeProperty('--md-sys-color-tertiary');
-      document.documentElement.style.removeProperty('--md-sys-color-on-tertiary');
-      document.documentElement.style.removeProperty('--md-sys-color-tertiary-container');
-      document.documentElement.style.removeProperty('--md-sys-color-on-tertiary-container');
-      document.documentElement.style.removeProperty('--md-sys-color-surface-variant');
-      document.documentElement.style.removeProperty('--md-sys-color-on-surface-variant');
-      document.documentElement.style.removeProperty('--md-sys-color-outline');
-      document.documentElement.style.removeProperty('--md-sys-color-outline-variant');
-      document.documentElement.style.removeProperty('--primary-rgb');
+      const propsToRemove = [
+        '--md-sys-color-on-primary', '--md-sys-color-primary-container', '--md-sys-color-on-primary-container',
+        '--md-sys-color-secondary', '--md-sys-color-on-secondary', '--md-sys-color-secondary-container', '--md-sys-color-on-secondary-container',
+        '--md-sys-color-tertiary', '--md-sys-color-on-tertiary', '--md-sys-color-tertiary-container', '--md-sys-color-on-tertiary-container',
+        '--md-sys-color-error', '--md-sys-color-on-error', '--md-sys-color-error-container', '--md-sys-color-on-error-container',
+        '--md-sys-color-background', '--md-sys-color-on-background', '--md-sys-color-surface', '--md-sys-color-on-surface',
+        '--md-sys-color-surface-variant', '--md-sys-color-on-surface-variant', '--md-sys-color-outline', '--md-sys-color-outline-variant',
+        '--md-sys-color-surface-container-lowest', '--md-sys-color-surface-container-low', '--md-sys-color-surface-container',
+        '--md-sys-color-surface-container-high', '--md-sys-color-surface-container-highest', '--primary-rgb'
+      ];
+      for (const prop of propsToRemove) {
+        document.documentElement.style.removeProperty(prop);
+      }
     } else {
       applyCustomColor(customColor);
     }
@@ -86,7 +83,7 @@
       const isDark = currentScheme === 'dark' || (currentScheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
       const palette = generateMd3Palette(hex, isDark);
       
-      const props = {
+      const props: Record<string, string> = {
         '--primary-color': palette.primary,
         '--md-sys-color-primary': palette.primary,
         '--md-sys-color-on-primary': palette.onPrimary,
@@ -100,17 +97,29 @@
         '--md-sys-color-on-tertiary': palette.onTertiary,
         '--md-sys-color-tertiary-container': palette.tertiaryContainer,
         '--md-sys-color-on-tertiary-container': palette.onTertiaryContainer,
+        '--md-sys-color-error': palette.error,
+        '--md-sys-color-on-error': palette.onError,
+        '--md-sys-color-error-container': palette.errorContainer,
+        '--md-sys-color-on-error-container': palette.onErrorContainer,
+        '--md-sys-color-background': palette.background,
+        '--md-sys-color-on-background': palette.onBackground,
+        '--md-sys-color-surface': palette.surface,
+        '--md-sys-color-on-surface': palette.onSurface,
         '--md-sys-color-surface-variant': palette.surfaceVariant,
         '--md-sys-color-on-surface-variant': palette.onSurfaceVariant,
         '--md-sys-color-outline': palette.outline,
         '--md-sys-color-outline-variant': palette.outlineVariant,
+        '--md-sys-color-surface-container-lowest': palette.surfaceContainerLowest,
+        '--md-sys-color-surface-container-low': palette.surfaceContainerLow,
+        '--md-sys-color-surface-container': palette.surfaceContainer,
+        '--md-sys-color-surface-container-high': palette.surfaceContainerHigh,
+        '--md-sys-color-surface-container-highest': palette.surfaceContainerHighest,
       };
 
       for (const [prop, value] of Object.entries(props)) {
         document.documentElement.style.setProperty(prop, value);
       }
       
-      // Simple hex to rgb conversion for the RGB variable
       const r = parseInt(palette.primary.slice(1, 3), 16);
       const g = parseInt(palette.primary.slice(3, 5), 16);
       const b = parseInt(palette.primary.slice(5, 7), 16);
