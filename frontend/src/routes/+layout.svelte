@@ -87,11 +87,11 @@
 					
 					// Basic background/surface fallbacks for custom themes to prevent white flash in dark mode
 					if (isDark) {
-						document.documentElement.style.setProperty("--md-sys-color-background", "#08090a");
-						document.documentElement.style.setProperty("--md-sys-color-surface", "#1a1c1e");
+						document.documentElement.style.setProperty("--md-sys-color-background", "#1a1c1e");
+						document.documentElement.style.setProperty("--md-sys-color-surface", "#1e2124");
 						document.documentElement.style.setProperty("--md-sys-color-on-surface", "#e2e2e6");
 					} else {
-						document.documentElement.style.setProperty("--md-sys-color-background", "#f0f2f5");
+						document.documentElement.style.setProperty("--md-sys-color-background", "#f8f9ff");
 						document.documentElement.style.setProperty("--md-sys-color-surface", "#ffffff");
 						document.documentElement.style.setProperty("--md-sys-color-on-surface", "#1b1b1f");
 					}

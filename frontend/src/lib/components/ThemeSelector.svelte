@@ -53,23 +53,24 @@
     localStorage.setItem('theme', themeId);
     document.documentElement.setAttribute('data-theme', themeId);
     
-    if (themeId !== 'custom') {
-      // Clear custom color overrides if switching to preset
-      document.documentElement.style.removeProperty('--primary-color');
-      document.documentElement.style.removeProperty('--md-sys-color-primary');
+    if (themeId !== "custom") {
       const propsToRemove = [
-        '--md-sys-color-on-primary', '--md-sys-color-primary-container', '--md-sys-color-on-primary-container',
-        '--md-sys-color-secondary', '--md-sys-color-on-secondary', '--md-sys-color-secondary-container', '--md-sys-color-on-secondary-container',
-        '--md-sys-color-tertiary', '--md-sys-color-on-tertiary', '--md-sys-color-tertiary-container', '--md-sys-color-on-tertiary-container',
-        '--md-sys-color-error', '--md-sys-color-on-error', '--md-sys-color-error-container', '--md-sys-color-on-error-container',
-        '--md-sys-color-background', '--md-sys-color-on-background', '--md-sys-color-surface', '--md-sys-color-on-surface',
-        '--md-sys-color-surface-variant', '--md-sys-color-on-surface-variant', '--md-sys-color-outline', '--md-sys-color-outline-variant',
-        '--md-sys-color-surface-container-lowest', '--md-sys-color-surface-container-low', '--md-sys-color-surface-container',
-        '--md-sys-color-surface-container-high', '--md-sys-color-surface-container-highest', '--primary-rgb'
+        "--primary-color", "--primary-rgb", "--surface-rgb",
+        "--md-sys-color-primary", "--md-sys-color-on-primary", "--md-sys-color-primary-container", "--md-sys-color-on-primary-container",
+        "--md-sys-color-secondary", "--md-sys-color-on-secondary", "--md-sys-color-secondary-container", "--md-sys-color-on-secondary-container",
+        "--md-sys-color-tertiary", "--md-sys-color-on-tertiary", "--md-sys-color-tertiary-container", "--md-sys-color-on-tertiary-container",
+        "--md-sys-color-error", "--md-sys-color-on-error", "--md-sys-color-error-container", "--md-sys-color-on-error-container",
+        "--md-sys-color-background", "--md-sys-color-on-background", "--md-sys-color-surface", "--md-sys-color-on-surface",
+        "--md-sys-color-surface-variant", "--md-sys-color-on-surface-variant", "--md-sys-color-outline", "--md-sys-color-outline-variant",
+        "--md-sys-color-surface-container-lowest", "--md-sys-color-surface-container-low", "--md-sys-color-surface-container",
+        "--md-sys-color-surface-container-high", "--md-sys-color-surface-container-highest",
+        "--color-success", "--color-warning", "--success", "--success-container",
+        "--surface-variant-hover", "--bg-success-subtle", "--bg-warning-subtle"
       ];
       for (const prop of propsToRemove) {
         document.documentElement.style.removeProperty(prop);
       }
+    } else {
     } else {
       applyCustomColor(customColor);
     }

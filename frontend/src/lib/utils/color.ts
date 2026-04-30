@@ -60,9 +60,9 @@ export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
     primary: { h, s: Math.max(seedHsl.s, 48) },
     secondary: { h, s: 16 },
     tertiary: { h: (h + 60) % 360, s: 24 },
-    neutral: { h, s: 4 },
-    neutralVariant: { h, s: 8 },
-    error: { h: 0, s: 40 } // Standard MD3 Error hue
+    neutral: { h, s: 10 }, // Increased saturation for visible tint
+    neutralVariant: { h, s: 12 },
+    error: { h: 0, s: 40 }
   };
 
   const colors: Record<string, string> = {
@@ -90,11 +90,11 @@ export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
     errorContainer: hslToHex(palettes.error.h, palettes.error.s, isDark ? 30 : 90),
     onErrorContainer: hslToHex(palettes.error.h, palettes.error.s, isDark ? 90 : 10),
 
-    // NEUTRAL (Surface/Background)
-    background: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 10 : 99),
-    onBackground: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 90 : 10),
-    surface: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 10 : 99),
-    onSurface: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 90 : 10),
+    // NEUTRAL (Surface/Background) - Bumped tones to avoid "completely black"
+    background: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 12 : 99),
+    onBackground: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 90 : 12),
+    surface: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 14 : 99),
+    onSurface: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 90 : 12),
     
     // NEUTRAL VARIANT
     surfaceVariant: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 30 : 90),
@@ -102,12 +102,12 @@ export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
     outline: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 60 : 50),
     outlineVariant: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 30 : 80),
 
-    // SURFACE CONTAINERS (Based on Neutral)
-    surfaceContainerLowest: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 4 : 100),
-    surfaceContainerLow: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 12 : 96),
-    surfaceContainer: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 15 : 94),
-    surfaceContainerHigh: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 18 : 92),
-    surfaceContainerHighest: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 22 : 90),
+    // SURFACE CONTAINERS
+    surfaceContainerLowest: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 10 : 100),
+    surfaceContainerLow: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 15 : 96),
+    surfaceContainer: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 18 : 94),
+    surfaceContainerHigh: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 22 : 92),
+    surfaceContainerHighest: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 28 : 90),
   };
 
   return colors;
