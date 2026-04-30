@@ -9,7 +9,10 @@
     class: className = '',
     multiline = false,
     rows = 3,
-    icon = ''
+    icon = '',
+    min = undefined,
+    max = undefined,
+    step = undefined
   } = $props();
 </script>
 
@@ -36,6 +39,9 @@
         bind:value 
         {placeholder} 
         {disabled} 
+        {min}
+        {max}
+        {step}
       />
     {/if}
   </div>

@@ -6,6 +6,8 @@
   import Checkbox from "./ui/Checkbox.svelte";
   import Button from "./ui/Button.svelte";
   import Input from "./ui/Input.svelte";
+  import Card from "./ui/Card.svelte";
+  import { i18n } from "$lib/i18n.svelte";
 
   const repo: any = getContext("repo");
   let loading = $state(true);
@@ -93,14 +95,14 @@
   onMount(fetchData);
 </script>
 
-<div class="security-settings">
-  <div class="settings-card">
-    <header class="card-header">
-      <div class="header-content">
-        <span class="material-symbols-rounded guardian-icon">shield</span>
+<Card padding="none" class="settings-premium-card">
+  <header class="section-header-premium">
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon" class:active={data.enabled}>shield</span>
         <div>
-          <h3>Secret Guardian</h3>
-          <p>Protección proactiva contra la subida de secretos, API keys y archivos sensibles.</p>
+          <h2>Secret Guardian</h2>
+          <p class="subtitle">Protección proactiva contra la subida de secretos, API keys y archivos sensibles en tus commits.</p>
         </div>
       </div>
       <div class="header-action">
@@ -110,102 +112,152 @@
           onchange={() => saveSettings()}
         />
       </div>
-    </header>
+    </div>
+  </header>
 
-    {#if data.enabled}
-      <div class="card-body">
-        <div class="mode-selector tonal">
+  <div class="settings-content">
+    {#if loading}
+      <div class="skeleton-form"></div>
+    {:else if data.enabled}
+      <div class="security-stack">
+        <div class="mode-island island">
           <Checkbox 
             label="Modo Estricto (Bloquear Push)" 
-            description="Si se detecta un secreto, el push será rechazado inmediatamente." 
+            description="Si se detecta un secreto en los cambios entrantes, el push será rechazado inmediatamente." 
             bind:checked={data.strict}
             onchange={saveSettings}
           />
         </div>
 
-        <section class="patterns-section">
-          <header class="section-header">
-            <h4>Patrones de Detección</h4>
-            <p>Se listan los patrones globales y personalizados aplicados a este repositorio.</p>
-          </header>
+        <div class="patterns-container">
+          <div class="patterns-header">
+            <span class="count-tag">{data.patterns.length} Patrones Activos</span>
+          </div>
 
           <div class="patterns-list">
             {#each data.patterns as pattern}
-              <div class="pattern-item" class:global={pattern.IsGlobal}>
-                <div class="pattern-info">
-                  <div class="pattern-name">
-                    {pattern.Name}
+              <div class="pattern-tile tonal" class:global={pattern.IsGlobal}>
+                <div class="pattern-core">
+                  <div class="pattern-identity">
+                    <span class="pattern-name">{pattern.Name}</span>
                     {#if pattern.IsGlobal}
-                      <span class="badge global">Global</span>
+                      <span class="badge global">Sistema</span>
+                    {:else}
+                      <span class="badge custom">Personalizado</span>
                     {/if}
                   </div>
                   <code class="pattern-regex">{pattern.Regex}</code>
-                  <p class="pattern-desc">{pattern.Description || ''}</p>
+                  {#if pattern.Description}
+                    <p class="pattern-desc">{pattern.Description}</p>
+                  {/if}
                 </div>
                 {#if !pattern.IsGlobal}
-                  <Button variant="ghost" icon="delete" onclick={() => deletePattern(pattern.ID)} />
+                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deletePattern(pattern.ID)} />
                 {/if}
               </div>
             {/each}
           </div>
 
-          <div class="add-pattern-form tonal">
-            <h5>Añadir Patrón Personalizado</h5>
+          <div class="add-pattern-box tonal">
+            <header class="add-header">
+              <span class="material-symbols-rounded">add_moderator</span>
+              <strong>Añadir Patrón Personalizado</strong>
+            </header>
             <div class="form-grid">
-              <Input label="Nombre" bind:value={newPattern.name} placeholder="p.ej. My Custom API Key" />
-              <Input label="Regex" bind:value={newPattern.regex} placeholder="p.ej. key-[0-9a-f]{32}" />
-              <Input label="Descripción" bind:value={newPattern.description} placeholder="Breve explicación..." class="full-width" />
+              <Input label="Nombre del Patrón" bind:value={newPattern.name} placeholder="p.ej. Mi Clave API Personalizada" />
+              <Input label="Expresión Regular (Regex)" bind:value={newPattern.regex} placeholder="p.ej. key-[0-9a-f]{32}" />
+              <Input label="Descripción" bind:value={newPattern.description} placeholder="¿Qué detecta este patrón?" class="full-width" />
             </div>
             <div class="form-actions">
               <Button variant="primary" icon="add" onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
-                Añadir Patrón
+                Registrar Patrón
               </Button>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
+    {:else}
+      <div class="empty-state-guardian island">
+        <span class="material-symbols-rounded">verified_user</span>
+        <h3>Guardián Desactivado</h3>
+        <p>Activa el Guardián para proteger este repositorio de fugas accidentales de información sensible.</p>
+        <Button variant="primary" onclick={() => { data.enabled = true; saveSettings(); }}>Activar Protección</Button>
       </div>
     {/if}
   </div>
-</div>
+</Card>
 
 <style>
-  .security-settings { display: flex; flex-direction: column; gap: 2rem; }
-  .settings-card { background: var(--md-sys-color-surface-container); border-radius: 2rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; transition: all 0.3s; }
+  .hero-icon.active { background: var(--primary-color); color: var(--on-primary); }
   
-  .card-header { padding: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
-  .header-content { display: flex; gap: 1.5rem; align-items: center; }
-  .guardian-icon { font-size: 3rem; color: var(--primary-color); }
-  .card-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .card-header p { margin: 0.25rem 0 0; color: var(--text-muted); }
+  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .card-body { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
+  @media (max-width: 600px) {
+    .section-header-premium { padding: 1.5rem; }
+    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
+  }
 
-  .mode-selector { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
-  .section-header { margin-bottom: 1.5rem; }
-  .section-header h4 { margin: 0; font-size: 1.25rem; font-weight: 800; }
-  .section-header p { margin: 0.5rem 0 0; color: var(--text-muted); }
-
-  .patterns-list { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-  .pattern-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.25rem; background: var(--md-sys-color-surface-container-high); border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); }
-  .pattern-item.global { border-left: 4px solid var(--primary-color); }
+  .security-stack { display: flex; flex-direction: column; gap: 2.5rem; }
   
-  .pattern-info { display: flex; flex-direction: column; gap: 0.5rem; }
-  .pattern-name { font-weight: 800; display: flex; align-items: center; gap: 0.75rem; }
-  .pattern-regex { font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 0.25rem 0.5rem; border-radius: 0.5rem; word-break: break-all; }
-  .pattern-desc { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
+  .mode-island { padding: 2rem; border-radius: 2rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
-  .badge { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 1rem; font-weight: 900; text-transform: uppercase; }
-  .badge.global { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+  .patterns-container { display: flex; flex-direction: column; gap: 1.5rem; }
+  .patterns-header { border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; }
+  .count-tag { font-size: 0.75rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.1em; }
 
-  .add-pattern-form { padding: 2rem; border-radius: 1.5rem; border: 1px dotted var(--md-sys-color-outline); }
-  .add-pattern-form h5 { margin: 0 0 1.5rem; font-size: 1.1rem; font-weight: 800; }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .patterns-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem; }
+  @media (max-width: 850px) { .patterns-list { grid-template-columns: 1fr; } }
+
+  .pattern-tile { display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; }
+  .pattern-tile:hover { transform: translateY(-2px); border-color: var(--primary-color); }
+  .pattern-tile.global { border-left: 6px solid var(--primary-color); }
+  
+  .pattern-core { display: flex; flex-direction: column; gap: 0.75rem; flex: 1; min-width: 0; }
+  .pattern-identity { display: flex; align-items: center; gap: 0.75rem; }
+  .pattern-name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
+  
+  .pattern-regex { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.08); padding: 0.4rem 0.75rem; border-radius: 0.75rem; word-break: break-all; width: fit-content; }
+  .pattern-desc { margin: 0; font-size: 0.9rem; color: var(--text-muted); opacity: 0.8; line-height: 1.4; }
+
+  .badge { font-size: 0.65rem; font-weight: 950; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 100px; }
+  .badge.global { background: var(--primary-color); color: var(--on-primary); }
+  .badge.custom { background: var(--md-sys-color-surface-container-highest); color: var(--text-muted); }
+
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+
+  .add-pattern-box { padding: 2.5rem; border-radius: 2rem; border: 1px dashed var(--md-sys-color-outline); display: flex; flex-direction: column; gap: 2rem; }
+  .add-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
+  .add-header span { font-size: 1.75rem; }
+  .add-header strong { font-weight: 950; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   :global(.full-width) { grid-column: span 2; }
-  .form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }
+  .form-actions { display: flex; justify-content: flex-end; }
+
+  .empty-state-guardian { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
+  .empty-state-guardian span { font-size: 5rem; color: var(--primary-color); opacity: 0.2; }
+  .empty-state-guardian h3 { margin: 0; font-size: 1.75rem; font-weight: 950; }
+  .empty-state-guardian p { max-width: 500px; margin: 0; color: var(--text-muted); font-size: 1.1rem; line-height: 1.5; }
+
+  .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
 
   @media (max-width: 600px) {
     .form-grid { grid-template-columns: 1fr; }
     :global(.full-width) { grid-column: span 1; }
+    .pattern-tile { flex-direction: column; gap: 1rem; }
+    .pattern-tile :global(button) { align-self: flex-end; }
   }
 </style>

@@ -4,7 +4,9 @@
   import { toast } from "$lib/toast.svelte";
   import Button from "./ui/Button.svelte";
   import Badge from "./ui/Badge.svelte";
+  import Card from "./ui/Card.svelte";
   import { tool } from "$lib/tool";
+  import { i18n } from "$lib/i18n.svelte";
 
   const repo: any = getContext("repo");
   let loading = $state(true);
@@ -79,14 +81,14 @@
   onMount(fetchReport);
 </script>
 
-<div class="janitor-panel">
-  <div class="settings-card">
-    <header class="card-header">
-      <div class="header-content">
-        <span class="material-symbols-rounded icon">mop</span>
+<Card padding="none" class="settings-premium-card">
+  <header class="section-header-premium">
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">mop</span>
         <div>
-          <h3>Ggit Janitor 🧹</h3>
-          <p>Análisis de salud del repositorio para detectar basura técnica y archivos innecesarios.</p>
+          <h2>Ggit Janitor</h2>
+          <p class="subtitle">Análisis de salud del repositorio para detectar basura técnica, dependencias huérfanas y archivos temporales.</p>
         </div>
       </div>
       <div class="header-actions">
@@ -99,38 +101,42 @@
           </Button>
         {/if}
       </div>
-    </header>
+    </div>
+  </header>
 
-    <div class="card-body">
-      {#if loading}
-        <div class="loading-state">Cargando reporte...</div>
-      {:else if !report || !report.issues || report.issues.length === 0}
-        <div class="empty-state tonal">
-          <span class="material-symbols-rounded">verified</span>
-          <p>¡Tu repositorio está impecable! No se han detectado archivos innecesarios.</p>
-        </div>
-      {:else}
-        <div class="summary-bar tonal">
-          <div class="summary-item">
-            <span class="value">{report.issues.length}</span>
-            <span class="label">Asuntos encontrados</span>
+  <div class="settings-content">
+    {#if loading}
+      <div class="skeleton-form"></div>
+    {:else if !report || !report.issues || report.issues.length === 0}
+      <div class="empty-state-janitor island">
+        <span class="material-symbols-rounded">verified</span>
+        <h3>¡Todo Impecable!</h3>
+        <p>No se han detectado archivos innecesarios ni basura técnica en este repositorio.</p>
+        <Button variant="outline" size="sm" onclick={runScan}>Repetir Escaneo</Button>
+      </div>
+    {:else}
+      <div class="janitor-stack">
+        <div class="summary-island island">
+          <div class="stat-item">
+            <span class="stat-value">{report.issues.length}</span>
+            <span class="stat-label">Problemas detectados</span>
           </div>
           {#if report.total_waste > 0}
-            <div class="summary-item">
-              <span class="value">{tool.fileSize(report.total_waste)}</span>
-              <span class="label">Espacio desperdiciado</span>
+            <div class="stat-item">
+              <span class="stat-value">{tool.fileSize(report.total_waste)}</span>
+              <span class="stat-label">Espacio recuperable</span>
             </div>
           {/if}
-          <div class="summary-item">
-            <span class="value">{new Date(report.generated_at * 1000).toLocaleString()}</span>
-            <span class="label">Último análisis</span>
+          <div class="stat-item">
+            <span class="stat-value">{new Date(report.generated_at * 1000).toLocaleDateString()}</span>
+            <span class="stat-label">Fecha del análisis</span>
           </div>
         </div>
 
-        <div class="issues-list">
+        <div class="issues-grid">
           {#each report.issues as issue}
             <div 
-              class="issue-item" 
+              class="issue-tile tonal" 
               class:critical={issue.severity === 'critical'} 
               class:selected={selectedPaths.includes(issue.path)} 
               onclick={() => toggleSelect(issue.path)}
@@ -138,10 +144,10 @@
               role="button"
               tabindex="0"
             >
-              <div class="issue-selection">
-                <span class="material-symbols-rounded">{selectedPaths.includes(issue.path) ? 'check_box' : 'check_box_outline_blank'}</span>
+              <div class="issue-selector">
+                <span class="material-symbols-rounded">{selectedPaths.includes(issue.path) ? 'check_circle' : 'circle'}</span>
               </div>
-              <div class="issue-type-icon">
+              <div class="issue-icon">
                 {#if issue.type === 'dependency'}
                   <span class="material-symbols-rounded">package_2</span>
                 {:else if issue.type === 'build'}
@@ -152,71 +158,89 @@
                   <span class="material-symbols-rounded">file_present</span>
                 {/if}
               </div>
-              <div class="issue-info">
-                <div class="issue-title">
-                  <code class="path">{issue.path}</code>
+              <div class="issue-body">
+                <div class="issue-header-row">
+                  <code class="issue-path">{issue.path}</code>
                   <Badge variant={issue.severity === 'critical' ? 'danger' : 'warning'}>{issue.type}</Badge>
                 </div>
-                <p class="issue-desc">{issue.description}</p>
+                <p class="issue-description">{issue.description}</p>
               </div>
               {#if issue.size > 0}
-                <div class="issue-size">{tool.fileSize(issue.size)}</div>
+                <div class="issue-meta-size">{tool.fileSize(issue.size)}</div>
               {/if}
             </div>
           {/each}
         </div>
 
-        <div class="cleanup-hint">
+        <div class="cleanup-hint island">
           <span class="material-symbols-rounded">magic_button</span>
-          <p>Al pulsar <b>Limpiar</b>, Ggit eliminará los archivos seleccionados y añadirá sugerencias a tu <code>.gitignore</code> automáticamente mediante un nuevo commit.</p>
+          <p>Al pulsar <b>Limpiar Seleccionados</b>, Ggit creará un nuevo commit eliminando los archivos y actualizando el <code>.gitignore</code> automáticamente.</p>
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
-</div>
+</Card>
 
 <style>
-  .janitor-panel { display: flex; flex-direction: column; gap: 2rem; }
-  .settings-card { background: var(--md-sys-color-surface-container); border-radius: 2rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   
-  .card-header { padding: 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .header-content { display: flex; gap: 1.5rem; align-items: center; }
-  .header-actions { display: flex; gap: 1rem; }
-  .icon { font-size: 3rem; color: var(--primary-color); }
-  .card-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .card-header p { margin: 0.25rem 0 0; color: var(--text-muted); }
-
-  .card-body { padding: 2.5rem; }
-
-  .summary-bar { display: flex; gap: 3rem; padding: 1.5rem 2rem; border-radius: 1.5rem; margin-bottom: 2rem; }
-  .summary-item { display: flex; flex-direction: column; }
-  .summary-item .value { font-size: 1.25rem; font-weight: 900; color: var(--primary-color); }
-  .summary-item .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-
-  .issues-list { display: flex; flex-direction: column; gap: 1rem; }
-  .issue-item { display: flex; align-items: center; gap: 1.5rem; padding: 1.25rem; background: var(--md-sys-color-surface-container-high); border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); cursor: pointer; transition: all 0.2s; }
-  .issue-item:hover { background: var(--md-sys-color-surface-container-highest); }
-  .issue-item.selected { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
-  .issue-item.critical { border-left: 4px solid var(--md-sys-color-error); }
-  
-  .issue-selection { color: var(--primary-color); }
-  .issue-type-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .issue-info { flex: 1; }
-  .issue-title { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem; }
-  .path { font-family: var(--font-mono); font-weight: 600; font-size: 0.95rem; }
-  .issue-desc { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
-  .issue-size { font-weight: 800; color: var(--text-muted); font-size: 0.9rem; }
-  .empty-state { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 4rem; border-radius: 2rem; text-align: center; }
-  .empty-state span { font-size: 4rem; color: var(--md-sys-color-primary); }
-  .empty-state p { margin: 0; font-size: 1.1rem; color: var(--text-muted); font-weight: 600; }
-
-  .cleanup-hint { margin-top: 2rem; display: flex; gap: 1rem; align-items: center; padding: 1.25rem; background: rgba(var(--primary-rgb), 0.05); border-radius: 1rem; color: var(--text-muted); font-size: 0.9rem; }
-  .cleanup-hint span { color: var(--primary-color); }
-  .cleanup-hint code { background: rgba(0,0,0,0.1); padding: 0.1rem 0.3rem; border-radius: 0.3rem; }
+  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
   @media (max-width: 600px) {
-    .summary-bar { flex-direction: column; gap: 1.5rem; }
-    .issue-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
-    .issue-size { align-self: flex-end; }
+    .section-header-premium { padding: 1.5rem; }
+    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
+  }
+
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+
+  .janitor-stack { display: flex; flex-direction: column; gap: 2.5rem; }
+
+  .summary-island { display: flex; justify-content: space-around; padding: 2rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .stat-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.25rem; }
+  .stat-value { font-size: 1.75rem; font-weight: 950; color: var(--primary-color); }
+  .stat-label { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; }
+
+  @media (max-width: 600px) { .summary-island { flex-direction: column; gap: 2rem; } }
+
+  .issues-grid { display: flex; flex-direction: column; gap: 1rem; }
+  .issue-tile { display: flex; align-items: center; gap: 1.5rem; padding: 1.25rem 1.75rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); cursor: pointer; transition: all 0.2s; position: relative; }
+  .issue-tile:hover { transform: translateX(4px); border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.02); }
+  .issue-tile.selected { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .issue-tile.critical { border-left: 6px solid var(--md-sys-color-error); }
+  
+  .issue-selector { color: var(--primary-color); transition: all 0.2s; }
+  .issue-tile.selected .issue-selector { transform: scale(1.2); }
+
+  .issue-icon { width: 44px; height: 44px; border-radius: 1rem; background: var(--md-sys-color-surface-container-highest); color: var(--primary-color); display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0.7; }
+  .issue-body { flex: 1; min-width: 0; }
+  .issue-header-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.25rem; }
+  .issue-path { font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 1rem; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .issue-description { margin: 0; font-size: 0.9rem; color: var(--text-muted); opacity: 0.8; }
+  .issue-meta-size { font-weight: 900; color: var(--text-muted); font-size: 0.85rem; opacity: 0.6; }
+
+  .empty-state-janitor { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  .empty-state-janitor span { font-size: 5rem; color: var(--success); opacity: 0.3; }
+  .empty-state-janitor h3 { margin: 0; font-size: 1.75rem; font-weight: 950; }
+  .empty-state-janitor p { color: var(--text-muted); font-size: 1.1rem; max-width: 450px; }
+
+  .cleanup-hint { display: flex; align-items: center; gap: 1.25rem; padding: 1.5rem 2rem; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); color: var(--text-muted); font-size: 0.95rem; border: 1px solid rgba(var(--primary-rgb), 0.1); }
+  .cleanup-hint span { font-size: 2rem; color: var(--primary-color); }
+  .cleanup-hint b { color: var(--text-color); }
+
+  .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+
+  @media (max-width: 800px) {
+    .issue-tile { flex-direction: column; align-items: flex-start; gap: 1.25rem; padding: 1.5rem; }
+    .issue-meta-size { align-self: flex-end; }
   }
 </style>

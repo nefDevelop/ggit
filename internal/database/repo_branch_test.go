@@ -51,7 +51,7 @@ func TestBranchProtectionSecurity(t *testing.T) {
 
 	t.Run("Error: Eliminación de rama protegida", func(t *testing.T) {
 		// En ggit, el borrado de ramas también pasa por validaciones de protección
-		pb := &ProtectBranch{Protected: true, Name: "main"}
+		pb := &ProtectBranch{Protected: true}
 		
 		// Simulación de borrado (branchName vacío o flag específico)
 		isDeletion := true

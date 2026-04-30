@@ -5,8 +5,10 @@
   import Input from "$lib/components/ui/Input.svelte";
   import Checkbox from "$lib/components/ui/Checkbox.svelte";
   import Button from "$lib/components/ui/Button.svelte";
+  import Card from "$lib/components/ui/Card.svelte";
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
+  import { i18n } from "$lib/i18n.svelte";
 
   const repo: any = getContext("repo");
 
@@ -66,7 +68,7 @@
   }
 
   async function handleDelete(id: number) {
-    if (!(await dialog.confirm("Are you sure you want to delete this deploy key?"))) return;
+    if (!(await dialog.confirm("¿Estás seguro de que deseas eliminar esta clave de despliegue?"))) return;
 
     try {
       const res = await apiFetch(
@@ -94,295 +96,176 @@
   onMount(fetchKeys);
 </script>
 
-<div class="keys-manager">
-  <header class="section-header">
-    <div class="header-content">
-      <h2>Deploy Keys</h2>
-      <p>
-        Deploy keys allow external servers to clone this repository via SSH
-        without needing a user account.
-      </p>
+<Card padding="none" class="settings-premium-card">
+  <header class="section-header-premium">
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">vpn_key</span>
+        <div>
+          <h2>Claves de Despliegue</h2>
+          <p class="subtitle">Permite que servidores externos clonen este repositorio vía SSH sin una cuenta de usuario.</p>
+        </div>
+      </div>
+      <Button variant="primary" icon="add" onclick={() => (showModal = true)}>Añadir Clave</Button>
     </div>
-    <Button variant="primary" icon="add" onclick={() => (showModal = true)}>
-      Add Key
-    </Button>
   </header>
 
-  {#if loading}
-    <div class="skeleton-list">
-      <div class="skeleton-item tonal"></div>
-      <div class="skeleton-item tonal"></div>
-    </div>
-  {:else if error}
-    <div class="error-banner">
-      <span class="material-symbols-rounded">error</span>
-      {error}
-    </div>
-  {:else if keys.length === 0}
-    <div class="empty-state tonal">
-      <span class="material-symbols-rounded size-xl">vpn_key</span>
-      <h3>No Deploy Keys</h3>
-      <p>You haven't configured any deploy keys for this repository yet.</p>
-      <Button variant="secondary" onclick={() => (showModal = true)}>
-        Add your first deploy key
-      </Button>
-    </div>
-  {:else}
-    <div class="keys-list">
-      {#each keys as key}
-        <div class="key-item tonal">
-          <div class="key-icon-box">
-            <span class="material-symbols-rounded">key</span>
-          </div>
-          <div class="key-info">
+  <div class="settings-content">
+    {#if loading}
+      <div class="skeleton-stack">
+        {#each Array(2) as _}
+          <div class="skeleton-item tonal"></div>
+        {/each}
+      </div>
+    {:else if error}
+      <div class="error-banner">
+        <span class="material-symbols-rounded">error</span>
+        {error}
+      </div>
+    {:else if keys.length === 0}
+      <div class="empty-state island">
+        <span class="material-symbols-rounded">key_off</span>
+        <p>No hay claves de despliegue configuradas para este repositorio.</p>
+        <Button variant="outline" size="sm" onclick={() => (showModal = true)}>Configurar la primera</Button>
+      </div>
+    {:else}
+      <div class="keys-stack">
+        {#each keys as key}
+          <div class="key-tile tonal">
             <div class="key-main">
-              <span class="key-title">{key.title}</span>
-              {#if key.read_only}
-                <span class="badge badge-read">Read-Only</span>
-              {:else}
-                <span class="badge badge-write">Read-Write</span>
-              {/if}
+              <div class="key-icon-wrap">
+                <span class="material-symbols-rounded">key</span>
+              </div>
+              <div class="key-info">
+                <div class="key-header-row">
+                  <span class="key-title">{key.title}</span>
+                  {#if key.read_only}
+                    <span class="badge">Solo Lectura</span>
+                  {:else}
+                    <span class="badge active">Lectura y Escritura</span>
+                  {/if}
+                </div>
+                <div class="key-fingerprint">
+                  <code>{key.key.substring(0, 48)}...</code>
+                </div>
+                <div class="key-meta">
+                  Añadida el {formatDate(key.created_at)}
+                </div>
+              </div>
             </div>
-            <div class="key-fingerprint">
-              <code>{key.key.substring(0, 32)}...</code>
-            </div>
-            <div class="key-meta">
-              Added on {formatDate(key.created_at)}
+            <div class="key-actions">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                icon="delete" 
+                class="danger-btn" 
+                onclick={() => handleDelete(key.id)} 
+                title="Eliminar"
+              />
             </div>
           </div>
-          <div class="key-actions">
-            <button
-              class="btn-icon delete"
-              onclick={() => handleDelete(key.id)}
-              title="Delete"
-            >
-              <span class="material-symbols-rounded">delete</span>
-            </button>
-          </div>
-        </div>
-      {/each}
-    </div>
-  {/if}
+        {/each}
+      </div>
+    {/if}
+  </div>
+</Card>
 
-  <Modal show={showModal} title="Add Deploy Key" onclose={() => (showModal = false)}>
-    <form
-      onsubmit={(e) => {
-        e.preventDefault();
-        handleAdd();
-      }}
-      style="display: flex; flex-direction: column; gap: 1.5rem;"
-    >
-      <Input 
-        label="Key Name" 
-        bind:value={newKey.title} 
-        placeholder="e.g. CI Server"
-      />
-      <Input 
-        label="Key Content" 
-        bind:value={newKey.key} 
-        placeholder="ssh-rsa AAAAB3Nza..."
-        multiline
-        rows={5}
-      />
+<Modal show={showModal} title="Añadir Clave de Despliegue" onclose={() => (showModal = false)}>
+  <form
+    onsubmit={(e) => {
+      e.preventDefault();
+      handleAdd();
+    }}
+    class="key-form"
+  >
+    <Input 
+      label="Nombre de la Clave" 
+      bind:value={newKey.title} 
+      placeholder="Ej: Servidor de CI"
+    />
+    <Input 
+      label="Contenido de la Clave (SSH)" 
+      bind:value={newKey.key} 
+      placeholder="ssh-rsa AAAAB3Nza..."
+      multiline
+      rows={5}
+    />
 
-      <Checkbox
-        bind:checked={newKey.read_only}
-        label="Read-only"
-        description="If enabled, this key will not be able to push to the repository."
-      />
+    <Checkbox
+      bind:checked={newKey.read_only}
+      label="Solo lectura"
+      description="Si está habilitado, esta clave no podrá realizar pushes al repositorio."
+    />
 
-      <footer class="modal-footer">
-        <Button variant="ghost" onclick={() => (showModal = false)}>
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          loading={isSubmitting}
-        >
-          Add Key
-        </Button>
-      </footer>
-    </form>
-  </Modal>
-</div>
+    <footer class="modal-actions-premium">
+      <Button variant="ghost" onclick={() => (showModal = false)}>Cancelar</Button>
+      <Button type="submit" variant="primary" loading={isSubmitting}>
+        Guardar Clave
+      </Button>
+    </footer>
+  </form>
+</Modal>
 
 <style>
-  .keys-manager {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    animation: fadeIn 0.3s ease-out;
+  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
+  
+  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
+
+  @media (max-width: 600px) {
+    .section-header-premium { padding: 1.5rem; }
+    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
   }
 
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  .header-content h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
-    font-weight: 800;
-  }
-  .header-content p {
-    margin: 0;
-    color: var(--text-muted);
-    font-size: 0.95rem;
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+
+  .keys-stack { display: flex; flex-direction: column; gap: 1rem; }
+  
+  .key-tile { padding: 1.25rem 1.75rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); display: flex; justify-content: space-between; align-items: center; gap: 2rem; transition: all 0.2s; }
+  .key-tile:hover { transform: translateX(4px); border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.02); }
+
+  .key-main { display: flex; align-items: center; gap: 1.5rem; flex: 1; min-width: 0; }
+  .key-icon-wrap { width: 44px; height: 44px; border-radius: 1rem; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; }
+  .key-icon-wrap span { font-size: 1.5rem; }
+
+  .key-info { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-width: 0; }
+  .key-header-row { display: flex; align-items: center; gap: 1rem; }
+  .key-title { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
+  
+  .badge { font-size: 0.65rem; font-weight: 950; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 100px; background: var(--md-sys-color-surface-container-highest); color: var(--text-muted); opacity: 0.6; }
+  .badge.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); opacity: 1; }
+
+  .key-fingerprint { margin: 0.25rem 0; }
+  .key-fingerprint code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+
+  .key-meta { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); opacity: 0.5; }
+
+  .key-actions { display: flex; gap: 0.5rem; }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+
+  @media (max-width: 800px) {
+    .key-tile { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    .key-actions { justify-content: flex-end; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 1rem; }
   }
 
-  .keys-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .key-item {
-    display: flex;
-    gap: 1.25rem;
-    align-items: center;
-    padding: 1.25rem 1.5rem;
-    transition:
-      transform 0.2s,
-      background 0.2s;
-  }
-  .key-item:hover {
-    transform: translateX(5px);
-    background: rgba(255, 255, 255, 0.03);
-  }
+  .key-form { display: flex; flex-direction: column; gap: 1.5rem; }
+  .modal-actions-premium { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  .key-icon-box {
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary-color);
-    width: 48px;
-    height: 48px;
-    border-radius: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .key-icon-box span {
-    font-size: 1.75rem;
-  }
+  .empty-state { padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .empty-state span { font-size: 4rem; color: var(--primary-color); opacity: 0.2; }
+  .empty-state p { font-weight: 700; color: var(--text-muted); }
 
-  .key-info {
-    flex: 1;
-  }
-  .key-main {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.25rem;
-  }
-  .key-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
+  .skeleton-stack { display: flex; flex-direction: column; gap: 1rem; }
+  .skeleton-item { height: 90px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
 
-  .badge {
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 0.1rem 0.5rem;
-    border-radius: 4px;
-  }
-  .badge-read {
-    background: rgba(255, 255, 255, 0.1);
-    color: var(--text-color);
-  }
-  .badge-write {
-    background: rgba(var(--primary-rgb), 0.2);
-    color: var(--primary-color);
-  }
-
-  .key-fingerprint {
-    margin-bottom: 0.25rem;
-  }
-  .key-fingerprint code {
-    font-size: 0.75rem;
-    opacity: 0.6;
-    font-family: "JetBrains Mono", monospace;
-  }
-
-  .key-meta {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
-
-  .btn-icon {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-  }
-  .btn-icon:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-color);
-  }
-  .btn-icon.delete:hover {
-    background: rgba(248, 113, 113, 0.1);
-    color: #f87171;
-  }
-
-  .empty-state {
-    padding: 4rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    text-align: center;
-  }
-  .empty-state .size-xl {
-    font-size: 4rem;
-    opacity: 0.2;
-  }
-  .empty-state h3 {
-    margin: 1rem 0 0 0;
-  }
-  .empty-state p {
-    color: var(--text-muted);
-    max-width: 400px;
-    margin-bottom: 1rem;
-  }
-
-  .modal-footer {
-    padding-top: 1rem;
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-  }
-
-  .skeleton-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .skeleton-item {
-    height: 90px;
-    width: 100%;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.6;
-    }
-    50% {
-      opacity: 0.3;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  .error-banner { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 1.5rem; background: rgba(var(--error-rgb), 0.1); color: var(--error); font-weight: 700; }
 </style>

@@ -3,7 +3,9 @@
   import { onMount, getContext } from "svelte";
   import Modal from "$lib/components/Modal.svelte";
   import Button from "$lib/components/ui/Button.svelte";
+  import Card from "$lib/components/ui/Card.svelte";
   import { toast } from "$lib/toast.svelte";
+  import { i18n } from "$lib/i18n.svelte";
 
   const repo: any = getContext("repo");
 
@@ -69,125 +71,153 @@
   onMount(fetchHooks);
 </script>
 
-<div class="git-hooks-manager">
-  <header class="section-header">
-    <div class="header-content">
-      <h2>Git Hooks</h2>
-      <p>
-        Server-side Git hooks allow you to execute custom scripts on the server when certain actions are performed (e.g., pushing commits).
-      </p>
+<Card padding="none" class="settings-premium-card">
+  <header class="section-header-premium">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">terminal</span>
+      <div>
+        <h2>Git Hooks</h2>
+        <p class="subtitle">Gestiona scripts personalizados que se ejecutan en el servidor ante eventos de Git.</p>
+      </div>
     </div>
   </header>
 
-  {#if loading}
-    <div class="skeleton-list">
-      {#each Array(3) as _}
-        <div class="skeleton-item tonal"></div>
-      {/each}
-    </div>
-  {:else if error}
-    <div class="error-banner">
-      <span class="material-symbols-rounded">error</span>
-      {error}
-    </div>
-  {:else}
-    <div class="hooks-list">
-      {#each hooks as hook}
-        <div class="hook-card tonal">
-          <div class="hook-info">
-            <div class="hook-name-row">
-              <span class="material-symbols-rounded">terminal</span>
-              <span class="hook-name">{hook.name}</span>
-              {#if hook.is_active}
-                <span class="badge badge-active">Active</span>
-              {:else}
-                <span class="badge badge-inactive">Not Configured</span>
-              {/if}
+  <div class="settings-content">
+    {#if loading}
+      <div class="skeleton-list">
+        {#each Array(3) as _}
+          <div class="skeleton-item tonal"></div>
+        {/each}
+      </div>
+    {:else if error}
+      <div class="error-banner">
+        <span class="material-symbols-rounded">error</span>
+        {error}
+      </div>
+    {:else}
+      <div class="hooks-grid">
+        {#each hooks as hook}
+          <div class="hook-tile tonal">
+            <div class="hook-main">
+              <div class="hook-identity">
+                <span class="material-symbols-rounded hook-icon">code</span>
+                <div class="hook-names">
+                  <span class="hook-name">{hook.name}</span>
+                  {#if hook.is_active}
+                    <span class="badge active">Configurado</span>
+                  {:else}
+                    <span class="badge">No configurado</span>
+                  {/if}
+                </div>
+              </div>
+              <p class="hook-desc">
+                {#if hook.name === 'pre-receive'}
+                  Se ejecuta antes de aceptar cualquier commit. Ideal para validar políticas.
+                {:else if hook.name === 'update'}
+                  Se ejecuta por cada rama que se intenta actualizar.
+                {:else if hook.name === 'post-receive'}
+                  Se ejecuta después de que los cambios han sido aceptados. Útil para despliegues o avisos.
+                {:else}
+                  Script de servidor ejecutado durante el ciclo de vida de Git.
+                {/if}
+              </p>
             </div>
-            <p class="hook-description">
-              {#if hook.name === 'pre-receive'}
-                Executed before any refs are updated. Use it to enforce project policies.
-              {:else if hook.name === 'update'}
-                Executed once for each ref being updated. Similar to pre-receive but per-ref.
-              {:else if hook.name === 'post-receive'}
-                Executed after all refs have been updated. Use it for notifications or deployments.
-              {/if}
-            </p>
+            <div class="hook-footer">
+              <Button variant="tonal" size="sm" icon="edit" onclick={() => handleEdit(hook)}>
+                Editar Script
+              </Button>
+            </div>
           </div>
-          <div class="hook-actions">
-            <Button variant="secondary" size="sm" icon="edit" onclick={() => handleEdit(hook)}>
-              Edit Script
-            </Button>
-          </div>
-        </div>
-      {/each}
-    </div>
-  {/if}
+        {/each}
+      </div>
+    {/if}
+  </div>
+</Card>
 
-  <Modal 
-    show={!!editingHook} 
-    title={`Edit Git Hook: ${editingHook?.name}`} 
-    onclose={() => editingHook = null}
-    maxWidth="900px"
-  >
-    {#if editingHook}
-      <div class="hook-editor">
-        <div class="editor-help">
-          <span class="material-symbols-rounded">info</span>
-          <p>This script will be executed as a shell script on the server. Make sure it has a proper shebang (e.g., <code>#!/bin/bash</code>).</p>
-        </div>
-        
+<Modal 
+  show={!!editingHook} 
+  title={`Editar Git Hook: ${editingHook?.name}`} 
+  onclose={() => editingHook = null}
+  maxWidth="900px"
+>
+  {#if editingHook}
+    <div class="hook-editor">
+      <div class="editor-info island">
+        <span class="material-symbols-rounded">info</span>
+        <p>Este script se ejecutará en el servidor. Asegúrate de incluir el shebang correcto (ej: <code>#!/bin/bash</code>).</p>
+      </div>
+      
+      <div class="textarea-container">
         <textarea 
           bind:value={hookContent} 
           class="hook-textarea"
-          placeholder="#!/bin/bash\n\n# Your custom hook logic here..."
+          placeholder="#!/bin/bash\n\n# Tu lógica personalizada aquí..."
           spellcheck="false"
         ></textarea>
-
-        <footer class="modal-footer">
-          <Button variant="ghost" onclick={() => editingHook = null}>Cancel</Button>
-          <Button variant="primary" loading={isSubmitting} onclick={handleSave}>
-            Save Hook
-          </Button>
-        </footer>
       </div>
-    {/if}
-  </Modal>
-</div>
+
+      <footer class="modal-actions">
+        <Button variant="ghost" onclick={() => editingHook = null}>Cancelar</Button>
+        <Button variant="primary" loading={isSubmitting} onclick={handleSave}>
+          Guardar Cambios
+        </Button>
+      </footer>
+    </div>
+  {/if}
+</Modal>
 
 <style>
-  .git-hooks-manager { display: flex; flex-direction: column; gap: 2rem; animation: fadeIn 0.3s ease-out; }
+  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   
-  .section-header { display: flex; justify-content: space-between; align-items: flex-start; }
-  .header-content h2 { margin: 0 0 0.5rem 0; font-size: 1.5rem; font-weight: 800; }
-  .header-content p { margin: 0; color: var(--text-muted); font-size: 0.95rem; max-width: 800px; }
+  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .hooks-list { display: flex; flex-direction: column; gap: 1rem; }
-  .hook-card { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; }
+  @media (max-width: 600px) {
+    .section-header-premium { padding: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
+  }
+
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+
+  .hooks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+  @media (max-width: 800px) { .hooks-grid { grid-template-columns: 1fr; } }
+
+  .hook-tile { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); display: flex; flex-direction: column; gap: 1.5rem; transition: all 0.2s; }
+  .hook-tile:hover { transform: translateY(-3px); border-color: var(--primary-color); }
   
-  .hook-info { display: flex; flex-direction: column; gap: 0.5rem; }
-  .hook-name-row { display: flex; align-items: center; gap: 0.75rem; }
-  .hook-name-row span:first-child { color: var(--primary-color); opacity: 0.7; }
-  .hook-name { font-weight: 800; font-size: 1.1rem; font-family: 'JetBrains Mono', monospace; }
+  .hook-identity { display: flex; align-items: center; gap: 1rem; }
+  .hook-icon { color: var(--primary-color); opacity: 0.7; font-size: 1.5rem; }
   
-  .badge { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; padding: 0.15rem 0.6rem; border-radius: 4px; letter-spacing: 0.05em; }
-  .badge-active { background: var(--success); color: var(--on-success); }
-  .badge-inactive { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+  .hook-names { display: flex; flex-direction: column; gap: 0.1rem; }
+  .hook-name { font-family: 'JetBrains Mono', monospace; font-weight: 900; font-size: 1rem; color: var(--text-color); }
+  
+  .badge { font-size: 0.65rem; font-weight: 950; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 100px; width: fit-content; background: var(--md-sys-color-surface-container-highest); color: var(--text-muted); opacity: 0.6; }
+  .badge.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); opacity: 1; }
 
-  .hook-description { margin: 0; font-size: 0.9rem; color: var(--text-muted); opacity: 0.8; }
+  .hook-desc { margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; opacity: 0.8; }
 
+  .hook-footer { display: flex; justify-content: flex-end; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
+
+  /* EDITOR */
   .hook-editor { display: flex; flex-direction: column; gap: 1.5rem; }
-  .editor-help { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(var(--primary-rgb), 0.05); border-radius: 0.75rem; border: 1px solid rgba(var(--primary-rgb), 0.1); color: var(--text-muted); font-size: 0.85rem; }
-  .editor-help code { background: rgba(0,0,0,0.2); padding: 0.1rem 0.3rem; border-radius: 4px; }
+  .editor-info { display: flex; align-items: center; gap: 1rem; color: var(--text-muted); padding: 1rem 1.5rem; border-radius: 1rem; font-size: 0.9rem; }
+  .editor-info code { background: rgba(0,0,0,0.3); padding: 0.1rem 0.3rem; border-radius: 4px; color: var(--primary-color); }
 
-  .hook-textarea { width: 100%; height: 400px; background: #000; color: #fff; border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; padding: 1.5rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.5; resize: vertical; outline: none; }
-  .hook-textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.2); }
+  .textarea-container { border-radius: 1.25rem; overflow: hidden; border: 2px solid var(--md-sys-color-outline-variant); background: #000; }
+  .hook-textarea { width: 100%; height: 400px; background: transparent; color: #fff; border: none; padding: 1.5rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; resize: vertical; outline: none; }
+  .hook-textarea:focus { caret-color: var(--primary-color); }
 
-  .modal-footer { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }
-  .skeleton-item { height: 100px; width: 100%; border-radius: 1rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+  .skeleton-list { display: flex; flex-direction: column; gap: 1.5rem; }
+  .skeleton-item { height: 120px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .error-banner { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 1.5rem; background: rgba(var(--error-rgb), 0.1); color: var(--error); font-weight: 700; }
 </style>

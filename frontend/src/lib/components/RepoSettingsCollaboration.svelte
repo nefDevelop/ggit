@@ -7,6 +7,7 @@
   import Input from './ui/Input.svelte';
   import Select from './ui/Select.svelte';
   import Card from './ui/Card.svelte';
+  import { i18n } from '$lib/i18n.svelte';
   
   const repo: any = getContext('repo');
   let collaborators = $state<any[]>([]);
@@ -73,7 +74,7 @@
   }
 
   async function removeCollaborator(username: string) {
-    if (!await dialog.confirm(`Remove ${username} as collaborator?`)) return;
+    if (!await dialog.confirm(`¿Remover a ${username} como colaborador?`)) return;
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators/${username}`, {
         method: 'DELETE'
@@ -95,242 +96,149 @@
   onMount(fetchCollaborators);
 </script>
 
-<div class="collaboration-view">
-  <Card class="add-collab-card tonal" padding="lg">
-    <div class="add-header">
-      <span class="material-symbols-rounded icon-hero">person_add</span>
-      <div class="text">
-        <h3>Add Collaborator</h3>
-        <p>Invite users to contribute to this repository with specific permissions.</p>
+<Card padding="none" class="settings-premium-card">
+  <header class="section-header-premium">
+    <div class="title-with-icon">
+      <span class="material-symbols-rounded hero-icon">group</span>
+      <div>
+        <h2>Colaboradores</h2>
+        <p class="subtitle">Gestiona quién tiene acceso a este repositorio y sus niveles de permiso.</p>
       </div>
     </div>
+  </header>
 
-    <form class="add-form" onsubmit={(e) => { e.preventDefault(); addCollaborator(); }}>
-      <div class="input-row">
-        <Input 
-          bind:value={newCollaborator} 
-          placeholder="Search by username..." 
-          icon="search"
-          error={message}
-        />
-        <Button 
-          type="submit" 
-          variant="primary" 
-          disabled={submitting || !newCollaborator}
-          loading={submitting}
-        >
-          Add
-        </Button>
+  <div class="settings-content">
+    <div class="add-collab-box island">
+      <div class="add-header-minimal">
+        <span class="material-symbols-rounded">person_add</span>
+        <strong>Añadir Colaborador</strong>
       </div>
-    </form>
-  </Card>
-
-  <div class="collab-list-container">
-    <div class="list-header">
-      <span class="count">{collaborators.length} Collaborators</span>
+      <form class="add-form" onsubmit={(e) => { e.preventDefault(); addCollaborator(); }}>
+        <div class="input-row">
+          <Input 
+            bind:value={newCollaborator} 
+            placeholder="Buscar por nombre de usuario..." 
+            icon="search"
+            error={message}
+          />
+          <Button 
+            type="submit" 
+            variant="primary" 
+            disabled={submitting || !newCollaborator}
+            loading={submitting}
+          >
+            Añadir
+          </Button>
+        </div>
+      </form>
     </div>
 
-    <div class="collab-grid">
-      {#each collaborators as col}
-        <div class="collab-island hover-lift">
-          <div class="collab-main">
-            <Avatar src={col.avatar_url} username={col.username} size={48} />
-            <div class="info">
-              <span class="name">{col.full_name || col.username}</span>
-              <span class="handle">@{col.username}</span>
-            </div>
-          </div>
+    <div class="collab-list-header">
+      <span class="count-tag">{collaborators.length} Colaboradores</span>
+    </div>
 
-          <div class="collab-actions">
-            <div class="role-selector">
-              <Select 
-                options={roleOptions} 
-                value={getModeValue(col)} 
-                onchange={(val) => updatePermission(col.username, val)}
-              />
-            </div>
-            <Button 
-              variant="ghost" 
-              icon="person_remove" 
-              class="danger-btn" 
-              onclick={() => removeCollaborator(col.username)} 
-            />
-          </div>
-        </div>
-      {/each}
-
-      {#if !loading && collaborators.length === 0}
-        <div class="empty-collabs">
-          <span class="material-symbols-rounded">group_off</span>
-          <p>No collaborators yet. Start by adding someone above.</p>
-        </div>
-      {/if}
-
+    <div class="collab-stack">
       {#if loading}
         {#each Array(3) as _}
-          <div class="skeleton-island"></div>
+          <div class="skeleton-tile tonal"></div>
         {/each}
+      {:else}
+        {#each collaborators as col}
+          <div class="collab-tile tonal hover-lift">
+            <div class="collab-main">
+              <Avatar src={col.avatar_url} username={col.username} size={44} class="collab-avatar" />
+              <div class="collab-info">
+                <span class="collab-name">{col.full_name || col.username}</span>
+                <span class="collab-handle">@{col.username}</span>
+              </div>
+            </div>
+
+            <div class="collab-actions">
+              <div class="role-wrap">
+                <Select 
+                  options={roleOptions} 
+                  value={getModeValue(col)} 
+                  onchange={(val) => updatePermission(col.username, val)}
+                />
+              </div>
+              <Button 
+                variant="ghost" 
+                icon="person_remove" 
+                class="danger-btn" 
+                onclick={() => removeCollaborator(col.username)} 
+              />
+            </div>
+          </div>
+        {/each}
+
+        {#if collaborators.length === 0}
+          <div class="empty-state">
+            <span class="material-symbols-rounded">group_off</span>
+            <p>Este repositorio no tiene colaboradores externos.</p>
+          </div>
+        {/if}
       {/if}
     </div>
   </div>
-</div>
+</Card>
 
 <style>
-  .collaboration-view {
-    display: flex;
-    flex-direction: column;
-    gap: 3rem;
-    animation: fadeIn 0.4s ease-out;
-  }
-
-  .add-header {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  .icon-hero {
-    font-size: 2.5rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.1);
-    padding: 1rem;
-    border-radius: 1.25rem;
-  }
-  .add-header h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 850;
-  }
-  .add-header p {
-    margin: 0.25rem 0 0 0;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-  }
-
-  .add-form .input-row {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-  :global(.add-form .input-row .input-container) {
-    flex: 1;
-  }
-
-  .list-header {
-    margin-bottom: 1.5rem;
-    padding-left: 0.5rem;
-    border-bottom: 2px solid var(--md-sys-color-outline-variant);
-    padding-bottom: 0.75rem;
-  }
-  .list-header .count {
-    font-size: 0.75rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--primary-color);
-    opacity: 0.8;
-  }
-
-  .collab-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .collab-island {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.25rem 1.75rem;
-    background: var(--md3-surface-1);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 1.5rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .collab-island:hover {
-    background: var(--surface-variant);
-    border-color: var(--primary-color);
-  }
-
-  .collab-main {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-  }
-  .info {
-    display: flex;
-    flex-direction: column;
-  }
-  .name {
-    font-size: 1.1rem;
-    font-weight: 800;
-    color: var(--text-color);
-  }
-  .handle {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-
-  .collab-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  .role-selector {
-    width: 140px;
-  }
-
-  :global(.danger-btn:hover) {
-    color: var(--error) !important;
-    background: rgba(var(--error-rgb), 0.1) !important;
-  }
-
-  .empty-collabs {
-    padding: 5rem 0;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    opacity: 0.5;
-  }
-  .empty-collabs span {
-    font-size: 4rem;
-    color: var(--primary-color);
-  }
-  .empty-collabs p {
-    font-weight: 700;
-    font-size: 1.1rem;
-  }
-
-  .skeleton-island {
-    height: 80px;
-    background: var(--surface-variant);
-    border-radius: 1.5rem;
-    animation: pulse 1.5s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 0.6; }
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
+  
+  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
   @media (max-width: 600px) {
-    .collab-island {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1.5rem;
-    }
-    .collab-actions {
-      justify-content: space-between;
-    }
-    .role-selector {
-      flex: 1;
-    }
+    .section-header-premium { padding: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
+  }
+
+  .settings-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+
+  .add-collab-box { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .add-header-minimal { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; color: var(--primary-color); }
+  .add-header-minimal span { font-size: 1.5rem; }
+  .add-header-minimal strong { font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.85rem; }
+
+  .add-form .input-row { display: flex; gap: 1rem; align-items: flex-start; }
+  :global(.add-form .input-row .input-container) { flex: 1; }
+
+  .collab-list-header { border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; }
+  .count-tag { font-size: 0.75rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.1em; opacity: 0.8; }
+
+  .collab-stack { display: flex; flex-direction: column; gap: 1rem; }
+
+  .collab-tile { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.75rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.3s; }
+  .collab-tile:hover { transform: translateX(4px); border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.02); }
+
+  .collab-main { display: flex; align-items: center; gap: 1.25rem; }
+  :global(.collab-avatar) { border: 1px solid var(--md-sys-color-outline-variant); }
+  
+  .collab-info { display: flex; flex-direction: column; }
+  .collab-name { font-size: 1.1rem; font-weight: 850; color: var(--text-color); }
+  .collab-handle { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+
+  .collab-actions { display: flex; align-items: center; gap: 1.5rem; }
+  .role-wrap { width: 140px; }
+
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+
+  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .empty-state span { font-size: 3rem; opacity: 0.3; }
+  .empty-state p { font-weight: 700; }
+
+  .skeleton-tile { height: 84px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+
+  @media (max-width: 600px) {
+    .collab-tile { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    .collab-actions { justify-content: space-between; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 1rem; }
+    .role-wrap { flex: 1; }
   }
 </style>

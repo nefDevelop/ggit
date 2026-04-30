@@ -4,8 +4,11 @@
   import WebhookEditor from './WebhookEditor.svelte';
   import WebhookLogViewer from './WebhookLogViewer.svelte';
   import Modal from '$lib/components/Modal.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
   import TableSkeleton from '$lib/components/ui/TableSkeleton.svelte';
   import { dialog } from '$lib/dialog.svelte';
+  import { i18n } from '$lib/i18n.svelte';
 
   const repo: any = getContext('repo');
   
@@ -48,7 +51,7 @@
   }
 
   async function handleDelete(id: number) {
-    if (!await dialog.confirm('Are you sure you want to delete this webhook?')) return;
+    if (!await dialog.confirm('¿Estás seguro de que deseas eliminar este webhook?')) return;
     
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/hooks/${id}`, {
@@ -71,121 +74,163 @@
   onMount(fetchWebhooks);
 </script>
 
-<div class="settings-view-flat">
-  <div class="header-action-minimal">
-    <button class="btn-action-primary" onclick={handleAdd}>
-      <span class="material-symbols-rounded">add</span>
-      New Webhook
-    </button>
-  </div>
-
-  {#if loading}
-    <div class="hooks-list-flat">
-      <table style="width: 100%;">
-        <tbody>
-          <TableSkeleton columns={1} rows={3} />
-        </tbody>
-      </table>
-    </div>
-  {:else if error}
-    <div class="error-msg">{error}</div>
-  {:else if webhooks.length === 0}
-    <div class="empty-state-flat">
-      <span class="material-symbols-rounded">webhook</span>
-      <p>No webhooks configured for this repository.</p>
-    </div>
-  {:else}
-    <div class="hooks-list-flat">
-      {#each webhooks as hook}
-        <div class="hook-row-flat">
-          <div class="hook-core">
-            <div class="hook-url-row">
-              <span class="type-badge">{hook.type}</span>
-              <code class="url-code">{hook.url}</code>
-            </div>
-            <div class="hook-status-meta">
-              <div class="status-indicator">
-                {#if hook.last_status === 'success'}
-                  <span class="material-symbols-rounded success">check_circle</span>
-                {:else if hook.last_status === 'failure'}
-                  <span class="material-symbols-rounded failure">error</span>
-                {:else}
-                  <span class="material-symbols-rounded neutral">help</span>
-                {/if}
-              </div>
-              <span class="events-summary">{hook.events.join(', ')}</span>
-            </div>
-          </div>
-          <div class="hook-row-actions">
-            <button class="btn-icon-minimal" onclick={() => handleLogs(hook)} title="Logs">
-              <span class="material-symbols-rounded">history</span>
-            </button>
-            <button class="btn-icon-minimal" onclick={() => handleEdit(hook)} title="Edit">
-              <span class="material-symbols-rounded">edit</span>
-            </button>
-            <button class="btn-icon-minimal delete" onclick={() => handleDelete(hook.id)} title="Delete">
-              <span class="material-symbols-rounded">delete</span>
-            </button>
-          </div>
+<Card padding="none" class="settings-premium-card">
+  <header class="section-header-premium">
+    <div class="header-flex">
+      <div class="title-with-icon">
+        <span class="material-symbols-rounded hero-icon">webhook</span>
+        <div>
+          <h2>Webhooks</h2>
+          <p class="subtitle">Configura eventos que dispararán peticiones HTTP POST a tus servicios externos.</p>
         </div>
-      {/each}
+      </div>
+      <Button variant="primary" icon="add" onclick={handleAdd}>Nuevo Webhook</Button>
     </div>
-  {/if}
+  </header>
 
-  <Modal 
-    show={showEditor} 
-    title={editingHook ? 'Edit Webhook' : 'Add New Webhook'} 
-    onclose={() => handleEditorClose()}
-  >
-    <WebhookEditor 
-      hook={editingHook} 
-      onclose={handleEditorClose} 
-    />
-  </Modal>
-
-  <Modal 
-    show={!!showingLogsFor} 
-    title="Webhook Logs" 
-    onclose={() => showingLogsFor = null}
-    maxWidth="1000px"
-  >
-    {#if showingLogsFor}
-      <WebhookLogViewer 
-        hook={showingLogsFor} 
-        onclose={() => showingLogsFor = null} 
-      />
+  <div class="settings-content">
+    {#if loading}
+      <div class="skeleton-list">
+        {#each Array(3) as _}
+          <div class="skeleton-item tonal"></div>
+        {/each}
+      </div>
+    {:else if error}
+      <div class="error-banner">
+        <span class="material-symbols-rounded">error</span>
+        {error}
+      </div>
+    {:else if webhooks.length === 0}
+      <div class="empty-state island">
+        <span class="material-symbols-rounded">webhook</span>
+        <p>No hay webhooks configurados para este repositorio.</p>
+        <Button variant="outline" size="sm" onclick={handleAdd}>Configurar el primero</Button>
+      </div>
+    {:else}
+      <div class="hooks-stack">
+        {#each webhooks as hook}
+          <div class="hook-tile tonal">
+            <div class="hook-main">
+              <div class="hook-url-row">
+                <span class="type-badge">{hook.type}</span>
+                <code class="url-code">{hook.url}</code>
+              </div>
+              <div class="hook-meta">
+                <div class="status-indicator">
+                  {#if hook.last_status === 'success'}
+                    <span class="material-symbols-rounded success">check_circle</span>
+                    <span class="status-text">Último envío OK</span>
+                  {:else if hook.last_status === 'failure'}
+                    <span class="material-symbols-rounded failure">error</span>
+                    <span class="status-text">Fallo en último envío</span>
+                  {:else}
+                    <span class="material-symbols-rounded neutral">help</span>
+                    <span class="status-text">Sin envíos aún</span>
+                  {/if}
+                </div>
+                <div class="events-list">
+                  <span class="material-symbols-rounded">event</span>
+                  {hook.events.join(', ')}
+                </div>
+              </div>
+            </div>
+            <div class="hook-actions">
+              <Button variant="ghost" size="sm" icon="history" onclick={() => handleLogs(hook)} title="Historial" />
+              <Button variant="ghost" size="sm" icon="edit" onclick={() => handleEdit(hook)} title="Editar" />
+              <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => handleDelete(hook.id)} title="Eliminar" />
+            </div>
+          </div>
+        {/each}
+      </div>
     {/if}
-  </Modal>
-</div>
+  </div>
+</Card>
+
+<Modal 
+  show={showEditor} 
+  title={editingHook ? 'Editar Webhook' : 'Nuevo Webhook'} 
+  onclose={() => handleEditorClose()}
+  maxWidth="800px"
+>
+  <WebhookEditor 
+    hook={editingHook} 
+    onclose={handleEditorClose} 
+  />
+</Modal>
+
+<Modal 
+  show={!!showingLogsFor} 
+  title="Historial de Webhook" 
+  onclose={() => showingLogsFor = null}
+  maxWidth="1000px"
+>
+  {#if showingLogsFor}
+    <WebhookLogViewer 
+      hook={showingLogsFor} 
+      onclose={() => showingLogsFor = null} 
+    />
+  {/if}
+</Modal>
 
 <style>
-  .settings-view-flat { display: flex; flex-direction: column; gap: 2rem; padding: 1rem; animation: fadeIn 0.3s ease-out; }
+  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   
-  .header-action-minimal { display: flex; justify-content: flex-end; }
+  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
+  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  .hooks-list-flat { display: flex; flex-direction: column; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
+  @media (max-width: 600px) {
+    .section-header-premium { padding: 1.5rem; }
+    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    h2 { font-size: 1.25rem; }
+    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    .title-with-icon { gap: 0.75rem; }
+    .subtitle { display: none; }
+  }
+
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+
+  .hooks-stack { display: flex; flex-direction: column; gap: 1rem; }
   
-  .hook-row-flat { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); transition: background 0.2s; }
-  .hook-row-flat:last-child { border-bottom: none; }
-  .hook-row-flat:hover { background: var(--surface-variant); }
+  .hook-tile { padding: 1.25rem 1.75rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); display: flex; justify-content: space-between; align-items: center; gap: 2rem; transition: all 0.2s; }
+  .hook-tile:hover { transform: translateX(4px); border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.02); }
 
-  .hook-core { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 0; }
+  .hook-main { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 0; }
   .hook-url-row { display: flex; align-items: center; gap: 1rem; }
-  .type-badge { background: var(--primary-color); color: var(--on-primary); font-size: 0.7rem; font-weight: 800; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.05em; }
-  .url-code { font-size: 0.9rem; opacity: 0.9; font-family: 'JetBrains Mono', monospace; }
+  .type-badge { background: var(--primary-color); color: var(--on-primary); font-size: 0.65rem; font-weight: 900; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 6px; letter-spacing: 0.05em; }
+  .url-code { font-size: 0.95rem; font-family: 'JetBrains Mono', monospace; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .hook-status-meta { display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: var(--text-muted); }
-  .status-indicator { display: flex; align-items: center; }
-  .status-indicator .success { color: var(--success); }
-  .status-indicator .failure { color: var(--error); }
-  .status-indicator .neutral { color: var(--text-muted); opacity: 0.5; }
-  
-  .events-summary { opacity: 0.7; }
+  .hook-meta { display: flex; align-items: center; gap: 2rem; }
+  .status-indicator { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
+  .status-indicator .success { color: var(--success); font-size: 1.25rem; }
+  .status-indicator .failure { color: var(--error); font-size: 1.25rem; }
+  .status-indicator .neutral { color: var(--text-muted); opacity: 0.5; font-size: 1.25rem; }
+  .status-text { color: var(--text-muted); }
 
-  .hook-row-actions { display: flex; gap: 0.5rem; }
+  .events-list { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.8; font-weight: 600; }
+  .events-list span { font-size: 1rem; }
 
-  .empty-state-flat { text-align: center; padding: 4rem; color: var(--text-muted); opacity: 0.5; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .empty-state-flat span { font-size: 3rem; }
+  .hook-actions { display: flex; gap: 0.5rem; }
+  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+
+  @media (max-width: 800px) {
+    .hook-tile { flex-direction: column; align-items: stretch; gap: 1.5rem; }
+    .hook-meta { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+    .hook-actions { justify-content: flex-end; border-top: 1px solid var(--md-sys-color-outline-variant); padding-top: 0.75rem; }
+  }
+
+  .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+  .empty-state span { font-size: 4rem; color: var(--primary-color); opacity: 0.3; }
+  .empty-state p { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); margin: 0; }
+
+  .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }
+  .skeleton-item { height: 80px; border-radius: 1.25rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+
+  .error-banner { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 1.5rem; background: rgba(var(--error-rgb), 0.1); color: var(--error); font-weight: 700; }
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
