@@ -401,9 +401,3 @@
   --color-warning: #ebcb8b;
 }
 
-/* CUSTOM Theme Dynamic Placeholder */
-/* When [data-theme="custom"] is active, the ThemeSelector will inject md-sys tokens inline. */
-/* The global mappings at the top will then automatically point to these custom tokens. */
-[data-theme="custom"] {
-   /* No explicit tokens here, they are injected via style attribute */
-}

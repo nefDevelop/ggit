@@ -71,7 +71,6 @@
         document.documentElement.style.removeProperty(prop);
       }
     } else {
-    } else {
       applyCustomColor(customColor);
     }
   }
