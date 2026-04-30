@@ -1,4 +1,20 @@
 <script lang="ts">
+  interface Props {
+    value?: any;
+    placeholder?: string;
+    type?: string;
+    label?: string;
+    error?: string;
+    disabled?: boolean;
+    class?: string;
+    multiline?: boolean;
+    rows?: number;
+    icon?: string;
+    min?: string | number;
+    max?: string | number;
+    step?: string | number;
+  }
+
   let { 
     value = $bindable(), 
     placeholder = '', 
@@ -13,7 +29,7 @@
     min = undefined,
     max = undefined,
     step = undefined
-  } = $props();
+  }: Props = $props();
 </script>
 
 <div class="field {className}">

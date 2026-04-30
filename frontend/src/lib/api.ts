@@ -60,6 +60,12 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
 
       if (response.status === 401) {
         toast.error("Sesión expirada. Por favor, vuelve a iniciar sesión.");
+        // Redirigir al login si no estamos ya allí
+        if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+          setTimeout(() => {
+            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+          }, 1500); // Esperar un poco para que vean el toast
+        }
       } else if (response.status === 403) {
         toast.error("No tienes permisos para realizar esta acción.");
       } else if (response.status >= 500) {

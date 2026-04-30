@@ -35,7 +35,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		user.POST("/reset_password", ginx.Handle(ResetPassword))
 		user.POST("/activate", ginx.Handle(Activate))
 
-		settings := user.Group("/settings")
+		settings := user.Group("/settings", context.Toggle(&context.ToggleOptions{SignInRequired: true}))
 		{
 			settings.GET("/profile", ginx.Handle(GetUserProfileSettings))
 			settings.PUT("/profile", ginx.Handle(UpdateUserProfileSettings))
@@ -83,14 +83,14 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.DELETE("/account", ginx.Handle(DeleteUserAccount))
 		}
 
-		dashboard := user.Group("/dashboard")
+		dashboard := user.Group("/dashboard", context.Toggle(&context.ToggleOptions{SignInRequired: true}))
 		{
 			dashboard.GET("/data", ginx.Handle(GetDashboardData))
 			dashboard.GET("/feeds", ginx.Handle(GetDashboardFeeds))
 		}
 
-		user.POST("/repos", ginx.Handle(CreateRepo))
-		user.POST("/repos/migrate", ginx.Handle(MigrateRepo))
+		user.POST("/repos", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRepo))
+		user.POST("/repos/migrate", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(MigrateRepo))
 	}
 
 	explore := r.Group("/explore", context.Toggle(&context.ToggleOptions{SignInRequired: false}))

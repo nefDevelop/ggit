@@ -80,7 +80,7 @@
 </div>
 
 <style>
-  .explore-users { padding: 2rem 0; }
+  .explore-users { padding: 2rem 1.5rem; }
   @media (max-width: 600px) {
     .explore-users { padding: 1rem; }
   }

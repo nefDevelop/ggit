@@ -60,7 +60,7 @@
 </div>
 
 <style>
-  .explore-topics { padding: 2rem 0; }
+  .explore-topics { padding: 2rem 1.5rem; }
   @media (max-width: 600px) {
     .explore-topics { padding: 1rem; }
   }

@@ -207,8 +207,8 @@
   .action-header span { font-size: 2.5rem; }
   .action-header h4 { margin: 0; font-size: 1.5rem; font-weight: 900; }
 
-  .action-form { display: flex; flex-direction: column; gap: 2rem; margin-top: 1.5rem; }
-  .form-actions { display: flex; justify-content: flex-start; margin-top: 1rem; }
+  .action-form { display: flex; flex-direction: column; gap: 2.5rem; margin-top: 2rem; }
+  .form-actions { display: flex; justify-content: flex-start; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
