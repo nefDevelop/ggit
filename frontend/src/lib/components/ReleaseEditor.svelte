@@ -135,7 +135,7 @@
 <div class="release-editor shadow-xl">
   <header class="editor-header">
     <h3>{release ? "Edit Release" : "New Release"}</h3>
-    <button class="btn-icon" onclick={onCancel}>
+    <button class="btn-icon" onclick={onCancel} aria-label="Close editor">
       <span class="material-symbols-rounded">close</span>
     </button>
   </header>
@@ -186,11 +186,11 @@
       </div>
 
       <div class="attachments-zone">
-        <label for="release-attachments">Binary Attachments</label>
-        <div id="release-attachments" class="upload-area" class:uploading>
+        <span class="field-label">Binary Attachments</span>
+        <div class="upload-area" class:uploading>
           <span class="material-symbols-rounded">cloud_upload</span>
           <p>Drag and drop assets here, or <strong>browse</strong></p>
-          <input type="file" multiple onchange={handleFileUpload} />
+          <input id="release-attachments" type="file" multiple onchange={handleFileUpload} aria-label="Upload attachments" />
         </div>
 
         {#if attachments.length > 0}
@@ -202,6 +202,7 @@
                 <button
                   class="remove-btn"
                   onclick={() => removeAttachment(a.uuid)}
+                  aria-label={`Remove ${a.name}`}
                 >
                   <span class="material-symbols-rounded">delete</span>
                 </button>
@@ -347,7 +348,7 @@
     flex-direction: column;
     gap: 1rem;
   }
-  .attachments-zone label {
+  .field-label {
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--text-muted);

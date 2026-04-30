@@ -131,7 +131,7 @@
       <p class="helper">Used to generate a signature in <code>X-Ggit-Signature-256</code> header.</p>
 
       <div class="events-picker">
-        <label class="section-label">Which events would you like to trigger this webhook?</label>
+        <span class="section-label">Which events would you like to trigger this webhook?</span>
         <div class="events-grid">
           {#each availableEvents as ev}
             <label class="event-card" class:active={events.includes(ev.id)}>
@@ -184,9 +184,9 @@
   
   .helper { margin: -0.5rem 0 0 0.25rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; }
 
-  .section-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .section-label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.5rem; }
 
-  .events-picker { display: flex; flex-direction: column; gap: 1rem; }
+  .events-picker { display: flex; flex-direction: column; gap: 0.5rem; }
   
   .events-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   @media (max-width: 600px) { .events-grid { grid-template-columns: 1fr; } }
