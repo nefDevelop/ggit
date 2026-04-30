@@ -48,22 +48,44 @@ export function hslToHex(h: number, s: number, l: number): string {
  * - Neutral: Chroma 4
  * - Neutral Variant: Chroma 8
  */
-export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
+export function generateMd3Palette(seedHex: string, isDark: boolean = false, scheme: 'tonal' | 'vibrant' | 'expressive' = 'expressive') {
   const seedHsl = hexToHsl(seedHex);
   const h = seedHsl.h;
 
   // Helper to map MD3 Tones (0-100) to HSL Lightness
   const getTone = (tone: number) => tone; 
 
-  // PALETTE DEFINITIONS (Saturation approximated for MD3 Chroma)
-  const palettes = {
-    primary: { h, s: Math.max(seedHsl.s, 48) },
-    secondary: { h, s: 16 }, // Official MD3 Tonal Spot Chroma
-    tertiary: { h: (h + 60) % 360, s: 24 }, // Official MD3 Tonal Spot Hue +60
-    neutral: { h, s: 6 }, 
-    neutralVariant: { h, s: 8 },
-    error: { h: 0, s: 40 }
-  };
+  // PALETTE DEFINITIONS based on MD3 Schemes
+  let palettes;
+  
+  if (scheme === 'expressive') {
+    palettes = {
+      primary: { h: (h + 15) % 360, s: Math.max(seedHsl.s, 48) },
+      secondary: { h: (h + 30) % 360, s: 32 }, 
+      tertiary: { h: (h + 120) % 360, s: 48 },
+      neutral: { h, s: 8 }, 
+      neutralVariant: { h, s: 12 },
+      error: { h: 0, s: 40 }
+    };
+  } else if (scheme === 'vibrant') {
+    palettes = {
+      primary: { h, s: Math.max(seedHsl.s, 60) },
+      secondary: { h, s: 40 }, 
+      tertiary: { h: (h + 60) % 360, s: 50 },
+      neutral: { h, s: 10 }, 
+      neutralVariant: { h, s: 14 },
+      error: { h: 0, s: 40 }
+    };
+  } else { // tonal_spot (official default)
+    palettes = {
+      primary: { h, s: Math.max(seedHsl.s, 48) },
+      secondary: { h, s: 16 }, 
+      tertiary: { h: (h + 60) % 360, s: 24 },
+      neutral: { h, s: 6 }, 
+      neutralVariant: { h, s: 8 },
+      error: { h: 0, s: 40 }
+    };
+  }
 
   const colors: Record<string, string> = {
     // PRIMARY

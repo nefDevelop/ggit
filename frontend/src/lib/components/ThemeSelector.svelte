@@ -7,7 +7,8 @@
   let currentTheme = $state('default');
   let currentScheme = $state('auto');
   let customColor = $state('#0b57d0');
-  let derivedPalette = $derived(generateMd3Palette(customColor, currentScheme === 'dark' || (currentScheme === 'auto' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)));
+  let customSchemeMode = $state('expressive');
+  let derivedPalette = $derived(generateMd3Palette(customColor, currentScheme === 'dark' || (currentScheme === 'auto' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches), customSchemeMode as any));
 
   const themes = [
     { 
@@ -42,6 +43,7 @@
     currentTheme = localStorage.getItem('theme') || 'default';
     currentScheme = localStorage.getItem('color-scheme') || 'auto';
     customColor = localStorage.getItem('custom-theme-color') || '#0b57d0';
+    customSchemeMode = localStorage.getItem('custom-scheme-mode') || 'expressive';
     
     if (currentTheme === 'custom') {
       applyCustomColor(customColor);
@@ -81,7 +83,7 @@
     
     if (currentTheme === 'custom') {
       const isDark = currentScheme === 'dark' || (currentScheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-      const palette = generateMd3Palette(hex, isDark);
+      const palette = generateMd3Palette(hex, isDark, customSchemeMode as any);
       
       const props: Record<string, string> = {
         '--primary-color': palette.primary,
@@ -143,6 +145,14 @@
       document.documentElement.style.setProperty('--bg-warning-subtle', `color-mix(in srgb, #f59e0b, transparent 85%)`);
     }
 
+  }
+
+  function setCustomScheme(mode: string) {
+    customSchemeMode = mode;
+    localStorage.setItem('custom-scheme-mode', mode);
+    if (currentTheme === 'custom') {
+      applyCustomColor(customColor);
+    }
   }
 
   function applyScheme(schemeId: string) {
@@ -255,7 +265,18 @@
           </div>
           <div class="theme-info">
             <span class="name">Personalizado</span>
-            <span class="hex">{customColor}</span>
+            <div class="scheme-mini-switcher">
+               {#each ['tonal', 'vibrant', 'expressive'] as mode}
+                  <button 
+                    type="button" 
+                    class="mini-chip" 
+                    class:active={customSchemeMode === mode}
+                    onclick={(e) => { e.stopPropagation(); setCustomScheme(mode); }}
+                  >
+                    {mode}
+                  </button>
+               {/each}
+            </div>
           </div>
           {#if currentTheme === 'custom'}
              <span class="material-symbols-rounded check-icon">check_circle</span>
@@ -317,9 +338,17 @@
 
   .custom-preview input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
 
-  .theme-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+  .theme-info { display: flex; flex-direction: column; flex: 1; min-width: 0; gap: 0.25rem; }
   .theme-info .name { font-weight: 900; font-size: 1rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .theme-info .hex { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted); opacity: 0.6; }
+  
+  .scheme-mini-switcher { display: flex; gap: 4px; margin-top: 4px; }
+  .mini-chip { 
+    padding: 2px 8px; border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); 
+    background: transparent; color: var(--text-muted); font-size: 0.65rem; font-weight: 700; 
+    text-transform: uppercase; cursor: pointer; transition: all 0.2s;
+  }
+  .mini-chip:hover { border-color: var(--primary-color); color: var(--primary-color); }
+  .mini-chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
   .check-icon { color: var(--primary-color); font-size: 1.5rem; }
 
