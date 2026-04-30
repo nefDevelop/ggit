@@ -136,7 +136,7 @@
         <span class="detail-time">Generado el {new Date(selectedNotice.created_at).toLocaleString()}</span>
       </div>
       <div class="detail-content">
-        <label>Contenido del Log</label>
+        <span class="detail-label">Contenido del Log</span>
         <div class="code-box">
           {selectedNotice.description}
         </div>
@@ -178,7 +178,7 @@
   .detail-top { display: flex; justify-content: space-between; align-items: center; }
   .detail-time { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
   .detail-content { display: flex; flex-direction: column; gap: 0.75rem; }
-  .detail-content label { font-size: 0.75rem; text-transform: uppercase; font-weight: 900; color: var(--primary-color); letter-spacing: 0.1em; }
+  .detail-content .detail-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 900; color: var(--primary-color); letter-spacing: 0.1em; }
   .code-box { background: #08080c; border: 1px solid #1a1a24; border-radius: 1.25rem; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; line-height: 1.6; font-size: 0.95rem; color: #6ee7b7; white-space: pre-wrap; word-break: break-all; }
 
   .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 2.5rem; animation: pulse 1.5s infinite; }

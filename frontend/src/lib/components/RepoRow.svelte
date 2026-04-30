@@ -44,10 +44,13 @@
 
   let avatarError = $state(false);
 
+  import { toast } from '$lib/toast.svelte';
+
   let copied = $state(false);
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
     copied = true;
+    toast.success("Enlace de clonación copiado");
     setTimeout(() => copied = false, 2000);
   }
 </script>
@@ -129,8 +132,8 @@
   </div>
 
   <div class="actions-info">
-    <button class="btn-icon-minimal" onclick={() => copyToClipboard(repo.clone_url)} title="Copy Clone URL">
-      <span class="material-symbols-rounded">{copied ? 'check' : 'content_copy'}</span>
+    <button class="btn-icon-minimal" onclick={(e) => { e.stopPropagation(); copyToClipboard(repo.clone_url); }} title="Copy Clone URL">
+      <span class="material-symbols-rounded" class:success-icon={copied}>{copied ? 'check' : 'content_copy'}</span>
     </button>
     <span class="time">{timeAgo(repo.updated_at)}</span>
   </div>
@@ -286,6 +289,7 @@
   .stat-item.active { color: var(--primary-color); font-weight: 700; }
 
   .actions-info { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
+  .success-icon { color: var(--md-sys-color-primary) !important; }
   .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
   @media (max-width: 1200px) {

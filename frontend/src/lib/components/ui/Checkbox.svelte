@@ -5,9 +5,10 @@
     description?: string;
     onchange?: (checked: boolean) => void;
     class?: string;
+    simple?: boolean;
   }
 
-  let { checked = $bindable(), label, description, onchange, class: className }: Props = $props();
+  let { checked = $bindable(), label, description, onchange, class: className, simple = false }: Props = $props();
 
   function toggle() {
     checked = !checked;
@@ -15,7 +16,7 @@
   }
 </script>
 
-<label class="checkbox-container {className}">
+<label class="checkbox-container {className}" class:simple>
   <input 
     type="checkbox" 
     bind:checked={checked} 
@@ -27,8 +28,8 @@
     {/if}
   </span>
   <div class="checkbox-text">
-    <strong>{label}</strong>
-    {#if description}
+    <strong class:simple-text={simple}>{label}</strong>
+    {#if description && !simple}
       <p>{description}</p>
     {/if}
   </div>
@@ -55,6 +56,15 @@
   .checkbox-container:active {
     transform: scale(0.98);
     background: var(--md-sys-color-surface-container-highest);
+  }
+
+  .checkbox-container.simple {
+    background: transparent;
+    padding: 0.5rem;
+    border: none;
+  }
+  .checkbox-container.simple:hover {
+    background: rgba(var(--primary-rgb), 0.05);
   }
 
   input {
@@ -92,6 +102,10 @@
     font-size: 1rem;
     font-weight: 700;
     color: var(--md-sys-color-on-surface);
+  }
+  .checkbox-text strong.simple-text {
+    font-size: 0.9rem;
+    font-weight: 600;
   }
   .checkbox-text p {
     font-size: 0.85rem;

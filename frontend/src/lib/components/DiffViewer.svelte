@@ -77,7 +77,13 @@
   <div class="diff-files">
     {#each diff?.Files || [] as file}
       <div class="diff-file" class:collapsed={collapsedFiles[file.Name]}>
-        <header class="file-header" onclick={() => toggleFile(file.Name)}>
+        <header 
+          class="file-header" 
+          onclick={() => toggleFile(file.Name)} 
+          onkeydown={(e) => e.key === 'Enter' && toggleFile(file.Name)}
+          role="button"
+          tabindex="0"
+        >
           <div class="header-left">
             <button class="collapse-btn">
               {#if collapsedFiles[file.Name]}

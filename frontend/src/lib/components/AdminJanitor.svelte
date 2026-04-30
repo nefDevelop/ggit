@@ -89,41 +89,65 @@
 </div>
 
 <style>
-  .admin-janitor { display: flex; flex-direction: column; gap: 2.5rem; }
+  .admin-janitor { display: flex; flex-direction: column; gap: 3rem; }
   
   .section-header { margin-bottom: 1rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
+  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2.25rem; }
+  h2 { margin: 0; font-size: 2.5rem; font-weight: 950; letter-spacing: -0.04em; color: var(--md-sys-color-on-surface); }
+  .subtitle { margin: 0.5rem 0 0; color: var(--md-sys-color-on-surface-variant); font-size: 1.15rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2rem; }
   
-  .repo-stat-card { display: flex; flex-direction: column; gap: 1.5rem; }
+  :global(.repo-stat-card) { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2rem !important; 
+    padding: 2rem !important;
+    border-radius: 2.5rem !important;
+  }
   
-  .repo-info { display: flex; justify-content: space-between; align-items: flex-start; }
-  .repo-main { display: flex; gap: 1rem; align-items: center; }
-  .repo-icon { color: var(--primary-color); opacity: 0.7; }
-  .repo-names { display: flex; flex-direction: column; }
-  .owner { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
-  .name { font-size: 1.2rem; font-weight: 900; }
-
-  .waste-badge { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 1rem; background: var(--surface-variant); font-weight: 800; font-size: 0.9rem; }
-  .waste-badge.warning { background: rgba(var(--error-rgb), 0.1); color: var(--error); }
-  .waste-badge span { font-size: 1.1rem; }
-
-  .repo-details { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; padding: 1rem; background: rgba(0,0,0,0.1); border-radius: 1rem; }
-  .detail-item { display: flex; flex-direction: column; gap: 0.2rem; }
-  .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 800; }
-  .value { font-size: 0.95rem; font-weight: 700; }
-
-  .card-actions { display: flex; justify-content: flex-end; }
-
+  .repo-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  .repo-main { display: flex; gap: 1.25rem; align-items: center; }
+  .repo-icon { 
+    color: var(--primary-color); 
+    background: rgba(var(--primary-rgb), 0.1);
+    padding: 0.75rem;
+    border-radius: 1rem;
+    font-size: 1.5rem;
+  }
+  .repo-names { display: flex; flex-direction: column; gap: 0.15rem; }
+  .owner { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); font-weight: 700; opacity: 0.7; }
+  .name { font-size: 1.35rem; font-weight: 900; color: var(--md-sys-color-on-surface); letter-spacing: -0.01em; }
+  .waste-badge { 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+    padding: 0.75rem 1.25rem; 
+    border-radius: 1.25rem; 
+    background: var(--md-sys-color-surface-container-high); 
+    font-weight: 900; 
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .waste-badge.warning { background: color-mix(in srgb, var(--md-sys-color-error), transparent 90%); color: var(--md-sys-color-error); }
+  .waste-badge span { font-size: 1.2rem; }
+  .repo-details { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1.5rem; 
+    padding: 1.5rem; 
+    background: var(--md-sys-color-surface-container-low); 
+    border-radius: 1.75rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .detail-item { display: flex; flex-direction: column; gap: 0.4rem; }
+  .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--md-sys-color-on-surface-variant); font-weight: 800; opacity: 0.8; }
+  .value { font-size: 1.1rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
+  .card-actions { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
+  :global(.card-actions .btn) { border-radius: 1rem !important; font-weight: 700 !important; }
   .empty-card { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-card span { font-size: 4rem; opacity: 0.2; }
-
-  .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
-  .skeleton-card { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
-
+  .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2rem; }
+  .skeleton-card { height: 260px; background: var(--md-sys-color-surface-container-high); border-radius: 2.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 </style>

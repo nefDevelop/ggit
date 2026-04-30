@@ -6,6 +6,9 @@
     label?: string;
     error?: string;
     disabled?: boolean;
+    required?: boolean;
+    autocomplete?: string;
+    id?: string;
     class?: string;
     multiline?: boolean;
     rows?: number;
@@ -22,6 +25,9 @@
     label = '', 
     error = '', 
     disabled = false,
+    required = false,
+    autocomplete = undefined,
+    id = undefined,
     class: className = '',
     multiline = false,
     rows = 3,
@@ -44,17 +50,22 @@
     
     {#if multiline}
       <textarea 
+        {id}
         bind:value 
         {placeholder} 
         {disabled} 
+        {required}
         {rows}
       ></textarea>
     {:else}
       <input 
+        {id}
         {type} 
         bind:value 
         {placeholder} 
         {disabled} 
+        {required}
+        autocomplete={autocomplete as any}
         {min}
         {max}
         {step}

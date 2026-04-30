@@ -123,7 +123,7 @@
               </p>
             </div>
             <div class="hook-footer">
-              <Button variant="tonal" size="sm" icon="edit" onclick={() => handleEdit(hook)}>
+              <Button variant="secondary" size="sm" icon="edit" onclick={() => handleEdit(hook)}>
                 Editar Script
               </Button>
             </div>

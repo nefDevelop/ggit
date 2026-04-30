@@ -2,18 +2,17 @@
   import { onMount } from 'svelte';
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
+  import Card from '$lib/components/ui/Card.svelte';
+  import Checkbox from '$lib/components/ui/Checkbox.svelte';
+  import { i18n } from '$lib/i18n.svelte';
 
   let username = $state('');
   let password = $state('');
   let remember = $state(false);
   let errorMsg = $state('');
   let loading = $state(false);
-
-  function getCsrfToken() {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
-    return match ? match[2] : '';
-  }
 
   async function handleLogin(e: Event) {
     e.preventDefault();
@@ -52,187 +51,303 @@
 </script>
 
 <svelte:head>
-  <title>Sign In - Gogs</title>
+  <title>Sign In - Ggit</title>
 </svelte:head>
 
-<div class="container auth-container">
-  <div class="glass auth-window">
-    <div class="auth-header">
-      <h2>Welcome Back</h2>
-      <p>Sign in to your account</p>
-    </div>
+<div class="login-page">
+  <div class="background-decor">
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+  </div>
 
-    {#if errorMsg}
-      <div class="alert box-error">
-        {errorMsg}
+  <div class="login-container">
+    <Card variant="highest" padding="none" class="login-card glass">
+      <div class="login-layout">
+        <div class="login-brand tonal">
+          <div class="brand-content">
+            <span class="material-symbols-rounded logo-icon">terminal</span>
+            <h1>Ggit</h1>
+            <p>El servicio de Git más ligero y elegante, ahora rediseñado para ti.</p>
+          </div>
+          <div class="brand-footer">
+            <span>v2026.4.0</span>
+          </div>
+        </div>
+
+        <div class="login-form-area">
+          <header class="form-header">
+            <h2>Bienvenido</h2>
+            <p>Inicia sesión para continuar</p>
+          </header>
+
+          {#if errorMsg}
+            <div class="error-banner animate-in">
+              <span class="material-symbols-rounded">error</span>
+              <p>{errorMsg}</p>
+            </div>
+          {/if}
+
+          <form onsubmit={handleLogin} class="auth-form">
+            <Input 
+              label="Usuario o Email" 
+              bind:value={username} 
+              icon="person" 
+              placeholder="tu_usuario" 
+              required
+            />
+            
+            <Input 
+              label="Contraseña" 
+              type="password" 
+              bind:value={password} 
+              icon="lock" 
+              placeholder="••••••••" 
+              required
+            />
+
+            <div class="form-options">
+              <Checkbox label="Recordarme" bind:checked={remember} simple />
+              <a href="/user/forgot_password" class="forgot-link">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <Button type="submit" variant="primary" class="login-btn" loading={loading}>
+              Iniciar Sesión
+            </Button>
+          </form>
+
+          <footer class="form-footer">
+            <p>¿No tienes una cuenta? <a href="/user/sign_up">Regístrate ahora</a></p>
+          </footer>
+        </div>
       </div>
-    {/if}
-
-    <form onsubmit={handleLogin} class="auth-form">
-      <div class="form-group">
-        <label for="username">Username or Email</label>
-        <input 
-          type="text" 
-          id="username" 
-          bind:value={username} 
-          required 
-          autocomplete="username"
-          placeholder="your_username"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input 
-          type="password" 
-          id="password" 
-          bind:value={password} 
-          required 
-          autocomplete="current-password"
-          placeholder="••••••••"
-        />
-      </div>
-
-      <div class="form-actions">
-        <label class="remember-me">
-          <input type="checkbox" bind:checked={remember} />
-          <span>Remember me</span>
-        </label>
-        <a href="/user/forgot_password" class="forgot-link">Forgot password?</a>
-      </div>
-
-      <button type="submit" class="btn btn-primary" disabled={loading}>
-        {loading ? 'Signing in...' : 'Sign In'}
-      </button>
-    </form>
-
-    <div class="auth-footer">
-      <p>Don't have an account? <a href="/user/sign_up">Sign up now</a></p>
-    </div>
+    </Card>
   </div>
 </div>
 
 <style>
-  .auth-container {
+  .login-page {
+    position: fixed;
+    inset: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: calc(100vh - 100px);
+    background: var(--bg-color);
+    overflow: hidden;
   }
 
-  .auth-window {
+  .background-decor {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    filter: blur(80px);
+    opacity: 0.4;
+  }
+
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  .c1 {
+    width: 400px;
+    height: 400px;
+    background: var(--primary-color);
+    top: -100px;
+    right: -100px;
+  }
+
+  .c2 {
+    width: 300px;
+    height: 300px;
+    background: #8b5cf6;
+    bottom: -50px;
+    left: -50px;
+  }
+
+  .login-container {
+    position: relative;
+    z-index: 1;
     width: 100%;
-    max-width: 420px;
-    padding: 3rem 2.5rem;
+    max-width: 900px;
+    padding: 2rem;
+    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .auth-header {
-    text-align: center;
-    margin-bottom: 2rem;
+  :global(.login-card) {
+    border-radius: 2.5rem !important;
+    overflow: hidden;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
   }
 
-  .auth-header h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
+  .login-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    min-height: 600px;
   }
 
-  .auth-header p {
-    color: var(--text-muted);
+  .login-brand {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.2));
   }
 
-  .auth-form {
+  .brand-content {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
   }
 
-  .form-group {
+  .logo-icon {
+    font-size: 4rem;
+    color: var(--primary-color);
+  }
+
+  .login-brand h1 {
+    font-size: 3.5rem;
+    font-weight: 950;
+    margin: 0;
+    letter-spacing: -0.05em;
+    background: linear-gradient(to bottom, var(--text-color), var(--primary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .login-brand p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 300px;
+  }
+
+  .brand-footer {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    opacity: 0.5;
+  }
+
+  .login-form-area {
+    padding: 3.5rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    justify-content: center;
+    background: var(--md-sys-color-surface-container-highest);
   }
 
-  .form-group label {
-    font-size: 0.9rem;
-    font-weight: 500;
+  .form-header {
+    margin-bottom: 2.5rem;
   }
 
-  .form-group input {
-    background-color: rgba(15, 23, 42, 0.5);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    padding: 0.8rem 1rem;
-    border-radius: var(--radius);
-    outline: none;
-    transition: border-color 0.2s ease;
+  .form-header h2 {
+    font-size: 2.25rem;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.02em;
   }
 
-  .form-group input:focus {
-    border-color: var(--primary-color);
-  }
-
-  .btn-primary {
-    width: 100%;
-    margin-top: 1rem;
-    padding: 1rem;
+  .form-header p {
+    color: var(--text-muted);
+    margin-top: 0.5rem;
     font-size: 1.1rem;
   }
 
-  .btn-primary:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
   }
 
-  .form-actions {
+  .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9rem;
-  }
-
-  .remember-me {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
+    margin-top: 0.5rem;
   }
 
   .forgot-link {
+    font-size: 0.9rem;
     color: var(--primary-color);
     text-decoration: none;
+    font-weight: 600;
   }
 
   .forgot-link:hover {
     text-decoration: underline;
   }
 
-  .auth-footer {
-    margin-top: 2rem;
+  :global(.login-btn) {
+    margin-top: 1rem;
+    height: 3.5rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 800 !important;
+    border-radius: 1.25rem !important;
+  }
+
+  .error-banner {
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
+    padding: 1rem 1.25rem;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .error-banner p { margin: 0; }
+
+  .form-footer {
+    margin-top: 2.5rem;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
   }
 
-  .auth-footer a {
+  .form-footer a {
     color: var(--primary-color);
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 700;
   }
 
-  .auth-footer a:hover {
+  .form-footer a:hover {
     text-decoration: underline;
   }
 
-  .alert {
-    padding: 1rem;
-    border-radius: var(--radius);
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  .box-error {
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid #ef4444;
-    color: #fca5a5;
+  .animate-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @media (max-width: 850px) {
+    .login-layout {
+      grid-template-columns: 1fr;
+    }
+    .login-brand {
+      display: none;
+    }
+    .login-container {
+      max-width: 500px;
+    }
+    .login-form-area {
+      padding: 2.5rem;
+    }
   }
 </style>
+

@@ -217,16 +217,7 @@
     {/if}
   </div>
 
-  <!-- THEME SELECTOR -->
-  <div class="theme-trigger-section">
-    <button
-      class="appearance-btn"
-      onclick={() => (showThemePanel = !showThemePanel)}
-    >
-      <span class="material-symbols-rounded">palette</span>
-      <span class="item-label">Apariencia</span>
-    </button>
-  </div>
+
 
   <!-- BRAND AT BOTTOM -->
   <div class="brand-section-bottom">
@@ -234,6 +225,13 @@
       <span class="brand-name">Ggit</span>
       <span class="version">v2026.4.0</span>
     </div>
+    <button
+      class="minimal-theme-btn"
+      onclick={() => (showThemePanel = !showThemePanel)}
+      title="Apariencia"
+    >
+      <span class="material-symbols-rounded">palette</span>
+    </button>
   </div>
 </nav>
 
@@ -489,9 +487,6 @@
       justify-content: space-around;
       pointer-events: none;
     }
-    .nav-links, .theme-trigger-section {
-      pointer-events: auto;
-    }
     .user-profile-summary,
     .brand-section-bottom,
     .item-label,
@@ -517,49 +512,28 @@
     .nav-org-list {
       display: none;
     }
-    .theme-trigger-section {
-      padding: 0;
-      margin: 0;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-    }
     .appearance-btn {
-      width: auto;
-      padding: 0.75rem;
-      gap: 0;
-      justify-content: center;
+      display: none;
     }
   }
 
   /* Theme Button Styles */
-  .theme-trigger-section {
-    padding: 0.5rem 0;
-    margin-bottom: 0.5rem;
-  }
-
-  .appearance-btn {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    width: 100%;
-    padding: 0.85rem 1.25rem;
-    color: var(--text-muted);
+  .minimal-theme-btn {
     background: transparent;
     border: none;
+    color: var(--text-muted);
     cursor: pointer;
-    border-radius: 1rem;
+    padding: 0.5rem;
+    display: flex;
+    border-radius: 0.75rem;
     transition: all 0.2s;
-    font-weight: 600;
-    font-size: 0.95rem;
+    margin-left: auto;
   }
-
-  .appearance-btn:hover {
-    color: var(--text-color);
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  .appearance-btn span.material-symbols-rounded {
+  .minimal-theme-btn:hover {
     color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.1);
+  }
+  .minimal-theme-btn span {
+    font-size: 1.25rem;
   }
 </style>

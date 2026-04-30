@@ -46,7 +46,6 @@
             type="text" 
             bind:value={inputValue} 
             class="dialog-input"
-            autofocus
             placeholder="Escribe aquí..."
           />
         {/if}

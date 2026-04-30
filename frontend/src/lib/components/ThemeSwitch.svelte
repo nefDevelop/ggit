@@ -128,7 +128,7 @@
 </script>
 
 {#if show}
-<div class="theme-backdrop" onclick={() => show = false}></div>
+<div class="theme-backdrop" onclick={() => show = false} onkeydown={(e) => e.key === 'Escape' && (show = false)} role="presentation"></div>
 <div class="theme-panel island">
   <div class="panel-header">
     <div class="title-box">

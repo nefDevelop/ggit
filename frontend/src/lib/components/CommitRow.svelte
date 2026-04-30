@@ -48,7 +48,9 @@
     </div>
   </div>
   <div class="commit-actions">
-    <code class="sha" title="Copiar" onclick={copyHash} style="cursor: pointer;">{commit.id?.slice(0, 7)}</code>
+    <button class="sha-btn" title="Copiar" onclick={copyHash}>
+      <code class="sha">{commit.id?.slice(0, 7)}</code>
+    </button>
     {#if !minimalist}
       <button class="btn btn-icon" onclick={copyHash} title="Copy Hash">
         <span class="material-symbols-rounded">{copied ? 'check' : 'content_copy'}</span>
@@ -137,6 +139,18 @@
     border-radius: 4px;
     color: var(--primary-color);
     font-size: 0.85rem;
+  }
+
+  .sha-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .sha-btn:hover .sha {
+    background: rgba(var(--primary-rgb), 0.15);
   }
 
   .commit-actions {
