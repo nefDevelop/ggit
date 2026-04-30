@@ -256,9 +256,10 @@
     gap: 1rem;
     padding: 1rem;
     margin-bottom: 2rem;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
     border-radius: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--md-sys-color-outline-variant);
     transition: all 0.3s ease;
   }
   .user-profile-summary:hover {
@@ -274,7 +275,7 @@
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    background: linear-gradient(135deg, var(--primary-color), var(--tertiary));
     flex-shrink: 0;
   }
 
@@ -288,7 +289,7 @@
   .full-name {
     font-size: 0.9rem;
     font-weight: 800;
-    color: var(--text-color);
+    color: inherit;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -296,7 +297,8 @@
 
   .user-handle {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: inherit;
+    opacity: 0.8;
     font-weight: 600;
   }
 

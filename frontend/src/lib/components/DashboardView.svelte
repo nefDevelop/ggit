@@ -336,8 +336,8 @@
 
   :global(.branch-pill) {
     font-family: monospace;
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary-color);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
     padding: 1px 4px;
     border-radius: 4px;
     font-size: 0.75rem;

@@ -197,19 +197,19 @@
   }
 
   .new-update {
-    border-left: 3px solid var(--primary-color);
+    border-left: 3px solid var(--tertiary);
   }
 
   .new-dot-indicator {
     width: 8px;
     height: 8px;
-    background: var(--primary-color);
+    background: var(--tertiary);
     border-radius: 50%;
     position: absolute;
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    box-shadow: 0 0 12px var(--primary-color);
+    box-shadow: 0 0 12px var(--tertiary);
     animation: pulse-dot 2s infinite;
     z-index: 5;
   }
@@ -222,8 +222,8 @@
 
   /* BLINK ANIMATIONS FOR COUNTERS */
   @keyframes activity-blink {
-    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0px var(--primary-color)); }
-    50% { opacity: 0.7; transform: scale(1.1); filter: drop-shadow(0 0 5px var(--primary-color)); color: var(--primary-color); }
+    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0px var(--tertiary)); }
+    50% { opacity: 0.7; transform: scale(1.1); filter: drop-shadow(0 0 5px var(--tertiary)); color: var(--tertiary); }
   }
 
   .blink-active {

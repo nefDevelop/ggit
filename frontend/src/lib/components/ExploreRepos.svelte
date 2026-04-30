@@ -179,7 +179,7 @@
   .lang-list { display: flex; flex-direction: column; gap: 0.2rem; }
   .lang-item { background: transparent; border: none; padding: 0.6rem 0.75rem; border-radius: 0.8rem; text-align: left; color: var(--md-sys-color-on-surface-variant); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; }
   .lang-item:hover { background: var(--md-sys-color-surface-variant); }
-  .lang-item.active { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); font-weight: 800; }
+  .lang-item.active { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font-weight: 800; }
 
   /* MAIN */
   .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
@@ -195,8 +195,8 @@
 
   .repo-stats { display: flex; align-items: center; gap: 1.25rem; font-size: 0.75rem; color: var(--md-sys-color-on-surface-variant); margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .stat { display: flex; align-items: center; gap: 0.3rem; font-weight: 700; opacity: 0.7; }
-  .stat span { font-size: 1rem; color: var(--md-sys-color-primary); }
-  .lang-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--md-sys-color-primary); }
+  .stat span { font-size: 1rem; color: var(--tertiary); }
+  .lang-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--tertiary); }
 
   .repo-topics { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
 

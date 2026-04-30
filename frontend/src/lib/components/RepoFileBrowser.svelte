@@ -363,13 +363,26 @@ git push -u origin main</code></pre>
     align-items: center;
     gap: 1.25rem;
     padding: 1rem 1.25rem;
-    background: var(--surface-variant);
+    background: var(--md-sys-color-secondary-container);
     border-radius: 1rem;
     margin-bottom: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     min-width: 0;
   }
-  .commit-avatar { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; border: 1px solid var(--md-sys-color-outline-variant); }
+  .commit-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-on-secondary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
   
   .commit-info {
     display: flex;
@@ -411,8 +424,15 @@ git push -u origin main</code></pre>
     color: var(--primary-color);
     text-decoration: underline;
   }
-  .sha { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(var(--primary-rgb), 0.2); transition: all 0.2s; }
-  .sha-link:hover .sha { background: var(--primary-color); color: var(--on-primary); }
+  .sha {
+    font-family: monospace;
+    background: var(--md-sys-color-tertiary-container);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: var(--md-sys-color-on-tertiary-container);
+    font-size: 0.85rem;
+  }
+  .sha-link:hover .sha { background: var(--tertiary); color: var(--on-tertiary); }
 
   .commit-actions-right {
     display: flex;
@@ -441,11 +461,11 @@ git push -u origin main</code></pre>
 
   /* FILE TABLE */
   .content-view { 
-    background: var(--bg-color); 
-    border: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--md-sys-color-secondary-container);
+    border: 3px solid var(--md-sys-color-outline-variant);
     border-radius: 1rem; 
     overflow: hidden; 
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-lg);
   }
   .file-table { width: 100%; border-collapse: collapse; }
   .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
@@ -535,6 +555,7 @@ git push -u origin main</code></pre>
   .lang-progress { height: 100%; transition: width 1s ease; }
   .lang-list { display: flex; flex-direction: column; gap: 0.6rem; }
   .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
+  .lang-item.active { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font-weight: 800; }
   .lang-item .dot { width: 10px; height: 10px; border-radius: 50%; }
   .lang-item .name { font-weight: 700; }
   .lang-item .percent { color: var(--text-muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
@@ -553,7 +574,7 @@ git push -u origin main</code></pre>
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
   .empty-state { padding: 5rem 2rem; text-align: center; }
-  .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--primary-color); }
+  .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--tertiary); }
   .empty-icon-ring span { font-size: 2.5rem; }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.75rem; text-transform: uppercase; }

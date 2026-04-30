@@ -89,8 +89,8 @@
   .commit-avatar {
     width: 32px;
     height: 32px;
-    background: var(--primary-color);
-    color: var(--on-primary);
+    background: var(--md-sys-color-secondary);
+    color: var(--md-sys-color-on-secondary);
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -134,10 +134,10 @@
 
   .sha {
     font-family: monospace;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--md-sys-color-tertiary-container);
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
-    color: var(--primary-color);
+    color: var(--md-sys-color-on-tertiary-container);
     font-size: 0.85rem;
   }
 

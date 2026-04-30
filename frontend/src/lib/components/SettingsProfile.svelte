@@ -374,7 +374,7 @@
     overflow: hidden;
     border: 3px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-lg);
-    background: var(--surface-variant);
+    background: var(--md-sys-color-secondary-container);
     flex-shrink: 0;
   }
   .avatar-shield-header:hover .avatar-overlay {
