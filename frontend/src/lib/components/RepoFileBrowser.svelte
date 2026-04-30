@@ -88,7 +88,8 @@
 
   // Calculate language percentages - Fallback to global context if local repoData doesn't have them
   const langEntries = $derived(() => {
-    const langs = repoData?.languages || repoContext.data?.languages;
+    // Correctly fallback to repoContext.languages (set in +layout.svelte)
+    const langs = repoData?.languages || repoContext.languages;
     if (!langs) return [];
     const total = Object.values(langs as Record<string, number>).reduce((a, b) => a + b, 0);
     if (total === 0) return [];

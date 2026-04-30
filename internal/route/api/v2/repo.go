@@ -4,6 +4,7 @@ import (
 	stdcontext "context"
 	"encoding/json"
 	"net/http"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -253,24 +254,22 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
-	// Fetching last commit for each entry is extremely slow in a loop.
-	// We'll skip it for now to ensure fast directory browsing.
-	/*
-		for i := range apiEntries {
-			lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: path.Join(c.Repo.TreePath, apiEntries[i].Name), MaxCount: 1})
-			if err == nil && len(lastCommit) > 0 {
-				apiEntries[i].LastCommit = map[string]any{
-					"id":      lastCommit[0].ID.String(),
-					"summary": lastCommit[0].Summary(),
-					"author": map[string]any{
-						"name":  lastCommit[0].Author.Name,
-						"email": lastCommit[0].Author.Email,
-						"when":  lastCommit[0].Author.When,
-					},
-				}
+	// Fetching last commit for each entry can be slow, but it's essential for a good UI.
+	// We'll fetch them here.
+	for i := range apiEntries {
+		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: path.Join(c.Repo.TreePath, apiEntries[i].Name), MaxCount: 1})
+		if err == nil && len(lastCommit) > 0 {
+			apiEntries[i].LastCommit = map[string]any{
+				"id":      lastCommit[0].ID.String(),
+				"summary": lastCommit[0].Summary(),
+				"author": map[string]any{
+					"name":  lastCommit[0].Author.Name,
+					"email": lastCommit[0].Author.Email,
+					"when":  lastCommit[0].Author.When,
+				},
 			}
 		}
-	*/
+	}
 
 	res := map[string]any{
 		"type":       "directory",
