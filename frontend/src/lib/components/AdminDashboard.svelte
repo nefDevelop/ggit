@@ -4,6 +4,7 @@
   import { i18n } from '$lib/i18n.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let stats = $state<any>(null);
   let loading = $state(true);
@@ -19,16 +20,12 @@
   onMount(fetchStats);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">analytics</span>
-      <div>
-        <h2>Panel de Estadísticas</h2>
-        <p class="subtitle">Resumen global de objetos y uso del sistema</p>
-      </div>
-    </div>
-  </header>
+<Card class="settings-premium-card" padding="none">
+  <PageHeader 
+    title="Panel de Estadísticas"
+    subtitle="Resumen global de objetos y uso del sistema"
+    icon="analytics"
+  />
 
   {#if loading}
     <div class="skeleton-dashboard"></div>
@@ -129,19 +126,9 @@
 </Card>
 
 <style>
-  .section-header { margin-bottom: 4rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  @media (max-width: 600px) {
-    .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.5rem; }
-    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { font-size: 0.9rem; }
-  }
+
+
 
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
   

@@ -12,6 +12,8 @@
   import Card from "./ui/Card.svelte";
   import { i18n } from "$lib/i18n.svelte";
 
+  import PageHeader from "./ui/PageHeader.svelte";
+
   const repo: any = getContext("repo");
   let settings = $state<any>({});
   let loading = $state(true);
@@ -163,15 +165,11 @@
 </script>
 
 <Card padding="none" class="settings-premium-card">
-  <header class="section-header-premium">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">settings</span>
-      <div>
-        <h2>Ajustes del Repositorio</h2>
-        <p class="subtitle">Configuración general, visibilidad y metadatos básicos de tu proyecto.</p>
-      </div>
-    </div>
-  </header>
+  <PageHeader 
+    title="Ajustes del Repositorio"
+    subtitle="Configuración general, visibilidad y metadatos básicos de tu proyecto."
+    icon="settings"
+  />
 
   <div class="settings-content">
     {#if loading}

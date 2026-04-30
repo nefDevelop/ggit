@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import PageHeader from "./ui/PageHeader.svelte";
   
   const repo: any = getContext('repo');
   let issues = $state<any[]>([]);
@@ -37,27 +38,8 @@
 </script>
 
 <div class="issues-view">
-  <div class="issues-header-minimal">
-    <div class="filter-pill-bar">
-      <button 
-        class="tab-pill" 
-        class:active={stateFilter === 'open'} 
-        onclick={() => stateFilter = 'open'}
-      >
-        <span class="material-symbols-rounded mini">error</span>
-        {repo.data?.open_issues_count || 0} Open
-      </button>
-      <button 
-        class="tab-pill" 
-        class:active={stateFilter === 'closed'} 
-        onclick={() => stateFilter = 'closed'}
-      >
-        <span class="material-symbols-rounded mini">check_circle</span>
-        {repo.data?.closed_issues_count || 0} Closed
-      </button>
-    </div>
-    
-    <div class="actions-group">
+  <PageHeader title="Issues" icon="bug_report" compact>
+    {#snippet actions()}
       <div class="nav-links">
         <a href="/{repo.data.owner.username}/{repo.data.name}/labels" class="btn-ghost">
           <span class="material-symbols-rounded">label</span>
@@ -73,7 +55,26 @@
         <span class="material-symbols-rounded">add</span>
         New Issue
       </a>
-    </div>
+    {/snippet}
+  </PageHeader>
+
+  <div class="pill-filter-group">
+    <button 
+      class="tab-pill" 
+      class:active={stateFilter === 'open'} 
+      onclick={() => stateFilter = 'open'}
+    >
+      <span class="material-symbols-rounded mini">error</span>
+      {repo.data?.open_issues_count || 0} Open
+    </button>
+    <button 
+      class="tab-pill" 
+      class:active={stateFilter === 'closed'} 
+      onclick={() => stateFilter = 'closed'}
+    >
+      <span class="material-symbols-rounded mini">check_circle</span>
+      {repo.data?.closed_issues_count || 0} Closed
+    </button>
   </div>
 
   {#if loading}
@@ -138,52 +139,12 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .issues-header-minimal {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .actions-group {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
   .nav-links {
     display: flex;
     gap: 0.5rem;
   }
 
-  .btn-ghost {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: background 0.2s;
-  }
-  .btn-ghost:hover {
-    background: var(--surface-variant);
-  }
-  .btn-ghost .material-symbols-rounded {
-    font-size: 1.2rem;
-    opacity: 0.7;
-  }
 
-  .filter-pill-bar {
-    display: flex;
-    gap: 0.5rem;
-    background: var(--surface-variant);
-    padding: 0.25rem;
-    border-radius: 2rem;
-  }
 
   .issue-row {
     display: flex;

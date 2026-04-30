@@ -6,6 +6,7 @@
   import RepoRow from './RepoRow.svelte';
   import GlobalSearch from './GlobalSearch.svelte';
   import ViewHeader from './ui/ViewHeader.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let data = $state<{
     repositories: any[],
@@ -120,6 +121,19 @@
 
 <div class="dashboard-layout" class:full-width={!hasSidebar}>
     <div class="dashboard-main-content">
+        <PageHeader 
+            title="Dashboard" 
+            subtitle="Gestiona tus proyectos y actividad reciente"
+            icon="dashboard"
+        >
+            {#snippet actions()}
+                <a class="btn-action-primary" href="/repo/create">
+                    <span class="material-symbols-rounded">add</span>
+                    <span class="hide-mobile">Nuevo Repositorio</span>
+                </a>
+            {/snippet}
+        </PageHeader>
+
         <ViewHeader 
             bind:activeTab={viewMode}
             tabs={[
@@ -131,16 +145,7 @@
                 },
                 { id: 'list', label: 'Alphabetical', icon: 'list' }
             ]}
-        >
-            {#snippet actions()}
-                <div class="btn-group">
-                  <a class="btn-action-primary" href="/repo/create">
-                      <span class="material-symbols-rounded">add</span>
-                      <span class="hide-mobile">Nuevo Repositorio</span>
-                  </a>
-                </div>
-            {/snippet}
-        </ViewHeader>
+        />
 
         <div class="repository-stream">
             {#if loading}

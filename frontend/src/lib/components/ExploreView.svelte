@@ -6,6 +6,7 @@
   import ExploreTopics from './ExploreTopics.svelte';
   import GlobalSearch from './GlobalSearch.svelte';
   import ViewHeader from './ui/ViewHeader.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let activeTab = $state('repos');
   let searchQuery = $state('');
@@ -26,7 +27,12 @@
 
 <div class="dashboard-grid full-width">
   <div class="dashboard-main-content">
-  <ViewHeader {tabs} bind:activeTab />
+    <PageHeader 
+        title="Explorar"
+        subtitle="Descubre nuevos repositorios, usuarios y comunidades"
+        icon="explore"
+    />
+    <ViewHeader {tabs} bind:activeTab />
 
     <main class="explore-content">
       {#if activeTab === 'repos'}

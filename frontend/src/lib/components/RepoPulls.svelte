@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import PageHeader from "./ui/PageHeader.svelte";
   
   const repo: any = getContext('repo');
   let pulls = $state<any[]>([]);
@@ -38,30 +39,32 @@
 </script>
 
 <div class="pulls-view">
-  <div class="header-minimal-row">
-    <div class="pill-filter-group">
-      <button 
-        class="tab-pill" 
-        class:active={stateFilter === 'open'} 
-        onclick={() => stateFilter = 'open'}
-      >
-        <span class="material-symbols-rounded mini">merge</span>
-        Open
-      </button>
-      <button 
-        class="tab-pill" 
-        class:active={stateFilter === 'closed'} 
-        onclick={() => stateFilter = 'closed'}
-      >
-        <span class="material-symbols-rounded mini">history_edu</span>
-        Closed
-      </button>
-    </div>
-    
-    <a href="./pulls/new" class="btn-action-primary">
-      <span class="material-symbols-rounded">add</span>
-      New
-    </a>
+  <PageHeader title="Pull Requests" icon="merge" compact>
+    {#snippet actions()}
+      <a href="./pulls/new" class="btn-action-primary">
+        <span class="material-symbols-rounded">add</span>
+        New Pull Request
+      </a>
+    {/snippet}
+  </PageHeader>
+
+  <div class="pill-filter-group">
+    <button 
+      class="tab-pill" 
+      class:active={stateFilter === 'open'} 
+      onclick={() => stateFilter = 'open'}
+    >
+      <span class="material-symbols-rounded mini">merge</span>
+      Open
+    </button>
+    <button 
+      class="tab-pill" 
+      class:active={stateFilter === 'closed'} 
+      onclick={() => stateFilter = 'closed'}
+    >
+      <span class="material-symbols-rounded mini">history_edu</span>
+      Closed
+    </button>
   </div>
 
   {#if loading}
@@ -111,60 +114,6 @@
 </div>
 
 <style>
-  .header-minimal-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .pill-filter-group {
-    display: flex;
-    background: var(--md-sys-color-surface-variant);
-    padding: 0.25rem;
-    border-radius: 100px;
-  }
-
-  .tab-pill {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.4rem 1.25rem;
-    border-radius: 100px;
-    border: none;
-    background: transparent;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .tab-pill.active {
-    background: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
-    box-shadow: var(--shadow-sm);
-  }
-
-  .btn-action-primary {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--primary-color);
-    color: white;
-    padding: 0.5rem 1.25rem;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-  }
-
-  .btn-action-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-
   .pulls-view {
     display: flex;
     flex-direction: column;

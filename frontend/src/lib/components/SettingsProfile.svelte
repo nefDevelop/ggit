@@ -8,6 +8,7 @@
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
   import { getAvailableLanguages } from '$lib/locales';
+  import PageHeader from "./ui/PageHeader.svelte";
 
   const availableLanguages = getAvailableLanguages();
 
@@ -164,53 +165,50 @@
   onMount(fetchProfile);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-avatar">
-        <div class="avatar-shield-header">
-          <Avatar
-            src={profile.avatar_url}
-            username={profile.username}
-            size={80}
-          />
-          <div class="avatar-overlay">
-            <label class="overlay-btn-mini" title="Subir foto">
-              <span class="material-symbols-rounded">cloud_upload</span>
-              <input
-                type="file"
-                accept="image/*"
-                onchange={handleAvatarUpload}
-                hidden
-              />
-            </label>
-            {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
-              <button
-                class="overlay-btn-mini delete"
-                onclick={deleteAvatar}
-                title="Quitar foto"
-              >
-                <span class="material-symbols-rounded">delete</span>
-              </button>
-            {/if}
-          </div>
-        </div>
-        <div>
-          <h2>{i18n.t("settings.public_profile")}</h2>
-          <p class="subtitle">{i18n.t("settings.public_profile_desc")}</p>
+<Card class="settings-premium-card" padding="none">
+  <PageHeader 
+    title={i18n.t("settings.public_profile")}
+    subtitle={i18n.t("settings.public_profile_desc")}
+  >
+    {#snippet avatar()}
+      <div class="avatar-shield-header">
+        <Avatar
+          src={profile.avatar_url}
+          username={profile.username}
+          size={80}
+        />
+        <div class="avatar-overlay">
+          <label class="overlay-btn-mini" title="Subir foto">
+            <span class="material-symbols-rounded">cloud_upload</span>
+            <input
+              type="file"
+              accept="image/*"
+              onchange={handleAvatarUpload}
+              hidden
+            />
+          </label>
+          {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
+            <button
+              class="overlay-btn-mini delete"
+              onclick={deleteAvatar}
+              title="Quitar foto"
+            >
+              <span class="material-symbols-rounded">delete</span>
+            </button>
+          {/if}
         </div>
       </div>
-      <div class="header-actions">
-        <Button
-          variant="ghost"
-          icon="magic_button"
-          onclick={() => (showDiceBear = !showDiceBear)}
-        >
-          {showDiceBear ? "Cerrar selector" : "Avatar Mágico"}
-        </Button>
-      </div>
-    </div>
-  </header>
+    {/snippet}
+    {#snippet actions()}
+      <Button
+        variant="ghost"
+        icon="magic_button"
+        onclick={() => (showDiceBear = !showDiceBear)}
+      >
+        {showDiceBear ? "Cerrar selector" : "Avatar Mágico"}
+      </Button>
+    {/snippet}
+  </PageHeader>
 
 
 
@@ -348,24 +346,8 @@
 </Card>
 
 <style>
-  .section-header {
-    margin-bottom: 4rem;
-  }
-  .header-flex {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  .title-with-avatar {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    min-width: 0;
-  }
+
+
   .avatar-shield-header {
     position: relative;
     width: 80px;
@@ -417,26 +399,9 @@
     color: var(--error);
   }
 
-  h2 {
-    margin: 0;
-    font-size: 2.25rem;
-    font-weight: 950;
-    letter-spacing: -0.04em;
-  }
-  .subtitle {
-    margin: 0.5rem 0 0 0;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-  }
 
-  @media (max-width: 600px) {
-    .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.25rem; }
-    .title-with-avatar { gap: 1rem; }
-    .avatar-shield-header { width: 50px; height: 50px; border-radius: 1rem; border-width: 2px; }
-    .header-flex { flex-direction: row; align-items: center; gap: 1rem; }
-    .subtitle { display: none; }
-  }
+
+
 
   .profile-content-layout {
     width: 100%;
