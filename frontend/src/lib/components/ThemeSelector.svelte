@@ -2,10 +2,12 @@
   import { onMount } from 'svelte';
   import { i18n } from '$lib/i18n.svelte';
   import Card from './ui/Card.svelte';
+  import { generateMd3Palette } from '$lib/utils/color';
 
   let currentTheme = $state('default');
   let currentScheme = $state('auto');
   let customColor = $state('#0b57d0');
+  let derivedPalette = $derived(generateMd3Palette(customColor, currentScheme === 'dark' || (currentScheme === 'auto' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)));
 
   const themes = [
     { 
@@ -55,6 +57,21 @@
       // Clear custom color overrides if switching to preset
       document.documentElement.style.removeProperty('--primary-color');
       document.documentElement.style.removeProperty('--md-sys-color-primary');
+      document.documentElement.style.removeProperty('--md-sys-color-on-primary');
+      document.documentElement.style.removeProperty('--md-sys-color-primary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-on-primary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-secondary');
+      document.documentElement.style.removeProperty('--md-sys-color-on-secondary');
+      document.documentElement.style.removeProperty('--md-sys-color-secondary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-on-secondary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-tertiary');
+      document.documentElement.style.removeProperty('--md-sys-color-on-tertiary');
+      document.documentElement.style.removeProperty('--md-sys-color-tertiary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-on-tertiary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-surface-variant');
+      document.documentElement.style.removeProperty('--md-sys-color-on-surface-variant');
+      document.documentElement.style.removeProperty('--md-sys-color-outline');
+      document.documentElement.style.removeProperty('--md-sys-color-outline-variant');
       document.documentElement.style.removeProperty('--primary-rgb');
     } else {
       applyCustomColor(customColor);
@@ -66,16 +83,38 @@
     localStorage.setItem('custom-theme-color', hex);
     
     if (currentTheme === 'custom') {
-      document.documentElement.style.setProperty('--primary-color', hex);
-      document.documentElement.style.setProperty('--md-sys-color-primary', hex);
+      const isDark = currentScheme === 'dark' || (currentScheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const palette = generateMd3Palette(hex, isDark);
+      
+      const props = {
+        '--primary-color': palette.primary,
+        '--md-sys-color-primary': palette.primary,
+        '--md-sys-color-on-primary': palette.onPrimary,
+        '--md-sys-color-primary-container': palette.primaryContainer,
+        '--md-sys-color-on-primary-container': palette.onPrimaryContainer,
+        '--md-sys-color-secondary': palette.secondary,
+        '--md-sys-color-on-secondary': palette.onSecondary,
+        '--md-sys-color-secondary-container': palette.secondaryContainer,
+        '--md-sys-color-on-secondary-container': palette.onSecondaryContainer,
+        '--md-sys-color-tertiary': palette.tertiary,
+        '--md-sys-color-on-tertiary': palette.onTertiary,
+        '--md-sys-color-tertiary-container': palette.tertiaryContainer,
+        '--md-sys-color-on-tertiary-container': palette.onTertiaryContainer,
+        '--md-sys-color-surface-variant': palette.surfaceVariant,
+        '--md-sys-color-on-surface-variant': palette.onSurfaceVariant,
+        '--md-sys-color-outline': palette.outline,
+        '--md-sys-color-outline-variant': palette.outlineVariant,
+      };
+
+      for (const [prop, value] of Object.entries(props)) {
+        document.documentElement.style.setProperty(prop, value);
+      }
       
       // Simple hex to rgb conversion for the RGB variable
-      if (hex.startsWith('#')) {
-        const r = parseInt(hex.slice(1, 3), 16);
-        const g = parseInt(hex.slice(3, 5), 16);
-        const b = parseInt(hex.slice(5, 7), 16);
-        document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
-      }
+      const r = parseInt(palette.primary.slice(1, 3), 16);
+      const g = parseInt(palette.primary.slice(3, 5), 16);
+      const b = parseInt(palette.primary.slice(5, 7), 16);
+      document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
     }
   }
 
@@ -87,6 +126,10 @@
       document.documentElement.setAttribute('data-color-scheme', 'dark');
     } else {
       document.documentElement.setAttribute('data-color-scheme', 'light');
+    }
+
+    if (currentTheme === 'custom') {
+      applyCustomColor(customColor);
     }
   }
 </script>
@@ -178,9 +221,9 @@
                 />
              </div>
              <div class="derived-dots">
-                <div class="dot" style="background-color: color-mix(in srgb, {customColor}, white 40%);"></div>
-                <div class="dot" style="background-color: color-mix(in srgb, {customColor}, transparent 50%);"></div>
-                <div class="dot" style="background-color: color-mix(in srgb, {customColor}, black 20%);"></div>
+                <div class="dot" style="background-color: {derivedPalette.secondary};" title="Secondary"></div>
+                <div class="dot" style="background-color: {derivedPalette.tertiary};" title="Tertiary"></div>
+                <div class="dot" style="background-color: {derivedPalette.primaryContainer};" title="Container"></div>
              </div>
           </div>
           <div class="theme-info">

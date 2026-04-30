@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { generateMd3Palette } from '$lib/utils/color';
 
   let { show = $bindable(false) } = $props();
 
@@ -14,10 +15,19 @@
 
   let currentTheme = $state('default');
   let currentScheme = $state('light');
+  let customColor = $state('#0b57d0');
+
+  const allThemes = $derived([
+    ...themes,
+    ...(currentTheme === 'custom' || localStorage.getItem('theme') === 'custom' 
+      ? [{ id: 'custom', name: 'Personalizado', color: customColor }] 
+      : [])
+  ]);
 
   onMount(() => {
     currentTheme = localStorage.getItem('theme') || 'default';
     currentScheme = localStorage.getItem('color-scheme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    customColor = localStorage.getItem('custom-theme-color') || '#0b57d0';
     applyStyles();
   });
 
@@ -36,6 +46,60 @@
   function applyStyles() {
     document.documentElement.setAttribute('data-theme', currentTheme);
     document.documentElement.setAttribute('data-color-scheme', currentScheme);
+
+    if (currentTheme === 'custom') {
+      const isDark = currentScheme === 'dark' || (currentScheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      const palette = generateMd3Palette(customColor, isDark);
+      
+      const props = {
+        '--primary-color': palette.primary,
+        '--md-sys-color-primary': palette.primary,
+        '--md-sys-color-on-primary': palette.onPrimary,
+        '--md-sys-color-primary-container': palette.primaryContainer,
+        '--md-sys-color-on-primary-container': palette.onPrimaryContainer,
+        '--md-sys-color-secondary': palette.secondary,
+        '--md-sys-color-on-secondary': palette.onSecondary,
+        '--md-sys-color-secondary-container': palette.secondaryContainer,
+        '--md-sys-color-on-secondary-container': palette.onSecondaryContainer,
+        '--md-sys-color-tertiary': palette.tertiary,
+        '--md-sys-color-on-tertiary': palette.onTertiary,
+        '--md-sys-color-tertiary-container': palette.tertiaryContainer,
+        '--md-sys-color-on-tertiary-container': palette.onTertiaryContainer,
+        '--md-sys-color-surface-variant': palette.surfaceVariant,
+        '--md-sys-color-on-surface-variant': palette.onSurfaceVariant,
+        '--md-sys-color-outline': palette.outline,
+        '--md-sys-color-outline-variant': palette.outlineVariant,
+      };
+
+      for (const [prop, value] of Object.entries(props)) {
+        document.documentElement.style.setProperty(prop, value);
+      }
+      
+      const r = parseInt(palette.primary.slice(1, 3), 16);
+      const g = parseInt(palette.primary.slice(3, 5), 16);
+      const b = parseInt(palette.primary.slice(5, 7), 16);
+      document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+    } else {
+      // Clear custom props
+      document.documentElement.style.removeProperty('--primary-color');
+      document.documentElement.style.removeProperty('--md-sys-color-primary');
+      document.documentElement.style.removeProperty('--md-sys-color-on-primary');
+      document.documentElement.style.removeProperty('--md-sys-color-primary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-on-primary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-secondary');
+      document.documentElement.style.removeProperty('--md-sys-color-on-secondary');
+      document.documentElement.style.removeProperty('--md-sys-color-secondary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-on-secondary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-tertiary');
+      document.documentElement.style.removeProperty('--md-sys-color-on-tertiary');
+      document.documentElement.style.removeProperty('--md-sys-color-tertiary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-on-tertiary-container');
+      document.documentElement.style.removeProperty('--md-sys-color-surface-variant');
+      document.documentElement.style.removeProperty('--md-sys-color-on-surface-variant');
+      document.documentElement.style.removeProperty('--md-sys-color-outline');
+      document.documentElement.style.removeProperty('--md-sys-color-outline-variant');
+      document.documentElement.style.removeProperty('--primary-rgb');
+    }
   }
 </script>
 
@@ -72,7 +136,7 @@
   <div class="section">
     <span class="section-title">Tonalidad de Acento</span>
     <div class="theme-grid">
-      {#each themes as theme}
+      {#each allThemes as theme}
         <button 
           class="theme-option" 
           class:active={currentTheme === theme.id}
