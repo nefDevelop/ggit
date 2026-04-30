@@ -39,66 +39,75 @@ export function hslToHex(h: number, s: number, l: number): string {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
+/**
+ * Generates an MD3-compliant palette from a seed color.
+ * Follows MD3 Tonal Palette rules:
+ * - Primary: Chroma 48
+ * - Secondary: Chroma 16
+ * - Tertiary: Hue + 60, Chroma 24
+ * - Neutral: Chroma 4
+ * - Neutral Variant: Chroma 8
+ */
 export function generateMd3Palette(seedHex: string, isDark: boolean = false) {
-  const hsl = hexToHsl(seedHex);
-  
-  // PRIMARY
-  let p_h = hsl.h;
-  let p_s = isDark ? Math.min(hsl.s, 40) : Math.min(hsl.s, 100);
-  let p_l = isDark ? 80 : 40;
+  const seedHsl = hexToHsl(seedHex);
+  const h = seedHsl.h;
 
-  // SECONDARY (Neutral-variant)
-  let s_h = hsl.h;
-  let s_s = Math.min(hsl.s * 0.25, 16);
-  let s_l = isDark ? 80 : 45;
+  // Helper to map MD3 Tones (0-100) to HSL Lightness
+  const getTone = (tone: number) => tone; 
 
-  // TERTIARY (Accent)
-  let t_h = (hsl.h + 60) % 360;
-  let t_s = Math.min(hsl.s * 0.5, 45);
-  let t_l = isDark ? 80 : 45;
-
-  // NEUTRAL
-  let n_h = hsl.h;
-  let n_s = Math.min(hsl.s * 0.08, 6);
+  // PALETTE DEFINITIONS (Saturation approximated for MD3 Chroma)
+  const palettes = {
+    primary: { h, s: Math.max(seedHsl.s, 48) },
+    secondary: { h, s: 16 },
+    tertiary: { h: (h + 60) % 360, s: 24 },
+    neutral: { h, s: 4 },
+    neutralVariant: { h, s: 8 },
+    error: { h: 0, s: 40 } // Standard MD3 Error hue
+  };
 
   const colors: Record<string, string> = {
-    // Core MD3
-    primary: hslToHex(p_h, p_s, p_l),
-    onPrimary: p_l > 60 ? '#001d31' : '#ffffff',
-    primaryContainer: hslToHex(p_h, p_s * 0.4, isDark ? 30 : 90),
-    onPrimaryContainer: hslToHex(p_h, p_s, isDark ? 90 : 15),
+    // PRIMARY
+    primary: hslToHex(palettes.primary.h, palettes.primary.s, isDark ? 80 : 40),
+    onPrimary: hslToHex(palettes.primary.h, palettes.primary.s, isDark ? 20 : 100),
+    primaryContainer: hslToHex(palettes.primary.h, palettes.primary.s, isDark ? 30 : 90),
+    onPrimaryContainer: hslToHex(palettes.primary.h, palettes.primary.s, isDark ? 90 : 10),
 
-    secondary: hslToHex(s_h, s_s, s_l),
-    onSecondary: s_l > 60 ? '#1b1b1f' : '#ffffff',
-    secondaryContainer: hslToHex(s_h, s_s, isDark ? 30 : 90),
-    onSecondaryContainer: hslToHex(s_h, s_s, isDark ? 90 : 15),
+    // SECONDARY
+    secondary: hslToHex(palettes.secondary.h, palettes.secondary.s, isDark ? 80 : 40),
+    onSecondary: hslToHex(palettes.secondary.h, palettes.secondary.s, isDark ? 20 : 100),
+    secondaryContainer: hslToHex(palettes.secondary.h, palettes.secondary.s, isDark ? 30 : 90),
+    onSecondaryContainer: hslToHex(palettes.secondary.h, palettes.secondary.s, isDark ? 90 : 10),
 
-    tertiary: hslToHex(t_h, t_s, t_l),
-    onTertiary: t_l > 60 ? '#1b1b1f' : '#ffffff',
-    tertiaryContainer: hslToHex(t_h, t_s, isDark ? 30 : 90),
-    onTertiaryContainer: hslToHex(t_h, t_s, isDark ? 90 : 15),
+    // TERTIARY
+    tertiary: hslToHex(palettes.tertiary.h, palettes.tertiary.s, isDark ? 80 : 40),
+    onTertiary: hslToHex(palettes.tertiary.h, palettes.tertiary.s, isDark ? 20 : 100),
+    tertiaryContainer: hslToHex(palettes.tertiary.h, palettes.tertiary.s, isDark ? 30 : 90),
+    onTertiaryContainer: hslToHex(palettes.tertiary.h, palettes.tertiary.s, isDark ? 90 : 10),
 
-    error: isDark ? '#ffb4ab' : '#ba1a1a',
-    onError: isDark ? '#690005' : '#ffffff',
-    errorContainer: isDark ? '#93000a' : '#ffdad6',
-    onErrorContainer: isDark ? '#ffdad6' : '#410002',
+    // ERROR
+    error: hslToHex(palettes.error.h, palettes.error.s, isDark ? 80 : 40),
+    onError: hslToHex(palettes.error.h, palettes.error.s, isDark ? 20 : 100),
+    errorContainer: hslToHex(palettes.error.h, palettes.error.s, isDark ? 30 : 90),
+    onErrorContainer: hslToHex(palettes.error.h, palettes.error.s, isDark ? 90 : 10),
 
-    background: isDark ? '#0d0e11' : '#f8f9ff',
-    onBackground: isDark ? '#e2e2e6' : '#1b1b1f',
-    surface: isDark ? '#0d0e11' : '#f8f9ff',
-    onSurface: isDark ? '#e2e2e6' : '#1b1b1f',
+    // NEUTRAL (Surface/Background)
+    background: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 10 : 99),
+    onBackground: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 90 : 10),
+    surface: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 10 : 99),
+    onSurface: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 90 : 10),
     
-    surfaceVariant: hslToHex(n_h, n_s * 2, isDark ? 30 : 90),
-    onSurfaceVariant: isDark ? '#c4c6d0' : '#44474e',
-    
-    outline: isDark ? '#8e9099' : '#757780',
-    outlineVariant: isDark ? '#44474e' : '#c5c6d0',
+    // NEUTRAL VARIANT
+    surfaceVariant: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 30 : 90),
+    onSurfaceVariant: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 80 : 30),
+    outline: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 60 : 50),
+    outlineVariant: hslToHex(palettes.neutralVariant.h, palettes.neutralVariant.s, isDark ? 30 : 80),
 
-    surfaceContainerLowest: isDark ? '#0d0e11' : '#ffffff',
-    surfaceContainerLow: isDark ? '#1a1c1e' : '#f7f3f8',
-    surfaceContainer: isDark ? '#1b1d21' : '#ffffff',
-    surfaceContainerHigh: isDark ? '#252a2f' : '#f2f2f7',
-    surfaceContainerHighest: isDark ? '#30353b' : '#ebebed',
+    // SURFACE CONTAINERS (Based on Neutral)
+    surfaceContainerLowest: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 4 : 100),
+    surfaceContainerLow: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 12 : 96),
+    surfaceContainer: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 15 : 94),
+    surfaceContainerHigh: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 18 : 92),
+    surfaceContainerHighest: hslToHex(palettes.neutral.h, palettes.neutral.s, isDark ? 22 : 90),
   };
 
   return colors;

@@ -2,6 +2,7 @@
   /* Global Layout & Typography Variables */
   --radius: 1.5rem;
   --font-family: 'Inter', system-ui, sans-serif;
+  --font-heading: 'Outfit', sans-serif;
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
   --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
@@ -59,6 +60,19 @@
   --island-bg: var(--md-sys-color-surface-container);
   --main-content-bg: var(--md-sys-color-surface-container-lowest);
   --main-content-border: var(--md-sys-color-outline-variant);
+}
+
+/* Tonal Utility Class */
+.tonal {
+  background-color: var(--md-sys-color-secondary-container) !important;
+  color: var(--md-sys-color-on-secondary-container) !important;
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+
+.tonal-tertiary {
+  background-color: var(--md-sys-color-tertiary-container) !important;
+  color: var(--md-sys-color-on-tertiary-container) !important;
+  border-color: var(--md-sys-color-outline-variant) !important;
 }
 
 /* ==========================================================================
