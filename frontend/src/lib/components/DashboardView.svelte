@@ -111,9 +111,14 @@
     return () => window.removeEventListener('ggit:search', handleGlobalSearch);
   });
 
+  const hasSidebar = $derived(
+    (!authState.user?.disable_news_feed && feeds.length > 0) || 
+    (data.organizations.length > 0 && userPrefs.current.showSidebarOrgs)
+  );
+
 </script>
 
-<div class="dashboard-layout">
+<div class="dashboard-layout" class:full-width={!hasSidebar}>
     <div class="dashboard-main-content">
         <ViewHeader 
             bind:activeTab={viewMode}
@@ -170,6 +175,7 @@
         </div>
     </div>
 
+    {#if hasSidebar}
     <aside class="dashboard-sidebar">
         {#if !authState.user?.disable_news_feed && feeds.length > 0}
             <div class="sidebar-card tonal">
@@ -211,6 +217,8 @@
             </div>
         {/if}
     </aside>
+    {/if}
+  .dashboard-layout.full-width { gap: 0; }
 </div>
 
 <style>
