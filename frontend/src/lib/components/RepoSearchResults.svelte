@@ -67,7 +67,7 @@
   {:else}
     <div class="results-list">
       {#each results as match}
-        <a href="/{username}/{reponame}/src/{branch}/{match.filename}#L{match.line}" class="match-item">
+        <a href={`/${username`}/${reponame}/src/{branch}/{match.filename}#L{match.line}`} class="match-item">
           <div class="match-file">
             <span class="material-symbols-rounded">description</span>
             <span class="filename">{match.filename}</span>

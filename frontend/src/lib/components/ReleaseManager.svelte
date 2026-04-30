@@ -39,7 +39,7 @@
       <span class="material-symbols-rounded">sell</span>
       <h2>Releases</h2>
     </div>
-    <a href="/{username}/{reponame}/releases/new" class="btn btn-primary">
+    <a href={`/${username}/${reponame}/releases/new`} class="btn btn-primary">
       Draft a new release
     </a>
   </header>
@@ -100,14 +100,14 @@
               <h4>Assets</h4>
               <div class="asset-grid">
                 <a
-                  href="/{username}/{reponame}/archive/{rel.TagName}.zip"
+                  href={`/${username}/${reponame}/archive/${rel.TagName}.zip`}
                   class="asset-link"
                 >
                   <span class="material-symbols-rounded">zip_box</span>
                   Source code (zip)
                 </a>
                 <a
-                  href="/{username}/{reponame}/archive/{rel.TagName}.tar.gz"
+                  href={`/${username}/${reponame}/archive/${rel.TagName}.tar.gz`}
                   class="asset-link"
                 >
                   <span class="material-symbols-rounded">folder_zip</span>

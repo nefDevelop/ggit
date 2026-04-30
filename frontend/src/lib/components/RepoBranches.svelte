@@ -43,7 +43,7 @@
         <div class="branch-main-info">
           <span class="material-symbols-rounded branch-icon-acc">stars</span>
           <div class="branch-name-stack">
-            <a href="/{username}/{reponame}/src/branch/{data.default.name}" class="branch-name-text">{data.default.name}</a>
+            <a href={`/${username}/${reponame}/src/branch/${data.default.name}`} class="branch-name-text">{data.default.name}</a>
             <div class="badges-row">
               <span class="badge-v2 primary">Primary</span>
               {#if data.default.is_protected}
@@ -65,7 +65,7 @@
             <div class="branch-main-info">
               <span class="material-symbols-rounded branch-icon">fork_right</span>
               <div class="branch-name-stack">
-                <a href="/{username}/{reponame}/src/branch/{branch.name}" class="branch-name-text">{branch.name}</a>
+                <a href={`/${username}/${reponame}/src/branch/${branch.name}`} class="branch-name-text">{branch.name}</a>
                 {#if branch.is_protected}
                   <span class="badge-v2 protected">Protected</span>
                 {/if}
@@ -90,7 +90,7 @@
             <div class="branch-main-info">
               <span class="material-symbols-rounded branch-icon">history</span>
               <div class="branch-name-stack">
-                <a href="/{username}/{reponame}/src/branch/{branch.name}" class="branch-name-text">{branch.name}</a>
+                <a href={`/${username}/${reponame}/src/branch/${branch.name}`} class="branch-name-text">{branch.name}</a>
               </div>
             </div>
             <div class="branch-meta-info">

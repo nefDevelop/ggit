@@ -36,7 +36,7 @@
   }
 </script>
 
-<a href="/{username}/{reponame}/commit/{commit.id}" class="commit-row tonal hover-lift" class:minimalist>
+<a href={`/${username}/${reponame}/commit/${commit.id}`} class="commit-row tonal hover-lift" class:minimalist>
   <div class="commit-avatar">
     {commit.author?.name?.[0] || "U"}
   </div>

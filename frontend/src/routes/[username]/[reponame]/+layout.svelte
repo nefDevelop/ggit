@@ -103,7 +103,7 @@
           <div class="breadcrumb-nav">
             <a href="/dashboard" class="bc-home"><span class="material-symbols-rounded">grid_view</span></a>
             <span class="bc-sep">/</span>
-            <a href="/{username}" class="bc-item">{username}</a>
+            <a href={`/${username}`} class="bc-item">{username}</a>
             <span class="bc-sep">/</span>
             <h1 class="bc-item active">{reponame}</h1>
             {#if repoData.private}<span class="lock-icon material-symbols-rounded">lock</span>{/if}
@@ -169,11 +169,11 @@
                   <div class="dropdown-section">
                     <span class="section-title">Download Source</span>
                     <div class="archive-grid-compact">
-                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.zip" class="archive-tile">
+                      <a href={`/api/v2/${username}/${reponame}/archive/${repoData.default_branch}.zip`} class="archive-tile">
                         <span class="material-symbols-rounded">folder_zip</span>
                         <span>ZIP</span>
                       </a>
-                      <a href="/api/v2/{username}/{reponame}/archive/{repoData.default_branch}.tar.gz" class="archive-tile">
+                      <a href={`/api/v2/${username}/${reponame}/archive/${repoData.default_branch}.tar.gz`} class="archive-tile">
                         <span class="material-symbols-rounded">inventory_2</span>
                         <span>TAR.GZ</span>
                       </a>
@@ -182,20 +182,20 @@
                 </div>
               {/if}
             </div>
-            <a href="/{username}/{reponame}/settings" class="settings-link" title="Settings">
+            <a href={`/${username}/${reponame}/settings`} class="settings-link" title="Settings">
               <span class="material-symbols-rounded">settings</span>
             </a>
           </div>
         </header>
 
         <nav class="rich-tabs">
-          <a href="/{username}/{reponame}" class="tab" class:active={activeTab === 'code'}>
+          <a href={`/${username}/${reponame}`} class="tab" class:active={activeTab === 'code'}>
             <span class="material-symbols-rounded">code</span>
             {#if activeTab === 'code'}<span class="tab-label">Code</span>{/if}
           </a>
 
           {#if userPrefs.current.repoTabs.commits}
-            <a href="/{username}/{reponame}/commits" class="tab" class:active={activeTab === 'commits'}>
+            <a href={`/${username}/${reponame}/commits`} class="tab" class:active={activeTab === 'commits'}>
               <span class="material-symbols-rounded">history</span>
               <span class="tab-count">{gitStats.commits}</span>
               {#if activeTab === 'commits'}<span class="tab-label">Commits</span>{/if}
@@ -203,7 +203,7 @@
           {/if}
 
           {#if userPrefs.current.repoTabs.branch}
-            <a href="/{username}/{reponame}/branches" class="tab" class:active={activeTab === 'branches'}>
+            <a href={`/${username}/${reponame}/branches`} class="tab" class:active={activeTab === 'branches'}>
               <span class="material-symbols-rounded">account_tree</span>
               <span class="tab-count">{gitStats.branches}</span>
               {#if activeTab === 'branches'}<span class="tab-label">Branches</span>{/if}
@@ -211,7 +211,7 @@
           {/if}
 
           {#if repoData.enable_issues && userPrefs.current.repoTabs.issue}
-            <a href={repoData.enable_external_tracker ? repoData.external_tracker_url : "/{username}/{reponame}/issues"} 
+            <a href={repoData.enable_external_tracker ? repoData.external_tracker_url : `/${username}/${reponame}/issues`} 
                target={repoData.enable_external_tracker ? "_blank" : ""}
                rel={repoData.enable_external_tracker ? "noopener noreferrer" : ""}
                class="tab" class:active={activeTab === 'issues'}>
@@ -222,7 +222,7 @@
           {/if}
 
           {#if repoData.enable_pulls && userPrefs.current.repoTabs.pr}
-            <a href="/{username}/{reponame}/pulls" class="tab" class:active={activeTab === 'pulls'}>
+            <a href={`/${username}/${reponame}/pulls`} class="tab" class:active={activeTab === 'pulls'}>
               <span class="material-symbols-rounded">merge</span>
               <span class="tab-count">{repoData.open_pulls_count || 0}</span>
               {#if activeTab === 'pulls'}<span class="tab-label">PRs</span>{/if}
@@ -230,7 +230,7 @@
           {/if}
 
           {#if repoData.enable_wiki && userPrefs.current.repoTabs.wiki}
-            <a href={repoData.enable_external_wiki ? repoData.external_wiki_url : "/{username}/{reponame}/wiki"} 
+            <a href={repoData.enable_external_wiki ? repoData.external_wiki_url : `/${username}/${reponame}/wiki`} 
                target={repoData.enable_external_wiki ? "_blank" : ""}
                rel={repoData.enable_external_wiki ? "noopener noreferrer" : ""}
                class="tab" class:active={activeTab === 'wiki'}>
@@ -239,12 +239,12 @@
             </a>
           {/if}
 
-          <a href="/{username}/{reponame}/labels" class="tab" class:active={activeTab === 'labels'}>
+          <a href={`/${username}/${reponame}/labels`} class="tab" class:active={activeTab === 'labels'}>
             <span class="material-symbols-rounded">label</span>
             {#if activeTab === 'labels'}<span class="tab-label">Labels</span>{/if}
           </a>
 
-          <a href="/{username}/{reponame}/milestones" class="tab" class:active={activeTab === 'milestones'}>
+          <a href={`/${username}/${reponame}/milestones`} class="tab" class:active={activeTab === 'milestones'}>
             <span class="material-symbols-rounded">event</span>
             {#if activeTab === 'milestones'}<span class="tab-label">Milestones</span>{/if}
           </a>

@@ -169,7 +169,7 @@ git push -u origin main</code></pre>
             <div class="last-commit-bar">
                 <div class="commit-avatar">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
                 <div class="commit-info">
-                <a href="/{username}/{reponame}/commit/{repoData.last_commit.id}" class="commit-msg-link">
+                <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="commit-msg-link">
                   <span class="commit-msg">{repoData.last_commit.summary}</span>
                 </a>
                 <span class="commit-meta">
@@ -178,7 +178,7 @@ git push -u origin main</code></pre>
                 </span>
                 </div>
                 <div class="commit-actions-right">
-                  <a href="/{username}/{reponame}/commit/{repoData.last_commit.id}" class="sha-link">
+                  <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="sha-link">
                     <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
                   </a>
                   <button class="btn-sidebar-toggle" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
@@ -208,7 +208,7 @@ git push -u origin main</code></pre>
                         <span class="material-symbols-rounded icon-{entry.type === 'tree' ? 'tree' : 'blob'}">
                           {entry.type === 'tree' ? 'folder' : 'description'}
                         </span>
-                        <a href="/{username}/{reponame}/src/{repoData.branch}/{realPath() ? realPath() + '/' : ''}{entry.name}" onclick={(e) => e.stopPropagation()}>
+                        <a href={`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`} onclick={(e) => e.stopPropagation()}>
                           {entry.name}
                         </a>
                       </td>
@@ -230,12 +230,12 @@ git push -u origin main</code></pre>
                    </div>
                     <div class="file-tools side-by-side">
                       {#if repoData.is_text_file}
-                        <a href="/{username}/{reponame}/_edit/{repoData.branch}/{realPath()}" class="tool-btn">
+                        <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn">
                           <span class="material-symbols-rounded">edit</span>
                         </a>
                       {/if}
-                      <a href="/api/v2/{username}/{reponame}/raw/{repoData.branch}/{realPath()}" target="_blank" class="tool-btn">Raw</a>
-                      <a href="/api/v2/{username}/{reponame}/media/{repoData.branch}/{realPath()}" class="tool-btn" download>
+                      <a href={`/api/v2/${username}/${reponame}/raw/${repoData.branch}/${realPath()}`} target="_blank" class="tool-btn">Raw</a>
+                      <a href={`/api/v2/${username}/${reponame}/media/${repoData.branch}/${realPath()}`} class="tool-btn" download>
                         <span class="material-symbols-rounded">download</span>
                       </a>
                       <button class="tool-btn btn-sidebar-toggle-inline" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>

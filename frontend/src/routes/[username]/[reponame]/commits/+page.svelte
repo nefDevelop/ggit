@@ -83,7 +83,7 @@
           <!-- Middle: Message & Meta -->
           <div class="commit-info-cell">
             <div class="commit-header">
-              <a href="/{username}/{reponame}/commit/{id}" class="commit-message-link">
+              <a href={`/${username}/${reponame}/commit/${id}`} class="commit-message-link">
                 <span class="commit-message">{String(message || '').split('\n')[0]}</span>
               </a>
               {#if String(message || '').split('\n').length > 1}
@@ -100,13 +100,13 @@
 
           <!-- Right: Technical context -->
           <div class="commit-actions-cell">
-            <a href="/{username}/{reponame}/commit/{id}" class="id-tag-link">
+            <a href={`/${username}/${reponame}/commit/${id}`} class="id-tag-link">
               <div class="id-tag">
                 <span class="material-symbols-rounded mini">fingerprint</span>
                 <code class="sha-text">{truncateSHA(id)}</code>
               </div>
             </a>
-            <a href="/api/v2/{username}/{reponame}/archive/{id}.zip" class="btn-icon" download title="Download ZIP at this commit">
+            <a href={`/api/v2/${username}/${reponame}/archive/${id}.zip`} class="btn-icon" download title="Download ZIP at this commit">
               <span class="material-symbols-rounded">folder_zip</span>
             </a>
           </div>
