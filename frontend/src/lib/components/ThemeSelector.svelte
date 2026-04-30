@@ -114,17 +114,35 @@
         '--md-sys-color-surface-container': palette.surfaceContainer,
         '--md-sys-color-surface-container-high': palette.surfaceContainerHigh,
         '--md-sys-color-surface-container-highest': palette.surfaceContainerHighest,
+        '--color-success': palette.tertiary,
+        '--color-warning': '#f59e0b',
+        '--success': palette.tertiary,
+        '--success-container': palette.tertiaryContainer,
       };
 
       for (const [prop, value] of Object.entries(props)) {
         document.documentElement.style.setProperty(prop, value);
       }
       
-      const r = parseInt(palette.primary.slice(1, 3), 16);
-      const g = parseInt(palette.primary.slice(3, 5), 16);
-      const b = parseInt(palette.primary.slice(5, 7), 16);
-      document.documentElement.style.setProperty('--primary-rgb', `${r}, ${g}, ${b}`);
+      // Primary RGB
+      const rP = parseInt(palette.primary.slice(1, 3), 16);
+      const gP = parseInt(palette.primary.slice(3, 5), 16);
+      const bP = parseInt(palette.primary.slice(5, 7), 16);
+      document.documentElement.style.setProperty('--primary-rgb', `${rP}, ${gP}, ${bP}`);
+
+      // Surface RGB
+      const rS = parseInt(palette.surface.slice(1, 3), 16);
+      const gS = parseInt(palette.surface.slice(3, 5), 16);
+      const bS = parseInt(palette.surface.slice(5, 7), 16);
+      document.documentElement.style.setProperty('--surface-rgb', `${rS}, ${gS}, ${bS}`);
+
+      // Derived dynamic behaviors
+      const hoverMix = isDark ? 'white 5%' : 'black 5%';
+      document.documentElement.style.setProperty('--surface-variant-hover', `color-mix(in srgb, ${palette.surfaceVariant}, ${hoverMix})`);
+      document.documentElement.style.setProperty('--bg-success-subtle', `color-mix(in srgb, ${palette.tertiary}, transparent 85%)`);
+      document.documentElement.style.setProperty('--bg-warning-subtle', `color-mix(in srgb, #f59e0b, transparent 85%)`);
     }
+
   }
 
   function applyScheme(schemeId: string) {

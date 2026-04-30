@@ -80,9 +80,22 @@
 
 				if (theme === "custom") {
 					const customColor = localStorage.getItem("custom-theme-color") || "#0b57d0";
+					const isDark = scheme === "dark" || (scheme === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+					
 					document.documentElement.style.setProperty("--primary-color", customColor);
 					document.documentElement.style.setProperty("--md-sys-color-primary", customColor);
 					
+					// Basic background/surface fallbacks for custom themes to prevent white flash in dark mode
+					if (isDark) {
+						document.documentElement.style.setProperty("--md-sys-color-background", "#08090a");
+						document.documentElement.style.setProperty("--md-sys-color-surface", "#1a1c1e");
+						document.documentElement.style.setProperty("--md-sys-color-on-surface", "#e2e2e6");
+					} else {
+						document.documentElement.style.setProperty("--md-sys-color-background", "#f0f2f5");
+						document.documentElement.style.setProperty("--md-sys-color-surface", "#ffffff");
+						document.documentElement.style.setProperty("--md-sys-color-on-surface", "#1b1b1f");
+					}
+
 					if (customColor.startsWith("#")) {
 						const r = parseInt(customColor.slice(1, 3), 16);
 						const g = parseInt(customColor.slice(3, 5), 16);
