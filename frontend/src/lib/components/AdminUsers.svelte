@@ -8,6 +8,7 @@
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import { dialog } from '$lib/dialog.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
   
   let users = $state<any[]>([]);
   let loading = $state(true);
@@ -55,19 +56,16 @@
   onMount(fetchUsers);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">person</span>
-        <div>
-          <h2>{i18n.t('admin.users')}</h2>
-          <p class="subtitle">Administra las cuentas de usuario, permisos globales y estado del sistema</p>
-        </div>
-      </div>
+<div class="admin-users-container">
+  <PageHeader 
+    title={i18n.t('admin.users') || "User Management"}
+    subtitle="Administra las cuentas de usuario, permisos globales y estado del sistema"
+    icon="person"
+  >
+    {#snippet actions()}
       <Button variant="primary" onclick={() => editingUserId = 'new'} icon="person_add">{i18n.t('admin.create_user')}</Button>
-    </div>
-  </header>
+    {/snippet}
+  </PageHeader>
 
   {#if editingUserId}
     <div class="editor-overlay island tonal">
@@ -126,7 +124,7 @@
       </table>
     </div>
   {/if}
-</Card>
+</div>
 
 <style>
   

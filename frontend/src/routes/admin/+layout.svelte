@@ -21,14 +21,16 @@
 </script>
 
 <div class="admin-layout-container">
-  <div class="admin-mobile-nav">
-    <ChipNavigation 
-      items={adminSubItems} 
-      activeId={page.url.pathname} 
-      title={i18n.t("admin_panel") || "Panel de Admin"} 
-      titleIcon="security"
-    />
-  </div>
+  {#if page.url.pathname !== '/admin/users'}
+    <div class="admin-mobile-nav">
+      <ChipNavigation 
+        items={adminSubItems} 
+        activeId={page.url.pathname} 
+        title={i18n.t("admin_panel") || "Panel de Admin"} 
+        titleIcon="security"
+      />
+    </div>
+  {/if}
 
   <main class="admin-content-full">
     {@render children()}
