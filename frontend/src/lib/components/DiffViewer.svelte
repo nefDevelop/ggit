@@ -209,6 +209,7 @@
   .diff-file {
     overflow: hidden;
     border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 1.5rem;
     transition: all 0.2s;
   }
 

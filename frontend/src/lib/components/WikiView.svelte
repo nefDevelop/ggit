@@ -34,6 +34,32 @@
   let editContent = $state('');
   let editTitle = $state('');
   let commitMessage = $state('');
+  let parentPath = $state('');
+  let pageOrder = $state<number | null>(null);
+
+  function parseFrontmatterOrder(content: string): number | null {
+    const match = content.match(/^---\n[\s\S]*?order:\s*(\d+)\s*\n[\s\S]*?\n---/);
+    if (match) return parseInt(match[1]);
+    return null;
+  }
+
+  function extractFoldersFromSlantedPaths(items: any[]): string[] {
+    const foldersSet = new Set<string>();
+    for (const item of items) {
+      if (item.is_folder) {
+        foldersSet.add(item.name);
+      } else if (item.name && item.name.includes('/')) {
+        const parts = item.name.split('/');
+        parts.pop();
+        let cumulative = '';
+        for (const part of parts) {
+          cumulative = cumulative ? `${cumulative}/${part}` : part;
+          foldersSet.add(cumulative);
+        }
+      }
+    }
+    return Array.from(foldersSet).sort();
+  }
 
   async function fetchWiki() {
     loading = true;
@@ -73,24 +99,31 @@
   async function handleSave() {
     saving = true;
     try {
-      const method = mode === 'edit' && currentPage?.id ? 'PUT' : 'POST';
-      const endpoint = mode === 'edit' ? 
+      const finalTitle = parentPath ? `${parentPath}/${editTitle}` : editTitle;
+      let finalContent = editContent;
+      if (pageOrder !== null && pageOrder !== undefined && !isNaN(pageOrder)) {
+        // Strip out existing frontmatter if any
+        const cleaned = finalContent.replace(/^---\n[\s\S]*?\n---\n/, '');
+        finalContent = `---\norder: ${pageOrder}\n---\n${cleaned}`;
+      }
+
+      const endpoint = mode === 'edit' && currentPage?.id ? 
         `/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}` :
         `/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki`;
 
       const res = await apiFetch(endpoint, {
-        method: mode === 'edit' ? 'PUT' : 'POST',
+        method: mode === 'edit' && currentPage?.id ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: editTitle,
-          content: editContent,
-          message: commitMessage || `Update ${editTitle}`
+          title: finalTitle,
+          content: finalContent,
+          message: commitMessage || `Update ${finalTitle}`
         })
       });
 
       if (res.ok) {
         const data = await res.json();
-        goto(`/${repo.data.owner.username}/${repo.data.name}/wiki/${data.url || editTitle}`);
+        goto(`/${repo.data.owner.username}/${repo.data.name}/wiki/${data.url || finalTitle}`);
         mode = 'view';
       } else {
         const data = await res.json();
@@ -119,8 +152,17 @@
 
   function startEdit() {
     mode = 'edit';
-    editTitle = currentPage?.name || '';
+    const full = currentPage?.name || '';
+    if (full.includes('/')) {
+      const parts = full.split('/');
+      editTitle = parts.pop() || '';
+      parentPath = parts.join('/');
+    } else {
+      editTitle = full;
+      parentPath = '';
+    }
     editContent = currentPage?.content || '';
+    pageOrder = parseFrontmatterOrder(editContent);
   }
 
   function startNew() {
@@ -128,6 +170,8 @@
     currentPage = null;
     editTitle = '';
     editContent = '';
+    parentPath = '';
+    pageOrder = null;
   }
 
   let expandedFolders = $state<Record<string, boolean>>({});
@@ -276,7 +320,25 @@
                   <Button variant="primary" onclick={startNew} icon="add">Crear Primera Página</Button>
                 </div>
               {/if}
-          {:else if mode === 'edit'}            <div class="edit-area">
+          {:else if mode === 'edit'}
+            {@const existingFolders = extractFoldersFromSlantedPaths(wikiPages)}
+            <div class="edit-area">
+                <div class="wiki-metadata-row">
+                  <div class="meta-field">
+                    <label for="parent-folder">Ubicación / Carpeta Padre</label>
+                    <select id="parent-folder" bind:value={parentPath}>
+                      <option value="">(Raíz / Root)</option>
+                      {#each existingFolders as folder}
+                        <option value={folder}>{folder}</option>
+                      {/each}
+                    </select>
+                  </div>
+                  <div class="meta-field">
+                    <label for="page-order">Orden de la página</label>
+                    <input type="number" id="page-order" bind:value={pageOrder} placeholder="Ej: 1, 2..." />
+                  </div>
+                </div>
+
                 <textarea 
                     class="wiki-editor" 
                     bind:value={editContent} 
@@ -554,6 +616,44 @@
     flex-direction: column;
     gap: 1.5rem;
     height: 100%;
+  }
+
+  .wiki-metadata-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .meta-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  .meta-field select,
+  .meta-field input {
+    background: var(--md-sys-color-surface-variant);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    color: var(--md-sys-color-on-surface);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .meta-field select:focus,
+  .meta-field input:focus {
+    border-color: var(--md-sys-color-primary);
+    background: rgba(var(--primary-rgb), 0.05);
   }
 
   .wiki-editor {

@@ -1,11 +1,14 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount } from "svelte";
+  import { onMount, getContext } from "svelte";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import DiffViewer from "$lib/components/DiffViewer.svelte";
   import CommitRow from "$lib/components/CommitRow.svelte";
   import BranchSelector from "$lib/components/BranchSelector.svelte";
+
+  const repo: any = getContext("repo");
+  const defaultBranch = $derived(repo?.data?.default_branch || "main");
 
   const username = $derived(page.params.username);
   const reponame = $derived(page.params.reponame);
@@ -34,7 +37,7 @@
       // We start by comparing the default branch with itself or a suggested branch
       // The backend will provide available branches and repositories (forks)
       const res = await apiFetch(
-        `/api/v2/${username}/${reponame}/compare/master...master`,
+        `/api/v2/${username}/${reponame}/compare/${defaultBranch}...${defaultBranch}`,
       );
       if (res.ok) {
         metadata = await res.json();

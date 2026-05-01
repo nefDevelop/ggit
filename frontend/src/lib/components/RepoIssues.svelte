@@ -40,17 +40,6 @@
 <div class="issues-view">
   <PageHeader title="Issues" icon="bug_report" compact>
     {#snippet actions()}
-      <div class="nav-links">
-        <a href="/{repo.data.owner.username}/{repo.data.name}/labels" class="btn-ghost">
-          <span class="material-symbols-rounded">label</span>
-          Labels
-        </a>
-        <a href="/{repo.data.owner.username}/{repo.data.name}/milestones" class="btn-ghost">
-          <span class="material-symbols-rounded">event</span>
-          Milestones
-        </a>
-      </div>
-      
       <a href="/{repo.data.owner.username}/{repo.data.name}/issues/new" class="btn-action-primary">
         <span class="material-symbols-rounded">add</span>
         New Issue

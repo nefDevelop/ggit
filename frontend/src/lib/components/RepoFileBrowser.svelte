@@ -514,7 +514,7 @@ git push -u origin main</code></pre>
   .file-meta { display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.95rem; color: var(--text-color); }
   .filesize { font-weight: 400; opacity: 0.5; font-size: 0.8rem; }
   
-  .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.4rem 0.85rem; border-radius: 0.6rem; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+  .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0 0.85rem; border-radius: 0.6rem; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem; height: 34px; box-sizing: border-box; }
   .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
   .file-tools.side-by-side { display: flex; align-items: center; gap: 0; }
   .file-tools.side-by-side .tool-btn { border-radius: 0; border-left-width: 0; }
