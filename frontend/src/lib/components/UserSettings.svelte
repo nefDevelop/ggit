@@ -11,15 +11,28 @@
   import SettingsOrganizations from "./SettingsOrganizations.svelte";
   import SettingsMyGgit from "./SettingsMyGgit.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import ChipNavigation from "./ui/ChipNavigation.svelte";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
+  import PageHeader from "./ui/PageHeader.svelte";
+  import ViewHeader from "./ui/ViewHeader.svelte";
 
-  let activeTab = $derived(page.url.searchParams.get("tab") || "profile");
+  let activeTab = $state(page.url.searchParams.get("tab") || "profile");
 
-  function setTab(id: string) {
-    goto(`?tab=${id}`, { replaceState: true });
-  }
+  $effect(() => {
+    const tabFromUrl = page.url.searchParams.get("tab") || "profile";
+    if (tabFromUrl !== activeTab) {
+      activeTab = tabFromUrl;
+    }
+  });
+
+  $effect(() => {
+    if (activeTab) {
+      const currentTab = page.url.searchParams.get("tab") || "profile";
+      if (activeTab !== currentTab) {
+        goto(`?tab=${activeTab}`, { replaceState: true });
+      }
+    }
+  });
 
   const tabs = $derived([
     { id: "profile", label: i18n.t("settings.profile"), icon: "person" },
@@ -37,16 +50,17 @@
 </script>
 
 <div class="settings-premium-container">
-  <!-- Mobile Chip Rail -->
-  <div class="mobile-nav-wrapper">
-    <ChipNavigation 
-      items={tabs} 
-      activeId={activeTab} 
-      title={i18n.t("settings.user_settings")} 
-      titleIcon="manage_accounts"
-      onSelect={(id) => setTab(id)} 
-    />
-  </div>
+  <PageHeader 
+    title={i18n.t("settings.user_settings") || "Ajustes de Usuario"}
+    subtitle="Personaliza tu cuenta, perfil, seguridad y preferencias"
+    icon="manage_accounts"
+  />
+
+  <ViewHeader 
+    tabs={tabs} 
+    bind:activeTab={activeTab} 
+    showSearch={false}
+  />
 
   <main class="settings-content">
     {#if activeTab === "profile"}
