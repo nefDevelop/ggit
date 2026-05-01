@@ -38,6 +38,7 @@
   let pageOrder = $state<number | null>(null);
 
   function parseFrontmatterOrder(content: string): number | null {
+    if (!content) return null;
     const match = content.match(/^---\n[\s\S]*?order:\s*(\d+)\s*\n[\s\S]*?\n---/);
     if (match) return parseInt(match[1]);
     return null;
@@ -61,12 +62,38 @@
     return Array.from(foldersSet).sort();
   }
 
+  function cleanContentForPreview(content: string): string {
+    if (!content) return '';
+    return content.replace(/^---\n[\s\S]*?\n---\n/, '');
+  }
+
+  function sortTree(items: any[]): any[] {
+    return items.map(item => {
+      if (item.children) {
+        return { ...item, children: sortTree(item.children) };
+      }
+      return item;
+    }).sort((a, b) => {
+      const orderA = parseFrontmatterOrder(a.content) ?? a.order ?? 999999;
+      const orderB = parseFrontmatterOrder(b.content) ?? b.order ?? 999999;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      const nameA = a.title || a.name || "";
+      const nameB = b.title || b.name || "";
+      return nameA.localeCompare(nameB, undefined, { numeric: true });
+    });
+  }
+
   async function fetchWiki() {
     loading = true;
     error = '';
     try {
       const listRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki`);
-      if (listRes.ok) wikiPages = (await listRes.json()) || [];
+      if (listRes.ok) {
+        const pages = (await listRes.json()) || [];
+        wikiPages = sortTree(pages);
+      }
       
       const pageRes = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${path}`);
       if (pageRes.ok) {
@@ -309,7 +336,7 @@
           {#if mode === 'view'}
               {#if currentPage}
                 <MarkdownRenderer
-                  content={currentPage?.content}
+                  content={cleanContentForPreview(currentPage?.content)}
                   repoContext={{owner: repo?.data?.owner?.username || repo?.owner?.username || repo?.owner?.name || '', name: repo?.data?.name || repo?.name || ''}}
                 />
               {:else}
