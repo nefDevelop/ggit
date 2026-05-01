@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { toast } from "$lib/toast.svelte";
   import { dialog } from "$lib/dialog.svelte";
+  import { i18n } from "$lib/i18n.svelte";
   import Button from "./ui/Button.svelte";
   import Input from "./ui/Input.svelte";
   import Card from "./ui/Card.svelte";
@@ -67,8 +68,8 @@
     <header class="admin-header">
       <span class="material-symbols-rounded icon">security</span>
       <div>
-        <h3>Seguridad Global: Secret Guardian</h3>
-        <p>Configura los patrones que se aplicarán por defecto a todos los repositorios del sistema.</p>
+        <h3>{i18n.t("admin.security_global")}</h3>
+        <p>{i18n.t("admin.security_global_desc")}</p>
       </div>
     </header>
 
@@ -83,14 +84,14 @@
               <Button variant="ghost" icon="delete" class="danger-text" onclick={() => deletePattern(pattern.ID)} />
             </div>
             <code class="regex-box">{pattern.Regex}</code>
-            <p class="pattern-desc">{pattern.Description || 'Sin descripción'}</p>
+            <p class="pattern-desc">{pattern.Description || i18n.t("admin.no_description")}</p>
           </div>
         {/each}
       {/if}
     </div>
 
     <div class="add-global-pattern tonal">
-      <h4>Añadir Patrón Global</h4>
+      <h4>{i18n.t("admin.add_global_pattern")}</h4>
       <div class="form-row">
         <Input label="Nombre" bind:value={newPattern.name} />
         <Input label="Regex" bind:value={newPattern.regex} />
@@ -98,7 +99,7 @@
       <Input label="Descripción" bind:value={newPattern.description} />
       <div class="form-actions">
         <Button variant="primary" icon="add" onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
-          Guardar Patrón Global
+          {i18n.t("admin.save_global_pattern")}
         </Button>
       </div>
     </div>

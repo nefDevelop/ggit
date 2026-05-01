@@ -88,16 +88,16 @@
         <span class="material-symbols-rounded hero-icon">mop</span>
         <div>
           <h2>Ggit Janitor</h2>
-          <p class="subtitle">Análisis de salud del repositorio para detectar basura técnica, dependencias huérfanas y archivos temporales.</p>
+          <p class="subtitle">{i18n.t("settings.janitor_desc")}</p>
         </div>
       </div>
       <div class="header-actions">
         <Button variant="outline" icon="search" onclick={runScan} loading={scanning} disabled={cleaning}>
-          {report ? 'Volver a Escanear' : 'Escanear Ahora'}
+          {report ? i18n.t("settings.re_scan") : i18n.t("settings.scan_now")}
         </Button>
         {#if report && report.issues?.length > 0}
           <Button variant="primary" icon="cleaning_services" onclick={runCleanup} loading={cleaning} disabled={scanning || selectedPaths.length === 0}>
-            Limpiar Seleccionados ({selectedPaths.length})
+            {i18n.t("settings.clean_selected")} ({selectedPaths.length})
           </Button>
         {/if}
       </div>
@@ -110,26 +110,26 @@
     {:else if !report || !report.issues || report.issues.length === 0}
       <div class="empty-state-janitor island">
         <span class="material-symbols-rounded">verified</span>
-        <h3>¡Todo Impecable!</h3>
-        <p>No se han detectado archivos innecesarios ni basura técnica en este repositorio.</p>
-        <Button variant="outline" size="sm" onclick={runScan}>Repetir Escaneo</Button>
+        <h3>{i18n.t("settings.everything_clean")}</h3>
+        <p>{i18n.t("settings.no_waste_detected")}</p>
+        <Button variant="outline" size="sm" onclick={runScan}>{i18n.t("settings.repeat_scan")}</Button>
       </div>
     {:else}
       <div class="janitor-stack">
         <div class="summary-island island">
           <div class="stat-item">
             <span class="stat-value">{report.issues.length}</span>
-            <span class="stat-label">Problemas detectados</span>
+            <span class="stat-label">{i18n.t("settings.issues_detected")}</span>
           </div>
           {#if report.total_waste > 0}
             <div class="stat-item">
               <span class="stat-value">{tool.fileSize(report.total_waste)}</span>
-              <span class="stat-label">Espacio recuperable</span>
+              <span class="stat-label">{i18n.t("settings.recoverable_space")}</span>
             </div>
           {/if}
           <div class="stat-item">
             <span class="stat-value">{new Date(report.generated_at * 1000).toLocaleDateString()}</span>
-            <span class="stat-label">Fecha del análisis</span>
+            <span class="stat-label">{i18n.t("settings.analysis_date")}</span>
           </div>
         </div>
 
@@ -174,7 +174,7 @@
 
         <div class="cleanup-hint island">
           <span class="material-symbols-rounded">magic_button</span>
-          <p>Al pulsar <b>Limpiar Seleccionados</b>, Ggit creará un nuevo commit eliminando los archivos y actualizando el <code>.gitignore</code> automáticamente.</p>
+          <p>{@html i18n.t("settings.cleanup_hint")}</p>
         </div>
       </div>
     {/if}

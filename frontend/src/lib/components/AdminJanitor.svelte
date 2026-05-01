@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { tool } from "$lib/tool";
+  import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
 
@@ -31,8 +32,8 @@
     <div class="title-with-icon">
       <span class="material-symbols-rounded hero-icon">mop</span>
       <div>
-        <h2>Ggit Janitor: Global Health</h2>
-        <p class="subtitle">Monitorea el desperdicio de espacio y la salud de todos los repositorios.</p>
+        <h2>{i18n.t("admin.janitor_global")}</h2>
+        <p class="subtitle">{i18n.t("admin.janitor_global_desc")}</p>
       </div>
     </div>
   </div>
@@ -46,7 +47,7 @@
   {:else if stats.length === 0}
     <Card class="empty-card">
       <span class="material-symbols-rounded">check_circle</span>
-      <p>Todos los repositorios están limpios o no se han escaneado todavía.</p>
+      <p>{i18n.t("admin.empty_janitor")}</p>
     </Card>
   {:else}
     <div class="stats-grid">
@@ -68,18 +69,18 @@
 
           <div class="repo-details">
             <div class="detail-item">
-              <span class="label">Problemas</span>
+              <span class="label">{i18n.t("admin.issues")}</span>
               <span class="value">{repo.issues_count}</span>
             </div>
             <div class="detail-item">
-              <span class="label">Último Escaneo</span>
+              <span class="label">{i18n.t("admin.last_scan")}</span>
               <span class="value">{new Date(repo.last_check * 1000).toLocaleDateString()}</span>
             </div>
           </div>
 
           <div class="card-actions">
             <Button href="/{repo.owner}/{repo.name}/settings" variant="outline" size="sm" icon="settings">
-              Gestionar
+              {i18n.t("admin.manage")}
             </Button>
           </div>
         </Card>
