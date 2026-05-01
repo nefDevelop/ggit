@@ -85,7 +85,7 @@
         </Card>
       {/each}
     </div>
-    </div>
+  {/if}
   </div>
 </div>
 

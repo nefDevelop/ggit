@@ -124,8 +124,9 @@
         </div>
       </footer>
     {/if}
-    </div>
+  {/if}
   </div>
+</div>
 
 <Modal show={showModal} title="Detalle del Aviso" onclose={() => showModal = false}>
   {#if selectedNotice}

@@ -333,8 +333,7 @@
         </Button>
       </div>
     </div>
-    </div>
-  </div>
+  {/if}
 </div>
 
 <style>

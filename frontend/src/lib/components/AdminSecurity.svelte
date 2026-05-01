@@ -64,9 +64,7 @@
   onMount(fetchPatterns);
 </script>
 
-<div class="admin-security">
-<div class="admin-security">
-  <div class="admin-security-container">
+<div class="admin-security-container">
     <PageHeader 
       title={i18n.t("admin.security_global") || "Seguridad Global"}
       subtitle={i18n.t("admin.security_global_desc") || "Gestión de patrones globales para repositorios"}
@@ -104,7 +102,6 @@
           {i18n.t("admin.save_global_pattern")}
         </Button>
       </div>
-    </div>
     </div>
   </div>
 </div>
