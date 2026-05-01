@@ -205,7 +205,7 @@
         icon="magic_button"
         onclick={() => (showDiceBear = !showDiceBear)}
       >
-        {showDiceBear ? "Cerrar selector" : "Avatar Mágico"}
+        <span class="avatar-magic-text">{showDiceBear ? "Cerrar selector" : "Avatar Mágico"}</span>
       </Button>
     {/snippet}
   </PageHeader>
@@ -406,6 +406,15 @@
   .profile-content-layout {
     width: 100%;
     box-sizing: border-box;
+    padding: 2.5rem;
+  }
+  @media (max-width: 600px) {
+    .profile-content-layout {
+      padding: 1.25rem 1rem;
+    }
+    .avatar-magic-text {
+      display: none;
+    }
   }
 
   .settings-form {

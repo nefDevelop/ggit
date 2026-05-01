@@ -125,7 +125,7 @@
               <div class="split-btn-group">
                 <button class="btn btn-sm btn-primary main-clone-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
                   <span class="material-symbols-rounded">download</span>
-                  Clone
+                  <span class="clone-text">Clone</span>
                 </button>
                 <button class="btn btn-sm btn-primary arrow-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
                   <span class="material-symbols-rounded">keyboard_arrow_down</span>
@@ -252,6 +252,11 @@
             <span class="material-symbols-rounded">event</span>
             {#if activeTab === 'milestones'}<span class="tab-label">Milestones</span>{/if}
           </a>
+
+          <a href={`/${username}/${reponame}/settings`} class="tab mobile-settings-tab" class:active={activeTab === 'settings'}>
+            <span class="material-symbols-rounded">settings</span>
+            {#if activeTab === 'settings'}<span class="tab-label">Settings</span>{/if}
+          </a>
         </nav>
       </div>
 
@@ -325,11 +330,16 @@
   .tab.active .tab-count { background: var(--primary-container); color: var(--on-primary-container); }
   .tab-label { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
 
+  .mobile-settings-tab { display: none; }
+  
   @media (max-width: 800px) {
     .tab:not(.active) .tab-label, .tab:not(.active) .tab-count { display: none; }
     .tab { padding: 0.85rem 1rem; flex-shrink: 0; }
-    .repo-identity-bar { flex-direction: column; align-items: flex-start; gap: 1rem; }
-    .repo-meta-actions { width: 100%; justify-content: space-between; }
+    .repo-identity-bar { flex-direction: row; justify-content: space-between; align-items: center; gap: 0.5rem; }
+    .repo-meta-actions { width: auto; gap: 0.5rem; align-items: center; }
+    .repo-meta-actions .settings-link { display: none; }
+    .mobile-settings-tab { display: flex; margin-left: auto; }
+    .clone-text, .arrow-btn { display: none; }
     .clone-dropdown { width: calc(100vw - 3rem); right: -1.5rem; }
   }
 

@@ -32,6 +32,28 @@
         <GlobalSearch />
       </div>
     {/if}
+
+    {#if tabs.length > 0}
+      <div class="view-mode-selector-row">
+        <nav class="view-mode-selector">
+          {#each tabs as tab}
+            <button 
+              class="tab-pill" 
+              class:active={activeTab === tab.id}
+              onclick={() => activeTab = tab.id}
+            >
+              <div class="tab-content-wrapper">
+                <span class="material-symbols-rounded mini">{tab.icon}</span>
+                <span class="tab-label-text">{tab.label}</span>
+                {#if tab.hasBadge}
+                  <span class="tab-badge-dot"></span>
+                {/if}
+              </div>
+            </button>
+          {/each}
+        </nav>
+      </div>
+    {/if}
     
     {#if actions}
       <div class="actions-flex">
@@ -39,28 +61,6 @@
       </div>
     {/if}
   </div>
-
-  {#if tabs.length > 0}
-    <div class="view-mode-selector-row">
-      <nav class="view-mode-selector">
-        {#each tabs as tab}
-          <button 
-            class="tab-pill" 
-            class:active={activeTab === tab.id}
-            onclick={() => activeTab = tab.id}
-          >
-            <div class="tab-content-wrapper">
-              <span class="material-symbols-rounded mini">{tab.icon}</span>
-              {tab.label}
-              {#if tab.hasBadge}
-                <span class="tab-badge-dot"></span>
-              {/if}
-            </div>
-          </button>
-        {/each}
-      </nav>
-    </div>
-  {/if}
 </header>
 
 <style>
@@ -146,6 +146,7 @@
     .search-and-action-row { flex-wrap: nowrap; gap: 0.75rem; }
     .search-flex { min-width: 0; flex: 1; order: 0; }
     .actions-flex { order: 1; width: auto; justify-content: flex-end; }
-    .view-mode-selector-row { overflow-x: auto; padding-bottom: 0.5rem; margin: 0 -1rem; padding-left: 1rem; }
+    .tab-label-text { display: none; }
+    .tab-pill { padding: 0.5rem; border-radius: 50%; }
   }
 </style>
