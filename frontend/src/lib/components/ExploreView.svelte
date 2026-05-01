@@ -8,7 +8,8 @@
   import ViewHeader from './ui/ViewHeader.svelte';
   import PageHeader from './ui/PageHeader.svelte';
 
-  let activeTab = $state('repos');
+  let { defaultTab = 'repos' } = $props();
+  let activeTab = $state(defaultTab);
   let searchQuery = $state('');
 
   const tabs = [

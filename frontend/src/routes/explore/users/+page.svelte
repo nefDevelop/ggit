@@ -1,12 +1,12 @@
 <script lang="ts">
-  import ExploreUsers from '$lib/components/ExploreUsers.svelte';
+  import ExploreView from '$lib/components/ExploreView.svelte';
 </script>
 
 <svelte:head>
   <title>Explore Users · Ggit</title>
 </svelte:head>
 
-<ExploreUsers />
+<ExploreView defaultTab="users" />
 
 <style>
 </style>

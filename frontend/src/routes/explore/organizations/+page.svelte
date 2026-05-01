@@ -1,12 +1,12 @@
 <script lang="ts">
-  import ExploreOrganizations from '$lib/components/ExploreOrganizations.svelte';
+  import ExploreView from '$lib/components/ExploreView.svelte';
 </script>
 
 <svelte:head>
   <title>Explore Organizations · Ggit</title>
 </svelte:head>
 
-<ExploreOrganizations />
+<ExploreView defaultTab="organizations" />
 
 <style>
 </style>
