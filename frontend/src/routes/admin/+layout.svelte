@@ -38,9 +38,10 @@
 <style>
   .admin-layout-container {
     animation: fadeIn 0.3s ease-out;
-    padding: 2rem 4rem;
-    max-width: 1600px;
-    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
   }
 
   .admin-mobile-nav {
@@ -57,6 +58,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    width: 100%;
   }
 
   /* Adjust for mobile if needed */

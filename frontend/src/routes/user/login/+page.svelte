@@ -58,6 +58,7 @@
   <div class="background-decor">
     <div class="circle c1"></div>
     <div class="circle c2"></div>
+    <div class="circle c3"></div>
   </div>
 
   <div class="login-container">
@@ -140,8 +141,8 @@
     inset: 0;
     overflow: hidden;
     z-index: 0;
-    filter: blur(80px);
-    opacity: 0.4;
+    filter: blur(120px);
+    opacity: 0.65;
   }
 
   .circle {
@@ -150,19 +151,28 @@
   }
 
   .c1 {
-    width: 400px;
-    height: 400px;
-    background: var(--primary-color);
-    top: -100px;
-    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--primary-color), #3b82f6);
+    top: -120px;
+    right: -120px;
   }
 
   .c2 {
-    width: 300px;
-    height: 300px;
-    background: #8b5cf6;
-    bottom: -50px;
-    left: -50px;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, #8b5cf6, #d946ef);
+    bottom: -100px;
+    left: -100px;
+  }
+
+  .c3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #06b6d4, #10b981);
+    top: 50%;
+    left: -150px;
+    transform: translateY(-50%);
   }
 
   .login-container {

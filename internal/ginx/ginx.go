@@ -66,6 +66,9 @@ func Handle(h any) gin.HandlerFunc {
 	}
 
 	return func(c *gin.Context) {
+		if c.IsAborted() {
+			return
+		}
 		gctx := c.MustGet("context").(*context.Context)
 		
 		inputs := make([]reflect.Value, t.NumIn())

@@ -230,8 +230,6 @@
     display: flex;
     gap: 2rem;
     height: 100%;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
     width: 100%;
     box-sizing: border-box;
     flex: 1 1 100%;
@@ -250,7 +248,7 @@
   }
 
   .repository-stream {
-    padding: 0 0 4rem;
+    padding: 0 1.5rem 4rem;
     width: 100%;
   }
 
@@ -261,6 +259,7 @@
     flex-direction: column;
     gap: 1.5rem;
     padding-top: 1.5rem;
+    padding-right: 1.5rem;
   }
 
   .sidebar-card {
@@ -376,22 +375,37 @@
   .flat-repo-list { 
     display: flex; 
     flex-direction: column; 
-    background: var(--bg-color); 
-    border: 1px solid var(--md-sys-color-outline-variant); 
-    border-radius: 1rem; 
-    overflow: hidden; 
+    gap: 1.25rem;
+    background: transparent; 
+    border: none; 
+    border-radius: 0; 
+    overflow: visible; 
+  }
+
+  :global(.repo-row) {
+    background: var(--md-sys-color-surface-container-low) !important;
+    border: 1px solid var(--md-sys-color-outline-variant) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  :global(.repo-row:hover) {
+    background: var(--md-sys-color-surface-variant) !important;
+    border-color: var(--primary-color) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
   }
 
   .divider-text { 
-    padding: 1.5rem 1.25rem 0.75rem; 
-    font-size: 0.7rem; 
+    padding: 2rem 0.5rem 0.5rem; 
+    font-size: 0.75rem; 
     font-weight: 900; 
     text-transform: uppercase; 
     color: var(--text-muted); 
-    letter-spacing: 0.1em; 
-    background: var(--surface-variant);
-    border-top: 1px solid var(--md-sys-color-outline-variant);
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    letter-spacing: 0.15em; 
+    background: transparent;
+    border: none;
   }
 
   .empty-dashboard, .empty-feed { padding: 2rem; text-align: center; color: var(--text-muted); }
