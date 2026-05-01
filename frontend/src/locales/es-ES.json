@@ -32,7 +32,9 @@
     "issues": "Problemas",
     "last_scan": "Último Escaneo",
     "manage": "Gestionar",
-    "empty_janitor": "Todos los repositorios están limpios o no se han escaneado todavía."
+    "empty_janitor": "Todos los repositorios están limpios o no se han escaneado todavía.",
+    "security": "Seguridad",
+    "janitor": "Janitor"
   },
   "admin_panel": "Panel de administración",
   "app_desc": "Un servicio de Git auto alojado y sin complicaciones",

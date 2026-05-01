@@ -32,7 +32,9 @@
     "issues": "Issues",
     "last_scan": "Last Scan",
     "manage": "Manage",
-    "empty_janitor": "All repositories are clean or have not been scanned yet."
+    "empty_janitor": "All repositories are clean or have not been scanned yet.",
+    "security": "Security",
+    "janitor": "Janitor"
   },
   "admin_panel": "Admin Panel",
   "app_desc": "A painless self-hosted Git service",

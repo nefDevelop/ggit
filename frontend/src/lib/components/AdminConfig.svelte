@@ -115,7 +115,7 @@
            <h4>Seguridad de Registro</h4>
         </div>
         <div class="action-body">
-           <p>Configura una pregunta de seguridad para evitar registros automatizados de bots.</p>
+           <p>Configura una pregunta de seguridad para evitar registros automatizados de bots. El sistema cuenta además con un Honeypot integrado para bloquear el SPAM de manera silenciosa.</p>
            <div class="action-form">
               <label class="premium-switch">
                  <input type="checkbox" bind:checked={regSecurity.enable} />

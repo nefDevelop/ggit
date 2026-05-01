@@ -254,11 +254,7 @@ git push -u origin main</code></pre>
                             <span>{i + 1}</span>
                           {/each}
                         </div>
-                        <pre class="code-pre hljs">
-                          {#each highlightedLines() as line}
-                            <div class="line">{@html line || '&nbsp;'}</div>
-                          {/each}
-                        </pre>
+                        <pre class="code-pre hljs">{#each highlightedLines() as line}<div class="line">{@html line || '&nbsp;'}</div>{/each}</pre>
                       </div>
                    {:else}
                       <div class="binary-placeholder">
@@ -520,7 +516,10 @@ git push -u origin main</code></pre>
   
   .tool-btn { background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); color: var(--text-muted); padding: 0.4rem 0.85rem; border-radius: 0.6rem; cursor: pointer; font-size: 0.8rem; font-weight: 800; transition: all 0.2s; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
   .tool-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
-  .file-tools.side-by-side { display: flex; align-items: center; gap: 0.5rem; }
+  .file-tools.side-by-side { display: flex; align-items: center; gap: 0; }
+  .file-tools.side-by-side .tool-btn { border-radius: 0; border-left-width: 0; }
+  .file-tools.side-by-side .tool-btn:first-child { border-top-left-radius: 0.6rem; border-bottom-left-radius: 0.6rem; border-left-width: 1px; }
+  .file-tools.side-by-side .tool-btn:last-child { border-top-right-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }
 
   .code-box { background: #0d0e11; overflow-x: auto; }
   .code-grid { display: grid; grid-template-columns: 60px 1fr; }
