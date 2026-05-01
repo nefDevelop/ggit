@@ -35,33 +35,37 @@
   });
 
   const tabs = $derived([
-    { id: "profile", label: i18n.t("settings.profile"), icon: "person" },
-    { id: "myggit", label: i18n.t("settings.my_ggit"), icon: "grid_view" },
-    { id: "appearance", label: i18n.t("settings.appearance"), icon: "palette" },
-    { id: "emails", label: i18n.t("settings.emails"), icon: "mail" },
-    { id: "security", label: i18n.t("settings.security"), icon: "security" },
-    { id: "sessions", label: "Sesiones", icon: "devices" },
-    { id: "blocks", label: "Bloqueos", icon: "person_off" },
-    { id: "keys", label: i18n.t("settings.ssh_keys"), icon: "key" },
-    { id: "tokens", label: i18n.t("settings.access_tokens"), icon: "token" },
-    { id: "repos", label: i18n.t("settings.repositories"), icon: "book" },
-    { id: "orgs", label: i18n.t("settings.organizations"), icon: "corporate_fare" },
+    { id: "profile", label: i18n.t("settings.profile") || "Perfil", icon: "person", description: "Configura tu información pública y avatar" },
+    { id: "myggit", label: i18n.t("settings.my_ggit") || "Mi Ggit", icon: "grid_view", description: "Personaliza tu página de inicio y preferencias del feed" },
+    { id: "appearance", label: i18n.t("settings.appearance") || "Apariencia", icon: "palette", description: "Personaliza el tema, colores y tipografía de la interfaz" },
+    { id: "emails", label: i18n.t("settings.emails") || "Correos", icon: "mail", description: "Gestiona las direcciones de correo electrónico vinculadas" },
+    { id: "security", label: i18n.t("settings.security") || "Seguridad", icon: "security", description: "Actualiza tu contraseña y configuración de doble factor" },
+    { id: "sessions", label: "Sesiones", icon: "devices", description: "Controla los dispositivos y navegadores conectados" },
+    { id: "blocks", label: "Bloqueos", icon: "person_off", description: "Gestiona los usuarios que tienes bloqueados" },
+    { id: "keys", label: i18n.t("settings.ssh_keys") || "Claves SSH", icon: "key", description: "Gestiona las llaves públicas vinculadas a tu cuenta" },
+    { id: "tokens", label: i18n.t("settings.access_tokens") || "Tokens", icon: "token", description: "Claves de acceso seguro vía API o Git sin usar contraseña" },
+    { id: "repos", label: i18n.t("settings.repositories") || "Repositorios", icon: "book", description: "Lista de todos tus proyectos personales y colaboraciones activas" },
+    { id: "orgs", label: i18n.t("settings.organizations") || "Organizaciones", icon: "corporate_fare", description: "Gestiona tu pertenencia a equipos y organizaciones" },
   ]);
+
+  const activeTabObj = $derived(tabs.find(t => t.id === activeTab) || tabs[0]);
 </script>
 
 <div class="settings-premium-container">
   <PageHeader 
-    title={i18n.t("settings.user_settings") || "Ajustes de Usuario"}
-    subtitle="Personaliza tu cuenta, perfil, seguridad y preferencias"
-    icon="manage_accounts"
+    title={activeTabObj.label}
+    subtitle={activeTabObj.description}
+    icon={activeTabObj.icon}
   />
 
   <div class="settings-premium-body">
-    <ViewHeader 
-      tabs={tabs} 
-      bind:activeTab={activeTab} 
-      showSearch={false}
-    />
+    <div class="mobile-nav-wrapper">
+      <ViewHeader 
+        tabs={tabs} 
+        bind:activeTab={activeTab} 
+        showSearch={false}
+      />
+    </div>
 
     <main class="settings-content">
       {#if activeTab === "profile"}
