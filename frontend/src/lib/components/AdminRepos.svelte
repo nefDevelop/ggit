@@ -7,6 +7,7 @@
   import { i18n } from '$lib/i18n.svelte';
   import { dialog } from '$lib/dialog.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let repos = $state<any[]>([]);
   let loading = $state(true);
@@ -53,19 +54,18 @@
   onMount(fetchRepos);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">database</span>
-        <div>
-          <h2>{i18n.t('admin.repositories')}</h2>
-          <p class="subtitle">Supervisión y gestión global de repositorios del sistema</p>
-        </div>
-      </div>
+<div class="admin-repos-container">
+  <PageHeader 
+    title={i18n.t('admin.repositories') || "Repositories"}
+    subtitle="Supervisión y gestión global de repositorios del sistema"
+    icon="database"
+  >
+    {#snippet actions()}
       <Button variant="primary" icon="add_box" href="/admin/repos/adoption">Adopción de Repos</Button>
-    </div>
-  </header>
+    {/snippet}
+  </PageHeader>
+
+  <div class="admin-repos-body">
 
   <div class="modern-table-card">
     <table class="modern-table">
@@ -130,9 +130,19 @@
       </tbody>
     </table>
   </div>
-</Card>
+  </div>
+</div>
 
 <style>
+  .admin-repos-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {
