@@ -171,16 +171,8 @@
   }
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">palette</span>
-      <div>
-        <h2>{i18n.t('settings.appearance') || 'Apariencia'}</h2>
-        <p class="subtitle">Personaliza la interfaz y el esquema de colores de tu espacio</p>
-      </div>
-    </div>
-  </header>
+<div class="theme-selector-container">
+
 
   <div class="modular-stack">
     <!-- COLOR SCHEME -->
@@ -285,7 +277,7 @@
       </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
 

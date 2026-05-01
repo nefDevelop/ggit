@@ -5,6 +5,7 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let auditLogs = $state<any[]>([]);
   let loading = $state(true);
@@ -47,19 +48,18 @@
   }
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">history_edu</span>
-        <div>
-          <h2>Registro de Auditoría</h2>
-          <p class="subtitle">Historial de eventos críticos, cambios de seguridad y acciones administrativas</p>
-        </div>
-      </div>
+<div class="admin-audit-container">
+  <PageHeader 
+    title={i18n.t('admin.audit_log') || "Registro de Auditoría"}
+    subtitle="Historial de eventos críticos, cambios de seguridad y acciones administrativas"
+    icon="history_edu"
+  >
+    {#snippet actions()}
       <Button variant="ghost" icon="refresh" onclick={() => fetchAuditLogs(1)} disabled={loading}>Actualizar</Button>
-    </div>
-  </header>
+    {/snippet}
+  </PageHeader>
+
+  <div class="admin-audit-body">
 
   <div class="modern-table-card">
     <table class="modern-table">
@@ -120,9 +120,19 @@
        </Button>
     </div>
   {/if}
-</Card>
+  </div>
+</div>
 
 <style>
+  .admin-audit-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }

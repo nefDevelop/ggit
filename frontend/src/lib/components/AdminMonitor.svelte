@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import Card from './ui/Card.svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
   
   let monitorData = $state<any>(null);
   let loading = $state(true);
@@ -28,18 +29,14 @@
   onMount(fetchMonitor);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">monitoring</span>
-        <div>
-          <h2>Monitor del Sistema</h2>
-          <p class="subtitle">Tareas programadas, procesos activos y recursos</p>
-        </div>
-      </div>
-    </div>
-  </header>
+<div class="admin-monitor-container">
+  <PageHeader 
+    title={i18n.t('admin.monitor') || "Monitor del Sistema"}
+    subtitle="Tareas programadas, procesos activos y recursos"
+    icon="monitoring"
+  />
+
+  <div class="admin-monitor-body">
 
   {#if loading}
     <div class="skeleton-monitor"></div>
@@ -123,9 +120,19 @@
       </section>
     </div>
   {/if}
-</Card>
+  </div>
+</div>
 
 <style>
+  .admin-monitor-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {

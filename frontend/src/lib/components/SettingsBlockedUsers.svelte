@@ -68,16 +68,8 @@
 </script>
 
 <div class="blocks-settings">
-  <Card padding="lg">
-    <header class="section-header">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">block</span>
-        <div>
-          <h2>Usuarios Bloqueados</h2>
-          <p class="subtitle">Los usuarios bloqueados no pueden colaborar en tus repositorios ni comentar en tus issues.</p>
-        </div>
-      </div>
-    </header>
+  <div class="settings-blocked-container">
+
 
     <div class="add-block-form tonal">
       <div class="form-row">
@@ -125,7 +117,7 @@
         </div>
       {/if}
     </div>
-  </Card>
+  </div>
 </div>
 
 <style>

@@ -7,6 +7,7 @@
   import Button from './ui/Button.svelte';
   import AdminAuthEditor from './AdminAuthEditor.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let sources = $state<any[]>([]);
   let loading = $state(true);
@@ -51,19 +52,18 @@
     onCancel={() => editing = false} 
   />
 {:else}
-  <Card class="settings-premium-card" padding="lg">
-    <header class="section-header">
-      <div class="header-flex">
-        <div class="title-with-icon">
-          <span class="material-symbols-rounded hero-icon">lock_person</span>
-          <div>
-            <h2>Fuentes de Autenticación</h2>
-            <p class="subtitle">Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos</p>
-          </div>
-        </div>
+  <div class="admin-auths-container">
+    <PageHeader 
+      title={i18n.t('admin.auths') || "Fuentes de Autenticación"}
+      subtitle="Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos"
+      icon="lock_person"
+    >
+      {#snippet actions()}
         <Button variant="primary" icon="add_moderator" onclick={newSource}>Nueva Fuente</Button>
-      </div>
-    </header>
+      {/snippet}
+    </PageHeader>
+
+    <div class="admin-auths-body">
 
   <div class="modern-table-card">
     <table class="modern-table">
@@ -120,10 +120,20 @@
       </tbody>
     </table>
   </div>
-</Card>
+    </div>
+  </div>
 {/if}
 
 <style>
+  .admin-auths-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }

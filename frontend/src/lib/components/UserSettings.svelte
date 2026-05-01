@@ -56,37 +56,39 @@
     icon="manage_accounts"
   />
 
-  <ViewHeader 
-    tabs={tabs} 
-    bind:activeTab={activeTab} 
-    showSearch={false}
-  />
+  <div class="settings-premium-body">
+    <ViewHeader 
+      tabs={tabs} 
+      bind:activeTab={activeTab} 
+      showSearch={false}
+    />
 
-  <main class="settings-content">
-    {#if activeTab === "profile"}
-      <SettingsProfile />
-    {:else if activeTab === "myggit"}
-      <SettingsMyGgit />
-    {:else if activeTab === "appearance"}
-      <ThemeSelector />
-    {:else if activeTab === "emails"}
-      <SettingsEmails />
-    {:else if activeTab === "security"}
-      <SettingsSecurity />
-    {:else if activeTab === "sessions"}
-      <SettingsSessions />
-    {:else if activeTab === "blocks"}
-      <SettingsBlockedUsers />
-    {:else if activeTab === "keys"}
-      <SettingsKeys />
-    {:else if activeTab === "tokens"}
-      <SettingsTokens />
-    {:else if activeTab === "repos"}
-      <SettingsRepositories />
-    {:else if activeTab === "orgs"}
-      <SettingsOrganizations />
-    {/if}
-  </main>
+    <main class="settings-content">
+      {#if activeTab === "profile"}
+        <SettingsProfile />
+      {:else if activeTab === "myggit"}
+        <SettingsMyGgit />
+      {:else if activeTab === "appearance"}
+        <ThemeSelector />
+      {:else if activeTab === "emails"}
+        <SettingsEmails />
+      {:else if activeTab === "security"}
+        <SettingsSecurity />
+      {:else if activeTab === "sessions"}
+        <SettingsSessions />
+      {:else if activeTab === "blocks"}
+        <SettingsBlockedUsers />
+      {:else if activeTab === "keys"}
+        <SettingsKeys />
+      {:else if activeTab === "tokens"}
+        <SettingsTokens />
+      {:else if activeTab === "repos"}
+        <SettingsRepositories />
+      {:else if activeTab === "orgs"}
+        <SettingsOrganizations />
+      {/if}
+    </main>
+  </div>
 </div>
 
 <style>
@@ -97,7 +99,14 @@
     min-height: 80vh;
     max-width: 100%;
     box-sizing: border-box;
-    padding: 1rem 0;
+    padding: 0;
+  }
+
+  .settings-premium-body {
+    padding: 0 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
   }
 
   .mobile-nav-wrapper {

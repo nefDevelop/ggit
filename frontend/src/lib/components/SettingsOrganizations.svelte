@@ -38,19 +38,8 @@
   onMount(fetchOrgs);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">corporate_fare</span>
-        <div>
-          <h2>Mis Organizaciones</h2>
-          <p class="subtitle">Gestiona tu pertenencia a equipos y organizaciones de desarrollo</p>
-        </div>
-      </div>
-      <Button variant="primary" icon="add" href="/org/create">Nueva Organización</Button>
-    </div>
-  </header>
+<div class="settings-orgs-container">
+
 
   <div class="modular-stack">
     <div class="config-module">
@@ -93,7 +82,7 @@
       </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   

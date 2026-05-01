@@ -55,16 +55,7 @@
   onMount(fetchKeys);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">key</span>
-      <div>
-        <h2>Claves SSH</h2>
-        <p class="subtitle">Gestiona las llaves públicas vinculadas a tu cuenta para acceso seguro vía Git</p>
-      </div>
-    </div>
-  </header>
+<div class="settings-keys-container">
 
   <div class="flex-col gap-xl">
     <!-- KEYS LIST -->
@@ -136,7 +127,7 @@
       </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   

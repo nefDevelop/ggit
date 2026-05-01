@@ -7,6 +7,7 @@
   import Button from "./ui/Button.svelte";
   import Input from "./ui/Input.svelte";
   import Card from "./ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
 
   let loading = $state(true);
   let patterns = $state<any[]>([]);
@@ -64,14 +65,15 @@
 </script>
 
 <div class="admin-security">
-  <Card>
-    <header class="admin-header">
-      <span class="material-symbols-rounded icon">security</span>
-      <div>
-        <h3>{i18n.t("admin.security_global")}</h3>
-        <p>{i18n.t("admin.security_global_desc")}</p>
-      </div>
-    </header>
+<div class="admin-security">
+  <div class="admin-security-container">
+    <PageHeader 
+      title={i18n.t("admin.security_global") || "Seguridad Global"}
+      subtitle={i18n.t("admin.security_global_desc") || "Gestión de patrones globales para repositorios"}
+      icon="security"
+    />
+
+    <div class="admin-security-body">
 
     <div class="patterns-grid">
       {#if loading}
@@ -103,10 +105,20 @@
         </Button>
       </div>
     </div>
-  </Card>
+    </div>
+  </div>
 </div>
 
 <style>
+  .admin-security-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .admin-header { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2.5rem; }
   .admin-header .icon { font-size: 3rem; color: var(--primary-color); }
   .admin-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }

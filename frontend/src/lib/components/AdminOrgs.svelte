@@ -8,6 +8,7 @@
   import AdminOrgEditor from './AdminOrgEditor.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
   
   let orgs = $state<any[]>([]);
   let loading = $state(true);
@@ -41,16 +42,14 @@
   onMount(fetchOrgs);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">corporate_fare</span>
-      <div>
-        <h2>{i18n.t('admin.organizations')}</h2>
-        <p class="subtitle">Gestión y supervisión de las entidades organizacionales</p>
-      </div>
-    </div>
-  </header>
+<div class="admin-orgs-container">
+  <PageHeader 
+    title={i18n.t('admin.organizations') || "Organizations"}
+    subtitle="Gestión y supervisión de las entidades organizacionales"
+    icon="corporate_fare"
+  />
+
+  <div class="admin-orgs-body">
 
   <div class="modern-table-card">
     <table class="modern-table">
@@ -107,7 +106,8 @@
       </tbody>
     </table>
   </div>
-</Card>
+  </div>
+</div>
 
 {#if editingOrg}
   <AdminOrgEditor 
@@ -118,6 +118,15 @@
 {/if}
 
 <style>
+  .admin-orgs-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {

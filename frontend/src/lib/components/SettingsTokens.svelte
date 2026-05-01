@@ -59,16 +59,7 @@
   onMount(fetchTokens);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">token</span>
-      <div>
-        <h2>Tokens de Acceso Personal</h2>
-        <p class="subtitle">Claves seguras para autenticarte vía API o Git sin usar tu contraseña</p>
-      </div>
-    </div>
-  </header>
+<div class="settings-tokens-container">
 
   <div class="flex-col gap-xl">
     {#if generatedToken}
@@ -150,7 +141,7 @@
       </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   

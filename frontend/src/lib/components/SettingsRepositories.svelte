@@ -33,16 +33,8 @@
   onMount(fetchRepos);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">book</span>
-      <div>
-        <h2>Mis Repositorios</h2>
-        <p class="subtitle">Lista de todos tus proyectos personales y colaboraciones activas</p>
-      </div>
-    </div>
-  </header>
+<div class="settings-repos-container">
+
 
   <div class="modular-stack">
     <div class="config-module">
@@ -82,7 +74,7 @@
       </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   

@@ -5,6 +5,7 @@
   import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
 
   let loading = $state(true);
   let stats = $state<any[]>([]);
@@ -27,16 +28,14 @@
   onMount(fetchStats);
 </script>
 
-<div class="admin-janitor">
-  <div class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">mop</span>
-      <div>
-        <h2>{i18n.t("admin.janitor_global")}</h2>
-        <p class="subtitle">{i18n.t("admin.janitor_global_desc")}</p>
-      </div>
-    </div>
-  </div>
+<div class="admin-janitor-container">
+  <PageHeader 
+    title={i18n.t("admin.janitor_global") || "Ggit Janitor"}
+    subtitle={i18n.t("admin.janitor_global_desc") || "Limpieza y mantenimiento de espacio en disco de repositorios"}
+    icon="mop"
+  />
+
+  <div class="admin-janitor-body">
 
   {#if loading}
     <div class="skeleton-grid">
@@ -86,10 +85,20 @@
         </Card>
       {/each}
     </div>
-  {/if}
+    </div>
+  </div>
 </div>
 
 <style>
+  .admin-janitor-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .admin-janitor { display: flex; flex-direction: column; gap: 3rem; }
   
   .section-header { margin-bottom: 1rem; }

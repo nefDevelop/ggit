@@ -5,6 +5,7 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import AdminConfigEditor from './AdminConfigEditor.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let config = $state<any>(null);
   let loading = $state(true);
@@ -72,16 +73,14 @@
   onMount(fetchConfig);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">settings</span>
-      <div>
-        <h2>Configuración del Sistema</h2>
-        <p class="subtitle">Estado detallado y ajustes del motor Ggit</p>
-      </div>
-    </div>
-  </header>
+<div class="admin-config-container">
+  <PageHeader 
+    title="Configuración del Sistema"
+    subtitle="Estado detallado y ajustes del motor Ggit"
+    icon="settings"
+  />
+
+  <div class="admin-config-body">
 
   {#if loading}
      <div class="skeleton-config"></div>
@@ -145,7 +144,8 @@
       </div>
     </div>
   {/if}
-</Card>
+  </div>
+</div>
 
 {#if editingSection}
   <AdminConfigEditor 
@@ -157,6 +157,15 @@
 {/if}
 
 <style>
+  .admin-config-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {

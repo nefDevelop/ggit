@@ -128,18 +128,7 @@
   onMount(fetch2FAStatus);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">security</span>
-      <div>
-        <h2>Seguridad y Acceso</h2>
-        <p class="subtitle">
-          Protege tu cuenta con contraseñas fuertes y autenticación en dos pasos
-        </p>
-      </div>
-    </div>
-  </header>
+<div class="settings-security-container">
 
   <div class="modular-stack">
     <!-- PASSWORD SECTION -->
@@ -331,7 +320,7 @@
       </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   .section-header {

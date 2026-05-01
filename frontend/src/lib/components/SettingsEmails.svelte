@@ -79,16 +79,8 @@
   onMount(fetchEmails);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">mail</span>
-      <div>
-        <h2>Configuración de Email</h2>
-        <p class="subtitle">Gestiona tus direcciones y elige tu correo principal de contacto</p>
-      </div>
-    </div>
-  </header>
+<div class="settings-emails-container">
+
 
   <div class="modular-stack">
     <!-- EMAIL LIST -->
@@ -168,7 +160,7 @@
        </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   

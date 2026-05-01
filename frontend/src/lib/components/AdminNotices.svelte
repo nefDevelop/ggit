@@ -5,6 +5,7 @@
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
   import Modal from "./Modal.svelte";
 
   let notices = $state<any[]>([]);
@@ -58,23 +59,21 @@
   });
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">notifications</span>
-        <div>
-          <h2>Avisos del Sistema</h2>
-          <p class="subtitle">Registros de errores, alertas y tareas en segundo plano</p>
-        </div>
-      </div>
+<div class="admin-notices-container">
+  <PageHeader 
+    title={i18n.t('admin.notices') || "Avisos del Sistema"}
+    subtitle="Registros de errores, alertas y tareas en segundo plano"
+    icon="notifications"
+  >
+    {#snippet actions()}
       <div class="header-actions">
         <Button variant="ghost" icon="refresh" onclick={fetchNotices}>Actualizar</Button>
         <Button variant="danger" icon="delete_sweep" onclick={clearAll}>Limpiar Todo</Button>
       </div>
-    </div>
-  </header>
+    {/snippet}
+  </PageHeader>
 
+  <div class="admin-notices-body">
   {#if loading}
     <div class="skeleton-monitor"></div>
   {:else}
@@ -125,8 +124,8 @@
         </div>
       </footer>
     {/if}
-  {/if}
-</Card>
+    </div>
+  </div>
 
 <Modal show={showModal} title="Detalle del Aviso" onclose={() => showModal = false}>
   {#if selectedNotice}
@@ -146,6 +145,15 @@
 </Modal>
 
 <style>
+  .admin-notices-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }

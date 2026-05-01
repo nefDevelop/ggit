@@ -49,16 +49,7 @@
   onMount(fetchProfile);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">grid_view</span>
-      <div>
-        <h2>{i18n.t('settings.my_ggit')}</h2>
-        <p class="subtitle">{i18n.t('settings.my_ggit_desc')}</p>
-      </div>
-    </div>
-  </header>
+<div class="settings-myggit-container">
 
   <div class="modular-stack">
     <!-- REPO MODULES -->
@@ -149,7 +140,7 @@
        </div>
     </div>
   </div>
-</Card>
+</div>
 
 <style>
   

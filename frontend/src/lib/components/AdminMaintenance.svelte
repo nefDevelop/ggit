@@ -5,6 +5,7 @@
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   let stats = $state<any>(null);
   let loading = $state(true);
@@ -83,16 +84,14 @@
 </script>
 
 <div class="maintenance-view-wrapper">
-  <Card class="settings-premium-card" padding="lg">
-    <header class="section-header">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">build</span>
-        <div>
-          <h2>Mantenimiento del Sistema</h2>
-          <p class="subtitle">Operaciones críticas y optimización de la instancia</p>
-        </div>
-      </div>
-    </header>
+  <div class="admin-maintenance-container">
+    <PageHeader 
+      title={i18n.t('admin.maintenance') || "Mantenimiento del Sistema"}
+      subtitle="Operaciones críticas y optimización de la instancia"
+      icon="build"
+    />
+
+    <div class="admin-maintenance-body">
 
     {#if loading}
        <div class="skeleton-grid"></div>
@@ -162,10 +161,20 @@
         </aside>
       </div>
     {/if}
-  </Card>
+    </div>
+  </div>
 </div>
 
 <style>
+  .admin-maintenance-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .section-header { margin-bottom: 4rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
   .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }

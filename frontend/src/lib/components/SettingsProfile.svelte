@@ -165,55 +165,8 @@
   onMount(fetchProfile);
 </script>
 
-<Card class="settings-premium-card" padding="none">
-  <PageHeader 
-    title={i18n.t("settings.public_profile")}
-    subtitle={i18n.t("settings.public_profile_desc")}
-  >
-    {#snippet avatar()}
-      <div class="avatar-shield-header">
-        <Avatar
-          src={profile.avatar_url}
-          username={profile.username}
-          size={80}
-        />
-        <div class="avatar-overlay">
-          <label class="overlay-btn-mini" title="Subir foto">
-            <span class="material-symbols-rounded">cloud_upload</span>
-            <input
-              type="file"
-              accept="image/*"
-              onchange={handleAvatarUpload}
-              hidden
-            />
-          </label>
-          {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
-            <button
-              class="overlay-btn-mini delete"
-              onclick={deleteAvatar}
-              title="Quitar foto"
-            >
-              <span class="material-symbols-rounded">delete</span>
-            </button>
-          {/if}
-        </div>
-      </div>
-    {/snippet}
-    {#snippet actions()}
-      <Button
-        variant="ghost"
-        icon="magic_button"
-        onclick={() => (showDiceBear = !showDiceBear)}
-      >
-        <span class="avatar-magic-text">{showDiceBear ? "Cerrar selector" : "Avatar Mágico"}</span>
-      </Button>
-    {/snippet}
-  </PageHeader>
-
-
-
+<div class="settings-profile-container">
   <div class="profile-content-layout">
-    <!-- FORM SIDE -->
     <div class="form-column">
       {#if loading}
         <div class="skeleton-form"></div>
@@ -225,6 +178,44 @@
             saveProfile();
           }}
         >
+          <div class="avatar-form-row">
+            <div class="avatar-shield-header">
+              <Avatar
+                src={profile.avatar_url}
+                username={profile.username}
+                size={80}
+              />
+              <div class="avatar-overlay">
+                <label class="overlay-btn-mini" title="Subir foto">
+                  <span class="material-symbols-rounded">cloud_upload</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onchange={handleAvatarUpload}
+                    hidden
+                  />
+                </label>
+                {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
+                  <button
+                    class="overlay-btn-mini delete"
+                    onclick={deleteAvatar}
+                    title="Quitar foto"
+                  >
+                    <span class="material-symbols-rounded">delete</span>
+                  </button>
+                {/if}
+              </div>
+            </div>
+            <div class="avatar-actions">
+              <Button
+                variant="ghost"
+                icon="magic_button"
+                onclick={() => (showDiceBear = !showDiceBear)}
+              >
+                <span class="avatar-magic-text">{showDiceBear ? "Cerrar selector" : "Avatar Mágico"}</span>
+              </Button>
+            </div>
+          </div>
           <div class="form-grid">
             <div class="field">
               <label for="username">{i18n.t("username")}</label>
@@ -342,10 +333,20 @@
         </Button>
       </div>
     </div>
-  {/if}
-</Card>
+    </div>
+  </div>
+</div>
 
 <style>
+  .avatar-form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
 
 
   .avatar-shield-header {

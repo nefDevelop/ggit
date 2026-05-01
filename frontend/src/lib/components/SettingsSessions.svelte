@@ -55,21 +55,15 @@
   onMount(fetchSessions);
 </script>
 
-<Card class="settings-premium-card" padding="lg">
-  <header class="section-header">
-    <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">devices</span>
-      <div>
-        <h2>{i18n.t("settings.sessions")}</h2>
-        <p class="subtitle">{i18n.t("settings.sessions_desc")}</p>
-      </div>
-    </div>
-    {#if sessions.length > 1}
+<div class="settings-sessions-container">
+  {#if sessions.length > 1}
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
       <Button variant="ghost" class="danger-btn" icon="logout" onclick={revokeOtherSessions}>
         {i18n.t("settings.sessions_revoke_all")}
       </Button>
-    {/if}
-  </header>
+    </div>
+  {/if}
+
 
   <div class="sessions-list">
     {#if loading}
@@ -104,7 +98,7 @@
       {/each}
     {/if}
   </div>
-</Card>
+</div>
 
 <style>
   .section-header { margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; }

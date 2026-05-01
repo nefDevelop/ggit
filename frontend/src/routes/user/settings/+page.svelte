@@ -14,6 +14,6 @@
   .page-container {
     width: 100%;
     margin: 0;
-    padding: 0 1.5rem 4rem;
+    padding: 0;
   }
 </style>
