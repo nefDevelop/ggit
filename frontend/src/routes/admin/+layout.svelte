@@ -20,7 +20,7 @@
   ].map(item => ({ ...item, label: item.name }));
 </script>
 
-<div class="admin-layout-container">
+<div class="admin-layout-container" class:edge-to-edge={page.url.pathname === '/admin/users'}>
   {#if page.url.pathname !== '/admin/users'}
     <div class="admin-mobile-nav">
       <ChipNavigation 
@@ -44,6 +44,10 @@
     width: 100%;
     box-sizing: border-box;
     margin: 0;
+  }
+
+  .admin-layout-container.edge-to-edge {
+    padding: 0;
   }
 
   .admin-mobile-nav {

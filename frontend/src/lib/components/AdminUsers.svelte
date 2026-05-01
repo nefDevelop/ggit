@@ -67,6 +67,7 @@
     {/snippet}
   </PageHeader>
 
+  <div class="admin-users-body">
   {#if editingUserId}
     <div class="editor-overlay island tonal">
        <AdminUserEditor 
@@ -124,9 +125,19 @@
       </table>
     </div>
   {/if}
+  </div>
 </div>
 
 <style>
+  .admin-users-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   
   .section-header { margin-bottom: 4rem; }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
