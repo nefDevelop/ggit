@@ -117,9 +117,9 @@
   ]);
   
   const exploreSubItems = $derived([
-    { name: i18n.t("explore.repos") || "Repositories", icon: "book", path: "/explore/repos" },
-    { name: i18n.t("explore.users") || "Users", icon: "person_search", path: "/explore/users" },
-    { name: i18n.t("explore.organizations") || "Organizations", icon: "corporate_fare", path: "/explore/organizations" },
+    { name: i18n.t("explore_repos"), icon: "book", path: "/explore/repos" },
+    { name: i18n.t("explore_users"), icon: "person_search", path: "/explore/users" },
+    { name: i18n.t("explore_organizations"), icon: "corporate_fare", path: "/explore/organizations" },
   ]);
 
   const isAdminPath = $derived(page.url.pathname.startsWith("/admin"));

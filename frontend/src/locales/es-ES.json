@@ -75,6 +75,9 @@
   "dashboard": "Panel de control",
   "email": "Correo electrónico",
   "explore": "Explorar",
+  "explore_repos": "Repositorios",
+  "explore_users": "Usuarios",
+  "explore_organizations": "Organizaciones",
   "form": {
     "AdminEmail": "Correo electrónico del administrador",
     "AuthName": "Nombre de autorización",

@@ -75,6 +75,9 @@
   "dashboard": "Dashboard",
   "email": "Email",
   "explore": "Explore",
+  "explore_repos": "Repositories",
+  "explore_users": "Users",
+  "explore_organizations": "Organizations",
   "form": {
     "AdminEmail": "Admin email",
     "AuthName": "Authorization name",
