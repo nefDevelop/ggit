@@ -6,8 +6,11 @@
   import ThemeSwitch from "$lib/components/ThemeSwitch.svelte";
   import Avatar from "$lib/components/Avatar.svelte";
   import { userPrefs } from "$lib/settings.svelte";
+  import { toast } from "$lib/toast.svelte";
+  import NotificationsPanel from "$lib/components/NotificationsPanel.svelte";
 
   let showThemePanel = $state(false);
+  let showNoticesPanel = $state(false);
   let userOrgs = $state<any[]>([]);
   let pageLoadTime = $state(13);
   let templateTime = $state(4);
@@ -148,13 +151,24 @@
 <nav class="navigation-bar">
   <!-- USER AT TOP -->
   {#if authState.isAuthenticated}
-    <div class="user-profile-summary">
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="user-profile-summary clickable-box"
+      onclick={() => {
+        showNoticesPanel = !showNoticesPanel;
+        toast.clearUnread();
+      }}
+    >
       <div class="avatar-ring">
         <Avatar
           src={authState.user?.avatar_url}
           username={authState.user?.username}
           size={40}
         />
+        {#if toast.hasUnread}
+          <span class="unread-dot"></span>
+        {/if}
       </div>
       <div class="user-details">
         <span class="full-name"
@@ -162,7 +176,7 @@
         >
         <span class="user-handle">@{authState.user?.username}</span>
       </div>
-      <button class="minimal-logout" onclick={handleLogout} title="Logout">
+      <button class="minimal-logout" onclick={(e) => { e.stopPropagation(); handleLogout(); }} title="Logout">
         <span class="material-symbols-rounded">logout</span>
       </button>
     </div>
@@ -224,6 +238,30 @@
         {/if}
       </div>
     {/if}
+
+    <!-- MOBILE ONLY AVATAR -->
+    {#if authState.isAuthenticated}
+      <!-- svelte-ignore a11y_click_events_have_key_events -->
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div
+        class="nav-item mobile-avatar-item"
+        onclick={() => {
+          showNoticesPanel = !showNoticesPanel;
+          toast.clearUnread();
+        }}
+      >
+        <div class="avatar-ring-small">
+          <Avatar
+            src={authState.user?.avatar_url}
+            username={authState.user?.username}
+            size={28}
+          />
+          {#if toast.hasUnread}
+            <span class="unread-dot-small"></span>
+          {/if}
+        </div>
+      </div>
+    {/if}
   </div>
 
   <!-- BRAND AT BOTTOM -->
@@ -247,6 +285,7 @@
 </nav>
 
 <ThemeSwitch bind:show={showThemePanel} />
+<NotificationsPanel bind:show={showNoticesPanel} onclose={() => showNoticesPanel = false} />
 
 <style>
   .navigation-bar {
@@ -290,6 +329,11 @@
     background: rgba(255, 255, 255, 0.06);
     transform: translateY(-2px);
   }
+  @media (min-width: 1025px) {
+    .clickable-box {
+      cursor: pointer;
+    }
+  }
 
   .avatar-ring {
     display: flex;
@@ -301,6 +345,25 @@
     border-radius: 50%;
     background: linear-gradient(135deg, var(--primary-color), var(--tertiary));
     flex-shrink: 0;
+  }
+
+  .unread-dot {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: var(--md-sys-color-error);
+    border-radius: 50%;
+    border: 2px solid var(--md-sys-color-surface-container-highest);
+    animation: pulse 1.5s infinite ease-in-out;
+    z-index: 2;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.7; }
   }
 
   .user-details {
@@ -561,5 +624,36 @@
   }
   .minimal-theme-btn span {
     font-size: 1.25rem;
+  }
+
+  .mobile-avatar-item {
+    display: none;
+  }
+
+  @media (max-width: 1024px) {
+    .mobile-avatar-item {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .avatar-ring-small {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .unread-dot-small {
+      position: absolute;
+      top: -1px;
+      right: -1px;
+      width: 8px;
+      height: 8px;
+      background: var(--md-sys-color-error);
+      border-radius: 50%;
+      border: 1.5px solid var(--md-sys-color-surface-container-highest);
+      animation: pulse 1.5s infinite ease-in-out;
+      z-index: 2;
+    }
   }
 </style>
