@@ -38,16 +38,6 @@
 </svelte:head>
 
 <div class="settings-container">
-  <div class="mobile-nav-wrapper">
-    <ChipNavigation 
-      items={visibleTabs} 
-      activeId={activeTab} 
-      title="Repository Settings"
-      titleIcon="settings"
-      onSelect={(id) => activeTab = id} 
-    />
-  </div>
-
   <aside class="settings-sidebar tonal">
     <h3 class="sidebar-title">Repository Settings</h3>
     <nav class="settings-nav">
@@ -85,6 +75,16 @@
         <RepoSettingsJanitor />
     {/if}
   </main>
+
+  <div class="mobile-nav-wrapper">
+    <ChipNavigation 
+      items={visibleTabs} 
+      activeId={activeTab} 
+      title="Repository Settings"
+      titleIcon="settings"
+      onSelect={(id) => activeTab = id} 
+    />
+  </div>
 </div>
 
 <style>
@@ -181,10 +181,14 @@
     }
     .mobile-nav-wrapper {
       display: block;
-      background: transparent;
-      padding: 0.25rem 0;
+      position: sticky;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      z-index: 999;
+      background: var(--bg-color);
+      padding: 0.5rem 0.5rem 0;
       border-top: none;
-      box-shadow: none;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      margin-top: auto;
     }
   }
 </style>

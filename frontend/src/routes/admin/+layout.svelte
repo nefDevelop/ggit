@@ -21,6 +21,10 @@
 </script>
 
 <div class="admin-layout-container" class:edge-to-edge={page.url.pathname.startsWith('/admin')}>
+  <main class="admin-content-full">
+    {@render children()}
+  </main>
+
   <div class="admin-mobile-nav">
     <ChipNavigation 
       items={adminSubItems} 
@@ -29,10 +33,6 @@
       titleIcon="security"
     />
   </div>
-
-  <main class="admin-content-full">
-    {@render children()}
-  </main>
 </div>
 
 <style>
@@ -78,11 +78,14 @@
     }
     .admin-mobile-nav {
       display: flex;
-      background: transparent;
-      padding: 0.25rem 0;
+      position: sticky;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      z-index: 999;
+      background: var(--bg-color);
+      padding: 0.5rem 0.5rem 0;
       border-top: none;
-      box-shadow: none;
-      margin-bottom: 0;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      margin-top: auto;
     }
   }
 </style>

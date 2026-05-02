@@ -60,14 +60,6 @@
   />
 
   <div class="settings-premium-body">
-    <div class="mobile-nav-wrapper">
-      <ChipNavigation 
-        items={tabs} 
-        activeId={activeTab} 
-        onSelect={(id) => activeTab = id}
-      />
-    </div>
-
     <main class="settings-content">
       {#if activeTab === "profile"}
         <SettingsProfile />
@@ -93,6 +85,14 @@
         <SettingsOrganizations />
       {/if}
     </main>
+
+    <div class="mobile-nav-wrapper">
+      <ChipNavigation 
+        items={tabs} 
+        activeId={activeTab} 
+        onSelect={(id) => activeTab = id}
+      />
+    </div>
   </div>
 </div>
 
@@ -144,10 +144,14 @@
     }
     .mobile-nav-wrapper {
       display: block;
-      background: transparent;
-      padding: 0.25rem 0;
+      position: sticky;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      z-index: 999;
+      background: var(--bg-color);
+      padding: 0.5rem 0.5rem 0;
       border-top: none;
-      box-shadow: none;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      margin-top: auto;
     }
     .settings-content {
       gap: 2rem;
