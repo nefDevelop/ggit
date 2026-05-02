@@ -135,7 +135,7 @@
 
   .chip-item.active {
     background: var(--primary-color);
-    color: white;
+    color: var(--md-sys-color-on-primary);
     border-color: var(--primary-color);
     box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
   }

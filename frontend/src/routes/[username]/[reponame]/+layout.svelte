@@ -336,12 +336,12 @@
   .archive-tile:hover { background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary-color); }
   .archive-tile .material-symbols-rounded { font-size: 1.25rem; color: var(--primary-color); }
 
-  .repo-header-region { background-color: var(--surface-variant); border-bottom: 1px solid var(--border-color); }
-  .rich-tabs { display: flex; gap: 0.25rem; padding: 0 1rem; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+  .repo-header-region { background-color: var(--surface-variant); border-bottom: none; }
+  .rich-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
   .rich-tabs::-webkit-scrollbar { display: none; }
-  .tab { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; border-radius: 0.75rem 0.75rem 0 0; margin-bottom: -1px; }
-  .tab:hover { color: var(--text-color); background: rgba(0,0,0,0.03); }
-  .tab.active { color: var(--primary-color); background: var(--bg-color); position: relative; border: 1px solid var(--border-color); border-bottom-color: var(--bg-color); }
+  .tab { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; border-radius: 0.75rem 0.75rem 0 0; }
+  .tab:hover { color: var(--text-color); background: rgba(255,255,255,0.03); }
+  .tab.active { color: var(--primary-color); background: var(--bg-color); border: none; }
   .tab-count { font-variant-numeric: tabular-nums; background: rgba(0,0,0,0.05); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
   .tab.active .tab-count { background: var(--primary-container); color: var(--on-primary-container); }
   .tab-label { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }

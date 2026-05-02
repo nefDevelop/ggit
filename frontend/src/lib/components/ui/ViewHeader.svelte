@@ -121,7 +121,7 @@
     font-family: inherit;
   }
   .tab-pill:hover { background: var(--md-sys-color-surface-container-low); color: var(--text-color); }
-  .tab-pill.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+  .tab-pill.active { background: var(--primary-color); color: var(--md-sys-color-on-primary); border-color: var(--primary-color); }
   
   .tab-content-wrapper {
     display: flex;
