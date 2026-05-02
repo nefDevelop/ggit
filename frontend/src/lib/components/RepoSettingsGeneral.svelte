@@ -16,11 +16,28 @@
 
   const repo: any = getContext("repo");
   let settings = $state<any>({});
+  let branches = $state<any[]>([]);
   let loading = $state(true);
   let saving = $state(false);
   let avatarUploading = $state(false);
   let deleteConfirm = $state("");
   let errors = $state<Record<string, string>>({});
+
+  async function fetchBranches() {
+    try {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/branches`);
+      if (res.ok) {
+        const d = await res.json();
+        const b = [];
+        if (d.default) b.push(d.default);
+        if (d.active) b.push(...d.active);
+        if (d.stale) b.push(...d.stale);
+        branches = b;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   async function fetchSettings() {
     loading = true;
@@ -29,6 +46,7 @@
         `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
       );
       if (res.ok) settings = await res.json();
+      await fetchBranches();
     } catch (e) {
       console.error(e);
     } finally {
@@ -228,6 +246,18 @@
             error={errors.website}
             placeholder="https://example.com" 
           />
+
+          <div class="select-field full-width">
+            <label for="default_branch">Rama por Defecto</label>
+            <div class="select-wrapper">
+              <select id="default_branch" bind:value={settings.default_branch}>
+                {#each branches as branch}
+                  <option value={branch.name}>{branch.name}</option>
+                {/each}
+              </select>
+            </div>
+            <span class="select-helper-text">La rama por defecto es la que se muestra predeterminadamente al ver el código del proyecto.</span>
+          </div>
           
           <Input 
             label="Descripción" 
@@ -456,6 +486,51 @@
 
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   :global(.full-width) { grid-column: span 2; }
+
+  .select-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .select-field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-left: 0.25rem;
+  }
+  .select-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .select-wrapper select {
+    width: 100%;
+    background: var(--md-sys-color-surface-container-high);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    color: var(--md-sys-color-on-surface);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    outline: none;
+    box-sizing: border-box;
+    cursor: pointer;
+  }
+  .select-wrapper select:focus {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface-container-highest);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%);
+  }
+  .select-helper-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-left: 0.25rem;
+    opacity: 0.8;
+  }
 
   @media (max-width: 800px) {
     .form-grid { grid-template-columns: 1fr; }

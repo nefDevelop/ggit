@@ -69,20 +69,15 @@
   @media (max-width: 1024px) {
     .admin-layout-container {
       padding: 1rem;
-      padding-bottom: calc(160px + env(safe-area-inset-bottom));
+      padding-bottom: 2rem;
     }
     .admin-mobile-nav {
       display: flex;
-      position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 0;
-      right: 0;
-      z-index: 999;
       background: var(--bg-color);
-      padding: 0.5rem 0.5rem 0;
-      border-top: 1px solid var(--md-sys-color-outline-variant);
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-      margin-bottom: 0;
+      padding: 0.5rem 0;
+      border-top: none;
+      box-shadow: none;
+      margin-bottom: 1.5rem;
     }
   }
 </style>

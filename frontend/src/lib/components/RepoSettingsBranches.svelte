@@ -94,7 +94,7 @@
     <Card padding="none" class="settings-premium-card">
       <header class="section-header-premium">
         <div class="title-with-icon">
-          <span class="material-symbols-rounded hero-icon">git_branches</span>
+          <span class="material-symbols-rounded hero-icon">call_split</span>
           <div>
             <h2>Ramas del Repositorio</h2>
             <p class="subtitle">Gestiona la rama principal y configura reglas de protección para evitar cambios no deseados.</p>

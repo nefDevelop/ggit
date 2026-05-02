@@ -171,22 +171,17 @@
       display: flex;
       flex-direction: column;
       gap: 1.5rem;
-      padding-bottom: calc(160px + env(safe-area-inset-bottom));
+      padding-bottom: 2rem;
     }
     .settings-sidebar {
       display: none;
     }
     .mobile-nav-wrapper {
       display: block;
-      position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 0;
-      right: 0;
-      z-index: 999;
       background: var(--bg-color);
-      padding: 0.5rem 0.5rem 0;
-      border-top: 1px solid var(--md-sys-color-outline-variant);
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      padding: 0.5rem 0;
+      border-top: none;
+      box-shadow: none;
     }
   }
 </style>
