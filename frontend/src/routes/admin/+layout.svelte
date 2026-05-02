@@ -69,13 +69,14 @@
   @media (max-width: 1024px) {
     .admin-layout-container, .admin-layout-container.edge-to-edge {
       padding: 0.5rem;
-      padding-bottom: calc(150px + env(safe-area-inset-bottom));
+      padding-bottom: 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
     }
     .admin-content-full {
       width: 100%;
+      margin-bottom: calc(140px + env(safe-area-inset-bottom));
     }
     .admin-mobile-nav {
       display: flex;

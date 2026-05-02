@@ -137,7 +137,7 @@
   @media (max-width: 1100px) {
     .settings-premium-container {
       padding: 0;
-      padding-bottom: calc(150px + env(safe-area-inset-bottom));
+      padding-bottom: 1rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
@@ -158,17 +158,19 @@
     }
     .settings-content {
       gap: 2rem;
+      margin-bottom: calc(140px + env(safe-area-inset-bottom));
     }
   }
 
   @media (max-width: 600px) {
     .settings-premium-container {
       padding: 0 0.5rem;
-      padding-bottom: calc(140px + env(safe-area-inset-bottom));
+      padding-bottom: 1rem;
       gap: 1.5rem;
     }
     .settings-content {
       gap: 1.5rem;
+      margin-bottom: calc(140px + env(safe-area-inset-bottom));
     }
   }
 </style>

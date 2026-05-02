@@ -171,13 +171,14 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding-bottom: calc(150px + env(safe-area-inset-bottom));
+      padding-bottom: 1rem;
     }
     .settings-sidebar {
       display: none;
     }
     .settings-content {
       width: 100%;
+      margin-bottom: calc(140px + env(safe-area-inset-bottom));
     }
     .mobile-nav-wrapper {
       display: block;
