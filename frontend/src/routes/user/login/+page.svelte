@@ -55,14 +55,14 @@
 </svelte:head>
 
 <div class="login-page">
-  <div class="background-decor">
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="circle c3"></div>
-  </div>
-
   <div class="login-container">
     <Card variant="highest" padding="none" class="login-card glass">
+      <div class="background-decor">
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+        <div class="circle c3"></div>
+      </div>
+
       <div class="login-layout">
         <div class="login-brand tonal">
           <div class="brand-content">
@@ -141,8 +141,9 @@
     inset: 0;
     overflow: hidden;
     z-index: 0;
-    filter: blur(120px);
-    opacity: 0.65;
+    filter: blur(80px);
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   .circle {
@@ -151,27 +152,27 @@
   }
 
   .c1 {
-    width: 500px;
-    height: 500px;
+    width: 400px;
+    height: 400px;
     background: radial-gradient(circle, var(--primary-color), #3b82f6);
-    top: -120px;
-    right: -120px;
+    top: -150px;
+    right: -100px;
   }
 
   .c2 {
-    width: 450px;
-    height: 450px;
+    width: 350px;
+    height: 350px;
     background: radial-gradient(circle, #8b5cf6, #d946ef);
-    bottom: -100px;
-    left: -100px;
+    bottom: -120px;
+    left: -80px;
   }
 
   .c3 {
-    width: 350px;
-    height: 350px;
+    width: 250px;
+    height: 250px;
     background: radial-gradient(circle, #06b6d4, #10b981);
     top: 50%;
-    left: -150px;
+    left: -100px;
     transform: translateY(-50%);
   }
 
@@ -185,15 +186,19 @@
   }
 
   :global(.login-card) {
+    position: relative;
     border-radius: 2.5rem !important;
-    overflow: hidden;
+    overflow: hidden !important;
     box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .login-layout {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     min-height: 600px;
+    position: relative;
+    z-index: 1;
   }
 
   .login-brand {
@@ -203,7 +208,8 @@
     justify-content: space-between;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.1), rgba(var(--primary-rgb), 0.2));
+    background: rgba(var(--primary-rgb), 0.05);
+    backdrop-filter: blur(10px);
   }
 
   .brand-content {
