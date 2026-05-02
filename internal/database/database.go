@@ -57,7 +57,7 @@ var Tables = []any{
 	new(SecretPattern),
 	new(Star),
 	new(Team), new(TeamRepo), new(TeamUser), new(Topic), new(TwoFactor), new(TwoFactorRecoveryCode),
-	new(Upload), new(User),
+	new(Upload), new(User), new(UserBlock),
 	new(Version),
 	new(Watch), new(Webhook),
 }
