@@ -56,9 +56,6 @@
 </script>
 
 <div class="repo-row {isOlder ? 'older-row' : ''} {isNew() ? 'new-update' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
-  {#if isNew()}
-    <span class="new-dot-indicator"></span>
-  {/if}
   
   <div class="repo-avatar-container">
     {#if repo.avatar_url && !avatarError}
@@ -197,37 +194,17 @@
   }
 
   .new-update {
-    border-left: 3px solid var(--tertiary);
+    background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.08), transparent) !important;
   }
 
-  .new-dot-indicator {
-    width: 8px;
-    height: 8px;
-    background: var(--tertiary);
-    border-radius: 50%;
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    box-shadow: 0 0 12px var(--tertiary);
-    animation: pulse-dot 2s infinite;
-    z-index: 5;
-  }
-
-  @keyframes pulse-dot {
-    0% { transform: translateY(-50%) scale(1); opacity: 1; }
-    50% { transform: translateY(-50%) scale(1.6); opacity: 0.4; }
-    100% { transform: translateY(-50%) scale(1); opacity: 1; }
-  }
-
-  /* BLINK ANIMATIONS FOR COUNTERS */
+  /* SMOOTHER BLINK ANIMATIONS FOR COUNTERS */
   @keyframes activity-blink {
     0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0px var(--tertiary)); }
-    50% { opacity: 0.7; transform: scale(1.1); filter: drop-shadow(0 0 5px var(--tertiary)); color: var(--tertiary); }
+    50% { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 0 4px var(--tertiary)); color: var(--tertiary); }
   }
 
   .blink-active {
-    animation: activity-blink 1.5s infinite ease-in-out;
+    animation: activity-blink 3.5s infinite ease-in-out;
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }

@@ -157,7 +157,7 @@
       right: 0;
       width: 100vw;
       box-sizing: border-box;
-      z-index: 10;
+      z-index: 500;
       background: transparent;
       padding: 0.5rem 1rem;
       border-top: none;

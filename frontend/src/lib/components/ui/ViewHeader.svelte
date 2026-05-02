@@ -47,9 +47,6 @@
               <div class="tab-content-wrapper">
                 <span class="material-symbols-rounded mini">{tab.icon}</span>
                 <span class="tab-label-text">{tab.label}</span>
-                {#if tab.hasBadge}
-                  <span class="tab-badge-dot"></span>
-                {/if}
               </div>
             </button>
           {/each}
@@ -131,24 +128,6 @@
     align-items: center;
     gap: 0.5rem;
     position: relative;
-  }
-
-  .tab-badge-dot {
-    width: 6px;
-    height: 6px;
-    background: #ff5252;
-    border-radius: 50%;
-    position: absolute;
-    top: -2px;
-    right: -8px;
-    box-shadow: 0 0 8px #ff5252;
-    animation: pulse-badge 2s infinite;
-  }
-
-  @keyframes pulse-badge {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.5); opacity: 0.5; }
-    100% { transform: scale(1); opacity: 1; }
   }
 
   @media (max-width: 800px) {

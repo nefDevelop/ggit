@@ -183,6 +183,22 @@
                       </a>
                     </div>
                   </div>
+
+                  <div class="dropdown-divider"></div>
+
+                  <div class="dropdown-section">
+                    <span class="section-title">Open in IDE</span>
+                    <div class="archive-grid-compact">
+                      <a href={`vscode://vscode.git/clone?url=${encodeURIComponent(cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url)}`} class="archive-tile">
+                        <span class="material-symbols-rounded">code</span>
+                        <span>VS Code</span>
+                      </a>
+                      <a href={`vscodium://vscode.git/clone?url=${encodeURIComponent(cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url)}`} class="archive-tile">
+                        <span class="material-symbols-rounded">terminal</span>
+                        <span>VSCodium</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               {/if}
             </div>

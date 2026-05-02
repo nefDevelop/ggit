@@ -37,7 +37,6 @@
 
 <style>
   .admin-layout-container {
-    animation: fadeIn 0.3s ease-out;
     padding: 0 1.5rem 4rem;
     width: 100%;
     box-sizing: border-box;
@@ -63,21 +62,19 @@
     flex-direction: column;
     gap: 2rem;
     width: 100%;
+    animation: fadeIn 0.3s ease-out;
   }
 
   /* Adjust for mobile if needed */
   @media (max-width: 1024px) {
     .admin-layout-container, .admin-layout-container.edge-to-edge {
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100%;
+      padding: 1rem 0;
+      display: block;
+      min-height: auto;
     }
     .admin-content-full {
       width: 100%;
-      padding: 1rem;
-      flex: 1;
-      padding-bottom: 2rem;
+      padding: 0.5rem 1.5rem;
     }
     .admin-mobile-nav {
       display: flex;
@@ -87,11 +84,11 @@
       right: 0;
       width: 100vw;
       box-sizing: border-box;
-      z-index: 10;
+      z-index: 500;
       background: transparent;
       padding: 0.5rem 1rem;
       border-top: none;
-      margin-top: 0;
+      margin: 0;
       overflow-x: auto;
     }
   }
