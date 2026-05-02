@@ -170,30 +170,21 @@
     .settings-container {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
-      padding-bottom: calc(140px + env(safe-area-inset-bottom));
-      position: relative;
+      gap: 1rem;
+      padding-bottom: 2rem;
     }
     .settings-sidebar {
       display: none;
     }
     .settings-content {
-      position: relative;
-      z-index: 1000;
-      background: var(--bg-color);
-      padding-bottom: 1rem;
+      width: 100%;
     }
     .mobile-nav-wrapper {
       display: block;
-      position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 0;
-      right: 0;
-      z-index: 999;
-      background: var(--bg-color);
-      padding: 0.5rem 0.5rem 0;
+      background: transparent;
+      padding: 0.25rem 0;
       border-top: none;
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: none;
     }
   }
 </style>

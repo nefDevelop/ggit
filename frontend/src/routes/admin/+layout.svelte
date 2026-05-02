@@ -69,26 +69,19 @@
   @media (max-width: 1024px) {
     .admin-layout-container, .admin-layout-container.edge-to-edge {
       padding: 0.5rem;
-      padding-bottom: calc(150px + env(safe-area-inset-bottom));
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
     .admin-content-full {
-      position: relative;
-      z-index: 1000;
-      background: var(--bg-color);
-      padding-bottom: 1rem;
+      width: 100%;
     }
     .admin-mobile-nav {
       display: flex;
-      position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
-      left: 0;
-      right: 0;
-      z-index: 999;
-      background: var(--bg-color);
-      padding: 0.5rem 0.5rem 0;
+      background: transparent;
+      padding: 0.25rem 0;
       border-top: none;
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: none;
       margin-bottom: 0;
     }
   }
