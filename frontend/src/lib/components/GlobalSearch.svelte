@@ -100,4 +100,18 @@
     border-radius: 4px;
     opacity: 0.8;
   }
+
+  @media (max-width: 600px) {
+    .shortcut-hint {
+      display: none;
+    }
+    .search-pill {
+      padding: 0.5rem 0.75rem;
+      gap: 0.5rem;
+    }
+    .global-search-input {
+      font-size: 0.85rem;
+      min-width: 0;
+    }
+  }
 </style>

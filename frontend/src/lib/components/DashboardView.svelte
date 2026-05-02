@@ -418,7 +418,7 @@
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
   @media (max-width: 1100px) {
-    .dashboard-layout { padding: 0 1rem; }
+    .dashboard-layout { padding: 0; }
     .dashboard-sidebar { display: none; }
   }
 

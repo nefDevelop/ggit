@@ -501,7 +501,7 @@
       z-index: 1000;
       padding: 0 0.5rem;
       background: var(--bg-color);
-      border-top: 1px solid var(--md-sys-color-outline-variant);
+      border-top: none;
       align-items: center;
       padding-bottom: env(safe-area-inset-bottom);
       height: calc(70px + env(safe-area-inset-bottom));
