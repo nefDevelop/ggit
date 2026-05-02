@@ -122,7 +122,11 @@
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(result.data),
+          body: JSON.stringify({
+            ...result.data,
+            branch: settings.default_branch,
+            default_branch: settings.default_branch
+          }),
         },
       );
       if (res.ok) {

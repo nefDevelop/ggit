@@ -251,7 +251,7 @@
   .navigation-bar {
     display: flex;
     flex-direction: column;
-    padding: 2rem 1rem;
+    padding: 2rem 1rem 4rem;
     width: 260px;
     height: 100vh;
     box-sizing: border-box;

@@ -90,6 +90,7 @@ type RepoSetting struct {
 	Description   string `json:"description" valid:"MaxSize(512)"`
 	Website       string `json:"website" valid:"Url;MaxSize(100)"`
 	Branch        string `json:"branch"`
+	DefaultBranch string `json:"default_branch"`
 	Interval      int    `json:"interval"`
 	Private       bool   `json:"private"`
 	Unlisted      bool   `json:"unlisted"`

@@ -80,7 +80,11 @@ func UpdateRepoSettings(c *context.APIContext) {
 	repo.PullsIgnoreWhitespace = f.PullsIgnoreWhitespace
 	repo.PullsAllowRebase = f.PullsAllowRebase
 	repo.PullsAllowManualMerge = f.PullsAllowManualMerge
-	repo.DefaultBranch = f.Branch
+	if f.Branch != "" {
+		repo.DefaultBranch = f.Branch
+	} else if f.DefaultBranch != "" {
+		repo.DefaultBranch = f.DefaultBranch
+	}
 
 	if err := database.UpdateRepository(repo, visibilityChanged); err != nil {
 		c.Error(err, "update repository")

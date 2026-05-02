@@ -69,15 +69,20 @@
   @media (max-width: 1024px) {
     .admin-layout-container {
       padding: 1rem;
-      padding-bottom: 2rem;
+      padding-bottom: calc(140px + env(safe-area-inset-bottom));
     }
     .admin-mobile-nav {
       display: flex;
+      position: fixed;
+      bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 0;
+      right: 0;
+      z-index: 999;
       background: var(--bg-color);
-      padding: 0.5rem 0;
+      padding: 0.5rem 0.5rem 0;
       border-top: none;
-      box-shadow: none;
-      margin-bottom: 1.5rem;
+      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      margin-bottom: 0;
     }
   }
 </style>
