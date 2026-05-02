@@ -69,6 +69,7 @@
   @media (max-width: 1024px) {
     .admin-layout-container, .admin-layout-container.edge-to-edge {
       padding: 0.5rem;
+      padding-bottom: calc(150px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       gap: 1rem;
@@ -78,14 +79,18 @@
     }
     .admin-mobile-nav {
       display: flex;
-      position: sticky;
+      position: fixed;
       bottom: calc(70px + env(safe-area-inset-bottom));
+      left: 0;
+      right: 0;
+      width: 100vw;
+      box-sizing: border-box;
       z-index: 999;
       background: var(--bg-color);
       padding: 0.5rem 0.5rem 0;
       border-top: none;
       box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-      margin-top: auto;
+      margin-bottom: 0;
     }
   }
 </style>
