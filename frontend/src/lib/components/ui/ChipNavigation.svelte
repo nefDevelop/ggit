@@ -45,6 +45,7 @@
           href={item.path} 
           class="chip-item" 
           class:active={activeId === item.id || activeId === item.path || (item.path !== '/' && activeId.startsWith(item.path + '/'))}
+          onclick={() => onSelect?.(item.id)}
         >
           <span class="material-symbols-rounded">{item.icon}</span>
           <span class="label">{item.label}</span>

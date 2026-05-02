@@ -36,17 +36,17 @@
   });
 
   const tabs = $derived([
-    { id: "profile", label: i18n.t("settings.profile") || "Perfil", icon: "person", description: "Configura tu información pública y avatar" },
-    { id: "myggit", label: i18n.t("settings.my_ggit") || "Mi Ggit", icon: "grid_view", description: "Personaliza tu página de inicio y preferencias del feed" },
-    { id: "appearance", label: i18n.t("settings.appearance") || "Apariencia", icon: "palette", description: "Personaliza el tema, colores y tipografía de la interfaz" },
-    { id: "emails", label: i18n.t("settings.emails") || "Correos", icon: "mail", description: "Gestiona las direcciones de correo electrónico vinculadas" },
-    { id: "security", label: i18n.t("settings.security") || "Seguridad", icon: "security", description: "Actualiza tu contraseña y configuración de doble factor" },
-    { id: "sessions", label: "Sesiones", icon: "devices", description: "Controla los dispositivos y navegadores conectados" },
-    { id: "blocks", label: "Bloqueos", icon: "person_off", description: "Gestiona los usuarios que tienes bloqueados" },
-    { id: "keys", label: i18n.t("settings.ssh_keys") || "Claves SSH", icon: "key", description: "Gestiona las llaves públicas vinculadas a tu cuenta" },
-    { id: "tokens", label: i18n.t("settings.access_tokens") || "Tokens", icon: "token", description: "Claves de acceso seguro vía API o Git sin usar contraseña" },
-    { id: "repos", label: i18n.t("settings.repositories") || "Repositorios", icon: "book", description: "Lista de todos tus proyectos personales y colaboraciones activas" },
-    { id: "orgs", label: i18n.t("settings.organizations") || "Organizaciones", icon: "corporate_fare", description: "Gestiona tu pertenencia a equipos y organizaciones" },
+    { id: "profile", label: i18n.t("settings.profile") || "Perfil", icon: "person", description: "Configura tu información pública y avatar", path: "/user/settings?tab=profile" },
+    { id: "myggit", label: i18n.t("settings.my_ggit") || "Mi Ggit", icon: "grid_view", description: "Personaliza tu página de inicio y preferencias del feed", path: "/user/settings?tab=myggit" },
+    { id: "appearance", label: i18n.t("settings.appearance") || "Apariencia", icon: "palette", description: "Personaliza el tema, colores y tipografía de la interfaz", path: "/user/settings?tab=appearance" },
+    { id: "emails", label: i18n.t("settings.emails") || "Correos", icon: "mail", description: "Gestiona las direcciones de correo electrónico vinculadas", path: "/user/settings?tab=emails" },
+    { id: "security", label: i18n.t("settings.security") || "Seguridad", icon: "security", description: "Actualiza tu contraseña y configuración de doble factor", path: "/user/settings?tab=security" },
+    { id: "sessions", label: "Sesiones", icon: "devices", description: "Controla los dispositivos y navegadores conectados", path: "/user/settings?tab=sessions" },
+    { id: "blocks", label: "Bloqueos", icon: "person_off", description: "Gestiona los usuarios que tienes bloqueados", path: "/user/settings?tab=blocks" },
+    { id: "keys", label: i18n.t("settings.ssh_keys") || "Claves SSH", icon: "key", description: "Gestiona las llaves públicas vinculadas a tu cuenta", path: "/user/settings?tab=keys" },
+    { id: "tokens", label: i18n.t("settings.access_tokens") || "Tokens", icon: "token", description: "Claves de acceso seguro vía API o Git sin usar contraseña", path: "/user/settings?tab=tokens" },
+    { id: "repos", label: i18n.t("settings.repositories") || "Repositorios", icon: "book", description: "Lista de todos tus proyectos personales y colaboraciones activas", path: "/user/settings?tab=repos" },
+    { id: "orgs", label: i18n.t("settings.organizations") || "Organizaciones", icon: "corporate_fare", description: "Gestiona tu pertenencia a equipos y organizaciones", path: "/user/settings?tab=orgs" },
   ]);
 
   const activeTabObj = $derived(tabs.find(t => t.id === activeTab) || tabs[0]);
