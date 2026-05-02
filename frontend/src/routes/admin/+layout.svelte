@@ -67,9 +67,9 @@
 
   /* Adjust for mobile if needed */
   @media (max-width: 1024px) {
-    .admin-layout-container {
-      padding: 1rem;
-      padding-bottom: calc(140px + env(safe-area-inset-bottom));
+    .admin-layout-container, .admin-layout-container.edge-to-edge {
+      padding: 0.5rem;
+      padding-bottom: calc(150px + env(safe-area-inset-bottom));
     }
     .admin-mobile-nav {
       display: flex;
