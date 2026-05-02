@@ -138,6 +138,7 @@
     .settings-premium-container {
       padding: 0;
       padding-bottom: calc(140px + env(safe-area-inset-bottom));
+      position: relative;
     }
     .mobile-nav-wrapper {
       display: block;
@@ -153,6 +154,10 @@
     }
     .settings-content {
       gap: 2rem;
+      position: relative;
+      z-index: 1000;
+      background: var(--bg-color);
+      padding-bottom: 1rem;
     }
   }
 

@@ -172,9 +172,16 @@
       flex-direction: column;
       gap: 1.5rem;
       padding-bottom: calc(140px + env(safe-area-inset-bottom));
+      position: relative;
     }
     .settings-sidebar {
       display: none;
+    }
+    .settings-content {
+      position: relative;
+      z-index: 1000;
+      background: var(--bg-color);
+      padding-bottom: 1rem;
     }
     .mobile-nav-wrapper {
       display: block;

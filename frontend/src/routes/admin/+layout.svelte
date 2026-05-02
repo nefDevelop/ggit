@@ -70,6 +70,13 @@
     .admin-layout-container, .admin-layout-container.edge-to-edge {
       padding: 0.5rem;
       padding-bottom: calc(150px + env(safe-area-inset-bottom));
+      position: relative;
+    }
+    .admin-content-full {
+      position: relative;
+      z-index: 1000;
+      background: var(--bg-color);
+      padding-bottom: 1rem;
     }
     .admin-mobile-nav {
       display: flex;
