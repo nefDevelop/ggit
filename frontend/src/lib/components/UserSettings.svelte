@@ -15,6 +15,7 @@
   import { goto } from "$app/navigation";
   import PageHeader from "./ui/PageHeader.svelte";
   import ViewHeader from "./ui/ViewHeader.svelte";
+  import ChipNavigation from "./ui/ChipNavigation.svelte";
 
   let activeTab = $state(page.url.searchParams.get("tab") || "profile");
 
@@ -60,11 +61,10 @@
 
   <div class="settings-premium-body">
     <div class="mobile-nav-wrapper">
-      <ViewHeader 
-        tabs={tabs} 
-        bind:activeTab={activeTab} 
+      <ChipNavigation 
+        items={tabs} 
+        activeId={activeTab} 
         onSelect={(id) => activeTab = id}
-        showSearch={false}
       />
     </div>
 
