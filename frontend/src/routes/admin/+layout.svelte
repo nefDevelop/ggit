@@ -21,16 +21,14 @@
 </script>
 
 <div class="admin-layout-container" class:edge-to-edge={page.url.pathname.startsWith('/admin')}>
-  {#if !page.url.pathname.startsWith('/admin')}
-    <div class="admin-mobile-nav">
-      <ChipNavigation 
-        items={adminSubItems} 
-        activeId={page.url.pathname} 
-        title={i18n.t("admin_panel") || "Panel de Admin"} 
-        titleIcon="security"
-      />
-    </div>
-  {/if}
+  <div class="admin-mobile-nav">
+    <ChipNavigation 
+      items={adminSubItems} 
+      activeId={page.url.pathname} 
+      title={i18n.t("admin_panel") || "Panel de Admin"} 
+      titleIcon="security"
+    />
+  </div>
 
   <main class="admin-content-full">
     {@render children()}

@@ -63,6 +63,7 @@
       <ViewHeader 
         tabs={tabs} 
         bind:activeTab={activeTab} 
+        onSelect={(id) => activeTab = id}
         showSearch={false}
       />
     </div>

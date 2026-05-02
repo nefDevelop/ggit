@@ -44,7 +44,7 @@
         <a 
           href={item.path} 
           class="chip-item" 
-          class:active={activeId === item.id || activeId === item.path}
+          class:active={activeId === item.id || activeId === item.path || (item.path !== '/' && activeId.startsWith(item.path + '/'))}
         >
           <span class="material-symbols-rounded">{item.icon}</span>
           <span class="label">{item.label}</span>
@@ -152,6 +152,12 @@
     }
     .chip-nav-rail {
       padding-bottom: 0.5rem;
+    }
+    .chip-item:not(.active) .label {
+      display: none;
+    }
+    .chip-item:not(.active) {
+      padding: 0.75rem 0.85rem;
     }
   }
 </style>

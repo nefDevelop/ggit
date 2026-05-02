@@ -14,13 +14,15 @@
     activeTab?: string;
     showSearch?: boolean;
     actions?: Snippet;
+    onSelect?: (id: string) => void;
   }
 
   let { 
     tabs = [], 
     activeTab = $bindable(''), 
     showSearch = true,
-    actions
+    actions,
+    onSelect
   }: Props = $props();
 
 </script>
@@ -40,7 +42,7 @@
             <button 
               class="tab-pill" 
               class:active={activeTab === tab.id}
-              onclick={() => activeTab = tab.id}
+              onclick={() => { activeTab = tab.id; onSelect?.(tab.id); }}
             >
               <div class="tab-content-wrapper">
                 <span class="material-symbols-rounded mini">{tab.icon}</span>
@@ -95,8 +97,16 @@
     align-items: center;
   }
 
-  .view-mode-selector { display: flex; gap: 0.5rem; }
-  
+  .view-mode-selector { 
+    display: flex; 
+    gap: 0.5rem; 
+    overflow-x: auto; 
+    scrollbar-width: none; 
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+  .view-mode-selector::-webkit-scrollbar { display: none; }
+
   .tab-pill { 
     background: transparent; 
     border: 1px solid var(--md-sys-color-outline-variant); 
@@ -146,7 +156,8 @@
     .search-and-action-row { flex-wrap: nowrap; gap: 0.75rem; }
     .search-flex { min-width: 0; flex: 1; order: 0; }
     .actions-flex { order: 1; width: auto; justify-content: flex-end; }
-    .tab-label-text { display: none; }
-    .tab-pill { padding: 0.5rem; border-radius: 50%; }
+    .tab-pill:not(.active) .tab-label-text { display: none; }
+    .tab-pill:not(.active) { padding: 0.5rem 0.65rem; border-radius: 100px; }
+    .tab-pill.active { padding: 0.5rem 1rem; border-radius: 100px; }
   }
 </style>
