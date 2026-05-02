@@ -65,6 +65,10 @@
 			isDashboard &&
 			!authState.user?.disable_news_feed,
 	);
+	const hasSubNav = $derived(
+		$page.url.pathname.startsWith("/admin") || 
+		$page.url.pathname.startsWith("/user/settings")
+	);
 </script>
 
 <svelte:head>
@@ -125,7 +129,7 @@
 	</script>
 </svelte:head>
 
-<div id="app-layout" class:has-right-sidebar={showRightSidebar}>
+<div id="app-layout" class:has-right-sidebar={showRightSidebar} class:has-sub-nav={hasSubNav}>
 	{#if authState.isAuthenticated}
 		<div class="navigation-sidebar">
 			<Navigation />

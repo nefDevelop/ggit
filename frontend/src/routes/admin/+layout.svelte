@@ -68,29 +68,31 @@
   /* Adjust for mobile if needed */
   @media (max-width: 1024px) {
     .admin-layout-container, .admin-layout-container.edge-to-edge {
-      padding: 0.5rem;
-      padding-bottom: calc(160px + env(safe-area-inset-bottom));
+      padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      min-height: 100%;
     }
     .admin-content-full {
       width: 100%;
+      padding: 1rem;
+      flex: 1;
+      padding-bottom: 2rem;
     }
     .admin-mobile-nav {
       display: flex;
       position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
+      bottom: calc(75px + env(safe-area-inset-bottom));
       left: 0;
       right: 0;
       width: 100vw;
       box-sizing: border-box;
-      z-index: 999;
-      background: var(--bg-color);
-      padding: 0.5rem 0.5rem 0;
+      z-index: 10;
+      background: transparent;
+      padding: 0.5rem 1rem;
       border-top: none;
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
-      margin-bottom: 0;
+      margin-top: 0;
+      overflow-x: auto;
     }
   }
 </style>

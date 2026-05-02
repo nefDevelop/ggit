@@ -55,16 +55,16 @@
 </svelte:head>
 
 <div class="login-page">
-  <div class="login-container">
-    <Card variant="highest" padding="none" class="login-card glass">
-      <div class="background-decor">
-        <div class="circle c1"></div>
-        <div class="circle c2"></div>
-        <div class="circle c3"></div>
-      </div>
+  <div class="background-decor">
+    <div class="circle c1"></div>
+    <div class="circle c2"></div>
+    <div class="circle c3"></div>
+  </div>
 
+  <div class="login-container">
+    <Card variant="highest" padding="none" class="login-card">
       <div class="login-layout">
-        <div class="login-brand tonal">
+        <div class="login-brand">
           <div class="brand-content">
             <span class="material-symbols-rounded logo-icon">terminal</span>
             <h1>Ggit</h1>
@@ -127,13 +127,14 @@
 
 <style>
   .login-page {
-    position: fixed;
-    inset: 0;
+    position: relative;
+    min-height: 100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--bg-color);
     overflow: hidden;
+    background: transparent;
   }
 
   .background-decor {
@@ -141,75 +142,86 @@
     inset: 0;
     overflow: hidden;
     z-index: 0;
-    filter: blur(80px);
-    opacity: 0.5;
+    filter: blur(100px);
+    opacity: 0.35;
     pointer-events: none;
   }
 
   .circle {
     position: absolute;
     border-radius: 50%;
+    animation: float 25s infinite alternate ease-in-out;
   }
 
   .c1 {
-    width: 400px;
-    height: 400px;
+    width: 600px;
+    height: 600px;
     background: radial-gradient(circle, var(--primary-color), #3b82f6);
     top: -150px;
-    right: -100px;
+    right: -150px;
+    animation-delay: 0s;
   }
 
   .c2 {
-    width: 350px;
-    height: 350px;
+    width: 500px;
+    height: 500px;
     background: radial-gradient(circle, #8b5cf6, #d946ef);
-    bottom: -120px;
-    left: -80px;
+    bottom: -150px;
+    left: -100px;
+    animation-delay: -5s;
+    animation-duration: 30s;
   }
 
   .c3 {
-    width: 250px;
-    height: 250px;
+    width: 400px;
+    height: 400px;
     background: radial-gradient(circle, #06b6d4, #10b981);
     top: 50%;
-    left: -100px;
+    left: -200px;
     transform: translateY(-50%);
+    animation-delay: -10s;
+    animation-duration: 35s;
+  }
+
+  @keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(60px, 40px) rotate(10deg); }
   }
 
   .login-container {
     position: relative;
-    z-index: 1;
+    z-index: 10;
     width: 100%;
     max-width: 900px;
     padding: 2rem;
-    animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   :global(.login-card) {
     position: relative;
     border-radius: 2.5rem !important;
     overflow: hidden !important;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 32px 80px rgba(0, 0, 0, 0.4),
+      inset 0 1px 1px rgba(255, 255, 255, 0.1),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(0, 0, 0, 0.3) !important;
+    background: var(--md-sys-color-surface-container-highest) !important;
   }
 
   .login-layout {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     min-height: 600px;
-    position: relative;
-    z-index: 1;
   }
 
   .login-brand {
-    padding: 3rem;
+    padding: 3.5rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    background: rgba(var(--primary-rgb), 0.05);
-    backdrop-filter: blur(10px);
+    background: var(--md-sys-color-surface-container-low);
+    border-right: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .brand-content {
@@ -366,4 +378,3 @@
     }
   }
 </style>
-

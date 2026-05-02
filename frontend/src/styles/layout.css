@@ -82,6 +82,13 @@
     width: calc(100vw - 1rem);
     box-sizing: border-box;
   }
+
+  /* Space for sub-navigation (Admin/Settings) */
+  #app-layout.has-sub-nav #main-container-wrapper {
+    margin-bottom: 150px !important;
+    height: calc(100vh - 160px);
+  }
+
   #main-container-wrapper::after {
     border-radius: 1.5rem !important;
   }

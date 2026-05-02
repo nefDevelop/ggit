@@ -226,14 +226,11 @@
     {/if}
   </div>
 
-
-
   <!-- BRAND AT BOTTOM -->
   <div class="brand-section-bottom">
     <div class="brand-info">
       <span class="brand-name">Ggit</span>
       <span class="version">v2026.4.0</span>
-      <span class="perf-metrics">Page: {pageLoadTime}ms Template: {templateTime}ms</span>
     </div>
     <button
       class="minimal-theme-btn"
@@ -243,6 +240,10 @@
       <span class="material-symbols-rounded">palette</span>
     </button>
   </div>
+
+  <div class="sidebar-perf-info">
+    Page: {pageLoadTime}ms Template: {templateTime}ms
+  </div>
 </nav>
 
 <ThemeSwitch bind:show={showThemePanel} />
@@ -251,12 +252,25 @@
   .navigation-bar {
     display: flex;
     flex-direction: column;
-    padding: 2rem 1rem 4rem;
+    padding: 2rem 1rem 2.5rem;
     width: 260px;
     height: 100vh;
     box-sizing: border-box;
     z-index: 1000;
-    /* No borders, no s, just flat integration with background */
+    position: relative;
+  }
+
+  .sidebar-perf-info {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 2rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    opacity: 0.4;
+    font-family: monospace;
+    white-space: nowrap;
+    pointer-events: none;
   }
 
   /* USER PROFILE SUMMARY */
@@ -479,18 +493,12 @@
     font-weight: 700;
     color: var(--text-muted);
   }
-  .perf-metrics {
-    font-size: 0.625rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    opacity: 0.85;
-    margin-top: 0.25rem;
-    font-family: monospace;
-    white-space: nowrap;
-  }
 
   /* Mobile stays similar but at bottom */
   @media (max-width: 1024px) {
+    .sidebar-perf-info {
+      display: none;
+    }
     .navigation-bar {
       width: 100vw;
       height: 70px;
@@ -531,9 +539,6 @@
       flex: 1;
     }
     .nav-org-list {
-      display: none;
-    }
-    .appearance-btn {
       display: none;
     }
   }
