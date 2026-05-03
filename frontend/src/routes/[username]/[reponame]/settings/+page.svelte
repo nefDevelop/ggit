@@ -188,10 +188,12 @@
       width: 100vw;
       box-sizing: border-box;
       z-index: 999;
-      background: var(--bg-color);
-      padding: 0.5rem 0.5rem 0;
-      border-top: none;
-      box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+      background: rgba(var(--surface-rgb), 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
       margin-bottom: 0;
     }
   }

@@ -438,7 +438,8 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 	apiRepo := opts.Repo.APIFormat(opts.Owner)
 	apiPusher := pusher.APIFormat()
 	if isDelRef {
-		err = PrepareWebhooks(
+		err = PrepareWebhooksWithDB(
+			s.db,
 			opts.Repo,
 			HookEventTypeDelete,
 			&apiv2types.WebhookDeletePayload{
@@ -482,7 +483,8 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 
 	var compareURL string
 	if isNewRef {
-		err = PrepareWebhooks(
+		err = PrepareWebhooksWithDB(
+			s.db,
 			opts.Repo,
 			HookEventTypeCreate,
 			&apiv2types.WebhookCreatePayload{
@@ -600,7 +602,8 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts PushTagOptions) error {
 		return nil
 	}
 
-	err = PrepareWebhooks(
+	err = PrepareWebhooksWithDB(
+		s.db,
 		opts.Repo,
 		HookEventTypeCreate,
 		&apiv2types.WebhookCreatePayload{
@@ -833,3 +836,4 @@ func (pcs *PushCommits) AvatarLink(email string) string {
 
 	return pcs.avatars[email]
 }
+

@@ -94,7 +94,6 @@ func TestActions(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	t.Parallel()
 	s := &ActionsStore{
 		db: newTestDB(t, "ActionsStore"),
 	}

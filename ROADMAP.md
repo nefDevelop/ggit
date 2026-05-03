@@ -1,18 +1,14 @@
 # Roadmap & Changelog: Modernización (Go/Gin + Svelte)
 
 ## Fase 1: Análisis y Funcionalidades Base ✅
-- [x] **Integrar detección avanzada de lenguajes:** Reemplazar sistema con `go-enry`.
+- [x] **Integrar detección avanzada de lenguajes:** Reemplazar sistema con `go-enry`. **Tested**.
 - [x] **Resaltado de sintaxis en el servidor:** Integrar `chroma` y eliminar JS pesado en cliente.
-- [x] **Auditoría de Settings:** Verificar flags `EnableIssues` y `EnablePulls`.
-
-## Fase 2: Desacoplamiento de Lógica ✅
+- [x] **Auditoría de Settings:** Verificar flags `EnableIssues` y `EnablePulls`. **Tested**.
 - [x] **Crear capa de Servicios:** Extraer lógica de Repos, Issues, PRs y Usuarios.
 - [x] **Tipado de Entradas/Salidas:** Definir DTOs independientes del contexto HTTP.
-
-## Fase 3: Migración del Motor HTTP a Gin ✅
 - [x] **Inicialización y Middleware:** Migrar Auth, Sesiones, Logging y Recovery.
 - [x] **Migración a API v2:** Implementar todos los endpoints JSON para el nuevo frontend.
-- [x] **Bypass de Instalación:** Pre-configuración automática con SQLite.
+- [x] **Bypass de Instalación:** Pre-configuración automática con SQLite. **Tested**.
 
 ## Fase 4: Frontend con SvelteKit ✅
 - [x] **Migración de Pantallas:** Login, Dashboard, Vista de Repo, Colaboración y Admin.
@@ -40,7 +36,7 @@
 - [x] **Limpieza de Dependencias:** Eliminar rastro de Macaron (`inject`, `binding`) del `go.mod`.
 - [x] **Eliminar Mirrors:** Borrar la lógica de sincronización periódica de repos remotos.
 - [x] **Eliminar Migraciones Masivas:** Transformado en **Smart Clone** (solo clonado Git, sin APIs externas).
-- [x] **Mantener LFS:** Decidido mantener el soporte para Large File Storage (`internal/lfsx`).
+- [x] **Mantener LFS:** Decidido mantener el soporte para Large File Storage (`internal/lfsx`). **Tested**.
 - [x] **Update Checker:** Borrar la tarea que busca actualizaciones de Gogs.
 - [x] **Captcha:** Reemplazado por sistema dual ultra-ligero (**Honeypot** + **Pregunta Configurable**).
 
@@ -75,7 +71,7 @@
 - [x] **Búsqueda Avanzada de Repositorio:**
   - [x] Desactivar indexación profunda global (Bleve/CPU Killer).
   - [x] Implementar **Repo Search (On-demand):** Búsqueda interna vía `git grep` en tiempo real.
-- [x] **Web File Management (CRUD):** Creación, subida (Drag & Drop) y borrado de archivos vía web.
+- [x] **Web File Management (CRUD):** Creación, subida (Drag & Drop) y borrado de archivos vía web. **Tested**.
 
 ---
 
@@ -112,7 +108,7 @@
 ## Fase 16: Ecosistema de Configuración Unificado ✅
 **Objetivo:** Unificar la identidad visual bajo un estándar premium (Modular Island Architecture).
 - [x] **Modular Island UI:** Arquitectura de "islas" con radios de `3rem` y glassmorphism.
-- [x] **AdminAuditLog:** Registro de auditoría integrado en el panel de administración.
+- [x] **AdminAuditLog:** Registro de auditoría integrado en el panel de administración. **Tested**.
 - [x] **Monitor & Mantenimiento:** Consolas de actividad y métricas en tiempo real.
 - [x] **Magic Avatar 2.0:** Selector de avatares deterministas (DiceBear) con previsualización.
 - [x] **QA de Sincronización:** Verificación de coherencia entre estados de UI y backend.
@@ -157,18 +153,19 @@
 **Objetivo:** Convertir Ggit en una plataforma de desarrollo profesional completa.
 
 ### 1. Code Review & Branch Protection ✅
-- [x] **Protección de Ramas:** Reglas para evitar pushes directos y requerir PRs.
-- [x] **Review Workflow:** Sistema de aprobaciones (Approve/Request Changes) en Pull Requests.
-- [x] **Comentarios en Línea:** Capacidad de comentar directamente en el diff del código.
+- [x] **Protección de Ramas:** Reglas para evitar pushes directos y requerir PRs. **Tested**.
+- [x] **Review Workflow:** Sistema de aprobaciones (Approve/Request Changes) en Pull Requests. **Tested**.
+- [x] **Comentarios en Línea:** Capacidad de comentar directamente en el diff del código. **Tested**.
 - [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes o falta de aprobaciones.
 
 ### 2. CI/CD & Automatización
 - [ ] **Commit Status API:** Modelo DB y API para reportar resultados de CI (iconos ✅/❌).
 - [ ] **OAuth2/OIDC Provider:** Flujo para que el CI pueda autenticar usuarios vía `ggit`.
-- [x] **Webhooks Seguros:** Firma de payloads mediante `HMAC-SHA256`.
+- [x] **Webhooks Seguros:** Firma de payloads mediante `HMAC-SHA256`. **Tested**.
+- [x] **Prometheus & Health Checks:** Exposición de `/metrics` y `/health` detallados. **Tested**.
 
 ### 3. Observabilidad & APM ✅
-- [x] **Prometheus & Health Checks:** Exposición de `/metrics` y `/health` detallados.
+- [x] **Prometheus & Health Checks:** Exposición de `/metrics` y `/health` detallados. **Tested**.
 - [x] **Instrumentación OpenTelemetry:** Rastreo básico para identificar cuellos de botella.
 
 ### 4. Gestión de Proyectos
@@ -179,14 +176,14 @@
 ## Fase 22: Integridad y Autocuración 🛡️
 **Objetivo:** Garantizar la consistencia entre Base de Datos y Sistema de Archivos.
 - [ ] **Consistencia Atómica:** Lógica de "Two-Phase Commit" para operaciones Git + DB.
-- [x] **Ggit Health Sentinel:** Orquestación de `git fsck` automático basado en actividad.
+- [x] **Ggit Health Sentinel:** Orquestación de `git fsck` automático basado en actividad. **Tested**.
 - [ ] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes.
-- [x] **Dangling Objects Cleanup:** Identificar y limpiar rastro de archivos de repositorios borrados.
+- [x] **Dangling Objects Cleanup:** Identificar y limpiar rastro de archivos de repositorios borrados. **Tested**.
 - [ ] **Blindaje Anti-OOM:** Limitador de procesos Git concurrentes basado en RAM disponible.
-- [x] **Modo Supervivencia:** Switch a "Solo Lectura" si el espacio en disco es crítico.
+- [x] **Modo Supervivencia:** Switch a "Solo Lectura" si el espacio en disco es crítico. **Tested**.
 - [x] **Dashboard Leído:** Animación de parpadeo en contadores de dashboard para items nuevos.
 - [ ] **Ggit Credential Helper:** Almacenamiento seguro para tokens de remotos HTTP.
-- [x] **Secret Guardian 🛡️:** Detección proactiva de secretos (API keys, .env) en tiempo de push.
+- [x] **Secret Guardian 🛡️:** Detección proactiva de secretos (API keys, .env) en tiempo de push. **Tested**.
 
 ---
 
@@ -202,7 +199,7 @@
 ---
 
 ## Fase 24: Estandarización de la Capa de Datos 🗄️
-- [x] **Gestión de Sesiones (DB Store):** Almacenamiento persistente de sesiones en base de datos.
+- [x] **Gestión de Sesiones (DB Store):** Almacenamiento persistente de sesiones en base de datos. **Tested**.
 - [x] **Migraciones Atómicas:** Sistema de migraciones v26 implementado.
 - [x] **Auditoría de Índices:** Optimización de tablas críticas (UserRepository, Actions). **Tested**.
 - [ ] **Pattern Store:** Unificar accesos a DB bajo un patrón de repositorio común.
@@ -211,7 +208,7 @@
 
 ## Fase 25: Infraestructura y Auth Final 🔐
 - [x] **Gestión de Fuentes de Auth:** UI para LDAP, OAuth2 (GitHub, Google) y PAM.
-- [x] **Release Management:** Upload center para binarios y estados de release (Draft/Pre).
+- [x] **Release Management:** Upload center para binarios y estados de release (Draft/Pre). **Tested**.
 - [x] **Monitorización Admin:** Cron scheduler y process tracker en el panel admin.
 - [x] **Respaldo de Metadatos:** Exportación ligera de DB y adjuntos (sin repositorios).
 - [x] **Adopción de Repositorios (Hardened 🛡️):** Función para vincular carpetas Git existentes con validación estricta de Path Traversal. **Tested**.
@@ -256,7 +253,6 @@
 
 ### Estabilidad y Robustez (Inmediato)
 - [x] **Mitigación SSRF en Webhooks:** Filtro de IPs locales (127.0.0.1, 10.0.x, etc) en el Tester HTTP. **Tested**.
-- [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes. NO
 - [x] **Commit Status API:** Integración de estados de CI externos. **Tested**.
 - [x] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos. **Tested**.
 - [ ] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico. SI

@@ -204,7 +204,7 @@ func (pr *PullRequest) CheckBranchProtection(ctx context.Context, doer *User) er
 		if err != nil {
 			return err
 		}
-		if stats.Approvals < pb.RequiredApprovals {
+		if stats.Approvals < int64(pb.RequiredApprovals) {
 			return errors.Newf("Insufficient approvals: %d/%d", stats.Approvals, pb.RequiredApprovals)
 		}
 		if stats.Rejections > 0 {

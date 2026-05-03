@@ -605,22 +605,22 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 	return nil
 }
 
-func prepareWebhooks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv2types.WebhookPayloader) error {
-	webhooks, err := getActiveWebhooksByRepoID(tx, repo.ID)
+func PrepareWebhooksWithDB(db *gorm.DB, repo *Repository, event HookEventType, p apiv2types.WebhookPayloader) error {
+	webhooks, err := getActiveWebhooksByRepoID(db, repo.ID)
 	if err != nil {
 		return errors.Newf("getActiveWebhooksByRepoID [%d]: %v", repo.ID, err)
 	}
 
 	// check if repo belongs to org and append additional webhooks
-	if repo.mustOwner(tx).IsOrganization() {
+	if repo.mustOwner(db).IsOrganization() {
 		// get hooks for org
-		orgws, err := getActiveWebhooksByOrgID(tx, repo.OwnerID)
+		orgws, err := getActiveWebhooksByOrgID(db, repo.OwnerID)
 		if err != nil {
 			return errors.Newf("getActiveWebhooksByOrgID [%d]: %v", repo.OwnerID, err)
 		}
 		webhooks = append(webhooks, orgws...)
 	}
-	return prepareHookTasks(tx, repo, event, p, webhooks)
+	return prepareHookTasks(db, repo, event, p, webhooks)
 }
 
 // PrepareWebhooks adds all active webhooks to task queue.
@@ -631,7 +631,7 @@ func PrepareWebhooks(repo *Repository, event HookEventType, p apiv2types.Webhook
 	} else {
 		return nil
 	}
-	return prepareWebhooks(tx, repo, event, p)
+	return PrepareWebhooksWithDB(tx, repo, event, p)
 }
 
 // TestWebhook adds the test webhook matches the ID to task queue.

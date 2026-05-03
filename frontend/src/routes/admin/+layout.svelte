@@ -79,17 +79,20 @@
     .admin-mobile-nav {
       display: flex;
       position: fixed;
-      bottom: calc(75px + env(safe-area-inset-bottom));
+      bottom: calc(70px + env(safe-area-inset-bottom));
       left: 0;
       right: 0;
       width: 100vw;
       box-sizing: border-box;
       z-index: 500;
-      background: transparent;
-      padding: 0.5rem 1rem;
-      border-top: none;
+      background: rgba(var(--surface-rgb), 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
       margin: 0;
-      overflow-x: auto;
+      overflow-x: hidden;
     }
   }
 </style>

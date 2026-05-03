@@ -375,6 +375,6 @@ func GetPullRequestProtection(c *context.APIContext) {
 		"approvals":          stats.Approvals,
 		"rejections":         stats.Rejections,
 		"is_protected":       pb != nil && pb.Protected,
-		"mergeable":          stats.Rejections == 0 && stats.Approvals >= requiredApprovals,
+		"mergeable":          stats.Rejections == 0 && stats.Approvals >= int64(requiredApprovals),
 	})
 }

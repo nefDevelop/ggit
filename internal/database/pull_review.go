@@ -66,12 +66,18 @@ func (s *PullReviewsStore) ListByIssueID(ctx context.Context, issueID int64) ([]
 
 // Create creates a new review.
 func (s *PullReviewsStore) Create(ctx context.Context, r *PullReview) error {
+	if r.IssueID <= 0 {
+		return errors.New("invalid issue ID")
+	}
+	if r.Type < PullReviewTypePending || r.Type > PullReviewTypeReject {
+		return errors.New("invalid review type")
+	}
 	return s.db.WithContext(ctx).Create(r).Error
 }
 
 type PullReviewStats struct {
-	Approvals int
-	Rejections int
+	Approvals  int64
+	Rejections int64
 }
 
 // GetReviewStatsByIssueID returns approval and rejection counts for a pull request.
