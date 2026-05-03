@@ -377,6 +377,16 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 		content := string(p)
 		res["content"] = content
 
+		// Server-side syntax highlighting
+		style := c.Query("theme")
+		if style == "" {
+			style = "github"
+		}
+		highlighted, err := markup.Highlight(content, path.Ext(blob.Name()), style)
+		if err == nil {
+			res["highlighted_content"] = highlighted
+		}
+
 		if markup.IsReadmeFile(blob.Name()) {
 			res["readme_content"] = string(p)
 		}

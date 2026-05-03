@@ -155,7 +155,12 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 	return db, nil
 }
 
-// Engine is a type alias for *gorm.DB to maintain compatibility with legacy
+// SetHandle sets the global database handle with the given gorm.DB instance.
+func SetHandle(db *gorm.DB) {
+	Handle = &DB{db: db}
+}
+
+// engine is a type alias for *gorm.DB to maintain compatibility with legacy
 // function signatures that were using the XORM Engine interface.
 type Engine = *gorm.DB
 

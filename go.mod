@@ -53,6 +53,7 @@ require (
 	bitbucket.org/creachadair/shell v0.0.9 // indirect
 	github.com/Azure/go-ntlmssp v0.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/alecthomas/chroma/v2 v2.24.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boombuler/barcode v1.1.0 // indirect
@@ -68,6 +69,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/djherbis/buffer v1.2.0 // indirect
 	github.com/djherbis/nio/v3 v3.0.1 // indirect
+	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect

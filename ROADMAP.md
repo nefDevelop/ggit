@@ -2,7 +2,7 @@
 
 ## Fase 1: Análisis y Funcionalidades Base ✅
 - [x] **Integrar detección avanzada de lenguajes:** Reemplazar sistema con `go-enry`. **Tested**.
-- [x] **Resaltado de sintaxis en el servidor:** Integrar `chroma` y eliminar JS pesado en cliente.
+- [x] **Resaltado de sintaxis en el servidor:** Integrar `chroma` y eliminar JS pesado en cliente. **Tested**.
 - [x] **Auditoría de Settings:** Verificar flags `EnableIssues` y `EnablePulls`. **Tested**.
 - [x] **Crear capa de Servicios:** Extraer lógica de Repos, Issues, PRs y Usuarios.
 - [x] **Tipado de Entradas/Salidas:** Definir DTOs independientes del contexto HTTP.
@@ -110,7 +110,7 @@
 - [x] **Modular Island UI:** Arquitectura de "islas" con radios de `3rem` y glassmorphism.
 - [x] **AdminAuditLog:** Registro de auditoría integrado en el panel de administración. **Tested**.
 - [x] **Monitor & Mantenimiento:** Consolas de actividad y métricas en tiempo real.
-- [x] **Magic Avatar 2.0:** Selector de avatares deterministas (DiceBear) con previsualización.
+- [x] **Magic Avatar 2.0:** Selector de avatares deterministas (DiceBear) con previsualización. **Tested**.
 - [x] **QA de Sincronización:** Verificación de coherencia entre estados de UI y backend.
 
 ---

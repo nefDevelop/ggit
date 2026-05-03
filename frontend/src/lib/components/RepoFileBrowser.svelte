@@ -21,6 +21,13 @@
 
   let highlightedLines = $derived(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];
+    
+    // Server-side syntax highlighting (Chroma)
+    if (repoData.highlighted_content) {
+      return repoData.highlighted_content.split('\n');
+    }
+
+    // Client-side fallback (Highlight.js)
     const language = repoData.name.split('.').pop() || '';
     let html: string;
     try {
