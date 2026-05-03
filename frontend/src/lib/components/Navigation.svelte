@@ -7,10 +7,7 @@
   import Avatar from "$lib/components/Avatar.svelte";
   import { userPrefs } from "$lib/settings.svelte";
   import { toast } from "$lib/toast.svelte";
-  import NotificationsPanel from "$lib/components/NotificationsPanel.svelte";
-
   let showThemePanel = $state(false);
-  let showNoticesPanel = $state(false);
   let userOrgs = $state<any[]>([]);
   let pageLoadTime = $state(13);
   let templateTime = $state(4);
@@ -156,7 +153,7 @@
     <div
       class="user-profile-summary clickable-box"
       onclick={() => {
-        showNoticesPanel = !showNoticesPanel;
+        toast.showNotices = !toast.showNotices;
         toast.clearUnread();
       }}
     >
@@ -246,7 +243,7 @@
       <div
         class="nav-item mobile-avatar-item"
         onclick={() => {
-          showNoticesPanel = !showNoticesPanel;
+          toast.showNotices = !toast.showNotices;
           toast.clearUnread();
         }}
       >
@@ -285,7 +282,6 @@
 </nav>
 
 <ThemeSwitch bind:show={showThemePanel} />
-<NotificationsPanel bind:show={showNoticesPanel} onclose={() => showNoticesPanel = false} />
 
 <style>
   .navigation-bar {

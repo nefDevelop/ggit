@@ -12,6 +12,7 @@ class ToastManager {
   list = $state<Toast[]>([]);
   history = $state<Toast[]>([]);
   hasUnread = $state(false);
+  showNotices = $state(false);
 
   show(message: string, type: ToastType = 'info', duration = 3000) {
     const id = crypto.randomUUID();

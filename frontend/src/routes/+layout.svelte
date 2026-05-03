@@ -10,6 +10,8 @@
 	import RightSidebar from "$lib/components/RightSidebar.svelte";
 	import GlobalDialog from "$lib/components/GlobalDialog.svelte";
 	import GlobalToast from "$lib/components/GlobalToast.svelte";
+	import NotificationsPanel from "$lib/components/NotificationsPanel.svelte";
+	import { toast } from "$lib/toast.svelte";
 	import { page } from "$app/stores";
 
 	let { children } = $props();
@@ -155,6 +157,7 @@
 				{@render children()}
 			{/if}
 		</main>
+		<NotificationsPanel bind:show={toast.showNotices} onclose={() => (toast.showNotices = false)} />
 	</div>
 
 	{#if showRightSidebar}

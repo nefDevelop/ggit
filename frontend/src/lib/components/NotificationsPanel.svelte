@@ -185,11 +185,11 @@
 
 <style>
   .panel-backdrop {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(4px);
     z-index: 2100;
@@ -200,7 +200,7 @@
     background: var(--md-sys-color-surface-container);
     color: var(--md-sys-color-on-surface);
     width: 320px;
-    height: 100vh;
+    height: 100%;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
     border-right: 1px solid var(--md-sys-color-outline-variant);
     display: flex;

@@ -25,16 +25,27 @@
     try {
       const actorLink = `<a href="/${act.act_user_name}" class="repo-link">${act.act_user_name}</a>`;
       const repoLink = `<a href="/${act.repo_user_name}/${act.repo_name}" class="repo-link">${act.repo_name}</a>`;
+      const opType = Number(act.op_type);
       
-      switch (act.op_type) {
+      switch (opType) {
         case 1: // CreateRepo
           return `<span class="action-summary"><span class="material-symbols-rounded mini">add_box</span> created repo ${repoLink}</span>`;
         case 5: // CommitRepo
-          const pushData = JSON.parse(act.content);
+          let pushData: any = { Len: 0 };
+          try {
+            pushData = typeof act.content === 'string' ? JSON.parse(act.content) : act.content;
+          } catch (err) {
+            try {
+              const fixed = act.content.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+              pushData = JSON.parse(fixed);
+            } catch (err2) {
+              console.error("Failed to parse pushData content", err2);
+            }
+          }
           return `
             <div class="action-summary">
-              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len} commits</span>
-              <span class="action-pill"><span class="material-symbols-rounded mini">fork_right</span> ${act.ref_name}</span>
+              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len || 0} commits</span>
+              <span class="action-pill"><span class="material-symbols-rounded mini">fork_right</span> ${act.ref_name || 'main'}</span>
               <span class="repo-link-wrap">in ${repoLink}</span>
             </div>
           `;
@@ -84,9 +95,9 @@
               <div class="entry-marker">
                 <div class="avatar-box">
                   <Avatar src={act.act_avatar} username={act.act_user_name} size={32} class="user-avatar" />
-                  <div class="type-icon {act.op_type === 5 ? 'push' : 'create'}">
+                  <div class="type-icon {Number(act.op_type) === 5 ? 'push' : 'create'}">
                     <span class="material-symbols-rounded">
-                      {act.op_type === 5 ? 'commit' : 'add_box'}
+                      {Number(act.op_type) === 5 ? 'commit' : 'add_box'}
                     </span>
                   </div>
                 </div>
