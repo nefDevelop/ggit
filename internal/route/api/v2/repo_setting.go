@@ -20,6 +20,7 @@ func GetRepoSettings(c *context.APIContext) {
 		"name":                    repo.Name,
 		"description":             repo.Description,
 		"website":                 repo.Website,
+		"project_folder":          repo.ProjectFolder,
 		"private":                 repo.IsPrivate,
 		"unlisted":                repo.IsUnlisted,
 		"archived":                repo.IsArchived,
@@ -60,6 +61,7 @@ func UpdateRepoSettings(c *context.APIContext) {
 	repo.LowerName = strings.ToLower(f.RepoName)
 	repo.Description = f.Description
 	repo.Website = f.Website
+	repo.ProjectFolder = f.ProjectFolder
 	repo.IsPrivate = f.Private
 	repo.IsUnlisted = f.Unlisted
 	repo.IsArchived = f.Archived

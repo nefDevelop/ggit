@@ -19,7 +19,8 @@
     title: '',
     description: '',
     due_on: '',
-    state: 'open'
+    state: 'open',
+    hill_state: 0
   });
 
   const stateOptions = [
@@ -65,7 +66,7 @@
       if (res.ok) {
         showEditor = false;
         editingMilestone = null;
-        form = { title: '', description: '', due_on: '', state: 'open' };
+        form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 };
         fetchMilestones();
       }
     } catch (e) {
@@ -108,7 +109,7 @@
 
 <div class="repo-milestones">
   <header class="section-actions">
-    <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open' }; showEditor = true; }} icon="add_circle">
+    <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon="add_circle">
       New Milestone
     </Button>
   </header>

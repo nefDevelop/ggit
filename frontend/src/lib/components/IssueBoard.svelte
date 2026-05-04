@@ -13,7 +13,7 @@
     
     issues.forEach(issue => {
       let status = 'Backlog';
-      const statusLabel = issue.labels?.find(l => l.name.startsWith('status::'));
+      const statusLabel = issue.labels?.find((l: any) => l.name.startsWith('status::'));
       if (statusLabel) {
         status = statusLabel.name.split('::')[1];
       } else if (issue.state === 'closed') {
@@ -71,7 +71,7 @@
             </div>
             {#if issue.labels && issue.labels.length > 0}
               <div class="card-labels">
-                {#each issue.labels.filter(l => !l.name.startsWith('status::')) as label}
+                {#each issue.labels.filter((l: any) => !l.name.startsWith('status::')) as label}
                   <span class="mini-label" style="background: {label.color}"></span>
                 {/each}
               </div>

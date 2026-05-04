@@ -56,7 +56,8 @@ type LoginSessionResponse struct {
 // RepositoryResponse represents a repository in the API v2.
 type RepositoryResponse struct {
 	ID          int64         `json:"id"`
-	Name        string        `json:"name"`
+	Name          string        `json:"name"`
+	ProjectFolder string        `json:"project_folder"`
 	FullName    string        `json:"full_name"`
 	Description string        `json:"description"`
 	Owner       *UserResponse `json:"owner"`

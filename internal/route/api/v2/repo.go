@@ -395,6 +395,85 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	c.JSON(http.StatusOK, res)
 }
 
+// GetRepoBlame returns the blame information for a file.
+func GetRepoBlame(c *context.APIContext) {
+	if c.Repo.TreePath == "" {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	gitutil.Acquire()
+	defer gitutil.Release()
+
+	// Use --porcelain for machine-readable output
+	stdout, err := git.NewCommand("blame", "--porcelain", "--", c.Repo.TreePath).RunInDir(c.Repo.Repository.RepoPath())
+	if err != nil {
+		c.Error(err, "git blame")
+		return
+	}
+
+	lines := strings.Split(string(stdout), "\n")
+	type hunk struct {
+		Commit string
+		Author string
+		Time   int64
+	}
+	hunks := make(map[string]*hunk)
+	results := make([]map[string]any, 0, 100)
+
+	for i := 0; i < len(lines); {
+		line := lines[i]
+		if line == "" {
+			i++
+			continue
+		}
+
+		parts := strings.Split(line, " ")
+		if len(parts) < 4 {
+			i++
+			continue
+		}
+
+		sha := parts[0]
+		// Each hunk starts with a header line: <sha> <orig_line> <final_line> <num_lines>
+		h, ok := hunks[sha]
+		if !ok {
+			h = &hunk{Commit: sha}
+			hunks[sha] = h
+			// Parse metadata following the header until we hit a tab-prefixed line (the content)
+			i++
+			for i < len(lines) && !strings.HasPrefix(lines[i], "\t") {
+				meta := lines[i]
+				if strings.HasPrefix(meta, "author ") {
+					h.Author = strings.TrimPrefix(meta, "author ")
+				} else if strings.HasPrefix(meta, "author-time ") {
+					t, _ := strconv.ParseInt(strings.TrimPrefix(meta, "author-time "), 10, 64)
+					h.Time = t
+				}
+				i++
+			}
+		} else {
+			// Skip metadata if we already have it for this SHA
+			i++
+			for i < len(lines) && !strings.HasPrefix(lines[i], "\t") {
+				i++
+			}
+		}
+
+		if i < len(lines) && strings.HasPrefix(lines[i], "\t") {
+			results = append(results, map[string]any{
+				"commit": h.Commit,
+				"author": h.Author,
+				"time":   h.Time,
+				"line":   strings.TrimPrefix(lines[i], "\t"),
+			})
+			i++
+		}
+	}
+
+	c.JSON(http.StatusOK, results)
+}
+
 // matchUsersWithCommitEmails matches existing users using commit author emails.
 func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit) []map[string]any {
 	emailToUsers := make(map[string]*database.User)

@@ -9,6 +9,9 @@
   }>();
 
   let content = $state(initialValue);
+  $effect(() => {
+    content = initialValue;
+  });
   let isPreview = $state(false);
 </script>
 

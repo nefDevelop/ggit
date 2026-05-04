@@ -139,3 +139,59 @@ func GetDashboardFeeds(c *context.APIContext) {
 		"feeds": actions,
 	})
 }
+
+// GetUnifiedInbox returns a list of assigned and relevant issues/PRs for the user.
+func GetUnifiedInbox(c *context.APIContext) {
+	ctxUser := c.User
+
+	// 1. Get Assigned Issues and PRs
+	var assigned []*database.Issue
+	err := database.Handle.DB().Where("assignee_id = ? AND is_closed = ?", ctxUser.ID, false).
+		Order("updated_unix DESC").Limit(50).Find(&assigned).Error
+	if err != nil {
+		c.Error(err, "find assigned items")
+		return
+	}
+
+	// Load attributes (Repo, Poster, etc.)
+	for _, is := range assigned {
+		_ = is.LoadAttributes()
+	}
+
+	type InboxItem struct {
+		ID           int64          `json:"id"`
+		RepoName     string         `json:"repo_name"`
+		RepoOwner    string         `json:"repo_owner"`
+		Index        int64          `json:"index"`
+		Title        string         `json:"title"`
+		IsPull       bool           `json:"is_pull"`
+		Status       string         `json:"status"`
+		UpdatedUnix  int64          `json:"updated_at"`
+		PosterName   string         `json:"poster_name"`
+		PosterAvatar string         `json:"poster_avatar"`
+	}
+
+	results := make([]InboxItem, 0, len(assigned))
+	for _, is := range assigned {
+		repo := is.Repo
+		ownerName := ""
+		if repo != nil {
+			ownerName = repo.MustOwner().Name
+		}
+		
+		results = append(results, InboxItem{
+			ID:           is.ID,
+			RepoName:     repo.Name,
+			RepoOwner:    ownerName,
+			Index:        is.Index,
+			Title:        is.Title,
+			IsPull:       is.IsPull,
+			Status:       "open",
+			UpdatedUnix:  is.UpdatedUnix,
+			PosterName:   is.Poster.Name,
+			PosterAvatar: is.Poster.AvatarURLPath(),
+		})
+	}
+
+	c.JSON(http.StatusOK, results)
+}

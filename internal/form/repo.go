@@ -89,6 +89,7 @@ type RepoSetting struct {
 	RepoName      string `json:"name" valid:"Required;AlphaDashDot;MaxSize(100)"`
 	Description   string `json:"description" valid:"MaxSize(512)"`
 	Website       string `json:"website" valid:"Url;MaxSize(100)"`
+	ProjectFolder string `json:"project_folder" valid:"MaxSize(100)"`
 	Branch        string `json:"branch"`
 	DefaultBranch string `json:"default_branch"`
 	Interval      int    `json:"interval"`

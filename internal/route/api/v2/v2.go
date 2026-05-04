@@ -87,6 +87,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		{
 			dashboard.GET("/data", ginx.Handle(GetDashboardData))
 			dashboard.GET("/feeds", ginx.Handle(GetDashboardFeeds))
+			dashboard.GET("/inbox", ginx.Handle(GetUnifiedInbox))
 		}
 
 		user.POST("/repos", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRepo))
@@ -150,6 +151,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/search", context.RepoRef(), ginx.Handle(SearchRepoContents))
 		repo.GET("/view", context.RepoRef(), ginx.Handle(GetRepoView))
 		repo.GET("/view/*path", context.RepoRef(), ginx.Handle(GetRepoView))
+		repo.GET("/blame/*path", context.RepoRef(), ginx.Handle(GetRepoBlame))
 		repo.GET("/commit/:sha", ginx.Handle(GetSingleCommit))
 		repo.GET("/commits/*path", context.RepoRef(), ginx.Handle(GetRepoCommits))
 		repo.GET("/watchers", ginx.Handle(GetRepoWatchers))

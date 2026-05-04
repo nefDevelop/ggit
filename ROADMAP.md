@@ -233,9 +233,9 @@
 - [ ] **Reflog Explorer:** Sección en Mantenimiento para recuperar commits mediante el historial de HEAD.
 
 ### 3. Productividad & Navegación
-- [ ] **Unified Inbox:** Nueva pestaña en el Dashboard para gestionar tareas de todos los repositorios.
-- [ ] **Inline Blame:** Visualización de autor y fecha al final de cada línea en el visor de archivos.
-- [ ] **Hierarchical Projects:** Soporte para organizar repositorios en carpetas en el Dashboard.
+- [x] **Unified Inbox:** Nueva pestaña en el Dashboard para gestionar tareas de todos los repositorios.
+- [x] **Inline Blame:** Visualización de autor y fecha al final de cada línea en el visor de archivos.
+- [x] **Hierarchical Projects:** Soporte para organizar repositorios en carpetas en el Dashboard.
 
 ### 4. Organización & Planificación
 - [x] **Kanban Virtual:** Selector de vista en la lista de Issues para pasar de modo Lista a Tablero.

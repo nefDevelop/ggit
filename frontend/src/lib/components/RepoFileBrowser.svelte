@@ -136,6 +136,35 @@
   onMount(() => {
     sidebarCollapsed = localStorage.getItem('repo-sidebar-collapsed') === 'true';
   });
+
+  let blameData = $state<any[]>([]);
+  let showBlame = $state(false);
+  let blameLoading = $state(false);
+
+  async function toggleBlame() {
+    if (showBlame) {
+      showBlame = false;
+      return;
+    }
+
+    if (blameData.length > 0) {
+      showBlame = true;
+      return;
+    }
+    
+    blameLoading = true;
+    try {
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/blame/${realPath()}?ref=${repoData.branch}`);
+      if (res.ok) {
+        blameData = await res.json();
+        showBlame = true;
+      }
+    } catch (e) {
+      console.error('Failed to fetch blame', e);
+    } finally {
+      blameLoading = false;
+    }
+  }
 </script>
 
 <div class="workspace-area">
@@ -240,6 +269,14 @@ git push -u origin main</code></pre>
                    </div>
                     <div class="file-tools side-by-side">
                       {#if repoData.is_text_file}
+                        <button class="tool-btn" class:active={showBlame} onclick={toggleBlame} disabled={blameLoading}>
+                           {#if blameLoading}
+                             <div class="mini-spinner"></div>
+                           {:else}
+                             <span class="material-symbols-rounded">history</span>
+                             Blame
+                           {/if}
+                        </button>
                         <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn">
                           <span class="material-symbols-rounded">edit</span>
                         </a>
@@ -255,7 +292,17 @@ git push -u origin main</code></pre>
                 </div>
                 <div class="code-box">
                    {#if repoData.is_text_file}
-                      <div class="code-grid">
+                      <div class="code-grid" class:with-blame={showBlame}>
+                        {#if showBlame}
+                           <div class="blame-col">
+                             {#each blameData as hunk}
+                                <div class="blame-line" title="{hunk.author} - {new Date(hunk.time * 1000).toLocaleString()}">
+                                   <span class="blame-author">{hunk.author.split(' ')[0]}</span>
+                                   <span class="blame-time">{timeAgo(hunk.time * 1000)}</span>
+                                </div>
+                             {/each}
+                           </div>
+                        {/if}
                         <div class="ln-col">
                           {#each highlightedLines() as _, i}
                             <span>{i + 1}</span>
@@ -535,6 +582,17 @@ git push -u origin main</code></pre>
   .code-pre { margin: 0; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.6; color: #e6edf3; }
   .code-pre.hljs { background: transparent; }
   .line { white-space: pre; }
+
+  .code-grid.with-blame { grid-template-columns: 140px 60px 1fr; }
+  .blame-col { border-right: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3); padding: 1.5rem 0; display: flex; flex-direction: column; overflow: hidden; }
+  .blame-line { padding: 0 0.75rem; font-size: 0.75rem; line-height: 1.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; gap: 0.5rem; opacity: 0.5; transition: opacity 0.2s; border-left: 2px solid transparent; }
+  .blame-line:hover { opacity: 1; border-left-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
+  .blame-author { font-weight: 800; color: var(--primary-color); }
+  .blame-time { color: var(--text-muted); font-size: 0.7rem; }
+
+  .tool-btn.active { background: var(--primary-color) !important; color: white !important; }
+  .mini-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* README */
   .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }

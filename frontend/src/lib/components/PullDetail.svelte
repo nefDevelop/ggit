@@ -174,11 +174,11 @@
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if pull}
+    {@const info = getAttentionStateInfo(pull.attention_state)}
     <header class="pull-detail-header">
        <div class="title-row">
          <h1>{pull.title} <span class="index">#{pull.number}</span></h1>
          
-         {@const info = getAttentionStateInfo(pull.attention_state)}
          {#if info}
            <div class="attention-badge" style="--badge-color: {info.color}">
               <span class="material-symbols-rounded mini">{info.icon}</span>

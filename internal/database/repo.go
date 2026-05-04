@@ -236,6 +236,7 @@ type Repository struct {
 	Website         string
 	DefaultBranch   string
 	Size            int64 `gorm:"not null;default:0"`
+	ProjectFolder   string `gorm:"index;default:''"`
 	UseCustomAvatar bool
 
 	// Counters
@@ -513,15 +514,6 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 	cloneLink := repox.NewCloneLink(r.Owner.Name, r.Name)
 
 	apiRepo := &apiv2types.RepositoryResponse{
-		ID:          r.ID,
-		Owner:       r.Owner.APIFormat(),
-		Name:        r.Name,
-		FullName:    r.Owner.Name + "/" + r.Name,
-		Description: r.Description,
-		IsPrivate:   r.IsPrivate,
-		NumStars:    r.NumStars,
-		NumForks:    r.NumForks,
-		NumWatches:  r.NumWatches,
 		CreatedAt:   time.Unix(r.CreatedUnix, 0),
 		UpdatedAt:   time.Unix(r.UpdatedUnix, 0),
 		Permissions: permission,

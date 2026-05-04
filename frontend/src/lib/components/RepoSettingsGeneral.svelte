@@ -124,6 +124,7 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...result.data,
+            project_folder: settings.project_folder,
             branch: settings.default_branch,
             default_branch: settings.default_branch
           }),
@@ -249,6 +250,12 @@
             bind:value={settings.website} 
             error={errors.website}
             placeholder="https://example.com" 
+          />
+          <Input 
+            label="Carpeta de Proyecto" 
+            bind:value={settings.project_folder} 
+            error={errors.project_folder}
+            placeholder="p.ej. Backend, Frontend, Personal" 
           />
 
           <div class="select-field full-width">
