@@ -99,6 +99,23 @@
     }
   }
 
+  async function resolveComment(id: number, resolved: boolean) {
+    try {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/comments/${id}/resolve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolved })
+      });
+      if (res.ok) {
+        toast.success(resolved ? "Conversación resuelta." : "Conversación reabierta.");
+        fetchPullDetail();
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Error al actualizar la conversación.");
+    }
+  }
+
   async function submitReview(type: number, content: string) {
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/pulls/${index}/reviews`, {
@@ -137,6 +154,15 @@
     }
   }
 
+  function getAttentionStateInfo(state: number) {
+    switch (state) {
+      case 1: return { label: 'Review required', color: '#0061a4', icon: 'visibility' };
+      case 2: return { label: 'Waiting for author', color: '#ba1a1a', icon: 'pending' };
+      case 3: return { label: 'Approved', color: '#006d39', icon: 'check_circle' };
+      default: return null;
+    }
+  }
+
   onMount(() => {
     if (repo.data) fetchPullDetail();
   });
@@ -151,6 +177,15 @@
     <header class="pull-detail-header">
        <div class="title-row">
          <h1>{pull.title} <span class="index">#{pull.number}</span></h1>
+         
+         {@const info = getAttentionStateInfo(pull.attention_state)}
+         {#if info}
+           <div class="attention-badge" style="--badge-color: {info.color}">
+              <span class="material-symbols-rounded mini">{info.icon}</span>
+              {info.label}
+           </div>
+         {/if}
+
          <div class="status-pill" class:merged={pull.pull_request?.merged}>
             <span class="material-symbols-rounded">
               {pull.pull_request?.merged ? 'merge' : 'merge_type'}
@@ -222,6 +257,7 @@
           allowComments={!pull.pull_request?.merged}
           comments={reviews.flatMap((r: any) => (r.comments || []).map((c: any) => ({...c, reviewer: r.reviewer})))}
           onAddComment={addInlineComment}
+          onResolveComment={resolveComment}
         />
       {/if}
     </div>
@@ -239,6 +275,20 @@
   .status-pill { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 1.25rem; border-radius: 2rem; background: var(--success); color: var(--on-primary); font-weight: 700; font-size: 0.9rem; }
   .status-pill.merged { background: var(--primary); }
   
+  .attention-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--badge-color), transparent 85%);
+    color: var(--badge-color);
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 1px solid color-mix(in srgb, var(--badge-color), transparent 70%);
+  }
+  .attention-badge span { font-size: 1.1rem; }
+
   .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5; }
   .subtitle code { background: var(--surface-variant); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); }
 

@@ -64,6 +64,7 @@
     currentPath.includes('/issues') ? 'issues' :
     currentPath.includes('/pulls') ? 'pulls' :
     currentPath.includes('/wiki') ? 'wiki' :
+    currentPath.includes('/docs') ? 'docs' :
     currentPath.includes('/branches') ? 'branches' : 
     currentPath.includes('/labels') ? 'labels' :
     currentPath.includes('/milestones') ? 'milestones' : 'code'
@@ -256,6 +257,13 @@
                class="tab" class:active={activeTab === 'wiki'}>
               <span class="material-symbols-rounded">book</span>
               {#if activeTab === 'wiki'}<span class="tab-label">Wiki</span>{/if}
+            </a>
+          {/if}
+
+          {#if userPrefs.current.repoTabs.docs}
+            <a href={`/${username}/${reponame}/docs`} class="tab" class:active={activeTab === 'docs'}>
+              <span class="material-symbols-rounded">article</span>
+              {#if activeTab === 'docs'}<span class="tab-label">Docs</span>{/if}
             </a>
           {/if}
 

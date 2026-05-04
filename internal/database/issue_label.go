@@ -272,6 +272,29 @@ func HasIssueLabel(issueID, labelID int64) bool {
 }
 
 func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
+	// Scoped Labels: key::value
+	if strings.Contains(label.Name, "::") {
+		key := strings.SplitN(label.Name, "::", 2)[0] + "::"
+		// Find existing labels with the same scope key
+		var existingLabels []*Label
+		err = tx.Table("label").
+			Joins("JOIN issue_label ON issue_label.label_id = label.id").
+			Where("issue_label.issue_id = ? AND label.name LIKE ?", issue.ID, key+"%").
+			Find(&existingLabels).Error
+		if err != nil {
+			return errors.Newf("find existing scoped labels: %v", err)
+		}
+
+		for _, el := range existingLabels {
+			if el.ID == label.ID {
+				continue
+			}
+			if err = deleteIssueLabel(tx, issue, el); err != nil {
+				return errors.Newf("deleteIssueLabel: %v", err)
+			}
+		}
+	}
+
 	if err = tx.Create(&IssueLabel{
 		IssueID: issue.ID,
 		LabelID: label.ID,

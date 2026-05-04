@@ -75,6 +75,8 @@ var migrations = []Migration{
 	NewMigration("add activity timestamps and sentinel to repository table", addActivityTimestampsAndSentinelToRepository),
 	// v29 -> v30:v0.13.0
 	NewMigration("add optimized indexes to action and commit_status tables", addOptimizedIndexes),
+	// v30 -> v31:v0.13.0
+	NewMigration("add hill_state to milestone table", v31),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")

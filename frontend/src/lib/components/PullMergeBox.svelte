@@ -70,24 +70,59 @@
           </div>
         {/if}
 
-        <!-- Requisito de Cambios Solicitados -->
-        {#if protection.rejections > 0}
+        <!-- Requisito de Conversaciones Resueltas -->
+        {#if protection.unresolved_count > 0}
           <div class="status-item error">
-            <div class="status-icon"><XCircle size={20} /></div>
+            <div class="status-icon"><AlertCircle size={20} /></div>
             <div class="status-text">
-              <strong>Cambios solicitados pendientes</strong>
-              <span>Debes resolver todos los comentarios de "Solicitud de cambios" antes de continuar.</span>
+              <strong>Conversaciones pendientes: {protection.unresolved_count}</strong>
+              <span>Todas las conversaciones deben ser resueltas antes de fusionar.</span>
+            </div>
+          </div>
+        {:else}
+          <div class="status-item success">
+            <div class="status-icon"><CheckCircle2 size={20} /></div>
+            <div class="status-text">
+              <strong>Conversaciones resueltas</strong>
+              <span>Todas las conversaciones han sido resueltas.</span>
+            </div>
+          </div>
+        {/if}
+
+        <!-- Requisito de CI/CD -->
+        {#if protection.combined_status}
+          <div class="status-item" class:success={protection.combined_status === 'success'} class:error={protection.combined_status === 'failure' || protection.combined_status === 'error'} class:warning={protection.combined_status === 'pending'}>
+            <div class="status-icon">
+              {#if protection.combined_status === 'success'}
+                <CheckCircle2 size={20} />
+              {:else if protection.combined_status === 'pending'}
+                <AlertCircle size={20} />
+              {:else}
+                <XCircle size={20} />
+              {/if}
+            </div>
+            <div class="status-text">
+              <strong>Estado de CI/CD: {protection.combined_status}</strong>
+              <span>
+                {#if protection.combined_status === 'success'}
+                  Todas las pruebas han pasado satisfactoriamente.
+                {:else if protection.combined_status === 'pending'}
+                  Hay pruebas en ejecución...
+                {:else}
+                  Algunas pruebas han fallado. Revisa los logs.
+                {/if}
+              </span>
             </div>
           </div>
         {/if}
 
         <!-- Estado General -->
         {#if protection.mergeable}
-          <div class="status-item success">
+          <div class="status-item success highlight">
             <div class="status-icon"><GitMerge size={20} /></div>
             <div class="status-text">
               <strong>Lista para fusionar</strong>
-              <span>Esta rama no tiene conflictos y cumple con las reglas de protección.</span>
+              <span>Esta rama no tiene conflictos y cumple con todos los criterios de calidad.</span>
             </div>
           </div>
         {:else}
@@ -95,7 +130,7 @@
             <div class="status-icon"><AlertCircle size={20} /></div>
             <div class="status-text">
               <strong>Fusión bloqueada</strong>
-              <span>No se puede fusionar hasta que se cumplan todos los requisitos anteriores.</span>
+              <span>{protection.merge_error || 'No se puede fusionar hasta que se cumplan todos los requisitos.'}</span>
             </div>
           </div>
         {/if}
@@ -116,7 +151,7 @@
 </Card>
 
 <style>
-  .merge-box-card { border-radius: 1.5rem; border: 2px solid var(--md-sys-color-outline-variant); overflow: hidden; margin-top: 2rem; }
+  :global(.merge-box-card) { border-radius: 1.5rem; border: 2px solid var(--md-sys-color-outline-variant); overflow: hidden; margin-top: 2rem; }
   
   .merge-box { display: flex; flex-direction: column; background: rgba(var(--primary-rgb), 0.02); }
   

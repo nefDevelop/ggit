@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"gorm.io/gorm"
 )
 
@@ -18,9 +19,24 @@ type PullReviewComment struct {
 	Line     int64  
 	CommitID string `gorm:"type:VARCHAR(40)"` // SHA of the commit
 	Content  string `gorm:"type:TEXT"`
+	IsResolved bool `gorm:"not null;default:FALSE"`
 	
 	CreatedUnix int64 `gorm:"not null"`
 	UpdatedUnix int64 `gorm:"not null"`
+}
+
+func (c *PullReviewComment) APIFormat() *apiv2types.PullReviewCommentResponse {
+	return &apiv2types.PullReviewCommentResponse{
+		ID:         c.ID,
+		ReviewID:   c.ReviewID,
+		TreePath:   c.TreePath,
+		Line:       c.Line,
+		CommitID:   c.CommitID,
+		Content:    c.Content,
+		IsResolved: c.IsResolved,
+		CreatedAt:  time.Unix(c.CreatedUnix, 0),
+		UpdatedAt:  time.Unix(c.UpdatedUnix, 0),
+	}
 }
 
 func (c *PullReviewComment) BeforeCreate(tx *gorm.DB) error {
@@ -67,5 +83,35 @@ func (s *PullReviewCommentsStore) ListByReviewID(ctx context.Context, reviewID i
 
 // Create creates a new review comment.
 func (s *PullReviewCommentsStore) Create(ctx context.Context, c *PullReviewComment) error {
-	return s.db.WithContext(ctx).Create(c).Error
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(c).Error; err != nil {
+			return err
+		}
+
+		pr, err := getPullRequestByIssueID(tx, c.IssueID)
+		if err != nil {
+			return err
+		}
+		return pr.RefreshAttentionState(ctx, tx)
+	})
+}
+
+// SetResolved sets the resolved status of a comment.
+func (s *PullReviewCommentsStore) SetResolved(ctx context.Context, id int64, resolved bool) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		c := new(PullReviewComment)
+		if err := tx.Where("id = ?", id).First(c).Error; err != nil {
+			return err
+		}
+		c.IsResolved = resolved
+		if err := tx.Model(c).Update("is_resolved", resolved).Error; err != nil {
+			return err
+		}
+
+		pr, err := getPullRequestByIssueID(tx, c.IssueID)
+		if err != nil {
+			return err
+		}
+		return pr.RefreshAttentionState(ctx, tx)
+	})
 }

@@ -72,15 +72,39 @@ var hooksTpls = map[git.HookName]string{
 
 // CreateDelegateHooks creates delegate hooks for the given repository path.
 func CreateDelegateHooks(repoPath string) error {
+	return SelfHealHooks(repoPath)
+}
+
+// SelfHealHooks checks and repairs hooks for the given repository path.
+// It ensures hooks exist, have the correct content (binary path, config path), and correct permissions.
+func SelfHealHooks(repoPath string) error {
 	for _, name := range git.ServerSideHooks {
 		hookPath := filepath.Join(repoPath, "hooks", string(name))
-		if err := os.MkdirAll(filepath.Dir(hookPath), os.ModePerm); err != nil {
-			return errors.Newf("create hooks directory: %v", err)
+		expectedContent := fmt.Sprintf(hooksTpls[name], conf.Repository.ScriptType, conf.AppPath(), conf.CustomConf)
+
+		shouldWrite := false
+		info, err := os.Stat(hookPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				shouldWrite = true
+			} else {
+				return errors.Newf("stat hook '%s': %v", hookPath, err)
+			}
+		} else {
+			// Check content and permissions
+			content, err := os.ReadFile(hookPath)
+			if err != nil || string(content) != expectedContent || info.Mode() != os.ModePerm {
+				shouldWrite = true
+			}
 		}
-		if err := os.WriteFile(hookPath,
-			fmt.Appendf(nil, hooksTpls[name], conf.Repository.ScriptType, conf.AppPath(), conf.CustomConf),
-			os.ModePerm); err != nil {
-			return errors.Newf("create delegate hook '%s': %v", hookPath, err)
+
+		if shouldWrite {
+			if err := os.MkdirAll(filepath.Dir(hookPath), os.ModePerm); err != nil {
+				return errors.Newf("create hooks directory: %v", err)
+			}
+			if err := os.WriteFile(hookPath, []byte(expectedContent), os.ModePerm); err != nil {
+				return errors.Newf("repair delegate hook '%s': %v", hookPath, err)
+			}
 		}
 	}
 	return nil

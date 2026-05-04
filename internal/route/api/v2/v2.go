@@ -184,6 +184,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			pullGroup.GET("/:index/reviews", ginx.Handle(ListPullReviews))
 			pullGroup.POST("/:index/reviews", ginx.Handle(CreatePullReview))
 			pullGroup.POST("/:index/reviews/:id/comments", ginx.Handle(AddPullReviewComment))
+			pullGroup.POST("/comments/:id/resolve", ginx.Handle(ResolvePullReviewComment))
 		}
 
 		wikiGroup := repo.Group("/wiki")

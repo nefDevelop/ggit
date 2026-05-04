@@ -39,11 +39,22 @@ const (
 	PullRequestStatusMergeable
 )
 
+type AttentionState int
+
+const (
+	AttentionStateNone AttentionState = iota
+	AttentionStateReviewRequired
+	AttentionStateWaitingForAuthor
+	AttentionStateApproved
+	AttentionStateClosed
+)
+
 // PullRequest represents relation between pull request and repositories.
 type PullRequest struct {
-	ID     int64 `gorm:"primaryKey"`
-	Type   PullRequestType
-	Status PullRequestStatus
+	ID             int64 `gorm:"primaryKey"`
+	Type           PullRequestType
+	Status         PullRequestStatus
+	AttentionState AttentionState `gorm:"not null;default:0"`
 
 	IssueID int64  `gorm:"index"`
 	Issue   *Issue `json:"-" gorm:"-"`
@@ -55,6 +66,7 @@ type PullRequest struct {
 	BaseRepo     *Repository `json:"-" gorm:"-"`
 	HeadUserName string
 	HeadBranch   string
+	HeadCommitID string `gorm:"type:VARCHAR(40)"`
 	BaseBranch   string
 	MergeBase    string `gorm:"type:VARCHAR(40)"`
 
@@ -122,6 +134,12 @@ func (pr *PullRequest) LoadIssue() (err error) {
 	return err
 }
 
+// UpdateAttentionState updates the attention state of the pull request.
+func (pr *PullRequest) UpdateAttentionState(tx *gorm.DB, state AttentionState) error {
+	pr.AttentionState = state
+	return tx.Model(pr).Update("attention_state", state).Error
+}
+
 // This method assumes following fields have been assigned with valid values:
 // Required - Issue, BaseRepo
 // Optional - HeadRepo, Merger
@@ -152,6 +170,8 @@ func (pr *PullRequest) APIFormat() *apiv2types.PullRequestResponse {
 		HasMerged:  pr.HasMerged,
 		CreatedAt:  pr.Issue.Created,
 		UpdatedAt:  pr.Issue.Updated,
+		AttentionState: int(pr.AttentionState),
+		CombinedStatus: string(Handle.CommitStatuses().GetCombinedStatusBySHA(context.TODO(), pr.BaseRepoID, pr.HeadCommitID)),
 	}
 
 	if pr.Status != PullRequestStatusChecking {
@@ -172,9 +192,111 @@ func (pr *PullRequest) IsChecking() bool {
 	return pr.Status == PullRequestStatusChecking
 }
 
-// CanAutoMerge returns true if pull request can be merged automatically.
+// CanAutoMerge returns true if pull request can be merged automatically (no technical conflicts).
 func (pr *PullRequest) CanAutoMerge() bool {
 	return pr.Status == PullRequestStatusMergeable
+}
+
+// CheckMergeChecks checks if the pull request meets both repository-level and branch protection requirements.
+func (pr *PullRequest) CheckMergeChecks(ctx context.Context, doer *User) error {
+	if pr.BaseRepo == nil {
+		if err := pr.loadAttributes(Handle.db); err != nil {
+			return err
+		}
+	}
+	repo := pr.BaseRepo
+
+	// 1. Repository-level checks
+	if repo.RequiredApprovals > 0 || repo.BlockMergeOnPendingReviews || repo.BlockMergeOnUnresolvedConversations {
+		stats, err := Handle.PullReviews().GetReviewStatsByIssueID(ctx, pr.IssueID)
+		if err != nil {
+			return err
+		}
+
+		if repo.RequiredApprovals > 0 && int(stats.Approvals) < repo.RequiredApprovals {
+			return errors.Newf("Insufficient approvals (repo): %d/%d", stats.Approvals, repo.RequiredApprovals)
+		}
+
+		if repo.BlockMergeOnPendingReviews && stats.Rejections > 0 {
+			return errors.New("All requested changes must be addressed before merging (repo).")
+		}
+
+		if repo.BlockMergeOnUnresolvedConversations {
+			comments, err := Handle.PullReviewComments().ListByIssueID(ctx, pr.IssueID)
+			if err != nil {
+				return err
+			}
+			for _, c := range comments {
+				if !c.IsResolved {
+					return errors.New("All conversations must be resolved before merging (repo).")
+				}
+			}
+		}
+	}
+
+	// 2. Branch-specific checks
+	return pr.CheckBranchProtection(ctx, doer)
+}
+
+// CalculateAttentionState calculates the current attention state of the pull request.
+func (pr *PullRequest) CalculateAttentionState(ctx context.Context) (AttentionState, error) {
+	if pr.Issue == nil {
+		if err := pr.LoadIssue(); err != nil {
+			return AttentionStateNone, err
+		}
+	}
+	if pr.Issue.IsClosed {
+		return AttentionStateClosed, nil
+	}
+
+	stats, err := Handle.PullReviews().GetReviewStatsByIssueID(ctx, pr.IssueID)
+	if err != nil {
+		return AttentionStateNone, err
+	}
+
+	// 1. If there are rejections, author needs to take action.
+	if stats.Rejections > 0 {
+		return AttentionStateWaitingForAuthor, nil
+	}
+
+	// 2. If there are unresolved conversations, author needs to take action.
+	comments, err := Handle.PullReviewComments().ListByIssueID(ctx, pr.IssueID)
+	if err != nil {
+		return AttentionStateNone, err
+	}
+	for _, c := range comments {
+		if !c.IsResolved {
+			return AttentionStateWaitingForAuthor, nil
+		}
+	}
+
+	// 3. If everything is resolved and approved (based on repo/branch rules).
+	if pr.BaseRepo == nil {
+		_ = pr.loadAttributes(Handle.db)
+	}
+	
+	requiredApprovals := pr.BaseRepo.RequiredApprovals
+	// Check branch protection for overrides
+	pb, _ := GetProtectBranchOfRepoByName(pr.BaseRepoID, pr.BaseBranch)
+	if pb != nil && pb.Protected && pb.RequiredApprovals > requiredApprovals {
+		requiredApprovals = pb.RequiredApprovals
+	}
+
+	if int(stats.Approvals) >= requiredApprovals && requiredApprovals > 0 {
+		return AttentionStateApproved, nil
+	}
+
+	// 4. Default to review required.
+	return AttentionStateReviewRequired, nil
+}
+
+// RefreshAttentionState recalculates and updates the attention state of the pull request.
+func (pr *PullRequest) RefreshAttentionState(ctx context.Context, tx *gorm.DB) error {
+	state, err := pr.CalculateAttentionState(ctx)
+	if err != nil {
+		return err
+	}
+	return pr.UpdateAttentionState(tx, state)
 }
 
 // CheckBranchProtection checks if the pull request meets branch protection requirements.
@@ -199,7 +321,7 @@ func (pr *PullRequest) CheckBranchProtection(ctx context.Context, doer *User) er
 	}
 
 	// 1. Check for required approvals
-	if pb.RequiredApprovals > 0 {
+	if pb.RequiredApprovals > 0 || pb.BlockOnPendingReviews {
 		stats, err := Handle.PullReviews().GetReviewStatsByIssueID(ctx, pr.IssueID)
 		if err != nil {
 			return err
@@ -207,8 +329,21 @@ func (pr *PullRequest) CheckBranchProtection(ctx context.Context, doer *User) er
 		if stats.Approvals < int64(pb.RequiredApprovals) {
 			return errors.Newf("Insufficient approvals: %d/%d", stats.Approvals, pb.RequiredApprovals)
 		}
-		if stats.Rejections > 0 {
+		if stats.Rejections > 0 && (pb.BlockOnPendingReviews || pb.RequiredApprovals > 0) {
 			return errors.New("All requested changes must be addressed before merging.")
+		}
+	}
+
+	// 2. Check for unresolved conversations
+	if pb.BlockOnUnresolvedConversations {
+		comments, err := Handle.PullReviewComments().ListByIssueID(ctx, pr.IssueID)
+		if err != nil {
+			return err
+		}
+		for _, c := range comments {
+			if !c.IsResolved {
+				return errors.New("All conversations must be resolved before merging.")
+			}
 		}
 	}
 
@@ -507,6 +642,13 @@ func NewPullRequest(repo *Repository, pull *Issue, labelIDs []int64, uuids []str
 		}
 
 		pr.IssueID = pull.ID
+		pr.AttentionState = AttentionStateReviewRequired
+		
+		headGitRepo, err := git.Open(pr.HeadRepo.RepoPath())
+		if err == nil {
+			pr.HeadCommitID, _ = headGitRepo.BranchCommitID(pr.HeadBranch)
+		}
+
 		return tx.Create(pr).Error
 	})
 }
@@ -643,7 +785,12 @@ func (pr *PullRequest) UpdatePatch() (err error) {
 	pr.MergeBase, err = headGitRepo.MergeBase(remoteBranch, pr.HeadBranch)
 	if err != nil {
 		return errors.Newf("get merge base: %v", err)
-	} else if err = pr.Update(); err != nil {
+	}
+	pr.HeadCommitID, err = headGitRepo.BranchCommitID(pr.HeadBranch)
+	if err != nil {
+		return errors.Newf("get head commit ID: %v", err)
+	}
+	if err = pr.Update(); err != nil {
 		return errors.Newf("update: %v", err)
 	}
 
@@ -769,6 +916,7 @@ func addHeadRepoTasks(prs []*PullRequest) {
 		}
 
 		pr.AddToTaskQueue()
+		_ = pr.RefreshAttentionState(context.TODO(), Handle.db)
 	}
 }
 

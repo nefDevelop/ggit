@@ -1,26 +1,30 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
-  import { onMount, getContext } from 'svelte';
+  import { onMount, getContext } from "svelte";
   import PageHeader from "./ui/PageHeader.svelte";
-  
-  const repo: any = getContext('repo');
+  import IssueBoard from "./IssueBoard.svelte";
+
+  const repo: any = getContext("repo");
   let issues = $state<any[]>([]);
   let loading = $state(true);
-  let error = $state('');
-  let stateFilter = $state('open'); // 'open' or 'closed'
+  let error = $state("");
+  let stateFilter = $state("open"); // 'open' or 'closed'
+  let view = $state<'list' | 'board'>('list');
 
   async function fetchIssues() {
     loading = true;
-    error = '';
+    error = "";
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues?state=${stateFilter}`);
+      const res = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues?state=${stateFilter}`,
+      );
       if (res.ok) {
         issues = await res.json();
       } else {
-        error = 'Failed to load issues.';
+        error = "Failed to load issues.";
       }
     } catch (e) {
-      error = 'Error connecting to API.';
+      error = "Error connecting to API.";
     } finally {
       loading = false;
     }
@@ -33,14 +37,17 @@
   });
 
   function getStatusColor(issue: any) {
-    return issue.is_closed ? 'var(--error)' : 'var(--success)';
+    return issue.is_closed ? "var(--error)" : "var(--success)";
   }
 </script>
 
 <div class="issues-view">
   <PageHeader title="Issues" icon="bug_report" compact>
     {#snippet actions()}
-      <a href="/{repo.data.owner.username}/{repo.data.name}/issues/new" class="btn-action-primary">
+      <a
+        href="/{repo.data.owner.username}/{repo.data.name}/issues/new"
+        class="btn-action-primary"
+      >
         <span class="material-symbols-rounded">add</span>
         New Issue
       </a>
@@ -48,18 +55,18 @@
   </PageHeader>
 
   <div class="pill-filter-group">
-    <button 
-      class="tab-pill" 
-      class:active={stateFilter === 'open'} 
-      onclick={() => stateFilter = 'open'}
+    <button
+      class="tab-pill"
+      class:active={stateFilter === "open"}
+      onclick={() => (stateFilter = "open")}
     >
       <span class="material-symbols-rounded mini">error</span>
       {repo.data?.open_issues_count || 0} Open
     </button>
-    <button 
-      class="tab-pill" 
-      class:active={stateFilter === 'closed'} 
-      onclick={() => stateFilter = 'closed'}
+    <button
+      class="tab-pill"
+      class:active={stateFilter === "closed"}
+      onclick={() => (stateFilter = "closed")}
     >
       <span class="material-symbols-rounded mini">check_circle</span>
       {repo.data?.closed_issues_count || 0} Closed
@@ -85,22 +92,38 @@
         <div class="issue-row">
           <div class="issue-icon" style="color: {getStatusColor(issue)}">
             <span class="material-symbols-rounded">
-              {issue.is_closed ? 'check_circle' : 'error'}
+              {issue.is_closed ? "check_circle" : "error"}
             </span>
           </div>
           <div class="issue-main">
             <div class="issue-title-row">
-              <a href="/{repo.data.owner.username}/{repo.data.name}/issues/{issue.number}" class="issue-title">
+              <a
+                href="/{repo.data.owner.username}/{repo.data
+                  .name}/issues/{issue.number}"
+                class="issue-title"
+              >
                 {issue.title}
               </a>
               {#each issue.labels || [] as label}
-                <span class="label-tag" style="background: {label.color}; --label-bg: {label.color}">
-                  {label.name}
+                <span
+                  class="label-tag"
+                  style="background: {label.color}"
+                  class:scoped={label.name.includes("::")}
+                >
+                  {#if label.name.includes("::")}
+                    {@const [key, val] = label.name.split("::")}
+                    <span class="key">{key}</span>
+                    <span class="val">{val}</span>
+                  {:else}
+                    {label.name}
+                  {/if}
                 </span>
               {/each}
             </div>
             <div class="issue-meta">
-              #{issue.number} opened {new Date(issue.created_at).toLocaleDateString()} by <strong>{issue.user?.username}</strong>
+              #{issue.number} opened {new Date(
+                issue.created_at,
+              ).toLocaleDateString()} by <strong>{issue.user?.username}</strong>
             </div>
           </div>
           {#if issue.comments > 0}
@@ -124,16 +147,15 @@
   }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-
-  .nav-links {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-
 
   .issue-row {
     display: flex;
@@ -180,13 +202,29 @@
   }
 
   .label-tag {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 800;
-    padding: 0.1rem 0.6rem;
+    padding: 0.15rem 0.5rem;
     border-radius: 4px;
     color: white;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .label-tag.scoped {
+    padding: 0;
+    overflow: hidden;
+    gap: 0;
+  }
+  .label-tag.scoped .key {
+    background: rgba(0, 0, 0, 0.25);
+    padding: 0.15rem 0.5rem;
+    opacity: 0.9;
+  }
+  .label-tag.scoped .val {
+    padding: 0.15rem 0.5rem;
   }
 
   .issue-meta {
@@ -203,7 +241,8 @@
     color: var(--text-muted);
   }
 
-  .loading-state, .empty-state {
+  .loading-state,
+  .empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -223,7 +262,9 @@
   }
 
   @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .error-msg {
@@ -232,5 +273,38 @@
     text-align: center;
     background: var(--error-container);
     border-radius: 1rem;
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--surface-variant);
+    padding: 4px;
+    border-radius: 10px;
+    margin-right: 0.5rem;
+  }
+
+  .btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-icon:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-color);
+  }
+
+  .btn-icon.active {
+    background: var(--bg-color);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
   }
 </style>

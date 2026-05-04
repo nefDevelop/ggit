@@ -169,7 +169,7 @@
 - [x] **Instrumentación OpenTelemetry:** Rastreo básico para identificar cuellos de botella.
 
 ### 4. Gestión de Proyectos
-- [ ] **Tableros Kanban:** Gestión de Issues por columnas (Todo, In Progress, Done).
+- [x] **Tableros Kanban:** Gestión de Issues por columnas (Todo, In Progress, Done). **Integrated 🗂️**
 
 ---
 
@@ -177,9 +177,9 @@
 **Objetivo:** Garantizar la consistencia entre Base de Datos y Sistema de Archivos.
 - [ ] **Consistencia Atómica:** Lógica de "Two-Phase Commit" para operaciones Git + DB.
 - [x] **Ggit Health Sentinel:** Orquestación de `git fsck` automático basado en actividad. **Tested**.
-- [ ] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes.
+- [x] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes. **Integrated 🛡️**
 - [x] **Dangling Objects Cleanup:** Identificar y limpiar rastro de archivos de repositorios borrados. **Tested**.
-- [ ] **Blindaje Anti-OOM:** Limitador de procesos Git concurrentes basado en RAM disponible.
+- [x] **Blindaje Anti-OOM:** Limitador de procesos Git concurrentes basado en RAM disponible. **Integrated 🛡️**
 - [x] **Modo Supervivencia:** Switch a "Solo Lectura" si el espacio en disco es crítico. **Tested**.
 - [x] **Dashboard Leído:** Animación de parpadeo en contadores de dashboard para items nuevos.
 - [ ] **Ggit Credential Helper:** Almacenamiento seguro para tokens de remotos HTTP.
@@ -213,6 +213,41 @@
 - [x] **Respaldo de Metadatos:** Exportación ligera de DB y adjuntos (sin repositorios).
 - [x] **Adopción de Repositorios (Hardened 🛡️):** Función para vincular carpetas Git existentes con validación estricta de Path Traversal. **Tested**.
 - [x] **Seguridad de Búsqueda:** Mitigación de Parameter Injection en `git grep` mediante separadores de argumentos. **Tested**.
+
+---
+
+## Fase 26: The Lean Developer Hub (Filosofía de Bajo Impacto) 🚀
+**Objetivo:** Reducir la fricción del desarrollador integrando herramientas profesionales en la UI existente.
+
+### 1. Flujo de Trabajo en Pull Requests (Vistas de PR)
+- [x] **Estados de Atención:** Semáforo de turno (Autor/Revisor) integrado en la cabecera del PR.
+- [x] **Merge Checks:** Validación visual de hilos resueltos y aprobaciones en el cuadro de merge.
+- [x] **Commit Status API:** Integración de iconos de CI (✅/❌) en listas de commits y PRs.
+- [x] **Scoped Labels:** Soporte para etiquetas excluyentes `key::value` en el panel lateral.
+
+### 2. Cirugía de Git en la Web (Herramientas de Código)
+- [ ] **Web Cherry-Pick:** Botón directo en la vista de commit para copiar cambios a otra rama.
+- [ ] **Conflict Resolver:** Editor visual integrado en la vista de PR para resolver choques de código.
+- [ ] **Web-based Rebase:** Interfaz para reordenar o hacer squash de commits desde la web.
+- [ ] **Web Stash Manager:** Nueva zona de "Herramientas" para guardar cambios temporales sin commit.
+- [ ] **Reflog Explorer:** Sección en Mantenimiento para recuperar commits mediante el historial de HEAD.
+
+### 3. Productividad & Navegación
+- [ ] **Unified Inbox:** Nueva pestaña en el Dashboard para gestionar tareas de todos los repositorios.
+- [ ] **Inline Blame:** Visualización de autor y fecha al final de cada línea en el visor de archivos.
+- [ ] **Hierarchical Projects:** Soporte para organizar repositorios en carpetas en el Dashboard.
+
+### 4. Organización & Planificación
+- [x] **Kanban Virtual:** Selector de vista en la lista de Issues para pasar de modo Lista a Tablero.
+- [x] **Hill Charts:** Integración de gráficas de incertidumbre en la vista de Hitos (Milestones). **Integrated 🏔️**
+- [ ] **Gists Integrados:** Nueva zona global para gestionar snippets de código personales.
+- [x] **Technotes / ADR:** Nueva pestaña "Docs" en el repositorio para diarios técnicos y decisiones. **Integrated 📝**
+
+### 5. Core & Janitor (Mantenimiento)
+- [x] **Stale Detection:** Nueva regla en el **Janitor** existente para detectar ramas e issues muertas. **Healed 🛡️**
+- [x] **Blindaje Anti-OOM:** Monitor de recursos dinámico y limitador de concurrencia.
+- [ ] **Atomic Consist. & Pattern Store:** Refactorización interna para integridad y mantenibilidad.
+
 ---
 
 ## Estimación de Dificultad (Tareas Pendientes)
@@ -224,26 +259,29 @@
 | **Modo Supervivencia** | 22 | Completado | Despreciable | Lógica de bloqueo de escritura basada en umbral de espacio en disco. |
 | **Dashboard Leído** | 22 | Completado | Despreciable | Implementación de animaciones CSS/Svelte para estados de lectura. |
 | **OIDC (OpenID Connect)** | 10 | Media | Bajo | Integración de cliente estándar para autenticación externa. |
-| **Merge Checks** | 21 | Media | Bajo | Validación de hilos de conversación resueltos antes de permitir merge. |
-| **Commit Status API** | 21 | Media | Bajo | Creación de endpoints y modelos para reportes de CI externos. |
+| **Merge Checks** | 26 | Completado | Bajo | Integración visual de validaciones antes de permitir merge. |
+| **Commit Status API** | 26 | Completado | Bajo | Creación de endpoints y modelos para reportes de CI externos. |
 | **Ggit Health Sentinel** | 22 | Completado | Alto | Orquestación de `git fsck` periódico sin degradar el rendimiento. |
-| **Self-Healing Hooks** | 22 | Media | Bajo | Detección y recreación automática de scripts de hooks faltantes. |
-| **Blindaje Anti-OOM** | 22 | Media | Medio | Limitador de concurrencia dinámico basado en la RAM disponible. |
+| **Self-Healing Hooks** | 22 | Completado | Bajo | Detección y recreación automática de scripts de hooks faltantes. |
+| **Blindaje Anti-OOM** | 26 | Completado | Medio | Limitador de concurrencia dinámico basado en la RAM disponible. |
 | **Ggit Credential Helper** | 22 | Media | Bajo | Sistema de cifrado y almacenamiento para tokens de remotos HTTP. |
 | **Gestión de Colaboradores** | 23 | Completado | Bajo | Nueva UI de búsqueda y gestión de roles granulares. |
 | **Deploy Keys & Git Hooks** | 23 | Completado | Bajo | Editores web con validación de sintaxis y seguridad en servidor. |
 | **Label & Milestone Manager** | 23 | Completado | Bajo | Refactorización de gestión de metadatos a componentes Material 3. |
 | **Webhook Tester & Logs** | 23 | Completado | Medio | Sistema de reintentos y visualización de payloads de entrega. |
-| **Auditoría de Índices** | 24 | Completado | Medio | Optimización de consultas críticas mediante índices SQLite precisos. **Tested**. |
+| **Auditoría de Índices** | 24 | Completado | Medio | Optimización de consultas SQLite precisas. **Tested**. |
 | **Fuentes de Auth UI** | 25 | Completado | Bajo | Interfaz administrativa para configurar proveedores LDAP/OAuth2. |
 | **Release Management** | 25 | Completado | Medio | Lógica de subida y persistencia de activos binarios en lanzamientos. |
 | **Monitorización Admin** | 25 | Completado | Bajo | Consola de control para tareas cron y procesos Git activos. |
 | **Respaldo de Metadatos** | 25 | Completado | Bajo | Exportación ligera de DB y adjuntos (sin repositorios). |
 | **Adopción de Repositorios** | 22 | Completado | Bajo | Función para vincular carpetas Git existentes a la DB. |
-| **OAuth2/OIDC Provider** | 21 | Alta | Medio | Implementar Ggit como proveedor de identidad completo (Server-side). |
-| **Tableros Kanban** | 21 | Alta | Medio | Sistema interactivo de gestión de estados con drag-and-drop. |
-| **Consistencia Atómica** | 22 | Alta | Medio | Coordinación de transacciones (2PC) entre SQLite y el sistema de archivos. |
-| **Pattern Store** | 24 | Alta | Medio | Refactorización estructural de toda la capa de persistencia del sistema. |
+| **Tableros Kanban** | 26 | Completado | Medio | Selector de vista interactivo en la lista de Issues. |
+| **Consistencia Atómica** | 26 | Alta | Medio | Coordinación de transacciones entre SQLite y el sistema de archivos. |
+| **Pattern Store** | 26 | Alta | Medio | Refactorización estructural de la capa de persistencia. |
+| **Estados de Atención** | 26 | Completado | **0 MB** | Motor de turnos para PRs integrado en la cabecera. |
+| **Unified Inbox** | 26 | Media | Bajo | Nueva pestaña global para gestión de tareas multi-repo. |
+| **Stale Detection** | 26 | Baja | **0 MB** | Nueva regla integrada en el motor de Janitor existente. |
+| **Gists Integrados** | 26 | Media | **0 MB** | Nueva zona global para gestión de snippets de código. |
 
 - [x] **Analisis de basura y de seguridad**: 
 ---
@@ -254,9 +292,9 @@
 ### Estabilidad y Robustez (Inmediato)
 - [x] **Mitigación SSRF en Webhooks:** Filtro de IPs locales (127.0.0.1, 10.0.x, etc) en el Tester HTTP. **Tested**.
 - [x] **Commit Status API:** Integración de estados de CI externos. **Tested**.
-- [x] **Auditoría de Índices:** Optimización final de consultas SQL para evitar micro-bloqueos. **Tested**.
-- [ ] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico. SI
-- [ ] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco. SI
+- [x] **Auditoría de Índices:** Optimización final de consultas SQL. **Tested**.
+- [x] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico. **Healed 🛡️**
+- [x] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco. **Healed 🛡️**
 
 ### Conectividad y Ecosistema (Medio Plazo)
 - [ ] **OIDC (OpenID Connect):** Soporte estándar para login externo.
@@ -264,5 +302,9 @@
 - [ ] **Pattern Store:** Refactorización de la capa de acceso a datos (Clean Architecture). SI
 
 ### Funcionalidades Avanzadas (Largo Plazo / 2.0)
-- [ ] **Tableros Kanban:** Gestión visual de issues.
+- [x] **Estados de Atención:** Implementar motor de turnos en PRs.
+- [x] **Kanban Virtual:** Vista de tablero basada en etiquetas.
 - [ ] **Consistencia Atómica (2PC):** Coordinación estricta entre DB y sistema de archivos.
+
+
+---

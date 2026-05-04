@@ -180,8 +180,26 @@ type IssueMilestoneResponse struct {
 	State        IssueStateType `json:"state"`
 	OpenIssues   int            `json:"open_issues"`
 	ClosedIssues int            `json:"closed_issues"`
-	ClosedAt     *time.Time     `json:"closed_at"`
+	Completeness int            `json:"completeness"`
+	HillState    int            `json:"hill_state"`
 	Deadline     *time.Time     `json:"due_on"`
+}
+
+// CreateMilestoneOption represents options for creating a milestone.
+type CreateMilestoneOption struct {
+	Title       string     `json:"title" binding:"required"`
+	Description string     `json:"description"`
+	Deadline    *time.Time `json:"due_on"`
+	HillState   int        `json:"hill_state"`
+}
+
+// EditMilestoneOption represents options for editing a milestone.
+type EditMilestoneOption struct {
+	Title       *string     `json:"title"`
+	Description *string     `json:"description"`
+	State       *string     `json:"state"`
+	Deadline    *time.Time  `json:"due_on"`
+	HillState   *int        `json:"hill_state"`
 }
 
 // PullRequestMetaResponse represents metadata for a pull request within an issue.
@@ -244,8 +262,33 @@ type PullRequestResponse struct {
 	Mergeable      *bool               `json:"mergeable"`
 	HasMerged      bool                `json:"merged"`
 	MergedAt       *time.Time          `json:"merged_at"`
-	MergedCommitID *string             `json:"merge_commit_sha"`
+	MergedCommitID *string             `json:"merged_commit_sha"`
 	MergedBy       *UserResponse       `json:"merged_by"`
+	AttentionState int                 `json:"attention_state"`
+	CombinedStatus string              `json:"combined_status"`
+}
+
+// PullReviewCommentResponse represents an inline comment on a pull request review.
+type PullReviewCommentResponse struct {
+	ID         int64     `json:"id"`
+	ReviewID   int64     `json:"review_id"`
+	TreePath   string    `json:"tree_path"`
+	Line       int64     `json:"line"`
+	CommitID   string    `json:"commit_id"`
+	Content    string    `json:"content"`
+	IsResolved bool      `json:"is_resolved"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at"`
+}
+
+// PullReviewResponse represents a review on a pull request.
+type PullReviewResponse struct {
+	ID         int64                        `json:"id"`
+	Type       int                          `json:"type"`
+	Reviewer   *UserResponse                `json:"reviewer"`
+	Content    string                       `json:"content"`
+	Comments   []*PullReviewCommentResponse `json:"comments"`
+	CreatedAt  time.Time                    `json:"created_at"`
 }
 
 // ORGANIZATION MODELS

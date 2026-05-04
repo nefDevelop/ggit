@@ -115,6 +115,8 @@ type ProtectBranch struct {
 	MergeWhitelistUserIDs  string `gorm:"type:TEXT"`
 	MergeWhitelistTeamIDs  string `gorm:"type:TEXT"`
 	BlockOnOutdatedBranch bool
+	BlockOnUnresolvedConversations bool
+	BlockOnPendingReviews          bool
 }
 
 // GetProtectBranchOfRepoByName returns *ProtectBranch by branch name in given repository.

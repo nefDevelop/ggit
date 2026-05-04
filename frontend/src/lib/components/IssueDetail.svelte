@@ -271,8 +271,14 @@
             {/if}
             <div class="labels-grid">
               {#each issue.labels || [] as label}
-                <span class="label-tag" style="background: {label.color}">
-                  {label.name}
+                <span class="label-tag" style="background: {label.color}" class:scoped={label.name.includes('::')}>
+                  {#if label.name.includes('::')}
+                    {@const [key, val] = label.name.split('::')}
+                    <span class="key">{key}</span>
+                    <span class="val">{val}</span>
+                  {:else}
+                    {label.name}
+                  {/if}
                   {#if showLabelEditor}
                     <button class="remove-label" onclick={() => {
                       const newLabels = issue.labels.filter((l: any) => l.id !== label.id).map((l: any) => l.id);
@@ -564,6 +570,22 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
+  }
+  .label-tag.scoped {
+    padding: 0;
+    overflow: hidden;
+    gap: 0;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .label-tag.scoped .key {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
+    font-weight: 800;
+    opacity: 0.8;
+  }
+  .label-tag.scoped .val {
+    padding: 2px 8px;
   }
   .remove-label {
     background: rgba(0, 0, 0, 0.2);

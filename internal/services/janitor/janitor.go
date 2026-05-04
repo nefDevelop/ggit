@@ -198,6 +198,43 @@ func Scan(ctx context.Context, repoID int64) (*Report, error) {
 		}
 	}
 
+	// NEW: Stale Branch Detection
+	// Branches without commits in the last 90 days
+	branches, err := gitRepo.Branches()
+	if err == nil {
+		for _, b := range branches {
+			commit, err := gitRepo.BranchCommit(b)
+			if err == nil && commit.Author != nil {
+				if time.Since(commit.Author.When) > 90*24*time.Hour {
+					report.Issues = append(report.Issues, Issue{
+						Type:        "system",
+						Severity:    "info",
+						Path:        "branch:" + b,
+						Description: fmt.Sprintf("Stale branch detected: '%s' has no activity for > 90 days.", b),
+						Size:        0,
+					})
+				}
+			}
+		}
+	}
+
+	// NEW: Stale Issue Detection
+	// Open issues without comments or updates for 60 days
+	var staleIssues []*database.Issue
+	err = database.Handle.DB().Where("repo_id = ? AND is_closed = ? AND updated_unix < ?",
+		repo.ID, false, time.Now().AddDate(0, 0, -60).Unix()).Find(&staleIssues).Error
+	if err == nil {
+		for _, is := range staleIssues {
+			report.Issues = append(report.Issues, Issue{
+				Type:        "system",
+				Severity:    "info",
+				Path:        fmt.Sprintf("issue:%d", is.Index),
+				Description: fmt.Sprintf("Stale issue #%d detected: no activity for > 60 days.", is.Index),
+				Size:        0,
+			})
+		}
+	}
+
 	// NEW: Deep History Scan
 	// We check for large objects in the entire Git history
 	idxPattern := filepath.Join(repo.RepoPath(), "objects", "pack", "*.idx")

@@ -24,6 +24,7 @@ type Milestone struct {
 	NumClosedIssues int
 	NumOpenIssues   int  `json:"-" gorm:"-"`
 	Completeness    int  // Percentage(1-100).
+	HillState       int  // Hill Chart State (0-100). 0-50 Uphill, 50-100 Downhill.
 	IsOverDue       bool `json:"-" gorm:"-"`
 
 	DeadlineString string    `json:"-" gorm:"-"`
@@ -90,6 +91,8 @@ func (m *Milestone) APIFormat() *apiv2types.IssueMilestoneResponse {
 		State:        m.State(),
 		OpenIssues:   m.NumOpenIssues,
 		ClosedIssues: m.NumClosedIssues,
+		Completeness: m.Completeness,
+		HillState:    m.HillState,
 		Deadline:     &m.Deadline,
 	}
 }

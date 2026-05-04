@@ -281,6 +281,9 @@ type Repository struct {
 	PullsIgnoreWhitespace bool              `gorm:"not null;default:FALSE"`
 	PullsAllowRebase      bool              `gorm:"not null;default:FALSE"`
 	PullsAllowManualMerge bool              `gorm:"not null;default:FALSE"`
+	BlockMergeOnPendingReviews          bool `gorm:"not null;default:FALSE"`
+	BlockMergeOnUnresolvedConversations bool `gorm:"not null;default:FALSE"`
+	RequiredApprovals                   int  `gorm:"not null;default:0"`
 
 	PrimaryLanguage string `gorm:"type:VARCHAR(32)"`
 	Languages       string `gorm:"type:TEXT"`
@@ -400,6 +403,9 @@ func (r *Repository) loadAttributes(tx *gorm.DB) (err error) {
 		}
 	}
 
+	if err := repox.SelfHealHooks(r.RepoPath()); err != nil {
+		log.Error("SelfHealHooks [%d]: %v", r.ID, err)
+	}
 	return nil
 }
 

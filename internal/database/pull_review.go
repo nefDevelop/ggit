@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"gorm.io/gorm"
 )
 
@@ -30,6 +31,25 @@ type PullReview struct {
 
 	CreatedUnix int64 `gorm:"not null"`
 	UpdatedUnix int64 `gorm:"not null"`
+}
+
+func (r *PullReview) APIFormat() *apiv2types.PullReviewResponse {
+	apiComments := make([]*apiv2types.PullReviewCommentResponse, len(r.Comments))
+	for i, c := range r.Comments {
+		apiComments[i] = c.APIFormat()
+	}
+
+	res := &apiv2types.PullReviewResponse{
+		ID:        r.ID,
+		Type:      int(r.Type),
+		Content:   r.Content,
+		Comments:  apiComments,
+		CreatedAt: time.Unix(r.CreatedUnix, 0),
+	}
+	if r.Reviewer != nil {
+		res.Reviewer = r.Reviewer.APIFormat()
+	}
+	return res
 }
 
 func (r *PullReview) BeforeCreate(tx *gorm.DB) error {
@@ -72,7 +92,17 @@ func (s *PullReviewsStore) Create(ctx context.Context, r *PullReview) error {
 	if r.Type < PullReviewTypePending || r.Type > PullReviewTypeReject {
 		return errors.New("invalid review type")
 	}
-	return s.db.WithContext(ctx).Create(r).Error
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(r).Error; err != nil {
+			return err
+		}
+
+		pr, err := getPullRequestByIssueID(tx, r.IssueID)
+		if err != nil {
+			return err
+		}
+		return pr.RefreshAttentionState(ctx, tx)
+	})
 }
 
 type PullReviewStats struct {

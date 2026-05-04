@@ -5,6 +5,7 @@ go 1.25.9
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/semver/v3 v3.4.0
+	github.com/alecthomas/chroma/v2 v2.24.1
 	github.com/cockroachdb/errors v1.12.0
 	github.com/derision-test/go-mockgen/v2 v2.1.1
 	github.com/editorconfig/editorconfig-core-go/v2 v2.6.4
@@ -53,7 +54,6 @@ require (
 	bitbucket.org/creachadair/shell v0.0.9 // indirect
 	github.com/Azure/go-ntlmssp v0.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/alecthomas/chroma/v2 v2.24.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boombuler/barcode v1.1.0 // indirect

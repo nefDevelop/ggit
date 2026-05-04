@@ -7,6 +7,7 @@ export interface UserPreferences {
     wiki: boolean;
     branch: boolean;
     commits: boolean;
+    docs: boolean;
   };
   showSidebarOrgs: boolean;
 }
@@ -18,6 +19,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     wiki: true,
     branch: true,
     commits: true,
+    docs: true,
   },
   showSidebarOrgs: true
 };

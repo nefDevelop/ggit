@@ -91,7 +91,8 @@
       title: ms.title,
       description: ms.description || '',
       due_on: ms.due_on ? ms.due_on.split('T')[0] : '',
-      state: ms.state
+      state: ms.state,
+      hill_state: ms.hill_state || 0
     };
     showEditor = true;
   }
@@ -147,6 +148,21 @@
             placeholder="What should be completed in this milestone?" 
           />
         </div>
+        <div class="full-width hill-state-picker">
+          <label for="hill-state">Hill Chart State: {form.hill_state}% ({form.hill_state < 50 ? 'Uphill / Figuring it out' : 'Downhill / Making it happen'})</label>
+          <input 
+            id="hill-state"
+            type="range" 
+            min="0" 
+            max="100" 
+            bind:value={form.hill_state} 
+            class="hill-slider"
+          />
+          <div class="hill-markers">
+            <span>Uncertainty</span>
+            <span>Execution</span>
+          </div>
+        </div>
       </div>
 
       <div class="editor-footer">
@@ -188,6 +204,24 @@
             
             <div class="ms-description">
               {ms.description || 'No description provided.'}
+            </div>
+
+            <div class="hill-chart-container">
+              <svg viewBox="0 0 100 40" class="hill-chart">
+                <path d="M 0 35 Q 50 -10 100 35" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1" />
+                <line x1="50" y1="5" x2="50" y2="35" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.5" />
+                <circle 
+                  cx={ms.hill_state} 
+                  cy={35 - (Math.sin((ms.hill_state / 100) * Math.PI) * 30)} 
+                  r="3" 
+                  fill="var(--primary-color)" 
+                  filter="drop-shadow(0 0 4px var(--primary-color))"
+                />
+              </svg>
+              <div class="hill-labels">
+                <span>Figuring it out</span>
+                <span>Making it happen</span>
+              </div>
             </div>
 
             <div class="ms-progress-zone">
@@ -251,4 +285,14 @@
 
   .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
   .empty-state span { font-size: 3rem; }
+
+  .hill-state-picker { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+  .hill-state-picker label { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+  .hill-slider { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; appearance: none; }
+  .hill-slider::-webkit-slider-thumb { appearance: none; width: 16px; height: 16px; background: var(--primary-color); border-radius: 50%; cursor: pointer; border: 2px solid var(--bg-color); }
+  .hill-markers { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.6; }
+
+  .hill-chart-container { margin: 0.5rem 0; background: rgba(0,0,0,0.2); padding: 1.25rem; border-radius: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .hill-chart { width: 100%; height: 60px; overflow: visible; }
+  .hill-labels { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-top: 0.5rem; opacity: 0.8; }
 </style>

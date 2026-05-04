@@ -254,12 +254,33 @@ func ListPullReviews(c *context.APIContext) {
 	}
 
 	// We should probably load reviewers too.
-	for _, r := range reviews {
+	apiReviews := make([]*apiv2types.PullReviewResponse, len(reviews))
+	for i, r := range reviews {
 		r.Reviewer, _ = database.Handle.Users().GetByID(c.Req.Context(), r.ReviewerID)
 		r.Comments, _ = database.Handle.PullReviewComments().ListByReviewID(c.Req.Context(), r.ID)
+		apiReviews[i] = r.APIFormat()
 	}
 
-	c.JSON(http.StatusOK, reviews)
+	c.JSON(http.StatusOK, apiReviews)
+}
+
+// ResolvePullReviewComment resolves or unresolves a review comment.
+func ResolvePullReviewComment(c *context.APIContext) {
+	commentID := c.ParamsInt64("id")
+	var f struct {
+		Resolved bool `json:"resolved"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if err := database.Handle.PullReviewComments().SetResolved(c.Req.Context(), commentID, f.Resolved); err != nil {
+		c.Error(err, "set resolved")
+		return
+	}
+
+	c.NoContent()
 }
 
 // CreatePullReview creates a new review for a pull request.
@@ -365,16 +386,36 @@ func GetPullRequestProtection(c *context.APIContext) {
 		return
 	}
 
+	// Count unresolved conversations
+	unresolvedCount := 0
+	comments, _ := database.Handle.PullReviewComments().ListByIssueID(c.Req.Context(), issue.ID)
+	for _, comment := range comments {
+		if !comment.IsResolved {
+			unresolvedCount++
+		}
+	}
+
+	combinedStatus := database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), issue.Repo.ID, issue.PullRequest.HeadCommitID)
+
 	requiredApprovals := 0
 	if pb != nil && pb.Protected {
 		requiredApprovals = pb.RequiredApprovals
 	}
+	if requiredApprovals == 0 {
+		requiredApprovals = issue.Repo.RequiredApprovals
+	}
+
+	err = issue.PullRequest.CheckMergeChecks(c.Req.Context(), c.User)
+	mergeable := err == nil
 
 	c.JSON(http.StatusOK, map[string]any{
 		"required_approvals": requiredApprovals,
 		"approvals":          stats.Approvals,
 		"rejections":         stats.Rejections,
+		"unresolved_count":   unresolvedCount,
+		"combined_status":    string(combinedStatus),
 		"is_protected":       pb != nil && pb.Protected,
-		"mergeable":          stats.Rejections == 0 && stats.Approvals >= int64(requiredApprovals),
+		"mergeable":          mergeable,
+		"merge_error":        func() string { if err != nil { return err.Error() }; return "" }(),
 	})
 }
