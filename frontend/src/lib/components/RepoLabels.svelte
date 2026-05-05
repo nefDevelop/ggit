@@ -123,8 +123,7 @@
     {#if loading}
       <div class="loading-state">Loading labels...</div>
     {:else if labels.length === 0}
-      <div class="empty-state tonal">
-        <span class="material-symbols-rounded">label_off</span>
+      <div class="empty-state">
         <p>No labels defined yet for this repository.</p>
       </div>
     {:else}

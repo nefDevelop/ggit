@@ -106,13 +106,9 @@
 </svelte:head>
 
 <div class="tags-page">
-  <div class="page-header">
-    <div class="header-left">
-      <span class="material-symbols-rounded header-icon">sell</span>
-      <h2>Tags <span class="count-chip">{tags.length}</span></h2>
-    </div>
+  <div class="header-actions-right">
     <button class="btn btn-primary btn-sm" onclick={() => { showNewTag = !showNewTag; createError = ''; }}>
-      <span class="material-symbols-rounded">add</span>
+      <span class="material-symbols-rounded">add_circle</span>
       New tag
     </button>
   </div>
@@ -173,7 +169,6 @@
         <div class="tag-row tonal" transition:fade={{ duration: 120 }}>
           <div class="tag-info">
             <a href={`/${username}/${reponame}/releases`} class="tag-name">
-              <span class="material-symbols-rounded">sell</span>
               {tag.name}
             </a>
             {#if tag.sha}
@@ -219,6 +214,8 @@
 
 <style>
   .tags-page { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .header-actions-right { display: flex; justify-content: flex-end; margin-bottom: 0.5rem; }
 
   .page-header { display: flex; align-items: center; justify-content: space-between; }
   .header-left { display: flex; align-items: center; gap: 0.75rem; }

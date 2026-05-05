@@ -60,9 +60,9 @@
 
 <div class="repo-docs-container">
   <PageHeader 
-    title="Architectural Decision Records" 
-    subtitle="Keep track of the 'why' behind your technical decisions"
-    icon="gavel"
+    title="" 
+    subtitle=""
+    icon=""
     compact
   >
     {#snippet actions()}

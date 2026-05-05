@@ -39,7 +39,7 @@
 </script>
 
 <div class="pulls-view">
-  <PageHeader title="Pull Requests" icon="merge" compact>
+  <PageHeader title="" icon="" compact>
     {#snippet actions()}
       <a href="./pulls/new" class="btn-action-primary">
         <span class="material-symbols-rounded">add</span>

@@ -50,10 +50,10 @@
         if (!release) target = data.default.name;
       }
 
-      const rRes = await apiFetch(`/api/v2/${username}/${reponame}/releases`);
-      if (rRes.ok) {
-        const data = await rRes.json();
-        tags = data.releases.map((r: any) => ({ name: r.tag_name }));
+      const tRes = await apiFetch(`/api/v2/${username}/${reponame}/tags`);
+      if (tRes.ok) {
+        const data = await tRes.json();
+        tags = data.map((t: any) => ({ name: t.name }));
       }
     } catch (e) {
       console.error(e);
@@ -148,10 +148,16 @@
           <input
             id="tag-name"
             type="text"
+            list="tag-suggestions"
             bind:value={tagName}
             placeholder="e.g. v1.0.0"
             disabled={!!release}
           />
+          <datalist id="tag-suggestions">
+            {#each tags as tag}
+              <option value={tag.name}></option>
+            {/each}
+          </datalist>
           <p class="help">
             Choose an existing tag, or create a new one on publish.
           </p>
@@ -267,6 +273,8 @@
     flex-direction: column;
     gap: 2rem;
     background: var(--md3-surface-1);
+    border-radius: 2rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
   }
 
   .editor-header {

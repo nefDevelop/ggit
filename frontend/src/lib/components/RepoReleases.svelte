@@ -29,10 +29,15 @@
       const res = await apiFetch(`/api/v2/${username}/${reponame}/releases${query}`);
       if (res.ok) {
         const data = await res.json();
-        releases = data.releases;
-        hasNext = data.has_next;
-        nextAfter = data.next_after;
-        hasPrevious = data.has_previous;
+        if (Array.isArray(data)) {
+          releases = data;
+          hasNext = false;
+        } else {
+          releases = data.releases || [];
+          hasNext = data.has_next;
+          nextAfter = data.next_after;
+          hasPrevious = data.has_previous;
+        }
       } else {
         error = "Failed to load releases.";
       }

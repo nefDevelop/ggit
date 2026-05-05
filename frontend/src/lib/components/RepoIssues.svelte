@@ -42,7 +42,7 @@
 </script>
 
 <div class="issues-view">
-  <PageHeader title="Issues" icon="bug_report" compact>
+  <PageHeader title="" icon="" compact>
     {#snippet actions()}
       <div class="view-toggle">
         <button 

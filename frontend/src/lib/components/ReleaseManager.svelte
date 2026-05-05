@@ -34,15 +34,12 @@
 </script>
 
 <div class="release-manager">
-  <header class="view-header">
-    <div class="title-group">
-      <span class="material-symbols-rounded">sell</span>
-      <h2>Releases</h2>
-    </div>
+  <div class="header-actions-right">
     <a href={`/${username}/${reponame}/releases/new`} class="btn btn-primary">
+      <span class="material-symbols-rounded">rocket_launch</span>
       Draft a new release
     </a>
-  </header>
+  </div>
 
   {#if loading}
     <div class="skeleton-list">
@@ -51,8 +48,7 @@
       {/each}
     </div>
   {:else if releases.length === 0}
-    <div class="empty-state tonal">
-      <span class="material-symbols-rounded">new_releases</span>
+    <div class="empty-state">
       <h3>No releases yet</h3>
       <p>
         Releases provide a way to package software and provide binary assets to
@@ -66,7 +62,6 @@
           <div class="release-meta">
             <div class="tag-status">
               <span class="tag-badge">
-                <span class="material-symbols-rounded">label</span>
                 {rel.TagName}
               </span>
               {#if rel.IsDraft}
@@ -138,6 +133,8 @@
     gap: 2rem;
     animation: fadeIn 0.4s ease-out;
   }
+  
+  .header-actions-right { display: flex; justify-content: flex-end; }
 
   .view-header {
     display: flex;
@@ -168,10 +165,12 @@
   .release-card {
     display: grid;
     grid-template-columns: 200px 1fr;
-    gap: 2rem;
+    gap: 0;
     padding: 0;
     overflow: hidden;
     border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 2rem;
+    background: var(--md3-surface-2);
   }
   .release-card.draft {
     border-style: dashed;
