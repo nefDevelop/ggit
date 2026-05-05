@@ -4,37 +4,59 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/gitx"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // GetComparison returns the comparison between two branches.
 func GetComparison(c *context.APIContext) {
-	info := c.Params("*")
+	info := c.Param("info")
 	parts := strings.Split(info, "...")
 	if len(parts) != 2 {
-		c.ErrorStatus(http.StatusBadRequest, nil)
+		c.ErrorStatus(http.StatusBadRequest, errors.New("invalid comparison format"))
 		return
 	}
 
-	baseBranch := parts[0]
-	headBranch := parts[1]
+	baseBranch := strings.Trim(parts[0], " /")
+	headBranch := strings.Trim(parts[1], " /")
 
 	baseRepo := c.Repo.Repository
 	baseRepoPath := baseRepo.RepoPath()
 
-	// If branches are the same and it's the same repository, return empty result
+	// Gather metadata for the UI (branches, forks, etc.)
+	branches, _ := c.Repo.GitRepo.Branches()
+	
+	var allHeadRepos []*apiv2types.RepositoryResponse
+	allHeadRepos = append(allHeadRepos, baseRepo.APIFormat(c.Repo.Owner))
+	
+	forks, _ := database.Handle.Repositories().ListForks(c.Req.Context(), baseRepo.ID, 1, 100)
+	for _, fork := range forks {
+		owner, _ := database.Handle.Users().GetByID(c.Req.Context(), fork.OwnerID)
+		allHeadRepos = append(allHeadRepos, fork.APIFormat(owner))
+	}
+
+	resp := map[string]any{
+		"base_repo":      baseRepo.APIFormat(c.Repo.Owner),
+		"head_repo":      baseRepo.APIFormat(c.Repo.Owner),
+		"all_head_repos": allHeadRepos,
+		"base_branches":  branches,
+		"head_branches":  branches,
+		"base_branch":    baseBranch,
+		"head_branch":    headBranch,
+		"is_same_repo":   true,
+	}
+
+	// If branches are the same, return empty result with metadata
 	if baseBranch == headBranch {
-		c.JSON(http.StatusOK, map[string]any{
-			"base_branch": baseBranch,
-			"head_branch": headBranch,
-			"merge_base":  "",
-			"commits":     []any{},
-			"num_commits": 0,
-			"diff":        nil,
-		})
+		resp["merge_base"] = ""
+		resp["commits"] = []any{}
+		resp["num_commits"] = 0
+		resp["diff"] = nil
+		c.JSON(http.StatusOK, resp)
 		return
 	}
 
@@ -61,12 +83,10 @@ func GetComparison(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]any{
-		"base_branch": baseBranch,
-		"head_branch": headBranch,
-		"merge_base":  meta.MergeBase,
-		"commits":     matchUsersWithCommitEmails(c.Req.Context(), meta.Commits),
-		"num_commits": len(meta.Commits),
-		"diff":        diff,
-	})
+	resp["merge_base"] = meta.MergeBase
+	resp["commits"] = matchUsersWithCommitEmails(c.Req.Context(), meta.Commits)
+	resp["num_commits"] = len(meta.Commits)
+	resp["diff"] = diff
+
+	c.JSON(http.StatusOK, resp)
 }

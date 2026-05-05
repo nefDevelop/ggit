@@ -302,6 +302,9 @@ func RepoRef() gin.HandlerFunc {
 		if path == "" {
 			path = c.Param("*")
 		}
+		if path == "" {
+			path = c.Param("info")
+		}
 		path = strings.Trim(path, "/")
 
 		if path == "" {

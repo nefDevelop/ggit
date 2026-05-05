@@ -31,7 +31,11 @@ func (c *APIContext) StatusError(status int, msg string, err error) {
 }
 
 func (c *APIContext) ErrorStatus(status int, err error) {
-	c.StatusError(status, err.Error(), err)
+	msg := "Unknown error"
+	if err != nil {
+		msg = err.Error()
+	}
+	c.StatusError(status, msg, err)
 }
 
 func (c *APIContext) NoContent() {
