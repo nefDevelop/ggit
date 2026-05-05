@@ -134,7 +134,13 @@
   }
 
   $effect(() => {
-    if (baseBranch && headBranch && headRepoId) fetchComparison();
+    if (baseBranch && headBranch && headRepoId) {
+      if (baseBranch === headBranch && headRepoId === metadata.base_repo.id) {
+        comparison = null;
+        return;
+      }
+      fetchComparison();
+    }
   });
 
   onMount(initComparison);

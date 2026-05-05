@@ -22,15 +22,32 @@ func GetComparison(c *context.APIContext) {
 	baseBranch := parts[0]
 	headBranch := parts[1]
 
-	// Use internal logic from repo.ParseCompareInfo but for API
 	baseRepo := c.Repo.Repository
 	baseRepoPath := baseRepo.RepoPath()
+
+	// If branches are the same and it's the same repository, return empty result
+	if baseBranch == headBranch {
+		c.JSON(http.StatusOK, map[string]any{
+			"base_branch": baseBranch,
+			"head_branch": headBranch,
+			"merge_base":  "",
+			"commits":     []any{},
+			"num_commits": 0,
+			"diff":        nil,
+		})
+		return
+	}
 
 	// For simplicity in this first version, we assume same repository.
 	// In the future, we can expand to fork comparison.
 	meta, err := gitx.Module.PullRequestMeta(baseRepoPath, baseRepoPath, headBranch, baseBranch)
 	if err != nil {
-		c.Error(err, "get pull request meta")
+		c.NotFoundOrError(gitx.NewError(err), "get pull request meta")
+		return
+	}
+
+	if meta.MergeBase == "" {
+		c.StatusError(http.StatusNotFound, "No common ancestor found", nil)
 		return
 	}
 
