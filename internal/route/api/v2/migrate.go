@@ -47,7 +47,7 @@ func MigrateRepo(c *context.APIContext) {
 
 	// Check permission
 	if !c.User.IsAdmin && c.User.ID != ctxUser.ID {
-		if !ctxUser.IsOrganization() || !ctxUser.IsOwnedBy(c.User.ID) {
+		if !database.FromDomainUser(ctxUser).IsOrganization() || !database.FromDomainUser(ctxUser).IsOwnedBy(c.User.ID) {
 			c.Status(http.StatusForbidden)
 			return
 		}
@@ -65,7 +65,7 @@ func MigrateRepo(c *context.APIContext) {
 		}
 	}
 
-	repo, err := database.MigrateRepository(c.User, ctxUser, database.MigrateRepoOptions{
+	repo, err := database.MigrateRepository(c.User, database.FromDomainUser(ctxUser), database.MigrateRepoOptions{
 		Name:        f.RepoName,
 		Description: f.Description,
 		IsPrivate:     f.Private || conf.Repository.ForcePrivate,
@@ -98,5 +98,5 @@ func MigrateRepo(c *context.APIContext) {
 		log.Error("UpdateRepositoryLanguages after migration: %v", err)
 	}
 
-	c.JSON(http.StatusCreated, repo.APIFormat(ctxUser))
+	c.JSON(http.StatusCreated, repo.APIFormat(database.FromDomainUser(ctxUser)))
 }

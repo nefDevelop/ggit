@@ -12,6 +12,7 @@
   } from "lucide-svelte";
   import ReviewCommentComposer from "./ReviewCommentComposer.svelte";
   import MarkdownRenderer from "./ui/MarkdownRenderer.svelte";
+  import hljs from "highlight.js";
 
   let { diff, allowComments = false, comments = [], onAddComment, onResolveComment } = $props<{ 
     diff: any, 
@@ -55,6 +56,18 @@
         return "@@";
       default:
         return " ";
+    }
+  };
+  const highlightCode = (content: string, fileName: string) => {
+    if (!content) return "&nbsp;";
+    const ext = fileName.split('.').pop() || '';
+    try {
+      return hljs.highlight(content, { 
+        language: hljs.getLanguage(ext) ? ext : 'plaintext',
+        ignoreIllegals: true 
+      }).value;
+    } catch (e) {
+      return content;
     }
   };
 </script>
@@ -127,7 +140,7 @@
                       </div>
                       <div class="line-sign">{getLineSign(line.Type)}</div>
                       <div class="line-code">
-                        <pre><code>{line.Content}</code></pre>
+                        <pre class="hljs"><code>{@html highlightCode(line.Content, file.Name)}</code></pre>
                       </div>
                     </div>
 
@@ -307,8 +320,9 @@
     border-right: 1px solid var(--md-sys-color-outline-variant);
     opacity: 0.6;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-end;
+    padding-top: 2px;
   }
 
   .line-sign {
@@ -327,13 +341,15 @@
     flex: 1;
     padding: 0 10px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
   }
 
   .line-code pre {
     margin: 0;
     line-height: 1.6;
     color: var(--text-base);
+    background: transparent;
+    padding: 0;
   }
 
   .diff-line-wrapper {

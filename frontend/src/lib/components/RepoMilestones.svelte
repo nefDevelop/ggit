@@ -158,6 +158,7 @@
           <div class="interactive-hill-container">
             <svg 
               viewBox="0 0 100 45" 
+              preserveAspectRatio="none"
               class="hill-chart-edit"
               onclick={(e) => {
                 const svg = e.currentTarget;
@@ -250,7 +251,7 @@
             </div>
 
             <div class="hill-chart-display-box tonal">
-              <svg viewBox="0 0 100 45" class="hill-chart-large">
+              <svg viewBox="0 0 100 45" preserveAspectRatio="none" class="hill-chart-large">
                 <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
                 <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
                 <circle 

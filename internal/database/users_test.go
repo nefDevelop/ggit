@@ -338,7 +338,7 @@ func usersChangeUsername(t *testing.T, ctx context.Context, s *UsersStore) {
 	alice, err = s.GetByID(ctx, alice.ID)
 	require.NoError(t, err)
 	assert.Equal(t, newUsername, alice.Name)
-	assert.Equal(t, s.db.NowFunc().Unix(), alice.UpdatedUnix)
+	assert.Equal(t, s.db.NowFunc().Unix(), alice.Updated.Unix())
 
 	// Change the cases of the username should just be fine
 	err = s.ChangeUsername(ctx, alice.ID, strings.ToUpper(newUsername))

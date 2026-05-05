@@ -31,11 +31,15 @@ func Init(db *database.DB) {
 }
 
 func (s *authService) Authenticate(ctx context.Context, opts LoginOptions) (*database.User, error) {
-	return s.db.Users().Authenticate(ctx, opts.Username, opts.Password, opts.LoginSource)
+	u, err := s.db.Users().Authenticate(ctx, opts.Username, opts.Password, opts.LoginSource)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainUser(u), nil
 }
 
 func (s *authService) Register(ctx context.Context, opts SignupOptions) (*database.User, error) {
-	user, err := s.db.Users().Create(
+	du, err := s.db.Users().Create(
 		ctx,
 		opts.Username,
 		opts.Email,
@@ -47,6 +51,7 @@ func (s *authService) Register(ctx context.Context, opts SignupOptions) (*databa
 	if err != nil {
 		return nil, err
 	}
+	user := database.FromDomainUser(du)
 
 	// Auto-set admin for the only user.
 	if s.db.Users().Count(ctx) == 1 {

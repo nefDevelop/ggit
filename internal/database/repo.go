@@ -19,6 +19,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/nef734/ggit/internal/archiver"
+	"github.com/nef734/ggit/internal/fsx"
 	"golang.org/x/image/draw"
 	"gopkg.in/ini.v1"
 	"gorm.io/gorm"
@@ -29,6 +30,7 @@ import (
 	embedConf "github.com/nef734/ggit/conf"
 	"github.com/nef734/ggit/internal/avatar"
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/markup"
 	"github.com/nef734/ggit/internal/osx"
@@ -318,6 +320,145 @@ type Repository struct {
 	Topics      []string `gorm:"-" json:"-"`
 }
 
+func (r *Repository) ToDomain() *domain.Repository {
+	if r == nil {
+		return nil
+	}
+	return &domain.Repository{
+		ID:              r.ID,
+		OwnerID:         r.OwnerID,
+		Owner:           r.Owner.ToDomain(),
+		LowerName:       r.LowerName,
+		Name:            r.Name,
+		Description:     r.Description,
+		Website:         r.Website,
+		DefaultBranch:   r.DefaultBranch,
+		Size:            r.Size,
+		ProjectFolder:   r.ProjectFolder,
+		UseCustomAvatar: r.UseCustomAvatar,
+		NumWatches:      r.NumWatches,
+		NumStars:        r.NumStars,
+		NumForks:        r.NumForks,
+		NumIssues:       r.NumIssues,
+		NumClosedIssues: r.NumClosedIssues,
+		NumPulls:        r.NumPulls,
+		NumClosedPulls:  r.NumClosedPulls,
+		NumMilestones:   r.NumMilestones,
+		NumClosedMilestones: r.NumClosedMilestones,
+		NumCommits:      r.NumCommits,
+		NumBranches:     r.NumBranches,
+		IsPrivate:       r.IsPrivate,
+		IsFork:          r.IsFork,
+		IsUnlisted:      r.IsUnlisted,
+		IsBare:          r.IsBare,
+		IsArchived:      r.IsArchived,
+		IsMaintenance:   r.IsMaintenance,
+		EnableWiki:      r.EnableWiki,
+		AllowPublicWiki: r.AllowPublicWiki,
+		EnableExternalWiki: r.EnableExternalWiki,
+		ExternalWikiURL:  r.ExternalWikiURL,
+		WikiFolderName:   r.WikiFolderName,
+		ADRFolderName:    r.ADRFolderName,
+		EnableIssues:     r.EnableIssues,
+		AllowPublicIssues: r.AllowPublicIssues,
+		EnableExternalTracker: r.EnableExternalTracker,
+		ExternalTrackerURL:    r.ExternalTrackerURL,
+		ExternalTrackerFormat: r.ExternalTrackerFormat,
+		ExternalTrackerStyle:  r.ExternalTrackerStyle,
+		EnablePulls:           r.EnablePulls,
+		PullsIgnoreWhitespace: r.PullsIgnoreWhitespace,
+		PullsAllowRebase:      r.PullsAllowRebase,
+		PullsAllowManualMerge: r.PullsAllowManualMerge,
+		BlockMergeOnPendingReviews:          r.BlockMergeOnPendingReviews,
+		BlockMergeOnUnresolvedConversations: r.BlockMergeOnUnresolvedConversations,
+		RequiredApprovals:                   r.RequiredApprovals,
+		PrimaryLanguage:                     r.PrimaryLanguage,
+		Languages:                           r.Languages,
+		EnableSecretGuardian:                r.EnableSecretGuardian,
+		SecretGuardianStrict:                r.SecretGuardianStrict,
+		JanitorLastCheckUnix:                r.JanitorLastCheckUnix,
+		LastHealthCheckUnix:                 r.LastHealthCheckUnix,
+		CommitsSinceCheck:                   r.CommitsSinceCheck,
+		LastCommitUnix:                      r.LastCommitUnix,
+		LastIssueUnix:                       r.LastIssueUnix,
+		LastPullUnix:                        r.LastPullUnix,
+		LastBranchUnix:                      r.LastBranchUnix,
+		ForkID:                              r.ForkID,
+		BaseRepo:                            r.BaseRepo.ToDomain(),
+		Created:                             time.Unix(r.CreatedUnix, 0),
+		Updated:                             time.Unix(r.UpdatedUnix, 0),
+		Topics:                              r.Topics,
+	}
+}
+
+func FromDomainRepository(r *domain.Repository) *Repository {
+	if r == nil {
+		return nil
+	}
+	return &Repository{
+		ID:              r.ID,
+		OwnerID:         r.OwnerID,
+		LowerName:       r.LowerName,
+		Name:            r.Name,
+		Description:     r.Description,
+		Website:         r.Website,
+		DefaultBranch:   r.DefaultBranch,
+		Size:            r.Size,
+		ProjectFolder:   r.ProjectFolder,
+		UseCustomAvatar: r.UseCustomAvatar,
+		NumWatches:      r.NumWatches,
+		NumStars:        r.NumStars,
+		NumForks:        r.NumForks,
+		NumIssues:       r.NumIssues,
+		NumClosedIssues: r.NumClosedIssues,
+		NumPulls:        r.NumPulls,
+		NumClosedPulls:  r.NumClosedPulls,
+		NumMilestones:   r.NumMilestones,
+		NumClosedMilestones: r.NumClosedMilestones,
+		NumCommits:      r.NumCommits,
+		NumBranches:     r.NumBranches,
+		IsPrivate:       r.IsPrivate,
+		IsFork:          r.IsFork,
+		IsUnlisted:      r.IsUnlisted,
+		IsBare:          r.IsBare,
+		IsArchived:      r.IsArchived,
+		IsMaintenance:   r.IsMaintenance,
+		EnableWiki:      r.EnableWiki,
+		AllowPublicWiki: r.AllowPublicWiki,
+		EnableExternalWiki: r.EnableExternalWiki,
+		ExternalWikiURL:  r.ExternalWikiURL,
+		WikiFolderName:   r.WikiFolderName,
+		ADRFolderName:    r.ADRFolderName,
+		EnableIssues:     r.EnableIssues,
+		AllowPublicIssues: r.AllowPublicIssues,
+		EnableExternalTracker: r.EnableExternalTracker,
+		ExternalTrackerURL:    r.ExternalTrackerURL,
+		ExternalTrackerFormat: r.ExternalTrackerFormat,
+		ExternalTrackerStyle:  r.ExternalTrackerStyle,
+		EnablePulls:           r.EnablePulls,
+		PullsIgnoreWhitespace: r.PullsIgnoreWhitespace,
+		PullsAllowRebase:      r.PullsAllowRebase,
+		PullsAllowManualMerge: r.PullsAllowManualMerge,
+		BlockMergeOnPendingReviews:          r.BlockMergeOnPendingReviews,
+		BlockMergeOnUnresolvedConversations: r.BlockMergeOnUnresolvedConversations,
+		RequiredApprovals:                   r.RequiredApprovals,
+		PrimaryLanguage:                     r.PrimaryLanguage,
+		Languages:                           r.Languages,
+		EnableSecretGuardian:                r.EnableSecretGuardian,
+		SecretGuardianStrict:                r.SecretGuardianStrict,
+		JanitorLastCheckUnix:                r.JanitorLastCheckUnix,
+		LastHealthCheckUnix:                 r.LastHealthCheckUnix,
+		CommitsSinceCheck:                   r.CommitsSinceCheck,
+		LastCommitUnix:                      r.LastCommitUnix,
+		LastIssueUnix:                       r.LastIssueUnix,
+		LastPullUnix:                        r.LastPullUnix,
+		LastBranchUnix:                      r.LastBranchUnix,
+		ForkID:                              r.ForkID,
+		CreatedUnix:                         r.Created.Unix(),
+		UpdatedUnix:                         r.Updated.Unix(),
+	}
+}
+
 func (repos RepositoryList) LoadTopics(ctx context.Context) error {
 	if len(repos) == 0 {
 		return nil
@@ -479,10 +620,19 @@ func (r *Repository) UploadAvatar(data []byte) error {
 		return errors.Newf("decode image: %v", err)
 	}
 
-	_ = os.MkdirAll(conf.Picture.RepositoryAvatarUploadPath, os.ModePerm)
-	fw, err := os.Create(r.CustomAvatarPath())
+	avatarPath := r.CustomAvatarPath()
+	tempPath := avatarPath + ".tmp"
+
+	fsTx := fsx.NewTransaction()
+	defer fsTx.Rollback()
+
+	if err := os.MkdirAll(filepath.Dir(tempPath), os.ModePerm); err != nil {
+		return errors.Wrap(err, "mkdir temp path")
+	}
+
+	fw, err := os.Create(tempPath)
 	if err != nil {
-		return errors.Newf("create custom avatar directory: %v", err)
+		return errors.Newf("create custom avatar temp file: %v", err)
 	}
 	defer fw.Close()
 
@@ -491,8 +641,21 @@ func (r *Repository) UploadAvatar(data []byte) error {
 	if err = png.Encode(fw, dst); err != nil {
 		return errors.Newf("encode image: %v", err)
 	}
+	_ = fw.Close()
 
-	return nil
+	fsTx.StageCreate(tempPath, avatarPath)
+
+	err = Handle.db.Transaction(func(tx *gorm.DB) error {
+		return tx.Model(r).Updates(map[string]any{
+			"use_custom_avatar": true,
+			"updated_unix":      tx.NowFunc().Unix(),
+		}).Error
+	})
+	if err != nil {
+		return err
+	}
+
+	return fsTx.Commit()
 }
 
 // DeleteAvatar deletes the repository custom avatar.
@@ -757,7 +920,7 @@ func (r *Repository) GetAssigneeByID(userID int64) (*User, error) {
 	) {
 		return nil, ErrUserNotExist{args: errx.Args{"userID": userID}}
 	}
-	return Handle.Users().GetByID(ctx, userID)
+	return Handle.Users().getByID(ctx, userID)
 }
 
 // GetWriters returns all users that have write access to the repository.
@@ -782,6 +945,10 @@ func (r *Repository) repoPath(tx *gorm.DB) string {
 // Deprecated: Use repox.RepositoryPath instead.
 func (r *Repository) RepoPath() string {
 	return r.repoPath(Handle.db)
+}
+
+func (r *Repository) WikiPath() string {
+	return r.RepoPath() // Assuming wiki is now just a folder in the main repo as per recent changes
 }
 
 func (r *Repository) GitConfigPath() string {
@@ -1502,7 +1669,7 @@ func RepoPath(userName, repoName string) string {
 
 // TransferOwnership transfers all corresponding setting from old user to new one.
 func TransferOwnership(doer *User, newOwnerName string, repo *Repository) error {
-	newOwner, err := Handle.Users().GetByUsername(context.TODO(), newOwnerName)
+	newOwner, err := Handle.Users().getByUsername(context.TODO(), newOwnerName)
 	if err != nil {
 		return errors.Newf("get new owner '%s': %v", newOwnerName, err)
 	}
@@ -1762,12 +1929,14 @@ func DeleteRepository(ownerID, repoID int64) error {
 	}
 
 	// In case is a organization.
-	org, err := Handle.Users().GetByID(context.TODO(), ownerID)
+	org, err := Handle.Users().getByID(context.TODO(), ownerID)
 	if err != nil {
 		return err
 	}
 
-	attachmentPaths := make([]string, 0, 10)
+	fsTx := fsx.NewTransaction()
+	defer fsTx.Rollback()
+
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if org.IsOrganization() {
 			if err = org.getTeams(tx); err != nil {
@@ -1843,7 +2012,10 @@ func DeleteRepository(ownerID, repoID int64) error {
 				return err
 			}
 			for j := range attachments {
-				attachmentPaths = append(attachmentPaths, attachments[j].LocalPath())
+				p := attachments[j].LocalPath()
+				if err = fsTx.StageDelete(p, p+".trash"); err != nil {
+					return err
+				}
 			}
 
 			if err = tx.Where("issue_id=?", issues[i].ID).Delete(new(Attachment)).Error; err != nil {
@@ -1864,21 +2036,29 @@ func DeleteRepository(ownerID, repoID int64) error {
 		if err = tx.Model(new(User)).Where("id = ?", ownerID).Update("num_repos", gorm.Expr("num_repos-1")).Error; err != nil {
 			return err
 		}
+
+		// Stage repository and wiki files for deletion
+		repoPath := repo.RepoPath()
+		if err = fsTx.StageDelete(repoPath, repoPath+".trash"); err != nil {
+			return err
+		}
+
+		wikiPath := repo.WikiPath()
+		if osx.IsDir(wikiPath) {
+			if err = fsTx.StageDelete(wikiPath, wikiPath+".trash"); err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 	if err != nil {
 		return err
 	}
 
-	// Remove repository files.
-	repoPath := repo.RepoPath()
-	RemoveAllWithNotice("Delete repository files", repoPath)
-
-	repo.DeleteWiki()
-
-	// Remove attachment files.
-	for i := range attachmentPaths {
-		RemoveAllWithNotice("Delete attachment", attachmentPaths[i])
+	// Commit FS transaction after DB success
+	if err := fsTx.Commit(); err != nil {
+		log.Error("DeleteRepository [repo_id: %d]: commit fs transaction: %v", repoID, err)
 	}
 
 	if repo.NumForks > 0 {
@@ -1889,6 +2069,7 @@ func DeleteRepository(ownerID, repoID int64) error {
 
 	return nil
 }
+
 
 // GetRepositoryByRef returns a Repository specified by a GFM reference.
 // See https://help.github.com/articles/writing-on-github#references for more information on the syntax.

@@ -10,6 +10,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/repox"
 
@@ -134,18 +135,25 @@ type CreateRepoOptions struct {
 // ErrNameNotAllowed when the repository name is not allowed, or
 // ErrRepoAlreadyExist when a repository with same name already exists for the
 // owner.
-func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts CreateRepoOptions) (*Repository, error) {
-	err := isRepoNameAllowed(opts.Name)
+func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any) (*domain.Repository, error) {
+	var options CreateRepoOptions
+	if o, ok := opts.(CreateRepoOptions); ok {
+		options = o
+	} else {
+		return nil, errors.New("invalid options type")
+	}
+
+	err := isRepoNameAllowed(options.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = s.GetByName(ctx, ownerID, opts.Name)
+	_, err = s.getByName(ctx, ownerID, options.Name)
 	if err == nil {
 		return nil, ErrRepoAlreadyExist{
 			args: errx.Args{
 				"ownerID": ownerID,
-				"name":    opts.Name,
+				"name":    options.Name,
 			},
 		}
 	} else if !IsErrRepoNotExist(err) {
@@ -154,26 +162,26 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts Crea
 
 	repo := &Repository{
 		OwnerID:       ownerID,
-		LowerName:     strings.ToLower(opts.Name),
-		Name:          opts.Name,
-		Description:   opts.Description,
-		Website:       opts.Website,
-		DefaultBranch: opts.DefaultBranch,
-		IsPrivate:     opts.Private,
-		IsUnlisted:    opts.IsUnlisted,
-		EnableWiki:    opts.EnableWiki,
-		WikiFolderName: opts.WikiFolderName,
-		EnableIssues:   opts.EnableIssues,
-		EnablePulls:    opts.EnablePulls,
-		IsArchived:     opts.IsArchived,
-		IsFork:         opts.Fork,
-		ForkID:         opts.ForkID,
+		LowerName:     strings.ToLower(options.Name),
+		Name:          options.Name,
+		Description:   options.Description,
+		Website:       options.Website,
+		DefaultBranch: options.DefaultBranch,
+		IsPrivate:     options.Private,
+		IsUnlisted:    options.IsUnlisted,
+		EnableWiki:    options.EnableWiki,
+		WikiFolderName: options.WikiFolderName,
+		EnableIssues:   options.EnableIssues,
+		EnablePulls:    options.EnablePulls,
+		IsArchived:     options.IsArchived,
+		IsFork:         options.Fork,
+		ForkID:         options.ForkID,
 	}
-	if !opts.CreatedAt.IsZero() {
-		repo.CreatedUnix = opts.CreatedAt.Unix()
+	if !options.CreatedAt.IsZero() {
+		repo.CreatedUnix = options.CreatedAt.Unix()
 		repo.UpdatedUnix = repo.CreatedUnix
 	}
-	return repo, s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	return repo.ToDomain(), s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err = tx.Create(repo).Error
 		if err != nil {
 			return errors.Wrap(err, "create")
@@ -294,9 +302,7 @@ func (ErrRepoNotExist) NotFound() bool {
 	return true
 }
 
-// GetByID returns the repository with given ID. It returns ErrRepoNotExist when
-// not found.
-func (s *RepositoriesStore) GetByID(ctx context.Context, id int64) (*Repository, error) {
+func (s *RepositoriesStore) getByID(ctx context.Context, id int64) (*Repository, error) {
 	repo := new(Repository)
 	err := s.db.WithContext(ctx).Where("id = ?", id).First(repo).Error
 	if err != nil {
@@ -308,9 +314,17 @@ func (s *RepositoriesStore) GetByID(ctx context.Context, id int64) (*Repository,
 	return repo, nil
 }
 
-// GetByName returns the repository with given owner and name. It returns
-// ErrRepoNotExist when not found.
-func (s *RepositoriesStore) GetByName(ctx context.Context, ownerID int64, name string) (*Repository, error) {
+// GetByID returns the repository with given ID. It returns ErrRepoNotExist when
+// not found.
+func (s *RepositoriesStore) GetByID(ctx context.Context, id int64) (*domain.Repository, error) {
+	repo, err := s.getByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return repo.ToDomain(), nil
+}
+
+func (s *RepositoriesStore) getByName(ctx context.Context, ownerID int64, name string) (*Repository, error) {
 	repo := new(Repository)
 	err := s.db.WithContext(ctx).
 		Where("owner_id = ? AND lower_name = ?", ownerID, strings.ToLower(name)).
@@ -328,6 +342,16 @@ func (s *RepositoriesStore) GetByName(ctx context.Context, ownerID int64, name s
 		return nil, err
 	}
 	return repo, nil
+}
+
+// GetByName returns the repository with given owner and name. It returns
+// ErrRepoNotExist when not found.
+func (s *RepositoriesStore) GetByName(ctx context.Context, ownerID int64, name string) (*domain.Repository, error) {
+	repo, err := s.getByName(ctx, ownerID, name)
+	if err != nil {
+		return nil, err
+	}
+	return repo.ToDomain(), nil
 }
 
 func (s *RepositoriesStore) recountStars(tx *gorm.DB, userID, repoID int64) error {

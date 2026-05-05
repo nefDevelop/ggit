@@ -6,6 +6,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // ExploreRepos returns a list of repositories for the explore page.
@@ -114,18 +115,28 @@ func ExploreUsers(c *context.APIContext) {
 		err   error
 	)
 	if keyword == "" {
-		users, err = database.Handle.Users().List(c.Req.Context(), page, conf.UI.ExplorePagingNum)
+		var dus []*domain.User
+		dus, err = database.Handle.Users().List(c.Req.Context(), page, conf.UI.ExplorePagingNum)
 		if err != nil {
 			c.Error(err, "list users")
 			return
 		}
+		users = make([]*database.User, len(dus))
+		for i, du := range dus {
+			users[i] = database.FromDomainUser(du)
+		}
 		count = database.Handle.Users().Count(c.Req.Context())
 	} else {
-		users, count, err = database.Handle.Users().SearchByName(c.Req.Context(), keyword, page, conf.UI.ExplorePagingNum, "updated_unix DESC")
+		dus, cnt, err := database.Handle.Users().SearchByName(c.Req.Context(), keyword, page, conf.UI.ExplorePagingNum, "updated_unix DESC")
 		if err != nil {
 			c.Error(err, "search users by name")
 			return
 		}
+		users = make([]*database.User, len(dus))
+		for i, du := range dus {
+			users[i] = database.FromDomainUser(du)
+		}
+		count = cnt
 	}
 
 	apiUsers := make([]any, len(users))

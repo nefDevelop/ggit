@@ -32,6 +32,12 @@ func (s *mockStorage) Upload(_ lfsx.OID, rc io.ReadCloser) (int64, error) {
 	return io.Copy(s.buf, rc)
 }
 
+func (s *mockStorage) UploadTemp(_ lfsx.OID, rc io.ReadCloser) (int64, string, error) {
+	defer func() { _ = rc.Close() }()
+	n, err := io.Copy(s.buf, rc)
+	return n, "", err
+}
+
 func (s *mockStorage) Download(_ lfsx.OID, w io.Writer) error {
 	_, err := io.Copy(w, s.buf)
 	return err

@@ -138,7 +138,7 @@ func CreateRepo(c *context.APIContext) {
 	owner := c.User
 	if f.UID != 0 && f.UID != c.User.ID {
 		var err error
-		owner, err = database.Handle.Users().GetByID(c.Req.Context(), f.UID)
+		du, err := database.Handle.Users().GetByID(c.Req.Context(), f.UID)
 		if err != nil {
 			if database.IsErrUserNotExist(err) {
 				c.StatusError(http.StatusNotFound, "Owner not found.", err)
@@ -147,6 +147,7 @@ func CreateRepo(c *context.APIContext) {
 			}
 			return
 		}
+		owner = database.FromDomainUser(du)
 
 		// Check permission
 		if !c.User.IsAdmin {
@@ -494,7 +495,8 @@ func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit
 	for i := range oldCommits {
 		var u *database.User
 		if v, ok := emailToUsers[oldCommits[i].Author.Email]; !ok {
-			u, _ = usersStore.GetByEmail(ctx, oldCommits[i].Author.Email)
+			du, _ := usersStore.GetByEmail(ctx, oldCommits[i].Author.Email)
+			u = database.FromDomainUser(du)
 			emailToUsers[oldCommits[i].Author.Email] = u
 		} else {
 			u = v

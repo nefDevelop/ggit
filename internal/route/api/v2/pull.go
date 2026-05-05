@@ -256,7 +256,8 @@ func ListPullReviews(c *context.APIContext) {
 	// We should probably load reviewers too.
 	apiReviews := make([]*apiv2types.PullReviewResponse, len(reviews))
 	for i, r := range reviews {
-		r.Reviewer, _ = database.Handle.Users().GetByID(c.Req.Context(), r.ReviewerID)
+		du, _ := database.Handle.Users().GetByID(c.Req.Context(), r.ReviewerID)
+		r.Reviewer = database.FromDomainUser(du)
 		r.Comments, _ = database.Handle.PullReviewComments().ListByReviewID(c.Req.Context(), r.ID)
 		apiReviews[i] = r.APIFormat()
 	}

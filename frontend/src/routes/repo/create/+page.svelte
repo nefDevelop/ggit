@@ -222,7 +222,7 @@
         </div>
       {/if}
 
-      <section class="form-section tonal">
+      <section class="form-section island tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">id_card</span>
           <h2>{creationMode === 'new' ? 'Información Básica' : 'Origen y Destino'}</h2>
@@ -315,7 +315,7 @@
         </div>
       </section>
 
-      <section class="form-section tonal">
+      <section class="form-section island tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">visibility</span>
           <h2>Visibilidad</h2>
@@ -372,7 +372,7 @@
 
 
       {#if creationMode === 'new'}
-      <section class="form-section tonal">
+      <section class="form-section island tonal">
         <div class="section-header">
           <span class="material-symbols-rounded">settings</span>
           <h2>Inicialización</h2>
@@ -920,7 +920,7 @@
     color: var(--primary-color);
     background: var(--primary-surface);
     padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    border-radius: 1.5rem;
   }
 
   /* VISIBILITY SELECTOR */
@@ -988,7 +988,7 @@
     width: 24px;
     height: 24px;
     border: 2px solid var(--border-color);
-    border-radius: 6px;
+    border-radius: 10px;
     transition: all 0.2s;
     display: flex;
     align-items: center;

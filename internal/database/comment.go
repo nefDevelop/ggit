@@ -94,7 +94,7 @@ func (c *Comment) AfterFind(_ *gorm.DB) error {
 
 func (c *Comment) loadAttributes(tx *gorm.DB) (err error) {
 	if c.Poster == nil {
-		c.Poster, err = Handle.Users().GetByID(context.TODO(), c.PosterID)
+		c.Poster, err = Handle.Users().getByID(context.TODO(), c.PosterID)
 		if err != nil {
 			if IsErrUserNotExist(err) {
 				c.PosterID = -1

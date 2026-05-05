@@ -13,7 +13,7 @@ import (
 // GetOrg returns the organization profile.
 func GetOrg(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
 		if errx.IsNotFound(err) {
 			c.NotFound()
@@ -22,6 +22,7 @@ func GetOrg(c *context.APIContext) {
 		}
 		return
 	}
+	org := database.FromDomainUser(du)
 
 	if !org.IsOrganization() {
 		c.NotFound()
@@ -46,11 +47,13 @@ func GetOrg(c *context.APIContext) {
 // UpdateOrg updates the organization profile.
 func UpdateOrg(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	var f struct {
 		FullName    string `json:"full_name"`
@@ -83,11 +86,13 @@ func UpdateOrg(c *context.APIContext) {
 // DeleteOrg deletes the organization.
 func DeleteOrg(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	if err := database.DeleteOrganization(org); err != nil {
 		c.Error(err, "delete organization")
@@ -100,11 +105,13 @@ func DeleteOrg(c *context.APIContext) {
 // ListOrgMembers returns all members of the organization.
 func ListOrgMembers(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	members, err := database.GetOrgUsersByOrgID(org.ID, 0)
 	if err != nil {
@@ -120,11 +127,13 @@ func RemoveOrgMember(c *context.APIContext) {
 	orgName := c.Params("org")
 	userName := c.Params("username")
 
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
 	if err != nil {
@@ -147,11 +156,13 @@ func RemoveOrgMember(c *context.APIContext) {
 // ListOrgTeams returns all teams of the organization.
 func ListOrgTeams(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	teams, err := database.GetTeamsByOrgID(org.ID)
 	if err != nil {
@@ -191,11 +202,13 @@ func GetTeam(c *context.APIContext) {
 // CreateOrgTeam creates a new team in the organization.
 func CreateOrgTeam(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	var f struct {
 		Name        string `json:"name" binding:"required"`
@@ -378,11 +391,13 @@ func RemoveTeamRepo(c *context.APIContext) {
 // UpdateOrgAvatar updates the organization avatar.
 func UpdateOrgAvatar(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	var f struct {
 		Avatar *multipart.FileHeader `form:"avatar"`
@@ -425,11 +440,13 @@ func UpdateOrgAvatar(c *context.APIContext) {
 // DeleteOrgAvatar deletes the organization avatar.
 func DeleteOrgAvatar(c *context.APIContext) {
 	orgName := c.Params("org")
-	org, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), orgName)
 	if err != nil {
-		c.NotFoundOrError(err, "get organization")
+		c.Error(err, "get organization")
 		return
 	}
+	org := database.FromDomainUser(du)
+
 
 	if err := database.Handle.Users().DeleteCustomAvatar(c.Req.Context(), org.ID); err != nil {
 		c.Error(err, "delete avatar")

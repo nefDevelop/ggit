@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/fsx"
 	"github.com/nef734/ggit/internal/lfsx"
 )
 
@@ -55,6 +56,27 @@ func (s *LFSStore) CreateObject(ctx context.Context, repoID int64, oid lfsx.OID,
 		Storage: storage,
 	}
 	return s.db.WithContext(ctx).Create(object).Error
+}
+
+func (s *LFSStore) CreateObjectAtomic(ctx context.Context, repoID int64, oid lfsx.OID, size int64, storage lfsx.Storage, tempPath, finalPath string) error {
+	fsTx := fsx.NewTransaction()
+	fsTx.StageCreate(tempPath, finalPath)
+	defer fsTx.Rollback()
+
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		object := &LFSObject{
+			RepoID:  repoID,
+			OID:     oid,
+			Size:    size,
+			Storage: storage,
+		}
+		return tx.Create(object).Error
+	})
+	if err != nil {
+		return err
+	}
+
+	return fsTx.Commit()
 }
 
 type ErrLFSObjectNotExist struct {

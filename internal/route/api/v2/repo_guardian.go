@@ -5,6 +5,7 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // GetRepoGuardianSettings returns Secret Guardian settings for the repository.
@@ -63,7 +64,7 @@ func AddRepoGuardianPattern(c *context.APIContext) {
 		return
 	}
 
-	pattern := &database.SecretPattern{
+	pattern := &domain.SecretPattern{
 		Name:        f.Name,
 		Regex:       f.Regex,
 		Description: f.Description,
@@ -111,7 +112,7 @@ func AddAdminGuardianPattern(c *context.APIContext) {
 		return
 	}
 
-	pattern := &database.SecretPattern{
+	pattern := &domain.SecretPattern{
 		Name:        f.Name,
 		Regex:       f.Regex,
 		Description: f.Description,
@@ -135,3 +136,4 @@ func DeleteAdminGuardianPattern(c *context.APIContext) {
 	}
 	c.NoContent()
 }
+

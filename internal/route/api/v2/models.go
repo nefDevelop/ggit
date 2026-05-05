@@ -227,7 +227,7 @@ func ToCommitStatusResponse(s *database.CommitStatus) *types.CommitStatusRespons
 		TargetURL:   s.TargetURL,
 		Description: s.Description,
 		Context:     s.Context,
-		Creator:     ToUserResponse(u),
+		Creator:     ToUserResponse(database.FromDomainUser(u)),
 		CreatedAt:   time.Unix(s.CreatedAt, 0),
 		UpdatedAt:   time.Unix(s.UpdatedAt, 0),
 	}

@@ -17,10 +17,11 @@ func GetRepoWatchers(c *context.APIContext) {
 
 	users := make([]any, 0, len(watches))
 	for _, w := range watches {
-		u, err := database.Handle.Users().GetByID(c.Req.Context(), w.UserID)
+		du, err := database.Handle.Users().GetByID(c.Req.Context(), w.UserID)
 		if err != nil {
 			continue
 		}
+		u := database.FromDomainUser(du)
 		users = append(users, u.APIFormat())
 	}
 

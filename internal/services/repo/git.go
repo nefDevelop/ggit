@@ -97,7 +97,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 	return nil
 }
 
-func initRepoCommit(tmpDir string, sig *git.Signature) error {
+func initRepoCommit(tmpDir string, sig *git.Signature, branch string) error {
 	var stderr string
 	var err error
 	if _, stderr, err = process.ExecDir(-1,
@@ -115,7 +115,7 @@ func initRepoCommit(tmpDir string, sig *git.Signature) error {
 
 	if _, stderr, err = process.ExecDir(-1,
 		tmpDir, fmt.Sprintf("initRepoCommit (git push): %s", tmpDir),
-		"git", "push", "origin", conf.Repository.DefaultBranch); err != nil {
+		"git", "push", "origin", branch); err != nil {
 		return errors.Newf("git push: %s", stderr)
 	}
 	return nil
@@ -134,7 +134,7 @@ func initRepository(repoPath string, doer *database.User, repo *database.Reposit
 		repoPath,
 		git.SymbolicRefOptions{
 			Name: "HEAD",
-			Ref:  git.RefsHeads + conf.Repository.DefaultBranch,
+			Ref:  git.RefsHeads + repo.DefaultBranch,
 		},
 	)
 	if err != nil {
@@ -162,6 +162,7 @@ func initRepository(repoPath string, doer *database.User, repo *database.Reposit
 				Email: doer.Email,
 				When:  time.Now(),
 			},
+			repo.DefaultBranch,
 		)
 		if err != nil {
 			return errors.Newf("initRepoCommit: %v", err)

@@ -411,7 +411,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 		return errors.Wrap(err, "touch repository")
 	}
 
-	pusher, err := NewUsersStore(s.db).GetByUsername(ctx, opts.PusherName)
+	pusher, err := NewUsersStore(s.db).getByUsername(ctx, opts.PusherName)
 	if err != nil {
 		return errors.Wrapf(err, "get pusher [name: %s]", opts.PusherName)
 	}
@@ -560,7 +560,7 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts PushTagOptions) error {
 		return errors.Wrap(err, "touch repository")
 	}
 
-	pusher, err := NewUsersStore(s.db).GetByUsername(ctx, opts.PusherName)
+	pusher, err := NewUsersStore(s.db).getByUsername(ctx, opts.PusherName)
 	if err != nil {
 		return errors.Wrapf(err, "get pusher [name: %s]", opts.PusherName)
 	}
@@ -823,7 +823,7 @@ func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore *UsersStore, r
 func (pcs *PushCommits) AvatarLink(email string) string {
 	_, ok := pcs.avatars[email]
 	if !ok {
-		u, err := Handle.Users().GetByEmail(context.Background(), email)
+		u, err := Handle.Users().getByEmail(context.Background(), email)
 		if err != nil {
 			pcs.avatars[email] = tool.AvatarLink(email)
 			if !IsErrUserNotExist(err) {

@@ -219,7 +219,7 @@ func GetAdminUsers(c *context.APIContext) {
 
 	resp := make([]*apiv2types.UserResponse, len(users))
 	for i, u := range users {
-		resp[i] = ToUserResponse(u)
+		resp[i] = ToUserResponse(database.FromDomainUser(u))
 	}
 	c.JSON(http.StatusOK, resp)
 }
@@ -260,18 +260,18 @@ func CreateAdminUser(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, ToUserResponse(user))
+	c.JSON(http.StatusCreated, ToUserResponse(database.FromDomainUser(user)))
 }
 
 // GetAdminUser returns a user's information.
 func GetAdminUser(c *context.APIContext) {
 	userID := c.ParamsInt64("id")
-	user, err := database.Handle.Users().GetByID(c.Req.Context(), userID)
+	u, err := database.Handle.Users().GetByID(c.Req.Context(), userID)
 	if err != nil {
 		c.Error(err, "get user")
 		return
 	}
-	c.JSON(http.StatusOK, ToUserResponse(user))
+	c.JSON(http.StatusOK, ToUserResponse(database.FromDomainUser(u)))
 }
 
 // GetAdminRepos returns a list of all repositories.
@@ -327,11 +327,12 @@ func CreateAdminOrg(c *context.APIContext) {
 		return
 	}
 
-	owner, err := database.Handle.Users().GetByID(c.Req.Context(), f.OwnerID)
+	u, err := database.Handle.Users().GetByID(c.Req.Context(), f.OwnerID)
 	if err != nil {
 		c.StatusError(http.StatusNotFound, "Owner not found", err)
 		return
 	}
+	owner := database.FromDomainUser(u)
 
 	org := &database.User{
 		Name:     f.Username,

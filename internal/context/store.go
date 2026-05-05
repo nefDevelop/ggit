@@ -60,17 +60,33 @@ func (*store) TouchAccessTokenByID(ctx context.Context, id int64) error {
 }
 
 func (*store) GetUserByID(ctx context.Context, id int64) (*database.User, error) {
-	return database.Handle.Users().GetByID(ctx, id)
+	u, err := database.Handle.Users().GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainUser(u), nil
 }
 
 func (*store) GetUserByUsername(ctx context.Context, username string) (*database.User, error) {
-	return database.Handle.Users().GetByUsername(ctx, username)
+	u, err := database.Handle.Users().GetByUsername(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainUser(u), nil
 }
 
 func (*store) CreateUser(ctx context.Context, username, email string, opts database.CreateUserOptions) (*database.User, error) {
-	return database.Handle.Users().Create(ctx, username, email, opts)
+	u, err := database.Handle.Users().Create(ctx, username, email, opts)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainUser(u), nil
 }
 
 func (*store) AuthenticateUser(ctx context.Context, login, password string, loginSourceID int64) (*database.User, error) {
-	return database.Handle.Users().Authenticate(ctx, login, password, loginSourceID)
+	u, err := database.Handle.Users().Authenticate(ctx, login, password, loginSourceID)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainUser(u), nil
 }

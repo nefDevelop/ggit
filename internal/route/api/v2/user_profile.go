@@ -11,11 +11,13 @@ import (
 // GetUserProfile returns the public profile of a user.
 func GetUserProfile(c *context.APIContext) {
 	username := c.Params("username")
-	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
 	if err != nil {
-		c.NotFoundOrError(err, "get user by username")
+		c.NotFoundOrError(err, "get user")
 		return
 	}
+	user := database.FromDomainUser(du)
+
 
 	c.JSON(http.StatusOK, user.APIFormat())
 }
@@ -23,11 +25,13 @@ func GetUserProfile(c *context.APIContext) {
 // GetUserPublicRepositories returns a list of public repositories for the given user.
 func GetUserPublicRepositories(c *context.APIContext) {
 	username := c.Params("username")
-	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
 	if err != nil {
-		c.NotFoundOrError(err, "get user by username")
+		c.NotFoundOrError(err, "get user")
 		return
 	}
+	user := database.FromDomainUser(du)
+
 
 	repos, err := database.GetUserRepositories(&database.UserRepoOptions{
 		UserID:   user.ID,
@@ -51,11 +55,13 @@ func GetUserPublicRepositories(c *context.APIContext) {
 // GetUserStars returns a list of repositories starred by the given user.
 func GetUserStars(c *context.APIContext) {
 	username := c.Params("username")
-	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
 	if err != nil {
-		c.NotFoundOrError(err, "get user by username")
+		c.NotFoundOrError(err, "get user")
 		return
 	}
+	user := database.FromDomainUser(du)
+
 
 	repos, err := database.Handle.Repositories().ListStarred(c.Req.Context(), user.ID, 1, 50)
 	if err != nil {
@@ -75,11 +81,13 @@ func GetUserStars(c *context.APIContext) {
 // GetUserPublicOrganizations returns a list of public organizations for the given user.
 func GetUserPublicOrganizations(c *context.APIContext) {
 	username := c.Params("username")
-	user, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), username)
 	if err != nil {
-		c.NotFoundOrError(err, "get user by username")
+		c.NotFoundOrError(err, "get user")
 		return
 	}
+	user := database.FromDomainUser(du)
+
 
 	orgs, err := database.Handle.Organizations().List(c.Req.Context(), database.ListOrgsOptions{
 		MemberID:              user.ID,

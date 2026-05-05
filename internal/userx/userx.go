@@ -53,20 +53,19 @@ func CustomAvatarPath(userID int64) string {
 }
 
 
-// SaveAvatar saves the given avatar for the user.
-func SaveAvatar(userID int64, data []byte) error {
+// SaveAvatarToPath saves the given avatar to the specified path.
+func SaveAvatarToPath(path string, data []byte) error {
 	img, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
 		return errors.Wrap(err, "decode image")
 	}
 
-	avatarPath := CustomAvatarPath(userID)
-	err = os.MkdirAll(filepath.Dir(avatarPath), os.ModePerm)
+	err = os.MkdirAll(filepath.Dir(path), os.ModePerm)
 	if err != nil {
 		return errors.Wrap(err, "create avatar directory")
 	}
 
-	f, err := os.Create(avatarPath)
+	f, err := os.Create(path)
 	if err != nil {
 		return errors.Wrap(err, "create avatar file")
 	}
@@ -78,6 +77,11 @@ func SaveAvatar(userID int64, data []byte) error {
 		return errors.Wrap(err, "encode avatar image to file")
 	}
 	return nil
+}
+
+// SaveAvatar saves the given avatar for the user.
+func SaveAvatar(userID int64, data []byte) error {
+	return SaveAvatarToPath(CustomAvatarPath(userID), data)
 }
 
 // EncodePassword encodes password using PBKDF2 SHA256 with given salt.

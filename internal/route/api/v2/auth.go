@@ -249,11 +249,12 @@ func LoginTwoFactor(c *context.APIContext) {
 		return
 	}
 
-	u, err := database.Handle.Users().GetByID(c.Req.Context(), userID)
+	du, err := database.Handle.Users().GetByID(c.Req.Context(), userID)
 	if err != nil {
 		c.Error(err, "get user by ID")
 		return
 	}
+	u := database.FromDomainUser(du)
 
 	// Prevent same passcode from being reused
 	if c.Cache.IsExist(userx.TwoFactorCacheKey(u.ID, payload.Passcode)) {
@@ -336,7 +337,7 @@ func ForgotPassword(c *context.APIContext) {
 		return
 	}
 
-	if !u.IsLocal() {
+	if !database.FromDomainUser(u).IsLocal() {
 		c.StatusError(http.StatusForbidden, "Non-local accounts cannot reset passwords here.", nil)
 		return
 	}
@@ -346,7 +347,7 @@ func ForgotPassword(c *context.APIContext) {
 		return
 	}
 
-	if err = email.SendResetPasswordMail(database.NewMailerUser(u), c.Tr("mail.reset_password")); err != nil {
+	if err = email.SendResetPasswordMail(database.NewMailerUser(database.FromDomainUser(u)), c.Tr("mail.reset_password")); err != nil {
 		log.Error("Failed to send reset password mail: %v", err)
 	}
 	if err = c.Cache.Put(userx.MailResendCacheKey(u.ID), 1, 180); err != nil {
@@ -368,7 +369,7 @@ func parseUserFromCode(code string) *database.User {
 	hexStr := code[tool.TimeLimitCodeLength:]
 	if b, err := hex.DecodeString(hexStr); err == nil {
 		if user, err := database.Handle.Users().GetByUsername(gocontext.TODO(), string(b)); user != nil {
-			return user
+			return database.FromDomainUser(user)
 		} else if !database.IsErrUserNotExist(err) {
 			log.Error("Failed to get user by name %q: %v", string(b), err)
 		}

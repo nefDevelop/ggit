@@ -110,11 +110,12 @@ func GetRepoCollaborators(c *context.APIContext) {
 // AddRepoCollaborator adds a new collaborator to the repository.
 func AddRepoCollaborator(c *context.APIContext) {
 	userName := c.Params("collaborator")
-	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
 	if err != nil {
 		c.NotFoundOrError(err, "get user by name")
 		return
 	}
+	u := database.FromDomainUser(du)
 
 	if err = c.Repo.Repository.AddCollaborator(u); err != nil {
 		c.Error(err, "add collaborator")
@@ -129,11 +130,12 @@ func AddRepoCollaborator(c *context.APIContext) {
 // UpdateRepoCollaborator updates the collaborator's access mode.
 func UpdateRepoCollaborator(c *context.APIContext) {
 	userName := c.Params("collaborator")
-	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
 	if err != nil {
 		c.NotFoundOrError(err, "get user by name")
 		return
 	}
+	u := database.FromDomainUser(du)
 
 	var f struct {
 		Mode int `json:"mode" binding:"required"`
@@ -156,11 +158,12 @@ func UpdateRepoCollaborator(c *context.APIContext) {
 // DeleteRepoCollaborator deletes a collaborator from the repository.
 func DeleteRepoCollaborator(c *context.APIContext) {
 	userName := c.Params("collaborator")
-	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
+	du, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
 	if err != nil {
 		c.NotFoundOrError(err, "get user by name")
 		return
 	}
+	u := database.FromDomainUser(du)
 
 	if err = c.Repo.Repository.DeleteCollaboration(u.ID); err != nil {
 		c.Error(err, "delete collaboration")

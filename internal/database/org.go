@@ -69,7 +69,7 @@ func (org *User) GetOrgOwner() (*User, error) {
 		}
 		return nil, err
 	}
-	return Handle.Users().GetByID(context.TODO(), ou.UID)
+	return Handle.Users().getByID(context.TODO(), ou.UID)
 }
 
 // GetMembers returns all members of organization.
@@ -81,7 +81,7 @@ func (org *User) GetMembers(limit int) error {
 
 	org.Members = make([]*User, len(ous))
 	for i, ou := range ous {
-		org.Members[i], err = Handle.Users().GetByID(context.TODO(), ou.UID)
+		org.Members[i], err = Handle.Users().getByID(context.TODO(), ou.UID)
 		if err != nil {
 			return err
 		}
@@ -379,11 +379,11 @@ func RemoveOrgUser(orgID, userID int64) error {
 		return errors.Newf("get org-user: %v", err)
 	}
 
-	user, err := Handle.Users().GetByID(context.TODO(), userID)
+	user, err := Handle.Users().getByID(context.TODO(), userID)
 	if err != nil {
 		return errors.Newf("GetUserByID [%d]: %v", userID, err)
 	}
-	org, err := Handle.Users().GetByID(context.TODO(), orgID)
+	org, err := Handle.Users().getByID(context.TODO(), orgID)
 	if err != nil {
 		return errors.Newf("GetUserByID [%d]: %v", orgID, err)
 	}

@@ -25,6 +25,8 @@ type Storager interface {
 	// The reader is closed once upload is finished. ErrInvalidOID is returned
 	// if the given oid is not valid.
 	Upload(oid OID, rc io.ReadCloser) (int64, error)
+	// UploadTemp is like Upload but returns the temporary path instead of publishing it.
+	UploadTemp(oid OID, rc io.ReadCloser) (int64, string, error)
 	// Download streams content of given oid to the io.Writer. It is caller's
 	// responsibility the close the writer when needed. ErrObjectNotExist is
 	// returned if the given oid does not exist.
@@ -61,8 +63,24 @@ func (s *LocalStorage) storagePath(oid OID) string {
 }
 
 func (s *LocalStorage) Upload(oid OID, rc io.ReadCloser) (int64, error) {
+	written, tmpPath, err := s.UploadTemp(oid, rc)
+	if err != nil {
+		return 0, err
+	}
+	if tmpPath == "" {
+		return written, nil // Already exists
+	}
+	defer os.Remove(tmpPath)
+
+	if err := s.Publish(oid, tmpPath); err != nil {
+		return 0, err
+	}
+	return written, nil
+}
+
+func (s *LocalStorage) UploadTemp(oid OID, rc io.ReadCloser) (int64, string, error) {
 	if !ValidOID(oid) {
-		return 0, ErrInvalidOID
+		return 0, "", ErrInvalidOID
 	}
 
 	fpath := s.storagePath(oid)
@@ -71,28 +89,25 @@ func (s *LocalStorage) Upload(oid OID, rc io.ReadCloser) (int64, error) {
 	defer rc.Close()
 
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return 0, errors.Wrap(err, "create directories")
+		return 0, "", errors.Wrap(err, "create directories")
 	}
 
 	// If the object file already exists, skip the upload and return the
 	// existing file's size.
 	if fi, err := os.Stat(fpath); err == nil {
 		_, _ = io.Copy(io.Discard, rc)
-		return fi.Size(), nil
+		return fi.Size(), "", nil
 	}
 
 	// Write to a temp file and verify the content hash before publishing.
-	// This ensures the final path always contains a complete, hash-verified
-	// file, even when concurrent uploads of the same OID race.
 	if err := os.MkdirAll(s.TempDir, os.ModePerm); err != nil {
-		return 0, errors.Wrap(err, "create temp directory")
+		return 0, "", errors.Wrap(err, "create temp directory")
 	}
 	tmp, err := os.CreateTemp(s.TempDir, "upload-*")
 	if err != nil {
-		return 0, errors.Wrap(err, "create temp file")
+		return 0, "", errors.Wrap(err, "create temp file")
 	}
 	tmpPath := tmp.Name()
-	defer os.Remove(tmpPath)
 
 	hash := sha256.New()
 	written, err := io.Copy(tmp, io.TeeReader(rc, hash))
@@ -100,17 +115,28 @@ func (s *LocalStorage) Upload(oid OID, rc io.ReadCloser) (int64, error) {
 		err = closeErr
 	}
 	if err != nil {
-		return 0, errors.Wrap(err, "write object file")
+		_ = os.Remove(tmpPath)
+		return 0, "", errors.Wrap(err, "write object file")
 	}
 
 	if computed := hex.EncodeToString(hash.Sum(nil)); computed != string(oid) {
-		return 0, ErrOIDMismatch
+		_ = os.Remove(tmpPath)
+		return 0, "", ErrOIDMismatch
 	}
 
-	if err := os.Rename(tmpPath, fpath); err != nil && !os.IsExist(err) {
-		return 0, errors.Wrap(err, "publish object file")
+	return written, tmpPath, nil
+}
+
+func (s *LocalStorage) Publish(oid OID, tempPath string) error {
+	fpath := s.storagePath(oid)
+	if err := os.Rename(tempPath, fpath); err != nil && !os.IsExist(err) {
+		return errors.Wrap(err, "publish object file")
 	}
-	return written, nil
+	return nil
+}
+
+func (s *LocalStorage) StoragePath(oid OID) string {
+	return s.storagePath(oid)
 }
 
 func (s *LocalStorage) Download(oid OID, w io.Writer) error {

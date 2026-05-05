@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -94,7 +95,7 @@ func (h *basicHandler) serveUpload(c *gin.Context) {
 	}
 
 	s := h.DefaultStorager()
-	written, err := s.Upload(oid, c.Request.Body)
+	written, tmpPath, err := s.UploadTemp(oid, c.Request.Body)
 	if err != nil {
 		if err == lfsx.ErrInvalidOID || err == lfsx.ErrOIDMismatch {
 			responseJSON(c.Writer, http.StatusBadRequest, responseError{
@@ -107,11 +108,15 @@ func (h *basicHandler) serveUpload(c *gin.Context) {
 		return
 	}
 
-	err = h.store.CreateLFSObject(c.Request.Context(), repo.ID, oid, written, s.Storage())
+	if tmpPath != "" {
+		defer os.Remove(tmpPath)
+		finalPath := s.(*lfsx.LocalStorage).StoragePath(oid)
+		err = database.Handle.LFS().CreateObjectAtomic(c.Request.Context(), repo.ID, oid, written, s.Storage(), tmpPath, finalPath)
+	} else {
+		err = h.store.CreateLFSObject(c.Request.Context(), repo.ID, oid, written, s.Storage())
+	}
+
 	if err != nil {
-		// NOTE: It is OK to leave the file when the whole operation failed
-		// with a DB error, a retry on client side will skip the upload as
-		// the file already exists on disk.
 		internalServerError(c.Writer)
 		log.Error("Failed to create object [repo_id: %d, oid: %s]: %v", repo.ID, oid, err)
 		return

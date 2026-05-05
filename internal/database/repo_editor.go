@@ -17,9 +17,11 @@ import (
 
 	"github.com/gogs/git-module"
 	"gorm.io/gorm"
+	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/fsx"
 	"github.com/nef734/ggit/internal/gitx"
 	"github.com/nef734/ggit/internal/iox"
 	"github.com/nef734/ggit/internal/osx"
@@ -142,7 +144,7 @@ type UpdateRepoFileOptions struct {
 }
 
 // UpdateRepoFile adds or updates a file in repository.
-func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) error {
+func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) (err error) {
 	// 🚨 SECURITY: Prevent Path Traversal
 	if strings.Contains(opts.NewTreeName, "..") || strings.HasPrefix(opts.NewTreeName, "/") ||
 		strings.Contains(opts.OldTreeName, "..") || strings.HasPrefix(opts.OldTreeName, "/") {
@@ -170,6 +172,16 @@ func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) erro
 	if hasSymlinkInPath(localPath, opts.OldTreeName) || hasSymlinkInPath(localPath, opts.NewTreeName) {
 		return errors.New("cannot update file with symbolic link in path")
 	}
+
+	// Use git reset for basic atomic consistency of local copy
+	if err := git.Add(localPath, git.AddOptions{All: true}); err == nil {
+		_ = git.Reset(localPath, "HEAD", git.ResetOptions{Hard: true})
+	}
+	defer func() {
+		if err != nil {
+			_ = git.Reset(localPath, "HEAD", git.ResetOptions{Hard: true})
+		}
+	}()
 
 	repoPath := r.RepoPath()
 	if opts.OldBranch != opts.NewBranch {
@@ -217,7 +229,7 @@ func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) erro
 	if err := git.Add(localPath, git.AddOptions{All: true}); err != nil {
 		return errors.Newf("git add --all: %v", err)
 	}
-	err := git.CreateCommit(
+	err = git.CreateCommit(
 		localPath,
 		&git.Signature{
 			Name:  doer.DisplayName(),
@@ -357,6 +369,16 @@ func (r *Repository) DeleteRepoFile(doer *User, opts DeleteRepoFileOptions) (err
 		return errors.New("cannot update file with symbolic link in path")
 	}
 
+	// Use git reset for basic atomic consistency of local copy
+	if err := git.Add(localPath, git.AddOptions{All: true}); err == nil {
+		_ = git.Reset(localPath, "HEAD", git.ResetOptions{Hard: true})
+	}
+	defer func() {
+		if err != nil {
+			_ = git.Reset(localPath, "HEAD", git.ResetOptions{Hard: true})
+		}
+	}()
+
 	if opts.OldBranch != opts.NewBranch {
 		if err := r.CheckoutNewBranch(opts.OldBranch, opts.NewBranch); err != nil {
 			return errors.Newf("checkout new branch[%s] from old branch[%s]: %v", opts.NewBranch, opts.OldBranch, err)
@@ -444,11 +466,15 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 	}
 
 	localPath := upload.LocalPath()
-	if err = os.MkdirAll(path.Dir(localPath), os.ModePerm); err != nil {
+	tempPath := localPath + ".tmp"
+	if err = os.MkdirAll(path.Dir(tempPath), os.ModePerm); err != nil {
 		return nil, errors.Newf("mkdir all: %v", err)
 	}
 
-	fw, err := os.Create(localPath)
+	fsTx := fsx.NewTransaction()
+	defer fsTx.Rollback()
+
+	fw, err := os.Create(tempPath)
 	if err != nil {
 		return nil, errors.Newf("create: %v", err)
 	}
@@ -459,9 +485,16 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 	} else if _, err = io.Copy(fw, file); err != nil {
 		return nil, errors.Newf("copy: %v", err)
 	}
+	_ = fw.Close()
+
+	fsTx.StageCreate(tempPath, localPath)
 
 	if err = Handle.db.Create(upload).Error; err != nil {
 		return nil, err
+	}
+
+	if err = fsTx.Commit(); err != nil {
+		return nil, errors.Wrap(err, "commit fs transaction")
 	}
 
 	return upload, nil
@@ -495,6 +528,9 @@ func DeleteUploads(uploads ...*Upload) (err error) {
 		return nil
 	}
 
+	fsTx := fsx.NewTransaction()
+	defer fsTx.Rollback()
+
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		ids := make([]int64, len(uploads))
 		for i := range uploads {
@@ -510,13 +546,17 @@ func DeleteUploads(uploads ...*Upload) (err error) {
 				continue
 			}
 
-			if err := os.Remove(localPath); err != nil {
-				return errors.Newf("remove upload: %v", err)
+			if err := fsTx.StageDelete(localPath, localPath+".trash"); err != nil {
+				return errors.Wrap(err, "stage delete")
 			}
 		}
 		return nil
 	})
-	return err
+	if err != nil {
+		return err
+	}
+
+	return fsTx.Commit()
 }
 
 func DeleteUpload(u *Upload) error {
@@ -604,6 +644,9 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 		return err
 	}
 
+	fsTx := fsx.NewTransaction()
+	defer fsTx.Rollback()
+
 	// Copy uploaded files into repository
 	for _, upload := range uploads {
 		tmpPath := upload.LocalPath()
@@ -629,6 +672,11 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 
 		if err = iox.CopyFile(tmpPath, targetPath); err != nil {
 			return errors.Newf("copy: %v", err)
+		}
+
+		// Stage deletion of temporary upload file
+		if err = fsTx.StageDelete(tmpPath, tmpPath+".trash"); err != nil {
+			return errors.Wrap(err, "stage upload cleanup")
 		}
 	}
 
@@ -665,6 +713,11 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 	)
 	if err != nil {
 		return errors.Newf("git push origin %s: %v", opts.NewBranch, err)
+	}
+
+	// If push succeeds, commit FS transaction (delete temp uploads) and DB cleanup
+	if err = fsTx.Commit(); err != nil {
+		log.Error("UploadRepoFiles [repo_id: %d]: commit fs transaction: %v", r.ID, err)
 	}
 
 	return DeleteUploads(uploads...)

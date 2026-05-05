@@ -129,7 +129,7 @@ func GetDashboardFeeds(c *context.APIContext) {
 		if _, ok := unameAvatars[act.ActUserName]; !ok {
 			u, err := database.Handle.Users().GetByUsername(c.Req.Context(), act.ActUserName)
 			if err == nil {
-				unameAvatars[act.ActUserName] = u.AvatarURLPath()
+				unameAvatars[act.ActUserName] = database.FromDomainUser(u).AvatarURLPath()
 			}
 		}
 		act.ActAvatar = unameAvatars[act.ActUserName]

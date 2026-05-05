@@ -15,7 +15,9 @@ import (
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	"github.com/nef734/ggit/internal/fsx"
 	"github.com/nef734/ggit/internal/lazyregexp"
 	"github.com/nef734/ggit/internal/markup"
 	"github.com/nef734/ggit/internal/osx"
@@ -25,16 +27,16 @@ import (
 	"github.com/nef734/ggit/internal/userx"
 )
 
-// userListFields are the columns used for listing users/organizations.
+// UserListFields are the columns used for listing Users/organizations.
 // We avoid 'passwd', 'salt', 'rands', etc. for security and to save RAM.
-const userListFields = "user.id, user.lower_name, user.name, user.full_name, user.email, user.type, user.location, user.website, user.avatar, user.avatar_email, user.use_custom_avatar, user.num_stars, user.num_repos, user.description, user.num_teams, user.num_members, user.created_unix, user.updated_unix, user.is_admin, user.is_active, user.prohibit_login"
+const UserListFields = "User.id, User.lower_name, User.name, User.full_name, User.email, User.type, User.location, User.website, User.avatar, User.avatar_email, User.use_custom_avatar, User.num_stars, User.num_repos, User.description, User.num_teams, User.num_members, User.created_unix, User.updated_unix, User.is_admin, User.is_active, User.prohibit_login"
 
 var (
-	// alphaDashDotPattern represents a regex for valid username/email characters.
+	// alphaDashDotPattern represents a regex for valid Username/email characters.
 	alphaDashDotPattern = lazyregexp.New(`[^\d\w\-_.]`)
 )
 
-// UsersStore is the storage layer for users.
+// UsersStore is the storage layer for Users.
 type UsersStore struct {
 	db *gorm.DB
 }
@@ -57,18 +59,18 @@ func (err ErrLoginSourceMismatch) Error() string {
 	return fmt.Sprintf("login source mismatch: %v", err.args)
 }
 
-// Authenticate validates username and password via given login source ID. It
-// returns ErrUserNotExist when the user was not found.
+// Authenticate validates Username and password via given login source ID. It
+// returns ErrUserNotExist when the User was not found.
 //
 // When the "loginSourceID" is negative, it aborts the process and returns
-// ErrUserNotExist if the user was not found in the database.
+// ErrUserNotExist if the User was not found in the database.
 //
 // When the "loginSourceID" is non-negative, it returns ErrLoginSourceMismatch
-// if the user has different login source ID than the "loginSourceID".
+// if the User has different login source ID than the "loginSourceID".
 //
 // When the "loginSourceID" is positive, it tries to authenticate via given
-// login source and creates a new user when not yet exists in the database.
-func (s *UsersStore) Authenticate(ctx context.Context, login, password string, loginSourceID int64) (*User, error) {
+// login source and creates a new User when not yet exists in the database.
+func (s *UsersStore) Authenticate(ctx context.Context, login, password string, loginSourceID int64) (*domain.User, error) {
 	login = strings.ToLower(login)
 
 	query := s.db.WithContext(ctx)
@@ -78,33 +80,33 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 		query = query.Where("lower_name = ?", login)
 	}
 
-	user := new(User)
-	err := query.First(user).Error
+	u := new(User)
+	err := query.First(u).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, errors.Wrap(err, "get user")
+		return nil, errors.Wrap(err, "get User")
 	}
 
-	var authSourceID int64 // The login source ID will be used to authenticate the user
-	createNewUser := false // Whether to create a new user after successful authentication
+	var authSourceID int64 // The login source ID will be used to authenticate the User
+	createNewUser := false // Whether to create a new User after successful authentication
 
 	// User found in the database
 	if err == nil {
-		// Note: This check is unnecessary but to reduce user confusion at login page
-		// and make it more consistent from user's perspective.
-		if loginSourceID >= 0 && user.LoginSource != loginSourceID {
-			return nil, ErrLoginSourceMismatch{args: errx.Args{"expect": loginSourceID, "actual": user.LoginSource}}
+		// Note: This check is unnecessary but to reduce User confusion at login page
+		// and make it more consistent from User's perspective.
+		if loginSourceID >= 0 && u.LoginSource != loginSourceID {
+			return nil, ErrLoginSourceMismatch{args: errx.Args{"expect": loginSourceID, "actual": u.LoginSource}}
 		}
 
 		// Validate password hash fetched from database for local accounts.
-		if user.IsLocal() {
-			if userx.ValidatePassword(user.Password, user.Salt, password) {
-				return user, nil
+		if u.LoginSource <= 0 { // IsLocal
+			if userx.ValidatePassword(u.Password, u.Salt, password) {
+				return u.ToDomain(), nil
 			}
 
-			return nil, auth.ErrBadCredentials{Args: map[string]any{"login": login, "userID": user.ID}}
+			return nil, auth.ErrBadCredentials{Args: map[string]any{"login": login, "UserID": u.ID}}
 		}
 
-		authSourceID = user.LoginSource
+		authSourceID = u.LoginSource
 
 	} else {
 		// Non-local login source is always greater than 0.
@@ -131,15 +133,15 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 	}
 
 	if !createNewUser {
-		return user, nil
+		return u.ToDomain(), nil
 	}
 
-	// Validate username make sure it satisfies requirement.
+	// Validate Username make sure it satisfies requirement.
 	if alphaDashDotPattern.MatchString(extAccount.Name) {
-		return nil, errors.Newf("invalid pattern for attribute 'username' [%s]: must be valid alpha or numeric or dash(-_) or dot characters", extAccount.Name)
+		return nil, errors.Newf("invalid pattern for attribute 'Username' [%s]: must be valid alpha or numeric or dash(-_) or dot characters", extAccount.Name)
 	}
 
-	return s.Create(ctx, extAccount.Name, extAccount.Email,
+	createdUser, err := s.Create(ctx, extAccount.Name, extAccount.Email,
 		CreateUserOptions{
 			FullName:    extAccount.FullName,
 			LoginSource: authSourceID,
@@ -148,21 +150,24 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 			Website:     extAccount.Website,
 			Activated:   true,
 			Admin:       extAccount.Admin,
-		},
-	)
+		})
+	if err != nil {
+		return nil, err
+	}
+	return createdUser, nil
 }
 
-// ChangeUsername changes the username of the given user and updates all
-// references to the old username. It returns ErrNameNotAllowed if the given
-// name or pattern of the name is not allowed as a username, or
-// ErrUserAlreadyExist when another user with same name already exists.
-func (s *UsersStore) ChangeUsername(ctx context.Context, userID int64, newUsername string) error {
+// ChangeUsername changes the Username of the given User and updates all
+// references to the old Username. It returns ErrNameNotAllowed if the given
+// name or pattern of the name is not allowed as a Username, or
+// ErrUserAlreadyExist when another User with same name already exists.
+func (s *UsersStore) ChangeUsername(ctx context.Context, UserID int64, newUsername string) error {
 	err := isUsernameAllowed(newUsername)
 	if err != nil {
 		return err
 	}
 
-	if s.IsUsernameUsed(ctx, newUsername, userID) {
+	if s.IsUsernameUsed(ctx, newUsername, UserID) {
 		return ErrUserAlreadyExist{
 			args: errx.Args{
 				"name": newUsername,
@@ -170,39 +175,39 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, userID int64, newUserna
 		}
 	}
 
-	user, err := s.GetByID(ctx, userID)
+	u, err := s.getByID(ctx, UserID)
 	if err != nil {
-		return errors.Wrap(err, "get user")
+		return errors.Wrap(err, "get User")
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err := tx.Model(&User{}).
-			Where("id = ?", user.ID).
+			Where("id = ?", u.ID).
 			Updates(map[string]any{
 				"lower_name":   strings.ToLower(newUsername),
 				"name":         newUsername,
 				"updated_unix": tx.NowFunc().Unix(),
 			}).Error
 		if err != nil {
-			return errors.Wrap(err, "update user name")
+			return errors.Wrap(err, "update User name")
 		}
 
-		// Stop here if it's just a case-change of the username
-		if strings.EqualFold(user.Name, newUsername) {
+		// Stop here if it's just a case-change of the Username
+		if strings.EqualFold(u.Name, newUsername) {
 			return nil
 		}
 
-		// Update all references to the user name in pull requests
+		// Update all references to the User name in pull requests
 		err = tx.Model(&PullRequest{}).
-			Where("head_user_name = ?", user.LowerName).
-			Update("head_user_name", strings.ToLower(newUsername)).
+			Where("head_User_name = ?", u.LowerName).
+			Update("head_User_name", strings.ToLower(newUsername)).
 			Error
 		if err != nil {
-			return errors.Wrap(err, `update "pull_request.head_user_name"`)
+			return errors.Wrap(err, `update "pull_request.head_User_name"`)
 		}
 
-		// Delete local copies of repositories and their wikis that are owned by the user
-		rows, err := tx.Model(&Repository{}).Where("owner_id = ?", user.ID).Rows()
+		// Delete local copies of repositories and their wikis that are owned by the User
+		rows, err := tx.Model(&Repository{}).Where("owner_id = ?", u.ID).Rows()
 		if err != nil {
 			return errors.Wrap(err, "iterate repositories")
 		}
@@ -223,20 +228,20 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, userID int64, newUserna
 			return errors.Wrap(err, "check rows.Err")
 		}
 
-		// Rename user directory if exists
-		userPath := repox.UserPath(user.Name)
-		if osx.Exist(userPath) {
+		// Rename User directory if exists
+		UserPath := repox.UserPath(u.Name)
+		if osx.Exist(UserPath) {
 			newUserPath := repox.UserPath(newUsername)
-			err = os.Rename(userPath, newUserPath)
+			err = os.Rename(UserPath, newUserPath)
 			if err != nil {
-				return errors.Wrap(err, "rename user directory")
+				return errors.Wrap(err, "rename User directory")
 			}
 		}
 		return nil
 	})
 }
 
-// Count returns the total number of users.
+// Count returns the total number of Users.
 func (s *UsersStore) Count(ctx context.Context) int64 {
 	var count int64
 	s.db.WithContext(ctx).Model(&User{}).Where("type = ?", UserTypeIndividual).Count(&count)
@@ -268,7 +273,7 @@ func IsErrUserAlreadyExist(err error) bool {
 }
 
 func (err ErrUserAlreadyExist) Error() string {
-	return fmt.Sprintf("user already exists: %v", err.args)
+	return fmt.Sprintf("User already exists: %v", err.args)
 }
 
 type ErrEmailAlreadyUsed struct {
@@ -293,26 +298,29 @@ func (err ErrEmailAlreadyUsed) Error() string {
 	return fmt.Sprintf("email has been used: %v", err.args)
 }
 
-// Create creates a new user and persists to database. It returns
-// ErrNameNotAllowed if the given name or pattern of the name is not allowed as
-// a username, or ErrUserAlreadyExist when a user with same name already exists,
-// or ErrEmailAlreadyUsed if the email has been verified by another user.
-func (s *UsersStore) Create(ctx context.Context, username, email string, opts CreateUserOptions) (*User, error) {
-	err := isUsernameAllowed(username)
+func (s *UsersStore) Create(ctx context.Context, Username, email string, opts any) (*domain.User, error) {
+	var options CreateUserOptions
+	if o, ok := opts.(CreateUserOptions); ok {
+		options = o
+	} else {
+		return nil, errors.New("invalid options type")
+	}
+
+	err := isUsernameAllowed(Username)
 	if err != nil {
 		return nil, err
 	}
 
-	if s.IsUsernameUsed(ctx, username, 0) {
+	if s.IsUsernameUsed(ctx, Username, 0) {
 		return nil, ErrUserAlreadyExist{
 			args: errx.Args{
-				"name": username,
+				"name": Username,
 			},
 		}
 	}
 
 	email = strings.ToLower(strings.TrimSpace(email))
-	_, err = s.GetByEmail(ctx, email)
+	_, err = s.getByEmail(ctx, email)
 	if err == nil {
 		return nil, ErrEmailAlreadyUsed{
 			args: errx.Args{
@@ -323,55 +331,55 @@ func (s *UsersStore) Create(ctx context.Context, username, email string, opts Cr
 		return nil, err
 	}
 
-	isAdmin := opts.Admin
-	isActivated := opts.Activated
+	isAdmin := options.Admin
+	isActivated := options.Activated
 
-	// The first user created must be an administrator and activated
+	// The first User created must be an administrator and activated
 	if s.Count(ctx) == 0 {
 		isAdmin = true
 		isActivated = true
 	}
 
-	user := &User{
-		LowerName:       strings.ToLower(username),
-		Name:            username,
-		FullName:        opts.FullName,
+	u := &User{
+		LowerName:       strings.ToLower(Username),
+		Name:            Username,
+		FullName:        options.FullName,
 		Email:           email,
-		Password:        opts.Password,
-		LoginSource:     opts.LoginSource,
-		LoginName:       opts.LoginName,
-		Location:        opts.Location,
-		Website:         opts.Website,
+		Password:        options.Password,
+		LoginSource:     options.LoginSource,
+		LoginName:       options.LoginName,
+		Location:        options.Location,
+		Website:         options.Website,
 		MaxRepoCreation: -1,
 		IsActive:         isActivated,
 		IsAdmin:          isAdmin,
-		AllowGitHook:     opts.AllowGitHook,
-		AllowImportLocal: opts.AllowImportLocal,
-		ProhibitLogin:    opts.ProhibitLogin,
+		AllowGitHook:     options.AllowGitHook,
+		AllowImportLocal: options.AllowImportLocal,
+		ProhibitLogin:    options.ProhibitLogin,
 		Avatar:          "",
 		AvatarEmail:     email,
 	}
 
-	user.Rands, err = userx.RandomSalt()
+	u.Rands, err = userx.RandomSalt()
 	if err != nil {
 		return nil, err
 	}
-	user.Salt, err = userx.RandomSalt()
+	u.Salt, err = userx.RandomSalt()
 	if err != nil {
 		return nil, err
 	}
-	user.Password = userx.EncodePassword(user.Password, user.Salt)
+	u.Password = userx.EncodePassword(u.Password, u.Salt)
 
-	return user, s.db.WithContext(ctx).Create(user).Error
+	return u.ToDomain(), s.db.WithContext(ctx).Create(u).Error
 }
 
-// DeleteCustomAvatar deletes the current user custom avatar and falls back to
+// DeleteCustomAvatar deletes the current User custom avatar and falls back to
 // use look up avatar by email.
-func (s *UsersStore) DeleteCustomAvatar(ctx context.Context, userID int64) error {
-	_ = os.Remove(userx.CustomAvatarPath(userID))
+func (s *UsersStore) DeleteCustomAvatar(ctx context.Context, UserID int64) error {
+	_ = os.Remove(userx.CustomAvatarPath(UserID))
 	return s.db.WithContext(ctx).
 		Model(&User{}).
-		Where("id = ?", userID).
+		Where("id = ?", UserID).
 		Updates(map[string]any{
 			"use_custom_avatar": false,
 			"updated_unix":      s.db.NowFunc().Unix(),
@@ -390,7 +398,7 @@ func IsErrUserOwnRepos(err error) bool {
 }
 
 func (err ErrUserOwnRepos) Error() string {
-	return fmt.Sprintf("user still has repository ownership: %v", err.args)
+	return fmt.Sprintf("User still has repository ownership: %v", err.args)
 }
 
 type ErrUserHasOrgs struct {
@@ -404,38 +412,38 @@ func IsErrUserHasOrgs(err error) bool {
 }
 
 func (err ErrUserHasOrgs) Error() string {
-	return fmt.Sprintf("user still has organization membership: %v", err.args)
+	return fmt.Sprintf("User still has organization membership: %v", err.args)
 }
 
-// DeleteByID deletes the given user and all their resources. It returns
-// ErrUserOwnRepos when the user still has repository ownership, or returns
-// ErrUserHasOrgs when the user still has organization membership. It is more
+// DeleteByID deletes the given User and all their resources. It returns
+// ErrUserOwnRepos when the User still has repository ownership, or returns
+// ErrUserHasOrgs when the User still has organization membership. It is more
 // performant to skip rewriting the "authorized_keys" file for individual
 // deletion in a batch operation.
-func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAuthorizedKeys bool) error {
-	user, err := s.GetByID(ctx, userID)
+func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAuthorizedKeys bool) error {
+	u, err := s.getByID(ctx, UserID)
 	if err != nil {
 		if IsErrUserNotExist(err) {
 			return nil
 		}
-		return errors.Wrap(err, "get user")
+		return errors.Wrap(err, "get User")
 	}
 
-	// Double-check the user is not a direct owner of any repository and not a
+	// Double-check the User is not a direct owner of any repository and not a
 	// member of any organization.
 	var count int64
-	err = s.db.WithContext(ctx).Model(&Repository{}).Where("owner_id = ?", userID).Count(&count).Error
+	err = s.db.WithContext(ctx).Model(&Repository{}).Where("owner_id = ?", UserID).Count(&count).Error
 	if err != nil {
 		return errors.Wrap(err, "count repositories")
 	} else if count > 0 {
-		return ErrUserOwnRepos{args: errx.Args{"userID": userID}}
+		return ErrUserOwnRepos{args: errx.Args{"UserID": UserID}}
 	}
 
-	err = s.db.WithContext(ctx).Model(&OrgUser{}).Where("uid = ?", userID).Count(&count).Error
+	err = s.db.WithContext(ctx).Model(&OrgUser{}).Where("uid = ?", UserID).Count(&count).Error
 	if err != nil {
 		return errors.Wrap(err, "count organization membership")
 	} else if count > 0 {
-		return ErrUserHasOrgs{args: errx.Args{"userID": userID}}
+		return ErrUserHasOrgs{args: errx.Args{"UserID": UserID}}
 	}
 
 	needsRewriteAuthorizedKeys := false
@@ -446,14 +454,14 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 			UPDATE repository
 			SET num_watches = num_watches - 1
 			WHERE id IN (
-				SELECT repo_id FROM watch WHERE user_id = @userID
+				SELECT repo_id FROM watch WHERE User_id = @UserID
 			)
 		*/
 		err = tx.Table("repository").
 			Where("id IN (?)", tx.
 				Select("repo_id").
 				Table("watch").
-				Where("user_id = ?", userID),
+				Where("User_id = ?", UserID),
 			).
 			UpdateColumn("num_watches", gorm.Expr("num_watches - 1")).
 			Error
@@ -467,14 +475,14 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 			UPDATE repository
 			SET num_stars = num_stars - 1
 			WHERE id IN (
-				SELECT repo_id FROM star WHERE uid = @userID
+				SELECT repo_id FROM star WHERE uid = @UserID
 			)
 		*/
 		err = tx.Table("repository").
 			Where("id IN (?)", tx.
 				Select("repo_id").
 				Table("star").
-				Where("uid = ?", userID),
+				Where("uid = ?", UserID),
 			).
 			UpdateColumn("num_stars", gorm.Expr("num_stars - 1")).
 			Error
@@ -483,11 +491,11 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 		}
 
 		if !skipRewriteAuthorizedKeys {
-			// We need to rewrite "authorized_keys" file if the user owns any public keys.
-			needsRewriteAuthorizedKeys = tx.Where("owner_id = ?", userID).First(&PublicKey{}).Error != gorm.ErrRecordNotFound
+			// We need to rewrite "authorized_keys" file if the User owns any public keys.
+			needsRewriteAuthorizedKeys = tx.Where("owner_id = ?", UserID).First(&PublicKey{}).Error != gorm.ErrRecordNotFound
 		}
 
-		err = tx.Model(&Issue{}).Where("assignee_id = ?", userID).Update("assignee_id", 0).Error
+		err = tx.Model(&Issue{}).Where("assignee_id = ?", UserID).Update("assignee_id", 0).Error
 		if err != nil {
 			return errors.Wrap(err, "clear assignees")
 		}
@@ -496,19 +504,19 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 			table any
 			where string
 		}{
-			{&Watch{}, "user_id = @userID"},
-			{&Star{}, "uid = @userID"},
-			{&PublicKey{}, "owner_id = @userID"},
+			{&Watch{}, "User_id = @UserID"},
+			{&Star{}, "uid = @UserID"},
+			{&PublicKey{}, "owner_id = @UserID"},
 
-			{&AccessToken{}, "uid = @userID"},
-			{&Collaboration{}, "user_id = @userID"},
-			{&Access{}, "user_id = @userID"},
-			{&Action{}, "user_id = @userID"},
-			{&IssueUser{}, "uid = @userID"},
-			{&EmailAddress{}, "uid = @userID"},
-			{&User{}, "id = @userID"},
+			{&AccessToken{}, "uid = @UserID"},
+			{&Collaboration{}, "User_id = @UserID"},
+			{&Access{}, "User_id = @UserID"},
+			{&Action{}, "User_id = @UserID"},
+			{&IssueUser{}, "uid = @UserID"},
+			{&EmailAddress{}, "uid = @UserID"},
+			{&User{}, "id = @UserID"},
 		} {
-			err = tx.Where(t.where, sql.Named("userID", userID)).Delete(t.table).Error
+			err = tx.Where(t.where, sql.Named("UserID", UserID)).Delete(t.table).Error
 			if err != nil {
 				return errors.Wrapf(err, "clean up table %T", t.table)
 			}
@@ -519,8 +527,8 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 		return err
 	}
 
-	_ = os.RemoveAll(repox.UserPath(user.Name))
-	_ = os.Remove(userx.CustomAvatarPath(userID))
+	_ = os.RemoveAll(repox.UserPath(u.Name))
+	_ = os.Remove(userx.CustomAvatarPath(UserID))
 
 	if needsRewriteAuthorizedKeys {
 		err = newPublicKeysStore(s.db).RewriteAuthorizedKeys()
@@ -531,25 +539,25 @@ func (s *UsersStore) DeleteByID(ctx context.Context, userID int64, skipRewriteAu
 	return nil
 }
 
-// DeleteInactivated deletes all inactivated users.
+// DeleteInactivated deletes all inactivated Users.
 //
 // NOTE: We do not take context.Context here because this operation in practice
 // could much longer than the general request timeout (e.g. one minute).
 func (s *UsersStore) DeleteInactivated() error {
-	var userIDs []int64
-	err := s.db.Model(&User{}).Where("is_active = ?", false).Pluck("id", &userIDs).Error
+	var UserIDs []int64
+	err := s.db.Model(&User{}).Where("is_active = ?", false).Pluck("id", &UserIDs).Error
 	if err != nil {
-		return errors.Wrap(err, "get inactivated user IDs")
+		return errors.Wrap(err, "get inactivated User IDs")
 	}
 
-	for _, userID := range userIDs {
-		err = s.DeleteByID(context.Background(), userID, true)
+	for _, UserID := range UserIDs {
+		err = s.DeleteByID(context.Background(), UserID, true)
 		if err != nil {
-			// Skip users that may had set to inactivated by admins.
+			// Skip Users that may had set to inactivated by admins.
 			if IsErrUserOwnRepos(err) || IsErrUserHasOrgs(err) {
 				continue
 			}
-			return errors.Wrapf(err, "delete user with ID %d", userID)
+			return errors.Wrapf(err, "delete User with ID %d", UserID)
 		}
 	}
 	err = newPublicKeysStore(s.db).RewriteAuthorizedKeys()
@@ -574,16 +582,14 @@ func IsErrUserNotExist(err error) bool {
 }
 
 func (err ErrUserNotExist) Error() string {
-	return fmt.Sprintf("user does not exist: %v", err.args)
+	return fmt.Sprintf("User does not exist: %v", err.args)
 }
 
 func (ErrUserNotExist) NotFound() bool {
 	return true
 }
 
-// GetByEmail returns the user (not organization) with given email. It ignores
-// records with unverified emails and returns ErrUserNotExist when not found.
-func (s *UsersStore) GetByEmail(ctx context.Context, email string) (*User, error) {
+func (s *UsersStore) getByEmail(ctx context.Context, email string) (*User, error) {
 	if email == "" {
 		return nil, ErrUserNotExist{args: errx.Args{"email": email}}
 	}
@@ -592,21 +598,21 @@ func (s *UsersStore) GetByEmail(ctx context.Context, email string) (*User, error
 	/*
 		Equivalent SQL for PostgreSQL:
 
-		SELECT * FROM "user"
-		LEFT JOIN email_address ON email_address.uid = "user".id
+		SELECT * FROM "User"
+		LEFT JOIN email_address ON email_address.uid = "User".id
 		WHERE
-			"user".type = @userType
+			"User".type = @UserType
 		AND (
-				"user".email = @email AND "user".is_active = TRUE
+				"User".email = @email AND "User".is_active = TRUE
 			OR  email_address.email = @email AND email_address.is_activated = TRUE
 		)
 	*/
-	user := new(User)
+	User := new(User)
 	err := s.db.WithContext(ctx).
-		Joins(dbx.Quote("LEFT JOIN email_address ON email_address.uid = %s.id", "user")).
-		Where(dbx.Quote("%s.type = ?", "user"), UserTypeIndividual).
-		Where(dbx.Quote("(%[1]s.email = ? AND %[1]s.is_active = ?) OR (email_address.email = ? AND email_address.is_activated = ?)", "user"), email, true, email, true).
-		First(&user).
+		Joins(dbx.Quote("LEFT JOIN email_address ON email_address.uid = %s.id", "User")).
+		Where(dbx.Quote("%s.type = ?", "User"), UserTypeIndividual).
+		Where(dbx.Quote("(%[1]s.email = ? AND %[1]s.is_active = ?) OR (email_address.email = ? AND email_address.is_activated = ?)", "User"), email, true, email, true).
+		First(&User).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -614,45 +620,71 @@ func (s *UsersStore) GetByEmail(ctx context.Context, email string) (*User, error
 		}
 		return nil, err
 	}
-	return user, nil
+	return User, nil
 }
 
-// GetByID returns the user with given ID. It returns ErrUserNotExist when not
-// found.
-func (s *UsersStore) GetByID(ctx context.Context, id int64) (*User, error) {
-	user := new(User)
-	err := s.db.WithContext(ctx).Where("id = ?", id).First(user).Error
+// GetByEmail returns the User (not organization) with given email. It ignores
+// records with unverified emails and returns ErrUserNotExist when not found.
+func (s *UsersStore) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
+	u, err := s.getByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	return u.ToDomain(), nil
+}
+
+func (s *UsersStore) getByID(ctx context.Context, id int64) (*User, error) {
+	u := new(User)
+	err := s.db.WithContext(ctx).Where("id = ?", id).First(u).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotExist{args: errx.Args{"userID": id}}
 		}
 		return nil, err
 	}
-	return user, nil
+	return u, nil
 }
 
-// GetByUsername returns the user with given username. It returns
-// ErrUserNotExist when not found.
-func (s *UsersStore) GetByUsername(ctx context.Context, username string) (*User, error) {
-	user := new(User)
-	err := s.db.WithContext(ctx).Where("lower_name = ?", strings.ToLower(username)).First(user).Error
+// GetByID returns the User with given ID. It returns ErrUserNotExist when not
+// found.
+func (s *UsersStore) GetByID(ctx context.Context, id int64) (*domain.User, error) {
+	u, err := s.getByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return u.ToDomain(), nil
+}
+
+func (s *UsersStore) getByUsername(ctx context.Context, username string) (*User, error) {
+	u := new(User)
+	err := s.db.WithContext(ctx).Where("lower_name = ?", strings.ToLower(username)).First(u).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotExist{args: errx.Args{"name": username}}
 		}
 		return nil, err
 	}
-	return user, nil
+	return u, nil
+}
+
+// GetByUsername returns the User with given Username. It returns
+// ErrUserNotExist when not found.
+func (s *UsersStore) GetByUsername(ctx context.Context, Username string) (*domain.User, error) {
+	u, err := s.getByUsername(ctx, Username)
+	if err != nil {
+		return nil, err
+	}
+	return u.ToDomain(), nil
 }
 
 // GetByKeyID returns the owner of given public key ID. It returns
 // ErrUserNotExist when not found.
 func (s *UsersStore) GetByKeyID(ctx context.Context, keyID int64) (*User, error) {
-	user := new(User)
+	User := new(User)
 	err := s.db.WithContext(ctx).
-		Joins(dbx.Quote("JOIN public_key ON public_key.owner_id = %s.id", "user")).
+		Joins(dbx.Quote("JOIN public_key ON public_key.owner_id = %s.id", "User")).
 		Where("public_key.id = ?", keyID).
-		First(user).
+		First(User).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -660,56 +692,65 @@ func (s *UsersStore) GetByKeyID(ctx context.Context, keyID int64) (*User, error)
 		}
 		return nil, err
 	}
-	return user, nil
+	return User, nil
 }
 
 // GetMailableEmailsByUsernames returns a list of verified primary email
-// addresses (where email notifications are sent to) of users with given list of
-// usernames. Non-existing usernames are ignored.
-func (s *UsersStore) GetMailableEmailsByUsernames(ctx context.Context, usernames []string) ([]string, error) {
-	emails := make([]string, 0, len(usernames))
+// addresses (where email notifications are sent to) of Users with given list of
+// Usernames. Non-existing Usernames are ignored.
+func (s *UsersStore) GetMailableEmailsByUsernames(ctx context.Context, Usernames []string) ([]string, error) {
+	emails := make([]string, 0, len(Usernames))
 	return emails, s.db.WithContext(ctx).
 		Model(&User{}).
 		Select("email").
-		Where("lower_name IN (?) AND is_active = ?", usernames, true).
+		Where("lower_name IN (?) AND is_active = ?", Usernames, true).
 		Find(&emails).Error
 }
 
-// IsUsernameUsed returns true if the given username has been used other than
-// the excluded user (a non-positive ID effectively meaning check against all
-// users).
-func (s *UsersStore) IsUsernameUsed(ctx context.Context, username string, excludeUserID int64) bool {
-	if username == "" {
+// IsUsernameUsed returns true if the given Username has been used other than
+// the excluded User (a non-positive ID effectively meaning check against all
+// Users).
+func (s *UsersStore) IsUsernameUsed(ctx context.Context, Username string, excludeUserID int64) bool {
+	if Username == "" {
 		return false
 	}
 	return s.db.WithContext(ctx).
 		Select("id").
-		Where("lower_name = ? AND id != ?", strings.ToLower(username), excludeUserID).
+		Where("lower_name = ? AND id != ?", strings.ToLower(Username), excludeUserID).
 		First(&User{}).
 		Error != gorm.ErrRecordNotFound
 }
 
-// List returns a list of users. Results are paginated by given page and page
+// List returns a list of Users. Results are paginated by given page and page
 // size, and sorted by primary key (id) in ascending order.
-func (s *UsersStore) List(ctx context.Context, page, pageSize int) ([]*User, error) {
-	users := make([]*User, 0, pageSize)
-	return users, s.db.WithContext(ctx).
-		Select(userListFields).
+func (s *UsersStore) List(ctx context.Context, page, pageSize int) ([]*domain.User, error) {
+	Users := make([]*User, 0, pageSize)
+	err := s.db.WithContext(ctx).
+		Select(UserListFields).
 		Where("type = ?", UserTypeIndividual).
 		Limit(pageSize).Offset((page - 1) * pageSize).
 		Order("id ASC").
-		Find(&users).
+		Find(&Users).
 		Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.User, len(Users))
+	for i, u := range Users {
+		res[i] = u.ToDomain()
+	}
+	return res, nil
 }
 
-func searchUserByName(ctx context.Context, db *gorm.DB, userType UserType, keyword string, page, pageSize int, orderBy string) ([]*User, int64, error) {
+func searchUserByName(ctx context.Context, db *gorm.DB, UserType UserType, keyword string, page, pageSize int, orderBy string) ([]*domain.User, int64, error) {
 	if keyword == "" {
-		return []*User{}, 0, nil
+		return []*domain.User{}, 0, nil
 	}
 	keyword = "%" + strings.ToLower(keyword) + "%"
 
 	tx := db.WithContext(ctx).
-		Where("type = ? AND (lower_name LIKE ? OR LOWER(full_name) LIKE ?)", userType, keyword, keyword)
+		Where("type = ? AND (lower_name LIKE ? OR LOWER(full_name) LIKE ?)", UserType, keyword, keyword)
 
 	var count int64
 	err := tx.Model(&User{}).Count(&count).Error
@@ -717,16 +758,25 @@ func searchUserByName(ctx context.Context, db *gorm.DB, userType UserType, keywo
 		return nil, 0, errors.Wrap(err, "count")
 	}
 
-	users := make([]*User, 0, pageSize)
-	return users, count, tx.Select(userListFields).Order(orderBy).Limit(pageSize).Offset((page - 1) * pageSize).Find(&users).Error
+	Users := make([]*User, 0, pageSize)
+	err = tx.Select(UserListFields).Order(orderBy).Limit(pageSize).Offset((page - 1) * pageSize).Find(&Users).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	res := make([]*domain.User, len(Users))
+	for i, u := range Users {
+		res[i] = u.ToDomain()
+	}
+	return res, count, nil
 }
 
-// SearchByName returns a list of users whose username or full name matches the
+// SearchByName returns a list of Users whose Username or full name matches the
 // given keyword case-insensitively. Results are paginated by given page and
 // page size, and sorted by the given order (e.g. "id DESC"). A total count of
 // all results is also returned. If the order is not given, it's up to the
 // database to decide.
-func (s *UsersStore) SearchByName(ctx context.Context, keyword string, page, pageSize int, orderBy string) ([]*User, int64, error) {
+func (s *UsersStore) SearchByName(ctx context.Context, keyword string, page, pageSize int, orderBy string) ([]*domain.User, int64, error) {
 	return searchUserByName(ctx, s.db, UserTypeIndividual, keyword, page, pageSize, orderBy)
 }
 
@@ -735,7 +785,7 @@ type UpdateUserOptions struct {
 	LoginName   *string
 
 	Password *string
-	// GenerateNewRands indicates whether to force generate new rands for the user.
+	// GenerateNewRands indicates whether to force generate new rands for the User.
 	GenerateNewRands bool
 
 	FullName    *string
@@ -761,37 +811,44 @@ type UpdateUserOptions struct {
 	IsPrivate *bool
 }
 
-// Update updates fields for the given user.
-func (s *UsersStore) Update(ctx context.Context, userID int64, opts UpdateUserOptions) error {
+// Update updates fields for the given User.
+func (s *UsersStore) Update(ctx context.Context, UserID int64, opts any) error {
+	var options UpdateUserOptions
+	if o, ok := opts.(UpdateUserOptions); ok {
+		options = o
+	} else {
+		return errors.New("invalid options type")
+	}
+
 	updates := map[string]any{
 		"updated_unix": s.db.NowFunc().Unix(),
 	}
 
-	if opts.IsPrivate != nil {
-		if *opts.IsPrivate {
+	if options.IsPrivate != nil {
+		if *options.IsPrivate {
 			updates["type"] = UserTypeOrganizationPrivate
 		} else {
 			updates["type"] = UserTypeOrganization
 		}
 	}
 
-	if opts.LoginSource != nil {
-		updates["login_source"] = *opts.LoginSource
+	if options.LoginSource != nil {
+		updates["login_source"] = *options.LoginSource
 	}
-	if opts.LoginName != nil {
-		updates["login_name"] = *opts.LoginName
+	if options.LoginName != nil {
+		updates["login_name"] = *options.LoginName
 	}
 
-	if opts.Password != nil {
+	if options.Password != nil {
 		salt, err := userx.RandomSalt()
 		if err != nil {
 			return errors.Wrap(err, "generate salt")
 		}
 		updates["salt"] = salt
-		updates["passwd"] = userx.EncodePassword(*opts.Password, salt)
-		opts.GenerateNewRands = true
+		updates["passwd"] = userx.EncodePassword(*options.Password, salt)
+		options.GenerateNewRands = true
 	}
-	if opts.GenerateNewRands {
+	if options.GenerateNewRands {
 		rands, err := userx.RandomSalt()
 		if err != nil {
 			return errors.Wrap(err, "generate rands")
@@ -799,88 +856,91 @@ func (s *UsersStore) Update(ctx context.Context, userID int64, opts UpdateUserOp
 		updates["rands"] = rands
 	}
 
-	if opts.FullName != nil {
-		updates["full_name"] = strx.Truncate(*opts.FullName, 255)
+	if options.FullName != nil {
+		updates["full_name"] = *options.FullName
 	}
-	if opts.Email != nil {
-		_, err := s.GetByEmail(ctx, *opts.Email)
-		if err == nil {
-			return ErrEmailAlreadyUsed{args: errx.Args{"email": *opts.Email}}
-		} else if !IsErrUserNotExist(err) {
-			return errors.Wrap(err, "check email")
-		}
-		updates["email"] = *opts.Email
+	if options.Email != nil {
+		updates["email"] = *options.Email
 	}
-	if opts.Website != nil {
-		updates["website"] = strx.Truncate(*opts.Website, 255)
+	if options.Website != nil {
+		updates["website"] = *options.Website
 	}
-	if opts.Location != nil {
-		updates["location"] = strx.Truncate(*opts.Location, 255)
+	if options.Location != nil {
+		updates["location"] = *options.Location
 	}
-	if opts.Description != nil {
-		updates["description"] = strx.Truncate(*opts.Description, 255)
+	if options.Description != nil {
+		updates["description"] = *options.Description
 	}
 
-	if opts.MaxRepoCreation != nil {
-		if *opts.MaxRepoCreation < -1 {
-			*opts.MaxRepoCreation = -1
-		}
-		updates["max_repo_creation"] = *opts.MaxRepoCreation
+	if options.MaxRepoCreation != nil {
+		updates["max_repo_creation"] = *options.MaxRepoCreation
 	}
-	if opts.LastRepoVisibility != nil {
-		updates["last_repo_visibility"] = *opts.LastRepoVisibility
+	if options.LastRepoVisibility != nil {
+		updates["last_repo_visibility"] = *options.LastRepoVisibility
 	}
 
-	if opts.IsActivated != nil {
-		updates["is_active"] = *opts.IsActivated
+	if options.IsActivated != nil {
+		updates["is_active"] = *options.IsActivated
 	}
-	if opts.IsAdmin != nil {
-		updates["is_admin"] = *opts.IsAdmin
+	if options.IsAdmin != nil {
+		updates["is_admin"] = *options.IsAdmin
 	}
-	if opts.AllowGitHook != nil {
-		updates["allow_git_hook"] = *opts.AllowGitHook
+	if options.AllowGitHook != nil {
+		updates["allow_git_hook"] = *options.AllowGitHook
 	}
-	if opts.AllowImportLocal != nil {
-		updates["allow_import_local"] = *opts.AllowImportLocal
+	if options.AllowImportLocal != nil {
+		updates["allow_import_local"] = *options.AllowImportLocal
 	}
-	if opts.ProhibitLogin != nil {
-		updates["prohibit_login"] = *opts.ProhibitLogin
-	}
-
-	if opts.Avatar != nil {
-		updates["avatar"] = strx.Truncate(*opts.Avatar, 2048)
-	}
-	if opts.AvatarEmail != nil {
-		updates["avatar_email"] = strx.Truncate(*opts.AvatarEmail, 255)
+	if options.ProhibitLogin != nil {
+		updates["prohibit_login"] = *options.ProhibitLogin
 	}
 
-	if opts.DisableNewsFeed != nil {
-		updates["disable_news_feed"] = *opts.DisableNewsFeed
+	if options.Avatar != nil {
+		updates["avatar"] = *options.Avatar
+	}
+	if options.AvatarEmail != nil {
+		updates["avatar_email"] = *options.AvatarEmail
 	}
 
-	return s.db.WithContext(ctx).Model(&User{}).Where("id = ?", userID).Updates(updates).Error
+	if options.DisableNewsFeed != nil {
+		updates["disable_news_feed"] = *options.DisableNewsFeed
+	}
+
+	return s.db.WithContext(ctx).Model(&User{}).Where("id = ?", UserID).Updates(updates).Error
 }
 
-// UseCustomAvatar uses the given avatar as the user custom avatar.
-func (s *UsersStore) UseCustomAvatar(ctx context.Context, userID int64, avatar []byte) error {
-	err := userx.SaveAvatar(userID, avatar)
+// UseCustomAvatar uses the given avatar as the User custom avatar.
+func (s *UsersStore) UseCustomAvatar(ctx context.Context, UserID int64, avatar []byte) error {
+	avatarPath := userx.CustomAvatarPath(UserID)
+	tempPath := avatarPath + ".tmp"
+
+	fsTx := fsx.NewTransaction()
+	defer fsTx.Rollback()
+
+	if err := userx.SaveAvatarToPath(tempPath, avatar); err != nil {
+		return errors.Wrap(err, "save avatar to temp")
+	}
+	fsTx.StageCreate(tempPath, avatarPath)
+
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		return tx.Model(&User{}).
+			Where("id = ?", UserID).
+			Updates(map[string]any{
+				"use_custom_avatar": true,
+				"updated_unix":      tx.NowFunc().Unix(),
+			}).
+			Error
+	})
 	if err != nil {
-		return errors.Wrap(err, "save avatar")
+		return err
 	}
 
-	return s.db.WithContext(ctx).
-		Model(&User{}).
-		Where("id = ?", userID).
-		Updates(map[string]any{
-			"use_custom_avatar": true,
-			"updated_unix":      s.db.NowFunc().Unix(),
-		}).
-		Error
+	return fsTx.Commit()
 }
 
-// AddEmail adds a new email address to given user. It returns
-// ErrEmailAlreadyUsed if the email has been verified by another user.
-func (s *UsersStore) AddEmail(ctx context.Context, userID int64, email string, isActivated bool) error {
+// AddEmail adds a new email address to given User. It returns
+// ErrEmailAlreadyUsed if the email has been verified by another User.
+func (s *UsersStore) AddEmail(ctx context.Context, UserID int64, email string, isActivated bool) error {
 	email = strings.ToLower(strings.TrimSpace(email))
 	_, err := s.GetByEmail(ctx, email)
 	if err == nil {
@@ -890,12 +950,12 @@ func (s *UsersStore) AddEmail(ctx context.Context, userID int64, email string, i
 			},
 		}
 	} else if !IsErrUserNotExist(err) {
-		return errors.Wrap(err, "check user by email")
+		return errors.Wrap(err, "check User by email")
 	}
 
 	return s.db.WithContext(ctx).Create(
 		&EmailAddress{
-			UserID:      userID,
+			UserID:      UserID,
 			Email:       email,
 			IsActivated: isActivated,
 		},
@@ -923,12 +983,12 @@ func (ErrEmailNotExist) NotFound() bool {
 	return true
 }
 
-// GetEmail returns the email address of the given user. If `needsActivated` is
+// GetEmail returns the email address of the given User. If `needsActivated` is
 // true, only activated email will be returned, otherwise, it may return
 // inactivated email addresses. It returns ErrEmailNotExist when no qualified
 // email is not found.
-func (s *UsersStore) GetEmail(ctx context.Context, userID int64, email string, needsActivated bool) (*EmailAddress, error) {
-	tx := s.db.WithContext(ctx).Where("uid = ? AND email = ?", userID, email)
+func (s *UsersStore) GetEmail(ctx context.Context, UserID int64, email string, needsActivated bool) (*EmailAddress, error) {
+	tx := s.db.WithContext(ctx).Where("uid = ? AND email = ?", UserID, email)
 	if needsActivated {
 		tx = tx.Where("is_activated = ?", true)
 	}
@@ -948,23 +1008,23 @@ func (s *UsersStore) GetEmail(ctx context.Context, userID int64, email string, n
 	return emailAddress, nil
 }
 
-// ListEmails returns all email addresses of the given user. It always includes
+// ListEmails returns all email addresses of the given User. It always includes
 // a primary email address.
-func (s *UsersStore) ListEmails(ctx context.Context, userID int64) ([]*EmailAddress, error) {
-	user, err := s.GetByID(ctx, userID)
+func (s *UsersStore) ListEmails(ctx context.Context, UserID int64) ([]*EmailAddress, error) {
+	u, err := s.getByID(ctx, UserID)
 	if err != nil {
-		return nil, errors.Wrap(err, "get user")
+		return nil, errors.Wrap(err, "get User")
 	}
 
 	var emails []*EmailAddress
-	err = s.db.WithContext(ctx).Where("uid = ?", userID).Order("id ASC").Find(&emails).Error
+	err = s.db.WithContext(ctx).Where("uid = ?", UserID).Order("id ASC").Find(&emails).Error
 	if err != nil {
 		return nil, errors.Wrap(err, "list emails")
 	}
 
 	isPrimaryFound := false
 	for _, email := range emails {
-		if email.Email == user.Email {
+		if email.Email == u.Email {
 			isPrimaryFound = true
 			email.IsPrimary = true
 			break
@@ -975,28 +1035,28 @@ func (s *UsersStore) ListEmails(ctx context.Context, userID int64) ([]*EmailAddr
 	// email_address table yet.
 	if !isPrimaryFound {
 		emails = append(emails, &EmailAddress{
-			Email:       user.Email,
-			IsActivated: user.IsActive,
+			Email:       u.Email,
+			IsActivated: u.IsActive,
 			IsPrimary:   true,
 		})
 	}
 	return emails, nil
 }
 
-// MarkEmailActivated marks the email address of the given user as activated,
-// and new rands are generated for the user.
-func (s *UsersStore) MarkEmailActivated(ctx context.Context, userID int64, email string) error {
+// MarkEmailActivated marks the email address of the given User as activated,
+// and new rands are generated for the User.
+func (s *UsersStore) MarkEmailActivated(ctx context.Context, UserID int64, email string) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err := s.db.WithContext(ctx).
 			Model(&EmailAddress{}).
-			Where("uid = ? AND email = ?", userID, email).
+			Where("uid = ? AND email = ?", UserID, email).
 			Update("is_activated", true).
 			Error
 		if err != nil {
 			return errors.Wrap(err, "mark email activated")
 		}
 
-		return NewUsersStore(tx).Update(ctx, userID, UpdateUserOptions{GenerateNewRands: true})
+		return NewUsersStore(tx).Update(ctx, UserID, UpdateUserOptions{GenerateNewRands: true})
 	})
 }
 
@@ -1015,12 +1075,12 @@ func (err ErrEmailNotVerified) Error() string {
 	return fmt.Sprintf("email has not been verified: %v", err.args)
 }
 
-// MarkEmailPrimary marks the email address of the given user as primary. It
-// returns ErrEmailNotExist when the email is not found for the user, and
+// MarkEmailPrimary marks the email address of the given User as primary. It
+// returns ErrEmailNotExist when the email is not found for the User, and
 // ErrEmailNotActivated when the email is not activated.
-func (s *UsersStore) MarkEmailPrimary(ctx context.Context, userID int64, email string) error {
+func (s *UsersStore) MarkEmailPrimary(ctx context.Context, UserID int64, email string) error {
 	var emailAddress EmailAddress
-	err := s.db.WithContext(ctx).Where("uid = ? AND email = ?", userID, email).First(&emailAddress).Error
+	err := s.db.WithContext(ctx).Where("uid = ? AND email = ?", UserID, email).First(&emailAddress).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrEmailNotExist{args: errx.Args{"email": email}}
@@ -1032,22 +1092,22 @@ func (s *UsersStore) MarkEmailPrimary(ctx context.Context, userID int64, email s
 		return ErrEmailNotVerified{args: errx.Args{"email": email}}
 	}
 
-	user, err := s.GetByID(ctx, userID)
+	u, err := s.getByID(ctx, UserID)
 	if err != nil {
-		return errors.Wrap(err, "get user")
+		return errors.Wrap(err, "get User")
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		// Make sure the former primary email doesn't disappear.
 		err = tx.FirstOrCreate(
 			&EmailAddress{
-				UserID:      user.ID,
-				Email:       user.Email,
-				IsActivated: user.IsActive,
+				UserID:      u.ID,
+				Email:       u.Email,
+				IsActivated: u.IsActive,
 			},
 			&EmailAddress{
-				UserID: user.ID,
-				Email:  user.Email,
+				UserID: u.ID,
+				Email:  u.Email,
 			},
 		).Error
 		if err != nil {
@@ -1055,7 +1115,7 @@ func (s *UsersStore) MarkEmailPrimary(ctx context.Context, userID int64, email s
 		}
 
 		return tx.Model(&User{}).
-			Where("id = ?", user.ID).
+			Where("id = ?", u.ID).
 			Updates(map[string]any{
 				"email":        email,
 				"updated_unix": tx.NowFunc().Unix(),
@@ -1064,12 +1124,12 @@ func (s *UsersStore) MarkEmailPrimary(ctx context.Context, userID int64, email s
 	})
 }
 
-// DeleteEmail deletes the email address of the given user.
-func (s *UsersStore) DeleteEmail(ctx context.Context, userID int64, email string) error {
-	return s.db.WithContext(ctx).Where("uid = ? AND email = ?", userID, email).Delete(&EmailAddress{}).Error
+// DeleteEmail deletes the email address of the given User.
+func (s *UsersStore) DeleteEmail(ctx context.Context, UserID int64, email string) error {
+	return s.db.WithContext(ctx).Where("uid = ? AND email = ?", UserID, email).Delete(&EmailAddress{}).Error
 }
 
-// UserType indicates the type of the user account.
+// UserType indicates the type of the User account.
 type UserType int
 
 const (
@@ -1130,6 +1190,88 @@ type User struct {
 	DisableNewsFeed bool
 }
 
+func (u *User) TableName() string {
+	return "user"
+}
+
+func (u *User) ToDomain() *domain.User {
+	if u == nil {
+		return nil
+	}
+	return &domain.User{
+		ID:                 u.ID,
+		LowerName:          u.LowerName,
+		Name:               u.Name,
+		FullName:           u.FullName,
+		Email:              u.Email,
+		Password:           u.Password,
+		LoginSource:        u.LoginSource,
+		LoginName:          u.LoginName,
+		Type:               domain.UserType(u.Type),
+		Location:           u.Location,
+		Website:            u.Website,
+		Rands:              u.Rands,
+		Salt:               u.Salt,
+		Created:            time.Unix(u.CreatedUnix, 0),
+		Updated:            time.Unix(u.UpdatedUnix, 0),
+		LastRepoVisibility: u.LastRepoVisibility,
+		MaxRepoCreation:    u.MaxRepoCreation,
+		IsActive:           u.IsActive,
+		IsAdmin:            u.IsAdmin,
+		AllowGitHook:       u.AllowGitHook,
+		AllowImportLocal:   u.AllowImportLocal,
+		ProhibitLogin:      u.ProhibitLogin,
+		Avatar:             u.Avatar,
+		AvatarEmail:        u.AvatarEmail,
+		UseCustomAvatar:    u.UseCustomAvatar,
+		NumStars:           u.NumStars,
+		NumRepos:           u.NumRepos,
+		Description:        u.Description,
+		NumTeams:           u.NumTeams,
+		NumMembers:         u.NumMembers,
+		DisableNewsFeed:    u.DisableNewsFeed,
+	}
+}
+
+func FromDomainUser(u *domain.User) *User {
+	if u == nil {
+		return nil
+	}
+	return &User{
+		ID:                 u.ID,
+		LowerName:          u.LowerName,
+		Name:               u.Name,
+		FullName:           u.FullName,
+		Email:              u.Email,
+		Password:           u.Password,
+		LoginSource:        u.LoginSource,
+		LoginName:          u.LoginName,
+		Type:               UserType(u.Type),
+		Location:           u.Location,
+		Website:            u.Website,
+		Rands:              u.Rands,
+		Salt:               u.Salt,
+		CreatedUnix:        u.Created.Unix(),
+		UpdatedUnix:        u.Updated.Unix(),
+		LastRepoVisibility: u.LastRepoVisibility,
+		MaxRepoCreation:    u.MaxRepoCreation,
+		IsActive:           u.IsActive,
+		IsAdmin:            u.IsAdmin,
+		AllowGitHook:       u.AllowGitHook,
+		AllowImportLocal:   u.AllowImportLocal,
+		ProhibitLogin:      u.ProhibitLogin,
+		Avatar:             u.Avatar,
+		AvatarEmail:        u.AvatarEmail,
+		UseCustomAvatar:    u.UseCustomAvatar,
+		NumStars:           u.NumStars,
+		NumRepos:           u.NumRepos,
+		Description:        u.Description,
+		NumTeams:           u.NumTeams,
+		NumMembers:         u.NumMembers,
+		DisableNewsFeed:    u.DisableNewsFeed,
+	}
+}
+
 // BeforeCreate implements the GORM create hook.
 func (u *User) BeforeCreate(tx *gorm.DB) error {
 	if u.CreatedUnix == 0 {
@@ -1147,12 +1289,12 @@ func (u *User) AfterFind(_ *gorm.DB) error {
 	return nil
 }
 
-// IsLocal returns true if the user is created as local account.
+// IsLocal returns true if the User is created as local account.
 func (u *User) IsLocal() bool {
 	return u.LoginSource <= 0
 }
 
-// IsOrganization returns true if the user is an organization.
+// IsOrganization returns true if the User is an organization.
 func (u *User) IsOrganization() bool {
 	return u.Type == UserTypeOrganization || u.Type == UserTypeOrganizationPrivate
 }
@@ -1161,7 +1303,7 @@ func (u *User) IsPrivateOrganization() bool {
 	return u.Type == UserTypeOrganizationPrivate
 }
 
-// APIFormat returns the API format of a user.
+// APIFormat returns the API format of a User.
 func (u *User) APIFormat() *apiv2types.UserResponse {
 	return &apiv2types.UserResponse{
 		ID:              u.ID,
@@ -1189,23 +1331,23 @@ func (u *User) MaxNumRepos() int {
 	return u.MaxRepoCreation
 }
 
-// CanCreateOrganization returns true if user can create organizations.
+// CanCreateOrganization returns true if User can create organizations.
 func (u *User) CanCreateOrganization() bool {
 	return !conf.Admin.DisableRegularOrgCreation || u.IsAdmin
 }
 
-// CanEditGitHook returns true if user can edit Git hooks.
+// CanEditGitHook returns true if User can edit Git hooks.
 func (u *User) CanEditGitHook() bool {
 	return u.IsAdmin || u.AllowGitHook
 }
 
-// CanImportLocal returns true if user can migrate repositories by local path.
+// CanImportLocal returns true if User can migrate repositories by local path.
 func (u *User) CanImportLocal() bool {
 	return conf.Repository.EnableLocalPathMigration && (u.IsAdmin || u.AllowImportLocal)
 }
 
-// DisplayName returns the full name of the user if it's not empty, returns the
-// username otherwise.
+// DisplayName returns the full name of the User if it's not empty, returns the
+// Username otherwise.
 func (u *User) DisplayName() string {
 	if len(u.FullName) > 0 {
 		return u.FullName
@@ -1213,7 +1355,7 @@ func (u *User) DisplayName() string {
 	return u.Name
 }
 
-// HomeURLPath returns the URL path to the user or organization home page.
+// HomeURLPath returns the URL path to the User or organization home page.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
 // having a dedicated type `template.User` and move this to the "userx"
@@ -1222,7 +1364,7 @@ func (u *User) HomeURLPath() string {
 	return conf.Server.Subpath + "/" + u.Name
 }
 
-// HTMLURL returns the full URL to the user or organization home page.
+// HTMLURL returns the full URL to the User or organization home page.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
 // having a dedicated type `template.User` and move this to the "userx"
@@ -1231,7 +1373,7 @@ func (u *User) HTMLURL() string {
 	return conf.Server.ExternalURL + u.Name
 }
 
-// AvatarURLPath returns the URL path to the user or organization avatar.
+// AvatarURLPath returns the URL path to the User or organization avatar.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
 // having a dedicated type `template.User` and move this to the "userx"
@@ -1248,7 +1390,7 @@ func (u *User) AvatarURLPath() string {
 	return fmt.Sprintf("%s/%s/%d", conf.Server.Subpath, conf.UsersAvatarPathPrefix, u.ID)
 }
 
-// AvatarURL returns the full URL to the user or organization avatar.
+// AvatarURL returns the full URL to the User or organization avatar.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
 // having a dedicated type `template.User` and move this to the "userx"
@@ -1258,7 +1400,7 @@ func (u *User) AvatarURL() string {
 }
 
 
-// IsUserOrgOwner returns true if the user is in the owner team of the given
+// IsUserOrgOwner returns true if the User is in the owner team of the given
 // organization.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
@@ -1267,7 +1409,7 @@ func (u *User) IsUserOrgOwner(orgID int64) bool {
 	return IsOrganizationOwner(orgID, u.ID)
 }
 
-// IsPublicMember returns true if the user has public membership of the given
+// IsPublicMember returns true if the User has public membership of the given
 // organization.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
@@ -1277,7 +1419,7 @@ func (u *User) IsPublicMember(orgID int64) bool {
 }
 
 // GetOrganizationCount returns the count of organization membership that the
-// user has.
+// User has.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
 // having a dedicated type `template.User`.
@@ -1285,7 +1427,7 @@ func (u *User) GetOrganizationCount() (int64, error) {
 	return Handle.Organizations().CountByUser(context.TODO(), u.ID)
 }
 
-// ShortName truncates and returns the username at most in given length.
+// ShortName truncates and returns the Username at most in given length.
 //
 // TODO(unknwon): This is also used in templates, which should be fixed by
 // having a dedicated type `template.User`.
@@ -1293,7 +1435,7 @@ func (u *User) ShortName(length int) string {
 	return strx.Ellipsis(u.Name, length)
 }
 
-// NewGhostUser creates and returns a fake user for people who has deleted their
+// NewGhostUser creates and returns a fake User for people who has deleted their
 // accounts.
 //
 // TODO: Once migrated to unknwon.dev/i18n, pass in the `i18n.Locale` to
@@ -1322,7 +1464,7 @@ var (
 		"install":  {},
 		"api":      {},
 		"avatar":   {},
-		"user":     {},
+		"User":     {},
 		"org":      {},
 		"help":     {},
 		"stars":    {},
@@ -1406,16 +1548,16 @@ func isNameAllowed(names map[string]struct{}, patterns []string, name string) er
 }
 
 // isUsernameAllowed returns ErrNameNotAllowed if the given name or pattern of
-// the name is not allowed as a username.
+// the name is not allowed as a Username.
 func isUsernameAllowed(name string) error {
 	return isNameAllowed(reservedUsernames, reservedUsernamePatterns, name)
 }
 
-// EmailAddress is an email address of a user.
+// EmailAddress is an email address of a User.
 type EmailAddress struct {
 	ID          int64  `gorm:"primaryKey"`
-	UserID      int64  `gorm:"column:uid;index;uniqueIndex:email_address_user_email_unique;not null"`
-	Email       string `gorm:"uniqueIndex:email_address_user_email_unique;not null;size:254"`
+	UserID      int64  `gorm:"column:uid;index;uniqueIndex:email_address_User_email_unique;not null"`
+	Email       string `gorm:"uniqueIndex:email_address_User_email_unique;not null;size:254"`
 	IsActivated bool   `gorm:"not null;default:FALSE"`
 	IsPrimary   bool   `gorm:"-" json:"-"`
 }

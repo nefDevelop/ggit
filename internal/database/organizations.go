@@ -50,7 +50,7 @@ func (s *OrganizationsStore) List(ctx context.Context, opts ListOrgsOptions) ([]
 	}
 
 	var orgs []*Organization
-	return orgs, tx.Select(userListFields).Find(&orgs).Error
+	return orgs, tx.Select(UserListFields).Find(&orgs).Error
 }
 
 // SearchByName returns a list of organizations whose username or full name
@@ -59,7 +59,16 @@ func (s *OrganizationsStore) List(ctx context.Context, opts ListOrgsOptions) ([]
 // count of all results is also returned. If the order is not given, it's up to
 // the database to decide.
 func (s *OrganizationsStore) SearchByName(ctx context.Context, keyword string, page, pageSize int, orderBy string) ([]*Organization, int64, error) {
-	return searchUserByName(ctx, s.db, UserTypeOrganization, keyword, page, pageSize, orderBy)
+	domainUsers, count, err := searchUserByName(ctx, s.db, UserTypeOrganization, keyword, page, pageSize, orderBy)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	orgs := make([]*Organization, len(domainUsers))
+	for i, du := range domainUsers {
+		orgs[i] = FromDomainUser(du)
+	}
+	return orgs, count, nil
 }
 
 // CountByUser returns the number of organizations the user is a member of.
@@ -69,7 +78,3 @@ func (s *OrganizationsStore) CountByUser(ctx context.Context, userID int64) (int
 }
 
 type Organization = User
-
-func (o *Organization) TableName() string {
-	return "user"
-}

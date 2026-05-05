@@ -283,8 +283,52 @@
 | **Stale Detection** | 26 | Baja | **0 MB** | Nueva regla integrada en el motor de Janitor existente. |
 | **Gists Integrados** | 26 | Media | **0 MB** | Nueva zona global para gestión de snippets de código. |
 
-- [x] **Analisis de basura y de seguridad**: 
 ---
+
+## Registro de Migración: Pattern Store & Atomic Consistency
+
+Este registro lleva la cuenta de la refactorización hacia Clean Architecture (Pattern Store) y la implementación de transacciones coordinadas (Atomic Consistency).
+
+### 🗄️ Pattern Store (Clean Architecture)
+Unificación de accesos a DB bajo interfaces en `internal/domain` y desacoplo de GORM en la capa de servicios.
+
+| Store | Estado | Dominio | Implementación |
+| :--- | :---: | :--- | :--- |
+| **SecretPatterns** | ✅ | `domain.SecretPatternsStore` | `database.SecretPatternsStore` |
+| **Repositories** | ✅ | `domain.RepositoriesStore` | `database.RepositoriesStore` |
+| **Users** | ✅ | `domain.UsersStore` | `database.UsersStore` |
+| **Organizations** | 🔄 | Pendiente | `database.OrganizationsStore` |
+| **Issues** | 🔄 | Pendiente | `database.IssuesStore` |
+| **PullRequests** | 🔄 | Pendiente | `database.PullRequestsStore` |
+| **Comments** | 🔄 | Pendiente | `database.CommentsStore` |
+| **AccessTokens** | 🔄 | Pendiente | `database.AccessTokensStore` |
+| **Actions** | 🔄 | Pendiente | `database.ActionsStore` |
+| **LFS** | 🔄 | Pendiente | `database.LFSStore` |
+| **LoginSources** | 🔄 | Pendiente | `database.LoginSourcesStore` |
+| **Permissions** | 🔄 | Pendiente | `database.PermissionsStore` |
+| **PublicKeys** | 🔄 | Pendiente | `database.PublicKeysStore` |
+| **TwoFactors** | 🔄 | Pendiente | `database.TwoFactorsStore` |
+| **UserBlocks** | 🔄 | Pendiente | `database.UserBlocksStore` |
+
+### 🛡️ Atomic Consistency (2PC Filesystem)
+Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones `fsx.Transaction`.
+
+| Operación | Estado | Servicio / Método |
+| :--- | :---: | :--- |
+| **Creación de Repositorio** | ✅ | `repo.RepositoryService.Create` |
+| **Borrado de Repositorio** | ✅ | `database.DeleteRepository` |
+| **Web CRUD: Crear/Subir** | ✅ | `database.Repository.UploadRepoFiles` |
+| **Web CRUD: Actualizar** | ✅ | `database.Repository.UpdateRepoFile` |
+| **Web CRUD: Borrar** | ✅ | `database.Repository.DeleteRepoFile` |
+| **Avatar de Usuario** | ✅ | `database.User.UploadAvatar` |
+| **Avatar de Repositorio** | ✅ | `database.Repository.UploadAvatar` |
+| **Adjuntos (Attachments)** | ✅ | `database.DeleteRepository` (Cleanup) |
+| **LFS Objects** | ✅ | `database.LFSStore.CreateObjectAtomic` |
+
+### 🛠️ Estabilización y Calidad
+- [x] **Corrección de Errores de Tipos:** Resolución de +50 errores de compilación tras la migración a Pattern Store.
+- [x] **Mapeo de Dominios:** Implementación de helpers `ToDomain` / `FromDomain` para compatibilidad progresiva.
+- [x] **Build Pass:** Verificación de integridad del proyecto completo (`go build ./...`).
 
 ## 🚩 Pendientes (Priorizados para 1.x)
 

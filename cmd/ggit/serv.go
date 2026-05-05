@@ -167,7 +167,7 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 		}
 		fail("Internal error", "Failed to get repository: %v", err)
 	}
-	repo.Owner = owner
+	repo.Owner = database.FromDomainUser(owner)
 
 	requestMode, ok := allowedCommands[verb]
 	if !ok {

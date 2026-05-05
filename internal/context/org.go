@@ -43,11 +43,12 @@ func HandleOrgAssignment(c *Context, args ...bool) {
 	orgName := c.Param("org")
 
 	var err error
-	c.Org.Organization, err = database.Handle.Users().GetByUsername(c.Request.Context(), orgName)
+	u, err := database.Handle.Users().GetByUsername(c.Request.Context(), orgName)
 	if err != nil {
 		c.NotFoundOrError(err, "get organization by name")
 		return
 	}
+	c.Org.Organization = database.FromDomainUser(u)
 	org := c.Org.Organization
 	c.Data["Org"] = org
 

@@ -35,7 +35,8 @@ func GetComparison(c *context.APIContext) {
 	
 	forks, _ := database.Handle.Repositories().ListForks(c.Req.Context(), baseRepo.ID, 1, 100)
 	for _, fork := range forks {
-		owner, _ := database.Handle.Users().GetByID(c.Req.Context(), fork.OwnerID)
+		du, _ := database.Handle.Users().GetByID(c.Req.Context(), fork.OwnerID)
+		owner := database.FromDomainUser(du)
 		allHeadRepos = append(allHeadRepos, fork.APIFormat(owner))
 	}
 

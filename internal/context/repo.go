@@ -124,11 +124,12 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 		if gctx.IsLogged && gctx.User.LowerName == strings.ToLower(ownerName) {
 			owner = gctx.User
 		} else {
-			owner, err = database.Handle.Users().GetByUsername(c.Request.Context(), ownerName)
+			u, err := database.Handle.Users().GetByUsername(c.Request.Context(), ownerName)
 			if err != nil {
 				gctx.NotFoundOrError(err, "get user by name")
 				return
 			}
+			owner = database.FromDomainUser(u)
 		}
 		gctx.Repo.Owner = owner
 		gctx.Data["Username"] = gctx.Repo.Owner.Name

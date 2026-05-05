@@ -15,11 +15,11 @@ type ParamsUser struct {
 func InjectParamsUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		gctx := c.MustGet("context").(*Context)
-		user, err := database.Handle.Users().GetByUsername(c.Request.Context(), c.Param("username"))
+		u, err := database.Handle.Users().GetByUsername(c.Request.Context(), c.Param("username"))
 		if err != nil {
 			gctx.NotFoundOrError(err, "get user by name")
 			return
 		}
-		c.Set("paramsUser", &ParamsUser{user})
+		c.Set("paramsUser", &ParamsUser{database.FromDomainUser(u)})
 	}
 }

@@ -248,7 +248,8 @@ func runHookPostReceive(_ context.Context, cmd *cli.Command) error {
 		if err == nil {
 			repo, err := database.Handle.Repositories().GetByName(context.Background(), owner.ID, options.RepoName)
 			if err == nil {
-				if err := reposervice.UpdateRepositoryLanguages(repo); err != nil {
+				if err = reposervice.UpdateRepositoryLanguages(database.FromDomainRepository(repo)); err != nil {
+
 					log.Error("UpdateRepositoryLanguages: %v", err)
 				}
 			}

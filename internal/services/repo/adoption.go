@@ -84,8 +84,7 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 
 	var repo *database.Repository
 	err = database.Handle.DB().Transaction(func(tx *gorm.DB) error {
-		var err error
-		repo, err = database.NewRepositoriesStore(tx).Create(ctx, owner.ID, database.CreateRepoOptions{
+		domainRepo, err := database.NewRepositoriesStore(tx).Create(ctx, owner.ID, database.CreateRepoOptions{
 			Name:          repoName,
 			DefaultBranch: conf.Repository.DefaultBranch,
 			EnableWiki:    true,
@@ -95,6 +94,7 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 		if err != nil {
 			return errors.Wrap(err, "create db record")
 		}
+		repo = database.FromDomainRepository(domainRepo)
 
 		repoPath := repo.RepoPath()
 		if !strings.HasSuffix(repoPath, ".git") {

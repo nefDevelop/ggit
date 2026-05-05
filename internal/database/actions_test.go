@@ -153,8 +153,8 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		err = s.CommitRepo(ctx,
 			CommitRepoOptions{
 				PusherName:  alice.Name,
-				Owner:       alice,
-				Repo:        repo,
+				Owner:       FromDomainUser(alice),
+				Repo:        FromDomainRepository(repo),
 				RefFullName: "refs/heads/main",
 				OldCommitID: "ca82a6dff817ec66f44342007202690a93763949",
 				NewCommitID: "085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7",
@@ -213,8 +213,8 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		err = s.CommitRepo(ctx,
 			CommitRepoOptions{
 				PusherName:  alice.Name,
-				Owner:       alice,
-				Repo:        repo,
+				Owner:       FromDomainUser(alice),
+				Repo:        FromDomainRepository(repo),
 				RefFullName: "refs/heads/main",
 				OldCommitID: git.EmptyID,
 				NewCommitID: "085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7",
@@ -288,8 +288,8 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		err = s.CommitRepo(ctx,
 			CommitRepoOptions{
 				PusherName:  alice.Name,
-				Owner:       alice,
-				Repo:        repo,
+				Owner:       FromDomainUser(alice),
+				Repo:        FromDomainRepository(repo),
 				RefFullName: "refs/heads/main",
 				OldCommitID: "ca82a6dff817ec66f44342007202690a93763949",
 				NewCommitID: git.EmptyID,
@@ -450,9 +450,9 @@ func actionsMergePullRequest(t *testing.T, ctx context.Context, s *ActionsStore)
 	require.NoError(t, err)
 
 	err = s.MergePullRequest(ctx,
-		alice,
-		alice,
-		repo,
+		FromDomainUser(alice),
+		FromDomainUser(alice),
+		FromDomainRepository(repo),
 		&Issue{
 			Index: 1,
 			Title: "Fix issue 1",
@@ -506,7 +506,7 @@ func actionsNewRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 			require.NoError(t, err)
 		})
 
-		err = s.NewRepo(ctx, alice, alice, repo)
+		err = s.NewRepo(ctx, FromDomainUser(alice), FromDomainUser(alice), FromDomainRepository(repo))
 		require.NoError(t, err)
 
 		got, err := s.ListByUser(ctx, alice.ID, alice.ID, 0, false)
@@ -538,7 +538,7 @@ func actionsNewRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		})
 
 		repo.IsFork = true
-		err = s.NewRepo(ctx, alice, alice, repo)
+		err = s.NewRepo(ctx, FromDomainUser(alice), FromDomainUser(alice), FromDomainRepository(repo))
 		require.NoError(t, err)
 
 		got, err := s.ListByUser(ctx, alice.ID, alice.ID, 0, false)
@@ -593,8 +593,8 @@ func actionsPushTag(t *testing.T, ctx context.Context, s *ActionsStore) {
 
 		err = s.PushTag(ctx,
 			PushTagOptions{
-				Owner:       alice,
-				Repo:        repo,
+				Owner:       FromDomainUser(alice),
+				Repo:        FromDomainRepository(repo),
 				PusherName:  alice.Name,
 				RefFullName: "refs/tags/v1.0.0",
 				NewCommitID: "085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7",
@@ -633,8 +633,8 @@ func actionsPushTag(t *testing.T, ctx context.Context, s *ActionsStore) {
 
 		err = s.PushTag(ctx,
 			PushTagOptions{
-				Owner:       alice,
-				Repo:        repo,
+				Owner:       FromDomainUser(alice),
+				Repo:        FromDomainRepository(repo),
 				PusherName:  alice.Name,
 				RefFullName: "refs/tags/v1.0.0",
 				NewCommitID: git.EmptyID,
@@ -683,7 +683,7 @@ func actionsRenameRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 	)
 	require.NoError(t, err)
 
-	err = s.RenameRepo(ctx, alice, alice, "oldExample", repo)
+	err = s.RenameRepo(ctx, FromDomainUser(alice), FromDomainUser(alice), "oldExample", FromDomainRepository(repo))
 	require.NoError(t, err)
 
 	got, err := s.ListByUser(ctx, alice.ID, alice.ID, 0, false)
@@ -728,7 +728,7 @@ func actionsTransferRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 	)
 	require.NoError(t, err)
 
-	err = s.TransferRepo(ctx, alice, alice, bob, repo)
+	err = s.TransferRepo(ctx, FromDomainUser(alice), FromDomainUser(alice), FromDomainUser(bob), FromDomainRepository(repo))
 	require.NoError(t, err)
 
 	got, err := s.ListByUser(ctx, alice.ID, alice.ID, 0, false)

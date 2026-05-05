@@ -396,7 +396,7 @@ func (issue *Issue) GetAssignee() (err error) {
 		return nil
 	}
 
-	issue.Assignee, err = Handle.Users().GetByID(context.TODO(), issue.AssigneeID)
+	issue.Assignee, err = Handle.Users().getByID(context.TODO(), issue.AssigneeID)
 	if IsErrUserNotExist(err) {
 		return nil
 	}
@@ -594,7 +594,7 @@ func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID i
 		return errors.Newf("UpdateIssueUserByAssignee: %v", err)
 	}
 
-	issue.Assignee, err = Handle.Users().GetByID(context.TODO(), issue.AssigneeID)
+	issue.Assignee, err = Handle.Users().getByID(context.TODO(), issue.AssigneeID)
 	if err != nil && !IsErrUserNotExist(err) {
 		log.Error("Failed to get user by ID: %v", err)
 		return nil
