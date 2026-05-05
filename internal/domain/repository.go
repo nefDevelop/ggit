@@ -85,6 +85,13 @@ type Repository struct {
 	Topics   []string
 }
 
+// Topic represents a repository topic.
+type Topic struct {
+	ID       int64
+	Name     string
+	NumRepos int
+}
+
 // RepositoriesStore defines the interface for managing repositories.
 type RepositoriesStore interface {
 	GetByID(ctx context.Context, id int64) (*Repository, error)
@@ -95,7 +102,12 @@ type RepositoriesStore interface {
 	Watch(ctx context.Context, userID, repoID int64) error
 	Touch(ctx context.Context, id int64) error
 	ListForks(ctx context.Context, repoID int64, page, pageSize int) ([]*Repository, error)
+	ListStarred(ctx context.Context, userID int64, page, pageSize int) ([]*Repository, error)
 	ListStars(ctx context.Context, repoID int64, page, pageSize int) ([]*User, error)
 	GetTopicsByRepoID(ctx context.Context, repoID int64) ([]string, error)
 	AddTopics(ctx context.Context, repoID int64, topics []string) error
+	HasForkedBy(ctx context.Context, repoID, userID int64) bool
+	GetByCollaboratorID(ctx context.Context, collaboratorID int64, limit int, orderBy string) ([]*Repository, error)
+	ListPopularTopics(ctx context.Context, limit int) ([]*Topic, error)
+	ListWatches(ctx context.Context, repoID int64) ([]*User, error)
 }

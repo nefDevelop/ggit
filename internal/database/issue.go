@@ -12,6 +12,7 @@ import (
 	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/markup"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
@@ -51,6 +52,62 @@ type Issue struct {
 
 	Attachments []*Attachment `json:"-" gorm:"-"`
 	Comments    []*Comment    `json:"-" gorm:"-"`
+}
+
+func (issue *Issue) ToDomain() *domain.Issue {
+	if issue == nil {
+		return nil
+	}
+	return &domain.Issue{
+		ID:          issue.ID,
+		RepoID:      issue.RepoID,
+		Repo:        issue.Repo.ToDomain(),
+		Index:       issue.Index,
+		PosterID:    issue.PosterID,
+		Poster:      issue.Poster.ToDomain(),
+		Title:       issue.Title,
+		Content:     issue.Content,
+		Labels:      LabelList(issue.Labels).ToDomain(),
+		MilestoneID: issue.MilestoneID,
+		Milestone:   issue.Milestone.ToDomain(),
+		Priority:    issue.Priority,
+		AssigneeID:  issue.AssigneeID,
+		Assignee:    issue.Assignee.ToDomain(),
+		IsClosed:    issue.IsClosed,
+		IsPull:      issue.IsPull,
+		NumComments: issue.NumComments,
+		Deadline:    issue.Deadline,
+		Created:     issue.Created,
+		Updated:     issue.Updated,
+	}
+}
+
+func FromDomainIssue(issue *domain.Issue) *Issue {
+	if issue == nil {
+		return nil
+	}
+	return &Issue{
+		ID:          issue.ID,
+		RepoID:      issue.RepoID,
+		Repo:        FromDomainRepository(issue.Repo),
+		Index:       issue.Index,
+		PosterID:    issue.PosterID,
+		Poster:      FromDomainUser(issue.Poster),
+		Title:       issue.Title,
+		Content:     issue.Content,
+		Labels:      FromDomainLabelList(issue.Labels),
+		MilestoneID: issue.MilestoneID,
+		Milestone:   FromDomainMilestone(issue.Milestone),
+		Priority:    issue.Priority,
+		AssigneeID:  issue.AssigneeID,
+		Assignee:    FromDomainUser(issue.Assignee),
+		IsClosed:    issue.IsClosed,
+		IsPull:      issue.IsPull,
+		NumComments: issue.NumComments,
+		DeadlineUnix: issue.Deadline.Unix(),
+		CreatedUnix:  issue.Created.Unix(),
+		UpdatedUnix:  issue.Updated.Unix(),
+	}
 }
 
 // BeforeCreate implements the GORM create hook.
@@ -396,11 +453,16 @@ func (issue *Issue) GetAssignee() (err error) {
 		return nil
 	}
 
-	issue.Assignee, err = Handle.Users().getByID(context.TODO(), issue.AssigneeID)
-	if IsErrUserNotExist(err) {
-		return nil
+	u, err := Handle.Users().GetByID(context.TODO(), issue.AssigneeID)
+	if err != nil {
+		if IsErrUserNotExist(err) {
+			return nil
+		}
+		return err
 	}
-	return err
+	issue.Assignee = FromDomainUser(u)
+	return nil
+
 }
 
 // ReadBy sets issue to be read by given user.
@@ -594,11 +656,15 @@ func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID i
 		return errors.Newf("UpdateIssueUserByAssignee: %v", err)
 	}
 
-	issue.Assignee, err = Handle.Users().getByID(context.TODO(), issue.AssigneeID)
+	u, err := Handle.Users().GetByID(context.TODO(), issue.AssigneeID)
 	if err != nil && !IsErrUserNotExist(err) {
 		log.Error("Failed to get user by ID: %v", err)
 		return nil
 	}
+	if err == nil {
+		issue.Assignee = FromDomainUser(u)
+	}
+
 
 	// Error not nil here means user does not exist, which is remove assignee.
 	isRemoveAssignee := err != nil

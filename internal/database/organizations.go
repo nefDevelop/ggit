@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // OrganizationsStore is the storage layer for organizations.
@@ -14,19 +15,12 @@ type OrganizationsStore struct {
 	db *gorm.DB
 }
 
-func newOrganizationsStoreStore(db *gorm.DB) *OrganizationsStore {
+func newOrganizationsStore(db *gorm.DB) *OrganizationsStore {
 	return &OrganizationsStore{db: db}
 }
 
-type ListOrgsOptions struct {
-	// Filter by the membership with the given user ID.
-	MemberID int64
-	// Whether to include private memberships.
-	IncludePrivateMembers bool
-}
-
 // List returns a list of organizations filtered by options.
-func (s *OrganizationsStore) List(ctx context.Context, opts ListOrgsOptions) ([]*Organization, error) {
+func (s *OrganizationsStore) List(ctx context.Context, opts domain.ListOrgsOptions) ([]*domain.User, error) {
 	if opts.MemberID <= 0 {
 		return nil, errors.New("MemberID must be greater than 0")
 	}
@@ -49,8 +43,17 @@ func (s *OrganizationsStore) List(ctx context.Context, opts ListOrgsOptions) ([]
 		tx = tx.Where("org_user.is_public = ?", true)
 	}
 
-	var orgs []*Organization
-	return orgs, tx.Select(UserListFields).Find(&orgs).Error
+	var models []*User
+	err := tx.Select(UserListFields).Find(&models).Error
+	if err != nil {
+		return nil, err
+	}
+
+	orgs := make([]*domain.User, len(models))
+	for i, m := range models {
+		orgs[i] = m.ToDomain()
+	}
+	return orgs, nil
 }
 
 // SearchByName returns a list of organizations whose username or full name
@@ -58,17 +61,8 @@ func (s *OrganizationsStore) List(ctx context.Context, opts ListOrgsOptions) ([]
 // page and page size, and sorted by the given order (e.g. "id DESC"). A total
 // count of all results is also returned. If the order is not given, it's up to
 // the database to decide.
-func (s *OrganizationsStore) SearchByName(ctx context.Context, keyword string, page, pageSize int, orderBy string) ([]*Organization, int64, error) {
-	domainUsers, count, err := searchUserByName(ctx, s.db, UserTypeOrganization, keyword, page, pageSize, orderBy)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	orgs := make([]*Organization, len(domainUsers))
-	for i, du := range domainUsers {
-		orgs[i] = FromDomainUser(du)
-	}
-	return orgs, count, nil
+func (s *OrganizationsStore) SearchByName(ctx context.Context, keyword string, page, pageSize int, orderBy string) ([]*domain.User, int64, error) {
+	return searchUserByName(ctx, s.db, UserTypeOrganization, keyword, page, pageSize, orderBy)
 }
 
 // CountByUser returns the number of organizations the user is a member of.

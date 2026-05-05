@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
+	"github.com/nef734/ggit/internal/domain"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
@@ -13,16 +14,16 @@ type Collaboration struct {
 	ID     int64      `gorm:"primaryKey"`
 	UserID int64      `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
 	RepoID int64      `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
-	Mode   AccessMode `gorm:"not null;default:2"`
+	Mode   domain.AccessMode `gorm:"not null;default:2"`
 }
 
 func (c *Collaboration) ModeI18nKey() string {
 	switch c.Mode {
-	case AccessModeRead:
+	case domain.AccessModeRead:
 		return "repo.settings.collaboration.read"
-	case AccessModeWrite:
+	case domain.AccessModeWrite:
 		return "repo.settings.collaboration.write"
-	case AccessModeAdmin:
+	case domain.AccessModeAdmin:
 		return "repo.settings.collaboration.admin"
 	default:
 		return "repo.settings.collaboration.undefined"
@@ -59,7 +60,7 @@ func (r *Repository) AddCollaborator(u *User) error {
 			return err
 		}
 
-		collaboration.Mode = AccessModeWrite
+		collaboration.Mode = domain.AccessModeWrite
 		if err = tx.Create(collaboration).Error; err != nil {
 			return err
 		}
@@ -87,9 +88,9 @@ func (c *Collaborator) APIFormat() *apiv2types.RepositoryCollaboratorResponse {
 	return &apiv2types.RepositoryCollaboratorResponse{
 		UserResponse: c.User.APIFormat(),
 		Permissions: apiv2types.RepositoryPermission{
-			Admin: c.Collaboration.Mode >= AccessModeAdmin,
-			Push:  c.Collaboration.Mode >= AccessModeWrite,
-			Pull:  c.Collaboration.Mode >= AccessModeRead,
+			Admin: c.Collaboration.Mode >= domain.AccessModeAdmin,
+			Push:  c.Collaboration.Mode >= domain.AccessModeWrite,
+			Pull:  c.Collaboration.Mode >= domain.AccessModeRead,
 		},
 	}
 }
@@ -120,9 +121,9 @@ func (r *Repository) GetCollaborators() ([]*Collaborator, error) {
 }
 
 // ChangeCollaborationAccessMode sets new access mode for the collaboration.
-func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode AccessMode) error {
+func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.AccessMode) error {
 	// Discard invalid input
-	if mode <= AccessModeNone || mode > AccessModeOwner {
+	if mode <= domain.AccessModeNone || mode > domain.AccessModeOwner {
 		return nil
 	}
 

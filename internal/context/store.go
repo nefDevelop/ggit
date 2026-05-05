@@ -52,11 +52,15 @@ func NewStore() Store {
 }
 
 func (*store) GetAccessTokenBySHA1(ctx context.Context, sha1 string) (*database.AccessToken, error) {
-	return database.Handle.AccessTokens().GetBySHA1(ctx, sha1)
+	t, err := database.Handle.AccessTokens().GetBySHA1(ctx, sha1)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainAccessToken(t), nil
 }
 
 func (*store) TouchAccessTokenByID(ctx context.Context, id int64) error {
-	return database.Handle.AccessTokens().Touch(ctx, id)
+	return database.Handle.AccessTokens().TouchByID(ctx, id)
 }
 
 func (*store) GetUserByID(ctx context.Context, id int64) (*database.User, error) {

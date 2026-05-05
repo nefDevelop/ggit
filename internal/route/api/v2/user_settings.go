@@ -172,7 +172,12 @@ func GetUserEmails(c *context.APIContext) {
 		c.Error(err, "get email addresses")
 		return
 	}
-	c.JSON(http.StatusOK, emails)
+
+	res := make([]*apiv2types.UserEmailResponse, len(emails))
+	for i, e := range emails {
+		res[i] = ToUserEmailResponse(e)
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 // AddUserEmail adds a new email address for the current user.
@@ -319,7 +324,7 @@ func AddUserAccessToken(c *context.APIContext) {
 		return
 	}
 
-	t, err := database.Handle.AccessTokens().Create(c.Req.Context(), c.User.ID, f.Name)
+	t, token, err := database.Handle.AccessTokens().Create(c.Req.Context(), c.User.ID, f.Name)
 	if err != nil {
 		if database.IsErrAccessTokenAlreadyExist(err) {
 			c.StatusError(http.StatusUnprocessableEntity, "Access token name has already been used.", err)
@@ -329,7 +334,11 @@ func AddUserAccessToken(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, t)
+	c.JSON(http.StatusOK, map[string]any{
+		"id":   t.ID,
+		"name": t.Name,
+		"sha1": token,
+	})
 }
 
 // DeleteUserAccessToken deletes an access token for the current user.
@@ -749,7 +758,7 @@ func GetBlockedUsers(c *context.APIContext) {
 
 	res := make([]*apiv2types.UserResponse, len(users))
 	for i, u := range users {
-		res[i] = u.APIFormat()
+		res[i] = database.FromDomainUser(u).APIFormat()
 	}
 	c.JSON(http.StatusOK, res)
 }

@@ -49,6 +49,29 @@ type User struct {
 	DisableNewsFeed    bool
 }
 
+// EmailAddress represents an email address of a user.
+type EmailAddress struct {
+	ID          int64
+	UserID      int64
+	Email       string
+	IsActivated bool
+	IsPrimary   bool
+}
+
+// IsOrganization returns true if the user is an organization.
+func (u *User) IsOrganization() bool {
+	return u.Type == UserTypeOrganization || u.Type == UserTypeOrganizationPrivate
+}
+
+// AvatarURLPath returns the URL path of the user's avatar.
+func (u *User) AvatarURLPath() string {
+	if u.UseCustomAvatar {
+		return "/avatars/" + u.Name
+	}
+	return "/avatars/default"
+}
+
+
 // UsersStore defines the interface for managing users.
 type UsersStore interface {
 	Authenticate(ctx context.Context, login, password string, loginSourceID int64) (*User, error)
@@ -62,4 +85,16 @@ type UsersStore interface {
 	DeleteByID(ctx context.Context, userID int64, skipRewriteAuthorizedKeys bool) error
 	UseCustomAvatar(ctx context.Context, userID int64, avatar []byte) error
 	Count(ctx context.Context) int64
+	IsUsernameUsed(ctx context.Context, username string, excludeUserID int64) bool
+	GetMailableEmailsByUsernames(ctx context.Context, usernames []string) ([]string, error)
+	GetEmail(ctx context.Context, userID int64, email string, needsActivated bool) (*EmailAddress, error)
+	DeleteInactivated(ctx context.Context) error
+	DeleteCustomAvatar(ctx context.Context, userID int64) error
+	ChangeUsername(ctx context.Context, userID int64, newUsername string) error
+	AddEmail(ctx context.Context, userID int64, email string, isActivated bool) error
+	ListEmails(ctx context.Context, userID int64) ([]*EmailAddress, error)
+	MarkEmailPrimary(ctx context.Context, userID int64, email string) error
+	DeleteEmail(ctx context.Context, userID int64, email string) error
+	MarkEmailActivated(ctx context.Context, userID int64, email string) error
+	GetByKeyID(ctx context.Context, keyID int64) (*User, error)
 }

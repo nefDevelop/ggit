@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -48,6 +49,38 @@ func (t *AccessToken) AfterFind(tx *gorm.DB) error {
 	return nil
 }
 
+func (t *AccessToken) ToDomain() *domain.AccessToken {
+	if t == nil {
+		return nil
+	}
+	return &domain.AccessToken{
+		ID:                t.ID,
+		UserID:            t.UserID,
+		Name:              t.Name,
+		Sha1:              t.Sha1,
+		SHA256:            t.SHA256,
+		Created:           t.Created,
+		Updated:           t.Updated,
+		HasRecentActivity: t.HasRecentActivity,
+		HasUsed:           t.HasUsed,
+	}
+}
+
+func FromDomainAccessToken(t *domain.AccessToken) *AccessToken {
+	if t == nil {
+		return nil
+	}
+	return &AccessToken{
+		ID:          t.ID,
+		UserID:      t.UserID,
+		Name:        t.Name,
+		Sha1:        t.Sha1,
+		SHA256:      t.SHA256,
+		CreatedUnix: t.Created.Unix(),
+		UpdatedUnix: t.Updated.Unix(),
+	}
+}
+
 // AccessTokensStore is the storage layer for access tokens.
 type AccessTokensStore struct {
 	db *gorm.DB
@@ -72,12 +105,12 @@ func (err ErrAccessTokenAlreadyExist) Error() string {
 // Create creates a new access token and persist to database. It returns
 // ErrAccessTokenAlreadyExist when an access token with same name already exists
 // for the user.
-func (s *AccessTokensStore) Create(ctx context.Context, userID int64, name string) (*AccessToken, error) {
+func (s *AccessTokensStore) Create(ctx context.Context, userID int64, name string) (*domain.AccessToken, string, error) {
 	err := s.db.WithContext(ctx).Where("uid = ? AND name = ?", userID, name).First(new(AccessToken)).Error
 	if err == nil {
-		return nil, ErrAccessTokenAlreadyExist{args: errx.Args{"userID": userID, "name": name}}
+		return nil, "", ErrAccessTokenAlreadyExist{args: errx.Args{"userID": userID, "name": name}}
 	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, err
+		return nil, "", err
 	}
 
 	token := cryptox.SHA1(uuid.New().String())
@@ -90,12 +123,12 @@ func (s *AccessTokensStore) Create(ctx context.Context, userID int64, name strin
 		SHA256: sha256,
 	}
 	if err = s.db.WithContext(ctx).Create(accessToken).Error; err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// Set back the raw access token value, for the sake of the caller.
 	accessToken.Sha1 = token
-	return accessToken, nil
+	return accessToken.ToDomain(), token, nil
 }
 
 // DeleteByID deletes the access token by given ID.
@@ -128,7 +161,7 @@ func (ErrAccessTokenNotExist) NotFound() bool {
 
 // GetBySHA1 returns the access token with given SHA1. It returns
 // ErrAccessTokenNotExist when not found.
-func (s *AccessTokensStore) GetBySHA1(ctx context.Context, sha1 string) (*AccessToken, error) {
+func (s *AccessTokensStore) GetBySHA1(ctx context.Context, sha1 string) (*domain.AccessToken, error) {
 	// No need to waste a query for an empty SHA1.
 	if sha1 == "" {
 		return nil, ErrAccessTokenNotExist{args: errx.Args{"sha": sha1}}
@@ -142,17 +175,43 @@ func (s *AccessTokensStore) GetBySHA1(ctx context.Context, sha1 string) (*Access
 	} else if err != nil {
 		return nil, err
 	}
-	return token, nil
+	return token.ToDomain(), nil
+}
+
+// GetBySHA256 returns the access token with given SHA256. It returns
+// ErrAccessTokenNotExist when not found.
+func (s *AccessTokensStore) GetBySHA256(ctx context.Context, sha256 string) (*domain.AccessToken, error) {
+	if sha256 == "" {
+		return nil, ErrAccessTokenNotExist{args: errx.Args{"sha256": sha256}}
+	}
+
+	token := new(AccessToken)
+	err := s.db.WithContext(ctx).Where("sha256 = ?", sha256).First(token).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrAccessTokenNotExist{args: errx.Args{"sha256": sha256}}
+	} else if err != nil {
+		return nil, err
+	}
+	return token.ToDomain(), nil
 }
 
 // List returns all access tokens belongs to given user.
-func (s *AccessTokensStore) List(ctx context.Context, userID int64) ([]*AccessToken, error) {
+func (s *AccessTokensStore) List(ctx context.Context, userID int64) ([]*domain.AccessToken, error) {
 	var tokens []*AccessToken
-	return tokens, s.db.WithContext(ctx).Where("uid = ?", userID).Order("id ASC").Find(&tokens).Error
+	err := s.db.WithContext(ctx).Where("uid = ?", userID).Order("id ASC").Find(&tokens).Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.AccessToken, len(tokens))
+	for i, t := range tokens {
+		res[i] = t.ToDomain()
+	}
+	return res, nil
 }
 
-// Touch updates the updated time of the given access token to the current time.
-func (s *AccessTokensStore) Touch(ctx context.Context, id int64) error {
+// TouchByID updates the updated time of the given access token to the current time.
+func (s *AccessTokensStore) TouchByID(ctx context.Context, id int64) error {
 	return s.db.WithContext(ctx).
 		Model(new(AccessToken)).
 		Where("id = ?", id).

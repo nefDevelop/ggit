@@ -11,6 +11,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/email"
 	authservice "github.com/nef734/ggit/internal/services/auth"
 	"github.com/nef734/ggit/internal/strx"
@@ -240,7 +241,7 @@ func LoginTwoFactor(c *context.APIContext) {
 		return
 	}
 
-	valid, err := t.ValidateTOTP(payload.Passcode)
+	valid, err := database.FromDomainTwoFactor(t).ValidateTOTP(payload.Passcode)
 	if err != nil {
 		c.Error(err, "validate TOTP")
 		return
@@ -428,7 +429,7 @@ type activatePayload struct {
 	Email string `json:"email"` // Optional, used for secondary email activation
 }
 
-func verifyActiveEmailCode(code, email string) *database.EmailAddress {
+func verifyActiveEmailCode(code, email string) *domain.EmailAddress {
 	minutes := conf.Auth.ActivateCodeLives
 	if user := parseUserFromCode(code); user != nil {
 		prefix := code[:tool.TimeLimitCodeLength]

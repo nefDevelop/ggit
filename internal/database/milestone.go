@@ -9,6 +9,7 @@ import (
 	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
@@ -32,6 +33,42 @@ type Milestone struct {
 	DeadlineUnix   int64
 	ClosedDate     time.Time `json:"-" gorm:"-"`
 	ClosedDateUnix int64
+}
+
+func (m *Milestone) ToDomain() *domain.Milestone {
+	if m == nil {
+		return nil
+	}
+	return &domain.Milestone{
+		ID:              m.ID,
+		RepoID:          m.RepoID,
+		Name:            m.Name,
+		Content:         m.Content,
+		IsClosed:        m.IsClosed,
+		NumIssues:       m.NumIssues,
+		NumClosedIssues: m.NumClosedIssues,
+		Completeness:    m.Completeness,
+		Deadline:        time.Unix(m.DeadlineUnix, 0),
+		ClosedDate:      time.Unix(m.ClosedDateUnix, 0),
+	}
+}
+
+func FromDomainMilestone(m *domain.Milestone) *Milestone {
+	if m == nil {
+		return nil
+	}
+	return &Milestone{
+		ID:              m.ID,
+		RepoID:          m.RepoID,
+		Name:            m.Name,
+		Content:         m.Content,
+		IsClosed:        m.IsClosed,
+		NumIssues:       m.NumIssues,
+		NumClosedIssues: m.NumClosedIssues,
+		Completeness:    m.Completeness,
+		DeadlineUnix:    m.Deadline.Unix(),
+		ClosedDateUnix:  m.ClosedDate.Unix(),
+	}
 }
 
 // BeforeCreate implements the GORM create hook.

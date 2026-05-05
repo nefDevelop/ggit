@@ -5,6 +5,7 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
@@ -71,8 +72,9 @@ func GetUserStars(c *context.APIContext) {
 
 	apiRepos := make([]*apiv2types.RepositoryResponse, len(repos))
 	for i, repo := range repos {
-		_ = repo.LoadAttributes()
-		apiRepos[i] = repo.APIFormat(repo.MustOwner())
+		drepo := database.FromDomainRepository(repo)
+		_ = drepo.LoadAttributes()
+		apiRepos[i] = drepo.APIFormat(drepo.MustOwner())
 	}
 
 	c.JSON(http.StatusOK, apiRepos)
@@ -89,7 +91,7 @@ func GetUserPublicOrganizations(c *context.APIContext) {
 	user := database.FromDomainUser(du)
 
 
-	orgs, err := database.Handle.Organizations().List(c.Req.Context(), database.ListOrgsOptions{
+	orgs, err := database.Handle.Organizations().List(c.Req.Context(), domain.ListOrgsOptions{
 		MemberID:              user.ID,
 		IncludePrivateMembers: c.IsLogged && (c.User.ID == user.ID || c.User.IsAdmin),
 	})
@@ -100,7 +102,7 @@ func GetUserPublicOrganizations(c *context.APIContext) {
 
 	apiOrgs := make([]*apiv2types.OrganizationResponse, len(orgs))
 	for i, org := range orgs {
-		apiOrgs[i] = org.APIFormatOrg()
+		apiOrgs[i] = database.FromDomainUser(org).APIFormatOrg()
 	}
 
 	c.JSON(http.StatusOK, apiOrgs)

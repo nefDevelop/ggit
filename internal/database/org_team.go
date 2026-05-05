@@ -8,6 +8,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -20,7 +21,7 @@ type Team struct {
 	LowerName   string        `gorm:"index;not null"`
 	Name        string        `gorm:"not null"`
 	Description string        `gorm:"type:VARCHAR(255)"`
-	Authorize   AccessMode    `gorm:"not null"`
+	Authorize   domain.AccessMode    `gorm:"not null"`
 	Repos       []*Repository `json:"-" gorm:"-"`
 	Members     []*User       `json:"-" gorm:"-"`
 	NumRepos    int
@@ -43,7 +44,7 @@ func (t *Team) IsOwnerTeam() bool {
 
 // HasWriteAccess returns true if team has at least write level access mode.
 func (t *Team) HasWriteAccess() bool {
-	return t.Authorize >= AccessModeWrite
+	return t.Authorize >= domain.AccessModeWrite
 }
 
 // IsTeamMember returns true if given user is a member of team.
@@ -163,11 +164,11 @@ func (t *Team) removeRepository(tx *gorm.DB, repo *Repository, recalculate bool)
 	}
 
 	// TODO: Delete me when this method is migrated to use GORM.
-	userAccessMode := func(tx *gorm.DB, userID int64, repo *Repository) (AccessMode, error) {
-		mode := AccessModeNone
+	userAccessMode := func(tx *gorm.DB, userID int64, repo *Repository) (domain.AccessMode, error) {
+		mode := domain.AccessModeNone
 		// Everyone has read access to public repository
 		if !repo.IsPrivate {
-			mode = AccessModeRead
+			mode = domain.AccessModeRead
 		}
 
 		if userID <= 0 {
@@ -175,7 +176,7 @@ func (t *Team) removeRepository(tx *gorm.DB, repo *Repository, recalculate bool)
 		}
 
 		if userID == repo.OwnerID {
-			return AccessModeOwner, nil
+			return domain.AccessModeOwner, nil
 		}
 
 		access := &Access{
@@ -192,13 +193,13 @@ func (t *Team) removeRepository(tx *gorm.DB, repo *Repository, recalculate bool)
 		return access.Mode, nil
 	}
 
-	hasAccess := func(tx *gorm.DB, userID int64, repo *Repository, testMode AccessMode) (bool, error) {
+	hasAccess := func(tx *gorm.DB, userID int64, repo *Repository, testMode domain.AccessMode) (bool, error) {
 		mode, err := userAccessMode(tx, userID, repo)
 		return mode >= testMode, err
 	}
 
 	for _, member := range t.Members {
-		has, err := hasAccess(tx, member.ID, repo, AccessModeRead)
+		has, err := hasAccess(tx, member.ID, repo, domain.AccessModeRead)
 		if err != nil {
 			return err
 		} else if has {
@@ -391,7 +392,7 @@ func DeleteTeam(t *Team) error {
 	}
 
 	// Get organization.
-	org, err := Handle.Users().getByID(context.TODO(), t.OrgID)
+	org, err := Handle.Users().GetByID(context.TODO(), t.OrgID)
 	if err != nil {
 		return err
 	}
@@ -655,7 +656,7 @@ func RemoveTeamRepo(teamID, repoID int64) error {
 }
 
 // GetTeamsHaveAccessToRepo returns all teams in an organization that have given access level to the repository.
-func GetTeamsHaveAccessToRepo(orgID, repoID int64, mode AccessMode) ([]*Team, error) {
+func GetTeamsHaveAccessToRepo(orgID, repoID int64, mode domain.AccessMode) ([]*Team, error) {
 	teams := make([]*Team, 0, 5)
 	err := Handle.db.Joins("JOIN team_repo ON team_repo.team_id = team.id").
 		Where("team.authorize >= ? AND team_repo.org_id = ? AND team_repo.repo_id = ?", mode, orgID, repoID).

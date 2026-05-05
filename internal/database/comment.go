@@ -11,6 +11,7 @@ import (
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/markup"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
@@ -70,6 +71,75 @@ type Comment struct {
 	ShowTag CommentTag `json:"-" gorm:"-"`
 }
 
+type CommentsStore struct {
+	db *gorm.DB
+}
+
+func newCommentsStore(db *gorm.DB) *CommentsStore {
+	return &CommentsStore{db: db}
+}
+
+func (s *CommentsStore) GetByID(ctx context.Context, id int64) (*domain.Comment, error) {
+	c, err := getCommentByID(s.db, id)
+	if err != nil {
+		return nil, err
+	}
+	return c.ToDomain(), nil
+}
+
+func (s *CommentsStore) ListByIssueID(ctx context.Context, issueID int64) ([]*domain.Comment, error) {
+	models, err := getCommentsByIssueID(s.db, issueID)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.Comment, len(models))
+	for i, m := range models {
+		res[i] = m.ToDomain()
+	}
+	return res, nil
+}
+
+func (c *Comment) ToDomain() *domain.Comment {
+	if c == nil {
+		return nil
+	}
+	return &domain.Comment{
+		ID:        c.ID,
+		Type:      int(c.Type),
+		PosterID:  c.PosterID,
+		Poster:    c.Poster.ToDomain(),
+		IssueID:   c.IssueID,
+		Issue:     c.Issue.ToDomain(),
+		CommitID:  c.CommitID,
+		Line:      c.Line,
+		Content:   c.Content,
+		Created:   c.Created,
+		Updated:   c.Updated,
+		CommitSHA: c.CommitSHA,
+	}
+}
+
+func FromDomainComment(c *domain.Comment) *Comment {
+	if c == nil {
+		return nil
+	}
+	return &Comment{
+		ID:          c.ID,
+		Type:        CommentType(c.Type),
+		PosterID:    c.PosterID,
+		Poster:      FromDomainUser(c.Poster),
+		IssueID:     c.IssueID,
+		Issue:       FromDomainIssue(c.Issue),
+		CommitID:    c.CommitID,
+		Line:        c.Line,
+		Content:     c.Content,
+		CreatedUnix: c.Created.Unix(),
+		UpdatedUnix: c.Updated.Unix(),
+		CommitSHA:   c.CommitSHA,
+	}
+}
+
 // BeforeCreate implements the GORM create hook.
 func (c *Comment) BeforeCreate(tx *gorm.DB) error {
 	if c.CreatedUnix == 0 {
@@ -94,14 +164,16 @@ func (c *Comment) AfterFind(_ *gorm.DB) error {
 
 func (c *Comment) loadAttributes(tx *gorm.DB) (err error) {
 	if c.Poster == nil {
-		c.Poster, err = Handle.Users().getByID(context.TODO(), c.PosterID)
+		u, err := Handle.Users().GetByID(context.TODO(), c.PosterID)
 		if err != nil {
 			if IsErrUserNotExist(err) {
 				c.PosterID = -1
 				c.Poster = NewGhostUser()
 			} else {
-				return errors.Newf("getUserByID.(Poster) [%d]: %v", c.PosterID, err)
+				return errors.Newf("GetByID.(Poster) [%d]: %v", c.PosterID, err)
 			}
+		} else {
+			c.Poster = FromDomainUser(u)
 		}
 	}
 
@@ -403,17 +475,21 @@ func (ErrCommentNotExist) NotFound() bool {
 	return true
 }
 
-// GetCommentByID returns the comment by given ID.
-func GetCommentByID(id int64) (*Comment, error) {
+func getCommentByID(db *gorm.DB, id int64) (*Comment, error) {
 	c := new(Comment)
-	err := Handle.db.Where("id = ?", id).First(c).Error
+	err := db.Where("id = ?", id).First(c).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrCommentNotExist{args: map[string]any{"commentID": id}}
 		}
 		return nil, err
 	}
-	return c, c.LoadAttributes()
+	return c, c.loadAttributes(db)
+}
+
+// GetCommentByID returns the comment by given ID.
+func GetCommentByID(id int64) (*Comment, error) {
+	return getCommentByID(Handle.db, id)
 }
 
 // FIXME: use CommentList to improve performance.

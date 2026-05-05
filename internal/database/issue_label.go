@@ -9,6 +9,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/lazyregexp"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
@@ -58,6 +59,52 @@ type Label struct {
 	NumClosedIssues int
 	NumOpenIssues   int  `json:"-" gorm:"-"`
 	IsChecked       bool `json:"-" gorm:"-"`
+}
+
+type LabelList []*Label
+
+func (ls LabelList) ToDomain() []*domain.Label {
+	res := make([]*domain.Label, len(ls))
+	for i, l := range ls {
+		res[i] = &domain.Label{
+			ID:              l.ID,
+			RepoID:          l.RepoID,
+			Name:            l.Name,
+			Color:           l.Color,
+			NumIssues:       l.NumIssues,
+			NumClosedIssues: l.NumClosedIssues,
+		}
+	}
+	return res
+}
+
+func FromDomainLabelList(ls []*domain.Label) []*Label {
+	res := make([]*Label, len(ls))
+	for i, l := range ls {
+		res[i] = &Label{
+			ID:              l.ID,
+			RepoID:          l.RepoID,
+			Name:            l.Name,
+			Color:           l.Color,
+			NumIssues:       l.NumIssues,
+			NumClosedIssues: l.NumClosedIssues,
+		}
+	}
+	return res
+}
+
+func (l *Label) ToDomain() *domain.Label {
+	if l == nil {
+		return nil
+	}
+	return &domain.Label{
+		ID:              l.ID,
+		RepoID:          l.RepoID,
+		Name:            l.Name,
+		Color:           l.Color,
+		NumIssues:       l.NumIssues,
+		NumClosedIssues: l.NumClosedIssues,
+	}
 }
 
 // AfterFind implements the GORM query hook.

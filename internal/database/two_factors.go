@@ -12,6 +12,7 @@ import (
 	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/strx"
 )
@@ -88,7 +89,7 @@ func (ErrTwoFactorNotFound) NotFound() bool {
 
 // GetByUserID returns the 2FA token of given user. It returns
 // ErrTwoFactorNotFound when not found.
-func (s *TwoFactorsStore) GetByUserID(ctx context.Context, userID int64) (*TwoFactor, error) {
+func (s *TwoFactorsStore) GetByUserID(ctx context.Context, userID int64) (*domain.TwoFactor, error) {
 	tf := new(TwoFactor)
 	err := s.db.WithContext(ctx).Where("user_id = ?", userID).First(tf).Error
 	if err != nil {
@@ -97,7 +98,7 @@ func (s *TwoFactorsStore) GetByUserID(ctx context.Context, userID int64) (*TwoFa
 		}
 		return nil, err
 	}
-	return tf, nil
+	return tf.ToDomain(), nil
 }
 
 // IsEnabled returns true if the user has enabled 2FA.
@@ -132,6 +133,50 @@ func (s *TwoFactorsStore) UseRecoveryCode(ctx context.Context, userID int64, cod
 	})
 }
 
+// GetRecoveryCodesByUserID returns recovery codes of given user.
+func (s *TwoFactorsStore) GetRecoveryCodesByUserID(ctx context.Context, userID int64) ([]*domain.TwoFactorRecoveryCode, error) {
+	var recoveryCodes []*TwoFactorRecoveryCode
+	err := s.db.WithContext(ctx).Where("user_id = ?", userID).Find(&recoveryCodes).Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.TwoFactorRecoveryCode, len(recoveryCodes))
+	for i, code := range recoveryCodes {
+		res[i] = code.ToDomain()
+	}
+	return res, nil
+}
+
+// RegenerateRecoveryCodes regenerates new set of recovery codes for given user.
+func (s *TwoFactorsStore) RegenerateRecoveryCodes(ctx context.Context, userID int64) error {
+	recoveryCodes, err := generateRecoveryCodes(userID, 10)
+	if err != nil {
+		return errors.Wrap(err, "generate recovery codes")
+	}
+
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
+			return errors.Wrap(err, "delete recovery codes")
+		} else if err = tx.Create(recoveryCodes).Error; err != nil {
+			return errors.Wrap(err, "insert new recovery codes")
+		}
+		return nil
+	})
+}
+
+// Delete removes two-factor authentication token and recovery codes of given user.
+func (s *TwoFactorsStore) Delete(ctx context.Context, userID int64) (err error) {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err = tx.Where("user_id = ?", userID).Delete(new(TwoFactor)).Error; err != nil {
+			return errors.Wrap(err, "delete two-factor")
+		} else if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
+			return errors.Wrap(err, "delete recovery codes")
+		}
+		return nil
+	})
+}
+
 // generateRecoveryCodes generates N number of recovery codes for 2FA.
 func generateRecoveryCodes(userID int64, n int) ([]*TwoFactorRecoveryCode, error) {
 	recoveryCodes := make([]*TwoFactorRecoveryCode, n)
@@ -147,3 +192,4 @@ func generateRecoveryCodes(userID int64, n int) ([]*TwoFactorRecoveryCode, error
 	}
 	return recoveryCodes, nil
 }
+

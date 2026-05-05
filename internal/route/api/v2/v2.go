@@ -214,6 +214,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.PUT("/branches/:branch/protection", ginx.Handle(UpdateBranchProtection))
 		repo.DELETE("/branches/:branch/protection", ginx.Handle(DeleteBranchProtection))
 
+		repo.GET("/tags", ginx.Handle(ListRepoTags))
+		repo.POST("/tags", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRepoTag))
+		repo.DELETE("/tags/:tag", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(DeleteRepoTag))
+
 		repo.GET("/archive/*name", context.RepoRef(), ginx.Handle(GetRepoArchive))
 		repo.GET("/raw/:ref/*path", ginx.Handle(GetRepoRawFile))
 		repo.GET("/media/:ref/*path", ginx.Handle(GetRepoMediaFile))

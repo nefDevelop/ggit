@@ -16,6 +16,7 @@ import (
 	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lazyregexp"
 	"github.com/nef734/ggit/internal/repox"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
@@ -113,24 +114,42 @@ func (s *ActionsStore) listByUser(ctx context.Context, userID, actorID, afterID 
 // ListByUser returns actions of the user viewable by the actor. Results are
 // paginated if `afterID` is given. The `isProfile` indicates whether repository
 // permissions should be considered.
-func (s *ActionsStore) ListByUser(ctx context.Context, userID, actorID, afterID int64, isProfile bool) ([]*Action, error) {
-	actions := make([]*Action, 0, conf.UI.User.NewsFeedPagingNum)
-	return actions, s.listByUser(ctx, userID, actorID, afterID, isProfile).Find(&actions).Error
+func (s *ActionsStore) ListByUser(ctx context.Context, userID, actorID, afterID int64, isProfile bool) ([]*domain.Action, error) {
+	models := make([]*Action, 0, conf.UI.User.NewsFeedPagingNum)
+	err := s.listByUser(ctx, userID, actorID, afterID, isProfile).Find(&models).Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.Action, len(models))
+	for i, m := range models {
+		res[i] = m.ToDomain()
+	}
+	return res, nil
 }
 
 // ListAuditLog returns all actions for the audit log. It only returns one copy per action
 // by filtering where user_id == act_user_id.
-func (s *ActionsStore) ListAuditLog(ctx context.Context, page int) ([]*Action, error) {
+func (s *ActionsStore) ListAuditLog(ctx context.Context, page int) ([]*domain.Action, error) {
 	if page <= 0 {
 		page = 1
 	}
 	actions := make([]*Action, 0, conf.UI.Admin.NoticePagingNum)
-	return actions, s.db.WithContext(ctx).
+	err := s.db.WithContext(ctx).
 		Where("user_id = act_user_id").
 		Limit(conf.UI.Admin.NoticePagingNum).
 		Offset((page - 1) * conf.UI.Admin.NoticePagingNum).
 		Order("id DESC").
 		Find(&actions).Error
+	if err != nil {
+		return nil, err
+	}
+
+	dactions := make([]*domain.Action, len(actions))
+	for i := range actions {
+		dactions[i] = actions[i].ToDomain()
+	}
+	return dactions, nil
 }
 
 // notifyWatchers creates rows in action table for watchers who are able to see the action.
@@ -152,17 +171,17 @@ func (s *ActionsStore) notifyWatchers(ctx context.Context, act *Action) error {
 	actions = append(actions, clone(act.ActUserID))
 
 	for _, watch := range watches {
-		if act.ActUserID == watch.UserID {
+		if act.ActUserID == watch.ID {
 			continue
 		}
-		actions = append(actions, clone(watch.UserID))
+		actions = append(actions, clone(watch.ID))
 	}
 
 	return s.db.Create(actions).Error
 }
 
 // UpdateConfig creates an action for updating system configuration.
-func (s *ActionsStore) UpdateConfig(ctx context.Context, doer *User, section, content string) error {
+func (s *ActionsStore) UpdateConfig(ctx context.Context, doer *domain.User, section, content string) error {
 	return s.db.Create(&Action{
 		UserID:      doer.ID,
 		ActUserID:   doer.ID,
@@ -194,24 +213,8 @@ func (s *ActionsStore) NewRepo(ctx context.Context, doer, owner *User, repo *Rep
 	)
 }
 
-// RenameRepo creates an action for renaming a repository.
-func (s *ActionsStore) RenameRepo(ctx context.Context, doer, owner *User, oldRepoName string, repo *Repository) error {
-	return s.notifyWatchers(ctx,
-		&Action{
-			ActUserID:    doer.ID,
-			ActUserName:  doer.Name,
-			OpType:       ActionRenameRepo,
-			RepoID:       repo.ID,
-			RepoUserName: owner.Name,
-			RepoName:     repo.Name,
-			IsPrivate:    repo.IsPrivate || repo.IsUnlisted,
-			Content:      oldRepoName,
-		},
-	)
-}
-
 // MergePullRequest creates an action for merging a pull request.
-func (s *ActionsStore) MergePullRequest(ctx context.Context, doer, owner *User, repo *Repository, pull *Issue) error {
+func (s *ActionsStore) MergePullRequest(ctx context.Context, doer, owner *domain.User, repo *domain.Repository, pull *domain.Issue) error {
 	return s.notifyWatchers(ctx,
 		&Action{
 			ActUserID:    doer.ID,
@@ -221,13 +224,13 @@ func (s *ActionsStore) MergePullRequest(ctx context.Context, doer, owner *User, 
 			RepoID:       repo.ID,
 			RepoUserName: owner.Name,
 			RepoName:     repo.Name,
-			IsPrivate:    repo.IsPrivate || repo.IsUnlisted,
+			IsPrivate:    repo.IsPrivate,
 		},
 	)
 }
 
 // TransferRepo creates an action for transferring a repository to a new owner.
-func (s *ActionsStore) TransferRepo(ctx context.Context, doer, oldOwner, newOwner *User, repo *Repository) error {
+func (s *ActionsStore) TransferRepo(ctx context.Context, doer, oldOwner, newOwner *domain.User, repo *domain.Repository) error {
 	return s.notifyWatchers(ctx,
 		&Action{
 			ActUserID:    doer.ID,
@@ -236,8 +239,24 @@ func (s *ActionsStore) TransferRepo(ctx context.Context, doer, oldOwner, newOwne
 			RepoID:       repo.ID,
 			RepoUserName: newOwner.Name,
 			RepoName:     repo.Name,
-			IsPrivate:    repo.IsPrivate || repo.IsUnlisted,
+			IsPrivate:    repo.IsPrivate,
 			Content:      oldOwner.Name + "/" + repo.Name,
+		},
+	)
+}
+
+// RenameRepo creates an action for renaming a repository.
+func (s *ActionsStore) RenameRepo(ctx context.Context, doer, owner *domain.User, oldRepoName string, repo *domain.Repository) error {
+	return s.notifyWatchers(ctx,
+		&Action{
+			ActUserID:    doer.ID,
+			ActUserName:  doer.Name,
+			OpType:       ActionRenameRepo,
+			RepoID:       repo.ID,
+			RepoUserName: owner.Name,
+			RepoName:     repo.Name,
+			IsPrivate:    repo.IsPrivate,
+			Content:      oldRepoName,
 		},
 	)
 }
@@ -405,42 +424,52 @@ type CommitRepoOptions struct {
 // action with the type ActionCommitRepo is created for a regular push. If the
 // regular push also creates a new branch, then another action with type
 // ActionCreateBranch is created.
-func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) error {
-	err := NewRepositoriesStore(s.db).Touch(ctx, opts.Repo.ID)
+func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
+	var options CommitRepoOptions
+	if o, ok := opts.(CommitRepoOptions); ok {
+		options = o
+	} else if o, ok := opts.(*CommitRepoOptions); ok {
+		options = *o
+	} else {
+		return errors.New("invalid options type")
+	}
+	optionsValue := options
+
+	err := NewRepositoriesStore(s.db).Touch(ctx, optionsValue.Repo.ID)
 	if err != nil {
 		return errors.Wrap(err, "touch repository")
 	}
 
-	pusher, err := NewUsersStore(s.db).getByUsername(ctx, opts.PusherName)
+	pusher, err := NewUsersStore(s.db).getByUsername(ctx, optionsValue.PusherName)
 	if err != nil {
-		return errors.Wrapf(err, "get pusher [name: %s]", opts.PusherName)
+		return errors.Wrapf(err, "get pusher [name: %s]", optionsValue.PusherName)
 	}
 
-	isNewRef := opts.OldCommitID == git.EmptyID
-	isDelRef := opts.NewCommitID == git.EmptyID
+	isNewRef := optionsValue.OldCommitID == git.EmptyID
+	isDelRef := optionsValue.NewCommitID == git.EmptyID
 
 	// If not the first commit, set the compare URL.
 	if !isNewRef && !isDelRef {
-		opts.Commits.CompareURL = repox.CompareCommitsPath(opts.Owner.Name, opts.Repo.Name, opts.OldCommitID, opts.NewCommitID)
+		optionsValue.Commits.CompareURL = repox.CompareCommitsPath(optionsValue.Owner.Name, optionsValue.Repo.Name, optionsValue.OldCommitID, optionsValue.NewCommitID)
 	}
 
-	refName := git.RefShortName(opts.RefFullName)
+	refName := git.RefShortName(optionsValue.RefFullName)
 	action := &Action{
 		ActUserID:    pusher.ID,
 		ActUserName:  pusher.Name,
-		RepoID:       opts.Repo.ID,
-		RepoUserName: opts.Owner.Name,
-		RepoName:     opts.Repo.Name,
+		RepoID:       optionsValue.Repo.ID,
+		RepoUserName: optionsValue.Owner.Name,
+		RepoName:     optionsValue.Repo.Name,
 		RefName:      refName,
-		IsPrivate:    opts.Repo.IsPrivate || opts.Repo.IsUnlisted,
+		IsPrivate:    optionsValue.Repo.IsPrivate || optionsValue.Repo.IsUnlisted,
 	}
 
-	apiRepo := opts.Repo.APIFormat(opts.Owner)
+	apiRepo := optionsValue.Repo.APIFormat(optionsValue.Owner)
 	apiPusher := pusher.APIFormat()
 	if isDelRef {
 		err = PrepareWebhooksWithDB(
 			s.db,
-			opts.Repo,
+			optionsValue.Repo,
 			HookEventTypeDelete,
 			&apiv2types.WebhookDeletePayload{
 				Ref:        refName,
@@ -465,17 +494,17 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 	}
 
 	// Only update issues via commits when internal issue tracker is enabled
-	if opts.Repo.EnableIssues && !opts.Repo.EnableExternalTracker {
-		if err = updateCommitReferencesToIssues(pusher, opts.Repo, opts.Commits.Commits); err != nil {
+	if optionsValue.Repo.EnableIssues && !optionsValue.Repo.EnableExternalTracker {
+		if err = updateCommitReferencesToIssues(pusher, optionsValue.Repo, optionsValue.Commits.Commits); err != nil {
 			log.Error("update commit references to issues: %v", err)
 		}
 	}
 
-	if conf.UI.FeedMaxCommitNum > 0 && len(opts.Commits.Commits) > conf.UI.FeedMaxCommitNum {
-		opts.Commits.Commits = opts.Commits.Commits[:conf.UI.FeedMaxCommitNum]
+	if conf.UI.FeedMaxCommitNum > 0 && len(optionsValue.Commits.Commits) > conf.UI.FeedMaxCommitNum {
+		optionsValue.Commits.Commits = optionsValue.Commits.Commits[:conf.UI.FeedMaxCommitNum]
 	}
 
-	data, err := json.Marshal(opts.Commits)
+	data, err := json.Marshal(optionsValue.Commits)
 	if err != nil {
 		return errors.Wrap(err, "marshal JSON")
 	}
@@ -485,12 +514,12 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 	if isNewRef {
 		err = PrepareWebhooksWithDB(
 			s.db,
-			opts.Repo,
+			optionsValue.Repo,
 			HookEventTypeCreate,
 			&apiv2types.WebhookCreatePayload{
 				Ref:           refName,
 				RefType:       "branch",
-				DefaultBranch: opts.Repo.DefaultBranch,
+				DefaultBranch: optionsValue.Repo.DefaultBranch,
 				Repo:          apiRepo,
 				Sender:        apiPusher,
 			},
@@ -505,25 +534,25 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts CommitRepoOptions) e
 			return errors.Wrap(err, "notify watchers")
 		}
 	} else {
-		compareURL = conf.Server.ExternalURL + opts.Commits.CompareURL
+		compareURL = conf.Server.ExternalURL + optionsValue.Commits.CompareURL
 	}
 
-	commits, err := opts.Commits.APIFormat(ctx,
+	commits, err := optionsValue.Commits.APIFormat(ctx,
 		NewUsersStore(s.db),
-		repox.RepositoryPath(opts.Owner.Name, opts.Repo.Name),
-		repox.HTMLURL(opts.Owner.Name, opts.Repo.Name),
+		repox.RepositoryPath(optionsValue.Owner.Name, optionsValue.Repo.Name),
+		repox.HTMLURL(optionsValue.Owner.Name, optionsValue.Repo.Name),
 	)
 	if err != nil {
 		return errors.Wrap(err, "convert commits to API format")
 	}
 
 	err = PrepareWebhooks(
-		opts.Repo,
+		optionsValue.Repo,
 		HookEventTypePush,
 		&apiv2types.WebhookPushPayload{
-			Ref:        opts.RefFullName,
-			Before:     opts.OldCommitID,
-			After:      opts.NewCommitID,
+			Ref:        optionsValue.RefFullName,
+			Before:     optionsValue.OldCommitID,
+			After:      optionsValue.NewCommitID,
 			CompareURL: compareURL,
 			Commits:    commits,
 			Repo:       apiRepo,
@@ -554,33 +583,41 @@ type PushTagOptions struct {
 // PushTag creates an action for pushing tags to the repository. An action with
 // the type ActionDeleteTag is created if the push deletes a tag. Otherwise, an
 // action with the type ActionPushTag is created for a regular push.
-func (s *ActionsStore) PushTag(ctx context.Context, opts PushTagOptions) error {
-	err := NewRepositoriesStore(s.db).Touch(ctx, opts.Repo.ID)
+func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
+	var options PushTagOptions
+	if o, ok := opts.(PushTagOptions); ok {
+		options = o
+	} else {
+		return errors.New("invalid options type")
+	}
+
+	err := NewRepositoriesStore(s.db).Touch(ctx, options.Repo.ID)
 	if err != nil {
 		return errors.Wrap(err, "touch repository")
 	}
 
-	pusher, err := NewUsersStore(s.db).getByUsername(ctx, opts.PusherName)
+	pusher, err := NewUsersStore(s.db).getByUsername(ctx, options.PusherName)
 	if err != nil {
-		return errors.Wrapf(err, "get pusher [name: %s]", opts.PusherName)
+		return errors.Wrapf(err, "get pusher [name: %s]", options.PusherName)
 	}
 
-	refName := git.RefShortName(opts.RefFullName)
+
+	refName := git.RefShortName(options.RefFullName)
 	action := &Action{
 		ActUserID:    pusher.ID,
 		ActUserName:  pusher.Name,
-		RepoID:       opts.Repo.ID,
-		RepoUserName: opts.Owner.Name,
-		RepoName:     opts.Repo.Name,
+		RepoID:       options.Repo.ID,
+		RepoUserName: options.Owner.Name,
+		RepoName:     options.Repo.Name,
 		RefName:      refName,
-		IsPrivate:    opts.Repo.IsPrivate || opts.Repo.IsUnlisted,
+		IsPrivate:    options.Repo.IsPrivate || options.Repo.IsUnlisted,
 	}
 
-	apiRepo := opts.Repo.APIFormat(opts.Owner)
+	apiRepo := options.Repo.APIFormat(options.Owner)
 	apiPusher := pusher.APIFormat()
-	if opts.NewCommitID == git.EmptyID {
+	if options.NewCommitID == git.EmptyID {
 		err = PrepareWebhooks(
-			opts.Repo,
+			options.Repo,
 			HookEventTypeDelete,
 			&apiv2types.WebhookDeletePayload{
 				Ref:        refName,
@@ -604,13 +641,13 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts PushTagOptions) error {
 
 	err = PrepareWebhooksWithDB(
 		s.db,
-		opts.Repo,
+		options.Repo,
 		HookEventTypeCreate,
 		&apiv2types.WebhookCreatePayload{
 			Ref:           refName,
 			RefType:       "tag",
-			Sha:           opts.NewCommitID,
-			DefaultBranch: opts.Repo.DefaultBranch,
+			Sha:           options.NewCommitID,
+			DefaultBranch: options.Repo.DefaultBranch,
 			Repo:          apiRepo,
 			Sender:        apiPusher,
 		},
@@ -672,6 +709,46 @@ type Action struct {
 
 	Created     time.Time `gorm:"-" json:"created_at"`
 	CreatedUnix int64     `json:"created_unix"`
+}
+
+func (a *Action) ToDomain() *domain.Action {
+	if a == nil {
+		return nil
+	}
+	return &domain.Action{
+		ID:           a.ID,
+		UserID:       a.UserID,
+		OpType:       int(a.OpType),
+		ActUserID:    a.ActUserID,
+		ActUserName:  a.ActUserName,
+		RepoID:       a.RepoID,
+		RepoUserName: a.RepoUserName,
+		RepoName:     a.RepoName,
+		RefName:      a.RefName,
+		IsPrivate:    a.IsPrivate,
+		Content:      a.Content,
+		Created:      time.Unix(a.CreatedUnix, 0),
+	}
+}
+
+func FromDomainAction(a *domain.Action) *Action {
+	if a == nil {
+		return nil
+	}
+	return &Action{
+		ID:           a.ID,
+		UserID:       a.UserID,
+		OpType:       ActionType(a.OpType),
+		ActUserID:    a.ActUserID,
+		ActUserName:  a.ActUserName,
+		RepoID:       a.RepoID,
+		RepoUserName: a.RepoUserName,
+		RepoName:     a.RepoName,
+		RefName:      a.RefName,
+		IsPrivate:    a.IsPrivate,
+		Content:      a.Content,
+		CreatedUnix:  a.Created.Unix(),
+	}
 }
 
 // BeforeCreate implements the GORM create hook.
@@ -794,7 +871,7 @@ func NewPushCommits() *PushCommits {
 	}
 }
 
-func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore *UsersStore, repoPath, repoURL string) ([]*apiv2types.WebhookPayloadCommit, error) {
+func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore domain.UsersStore, repoPath, repoURL string) ([]*apiv2types.WebhookPayloadCommit, error) {
 	commits := make([]*apiv2types.WebhookPayloadCommit, len(pcs.Commits))
 	for i := range pcs.Commits {
 		commits[i] = &apiv2types.WebhookPayloadCommit{
@@ -823,7 +900,7 @@ func (pcs *PushCommits) APIFormat(ctx context.Context, usersStore *UsersStore, r
 func (pcs *PushCommits) AvatarLink(email string) string {
 	_, ok := pcs.avatars[email]
 	if !ok {
-		u, err := Handle.Users().getByEmail(context.Background(), email)
+		u, err := Handle.Users().GetByEmail(context.Background(), email)
 		if err != nil {
 			pcs.avatars[email] = tool.AvatarLink(email)
 			if !IsErrUserNotExist(err) {

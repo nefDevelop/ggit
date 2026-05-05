@@ -17,6 +17,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/repox"
 )
 
@@ -28,7 +29,7 @@ type PullRequest struct {
 }
 
 type Repository struct {
-	AccessMode   database.AccessMode
+	AccessMode   domain.AccessMode
 	IsWatching   bool
 	IsViewBranch bool
 	IsViewTag    bool
@@ -49,10 +50,10 @@ type Repository struct {
 }
 
 // ... helper methods (IsOwner, IsAdmin, etc.) same as before ...
-func (r *Repository) IsOwner() bool   { return r.AccessMode >= database.AccessModeOwner }
-func (r *Repository) IsAdmin() bool   { return r.AccessMode >= database.AccessModeAdmin }
-func (r *Repository) IsWriter() bool  { return r.AccessMode >= database.AccessModeWrite }
-func (r *Repository) HasAccess() bool { return r.AccessMode >= database.AccessModeRead }
+func (r *Repository) IsOwner() bool   { return r.AccessMode >= domain.AccessModeOwner }
+func (r *Repository) IsAdmin() bool   { return r.AccessMode >= domain.AccessModeAdmin }
+func (r *Repository) IsWriter() bool  { return r.AccessMode >= domain.AccessModeWrite }
+func (r *Repository) HasAccess() bool { return r.AccessMode >= domain.AccessModeRead }
 
 func (r *Repository) CanEnableEditor() bool {
 	return r.Repository.CanEnableEditor() && r.IsViewBranch && r.IsWriter() && !r.Repository.IsBranchRequirePullRequest(r.BranchName)
@@ -159,30 +160,30 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 
 		// Admin has super access
 		if gctx.IsLogged && gctx.User.IsAdmin {
-			gctx.Repo.AccessMode = database.AccessModeOwner
+			gctx.Repo.AccessMode = domain.AccessModeOwner
 		} else {
 			gctx.Repo.AccessMode = database.Handle.Permissions().AccessMode(c.Request.Context(), gctx.UserID(), repo.ID,
-				database.AccessModeOptions{
+				domain.AccessModeOptions{
 					OwnerID: repo.OwnerID,
 					Private: repo.IsPrivate,
 				},
 			)
 		}
 
-		if gctx.Repo.AccessMode == database.AccessModeNone && repo.BaseRepo != nil {
+		if gctx.Repo.AccessMode == domain.AccessModeNone && repo.BaseRepo != nil {
 			mode := min(
 				database.Handle.Permissions().AccessMode(c.Request.Context(), gctx.UserID(), repo.BaseRepo.ID,
-					database.AccessModeOptions{
+					domain.AccessModeOptions{
 						OwnerID: repo.BaseRepo.OwnerID,
 						Private: repo.BaseRepo.IsPrivate,
 					},
 				),
-				database.AccessModeWrite,
+				domain.AccessModeWrite,
 			)
 			gctx.Repo.AccessMode = mode
 		}
 
-		if gctx.Repo.AccessMode == database.AccessModeNone {
+		if gctx.Repo.AccessMode == domain.AccessModeNone {
 			if repo.IsPartialPublic() &&
 				(!isIssuesPage || !repo.CanGuestViewIssues()) {
 				if repo.CanGuestViewIssues() {
@@ -464,7 +465,7 @@ func GitHookService() gin.HandlerFunc {
 	}
 }
 
-func min(a, b database.AccessMode) database.AccessMode {
+func min(a, b domain.AccessMode) domain.AccessMode {
 	if a < b {
 		return a
 	}

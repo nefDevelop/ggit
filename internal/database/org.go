@@ -8,6 +8,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/repox"
 	"github.com/nef734/ggit/internal/userx"
@@ -55,7 +56,7 @@ func (org *User) GetTeams() error {
 }
 
 // TeamsHaveAccessToRepo returns all teams that have given access level to the repository.
-func (org *User) TeamsHaveAccessToRepo(repoID int64, mode AccessMode) ([]*Team, error) {
+func (org *User) TeamsHaveAccessToRepo(repoID int64, mode domain.AccessMode) ([]*Team, error) {
 	return GetTeamsHaveAccessToRepo(org.ID, repoID, mode)
 }
 
@@ -69,7 +70,8 @@ func (org *User) GetOrgOwner() (*User, error) {
 		}
 		return nil, err
 	}
-	return Handle.Users().getByID(context.TODO(), ou.UID)
+	u, err := Handle.Users().GetByID(context.TODO(), ou.UID)
+	return FromDomainUser(u), err
 }
 
 // GetMembers returns all members of organization.
@@ -81,11 +83,13 @@ func (org *User) GetMembers(limit int) error {
 
 	org.Members = make([]*User, len(ous))
 	for i, ou := range ous {
-		org.Members[i], err = Handle.Users().getByID(context.TODO(), ou.UID)
+		u, err := Handle.Users().GetByID(context.TODO(), ou.UID)
 		if err != nil {
 			return err
 		}
+		org.Members[i] = FromDomainUser(u)
 	}
+
 	return nil
 }
 
@@ -154,7 +158,7 @@ func CreateOrganization(org, owner *User) (err error) {
 			OrgID:      org.ID,
 			LowerName:  strings.ToLower(ownerTeamName),
 			Name:       ownerTeamName,
-			Authorize:  AccessModeOwner,
+			Authorize:  domain.AccessModeOwner,
 			NumMembers: 1,
 		}
 		if err = tx.Create(t).Error; err != nil {
@@ -379,14 +383,18 @@ func RemoveOrgUser(orgID, userID int64) error {
 		return errors.Newf("get org-user: %v", err)
 	}
 
-	user, err := Handle.Users().getByID(context.TODO(), userID)
+	u, err := Handle.Users().GetByID(context.TODO(), userID)
 	if err != nil {
-		return errors.Newf("GetUserByID [%d]: %v", userID, err)
+		return errors.Newf("GetByID [%d]: %v", userID, err)
 	}
-	org, err := Handle.Users().getByID(context.TODO(), orgID)
+	user := FromDomainUser(u)
+
+	o, err := Handle.Users().GetByID(context.TODO(), orgID)
 	if err != nil {
-		return errors.Newf("GetUserByID [%d]: %v", orgID, err)
+		return errors.Newf("GetByID [%d]: %v", orgID, err)
 	}
+	org := FromDomainUser(o)
+
 
 	// FIXME: only need to get IDs here, not all fields of repository.
 	repos, _, err := org.GetUserRepositories(user.ID, 1, org.NumRepos)

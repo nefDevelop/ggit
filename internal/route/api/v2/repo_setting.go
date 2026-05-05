@@ -8,6 +8,7 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/form"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
@@ -145,7 +146,7 @@ func UpdateRepoCollaborator(c *context.APIContext) {
 		return
 	}
 
-	if err = c.Repo.Repository.ChangeCollaborationAccessMode(u.ID, database.AccessMode(f.Mode)); err != nil {
+	if err = c.Repo.Repository.ChangeCollaborationAccessMode(u.ID, domain.AccessMode(f.Mode)); err != nil {
 		c.Error(err, "change collaboration access mode")
 		return
 	}

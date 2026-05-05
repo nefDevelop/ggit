@@ -6,6 +6,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 	log "unknwon.dev/clog/v2"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // Access represents the highest access level of a user has to a repository. The
@@ -13,47 +14,21 @@ import (
 // In case of an organization repository, the members of the owners team are in
 // this table.
 type Access struct {
-	ID     int64      `gorm:"primaryKey"`
-	UserID int64      `gorm:"uniqueIndex:access_user_repo_unique;not null"`
-	RepoID int64      `gorm:"uniqueIndex:access_user_repo_unique;not null"`
-	Mode   AccessMode `gorm:"not null"`
-}
-
-// AccessMode is the access mode of a user has to a repository.
-type AccessMode int
-
-const (
-	AccessModeNone  AccessMode = iota // 0
-	AccessModeRead                    // 1
-	AccessModeWrite                   // 2
-	AccessModeAdmin                   // 3
-	AccessModeOwner                   // 4
-)
-
-func (mode AccessMode) String() string {
-	switch mode {
-	case AccessModeRead:
-		return "read"
-	case AccessModeWrite:
-		return "write"
-	case AccessModeAdmin:
-		return "admin"
-	case AccessModeOwner:
-		return "owner"
-	default:
-		return "none"
-	}
+	ID     int64             `gorm:"primaryKey"`
+	UserID int64             `gorm:"uniqueIndex:access_user_repo_unique;not null"`
+	RepoID int64             `gorm:"uniqueIndex:access_user_repo_unique;not null"`
+	Mode   domain.AccessMode `gorm:"not null"`
 }
 
 // ParseAccessMode returns corresponding access mode to given permission string.
-func ParseAccessMode(permission string) AccessMode {
+func ParseAccessMode(permission string) domain.AccessMode {
 	switch permission {
 	case "write":
-		return AccessModeWrite
+		return domain.AccessModeWrite
 	case "admin":
-		return AccessModeAdmin
+		return domain.AccessModeAdmin
 	default:
-		return AccessModeRead
+		return domain.AccessModeRead
 	}
 }
 
@@ -66,20 +41,15 @@ func newPermissionsStore(db *gorm.DB) *PermissionsStore {
 	return &PermissionsStore{db: db}
 }
 
-type AccessModeOptions struct {
-	OwnerID int64 // The ID of the repository owner.
-	Private bool  // Whether the repository is private.
-}
-
 // AccessMode returns the access mode of given user has to the repository.
-func (s *PermissionsStore) AccessMode(ctx context.Context, userID, repoID int64, opts AccessModeOptions) (mode AccessMode) {
+func (s *PermissionsStore) AccessMode(ctx context.Context, userID, repoID int64, opts domain.AccessModeOptions) (mode domain.AccessMode) {
 	if repoID <= 0 {
-		return AccessModeNone
+		return domain.AccessModeNone
 	}
 
 	// Everyone has read access to public repository.
 	if !opts.Private {
-		mode = AccessModeRead
+		mode = domain.AccessModeRead
 	}
 
 	// Anonymous user gets the default access.
@@ -88,7 +58,7 @@ func (s *PermissionsStore) AccessMode(ctx context.Context, userID, repoID int64,
 	}
 
 	if userID == opts.OwnerID {
-		return AccessModeOwner
+		return domain.AccessModeOwner
 	}
 
 	access := new(Access)
@@ -104,13 +74,13 @@ func (s *PermissionsStore) AccessMode(ctx context.Context, userID, repoID int64,
 
 // Authorize returns true if the user has as good as desired access mode to the
 // repository.
-func (s *PermissionsStore) Authorize(ctx context.Context, userID, repoID int64, desired AccessMode, opts AccessModeOptions) bool {
+func (s *PermissionsStore) Authorize(ctx context.Context, userID, repoID int64, desired domain.AccessMode, opts domain.AccessModeOptions) bool {
 	return desired <= s.AccessMode(ctx, userID, repoID, opts)
 }
 
 // SetRepoPerms does a full update to which users have which level of access to
 // given repository. Keys of the "accessMap" are user IDs.
-func (s *PermissionsStore) SetRepoPerms(ctx context.Context, repoID int64, accessMap map[int64]AccessMode) error {
+func (s *PermissionsStore) SetRepoPerms(ctx context.Context, repoID int64, accessMap map[int64]domain.AccessMode) error {
 	records := make([]*Access, 0, len(accessMap))
 	for userID, mode := range accessMap {
 		records = append(records, &Access{
@@ -129,3 +99,4 @@ func (s *PermissionsStore) SetRepoPerms(ctx context.Context, repoID int64, acces
 		return tx.Create(&records).Error
 	})
 }
+

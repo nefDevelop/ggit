@@ -12,6 +12,7 @@ import (
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -116,6 +117,34 @@ func (s *LoginSource) LDAP() *ldap.Config {
 	return s.Provider.Config().(*ldap.Config)
 }
 
+func (s *LoginSource) ToDomain() *domain.LoginSource {
+	if s == nil {
+		return nil
+	}
+	return &domain.LoginSource{
+		ID:        s.ID,
+		Type:      int(s.Type),
+		Name:      s.Name,
+		IsActived: s.IsActived,
+		IsDefault: s.IsDefault,
+		Config:    s.Config,
+	}
+}
+
+func FromDomainLoginSource(s *domain.LoginSource) *LoginSource {
+	if s == nil {
+		return nil
+	}
+	return &LoginSource{
+		ID:        s.ID,
+		Type:      auth.Type(s.Type),
+		Name:      s.Name,
+		IsActived: s.IsActived,
+		IsDefault: s.IsDefault,
+		Config:    s.Config,
+	}
+}
+
 // LoginSourcesStore is the storage layer for login sources.
 type LoginSourcesStore struct {
 	db    *gorm.DB
@@ -127,14 +156,6 @@ func newLoginSourcesStore(db *gorm.DB, files loginSourceFilesStore) *LoginSource
 		db:    db,
 		files: files,
 	}
-}
-
-type CreateLoginSourceOptions struct {
-	Type      auth.Type
-	Name      string
-	Activated bool
-	Default   bool
-	Config    any
 }
 
 type ErrLoginSourceAlreadyExist struct {
@@ -151,7 +172,7 @@ func (err ErrLoginSourceAlreadyExist) Error() string {
 
 // Create creates a new login source and persists it to the database. It returns
 // ErrLoginSourceAlreadyExist when a login source with same name already exists.
-func (s *LoginSourcesStore) Create(ctx context.Context, opts CreateLoginSourceOptions) (*LoginSource, error) {
+func (s *LoginSourcesStore) Create(ctx context.Context, opts domain.CreateLoginSourceOptions) (*domain.LoginSource, error) {
 	err := s.db.WithContext(ctx).Where("name = ?", opts.Name).First(new(LoginSource)).Error
 	if err == nil {
 		return nil, ErrLoginSourceAlreadyExist{args: errx.Args{"name": opts.Name}}
@@ -160,7 +181,7 @@ func (s *LoginSourcesStore) Create(ctx context.Context, opts CreateLoginSourceOp
 	}
 
 	source := &LoginSource{
-		Type:      opts.Type,
+		Type:      auth.Type(opts.Type),
 		Name:      opts.Name,
 		IsActived: opts.Activated,
 		IsDefault: opts.Default,
@@ -170,18 +191,15 @@ func (s *LoginSourcesStore) Create(ctx context.Context, opts CreateLoginSourceOp
 	if err != nil {
 		return nil, err
 	}
-	return source, s.db.WithContext(ctx).Create(source).Error
-}
-
-type UpdateLoginSourceOptions struct {
-	Name      *string
-	Activated *bool
-	Default   *bool
-	Config    any
+	err = s.db.WithContext(ctx).Create(source).Error
+	if err != nil {
+		return nil, err
+	}
+	return source.ToDomain(), nil
 }
 
 // Update updates fields for the given login source.
-func (s *LoginSourcesStore) Update(ctx context.Context, id int64, opts UpdateLoginSourceOptions) error {
+func (s *LoginSourcesStore) Update(ctx context.Context, id int64, opts domain.UpdateLoginSourceOptions) error {
 	updates := map[string]any{
 		"updated_unix": s.db.NowFunc().Unix(),
 	}
@@ -209,7 +227,7 @@ func (s *LoginSourcesStore) Update(ctx context.Context, id int64, opts UpdateLog
 	}
 
 	if opts.Default != nil && *opts.Default {
-		return s.ResetNonDefault(ctx, &LoginSource{ID: id})
+		return s.ResetNonDefault(ctx, &domain.LoginSource{ID: id})
 	}
 	return nil
 }
@@ -247,9 +265,7 @@ func (s *LoginSourcesStore) DeleteByID(ctx context.Context, id int64) error {
 	return s.db.WithContext(ctx).Where("id = ?", id).Delete(new(LoginSource)).Error
 }
 
-// GetByID returns the login source with given ID. It returns
-// ErrLoginSourceNotExist when not found.
-func (s *LoginSourcesStore) GetByID(ctx context.Context, id int64) (*LoginSource, error) {
+func (s *LoginSourcesStore) getByID(ctx context.Context, id int64) (*LoginSource, error) {
 	source := new(LoginSource)
 	err := s.db.WithContext(ctx).Where("id = ?", id).First(source).Error
 	if err != nil {
@@ -261,13 +277,18 @@ func (s *LoginSourcesStore) GetByID(ctx context.Context, id int64) (*LoginSource
 	return source, nil
 }
 
-type ListLoginSourceOptions struct {
-	// Whether to only include activated login sources.
-	OnlyActivated bool
+// GetByID returns the login source with given ID. It returns
+// ErrLoginSourceNotExist when not found.
+func (s *LoginSourcesStore) GetByID(ctx context.Context, id int64) (*domain.LoginSource, error) {
+	source, err := s.getByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return source.ToDomain(), nil
 }
 
 // List returns a list of login sources filtered by options.
-func (s *LoginSourcesStore) List(ctx context.Context, opts ListLoginSourceOptions) ([]*LoginSource, error) {
+func (s *LoginSourcesStore) List(ctx context.Context, opts domain.ListLoginSourceOptions) ([]*domain.LoginSource, error) {
 	var sources []*LoginSource
 	query := s.db.WithContext(ctx).Order("id ASC")
 	if opts.OnlyActivated {
@@ -278,11 +299,18 @@ func (s *LoginSourcesStore) List(ctx context.Context, opts ListLoginSourceOption
 		return nil, err
 	}
 
-	return append(sources, s.files.List(opts)...), nil
+	res := make([]*domain.LoginSource, 0, len(sources)+s.files.Len())
+	for _, src := range sources {
+		res = append(res, src.ToDomain())
+	}
+	for _, src := range s.files.List(opts) {
+		res = append(res, src.ToDomain())
+	}
+	return res, nil
 }
 
 // ResetNonDefault clears default flag for all the other login sources.
-func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *LoginSource) error {
+func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *domain.LoginSource) error {
 	err := s.db.WithContext(ctx).
 		Model(new(LoginSource)).
 		Where("id != ?", dflt.ID).
@@ -292,7 +320,7 @@ func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *LoginSour
 		return err
 	}
 
-	for _, source := range s.files.List(ListLoginSourceOptions{}) {
+	for _, source := range s.files.List(domain.ListLoginSourceOptions{}) {
 		if source.File != nil && source.ID != dflt.ID {
 			source.File.SetGeneral("is_default", "false")
 			if err = source.File.Save(); err != nil {
@@ -301,23 +329,29 @@ func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *LoginSour
 		}
 	}
 
-	s.files.Update(dflt)
+	s.files.Update(FromDomainLoginSource(dflt))
 	return nil
 }
 
 // Save persists all values of given login source to database or local file. The
 // Updated field is set to current time automatically.
-func (s *LoginSourcesStore) Save(ctx context.Context, source *LoginSource) error {
-	if source.File == nil {
-		return s.db.WithContext(ctx).Save(source).Error
+func (s *LoginSourcesStore) Save(ctx context.Context, source *domain.LoginSource) error {
+	m := FromDomainLoginSource(source)
+	if m.File == nil {
+		return s.db.WithContext(ctx).Save(m).Error
 	}
 
-	source.File.SetGeneral("name", source.Name)
-	source.File.SetGeneral("is_activated", strconv.FormatBool(source.IsActived))
-	source.File.SetGeneral("is_default", strconv.FormatBool(source.IsDefault))
-	if err := source.File.SetConfig(source.Provider.Config()); err != nil {
-		return errors.Wrap(err, "set config")
-	} else if err = source.File.Save(); err != nil {
+	m.File.SetGeneral("name", m.Name)
+	m.File.SetGeneral("is_activated", strconv.FormatBool(m.IsActived))
+	m.File.SetGeneral("is_default", strconv.FormatBool(m.IsDefault))
+	// Warning: Provider might be nil if only FromDomainLoginSource was called without loading.
+	// But usually Save is called on an existing object.
+	if m.Provider != nil {
+		if err := m.File.SetConfig(m.Provider.Config()); err != nil {
+			return errors.Wrap(err, "set config")
+		}
+	}
+	if err := m.File.Save(); err != nil {
 		return errors.Wrap(err, "save file")
 	}
 	return nil

@@ -17,6 +17,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 func newLogWriter() (logger.Writer, error) {
@@ -205,15 +206,15 @@ func (db *DB) Transaction(fc func(tx *gorm.DB) error, opts ...*sql.TxOptions) er
 	return db.db.Transaction(fc, opts...)
 }
 
-func (db *DB) AccessTokens() *AccessTokensStore {
+func (db *DB) AccessTokens() domain.AccessTokensStore {
 	return newAccessTokensStore(db.db)
 }
 
-func (db *DB) Actions() *ActionsStore {
+func (db *DB) Actions() domain.ActionsStore {
 	return newActionsStore(db.db)
 }
 
-func (db *DB) LFS() *LFSStore {
+func (db *DB) LFS() domain.LFSStore {
 	return newLFSStore(db.db)
 }
 
@@ -221,7 +222,7 @@ func (db *DB) LFS() *LFSStore {
 // service start.
 var loadedLoginSourceFilesStore loginSourceFilesStore
 
-func (db *DB) LoginSources() *LoginSourcesStore {
+func (db *DB) LoginSources() domain.LoginSourcesStore {
 	return newLoginSourcesStore(db.db, loadedLoginSourceFilesStore)
 }
 
@@ -233,32 +234,40 @@ func (db *DB) Notices() *NoticesStore {
 	return newNoticesStore(db.db)
 }
 
-func (db *DB) Organizations() *OrganizationsStore {
-	return newOrganizationsStoreStore(db.db)
+func (db *DB) Organizations() domain.OrganizationsStore {
+	return newOrganizationsStore(db.db)
 }
 
-func (db *DB) Permissions() *PermissionsStore {
+func (db *DB) Permissions() domain.PermissionsStore {
 	return newPermissionsStore(db.db)
 }
 
-func (db *DB) PublicKey() *PublicKeysStore {
+func (db *DB) PublicKey() domain.PublicKeysStore {
 	return newPublicKeysStore(db.db)
 }
 
-func (db *DB) Repositories() *RepositoriesStore {
+func (db *DB) Repositories() domain.RepositoriesStore {
 	return NewRepositoriesStore(db.db)
 }
 
-func (db *DB) Issues() *IssuesStore {
+func (db *DB) Issues() domain.IssuesStore {
 	return newIssuesStore(db.db)
 }
 
-func (db *DB) TwoFactors() *TwoFactorsStore {
+func (db *DB) Comments() domain.CommentsStore {
+	return newCommentsStore(db.db)
+}
+
+func (db *DB) TwoFactors() domain.TwoFactorsStore {
 	return newTwoFactorsStore(db.db)
 }
 
-func (db *DB) Users() *UsersStore {
+func (db *DB) Users() domain.UsersStore {
 	return NewUsersStore(db.db)
+}
+
+func (db *DB) PullRequests() domain.PullRequestsStore {
+	return newPullRequestsStore(db.db)
 }
 
 func (db *DB) PullReviews() *PullReviewsStore {
@@ -269,6 +278,6 @@ func (db *DB) PullReviewComments() *PullReviewCommentsStore {
 	return newPullReviewCommentsStore(db.db)
 }
 
-func (db *DB) UserBlocks() *UserBlocksStore {
+func (db *DB) UserBlocks() domain.UserBlocksStore {
 	return newUserBlocksStore(db.db)
 }

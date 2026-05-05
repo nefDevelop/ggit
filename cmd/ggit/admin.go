@@ -49,7 +49,7 @@ to make automatic initialization process more smoothly`,
 		Name:  "delete-inactive-users",
 		Usage: "Delete all inactive accounts",
 		Action: adminDashboardOperation(
-			func() error { return database.Handle.Users().DeleteInactivated() },
+			func() error { return database.Handle.Users().DeleteInactivated(context.Background()) },
 			"All inactivated accounts have been deleted successfully",
 		),
 		Flags: []cli.Flag{

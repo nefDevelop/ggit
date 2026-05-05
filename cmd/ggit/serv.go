@@ -15,6 +15,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 const (
@@ -117,10 +118,10 @@ func checkDeployKey(key *database.PublicKey, repo *database.Repository) {
 	}
 }
 
-var allowedCommands = map[string]database.AccessMode{
-	"git-upload-pack":    database.AccessModeRead,
-	"git-upload-archive": database.AccessModeRead,
-	"git-receive-pack":   database.AccessModeWrite,
+var allowedCommands = map[string]domain.AccessMode{
+	"git-upload-pack":    domain.AccessModeRead,
+	"git-upload-archive": domain.AccessModeRead,
+	"git-receive-pack":   domain.AccessModeWrite,
 }
 
 func runServ(ctx context.Context, cmd *cli.Command) error {
@@ -183,7 +184,7 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 		fail("Invalid key ID", "Invalid key ID '%s': %v", cmd.Args().Get(0), err)
 	}
 
-	if requestMode == database.AccessModeWrite || repo.IsPrivate {
+	if requestMode == domain.AccessModeWrite || repo.IsPrivate {
 		// Check deploy key or user key.
 		if key.IsDeployKey() {
 			if key.Mode < requestMode {
@@ -191,20 +192,21 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 			}
 			checkDeployKey(key, repo)
 		} else {
-			user, err = database.Handle.Users().GetByKeyID(ctx, key.ID)
+			du, err := database.Handle.Users().GetByKeyID(ctx, key.ID)
 			if err != nil {
 				fail("Internal error", "Failed to get user by key ID '%d': %v", key.ID, err)
 			}
+			user = database.FromDomainUser(du)
 
 			mode := database.Handle.Permissions().AccessMode(ctx, user.ID, repo.ID,
-				database.AccessModeOptions{
+				domain.AccessModeOptions{
 					OwnerID: repo.OwnerID,
 					Private: repo.IsPrivate,
 				},
 			)
 			if mode < requestMode {
 				clientMessage := accessDeniedMessage
-				if mode >= database.AccessModeRead {
+				if mode >= domain.AccessModeRead {
 					clientMessage = "You do not have sufficient authorization for this action"
 				}
 				fail(clientMessage,
@@ -254,7 +256,7 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 	} else {
 		gitCmd = exec.Command(verb, repoFullName)
 	}
-	if requestMode == database.AccessModeWrite {
+	if requestMode == domain.AccessModeWrite {
 		gitCmd.Env = append(os.Environ(), database.ComposeHookEnvs(database.ComposeHookEnvsOptions{
 			AuthUser:  user,
 			OwnerName: owner.Name,

@@ -12,6 +12,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
 )
 
@@ -23,7 +24,7 @@ func RegisterRoutes(r gin.IRouter) {
 	verifyContentTypeStream := verifyHeader("Content-Type", "application/octet-stream", http.StatusBadRequest)
 
 	store := NewStore()
-	r.POST("/objects/batch", authenticate(store), authorize(store, database.AccessModeRead), verifyAccept, verifyContentTypeJSON, serveBatch(store))
+	r.POST("/objects/batch", authenticate(store), authorize(store, domain.AccessModeRead), verifyAccept, verifyContentTypeJSON, serveBatch(store))
 	basicGroup := r.Group("/objects/basic", authenticate(store))
 	{
 		basic := &basicHandler{
@@ -33,9 +34,9 @@ func RegisterRoutes(r gin.IRouter) {
 				lfsx.StorageLocal: &lfsx.LocalStorage{Root: conf.LFS.ObjectsPath, TempDir: conf.LFS.ObjectsTempPath},
 			},
 		}
-		basicGroup.GET("/:oid", verifyOID(), authorize(store, database.AccessModeRead), basic.serveDownload)
-		basicGroup.PUT("/:oid", verifyOID(), authorize(store, database.AccessModeWrite), verifyContentTypeStream, basic.serveUpload)
-		basicGroup.POST("/verify", authorize(store, database.AccessModeWrite), verifyAccept, verifyContentTypeJSON, basic.serveVerify)
+		basicGroup.GET("/:oid", verifyOID(), authorize(store, domain.AccessModeRead), basic.serveDownload)
+		basicGroup.PUT("/:oid", verifyOID(), authorize(store, domain.AccessModeWrite), verifyContentTypeStream, basic.serveUpload)
+		basicGroup.POST("/verify", authorize(store, domain.AccessModeWrite), verifyAccept, verifyContentTypeJSON, basic.serveVerify)
 	}
 }
 
@@ -103,7 +104,7 @@ func authenticate(store Store) gin.HandlerFunc {
 }
 
 // authorize tries to authorize the user to the context repository with given access mode.
-func authorize(store Store, mode database.AccessMode) gin.HandlerFunc {
+func authorize(store Store, mode domain.AccessMode) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		actor, ok := c.Get("actor")
 		if !ok {
@@ -140,7 +141,7 @@ func authorize(store Store, mode database.AccessMode) gin.HandlerFunc {
 		}
 
 		if !store.AuthorizeRepositoryAccess(c.Request.Context(), u.ID, repo.ID, mode,
-			database.AccessModeOptions{
+			domain.AccessModeOptions{
 				OwnerID: repo.OwnerID,
 				Private: repo.IsPrivate,
 			},

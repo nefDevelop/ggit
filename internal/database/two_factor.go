@@ -12,6 +12,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/cryptox"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // TwoFactor is a 2FA token of a user.
@@ -21,6 +22,30 @@ type TwoFactor struct {
 	Secret      string
 	Created     time.Time `gorm:"-" json:"-"`
 	CreatedUnix int64
+}
+
+func (t *TwoFactor) ToDomain() *domain.TwoFactor {
+	if t == nil {
+		return nil
+	}
+	return &domain.TwoFactor{
+		ID:      t.ID,
+		UserID:  t.UserID,
+		Secret:  t.Secret,
+		Created: t.Created,
+	}
+}
+
+func FromDomainTwoFactor(t *domain.TwoFactor) *TwoFactor {
+	if t == nil {
+		return nil
+	}
+	return &TwoFactor{
+		ID:          t.ID,
+		UserID:      t.UserID,
+		Secret:      t.Secret,
+		CreatedUnix: t.Created.Unix(),
+	}
 }
 
 // ValidateTOTP returns true if given passcode is valid for two-factor authentication token.
@@ -38,15 +63,10 @@ func (t *TwoFactor) ValidateTOTP(passcode string) (bool, error) {
 }
 
 // DeleteTwoFactor removes two-factor authentication token and recovery codes of given user.
+//
+// Deprecated: Use TwoFactorsStore.Delete instead.
 func DeleteTwoFactor(userID int64) (err error) {
-	return Handle.db.Transaction(func(tx *gorm.DB) error {
-		if err = tx.Where("user_id = ?", userID).Delete(new(TwoFactor)).Error; err != nil {
-			return errors.Wrap(err, "delete two-factor")
-		} else if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
-			return errors.Wrap(err, "deleteRecoveryCodesByUserID")
-		}
-		return nil
-	})
+	return Handle.TwoFactors().Delete(context.Background(), userID)
 }
 
 // TwoFactorRecoveryCode represents a two-factor authentication recovery code.
@@ -57,14 +77,41 @@ type TwoFactorRecoveryCode struct {
 	IsUsed bool
 }
 
-func (s *TwoFactorsStore) GetRecoveryCodesByUserID(ctx context.Context, userID int64) ([]*TwoFactorRecoveryCode, error) {
-	recoveryCodes := make([]*TwoFactorRecoveryCode, 0, 10)
-	return recoveryCodes, s.db.WithContext(ctx).Where("user_id = ?", userID).Find(&recoveryCodes).Error
+func (c *TwoFactorRecoveryCode) ToDomain() *domain.TwoFactorRecoveryCode {
+	if c == nil {
+		return nil
+	}
+	return &domain.TwoFactorRecoveryCode{
+		ID:     c.ID,
+		UserID: c.UserID,
+		Code:   c.Code,
+		IsUsed: c.IsUsed,
+	}
+}
+
+func FromDomainTwoFactorRecoveryCode(c *domain.TwoFactorRecoveryCode) *TwoFactorRecoveryCode {
+	if c == nil {
+		return nil
+	}
+	return &TwoFactorRecoveryCode{
+		ID:     c.ID,
+		UserID: c.UserID,
+		Code:   c.Code,
+		IsUsed: c.IsUsed,
+	}
 }
 
 // GetRecoveryCodesByUserID returns recovery codes of given user.
 func GetRecoveryCodesByUserID(userID int64) ([]*TwoFactorRecoveryCode, error) {
-	return Handle.TwoFactors().GetRecoveryCodesByUserID(context.Background(), userID)
+	codes, err := Handle.TwoFactors().GetRecoveryCodesByUserID(context.Background(), userID)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*TwoFactorRecoveryCode, len(codes))
+	for i, c := range codes {
+		res[i] = FromDomainTwoFactorRecoveryCode(c)
+	}
+	return res, nil
 }
 
 func deleteRecoveryCodesByUserID(tx *gorm.DB, userID int64) error {
@@ -72,20 +119,10 @@ func deleteRecoveryCodesByUserID(tx *gorm.DB, userID int64) error {
 }
 
 // RegenerateRecoveryCodes regenerates new set of recovery codes for given user.
+//
+// Deprecated: Use TwoFactorsStore.RegenerateRecoveryCodes instead.
 func RegenerateRecoveryCodes(userID int64) error {
-	recoveryCodes, err := generateRecoveryCodes(userID, 10)
-	if err != nil {
-		return errors.Wrap(err, "generateRecoveryCodes")
-	}
-
-	return Handle.db.Transaction(func(tx *gorm.DB) error {
-		if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
-			return errors.Wrap(err, "deleteRecoveryCodesByUserID")
-		} else if err = tx.Create(recoveryCodes).Error; err != nil {
-			return errors.Wrap(err, "insert new recovery codes")
-		}
-		return nil
-	})
+	return Handle.TwoFactors().RegenerateRecoveryCodes(context.Background(), userID)
 }
 
 type ErrTwoFactorRecoveryCodeNotFound struct {
@@ -100,3 +137,4 @@ func IsTwoFactorRecoveryCodeNotFound(err error) bool {
 func (err ErrTwoFactorRecoveryCodeNotFound) Error() string {
 	return fmt.Sprintf("two-factor recovery code does not found [code: %s]", err.Code)
 }
+

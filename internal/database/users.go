@@ -118,7 +118,8 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 		createNewUser = true
 	}
 
-	source, err := newLoginSourcesStore(s.db, loadedLoginSourceFilesStore).GetByID(ctx, authSourceID)
+	source, err := newLoginSourcesStore(s.db, loadedLoginSourceFilesStore).getByID(ctx, authSourceID)
+
 	if err != nil {
 		return nil, errors.Wrap(err, "get login source")
 	}
@@ -543,7 +544,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 //
 // NOTE: We do not take context.Context here because this operation in practice
 // could much longer than the general request timeout (e.g. one minute).
-func (s *UsersStore) DeleteInactivated() error {
+func (s *UsersStore) DeleteInactivated(ctx context.Context) error {
 	var UserIDs []int64
 	err := s.db.Model(&User{}).Where("is_active = ?", false).Pluck("id", &UserIDs).Error
 	if err != nil {
@@ -679,12 +680,12 @@ func (s *UsersStore) GetByUsername(ctx context.Context, Username string) (*domai
 
 // GetByKeyID returns the owner of given public key ID. It returns
 // ErrUserNotExist when not found.
-func (s *UsersStore) GetByKeyID(ctx context.Context, keyID int64) (*User, error) {
-	User := new(User)
+func (s *UsersStore) GetByKeyID(ctx context.Context, keyID int64) (*domain.User, error) {
+	u := new(User)
 	err := s.db.WithContext(ctx).
 		Joins(dbx.Quote("JOIN public_key ON public_key.owner_id = %s.id", "User")).
 		Where("public_key.id = ?", keyID).
-		First(User).
+		First(u).
 		Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -692,7 +693,7 @@ func (s *UsersStore) GetByKeyID(ctx context.Context, keyID int64) (*User, error)
 		}
 		return nil, err
 	}
-	return User, nil
+	return u.ToDomain(), nil
 }
 
 // GetMailableEmailsByUsernames returns a list of verified primary email
@@ -987,7 +988,7 @@ func (ErrEmailNotExist) NotFound() bool {
 // true, only activated email will be returned, otherwise, it may return
 // inactivated email addresses. It returns ErrEmailNotExist when no qualified
 // email is not found.
-func (s *UsersStore) GetEmail(ctx context.Context, UserID int64, email string, needsActivated bool) (*EmailAddress, error) {
+func (s *UsersStore) GetEmail(ctx context.Context, UserID int64, email string, needsActivated bool) (*domain.EmailAddress, error) {
 	tx := s.db.WithContext(ctx).Where("uid = ? AND email = ?", UserID, email)
 	if needsActivated {
 		tx = tx.Where("is_activated = ?", true)
@@ -1005,12 +1006,12 @@ func (s *UsersStore) GetEmail(ctx context.Context, UserID int64, email string, n
 		}
 		return nil, err
 	}
-	return emailAddress, nil
+	return emailAddress.ToDomain(), nil
 }
 
 // ListEmails returns all email addresses of the given User. It always includes
 // a primary email address.
-func (s *UsersStore) ListEmails(ctx context.Context, UserID int64) ([]*EmailAddress, error) {
+func (s *UsersStore) ListEmails(ctx context.Context, UserID int64) ([]*domain.EmailAddress, error) {
 	u, err := s.getByID(ctx, UserID)
 	if err != nil {
 		return nil, errors.Wrap(err, "get User")
@@ -1027,20 +1028,23 @@ func (s *UsersStore) ListEmails(ctx context.Context, UserID int64) ([]*EmailAddr
 		if email.Email == u.Email {
 			isPrimaryFound = true
 			email.IsPrimary = true
-			break
 		}
 	}
 
-	// We always want the primary email address displayed, even if it's not in the
-	// email_address table yet.
+	res := make([]*domain.EmailAddress, 0, len(emails)+1)
 	if !isPrimaryFound {
-		emails = append(emails, &EmailAddress{
+		res = append(res, &domain.EmailAddress{
+			UserID:      u.ID,
 			Email:       u.Email,
 			IsActivated: u.IsActive,
 			IsPrimary:   true,
 		})
 	}
-	return emails, nil
+
+	for _, email := range emails {
+		res = append(res, email.ToDomain())
+	}
+	return res, nil
 }
 
 // MarkEmailActivated marks the email address of the given User as activated,
@@ -1560,5 +1564,17 @@ type EmailAddress struct {
 	Email       string `gorm:"uniqueIndex:email_address_User_email_unique;not null;size:254"`
 	IsActivated bool   `gorm:"not null;default:FALSE"`
 	IsPrimary   bool   `gorm:"-" json:"-"`
+}
+func (e *EmailAddress) ToDomain() *domain.EmailAddress {
+	if e == nil {
+		return nil
+	}
+	return &domain.EmailAddress{
+		ID:          e.ID,
+		UserID:      e.UserID,
+		Email:       e.Email,
+		IsActivated: e.IsActivated,
+		IsPrimary:   e.IsPrimary,
+	}
 }
 

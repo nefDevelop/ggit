@@ -32,7 +32,7 @@ func Init(db *database.DB) {
 
 func (s *issueService) CreateIssue(ctx context.Context, repo *database.Repository, issue *database.Issue, opts CreateIssueOptions) error {
 	// 1. Crear el issue en la base de datos (puro)
-	err := s.db.Issues().Create(ctx, repo, issue, opts.LabelIDs, opts.Attachments)
+	err := s.db.Issues().Create(ctx, repo.ToDomain(), issue.ToDomain(), opts.LabelIDs, opts.Attachments)
 	if err != nil {
 		return err
 	}

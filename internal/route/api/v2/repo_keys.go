@@ -5,6 +5,7 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // ListRepoDeployKeys returns a list of deploy keys for the repository.
@@ -45,9 +46,9 @@ func AddRepoDeployKey(c *context.APIContext) {
 		return
 	}
 
-	mode := database.AccessModeWrite
+	mode := domain.AccessModeWrite
 	if f.ReadOnly {
-		mode = database.AccessModeRead
+		mode = domain.AccessModeRead
 	}
 
 	key, err := database.AddDeployKey(c.Repo.Repository.ID, f.Title, content, mode)

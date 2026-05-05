@@ -4,8 +4,10 @@ import (
 	"context"
 	"path"
 	"time"
+	"github.com/nef734/ggit/internal/auth"
 
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
@@ -26,6 +28,17 @@ func ToUserResponse(u *database.User) *types.UserResponse {
 		AllowImportLocal: u.AllowImportLocal,
 		MaxRepoCreation:  u.MaxRepoCreation,
 		CreatedAt:       time.Unix(u.CreatedUnix, 0),
+	}
+}
+
+func ToUserEmailResponse(e *domain.EmailAddress) *types.UserEmailResponse {
+	if e == nil {
+		return nil
+	}
+	return &types.UserEmailResponse{
+		Email:    e.Email,
+		Verified: e.IsActivated,
+		Primary:  e.IsPrimary,
 	}
 }
 
@@ -62,17 +75,17 @@ func ToOrganizationResponse(o *database.User, owner *database.User) *types.Organ
 	}
 }
 
-func ToAuthSourceResponse(s *database.LoginSource) *types.AuthSourceResponse {
+func ToAuthSourceResponse(s *domain.LoginSource) *types.AuthSourceResponse {
 	if s == nil {
 		return nil
 	}
 	return &types.AuthSourceResponse{
 		ID:          s.ID,
 		Name:        s.Name,
-		TypeName:    s.TypeName(),
+		TypeName:    auth.Name(auth.Type(s.Type)),
 		IsActivated: s.IsActived,
-		CreatedAt:   s.Created,
-		RawConfig:   s.Config,
+		// CreatedAt:   s.Created, // domain.LoginSource doesn't have Created yet?
+		RawConfig: s.Config,
 	}
 }
 
@@ -148,7 +161,7 @@ func ToDeployKeyResponse(key *database.DeployKey) *types.RepositoryDeployKeyResp
 		URL:       "", // Not used in frontend yet
 		Title:     key.Name,
 		CreatedAt: key.Created,
-		ReadOnly:  key.Mode <= database.AccessModeRead,
+		ReadOnly:  key.Mode <= domain.AccessModeRead,
 	}
 }
 

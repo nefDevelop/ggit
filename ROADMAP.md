@@ -175,7 +175,7 @@
 
 ## Fase 22: Integridad y Autocuración 🛡️
 **Objetivo:** Garantizar la consistencia entre Base de Datos y Sistema de Archivos.
-- [ ] **Consistencia Atómica:** Lógica de "Two-Phase Commit" para operaciones Git + DB.
+- [x] **Consistencia Atómica:** Lógica de "Two-Phase Commit" para operaciones Git + DB. **Completado 🛡️**
 - [x] **Ggit Health Sentinel:** Orquestación de `git fsck` automático basado en actividad. **Tested**.
 - [x] **Self-Healing Hooks:** Reparación automática de hooks corruptos o ausentes. **Integrated 🛡️**
 - [x] **Dangling Objects Cleanup:** Identificar y limpiar rastro de archivos de repositorios borrados. **Tested**.
@@ -202,7 +202,7 @@
 - [x] **Gestión de Sesiones (DB Store):** Almacenamiento persistente de sesiones en base de datos. **Tested**.
 - [x] **Migraciones Atómicas:** Sistema de migraciones v26 implementado.
 - [x] **Auditoría de Índices:** Optimización de tablas críticas (UserRepository, Actions). **Tested**.
-- [ ] **Pattern Store:** Unificar accesos a DB bajo un patrón de repositorio común.
+- [x] **Pattern Store:** Unificar accesos a DB bajo un patrón de repositorio común (Fase 1). **Completado 🗄️**
 
 ---
 
@@ -246,7 +246,7 @@
 ### 5. Core & Janitor (Mantenimiento)
 - [x] **Stale Detection:** Nueva regla en el **Janitor** existente para detectar ramas e issues muertas. **Healed 🛡️**
 - [x] **Blindaje Anti-OOM:** Monitor de recursos dinámico y limitador de concurrencia.
-- [ ] **Atomic Consist. & Pattern Store:** Refactorización interna para integridad y mantenibilidad.
+- [x] **Atomic Consist. & Pattern Store:** Refactorización interna para integridad y mantenibilidad. **Completado 🛡️**
 
 ---
 
@@ -276,8 +276,8 @@
 | **Respaldo de Metadatos** | 25 | Completado | Bajo | Exportación ligera de DB y adjuntos (sin repositorios). |
 | **Adopción de Repositorios** | 22 | Completado | Bajo | Función para vincular carpetas Git existentes a la DB. |
 | **Tableros Kanban** | 26 | Completado | Medio | Selector de vista interactivo en la lista de Issues. |
-| **Consistencia Atómica** | 26 | Alta | Medio | Coordinación de transacciones entre SQLite y el sistema de archivos. |
-| **Pattern Store** | 26 | Alta | Medio | Refactorización estructural de la capa de persistencia. |
+| **Consistencia Atómica** | 26 | Completado | Medio | Coordinación de transacciones entre SQLite y el sistema de archivos. |
+| **Pattern Store** | 26 | Completado | Medio | Refactorización estructural de la capa de persistencia (Entidades Core). |
 | **Estados de Atención** | 26 | Completado | **0 MB** | Motor de turnos para PRs integrado en la cabecera. |
 | **Unified Inbox** | 26 | Media | Bajo | Nueva pestaña global para gestión de tareas multi-repo. |
 | **Stale Detection** | 26 | Baja | **0 MB** | Nueva regla integrada en el motor de Janitor existente. |
@@ -297,18 +297,18 @@ Unificación de accesos a DB bajo interfaces en `internal/domain` y desacoplo de
 | **SecretPatterns** | ✅ | `domain.SecretPatternsStore` | `database.SecretPatternsStore` |
 | **Repositories** | ✅ | `domain.RepositoriesStore` | `database.RepositoriesStore` |
 | **Users** | ✅ | `domain.UsersStore` | `database.UsersStore` |
-| **Organizations** | 🔄 | Pendiente | `database.OrganizationsStore` |
-| **Issues** | 🔄 | Pendiente | `database.IssuesStore` |
-| **PullRequests** | 🔄 | Pendiente | `database.PullRequestsStore` |
-| **Comments** | 🔄 | Pendiente | `database.CommentsStore` |
-| **AccessTokens** | 🔄 | Pendiente | `database.AccessTokensStore` |
-| **Actions** | 🔄 | Pendiente | `database.ActionsStore` |
-| **LFS** | 🔄 | Pendiente | `database.LFSStore` |
-| **LoginSources** | 🔄 | Pendiente | `database.LoginSourcesStore` |
-| **Permissions** | 🔄 | Pendiente | `database.PermissionsStore` |
-| **PublicKeys** | 🔄 | Pendiente | `database.PublicKeysStore` |
-| **TwoFactors** | 🔄 | Pendiente | `database.TwoFactorsStore` |
-| **UserBlocks** | 🔄 | Pendiente | `database.UserBlocksStore` |
+| **Organizations** | ✅ | `domain.OrganizationsStore` | `database.OrganizationsStore` |
+| **Issues** | ✅ | `domain.IssuesStore` | `database.IssuesStore` |
+| **PullRequests** | ✅ | `domain.PullRequestsStore` | `database.PullRequestsStore` |
+| **Comments** | ✅ | `domain.CommentsStore` | `database.CommentsStore` |
+| **AccessTokens** | ✅ | `domain.AccessTokensStore` | `database.AccessTokensStore` |
+| **Actions** | ✅ | `domain.ActionsStore` | `database.ActionsStore` |
+| **LoginSources** | ✅ | `domain.LoginSourcesStore` | `database.LoginSourcesStore` |
+| **LFS** | ✅ | `domain.LFSStore` | `database.LFSStore` |
+| **Permissions** | ✅ | `domain.PermissionsStore` | `database.PermissionsStore` |
+| **PublicKeys** | ✅ | `domain.PublicKeysStore` | `database.PublicKeysStore` |
+| **TwoFactors** | ✅ | `domain.TwoFactorsStore` | `database.TwoFactorsStore` |
+| **UserBlocks** | ✅ | `domain.UserBlocksStore` | `database.UserBlocksStore` |
 
 ### 🛡️ Atomic Consistency (2PC Filesystem)
 Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones `fsx.Transaction`.
@@ -326,7 +326,7 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 | **LFS Objects** | ✅ | `database.LFSStore.CreateObjectAtomic` |
 
 ### 🛠️ Estabilización y Calidad
-- [x] **Corrección de Errores de Tipos:** Resolución de +50 errores de compilación tras la migración a Pattern Store.
+- [x] **Corrección de Errores de Tipos:** Resolución de +100 errores de compilación tras la migración masiva.
 - [x] **Mapeo de Dominios:** Implementación de helpers `ToDomain` / `FromDomain` para compatibilidad progresiva.
 - [x] **Build Pass:** Verificación de integridad del proyecto completo (`go build ./...`).
 
@@ -339,16 +339,13 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 - [x] **Auditoría de Índices:** Optimización final de consultas SQL. **Tested**.
 - [x] **Blindaje Anti-OOM:** Limitador de concurrencia Git dinámico. **Healed 🛡️**
 - [x] **Self-Healing Hooks:** Sistema de autorreparación de scripts en disco. **Healed 🛡️**
+- [x] **Consistencia Atómica (2PC):** Coordinación estricta entre DB y sistema de archivos. **Completado 🛡️**
 
 ### Conectividad y Ecosistema (Medio Plazo)
 - [ ] **OIDC (OpenID Connect):** Soporte estándar para login externo.
 - [ ] **Ggit Credential Helper:** Almacenamiento seguro de credenciales para remotos HTTP. 
-- [ ] **Pattern Store:** Refactorización de la capa de acceso a datos (Clean Architecture). SI
+- [x] **Pattern Store (Fase 1):** Unificación de accesos a DB para entidades Core. **Completado 🗄️**
 
 ### Funcionalidades Avanzadas (Largo Plazo / 2.0)
 - [x] **Estados de Atención:** Implementar motor de turnos en PRs.
 - [x] **Kanban Virtual:** Vista de tablero basada en etiquetas.
-- [ ] **Consistencia Atómica (2PC):** Coordinación estricta entre DB y sistema de archivos.
-
-
----

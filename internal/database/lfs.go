@@ -8,6 +8,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/fsx"
 	"github.com/nef734/ggit/internal/lfsx"
@@ -36,6 +37,34 @@ func (o *LFSObject) BeforeCreate(tx *gorm.DB) error {
 func (o *LFSObject) AfterFind(_ *gorm.DB) error {
 	o.Created = time.Unix(o.CreatedUnix, 0).Local()
 	return nil
+}
+
+func (o *LFSObject) ToDomain() *domain.LFSObject {
+	if o == nil {
+		return nil
+	}
+	return &domain.LFSObject{
+		ID:      o.ID,
+		OID:     o.OID,
+		Size:    o.Size,
+		RepoID:  o.RepoID,
+		Storage: o.Storage,
+		Created: o.Created,
+	}
+}
+
+func FromDomainLFSObject(o *domain.LFSObject) *LFSObject {
+	if o == nil {
+		return nil
+	}
+	return &LFSObject{
+		ID:          o.ID,
+		OID:         o.OID,
+		Size:        o.Size,
+		RepoID:      o.RepoID,
+		Storage:     o.Storage,
+		CreatedUnix: o.Created.Unix(),
+	}
 }
 
 // LFSStore is the storage layer for LFS objects.
@@ -97,7 +126,7 @@ func (ErrLFSObjectNotExist) NotFound() bool {
 
 // GetObjectByOID returns the LFS object with given OID. It returns
 // ErrLFSObjectNotExist when not found.
-func (s *LFSStore) GetObjectByOID(ctx context.Context, repoID int64, oid lfsx.OID) (*LFSObject, error) {
+func (s *LFSStore) GetObjectByOID(ctx context.Context, repoID int64, oid lfsx.OID) (*domain.LFSObject, error) {
 	object := new(LFSObject)
 	err := s.db.WithContext(ctx).Where("repo_id = ? AND oid = ?", repoID, string(oid)).First(object).Error
 	if err != nil {
@@ -106,14 +135,14 @@ func (s *LFSStore) GetObjectByOID(ctx context.Context, repoID int64, oid lfsx.OI
 		}
 		return nil, err
 	}
-	return object, err
+	return object.ToDomain(), err
 }
 
 // GetObjectsByOIDs returns LFS objects found within "oids". The returned list
 // could have fewer elements if some oids were not found.
-func (s *LFSStore) GetObjectsByOIDs(ctx context.Context, repoID int64, oids ...lfsx.OID) ([]*LFSObject, error) {
+func (s *LFSStore) GetObjectsByOIDs(ctx context.Context, repoID int64, oids ...lfsx.OID) ([]*domain.LFSObject, error) {
 	if len(oids) == 0 {
-		return []*LFSObject{}, nil
+		return []*domain.LFSObject{}, nil
 	}
 
 	strOIDs := make([]string, len(oids))
@@ -126,5 +155,11 @@ func (s *LFSStore) GetObjectsByOIDs(ctx context.Context, repoID int64, oids ...l
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, err
 	}
-	return objects, nil
+
+	res := make([]*domain.LFSObject, len(objects))
+	for i, object := range objects {
+		res[i] = object.ToDomain()
+	}
+	return res, nil
 }
+

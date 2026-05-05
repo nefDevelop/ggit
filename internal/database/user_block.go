@@ -6,6 +6,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 // UserBlock represents a user blocking another user.
@@ -33,7 +34,7 @@ func newUserBlocksStore(db *gorm.DB) *UserBlocksStore {
 }
 
 // ListByUserID returns all users blocked by the given user.
-func (s *UserBlocksStore) ListByUserID(ctx context.Context, userID int64) ([]*User, error) {
+func (s *UserBlocksStore) ListByUserID(ctx context.Context, userID int64) ([]*domain.User, error) {
 	users := make([]*User, 0, 5)
 	err := s.db.WithContext(ctx).
 		Table("user").
@@ -43,7 +44,12 @@ func (s *UserBlocksStore) ListByUserID(ctx context.Context, userID int64) ([]*Us
 	if err != nil {
 		return nil, errors.Wrap(err, "list blocked users")
 	}
-	return users, nil
+
+	res := make([]*domain.User, len(users))
+	for i, user := range users {
+		res[i] = user.ToDomain()
+	}
+	return res, nil
 }
 
 // Block blocks a user.
@@ -65,3 +71,4 @@ func (s *UserBlocksStore) IsBlocked(ctx context.Context, userID, blockID int64) 
 	s.db.WithContext(ctx).Model(&UserBlock{}).Where("user_id = ? AND block_id = ?", userID, blockID).Count(&count)
 	return count > 0
 }
+

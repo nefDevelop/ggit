@@ -9,23 +9,18 @@ import (
 
 // GetRepoWatchers returns a list of users watching the repository.
 func GetRepoWatchers(c *context.APIContext) {
-	watches, err := database.Handle.Repositories().ListWatches(c.Req.Context(), c.Repo.Repository.ID)
+	users, err := database.Handle.Repositories().ListWatches(c.Req.Context(), c.Repo.Repository.ID)
 	if err != nil {
 		c.Error(err, "list watches")
 		return
 	}
 
-	users := make([]any, 0, len(watches))
-	for _, w := range watches {
-		du, err := database.Handle.Users().GetByID(c.Req.Context(), w.UserID)
-		if err != nil {
-			continue
-		}
-		u := database.FromDomainUser(du)
-		users = append(users, u.APIFormat())
+	apiUsers := make([]any, len(users))
+	for i, u := range users {
+		apiUsers[i] = database.FromDomainUser(u).APIFormat()
 	}
 
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, apiUsers)
 }
 
 // GetRepoStars returns a list of users who starred the repository.
@@ -43,7 +38,7 @@ func GetRepoStars(c *context.APIContext) {
 
 	apiUsers := make([]any, len(stars))
 	for i, u := range stars {
-		apiUsers[i] = u.APIFormat()
+		apiUsers[i] = database.FromDomainUser(u).APIFormat()
 	}
 
 	c.JSON(http.StatusOK, apiUsers)
@@ -63,7 +58,7 @@ func GetRepoForks(c *context.APIContext) {
 	}
 
 	for _, fork := range forks {
-		_ = fork.LoadAttributes()
+		_ = database.FromDomainRepository(fork).LoadAttributes()
 	}
 
 	c.JSON(http.StatusOK, forks)

@@ -6,6 +6,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	log "unknwon.dev/clog/v2"
 )
@@ -62,21 +63,26 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 	log.Trace("GetDashboardData: Loading attributes for %d collaborative repos", len(collaborative))
-	_ = database.RepositoryList(collaborative).LoadAttributes()
+	drepos := make([]*database.Repository, len(collaborative))
+	for i, r := range collaborative {
+		drepos[i] = database.FromDomainRepository(r)
+	}
+	_ = database.RepositoryList(drepos).LoadAttributes()
 	
 	apiCollaborative := make([]*apiv2types.RepositoryResponse, 0, len(collaborative))
-	for _, r := range collaborative {
+	for i, r := range collaborative {
 		if r == nil {
 			continue
 		}
-		apiCollaborative = append(apiCollaborative, r.APIFormat(r.MustOwner()))
+		dr := drepos[i]
+		apiCollaborative = append(apiCollaborative, dr.APIFormat(dr.MustOwner()))
 	}
 
 	// 4. Get Organizations
 	log.Trace("GetDashboardData: Fetching organizations for user %d", ctxUser.ID)
 	orgs, err := database.Handle.Organizations().List(
 		c.Req.Context(),
-		database.ListOrgsOptions{
+		domain.ListOrgsOptions{
 			MemberID:              ctxUser.ID,
 			IncludePrivateMembers: true,
 		},
@@ -90,7 +96,7 @@ func GetDashboardData(c *context.APIContext) {
 		if o == nil {
 			continue
 		}
-		apiOrgs = append(apiOrgs, o.APIFormat())
+		apiOrgs = append(apiOrgs, database.FromDomainUser(o).APIFormat())
 	}
 
 	log.Trace("GetDashboardData: Returning consolidated data")

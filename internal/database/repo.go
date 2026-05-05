@@ -692,12 +692,12 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 				context.TODO(),
 				user[0].ID,
 				r.ID,
-				AccessModeOptions{
+				domain.AccessModeOptions{
 					OwnerID: r.OwnerID,
 					Private: r.IsPrivate,
 				},
 			)
-			p.Push = accessMode >= AccessModeWrite
+			p.Push = accessMode >= domain.AccessModeWrite
 		}
 		apiRepo.Permissions = p
 	}
@@ -708,13 +708,13 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 				context.TODO(),
 				user[0].ID,
 				r.ID,
-				AccessModeOptions{
+				domain.AccessModeOptions{
 					OwnerID: r.OwnerID,
 					Private: r.IsPrivate,
 				},
 			)
-			p.Admin = accessMode >= AccessModeAdmin
-			p.Push = accessMode >= AccessModeWrite
+			p.Admin = accessMode >= domain.AccessModeAdmin
+			p.Push = accessMode >= domain.AccessModeWrite
 		}
 		apiRepo.Parent = r.BaseRepo.APIFormatLegacy(p, user...)
 	}
@@ -859,7 +859,7 @@ func (r *Repository) ComposeMetas() map[string]string {
 func (r *Repository) DeleteWiki() {}
 
 // getUsersWithAccesMode returns users that have at least given access mode to the repository.
-func (r *Repository) getUsersWithAccesMode(tx *gorm.DB, mode AccessMode) (_ []*User, err error) {
+func (r *Repository) getUsersWithAccesMode(tx *gorm.DB, mode domain.AccessMode) (_ []*User, err error) {
 	if err = r.getOwner(tx); err != nil {
 		return nil, err
 	}
@@ -896,13 +896,13 @@ func (r *Repository) getUsersWithAccesMode(tx *gorm.DB, mode AccessMode) (_ []*U
 
 // getAssignees returns a list of users who can be assigned to issues in this repository.
 func (r *Repository) getAssignees(e Engine) (_ []*User, err error) {
-	return r.getUsersWithAccesMode(e, AccessModeRead)
+	return r.getUsersWithAccesMode(e, domain.AccessModeRead)
 }
 
 // GetAssignees returns all users that have read access and can be assigned to issues
 // of the repository,
 func (r *Repository) GetAssignees() (_ []*User, err error) {
-	return r.getUsersWithAccesMode(Handle.db, AccessModeRead)
+	return r.getUsersWithAccesMode(Handle.db, domain.AccessModeRead)
 }
 
 // GetAssigneeByID returns the user that has write access of repository by given ID.
@@ -912,20 +912,21 @@ func (r *Repository) GetAssigneeByID(userID int64) (*User, error) {
 		ctx,
 		userID,
 		r.ID,
-		AccessModeRead,
-		AccessModeOptions{
+		domain.AccessModeRead,
+		domain.AccessModeOptions{
 			OwnerID: r.OwnerID,
 			Private: r.IsPrivate,
 		},
 	) {
 		return nil, ErrUserNotExist{args: errx.Args{"userID": userID}}
 	}
-	return Handle.Users().getByID(ctx, userID)
+	u, err := Handle.Users().GetByID(ctx, userID)
+	return FromDomainUser(u), err
 }
 
 // GetWriters returns all users that have write access to the repository.
 func (r *Repository) GetWriters() (_ []*User, err error) {
-	return r.getUsersWithAccesMode(Handle.db, AccessModeWrite)
+	return r.getUsersWithAccesMode(Handle.db, domain.AccessModeWrite)
 }
 
 // GetMilestoneByID returns the milestone belongs to repository by given ID.
@@ -969,8 +970,8 @@ func (r *Repository) ComposeCompareURL(oldCommitID, newCommitID string) string {
 }
 
 func (r *Repository) HasAccess(userID int64) bool {
-	return Handle.Permissions().Authorize(context.TODO(), userID, r.ID, AccessModeRead,
-		AccessModeOptions{
+	return Handle.Permissions().Authorize(context.TODO(), userID, r.ID, domain.AccessModeRead,
+		domain.AccessModeOptions{
 			OwnerID: r.OwnerID,
 			Private: r.IsPrivate,
 		},
@@ -1669,10 +1670,12 @@ func RepoPath(userName, repoName string) string {
 
 // TransferOwnership transfers all corresponding setting from old user to new one.
 func TransferOwnership(doer *User, newOwnerName string, repo *Repository) error {
-	newOwner, err := Handle.Users().getByUsername(context.TODO(), newOwnerName)
+	u, err := Handle.Users().GetByUsername(context.TODO(), newOwnerName)
 	if err != nil {
 		return errors.Newf("get new owner '%s': %v", newOwnerName, err)
 	}
+	newOwner := FromDomainUser(u)
+
 
 	// Check if new owner has repository with same name.
 	has, err := IsRepositoryExist(newOwner, repo.Name)
@@ -1929,10 +1932,12 @@ func DeleteRepository(ownerID, repoID int64) error {
 	}
 
 	// In case is a organization.
-	org, err := Handle.Users().getByID(context.TODO(), ownerID)
+	u, err := Handle.Users().GetByID(context.TODO(), ownerID)
 	if err != nil {
 		return err
 	}
+	org := FromDomainUser(u)
+
 
 	fsTx := fsx.NewTransaction()
 	defer fsTx.Rollback()
@@ -3030,7 +3035,7 @@ func (r *Repository) CreateNewBranch(oldBranch, newBranch string) (err error) {
 }
 
 // Deprecated: Use Perms.SetRepoPerms instead.
-func (r *Repository) refreshAccesses(e Engine, accessMap map[int64]AccessMode) (err error) {
+func (r *Repository) refreshAccesses(e Engine, accessMap map[int64]domain.AccessMode) (err error) {
 	newAccesses := make([]Access, 0, len(accessMap))
 	for userID, mode := range accessMap {
 		newAccesses = append(newAccesses, Access{
@@ -3052,7 +3057,7 @@ func (r *Repository) refreshAccesses(e Engine, accessMap map[int64]AccessMode) (
 }
 
 // refreshCollaboratorAccesses retrieves repository collaborations with their access modes.
-func (r *Repository) refreshCollaboratorAccesses(e Engine, accessMap map[int64]AccessMode) error {
+func (r *Repository) refreshCollaboratorAccesses(e Engine, accessMap map[int64]domain.AccessMode) error {
 	collaborations, err := r.getCollaborations(e)
 	if err != nil {
 		return errors.Newf("getCollaborations: %v", err)
@@ -3067,7 +3072,7 @@ func (r *Repository) refreshCollaboratorAccesses(e Engine, accessMap map[int64]A
 // except the team whose ID is given. It is used to assign a team ID when
 // remove repository from that team.
 func (r *Repository) recalculateTeamAccesses(e Engine, ignTeamID int64) (err error) {
-	accessMap := make(map[int64]AccessMode, 20)
+	accessMap := make(map[int64]domain.AccessMode, 20)
 
 	if err = r.getOwner(e); err != nil {
 		return err
@@ -3083,8 +3088,8 @@ func (r *Repository) recalculateTeamAccesses(e Engine, ignTeamID int64) (err err
 		return err
 	}
 
-	maxAccessMode := func(modes ...AccessMode) AccessMode {
-		max := AccessModeNone
+	maxAccessMode := func(modes ...domain.AccessMode) domain.AccessMode {
+		max := domain.AccessModeNone
 		for _, mode := range modes {
 			if mode > max {
 				max = mode
@@ -3101,7 +3106,7 @@ func (r *Repository) recalculateTeamAccesses(e Engine, ignTeamID int64) (err err
 		// Owner team gets owner access, and skip for teams that do not
 		// have relations with repository.
 		if t.IsOwnerTeam() {
-			t.Authorize = AccessModeOwner
+			t.Authorize = domain.AccessModeOwner
 		} else if !t.hasRepository(e, r.ID) {
 			continue
 		}
@@ -3122,7 +3127,7 @@ func (r *Repository) recalculateAccesses(e Engine) error {
 		return r.recalculateTeamAccesses(e, 0)
 	}
 
-	accessMap := make(map[int64]AccessMode, 10)
+	accessMap := make(map[int64]domain.AccessMode, 10)
 	if err := r.refreshCollaboratorAccesses(e, accessMap); err != nil {
 		return errors.Newf("refreshCollaboratorAccesses: %v", err)
 	}

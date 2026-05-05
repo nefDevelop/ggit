@@ -202,16 +202,25 @@ type UpdateRepoOptions struct {
 }
 
 // Update updates the repository record in the database.
-func (s *RepositoriesStore) Update(ctx context.Context, repoID int64, opts UpdateRepoOptions) error {
+func (s *RepositoriesStore) Update(ctx context.Context, repoID int64, opts any) error {
+	var options UpdateRepoOptions
+	if o, ok := opts.(UpdateRepoOptions); ok {
+		options = o
+	} else if o, ok := opts.(*UpdateRepoOptions); ok {
+		options = *o
+	} else {
+		return errors.New("invalid options type")
+	}
+
 	updates := make(map[string]any)
-	if opts.PrimaryLanguage != nil {
-		updates["primary_language"] = *opts.PrimaryLanguage
+	if options.PrimaryLanguage != nil {
+		updates["primary_language"] = *options.PrimaryLanguage
 	}
-	if opts.Languages != nil {
-		updates["languages"] = *opts.Languages
+	if options.Languages != nil {
+		updates["languages"] = *options.Languages
 	}
-	if opts.WikiFolderName != nil {
-		updates["wiki_folder_name"] = *opts.WikiFolderName
+	if options.WikiFolderName != nil {
+		updates["wiki_folder_name"] = *options.WikiFolderName
 	}
 
 	if len(updates) == 0 {
@@ -225,7 +234,7 @@ func (s *RepositoriesStore) Update(ctx context.Context, repoID int64, opts Updat
 // collaborator has access to. Results are limited to the given limit and sorted
 // by the given order (e.g. "updated_unix DESC"). Repositories that are owned
 // directly by the given collaborator are not included.
-func (s *RepositoriesStore) GetByCollaboratorID(ctx context.Context, collaboratorID int64, limit int, orderBy string) ([]*Repository, error) {
+func (s *RepositoriesStore) GetByCollaboratorID(ctx context.Context, collaboratorID int64, limit int, orderBy string) ([]*domain.Repository, error) {
 	/*
 		Equivalent SQL for PostgreSQL:
 
@@ -236,21 +245,30 @@ func (s *RepositoriesStore) GetByCollaboratorID(ctx context.Context, collaborato
 		LIMIT @limit
 	*/
 	var repos []*Repository
-	return repos, s.db.WithContext(ctx).
+	err := s.db.WithContext(ctx).
 		Select(repoListFields).
 		Joins("JOIN access ON access.repo_id = repository.id AND access.user_id = ?", collaboratorID).
-		Where("access.mode >= ?", AccessModeRead).
+		Where("access.mode >= ?", domain.AccessModeRead).
 		Order(orderBy).
 		Limit(limit).
 		Find(&repos).
 		Error
+	if err != nil {
+		return nil, err
+	}
+
+	drepos := make([]*domain.Repository, len(repos))
+	for i := range repos {
+		drepos[i] = repos[i].ToDomain()
+	}
+	return drepos, nil
 }
 
 // GetByCollaboratorIDWithAccessMode returns a list of repositories and
 // corresponding access mode that the given collaborator has access to.
 // Repositories that are owned directly by the given collaborator are not
 // included.
-func (s *RepositoriesStore) GetByCollaboratorIDWithAccessMode(ctx context.Context, collaboratorID int64) (map[*Repository]AccessMode, error) {
+func (s *RepositoriesStore) GetByCollaboratorIDWithAccessMode(ctx context.Context, collaboratorID int64) (map[*domain.Repository]domain.AccessMode, error) {
 	/*
 		Equivalent SQL for PostgreSQL:
 
@@ -263,22 +281,22 @@ func (s *RepositoriesStore) GetByCollaboratorIDWithAccessMode(ctx context.Contex
 	*/
 	var reposWithAccessMode []*struct {
 		*Repository
-		Mode AccessMode
+		Mode domain.AccessMode
 	}
 	err := s.db.WithContext(ctx).
 		Select("repository.id, repository.owner_id, repository.name, repository.lower_name, repository.description, repository.is_private, repository.updated_unix", "access.mode").
 		Table("repository").
 		Joins("JOIN access ON access.repo_id = repository.id AND access.user_id = ?", collaboratorID).
-		Where("access.mode >= ?", AccessModeRead).
+		Where("access.mode >= ?", domain.AccessModeRead).
 		Find(&reposWithAccessMode).
 		Error
 	if err != nil {
 		return nil, err
 	}
 
-	repos := make(map[*Repository]AccessMode, len(reposWithAccessMode))
+	repos := make(map[*domain.Repository]domain.AccessMode, len(reposWithAccessMode))
 	for _, repoWithAccessMode := range reposWithAccessMode {
-		repos[repoWithAccessMode.Repository] = repoWithAccessMode.Mode
+		repos[repoWithAccessMode.Repository.ToDomain()] = repoWithAccessMode.Mode
 	}
 	return repos, nil
 }
@@ -428,10 +446,24 @@ func (s *RepositoriesStore) Touch(ctx context.Context, id int64) error {
 		Error
 }
 
-// ListWatches returns all watches of the given repository.
-func (s *RepositoriesStore) ListWatches(ctx context.Context, repoID int64) ([]*Watch, error) {
-	var watches []*Watch
-	return watches, s.db.WithContext(ctx).Where("repo_id = ?", repoID).Find(&watches).Error
+// ListWatches returns all watchers of the given repository.
+func (s *RepositoriesStore) ListWatches(ctx context.Context, repoID int64) ([]*domain.User, error) {
+	var users []*User
+	err := s.db.WithContext(ctx).
+		Table("user").
+		Joins("JOIN watch ON watch.uid = user.id").
+		Where("watch.repo_id = ?", repoID).
+		Find(&users).
+		Error
+	if err != nil {
+		return nil, err
+	}
+
+	dusers := make([]*domain.User, len(users))
+	for i := range users {
+		dusers[i] = users[i].ToDomain()
+	}
+	return dusers, nil
 }
 
 func (s *RepositoriesStore) recountWatches(tx *gorm.DB, repoID int64) error {
@@ -479,33 +511,51 @@ func (s *RepositoriesStore) HasForkedBy(ctx context.Context, repoID, userID int6
 }
 
 // ListStars returns a list of users that starred the given repository.
-func (s *RepositoriesStore) ListStars(ctx context.Context, repoID int64, page, pageSize int) ([]*User, error) {
-	users := make([]*User, 0, pageSize)
-	return users, s.db.WithContext(ctx).
+func (s *RepositoriesStore) ListStars(ctx context.Context, repoID int64, page, pageSize int) ([]*domain.User, error) {
+	models := make([]*User, 0, pageSize)
+	err := s.db.WithContext(ctx).
 		Joins("JOIN star ON star.uid = user.id").
 		Where("star.repo_id = ?", repoID).
 		Limit(pageSize).Offset((page - 1) * pageSize).
 		Order("star.id DESC").
-		Find(&users).
+		Find(&models).
 		Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.User, len(models))
+	for i, m := range models {
+		res[i] = m.ToDomain()
+	}
+	return res, nil
 }
 
 // ListForks returns a list of repositories that are forks of the given repository.
-func (s *RepositoriesStore) ListForks(ctx context.Context, repoID int64, page, pageSize int) ([]*Repository, error) {
-	repos := make([]*Repository, 0, pageSize)
-	return repos, s.db.WithContext(ctx).
+func (s *RepositoriesStore) ListForks(ctx context.Context, repoID int64, page, pageSize int) ([]*domain.Repository, error) {
+	models := make([]*Repository, 0, pageSize)
+	err := s.db.WithContext(ctx).
 		Select(repoListFields).
 		Where("fork_id = ?", repoID).
 		Limit(pageSize).Offset((page - 1) * pageSize).
 		Order("updated_unix DESC").
-		Find(&repos).
+		Find(&models).
 		Error
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*domain.Repository, len(models))
+	for i, m := range models {
+		res[i] = m.ToDomain()
+	}
+	return res, nil
 }
 
 // ListStarred returns a list of repositories starred by the given user.
-func (s *RepositoriesStore) ListStarred(ctx context.Context, userID int64, page, pageSize int) ([]*Repository, error) {
+func (s *RepositoriesStore) ListStarred(ctx context.Context, userID int64, page, pageSize int) ([]*domain.Repository, error) {
 	repos := make([]*Repository, 0, pageSize)
-	return repos, s.db.WithContext(ctx).
+	err := s.db.WithContext(ctx).
 		Table("repository").
 		Select(repoListFields).
 		Joins("JOIN star ON star.repo_id = repository.id").
@@ -514,4 +564,13 @@ func (s *RepositoriesStore) ListStarred(ctx context.Context, userID int64, page,
 		Order("star.id DESC").
 		Find(&repos).
 		Error
+	if err != nil {
+		return nil, err
+	}
+
+	drepos := make([]*domain.Repository, len(repos))
+	for i := range repos {
+		drepos[i] = repos[i].ToDomain()
+	}
+	return drepos, nil
 }

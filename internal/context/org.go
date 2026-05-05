@@ -7,6 +7,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 type Organization struct {
@@ -128,7 +129,7 @@ func HandleOrgAssignment(c *Context, args ...bool) {
 			return
 		}
 
-		c.Org.IsTeamAdmin = c.Org.Team.IsOwnerTeam() || c.Org.Team.Authorize >= database.AccessModeAdmin
+		c.Org.IsTeamAdmin = c.Org.Team.IsOwnerTeam() || c.Org.Team.Authorize >= domain.AccessModeAdmin
 		c.Data["IsTeamAdmin"] = c.Org.IsTeamAdmin
 		if requireTeamAdmin && !c.Org.IsTeamAdmin {
 			c.NotFound()

@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,17 @@ type Topic struct {
 	NumRepos    int
 	CreatedUnix int64
 	UpdatedUnix int64
+}
+
+func (t *Topic) ToDomain() *domain.Topic {
+	if t == nil {
+		return nil
+	}
+	return &domain.Topic{
+		ID:       t.ID,
+		Name:     t.Name,
+		NumRepos: t.NumRepos,
+	}
 }
 
 // BeforeCreate implements the GORM create hook.
@@ -88,7 +100,7 @@ func (s *RepositoriesStore) AddTopics(ctx context.Context, repoID int64, topics 
 }
 
 // ListPopularTopics returns the most used topics.
-func (s *RepositoriesStore) ListPopularTopics(ctx context.Context, limit int) ([]*Topic, error) {
+func (s *RepositoriesStore) ListPopularTopics(ctx context.Context, limit int) ([]*domain.Topic, error) {
 	var topics []*Topic
 	err := s.db.WithContext(ctx).
 		Table("topic").
@@ -102,5 +114,10 @@ func (s *RepositoriesStore) ListPopularTopics(ctx context.Context, limit int) ([
 	if err != nil {
 		return nil, errors.Wrap(err, "list popular topics")
 	}
-	return topics, nil
+
+	dtops := make([]*domain.Topic, len(topics))
+	for i := range topics {
+		dtops[i] = topics[i].ToDomain()
+	}
+	return dtops, nil
 }

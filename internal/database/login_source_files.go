@@ -13,6 +13,7 @@ import (
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/osx"
 )
@@ -24,7 +25,7 @@ type loginSourceFilesStore interface {
 	// Len returns number of login sources.
 	Len() int
 	// List returns a list of login sources filtered by options.
-	List(opts ListLoginSourceOptions) []*LoginSource
+	List(opts domain.ListLoginSourceOptions) []*LoginSource
 	// Update updates in-memory copy of the authentication source.
 	Update(source *LoginSource)
 }
@@ -75,11 +76,11 @@ func (s *loginSourceFiles) Len() int {
 	return len(s.sources)
 }
 
-func (s *loginSourceFiles) List(opts ListLoginSourceOptions) []*LoginSource {
+func (s *loginSourceFiles) List(opts domain.ListLoginSourceOptions) []*LoginSource {
 	s.RLock()
 	defer s.RUnlock()
 
-	list := make([]*LoginSource, 0, s.Len())
+	list := make([]*LoginSource, 0, len(s.sources))
 	for _, source := range s.sources {
 		if opts.OnlyActivated && !source.IsActived {
 			continue

@@ -124,7 +124,7 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 			continue
 		}
 
-		to, err := Handle.Users().getByID(ctx, watchers[i].UserID)
+		to, err := Handle.Users().GetByID(ctx, watchers[i].UserID)
 		if err != nil {
 			return errors.Newf("GetUserByID [%d]: %v", watchers[i].UserID, err)
 		}

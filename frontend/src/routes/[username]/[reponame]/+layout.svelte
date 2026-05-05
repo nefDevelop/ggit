@@ -65,7 +65,9 @@
     currentPath.includes('/pulls') ? 'pulls' :
     currentPath.includes('/wiki') ? 'wiki' :
     currentPath.includes('/adr') ? 'adr' :
-    currentPath.includes('/branches') ? 'branches' : 
+    currentPath.includes('/branches') ? 'branches' :
+    currentPath.includes('/releases') ? 'releases' :
+    currentPath.includes('/tags') ? 'tags' :
     currentPath.includes('/labels') ? 'labels' :
     currentPath.includes('/milestones') ? 'milestones' : 'code'
   );
@@ -230,6 +232,17 @@
               {#if activeTab === 'branches'}<span class="tab-label">Branches</span>{/if}
             </a>
           {/if}
+
+          <a href={`/${username}/${reponame}/tags`} class="tab" class:active={activeTab === 'tags'}>
+            <span class="material-symbols-rounded">sell</span>
+            <span class="tab-count">{gitStats.tags}</span>
+            {#if activeTab === 'tags'}<span class="tab-label">Tags</span>{/if}
+          </a>
+
+          <a href={`/${username}/${reponame}/releases`} class="tab" class:active={activeTab === 'releases'}>
+            <span class="material-symbols-rounded">rocket_launch</span>
+            {#if activeTab === 'releases'}<span class="tab-label">Releases</span>{/if}
+          </a>
 
           {#if repoData.enable_issues && userPrefs.current.repoTabs.issue}
             <a href={repoData.enable_external_tracker ? repoData.external_tracker_url : `/${username}/${reponame}/issues`} 

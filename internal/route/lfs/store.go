@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
 )
 
@@ -29,7 +30,7 @@ type Store interface {
 
 	// AuthorizeRepositoryAccess returns true if the user has as good as desired
 	// access mode to the repository.
-	AuthorizeRepositoryAccess(ctx context.Context, userID, repoID int64, desired database.AccessMode, opts database.AccessModeOptions) bool
+	AuthorizeRepositoryAccess(ctx context.Context, userID, repoID int64, desired domain.AccessMode, opts domain.AccessModeOptions) bool
 
 	// GetRepositoryByName returns the repository with given owner and name. It
 	// returns database.ErrRepoNotExist when not found.
@@ -73,11 +74,15 @@ func NewStore() Store {
 }
 
 func (*store) GetAccessTokenBySHA1(ctx context.Context, sha1 string) (*database.AccessToken, error) {
-	return database.Handle.AccessTokens().GetBySHA1(ctx, sha1)
+	t, err := database.Handle.AccessTokens().GetBySHA1(ctx, sha1)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainAccessToken(t), nil
 }
 
 func (*store) TouchAccessTokenByID(ctx context.Context, id int64) error {
-	return database.Handle.AccessTokens().Touch(ctx, id)
+	return database.Handle.AccessTokens().TouchByID(ctx, id)
 }
 
 func (*store) CreateLFSObject(ctx context.Context, repoID int64, oid lfsx.OID, size int64, storage lfsx.Storage) error {
@@ -85,14 +90,27 @@ func (*store) CreateLFSObject(ctx context.Context, repoID int64, oid lfsx.OID, s
 }
 
 func (*store) GetLFSObjectByOID(ctx context.Context, repoID int64, oid lfsx.OID) (*database.LFSObject, error) {
-	return database.Handle.LFS().GetObjectByOID(ctx, repoID, oid)
+	o, err := database.Handle.LFS().GetObjectByOID(ctx, repoID, oid)
+	if err != nil {
+		return nil, err
+	}
+	return database.FromDomainLFSObject(o), nil
 }
 
 func (*store) GetLFSObjectsByOIDs(ctx context.Context, repoID int64, oids ...lfsx.OID) ([]*database.LFSObject, error) {
-	return database.Handle.LFS().GetObjectsByOIDs(ctx, repoID, oids...)
+	objects, err := database.Handle.LFS().GetObjectsByOIDs(ctx, repoID, oids...)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*database.LFSObject, len(objects))
+	for i, o := range objects {
+		res[i] = database.FromDomainLFSObject(o)
+	}
+	return res, nil
 }
 
-func (*store) AuthorizeRepositoryAccess(ctx context.Context, userID, repoID int64, desired database.AccessMode, opts database.AccessModeOptions) bool {
+func (*store) AuthorizeRepositoryAccess(ctx context.Context, userID, repoID int64, desired domain.AccessMode, opts domain.AccessModeOptions) bool {
 	return database.Handle.Permissions().Authorize(ctx, userID, repoID, desired, opts)
 }
 

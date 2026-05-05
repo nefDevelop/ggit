@@ -15,6 +15,7 @@ import (
 	"github.com/gogs/git-module"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/process"
@@ -76,6 +77,89 @@ type PullRequest struct {
 	Merger         *User     `json:"-" gorm:"-"`
 	Merged         time.Time `json:"-" gorm:"-"`
 	MergedUnix     int64
+}
+
+type PullRequestsStore struct {
+	db *gorm.DB
+}
+
+func newPullRequestsStore(db *gorm.DB) *PullRequestsStore {
+	return &PullRequestsStore{db: db}
+}
+
+func (s *PullRequestsStore) GetByID(ctx context.Context, id int64) (*domain.PullRequest, error) {
+	pr, err := getPullRequestByID(s.db, id)
+	if err != nil {
+		return nil, err
+	}
+	return pr.ToDomain(), nil
+}
+
+func (s *PullRequestsStore) GetByIssueID(ctx context.Context, issueID int64) (*domain.PullRequest, error) {
+	pr, err := getPullRequestByIssueID(s.db, issueID)
+	if err != nil {
+		return nil, err
+	}
+	return pr.ToDomain(), nil
+}
+
+func (pr *PullRequest) ToDomain() *domain.PullRequest {
+	if pr == nil {
+		return nil
+	}
+	return &domain.PullRequest{
+		ID:             pr.ID,
+		Type:           int(pr.Type),
+		Status:         int(pr.Status),
+		AttentionState: int(pr.AttentionState),
+		IssueID:        pr.IssueID,
+		Issue:          pr.Issue.ToDomain(),
+		Index:          pr.Index,
+		HeadRepoID:     pr.HeadRepoID,
+		HeadRepo:       pr.HeadRepo.ToDomain(),
+		BaseRepoID:     pr.BaseRepoID,
+		BaseRepo:       pr.BaseRepo.ToDomain(),
+		HeadUserName:   pr.HeadUserName,
+		HeadBranch:     pr.HeadBranch,
+		HeadCommitID:   pr.HeadCommitID,
+		BaseBranch:     pr.BaseBranch,
+		MergeBase:      pr.MergeBase,
+		HasMerged:      pr.HasMerged,
+		MergedCommitID: pr.MergedCommitID,
+		MergerID:       pr.MergerID,
+		Merger:         pr.Merger.ToDomain(),
+		Merged:         pr.Merged,
+	}
+}
+
+func FromDomainPullRequest(pr *domain.PullRequest) *PullRequest {
+	if pr == nil {
+		return nil
+	}
+	return &PullRequest{
+		ID:             pr.ID,
+		Type:           PullRequestType(pr.Type),
+		Status:         PullRequestStatus(pr.Status),
+		AttentionState: AttentionState(pr.AttentionState),
+		IssueID:        pr.IssueID,
+		Issue:          FromDomainIssue(pr.Issue),
+		Index:          pr.Index,
+		HeadRepoID:     pr.HeadRepoID,
+		HeadRepo:       FromDomainRepository(pr.HeadRepo),
+		BaseRepoID:     pr.BaseRepoID,
+		BaseRepo:       FromDomainRepository(pr.BaseRepo),
+		HeadUserName:   pr.HeadUserName,
+		HeadBranch:     pr.HeadBranch,
+		HeadCommitID:   pr.HeadCommitID,
+		BaseBranch:     pr.BaseBranch,
+		MergeBase:      pr.MergeBase,
+		HasMerged:      pr.HasMerged,
+		MergedCommitID: pr.MergedCommitID,
+		MergerID:       pr.MergerID,
+		Merger:         FromDomainUser(pr.Merger),
+		Merged:         pr.Merged,
+		MergedUnix:     pr.Merged.Unix(),
+	}
 }
 
 // BeforeUpdate implements the GORM update hook.
@@ -505,7 +589,7 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 	if err != nil {
 		return err
 	}
-	if err = Handle.Actions().MergePullRequest(ctx, doer, pr.Issue.Repo.Owner, pr.Issue.Repo, pr.Issue); err != nil {
+	if err = Handle.Actions().MergePullRequest(ctx, doer.ToDomain(), pr.Issue.Repo.Owner.ToDomain(), pr.Issue.Repo.ToDomain(), pr.Issue.ToDomain()); err != nil {
 		log.Error("Failed to create action for merge pull request, pull_request_id: %d, error: %v", pr.ID, err)
 	}
 

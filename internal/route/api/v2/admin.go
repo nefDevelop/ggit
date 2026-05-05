@@ -10,11 +10,11 @@ import (
 	"gopkg.in/ini.v1"
 	log "unknwon.dev/clog/v2"
 
-	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/cron"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/email"
 	"github.com/nef734/ggit/internal/process"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
@@ -39,7 +39,7 @@ func GetAdminAuditLog(c *context.APIContext) {
 
 	resp := make([]*apiv2types.AuditLogResponse, len(actions))
 	for i := range actions {
-		resp[i] = ToAuditLogResponse(actions[i])
+		resp[i] = ToAuditLogResponse(database.FromDomainAction(actions[i]))
 	}
 	c.JSONSuccess(resp)
 }
@@ -123,7 +123,7 @@ func RunAdminOperation(c *context.APIContext) {
 	switch AdminOperation(f.Op) {
 	case CleanInactivateUser:
 		successKey = "admin.dashboard.delete_inactivate_accounts_success"
-		err = database.Handle.Users().DeleteInactivated()
+		err = database.Handle.Users().DeleteInactivated(c.Req.Context())
 	case CleanRepoArchives:
 		successKey = "admin.dashboard.delete_repo_archives_success"
 		err = database.DeleteRepositoryArchives()
@@ -416,7 +416,7 @@ func DeleteAdminUser(c *context.APIContext) {
 
 // GetAdminAuths returns a list of all login sources.
 func GetAdminAuths(c *context.APIContext) {
-	sources, err := database.Handle.LoginSources().List(c.Req.Context(), database.ListLoginSourceOptions{})
+	sources, err := database.Handle.LoginSources().List(c.Req.Context(), domain.ListLoginSourceOptions{})
 	if err != nil {
 		c.Error(err, "list login sources")
 		return
@@ -444,8 +444,8 @@ func CreateAdminAuth(c *context.APIContext) {
 		return
 	}
 
-	source, err := database.Handle.LoginSources().Create(c.Req.Context(), database.CreateLoginSourceOptions{
-		Type:      auth.Type(f.Type),
+	source, err := database.Handle.LoginSources().Create(c.Req.Context(), domain.CreateLoginSourceOptions{
+		Type:      f.Type,
 		Name:      f.Name,
 		Activated: f.Activated,
 		Default:   f.Default,
@@ -490,7 +490,7 @@ func UpdateAdminConfig(c *context.APIContext) {
 
 	// Record action in Audit Log
 	content, _ := json.Marshal(f.Data)
-	if err := database.Handle.Actions().UpdateConfig(c.Req.Context(), c.User, f.Section, string(content)); err != nil {
+	if err := database.Handle.Actions().UpdateConfig(c.Req.Context(), c.User.ToDomain(), f.Section, string(content)); err != nil {
 		log.Error("Failed to record config update action: %v", err)
 	}
 
@@ -522,7 +522,7 @@ func UpdateAdminAuth(c *context.APIContext) {
 		return
 	}
 
-	opts := database.UpdateLoginSourceOptions{
+	opts := domain.UpdateLoginSourceOptions{
 		Name:      f.Name,
 		Activated: f.Activated,
 		Default:   f.Default,

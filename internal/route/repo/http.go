@@ -20,6 +20,7 @@ import (
 	"github.com/nef734/ggit/internal/conf"
 	gcontext "github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lazyregexp"
 	"github.com/nef734/ggit/internal/pathx"
 	"github.com/nef734/ggit/internal/tool"
@@ -167,12 +168,12 @@ Please create and use personal access token on user settings page`)
 
 		log.Trace("[Git] Authenticated user: %s", authUser.Name)
 
-		mode := database.AccessModeWrite
+		mode := domain.AccessModeWrite
 		if isPull {
-			mode = database.AccessModeRead
+			mode = domain.AccessModeRead
 		}
 		if !database.Handle.Permissions().Authorize(c.Request.Context(), authUser.ID, repo.ID, mode,
-			database.AccessModeOptions{
+			domain.AccessModeOptions{
 				OwnerID: repo.OwnerID,
 				Private: repo.IsPrivate,
 			},

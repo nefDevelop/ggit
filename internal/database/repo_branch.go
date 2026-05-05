@@ -10,6 +10,7 @@ import (
 	"github.com/gogs/git-module"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/tool"
 )
@@ -178,8 +179,8 @@ func UpdateOrgProtectBranch(repo *Repository, protectBranch *ProtectBranch, whit
 		userIDs := tool.StringsToInt64s(strings.Split(whitelistUserIDs, ","))
 		validUserIDs = make([]int64, 0, len(userIDs))
 		for _, userID := range userIDs {
-			if !Handle.Permissions().Authorize(context.TODO(), userID, repo.ID, AccessModeWrite,
-				AccessModeOptions{
+			if !Handle.Permissions().Authorize(context.TODO(), userID, repo.ID, domain.AccessModeWrite,
+				domain.AccessModeOptions{
 					OwnerID: repo.OwnerID,
 					Private: repo.IsPrivate,
 				},
@@ -198,7 +199,7 @@ func UpdateOrgProtectBranch(repo *Repository, protectBranch *ProtectBranch, whit
 	if protectBranch.WhitelistTeamIDs != whitelistTeamIDs {
 		hasTeamsChanged = true
 		teamIDs := tool.StringsToInt64s(strings.Split(whitelistTeamIDs, ","))
-		teams, err := GetTeamsHaveAccessToRepo(repo.OwnerID, repo.ID, AccessModeWrite)
+		teams, err := GetTeamsHaveAccessToRepo(repo.OwnerID, repo.ID, domain.AccessModeWrite)
 		if err != nil {
 			return errors.Newf("GetTeamsHaveAccessToRepo [org_id: %d, repo_id: %d]: %v", repo.OwnerID, repo.ID, err)
 		}

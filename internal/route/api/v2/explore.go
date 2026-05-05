@@ -172,10 +172,15 @@ func ExploreOrganizations(c *context.APIContext) {
 		}
 		count = database.CountOrganizations()
 	} else {
-		orgs, count, err = database.Handle.Organizations().SearchByName(c.Req.Context(), keyword, page, conf.UI.ExplorePagingNum, "updated_unix DESC")
+		var dus []*domain.User
+		dus, count, err = database.Handle.Organizations().SearchByName(c.Req.Context(), keyword, page, conf.UI.ExplorePagingNum, "updated_unix DESC")
 		if err != nil {
 			c.Error(err, "search organizations by name")
 			return
+		}
+		orgs = make([]*database.User, len(dus))
+		for i, du := range dus {
+			orgs[i] = database.FromDomainUser(du)
 		}
 	}
 
