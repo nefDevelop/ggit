@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { authState } from "$lib/auth.svelte";
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import Card from "$lib/components/ui/Card.svelte";
@@ -7,12 +8,20 @@
   import { marked } from "marked";
   import hljs from "highlight.js";
   import "highlight.js/styles/github-dark.css";
+  import Avatar from "./Avatar.svelte";
+  import { toast } from "$lib/toast.svelte";
 
   let { gist } = $props<{ gist: any }>();
   let files = $derived(gist.files || []);
 
   function renderMarkdown(content: string) {
     return marked(content);
+  }
+
+  function copyLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard!");
   }
 
   onMount(() => {
@@ -23,14 +32,25 @@
 <div class="gist-view">
   <header class="gist-header">
     <div class="header-main">
-      <div class="title-row">
-        <h1>{gist.description || "Untitled Gist"}</h1>
-        {#if !gist.is_public}
-          <Badge variant="neutral">Secret</Badge>
-        {/if}
+      <div class="header-top">
+        <div class="title-row">
+          <h1>{gist.description || "Untitled Gist"}</h1>
+          {#if !gist.is_public}
+            <Badge variant="neutral">Secret</Badge>
+          {/if}
+        </div>
+        <div class="gist-actions">
+           <Button variant="ghost" icon="share" onclick={copyLink}>Compartir</Button>
+           {#if gist.owner?.username === authState.user?.username}
+              <Button variant="ghost" icon="edit" href="/gists/{gist.uuid}/edit">Editar</Button>
+           {/if}
+        </div>
       </div>
       <div class="meta-row">
-        <span class="user">@{gist.user_id}</span>
+        <div class="owner-pill">
+           <Avatar src={gist.owner?.avatar_url} username={gist.owner?.username} size={24} />
+           <span class="user">@{gist.owner?.username || 'anonymous'}</span>
+        </div>
         <span class="sep">•</span>
         <span class="date">{new Date(gist.created_at).toLocaleDateString()}</span>
         <span class="sep">•</span>
@@ -65,10 +85,13 @@
 <style>
   .gist-view { display: flex; flex-direction: column; gap: 2rem; }
   .gist-header { padding-bottom: 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .title-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem; }
+  .header-top { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
+  .gist-actions { display: flex; gap: 0.5rem; }
+  .title-row { display: flex; align-items: center; gap: 1rem; }
   .title-row h1 { margin: 0; font-size: 1.75rem; font-weight: 800; color: var(--md-sys-color-on-surface); }
   
-  .meta-row { display: flex; align-items: center; gap: 0.75rem; color: var(--md-sys-color-on-surface-variant); font-size: 0.9rem; }
+  .meta-row { display: flex; align-items: center; gap: 0.75rem; color: var(--md-sys-color-on-surface-variant); font-size: 0.9rem; margin-top: 1rem; }
+  .owner-pill { display: flex; align-items: center; gap: 0.5rem; background: var(--md-sys-color-surface-container); padding: 0.25rem 0.75rem 0.25rem 0.25rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .sep { opacity: 0.3; }
 
   .gist-files { display: flex; flex-direction: column; gap: 2rem; }

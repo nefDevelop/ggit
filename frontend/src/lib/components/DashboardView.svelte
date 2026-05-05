@@ -1,7 +1,7 @@
 <script lang="ts">
   import { 
     LayoutDashboard, Plus, History, List, FolderOpen, Inbox, 
-    Rocket, Folder, CheckCircle2, GitPullRequest, AlertCircle, Building2 
+    Rocket, Folder, CheckCircle2, GitPullRequest, AlertCircle, Building2, ScrollText
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
@@ -15,11 +15,13 @@
   let data = $state<{
     repositories: any[],
     collaborative: any[],
-    organizations: any[]
+    organizations: any[],
+    gists: any[]
   }>({
     repositories: [],
     collaborative: [],
-    organizations: []
+    organizations: [],
+    gists: []
   });
   let loading = $state(true);
   let viewMode = $state<'list' | 'temporal' | 'folders' | 'inbox'>('temporal');
@@ -101,6 +103,10 @@
       // Silently prefetch inbox to show badge
       const inboxRes = await apiFetch('/api/v2/user/dashboard/inbox');
       if (inboxRes.ok) inboxItems = await inboxRes.json();
+
+      // Fetch gists for sidebar
+      const gistsRes = await apiFetch(`/api/v2/users/${authState.user?.username}/gists`);
+      if (gistsRes.ok) data.gists = await gistsRes.json();
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
     } finally {
@@ -251,11 +257,29 @@
 
     {#if hasSidebar}
     <aside class="dashboard-sidebar">
+        {#if data.gists.length > 0}
+            <div class="sidebar-card tonal">
+                <header class="sidebar-header">
+                    <ScrollText size={18} />
+                    <h4>Recent Gists</h4>
+                    <a href="/gists/new" class="mini-add-link" title="New Gist"><Plus size={16} /></a>
+                </header>
+                <div class="gist-mini-list">
+                    {#each data.gists.slice(0, 5) as gist}
+                        <a href="/gists/{gist.uuid}" class="gist-mini-item">
+                            <span class="gist-mini-title">{gist.description || 'Untitled'}</span>
+                        </a>
+                    {/each}
+                </div>
+            </div>
+        {/if}
+
         {#if data.organizations.length > 0 && userPrefs.current.showSidebarOrgs}
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
                     <Building2 size={18} />
                     <h4>Organizations</h4>
+                    <a href="/org/create" class="mini-add-link" title="New Org"><Plus size={16} /></a>
                 </header>
                 <div class="org-grid">
                     {#each data.organizations as org}
@@ -327,7 +351,15 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    flex: 1;
   }
+
+  .mini-add-link { color: var(--text-muted); transition: color 0.2s; }
+  .mini-add-link:hover { color: var(--primary-color); }
+
+  .gist-mini-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .gist-mini-item { text-decoration: none; color: var(--text-color); font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: 0.75rem; background: rgba(255,255,255,0.02); transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .gist-mini-item:hover { background: var(--primary-color); color: white; transform: translateX(4px); }
 
 
 

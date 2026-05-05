@@ -16,6 +16,7 @@ type Gist struct {
 
 	// Files associated with this Gist.
 	Files []*GistFile `json:"files,omitempty"`
+	Owner *User       `json:"owner,omitempty"`
 }
 
 // GistFile represents a single file within a Gist.

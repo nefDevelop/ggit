@@ -14,6 +14,12 @@ import (
 	"github.com/nef734/ggit/internal/domain"
 )
 
+type GistUser struct {
+	ID     int64
+	Name   string
+	Avatar string
+}
+
 // Gist is the database model for domain.Gist.
 type Gist struct {
 	ID          int64  `gorm:"primaryKey"`
@@ -104,6 +110,11 @@ func (s *gistsStore) GetByUUID(uuid string) (*domain.Gist, error) {
 		return nil, err
 	}
 
+	var user GistUser
+	if err := s.db.Table("users").Where("id = ?", g.UserID).First(&user).Error; err != nil {
+		return nil, err
+	}
+
 	var files []*GistFile
 	if err := s.db.Where("gist_id = ?", g.ID).Find(&files).Error; err != nil {
 		return nil, err
@@ -138,6 +149,11 @@ func (s *gistsStore) GetByUUID(uuid string) (*domain.Gist, error) {
 		CreatedAt:   g.CreatedAt,
 		UpdatedAt:   g.UpdatedAt,
 		Files:       domainFiles,
+		Owner: &domain.User{
+			ID:     user.ID,
+			Name:   user.Name,
+			Avatar: user.Avatar,
+		},
 	}, nil
 }
 
