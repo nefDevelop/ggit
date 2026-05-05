@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 func TestOrgs(t *testing.T) {
@@ -70,12 +71,12 @@ func orgsList(t *testing.T, ctx context.Context, s *OrganizationsStore) {
 
 	tests := []struct {
 		name         string
-		opts         ListOrgsOptions
+		opts         domain.ListOrgsOptions
 		wantOrgNames []string
 	}{
 		{
 			name: "only public memberships for a user",
-			opts: ListOrgsOptions{
+			opts: domain.ListOrgsOptions{
 				MemberID:              alice.ID,
 				IncludePrivateMembers: false,
 			},
@@ -83,7 +84,7 @@ func orgsList(t *testing.T, ctx context.Context, s *OrganizationsStore) {
 		},
 		{
 			name: "all memberships for a user",
-			opts: ListOrgsOptions{
+			opts: domain.ListOrgsOptions{
 				MemberID:              alice.ID,
 				IncludePrivateMembers: true,
 			},
@@ -91,7 +92,7 @@ func orgsList(t *testing.T, ctx context.Context, s *OrganizationsStore) {
 		},
 		{
 			name: "no membership for a non-existent user",
-			opts: ListOrgsOptions{
+			opts: domain.ListOrgsOptions{
 				MemberID:              404,
 				IncludePrivateMembers: true,
 			},

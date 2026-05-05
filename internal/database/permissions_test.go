@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 func TestPerms(t *testing.T) {
@@ -43,26 +44,26 @@ func TestPerms(t *testing.T) {
 func permsAccessMode(t *testing.T, ctx context.Context, s *PermissionsStore) {
 	// Set up permissions
 	err := s.SetRepoPerms(ctx, 1,
-		map[int64]AccessMode{
-			2: AccessModeWrite,
-			3: AccessModeAdmin,
+		map[int64]domain.AccessMode{
+			2: domain.AccessModeWrite,
+			3: domain.AccessModeAdmin,
 		},
 	)
 	require.NoError(t, err)
 	err = s.SetRepoPerms(ctx, 2,
-		map[int64]AccessMode{
-			1: AccessModeRead,
+		map[int64]domain.AccessMode{
+			1: domain.AccessModeRead,
 		},
 	)
 	require.NoError(t, err)
 
 	publicRepoID := int64(1)
-	publicRepoOpts := AccessModeOptions{
+	publicRepoOpts := domain.AccessModeOptions{
 		OwnerID: 98,
 	}
 
 	privateRepoID := int64(2)
-	privateRepoOpts := AccessModeOptions{
+	privateRepoOpts := domain.AccessModeOptions{
 		OwnerID: 99,
 		Private: true,
 	}
@@ -71,25 +72,25 @@ func permsAccessMode(t *testing.T, ctx context.Context, s *PermissionsStore) {
 		name           string
 		userID         int64
 		repoID         int64
-		opts           AccessModeOptions
-		wantAccessMode AccessMode
+		opts           domain.AccessModeOptions
+		wantAccessMode domain.AccessMode
 	}{
 		{
 			name:           "nil repository",
-			wantAccessMode: AccessModeNone,
+			wantAccessMode: domain.AccessModeNone,
 		},
 
 		{
 			name:           "anonymous user has read access to public repository",
 			repoID:         publicRepoID,
 			opts:           publicRepoOpts,
-			wantAccessMode: AccessModeRead,
+			wantAccessMode: domain.AccessModeRead,
 		},
 		{
 			name:           "anonymous user has no access to private repository",
 			repoID:         privateRepoID,
 			opts:           privateRepoOpts,
-			wantAccessMode: AccessModeNone,
+			wantAccessMode: domain.AccessModeNone,
 		},
 
 		{
@@ -97,28 +98,28 @@ func permsAccessMode(t *testing.T, ctx context.Context, s *PermissionsStore) {
 			userID:         98,
 			repoID:         publicRepoID,
 			opts:           publicRepoOpts,
-			wantAccessMode: AccessModeOwner,
+			wantAccessMode: domain.AccessModeOwner,
 		},
 		{
 			name:           "user 1 has read access to public repo",
 			userID:         1,
 			repoID:         publicRepoID,
 			opts:           publicRepoOpts,
-			wantAccessMode: AccessModeRead,
+			wantAccessMode: domain.AccessModeRead,
 		},
 		{
 			name:           "user 2 has write access to public repo",
 			userID:         2,
 			repoID:         publicRepoID,
 			opts:           publicRepoOpts,
-			wantAccessMode: AccessModeWrite,
+			wantAccessMode: domain.AccessModeWrite,
 		},
 		{
 			name:           "user 3 has admin access to public repo",
 			userID:         3,
 			repoID:         publicRepoID,
 			opts:           publicRepoOpts,
-			wantAccessMode: AccessModeAdmin,
+			wantAccessMode: domain.AccessModeAdmin,
 		},
 
 		{
@@ -126,21 +127,21 @@ func permsAccessMode(t *testing.T, ctx context.Context, s *PermissionsStore) {
 			userID:         1,
 			repoID:         privateRepoID,
 			opts:           privateRepoOpts,
-			wantAccessMode: AccessModeRead,
+			wantAccessMode: domain.AccessModeRead,
 		},
 		{
 			name:           "user 2 has no access to private repo",
 			userID:         2,
 			repoID:         privateRepoID,
 			opts:           privateRepoOpts,
-			wantAccessMode: AccessModeNone,
+			wantAccessMode: domain.AccessModeNone,
 		},
 		{
 			name:           "user 3 has no access to private repo",
 			userID:         3,
 			repoID:         privateRepoID,
 			opts:           privateRepoOpts,
-			wantAccessMode: AccessModeNone,
+			wantAccessMode: domain.AccessModeNone,
 		},
 	}
 	for _, test := range tests {
@@ -154,10 +155,10 @@ func permsAccessMode(t *testing.T, ctx context.Context, s *PermissionsStore) {
 func permsAuthorize(t *testing.T, ctx context.Context, s *PermissionsStore) {
 	// Set up permissions
 	err := s.SetRepoPerms(ctx, 1,
-		map[int64]AccessMode{
-			1: AccessModeRead,
-			2: AccessModeWrite,
-			3: AccessModeAdmin,
+		map[int64]domain.AccessMode{
+			1: domain.AccessModeRead,
+			2: domain.AccessModeWrite,
+			3: domain.AccessModeAdmin,
 		},
 	)
 	require.NoError(t, err)
@@ -170,64 +171,64 @@ func permsAuthorize(t *testing.T, ctx context.Context, s *PermissionsStore) {
 	tests := []struct {
 		name           string
 		userID         int64
-		desired        AccessMode
+		desired        domain.AccessMode
 		wantAuthorized bool
 	}{
 		{
 			name:           "user 1 has read and wants read",
 			userID:         1,
-			desired:        AccessModeRead,
+			desired:        domain.AccessModeRead,
 			wantAuthorized: true,
 		},
 		{
 			name:           "user 1 has read and wants write",
 			userID:         1,
-			desired:        AccessModeWrite,
+			desired:        domain.AccessModeWrite,
 			wantAuthorized: false,
 		},
 
 		{
 			name:           "user 2 has write and wants read",
 			userID:         2,
-			desired:        AccessModeRead,
+			desired:        domain.AccessModeRead,
 			wantAuthorized: true,
 		},
 		{
 			name:           "user 2 has write and wants write",
 			userID:         2,
-			desired:        AccessModeWrite,
+			desired:        domain.AccessModeWrite,
 			wantAuthorized: true,
 		},
 		{
 			name:           "user 2 has write and wants admin",
 			userID:         2,
-			desired:        AccessModeAdmin,
+			desired:        domain.AccessModeAdmin,
 			wantAuthorized: false,
 		},
 
 		{
 			name:           "user 3 has admin and wants read",
 			userID:         3,
-			desired:        AccessModeRead,
+			desired:        domain.AccessModeRead,
 			wantAuthorized: true,
 		},
 		{
 			name:           "user 3 has admin and wants write",
 			userID:         3,
-			desired:        AccessModeWrite,
+			desired:        domain.AccessModeWrite,
 			wantAuthorized: true,
 		},
 		{
 			name:           "user 3 has admin and wants admin",
 			userID:         3,
-			desired:        AccessModeAdmin,
+			desired:        domain.AccessModeAdmin,
 			wantAuthorized: true,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			authorized := s.Authorize(ctx, test.userID, repo.ID, test.desired,
-				AccessModeOptions{
+				domain.AccessModeOptions{
 					OwnerID: repo.OwnerID,
 					Private: repo.IsPrivate,
 				},
@@ -240,39 +241,39 @@ func permsAuthorize(t *testing.T, ctx context.Context, s *PermissionsStore) {
 func permsSetRepoPerms(t *testing.T, ctx context.Context, s *PermissionsStore) {
 	for _, update := range []struct {
 		repoID    int64
-		accessMap map[int64]AccessMode
+		accessMap map[int64]domain.AccessMode
 	}{
 		{
 			repoID: 1,
-			accessMap: map[int64]AccessMode{
-				1: AccessModeWrite,
-				2: AccessModeWrite,
-				3: AccessModeAdmin,
-				4: AccessModeWrite,
+			accessMap: map[int64]domain.AccessMode{
+				1: domain.AccessModeWrite,
+				2: domain.AccessModeWrite,
+				3: domain.AccessModeAdmin,
+				4: domain.AccessModeWrite,
 			},
 		},
 		{
 			repoID: 2,
-			accessMap: map[int64]AccessMode{
-				1: AccessModeWrite,
-				2: AccessModeRead,
-				4: AccessModeWrite,
-				5: AccessModeWrite,
+			accessMap: map[int64]domain.AccessMode{
+				1: domain.AccessModeWrite,
+				2: domain.AccessModeRead,
+				4: domain.AccessModeWrite,
+				5: domain.AccessModeWrite,
 			},
 		},
 		{
 			repoID: 1,
-			accessMap: map[int64]AccessMode{
-				2: AccessModeWrite,
-				3: AccessModeAdmin,
+			accessMap: map[int64]domain.AccessMode{
+				2: domain.AccessModeWrite,
+				3: domain.AccessModeAdmin,
 			},
 		},
 		{
 			repoID: 2,
-			accessMap: map[int64]AccessMode{
-				1: AccessModeWrite,
-				2: AccessModeRead,
-				5: AccessModeWrite,
+			accessMap: map[int64]domain.AccessMode{
+				1: domain.AccessModeWrite,
+				2: domain.AccessModeRead,
+				5: domain.AccessModeWrite,
 			},
 		},
 	} {
@@ -292,11 +293,11 @@ func permsSetRepoPerms(t *testing.T, ctx context.Context, s *PermissionsStore) {
 	}
 
 	wantAccesses := []*Access{
-		{UserID: 1, RepoID: 2, Mode: AccessModeWrite},
-		{UserID: 2, RepoID: 1, Mode: AccessModeWrite},
-		{UserID: 2, RepoID: 2, Mode: AccessModeRead},
-		{UserID: 3, RepoID: 1, Mode: AccessModeAdmin},
-		{UserID: 5, RepoID: 2, Mode: AccessModeWrite},
+		{UserID: 1, RepoID: 2, Mode: domain.AccessModeWrite},
+		{UserID: 2, RepoID: 1, Mode: domain.AccessModeWrite},
+		{UserID: 2, RepoID: 2, Mode: domain.AccessModeRead},
+		{UserID: 3, RepoID: 1, Mode: domain.AccessModeAdmin},
+		{UserID: 5, RepoID: 2, Mode: domain.AccessModeWrite},
 	}
 	assert.Equal(t, wantAccesses, accesses)
 }

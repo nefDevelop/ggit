@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -49,12 +50,12 @@ func TestLoginSourceFiles_List(t *testing.T) {
 	}
 
 	t.Run("list all sources", func(t *testing.T) {
-		sources := store.List(ListLoginSourceOptions{})
+		sources := store.List(domain.ListLoginSourceOptions{})
 		assert.Equal(t, 2, len(sources), "number of sources")
 	})
 
 	t.Run("list only activated sources", func(t *testing.T) {
-		sources := store.List(ListLoginSourceOptions{OnlyActivated: true})
+		sources := store.List(domain.ListLoginSourceOptions{OnlyActivated: true})
 		assert.Equal(t, 1, len(sources), "number of sources")
 		assert.Equal(t, int64(101), sources[0].ID)
 	})

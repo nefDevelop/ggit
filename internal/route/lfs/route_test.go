@@ -13,6 +13,7 @@ import (
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
 )
 
@@ -161,14 +162,14 @@ func TestAuthenticate(t *testing.T) {
 func TestAuthorize(t *testing.T) {
 	tests := []struct {
 		name          string
-		accessMode    database.AccessMode
+		accessMode    domain.AccessMode
 		mockStore     func() *MockStore
 		expStatusCode int
 		expBody       string
 	}{
 		{
 			name:       "user does not exist",
-			accessMode: database.AccessModeNone,
+			accessMode: domain.AccessModeNone,
 			mockStore: func() *MockStore {
 				mockStore := NewMockStore()
 				mockStore.GetUserByUsernameFunc.SetDefaultReturn(nil, database.ErrUserNotExist{})
@@ -178,7 +179,7 @@ func TestAuthorize(t *testing.T) {
 		},
 		{
 			name:       "repository does not exist",
-			accessMode: database.AccessModeNone,
+			accessMode: domain.AccessModeNone,
 			mockStore: func() *MockStore {
 				mockStore := NewMockStore()
 				mockStore.GetRepositoryByNameFunc.SetDefaultReturn(nil, database.ErrRepoNotExist{})
@@ -191,11 +192,11 @@ func TestAuthorize(t *testing.T) {
 		},
 		{
 			name:       "actor is not authorized",
-			accessMode: database.AccessModeWrite,
+			accessMode: domain.AccessModeWrite,
 			mockStore: func() *MockStore {
 				mockStore := NewMockStore()
-				mockStore.AuthorizeRepositoryAccessFunc.SetDefaultHook(func(_ context.Context, _ int64, _ int64, desired database.AccessMode, _ database.AccessModeOptions) bool {
-					return desired <= database.AccessModeRead
+				mockStore.AuthorizeRepositoryAccessFunc.SetDefaultHook(func(_ context.Context, _ int64, _ int64, desired domain.AccessMode, _ domain.AccessModeOptions) bool {
+					return desired <= domain.AccessModeRead
 				})
 				mockStore.GetRepositoryByNameFunc.SetDefaultHook(func(ctx context.Context, ownerID int64, name string) (*database.Repository, error) {
 					return &database.Repository{Name: name}, nil
@@ -210,11 +211,11 @@ func TestAuthorize(t *testing.T) {
 
 		{
 			name:       "actor is authorized",
-			accessMode: database.AccessModeRead,
+			accessMode: domain.AccessModeRead,
 			mockStore: func() *MockStore {
 				mockStore := NewMockStore()
-				mockStore.AuthorizeRepositoryAccessFunc.SetDefaultHook(func(_ context.Context, _ int64, _ int64, desired database.AccessMode, _ database.AccessModeOptions) bool {
-					return desired <= database.AccessModeRead
+				mockStore.AuthorizeRepositoryAccessFunc.SetDefaultHook(func(_ context.Context, _ int64, _ int64, desired domain.AccessMode, _ domain.AccessModeOptions) bool {
+					return desired <= domain.AccessModeRead
 				})
 				mockStore.GetRepositoryByNameFunc.SetDefaultHook(func(ctx context.Context, ownerID int64, name string) (*database.Repository, error) {
 					return &database.Repository{Name: name}, nil

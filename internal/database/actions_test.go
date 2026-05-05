@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 )
 
 func TestIssueReferencePattern(t *testing.T) {
@@ -450,10 +451,10 @@ func actionsMergePullRequest(t *testing.T, ctx context.Context, s *ActionsStore)
 	require.NoError(t, err)
 
 	err = s.MergePullRequest(ctx,
-		FromDomainUser(alice),
-		FromDomainUser(alice),
-		FromDomainRepository(repo),
-		&Issue{
+		alice,
+		alice,
+		repo,
+		&domain.Issue{
 			Index: 1,
 			Title: "Fix issue 1",
 		},
@@ -683,7 +684,7 @@ func actionsRenameRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 	)
 	require.NoError(t, err)
 
-	err = s.RenameRepo(ctx, FromDomainUser(alice), FromDomainUser(alice), "oldExample", FromDomainRepository(repo))
+	err = s.RenameRepo(ctx, alice, alice, "oldExample", repo)
 	require.NoError(t, err)
 
 	got, err := s.ListByUser(ctx, alice.ID, alice.ID, 0, false)
@@ -728,7 +729,7 @@ func actionsTransferRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 	)
 	require.NoError(t, err)
 
-	err = s.TransferRepo(ctx, FromDomainUser(alice), FromDomainUser(alice), FromDomainUser(bob), FromDomainRepository(repo))
+	err = s.TransferRepo(ctx, alice, alice, bob, repo)
 	require.NoError(t, err)
 
 	got, err := s.ListByUser(ctx, alice.ID, alice.ID, 0, false)

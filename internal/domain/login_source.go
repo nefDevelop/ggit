@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"time"
 )
 
 // LoginSource represents an external way for authorizing users.
@@ -12,6 +13,9 @@ type LoginSource struct {
 	IsActived bool
 	IsDefault bool
 	Config    string
+
+	Created time.Time
+	Updated time.Time
 }
 
 // CreateLoginSourceOptions contains options for creating a login source.

@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -162,9 +163,9 @@ func reposGetByCollaboratorID(t *testing.T, ctx context.Context, s *Repositories
 	require.NoError(t, err)
 
 	permissionsStore := newPermissionsStore(s.db)
-	err = permissionsStore.SetRepoPerms(ctx, repo1.ID, map[int64]AccessMode{3: AccessModeRead})
+	err = permissionsStore.SetRepoPerms(ctx, repo1.ID, map[int64]domain.AccessMode{3: domain.AccessModeRead})
 	require.NoError(t, err)
-	err = permissionsStore.SetRepoPerms(ctx, repo2.ID, map[int64]AccessMode{4: AccessModeAdmin})
+	err = permissionsStore.SetRepoPerms(ctx, repo2.ID, map[int64]domain.AccessMode{4: domain.AccessModeAdmin})
 	require.NoError(t, err)
 
 	t.Run("user 3 is a collaborator of repo1", func(t *testing.T) {
@@ -190,23 +191,23 @@ func reposGetByCollaboratorIDWithAccessMode(t *testing.T, ctx context.Context, s
 	require.NoError(t, err)
 
 	permissionsStore := newPermissionsStore(s.db)
-	err = permissionsStore.SetRepoPerms(ctx, repo1.ID, map[int64]AccessMode{3: AccessModeRead})
+	err = permissionsStore.SetRepoPerms(ctx, repo1.ID, map[int64]domain.AccessMode{3: domain.AccessModeRead})
 	require.NoError(t, err)
-	err = permissionsStore.SetRepoPerms(ctx, repo2.ID, map[int64]AccessMode{3: AccessModeAdmin, 4: AccessModeWrite})
+	err = permissionsStore.SetRepoPerms(ctx, repo2.ID, map[int64]domain.AccessMode{3: domain.AccessModeAdmin, 4: domain.AccessModeWrite})
 	require.NoError(t, err)
-	err = permissionsStore.SetRepoPerms(ctx, repo3.ID, map[int64]AccessMode{4: AccessModeWrite})
+	err = permissionsStore.SetRepoPerms(ctx, repo3.ID, map[int64]domain.AccessMode{4: domain.AccessModeWrite})
 	require.NoError(t, err)
 
 	got, err := s.GetByCollaboratorIDWithAccessMode(ctx, 3)
 	require.NoError(t, err)
 	require.Len(t, got, 2)
 
-	accessModes := make(map[int64]AccessMode)
+	accessModes := make(map[int64]domain.AccessMode)
 	for repo, mode := range got {
 		accessModes[repo.ID] = mode
 	}
-	assert.Equal(t, AccessModeRead, accessModes[repo1.ID])
-	assert.Equal(t, AccessModeAdmin, accessModes[repo2.ID])
+	assert.Equal(t, domain.AccessModeRead, accessModes[repo1.ID])
+	assert.Equal(t, domain.AccessModeAdmin, accessModes[repo2.ID])
 }
 
 func reposGetByID(t *testing.T, ctx context.Context, s *RepositoriesStore) {

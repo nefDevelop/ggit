@@ -15,6 +15,7 @@ import (
 	"github.com/nef734/ggit/internal/auth/ldap"
 	"github.com/nef734/ggit/internal/cryptox"
 	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
 	"github.com/nef734/ggit/internal/testx"
 )
@@ -50,13 +51,13 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			ID:     1,
 			UserID: 1,
 			RepoID: 11,
-			Mode:   AccessModeRead,
+			Mode:   domain.AccessModeRead,
 		},
 		&Access{
 			ID:     2,
 			UserID: 2,
 			RepoID: 22,
-			Mode:   AccessModeWrite,
+			Mode:   domain.AccessModeWrite,
 		},
 
 		&AccessToken{

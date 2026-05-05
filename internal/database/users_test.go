@@ -16,6 +16,7 @@ import (
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/repox"
@@ -170,8 +171,8 @@ func usersAuthenticate(t *testing.T, ctx context.Context, s *UsersStore) {
 		loginSourcesStore := newLoginSourcesStore(s.db, NewMockLoginSourceFilesStore())
 		loginSource, err := loginSourcesStore.Create(
 			ctx,
-			CreateLoginSourceOptions{
-				Type:      auth.Mock,
+			domain.CreateLoginSourceOptions{
+				Type:      int(auth.Mock),
 				Name:      "mock-1",
 				Activated: true,
 				Config: mockProviderConfig{
@@ -198,8 +199,8 @@ func usersAuthenticate(t *testing.T, ctx context.Context, s *UsersStore) {
 		loginSourcesStore := newLoginSourcesStore(s.db, NewMockLoginSourceFilesStore())
 		loginSource, err := loginSourcesStore.Create(
 			ctx,
-			CreateLoginSourceOptions{
-				Type:      auth.Mock,
+			domain.CreateLoginSourceOptions{
+				Type:      int(auth.Mock),
 				Name:      "mock-2",
 				Activated: true,
 				Config: mockProviderConfig{
@@ -688,7 +689,7 @@ func usersDeleteInactivated(t *testing.T, ctx context.Context, s *UsersStore) {
 	tempSSHRootPath := filepath.Join(os.TempDir(), "usersDeleteInactivated-tempSSHRootPath")
 	conf.SetMockSSH(t, conf.SSHOpts{RootPath: tempSSHRootPath})
 
-	err = s.DeleteInactivated()
+	err = s.DeleteInactivated(ctx)
 	require.NoError(t, err)
 
 	_, err = s.GetByID(ctx, david.ID)

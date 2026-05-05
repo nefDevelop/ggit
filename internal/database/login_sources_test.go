@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -173,8 +175,8 @@ func TestLoginSources(t *testing.T) {
 func loginSourcesCreate(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	// Create first login source with name "LDAP"
 	source, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:      auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type:      int(auth.LDAP),
 			Name:      "LDAP",
 			Activated: true,
 			Default:   false,
@@ -192,7 +194,7 @@ func loginSourcesCreate(t *testing.T, ctx context.Context, s *LoginSourcesStore)
 	assert.Equal(t, s.db.NowFunc().Format(time.RFC3339), source.Updated.UTC().Format(time.RFC3339))
 
 	// Try to create second login source with same name should fail.
-	_, err = s.Create(ctx, CreateLoginSourceOptions{Name: source.Name})
+	_, err = s.Create(ctx, domain.CreateLoginSourceOptions{Name: source.Name})
 	wantErr := ErrLoginSourceAlreadyExist{args: errx.Args{"name": source.Name}}
 	assert.Equal(t, wantErr, err)
 }
@@ -208,8 +210,8 @@ func setMockLoginSourceFilesStore(t *testing.T, s *LoginSourcesStore, mock login
 func loginSourcesCount(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	// Create two login sources, one in database and one as source file.
 	_, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:      auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type:      int(auth.LDAP),
 			Name:      "LDAP",
 			Activated: true,
 			Default:   false,
@@ -230,8 +232,8 @@ func loginSourcesCount(t *testing.T, ctx context.Context, s *LoginSourcesStore) 
 func loginSourcesDeleteByID(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	t.Run("delete but in used", func(t *testing.T) {
 		source, err := s.Create(ctx,
-			CreateLoginSourceOptions{
-				Type:      auth.LDAP,
+			domain.CreateLoginSourceOptions{
+				Type:      int(auth.LDAP),
 				Name:      "LDAP",
 				Activated: true,
 				Default:   false,
@@ -264,8 +266,8 @@ func loginSourcesDeleteByID(t *testing.T, ctx context.Context, s *LoginSourcesSt
 
 	// Create a login source with name "LDAP2"
 	source, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:      auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type:      int(auth.LDAP),
 			Name:      "LDAP2",
 			Activated: true,
 			Default:   false,
@@ -310,8 +312,8 @@ func loginSourcesGetByID(t *testing.T, ctx context.Context, s *LoginSourcesStore
 
 	// Create a login source with name "LDAP"
 	source, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:      auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type:      int(auth.LDAP),
 			Name:      "LDAP",
 			Activated: true,
 			Default:   false,
@@ -323,7 +325,11 @@ func loginSourcesGetByID(t *testing.T, ctx context.Context, s *LoginSourcesStore
 	// Get the one in the database and test the read/write hooks
 	source, err = s.GetByID(ctx, source.ID)
 	require.NoError(t, err)
-	assert.Equal(t, expConfig, source.Provider.Config())
+
+	m := FromDomainLoginSource(source)
+	err = m.AfterFind(s.db)
+	require.NoError(t, err)
+	assert.Equal(t, expConfig, m.Provider.Config())
 
 	// Get the one in source file store
 	_, err = s.GetByID(ctx, 101)
@@ -332,7 +338,7 @@ func loginSourcesGetByID(t *testing.T, ctx context.Context, s *LoginSourcesStore
 
 func loginSourcesList(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	mock := NewMockLoginSourceFilesStore()
-	mock.ListFunc.SetDefaultHook(func(opts ListLoginSourceOptions) []*LoginSource {
+	mock.ListFunc.SetDefaultHook(func(opts domain.ListLoginSourceOptions) []*LoginSource {
 		if opts.OnlyActivated {
 			return []*LoginSource{
 				{ID: 1},
@@ -347,8 +353,8 @@ func loginSourcesList(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 
 	// Create two login sources in database, one activated and the other one not
 	_, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type: auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type: int(auth.LDAP),
 			Name: "LDAP",
 			Config: &ldap.Config{
 				Host: "ldap.example.com",
@@ -357,8 +363,8 @@ func loginSourcesList(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	)
 	require.NoError(t, err)
 	_, err = s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:      auth.DLDAP,
+		domain.CreateLoginSourceOptions{
+			Type:      int(auth.DLDAP),
 			Name:      "DLDAP",
 			Activated: true,
 			Config: &ldap.Config{
@@ -369,19 +375,19 @@ func loginSourcesList(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	require.NoError(t, err)
 
 	// List all login sources
-	sources, err := s.List(ctx, ListLoginSourceOptions{})
+	sources, err := s.List(ctx, domain.ListLoginSourceOptions{})
 	require.NoError(t, err)
 	assert.Equal(t, 4, len(sources), "number of sources")
 
 	// Only list activated login sources
-	sources, err = s.List(ctx, ListLoginSourceOptions{OnlyActivated: true})
+	sources, err = s.List(ctx, domain.ListLoginSourceOptions{OnlyActivated: true})
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(sources), "number of sources")
 }
 
 func loginSourcesResetNonDefault(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	mock := NewMockLoginSourceFilesStore()
-	mock.ListFunc.SetDefaultHook(func(opts ListLoginSourceOptions) []*LoginSource {
+	mock.ListFunc.SetDefaultHook(func(opts domain.ListLoginSourceOptions) []*LoginSource {
 		mockFile := NewMockLoginSourceFileStore()
 		mockFile.SetGeneralFunc.SetDefaultHook(func(name, value string) {
 			assert.Equal(t, "is_default", name)
@@ -397,8 +403,8 @@ func loginSourcesResetNonDefault(t *testing.T, ctx context.Context, s *LoginSour
 
 	// Create two login sources both have default on
 	source1, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:    auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type:    int(auth.LDAP),
 			Name:    "LDAP1",
 			Default: true,
 			Config: &ldap.Config{
@@ -408,8 +414,8 @@ func loginSourcesResetNonDefault(t *testing.T, ctx context.Context, s *LoginSour
 	)
 	require.NoError(t, err)
 	source2, err := s.Create(ctx,
-		CreateLoginSourceOptions{
-			Type:      auth.LDAP,
+		domain.CreateLoginSourceOptions{
+			Type:      int(auth.LDAP),
 			Name:      "LDAP2",
 			Activated: true,
 			Default:   true,
@@ -438,8 +444,8 @@ func loginSourcesSave(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	t.Run("save to database", func(t *testing.T) {
 		// Create a login source with name "LDAP"
 		source, err := s.Create(ctx,
-			CreateLoginSourceOptions{
-				Type:      auth.LDAP,
+			domain.CreateLoginSourceOptions{
+				Type:      int(auth.LDAP),
 				Name:      "LDAP",
 				Activated: true,
 				Default:   false,
@@ -451,16 +457,24 @@ func loginSourcesSave(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 		require.NoError(t, err)
 
 		source.IsActived = false
-		source.Provider = ldap.NewProvider(false, &ldap.Config{
+		cfg := &ldap.Config{
 			Host: "ldap2.example.com",
-		})
+		}
+		data, err := json.Marshal(cfg)
+		require.NoError(t, err)
+		source.Config = string(data)
+
 		err = s.Save(ctx, source)
 		require.NoError(t, err)
 
 		source, err = s.GetByID(ctx, source.ID)
 		require.NoError(t, err)
 		assert.False(t, source.IsActived)
-		assert.Equal(t, "ldap2.example.com", source.LDAP().Host)
+
+		m := FromDomainLoginSource(source)
+		err = m.AfterFind(s.db)
+		require.NoError(t, err)
+		assert.Equal(t, "ldap2.example.com", m.LDAP().Host)
 	})
 
 	t.Run("save to file", func(t *testing.T) {
@@ -471,7 +485,7 @@ func loginSourcesSave(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 			}),
 			File: mockFile,
 		}
-		err := s.Save(ctx, source)
+		err := s.Save(ctx, source.ToDomain())
 		require.NoError(t, err)
 		mockrequire.Called(t, mockFile.SaveFunc)
 	})

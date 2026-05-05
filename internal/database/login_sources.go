@@ -128,6 +128,8 @@ func (s *LoginSource) ToDomain() *domain.LoginSource {
 		IsActived: s.IsActived,
 		IsDefault: s.IsDefault,
 		Config:    s.Config,
+		Created:   time.Unix(s.CreatedUnix, 0),
+		Updated:   time.Unix(s.UpdatedUnix, 0),
 	}
 }
 
@@ -136,12 +138,14 @@ func FromDomainLoginSource(s *domain.LoginSource) *LoginSource {
 		return nil
 	}
 	return &LoginSource{
-		ID:        s.ID,
-		Type:      auth.Type(s.Type),
-		Name:      s.Name,
-		IsActived: s.IsActived,
-		IsDefault: s.IsDefault,
-		Config:    s.Config,
+		ID:          s.ID,
+		Type:        auth.Type(s.Type),
+		Name:        s.Name,
+		IsActived:   s.IsActived,
+		IsDefault:   s.IsDefault,
+		Config:      s.Config,
+		CreatedUnix: s.Created.Unix(),
+		UpdatedUnix: s.Updated.Unix(),
 	}
 }
 

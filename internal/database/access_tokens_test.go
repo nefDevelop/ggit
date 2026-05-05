@@ -123,7 +123,7 @@ func TestAccessTokens(t *testing.T) {
 
 func accessTokensCreate(t *testing.T, ctx context.Context, s *AccessTokensStore) {
 	// Create first access token with name "Test"
-	token, err := s.Create(ctx, 1, "Test")
+	token, _, err := s.Create(ctx, 1, "Test")
 	require.NoError(t, err)
 
 	assert.Equal(t, int64(1), token.UserID)
@@ -136,7 +136,7 @@ func accessTokensCreate(t *testing.T, ctx context.Context, s *AccessTokensStore)
 	assert.Equal(t, s.db.NowFunc().Format(time.RFC3339), token.Created.UTC().Format(time.RFC3339))
 
 	// Try create second access token with same name should fail
-	_, err = s.Create(ctx, token.UserID, token.Name)
+	_, _, err = s.Create(ctx, token.UserID, token.Name)
 	wantErr := ErrAccessTokenAlreadyExist{
 		args: errx.Args{
 			"userID": token.UserID,
@@ -148,7 +148,7 @@ func accessTokensCreate(t *testing.T, ctx context.Context, s *AccessTokensStore)
 
 func accessTokensDeleteByID(t *testing.T, ctx context.Context, s *AccessTokensStore) {
 	// Create an access token with name "Test"
-	token, err := s.Create(ctx, 1, "Test")
+	token, _, err := s.Create(ctx, 1, "Test")
 	require.NoError(t, err)
 
 	// Delete a token with mismatched user ID is noop
@@ -175,7 +175,7 @@ func accessTokensDeleteByID(t *testing.T, ctx context.Context, s *AccessTokensSt
 
 func accessTokensGetBySHA(t *testing.T, ctx context.Context, s *AccessTokensStore) {
 	// Create an access token with name "Test"
-	token, err := s.Create(ctx, 1, "Test")
+	token, _, err := s.Create(ctx, 1, "Test")
 	require.NoError(t, err)
 
 	// We should be able to get it back
@@ -194,13 +194,13 @@ func accessTokensGetBySHA(t *testing.T, ctx context.Context, s *AccessTokensStor
 
 func accessTokensList(t *testing.T, ctx context.Context, s *AccessTokensStore) {
 	// Create two access tokens for user 1
-	_, err := s.Create(ctx, 1, "user1_1")
+	_, _, err := s.Create(ctx, 1, "user1_1")
 	require.NoError(t, err)
-	_, err = s.Create(ctx, 1, "user1_2")
+	_, _, err = s.Create(ctx, 1, "user1_2")
 	require.NoError(t, err)
 
 	// Create one access token for user 2
-	_, err = s.Create(ctx, 2, "user2_1")
+	_, _, err = s.Create(ctx, 2, "user2_1")
 	require.NoError(t, err)
 
 	// List all access tokens for user 1
@@ -217,13 +217,13 @@ func accessTokensList(t *testing.T, ctx context.Context, s *AccessTokensStore) {
 
 func accessTokensTouch(t *testing.T, ctx context.Context, s *AccessTokensStore) {
 	// Create an access token with name "Test"
-	token, err := s.Create(ctx, 1, "Test")
+	token, _, err := s.Create(ctx, 1, "Test")
 	require.NoError(t, err)
 
 	// Updated field is zero now
 	assert.True(t, token.Updated.IsZero())
 
-	err = s.Touch(ctx, token.ID)
+	err = s.TouchByID(ctx, token.ID)
 	require.NoError(t, err)
 
 	// Get back from DB should have Updated set

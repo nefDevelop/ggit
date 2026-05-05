@@ -11,6 +11,7 @@ import (
 	"sync"
 
 	database "github.com/nef734/ggit/internal/database"
+	domain "github.com/nef734/ggit/internal/domain"
 	lfsx "github.com/nef734/ggit/internal/lfsx"
 )
 
@@ -66,7 +67,7 @@ func NewMockStore() *MockStore {
 			},
 		},
 		AuthorizeRepositoryAccessFunc: &StoreAuthorizeRepositoryAccessFunc{
-			defaultHook: func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) (r0 bool) {
+			defaultHook: func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) (r0 bool) {
 				return
 			},
 		},
@@ -133,7 +134,7 @@ func NewStrictMockStore() *MockStore {
 			},
 		},
 		AuthorizeRepositoryAccessFunc: &StoreAuthorizeRepositoryAccessFunc{
-			defaultHook: func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool {
+			defaultHook: func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool {
 				panic("unexpected invocation of MockStore.AuthorizeRepositoryAccess")
 			},
 		},
@@ -351,15 +352,15 @@ func (c StoreAuthenticateUserFuncCall) Results() []interface{} {
 // AuthorizeRepositoryAccess method of the parent MockStore instance is
 // invoked.
 type StoreAuthorizeRepositoryAccessFunc struct {
-	defaultHook func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool
-	hooks       []func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool
+	defaultHook func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool
+	hooks       []func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool
 	history     []StoreAuthorizeRepositoryAccessFuncCall
 	mutex       sync.Mutex
 }
 
 // AuthorizeRepositoryAccess delegates to the next hook function in the
 // queue and stores the parameter and result values of this invocation.
-func (m *MockStore) AuthorizeRepositoryAccess(v0 context.Context, v1 int64, v2 int64, v3 database.AccessMode, v4 database.AccessModeOptions) bool {
+func (m *MockStore) AuthorizeRepositoryAccess(v0 context.Context, v1 int64, v2 int64, v3 domain.AccessMode, v4 domain.AccessModeOptions) bool {
 	r0 := m.AuthorizeRepositoryAccessFunc.nextHook()(v0, v1, v2, v3, v4)
 	m.AuthorizeRepositoryAccessFunc.appendCall(StoreAuthorizeRepositoryAccessFuncCall{v0, v1, v2, v3, v4, r0})
 	return r0
@@ -368,7 +369,7 @@ func (m *MockStore) AuthorizeRepositoryAccess(v0 context.Context, v1 int64, v2 i
 // SetDefaultHook sets function that is called when the
 // AuthorizeRepositoryAccess method of the parent MockStore instance is
 // invoked and the hook queue is empty.
-func (f *StoreAuthorizeRepositoryAccessFunc) SetDefaultHook(hook func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool) {
+func (f *StoreAuthorizeRepositoryAccessFunc) SetDefaultHook(hook func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool) {
 	f.defaultHook = hook
 }
 
@@ -376,7 +377,7 @@ func (f *StoreAuthorizeRepositoryAccessFunc) SetDefaultHook(hook func(context.Co
 // AuthorizeRepositoryAccess method of the parent MockStore instance invokes
 // the hook at the front of the queue and discards it. After the queue is
 // empty, the default hook function is invoked for any future action.
-func (f *StoreAuthorizeRepositoryAccessFunc) PushHook(hook func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool) {
+func (f *StoreAuthorizeRepositoryAccessFunc) PushHook(hook func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool) {
 	f.mutex.Lock()
 	f.hooks = append(f.hooks, hook)
 	f.mutex.Unlock()
@@ -385,19 +386,19 @@ func (f *StoreAuthorizeRepositoryAccessFunc) PushHook(hook func(context.Context,
 // SetDefaultReturn calls SetDefaultHook with a function that returns the
 // given values.
 func (f *StoreAuthorizeRepositoryAccessFunc) SetDefaultReturn(r0 bool) {
-	f.SetDefaultHook(func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool {
+	f.SetDefaultHook(func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool {
 		return r0
 	})
 }
 
 // PushReturn calls PushHook with a function that returns the given values.
 func (f *StoreAuthorizeRepositoryAccessFunc) PushReturn(r0 bool) {
-	f.PushHook(func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool {
+	f.PushHook(func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool {
 		return r0
 	})
 }
 
-func (f *StoreAuthorizeRepositoryAccessFunc) nextHook() func(context.Context, int64, int64, database.AccessMode, database.AccessModeOptions) bool {
+func (f *StoreAuthorizeRepositoryAccessFunc) nextHook() func(context.Context, int64, int64, domain.AccessMode, domain.AccessModeOptions) bool {
 	f.mutex.Lock()
 	defer f.mutex.Unlock()
 
@@ -442,10 +443,10 @@ type StoreAuthorizeRepositoryAccessFuncCall struct {
 	Arg2 int64
 	// Arg3 is the value of the 4th argument passed to this method
 	// invocation.
-	Arg3 database.AccessMode
+	Arg3 domain.AccessMode
 	// Arg4 is the value of the 5th argument passed to this method
 	// invocation.
-	Arg4 database.AccessModeOptions
+	Arg4 domain.AccessModeOptions
 	// Result0 is the value of the 1st result returned from this method
 	// invocation.
 	Result0 bool
