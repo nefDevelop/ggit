@@ -4,6 +4,7 @@
   import Card from './ui/Card.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { Activity, Clock, CalendarOff, Network, Hourglass } from 'lucide-svelte';
   
   let monitorData = $state<any>(null);
   let loading = $state(true);
@@ -33,7 +34,7 @@
   <PageHeader 
     title={i18n.t('admin.monitor') || "Monitor del Sistema"}
     subtitle="Tareas programadas, procesos activos y recursos"
-    icon="monitoring"
+    icon={Activity}
   />
 
   <div class="admin-monitor-body">
@@ -45,7 +46,7 @@
       <!-- CRON TASKS SECTION -->
       <section class="monitor-section">
         <div class="section-tag">
-          <span class="material-symbols-rounded">schedule</span>
+          <Clock size={18} />
           Tareas Cron
         </div>
         {#if monitorData.cron && monitorData.cron.length > 0}
@@ -78,7 +79,7 @@
           </div>
         {:else}
           <div class="empty-monitor-state">
-            <span class="material-symbols-rounded">event_busy</span>
+            <CalendarOff size={48} />
             <p>No hay tareas programadas activas en este momento.</p>
           </div>
         {/if}
@@ -87,7 +88,7 @@
       <!-- ACTIVE PROCESSES SECTION -->
       <section class="monitor-section">
         <div class="section-tag">
-          <span class="material-symbols-rounded">account_tree</span>
+          <Network size={18} />
           Procesos en Ejecución
         </div>
         {#if monitorData.processes && monitorData.processes.length > 0}
@@ -113,7 +114,7 @@
           </div>
         {:else}
           <div class="empty-monitor-state">
-            <span class="material-symbols-rounded">hourglass_empty</span>
+            <Hourglass size={48} />
             <p>No hay procesos en segundo plano activos actualmente.</p>
           </div>
         {/if}
@@ -133,23 +134,8 @@
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .section-header { margin-bottom: 4rem; }
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {
-    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
-    .title-with-icon { flex-direction: column; gap: 1rem; }
-  }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.5rem; }
-    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { font-size: 0.9rem; }
+    .modern-table-card { border-radius: 1.5rem; }
   }
 
   @media (max-width: 1024px) {
@@ -164,7 +150,6 @@
   .monitor-section { display: flex; flex-direction: column; gap: 1.5rem; }
   
   .section-tag { font-size: 0.75rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .section-tag span { font-size: 1.25rem; }
 
   .task-name { font-size: 1.05rem; color: var(--text-color); font-weight: 800; }
   .spec-code { font-family: 'JetBrains Mono', monospace; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.4rem 0.75rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700; }
@@ -181,6 +166,5 @@
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 
   .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: rgba(0,0,0,0.1); border-radius: 2rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
-  .empty-monitor-state span { font-size: 3rem; opacity: 0.5; }
   .empty-monitor-state p { margin: 0; font-size: 1.1rem; font-weight: 600; }
 </style>

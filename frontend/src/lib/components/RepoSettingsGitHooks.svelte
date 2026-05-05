@@ -6,6 +6,7 @@
   import Card from "$lib/components/ui/Card.svelte";
   import { toast } from "$lib/toast.svelte";
   import { i18n } from "$lib/i18n.svelte";
+  import { Terminal, AlertCircle, Code, Edit, Info } from "lucide-svelte";
 
   const repo: any = getContext("repo");
 
@@ -74,7 +75,7 @@
 <Card padding="none" class="settings-premium-card">
   <header class="section-header-premium">
     <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">terminal</span>
+      <Terminal size={48} class="hero-icon" />
       <div>
         <h2>Git Hooks</h2>
         <p class="subtitle">Gestiona scripts personalizados que se ejecutan en el servidor ante eventos de Git.</p>
@@ -91,7 +92,7 @@
       </div>
     {:else if error}
       <div class="error-banner">
-        <span class="material-symbols-rounded">error</span>
+        <AlertCircle size={24} />
         {error}
       </div>
     {:else}
@@ -100,7 +101,7 @@
           <div class="hook-tile tonal">
             <div class="hook-main">
               <div class="hook-identity">
-                <span class="material-symbols-rounded hook-icon">code</span>
+                <Code size={18} class="hook-icon" />
                 <div class="hook-names">
                   <span class="hook-name">{hook.name}</span>
                   {#if hook.is_active}
@@ -123,7 +124,7 @@
               </p>
             </div>
             <div class="hook-footer">
-              <Button variant="secondary" size="sm" icon="edit" onclick={() => handleEdit(hook)}>
+              <Button variant="secondary" size="sm" icon={Edit} onclick={() => handleEdit(hook)}>
                 Editar Script
               </Button>
             </div>
@@ -143,7 +144,7 @@
   {#if editingHook}
     <div class="hook-editor">
       <div class="editor-info island">
-        <span class="material-symbols-rounded">info</span>
+        <Info size={18} />
         <p>Este script se ejecutará en el servidor. Asegúrate de incluir el shebang correcto (ej: <code>#!/bin/bash</code>).</p>
       </div>
       
@@ -169,7 +170,7 @@
 <style>
   .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
+  :global(.hero-icon) { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
   
   h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
@@ -177,7 +178,7 @@
   @media (max-width: 600px) {
     .section-header-premium { padding: 1.5rem; }
     h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    :global(.hero-icon) { padding: 0.5rem; border-radius: 0.75rem; }
     .title-with-icon { gap: 0.75rem; }
     .subtitle { display: none; }
   }
@@ -192,7 +193,7 @@
   .hook-tile:hover { transform: translateY(-3px); border-color: var(--primary-color); }
   
   .hook-identity { display: flex; align-items: center; gap: 1rem; }
-  .hook-icon { color: var(--primary-color); opacity: 0.7; font-size: 1.5rem; }
+  :global(.hook-icon) { color: var(--primary-color); opacity: 0.7; }
   
   .hook-names { display: flex; flex-direction: column; gap: 0.1rem; }
   .hook-name { font-family: 'JetBrains Mono', monospace; font-weight: 900; font-size: 1rem; color: var(--text-color); }

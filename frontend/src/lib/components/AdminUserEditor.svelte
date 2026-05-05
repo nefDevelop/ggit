@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { UserCog, UserPlus, AlertCircle, RefreshCw, Save } from "lucide-svelte";
 
   let {
     userId = null,
@@ -98,7 +99,11 @@
 <div class="user-editor tonal">
   <header class="editor-header">
     <div class="title-row">
-      <span class="material-symbols-rounded icon-hero">{userId ? 'person_edit' : 'person_add'}</span>
+      {#if userId}
+        <UserCog size={56} class="icon-hero" />
+      {:else}
+        <UserPlus size={56} class="icon-hero" />
+      {/if}
       <div>
         <h3>{userId ? i18n.t('admin.edit_user') : i18n.t('admin.create_user')}</h3>
         <p class="subtitle">
@@ -214,7 +219,7 @@
 
       {#if error}
         <div class="error-banner">
-          <span class="material-symbols-rounded">error</span>
+          <AlertCircle size={24} />
           {error}
         </div>
       {/if}
@@ -224,7 +229,11 @@
           {i18n.t('cancel')}
         </button>
         <button type="submit" class="btn btn-primary btn-lg" disabled={submitting}>
-          <span class="material-symbols-rounded">{submitting ? 'sync' : 'save'}</span>
+          {#if submitting}
+            <RefreshCw size={20} class="spin" />
+          {:else}
+            <Save size={20} />
+          {/if}
           {submitting ? i18n.t('settings.saving') : i18n.t('admin.save_user')}
         </button>
       </div>
@@ -246,7 +255,7 @@
 
   .editor-header { margin-bottom: 4rem; }
   .title-row { display: flex; align-items: center; gap: 2rem; }
-  .icon-hero { font-size: 3.5rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  :global(.icon-hero) { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
   
   h3 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }

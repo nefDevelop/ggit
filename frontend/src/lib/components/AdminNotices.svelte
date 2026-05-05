@@ -7,6 +7,7 @@
   import Button from './ui/Button.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   import Modal from "./Modal.svelte";
+  import { Bell, RefreshCw, Trash2, ChevronLeft, ChevronRight } from 'lucide-svelte';
 
   let notices = $state<any[]>([]);
   let total = $state(0);
@@ -63,12 +64,12 @@
   <PageHeader 
     title={i18n.t('admin.notices') || "Avisos del Sistema"}
     subtitle="Registros de errores, alertas y tareas en segundo plano"
-    icon="notifications"
+    icon={Bell}
   >
     {#snippet actions()}
       <div class="header-actions">
-        <Button variant="ghost" icon="refresh" onclick={fetchNotices}>Actualizar</Button>
-        <Button variant="danger" icon="delete_sweep" onclick={clearAll}>Limpiar Todo</Button>
+        <Button variant="ghost" icon={RefreshCw} onclick={fetchNotices}>Actualizar</Button>
+        <Button variant="danger" icon={Trash2} onclick={clearAll}>Limpiar Todo</Button>
       </div>
     {/snippet}
   </PageHeader>
@@ -105,7 +106,7 @@
                   <span class="date-tag">{new Date(notice.created_at).toLocaleString()}</span>
                 </td>
                 <td>
-                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={(e) => { e.stopPropagation(); deleteNotice(notice.id); }} />
+                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={(e) => { e.stopPropagation(); deleteNotice(notice.id); }} />
                 </td>
               </tr>
             {/each}
@@ -118,9 +119,9 @@
       <footer class="pagination-footer">
         <span class="count-info">Mostrando {notices.length} de {total} avisos</span>
         <div class="nav-controls">
-          <Button variant="ghost" size="sm" icon="chevron_left" disabled={page === 1} onclick={() => page--} />
+          <Button variant="ghost" size="sm" icon={ChevronLeft} disabled={page === 1} onclick={() => page--} />
           <span class="page-current">Página {page} de {totalPages}</span>
-          <Button variant="ghost" size="sm" icon="chevron_right" disabled={page >= totalPages} onclick={() => page++} />
+          <Button variant="ghost" size="sm" icon={ChevronRight} disabled={page >= totalPages} onclick={() => page++} />
         </div>
       </footer>
     {/if}
@@ -155,12 +156,6 @@
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .section-header { margin-bottom: 4rem; }
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
   .header-actions { display: flex; gap: 0.75rem; }
 
 

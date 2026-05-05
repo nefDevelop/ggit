@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { 
+    Database, PlusSquare, Lock, BookText, Star, 
+    GitFork, Eye, ShieldCheck, Trash2 
+  } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import Card from './ui/Card.svelte';
@@ -58,10 +62,10 @@
   <PageHeader 
     title={i18n.t('admin.repositories') || "Repositories"}
     subtitle="Supervisión y gestión global de repositorios del sistema"
-    icon="database"
+    icon={Database}
   >
     {#snippet actions()}
-      <Button variant="primary" icon="add_box" href="/admin/repos/adoption">Adopción de Repos</Button>
+      <Button variant="primary" icon={PlusSquare} href="/admin/repos/adoption">Adopción de Repos</Button>
     {/snippet}
   </PageHeader>
 
@@ -88,7 +92,11 @@
               <td data-label={i18n.t('repository')}>
                 <div class="repo-info-cell">
                   <div class="repo-main">
-                    <span class="material-symbols-rounded repo-icon">{repo.is_private ? 'lock' : 'book'}</span>
+                    {#if repo.is_private}
+                      <Lock size={18} class="repo-icon" />
+                    {:else}
+                      <BookText size={18} class="repo-icon" />
+                    {/if}
                     <a href="/{repo.owner?.username}/{repo.name}" class="repo-link">
                       <span class="owner">{repo.owner?.username}</span>
                       <span class="divider">/</span>
@@ -103,11 +111,11 @@
               <td data-label="Colaboradores">
                 <div class="repo-stats">
                   <div class="stat">
-                    <span class="material-symbols-rounded">star</span>
+                    <Star size={16} />
                     {repo.num_stars}
                   </div>
                   <div class="stat">
-                    <span class="material-symbols-rounded">fork_right</span>
+                    <GitFork size={16} />
                     {repo.num_forks}
                   </div>
                 </div>
@@ -119,9 +127,9 @@
               </td>
               <td data-label="Acciones">
                 <div class="action-row">
-                  <Button variant="ghost" size="sm" icon="visibility" href="/{repo.owner?.username}/{repo.name}" />
-                  <Button variant="ghost" size="sm" icon="health_and_safety" onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad" />
-                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteRepo(repo.id, repo.name)} />
+                  <Button variant="ghost" size="sm" icon={Eye} href="/{repo.owner?.username}/{repo.name}" />
+                  <Button variant="ghost" size="sm" icon={ShieldCheck} onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad" />
+                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteRepo(repo.id, repo.name)} />
                 </div>
               </td>
             </tr>
@@ -157,7 +165,7 @@
 
   .repo-info-cell { display: flex; flex-direction: column; gap: 0.6rem; }
   .repo-main { display: flex; align-items: center; gap: 1rem; }
-  .repo-icon { font-size: 1.5rem; color: var(--primary-color); opacity: 0.7; }
+  :global(.repo-icon) { color: var(--primary-color); opacity: 0.7; }
   
   .repo-link { text-decoration: none; display: flex; align-items: center; gap: 0.25rem; font-size: 1.2rem; }
   .repo-link .owner { color: var(--text-muted); font-weight: 600; }
@@ -169,7 +177,6 @@
 
   .repo-stats { display: flex; gap: 2rem; }
   .stat { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 800; color: var(--text-muted); }
-  .stat span { font-size: 1.25rem; color: var(--primary-color); }
 
   .badge { padding: 0.5rem 1rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; background: rgba(var(--primary-rgb), 0.12); color: var(--primary-color); border: 2px solid rgba(var(--primary-rgb), 0.2); }
   .badge.private { background: rgba(var(--error-rgb), 0.12); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }

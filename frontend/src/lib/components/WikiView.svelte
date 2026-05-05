@@ -5,17 +5,18 @@
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import { 
-    FileText as Description, 
+    FileText, 
     Edit, 
-    History as HistoryIcon, 
-    Plus as Add, 
+    History, 
+    Plus, 
     Save, 
-    X as Close, 
-    Trash2 as Delete,
-    ArrowLeft as ArrowBack,
-    MoreVertical as MoreVert,
+    X, 
+    Trash2,
+    ArrowLeft,
+    MoreVertical,
     Folder,
-    ChevronRight
+    ChevronRight,
+    BookText
   } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
@@ -230,7 +231,7 @@
     {#if wikiPages.length > 0}
     <aside class="wiki-sidebar">
       <div class="sidebar-header-minimal">
-        <Button class="w-full" onclick={startNew} icon="add">
+        <Button class="w-full" onclick={startNew} icon={Plus}>
           New Page
         </Button>
       </div>
@@ -266,7 +267,7 @@
           class:active={path === pageItem.name}
           style="padding-left: {depth * 0.75 + 0.8}rem"
         >
-          <Description size={14} class="opacity-60" />
+          <FileText size={14} class="opacity-60" />
           <span>{pageItem.title || pageItem.name}</span>
         </a>
       {/if}
@@ -313,7 +314,7 @@
                     </button>
                 {:else if mode === 'edit'}
                     <button class="btn-icon-text variant" onclick={() => { if (wikiPages.length === 0) { mode = 'view'; } else { mode = 'view'; } }}>
-                        <Close size={16} />
+                        <X size={16} />
                         Cancelar
                     </button>
                     <button class="btn-primary" onclick={handleSave} disabled={saving || !editTitle}>
@@ -324,7 +325,7 @@
                 
                 {#if mode === 'view' && path !== 'Home' && wikiPages.length > 0}
                     <button class="btn-danger-icon" onclick={handleDelete} title="Eliminar Página">
-                        <Delete size={18} />
+                        <Trash2 size={18} />
                     </button>
                 {/if}
             </div>
@@ -341,10 +342,10 @@
                 />
               {:else}
                 <div class="empty-wiki-state">
-                  <span class="material-symbols-rounded" style="font-size: 4rem; opacity: 0.5;">menu_book</span>
+                  <BookText size={64} class="opacity-50" />
                   <h2 style="margin: 0.5rem 0;">Wiki Vacía</h2>
                   <p style="margin-bottom: 1.5rem;">Este repositorio aún no tiene documentación.</p>
-                  <Button variant="primary" onclick={startNew} icon="add">Crear Primera Página</Button>
+                  <Button variant="primary" onclick={startNew} icon={Plus}>Crear Primera Página</Button>
                 </div>
               {/if}
           {:else if mode === 'edit'}
@@ -636,8 +637,6 @@
     text-align: center;
     color: var(--text-muted);
   }
-
-  /* Edit Area */
   .edit-area {
     display: flex;
     flex-direction: column;

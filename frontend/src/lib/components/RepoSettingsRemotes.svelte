@@ -4,7 +4,7 @@
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
   import { dialog } from "$lib/dialog.svelte";
-  import { Trash2, Plus, Globe, Shield } from "lucide-svelte";
+  import { Trash2, Plus, Globe, Shield, RefreshCw, List, Cloud, Info } from "lucide-svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   import Input from "./ui/Input.svelte";
 
@@ -89,7 +89,7 @@
     <PageHeader 
       title="Gestionar Remotos"
       subtitle="Configura destinos adicionales para sincronizar tu código con otros servicios."
-      icon="sync"
+      icon={RefreshCw}
     />
 
     <div class="settings-content">
@@ -116,7 +116,7 @@
               variant="primary" 
               type="submit"
               disabled={adding || !newName || !newURL}
-              icon="add"
+              icon={Plus}
               loading={adding}
             >
               Añadir Remoto
@@ -129,7 +129,7 @@
 
       <div class="remotes-list-section">
         <header class="list-header">
-          <span class="material-symbols-rounded">list</span>
+          <List size={24} />
           <strong>Remotos Configurados</strong>
         </header>
 
@@ -137,7 +137,7 @@
           <div class="skeleton-list"></div>
         {:else if remotes.length === 0}
           <div class="empty-state">
-            <span class="material-symbols-rounded">globe</span>
+            <Globe size={48} />
             <h3>No hay remotos configurados</h3>
             <p>Este repositorio solo existe localmente en Ggit.</p>
           </div>
@@ -147,7 +147,7 @@
               <div class="remote-item tonal">
                 <div class="remote-main">
                   <div class="remote-icon-wrap">
-                    <span class="material-symbols-rounded">cloud_sync</span>
+                    <Cloud size={24} />
                   </div>
                   <div class="remote-details">
                     <span class="remote-name">{remote}</span>
@@ -158,7 +158,7 @@
                   variant="ghost" 
                   size="sm"
                   class="danger-text"
-                  icon="delete"
+                  icon={Trash2}
                   onclick={() => deleteRemote(remote)}
                   disabled={deleting === remote}
                 />
@@ -173,7 +173,7 @@
   <div class="info-zone">
     <Card class="tonal warning-card" padding="lg">
       <div class="info-content">
-        <span class="material-symbols-rounded warning-icon">info</span>
+        <Info size={32} class="warning-icon" />
         <div class="info-text">
           <strong>Nota sobre Autenticación</strong>
           <p>Actualmente, el servidor de Ggit debe tener acceso pre-configurado (vía SSH o tokens en el entorno) para interactuar con estos remotos externos.</p>
@@ -202,7 +202,6 @@
 
   .remotes-list-section { display: flex; flex-direction: column; gap: 1.5rem; }
   .list-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
-  .list-header span { font-size: 1.5rem; opacity: 0.7; }
   .list-header strong { font-weight: 950; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
   .remotes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.25rem; }
@@ -213,21 +212,19 @@
 
   .remote-main { display: flex; align-items: center; gap: 1.25rem; }
   .remote-icon-wrap { width: 44px; height: 44px; border-radius: 12px; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; }
-  .remote-icon-wrap span { font-size: 1.5rem; }
 
   .remote-details { display: flex; flex-direction: column; }
   .remote-name { font-weight: 800; font-size: 1.1rem; color: var(--text-color); }
   .remote-url-hint { font-size: 0.75rem; color: var(--text-muted); opacity: 0.8; }
 
   .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
-  .empty-state span { font-size: 3rem; }
 
   .error-text { color: var(--error); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
   .success-text { color: var(--success); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
 
   .info-zone { margin-top: 1rem; }
   .info-content { display: flex; gap: 1.5rem; align-items: flex-start; }
-  .warning-icon { font-size: 2rem; color: var(--primary-color); opacity: 0.8; }
+  :global(.warning-icon) { color: var(--primary-color); opacity: 0.8; }
   .info-text strong { display: block; margin-bottom: 0.25rem; font-size: 1.1rem; font-weight: 800; }
   .info-text p { margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
 

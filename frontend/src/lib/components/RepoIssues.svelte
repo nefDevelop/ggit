@@ -3,6 +3,7 @@
   import { onMount, getContext } from "svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   import IssueBoard from "./IssueBoard.svelte";
+  import { List, LayoutDashboard, Plus, AlertCircle, CheckCircle2, MessageSquare } from "lucide-svelte";
 
   const repo: any = getContext("repo");
   let issues = $state<any[]>([]);
@@ -68,7 +69,7 @@
           onclick={() => view = 'list'}
           title="List View"
         >
-          <span class="material-symbols-rounded">list</span>
+          <List size={18} />
         </button>
         <button 
           class="btn-icon" 
@@ -76,14 +77,14 @@
           onclick={() => view = 'board'}
           title="Board View"
         >
-          <span class="material-symbols-rounded">dashboard</span>
+          <LayoutDashboard size={18} />
         </button>
       </div>
       <a
         href="/{repo.data.owner.username}/{repo.data.name}/issues/new"
         class="btn-action-primary"
       >
-        <span class="material-symbols-rounded">add</span>
+        <Plus size={18} />
         New Issue
       </a>
     {/snippet}
@@ -99,7 +100,7 @@
     <div class="error-msg">{error}</div>
   {:else if issues.length === 0}
     <div class="empty-state">
-      <span class="material-symbols-rounded">error_outline</span>
+      <AlertCircle size={48} />
       <h3>No issues found</h3>
       <p>There are no {stateFilter} issues in this repository.</p>
     </div>
@@ -109,9 +110,11 @@
         {#each issues as issue}
           <div class="issue-row">
             <div class="issue-icon" style="color: {getStatusColor(issue)}">
-              <span class="material-symbols-rounded">
-                {issue.is_closed ? "check_circle" : "error"}
-              </span>
+              {#if issue.is_closed}
+                <CheckCircle2 size={18} />
+              {:else}
+                <AlertCircle size={18} />
+              {/if}
             </div>
             <div class="issue-main">
               <div class="issue-title-row">
@@ -146,7 +149,7 @@
             </div>
             {#if issue.comments > 0}
               <div class="issue-comments-count">
-                <span class="material-symbols-rounded">chat_bubble</span>
+                <MessageSquare size={16} />
                 {issue.comments}
               </div>
             {/if}

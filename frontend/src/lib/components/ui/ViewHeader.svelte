@@ -5,7 +5,7 @@
   interface Tab {
     id: string;
     label: string;
-    icon: string;
+    icon: any;
     hasBadge?: boolean;
   }
 
@@ -45,7 +45,12 @@
               onclick={() => { activeTab = tab.id; onSelect?.(tab.id); }}
             >
               <div class="tab-content-wrapper">
-                <span class="material-symbols-rounded mini">{tab.icon}</span>
+                {#if typeof tab.icon === 'string'}
+                  <span class="material-symbols-rounded mini">{tab.icon}</span>
+                {:else if tab.icon}
+                  {@const Icon = tab.icon}
+                  <Icon size={16} />
+                {/if}
                 <span class="tab-label-text">{tab.label}</span>
               </div>
             </button>

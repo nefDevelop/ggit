@@ -2,6 +2,8 @@
   import { toast } from "$lib/toast.svelte";
   import { page } from '$app/state';
 
+  import { Check, Copy } from "lucide-svelte";
+
   let { commit, minimalist = false } = $props();
 
   let copied = $state(false);
@@ -53,7 +55,11 @@
     </button>
     {#if !minimalist}
       <button class="btn btn-icon" onclick={copyHash} title="Copy Hash">
-        <span class="material-symbols-rounded">{copied ? 'check' : 'content_copy'}</span>
+        {#if copied}
+          <Check size={16} />
+        {:else}
+          <Copy size={16} />
+        {/if}
       </button>
     {/if}
   </div>

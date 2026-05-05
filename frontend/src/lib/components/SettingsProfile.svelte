@@ -9,6 +9,7 @@
   import Button from "./ui/Button.svelte";
   import { getAvailableLanguages } from '$lib/locales';
   import PageHeader from "./ui/PageHeader.svelte";
+  import { Upload, Trash2, Wand2, ChevronDown, Dices } from "lucide-svelte";
 
   const availableLanguages = getAvailableLanguages();
 
@@ -187,7 +188,7 @@
               />
               <div class="avatar-overlay">
                 <label class="overlay-btn-mini" title="Subir foto">
-                  <span class="material-symbols-rounded">cloud_upload</span>
+                  <Upload size={18} />
                   <input
                     type="file"
                     accept="image/*"
@@ -196,20 +197,20 @@
                   />
                 </label>
                 {#if profile.avatar_url && !profile.avatar_url.includes("magic")}
-                  <button
-                    class="overlay-btn-mini delete"
-                    onclick={deleteAvatar}
-                    title="Quitar foto"
-                  >
-                    <span class="material-symbols-rounded">delete</span>
-                  </button>
+                    <button
+                      class="overlay-btn-mini delete"
+                      onclick={deleteAvatar}
+                      title="Quitar foto"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                 {/if}
               </div>
             </div>
             <div class="avatar-actions">
               <Button
                 variant="ghost"
-                icon="magic_button"
+                icon={Wand2}
                 onclick={() => (showDiceBear = !showDiceBear)}
               >
                 <span class="avatar-magic-text">{showDiceBear ? "Cerrar selector" : "Avatar Mágico"}</span>
@@ -285,7 +286,7 @@
                         <option value={lang.code}>{lang.name}</option>
                     {/each}
                 </select>
-                <span class="material-symbols-rounded dropdown-icon">expand_more</span>
+                <ChevronDown size={18} class="dropdown-icon" />
               </div>
               <p class="hint">{i18n.t("settings.language_helper") || "Choose your preferred language for the interface."}</p>
             </div>
@@ -312,7 +313,7 @@
             onclick={() =>
               (dicebearSeed = Math.random().toString(36).substring(7))}
           >
-            <span class="material-symbols-rounded">casino</span>
+            <Dices size={18} />
           </button>
         </div>
       </div>
@@ -388,9 +389,6 @@
     cursor: pointer;
     border: none;
     transition: transform 0.2s;
-  }
-  .overlay-btn-mini span {
-    font-size: 1.25rem;
   }
   .overlay-btn-mini:hover {
     transform: scale(1.1);
@@ -491,7 +489,7 @@
     background: rgba(var(--primary-rgb), 0.05);
     box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.1);
   }
-  .dropdown-icon {
+  :global(.dropdown-icon) {
     position: absolute;
     right: 1.5rem;
     top: 50%;
@@ -500,7 +498,7 @@
     pointer-events: none;
     transition: transform 0.3s;
   }
-  .select-wrapper select:focus + .dropdown-icon {
+  .select-wrapper select:focus + :global(.dropdown-icon) {
     transform: translateY(-50%) rotate(180deg);
     color: var(--primary-color);
   }

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { PlusCircle, Calendar, TrendingUp, TrendingDown, Edit, Trash2, AlertCircle } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
@@ -109,7 +110,7 @@
 
 <div class="repo-milestones">
   <header class="section-actions">
-    <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon="add_circle">
+    <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
       New Milestone
     </Button>
   </header>
@@ -236,7 +237,7 @@
       </div>
     {:else if milestones.length === 0}
       <div class="empty-state">
-        <span class="material-symbols-rounded">error_outline</span>
+        <AlertCircle size={48} />
         <h3>No milestones found</h3>
         <p>There are no milestones in this repository.</p>
       </div>
@@ -252,7 +253,7 @@
               <div class="ms-meta">
                 {#if ms.due_on}
                   <span class="due-date">
-                    <span class="material-symbols-rounded mini">calendar_today</span>
+                    <Calendar size={14} />
                     Due on {new Date(ms.due_on).toLocaleDateString()}
                   </span>
                 {/if}
@@ -278,12 +279,12 @@
               </svg>
               <div class="hill-labels">
                 <div class="phase uphill" class:active={ms.hill_state < 50}>
-                   <span class="material-symbols-rounded">trending_up</span>
-                   Figuring it out
+                    <TrendingUp size={16} />
+                    Figuring it out
                 </div>
                 <div class="phase downhill" class:active={ms.hill_state >= 50}>
-                   <span class="material-symbols-rounded">trending_down</span>
-                   Making it happen
+                    <TrendingDown size={16} />
+                    Making it happen
                 </div>
               </div>
             </div>
@@ -300,8 +301,8 @@
           </div>
 
           <div class="ms-actions">
-            <Button variant="ghost" icon="edit" onclick={() => handleEdit(ms)} />
-            <Button variant="ghost" icon="delete" class="danger-btn" onclick={() => deleteMilestone(ms.id)} />
+            <Button variant="ghost" icon={Edit} onclick={() => handleEdit(ms)} />
+            <Button variant="ghost" icon={Trash2} class="danger-btn" onclick={() => deleteMilestone(ms.id)} />
           </div>
         </Card>
       {/each}
@@ -336,7 +337,6 @@
   .ms-title-row h4 { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
   
   .ms-meta { display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
-  .ms-meta .mini { font-size: 1rem; }
 
   .ms-description { font-size: 0.95rem; opacity: 0.8; line-height: 1.5; }
 
@@ -349,7 +349,6 @@
   :global(.danger-btn:hover) { color: var(--error) !important; }
 
   .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
-  .empty-state span { font-size: 3rem; }
 
   .hill-state-editor-box { padding: 1.5rem; border-radius: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .hill-editor-header { display: flex; justify-content: space-between; align-items: baseline; }
@@ -365,5 +364,4 @@
   .hill-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; }
   .phase { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.4; transition: all 0.3s; }
   .phase.active { opacity: 1; color: var(--primary-color); }
-  .phase span { font-size: 1.1rem; }
 </style>

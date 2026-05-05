@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { User, UserPlus, Edit, Trash2 } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import AdminUserEditor from './AdminUserEditor.svelte';
@@ -60,10 +61,10 @@
   <PageHeader 
     title={i18n.t('admin.users') || "User Management"}
     subtitle="Administra las cuentas de usuario, permisos globales y estado del sistema"
-    icon="person"
+    icon={User}
   >
     {#snippet actions()}
-      <Button variant="primary" onclick={() => editingUserId = 'new'} icon="person_add">{i18n.t('admin.create_user')}</Button>
+      <Button variant="primary" onclick={() => editingUserId = 'new'} icon={UserPlus}>{i18n.t('admin.create_user')}</Button>
     {/snippet}
   </PageHeader>
 
@@ -114,8 +115,8 @@
                 </td>
                 <td data-label="Acciones">
                   <div class="action-buttons">
-                    <Button variant="ghost" size="sm" icon="edit" onclick={() => editingUserId = user.id} />
-                    <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteUser(user.id)} />
+                    <Button variant="ghost" size="sm" icon={Edit} onclick={() => editingUserId = user.id} />
+                    <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteUser(user.id)} />
                   </div>
                 </td>
               </tr>

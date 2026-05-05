@@ -4,6 +4,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import { Lock, GitFork, BookText, Star, SearchX, Tag } from "lucide-svelte";
   
   let { q = '' } = $props();
   
@@ -82,9 +83,13 @@
           <a href="/{repo.owner.username}/{repo.name}" class="card-link">
             <Card hover variant="low" padding="md" class="repo-card">
               <div class="repo-header">
-                <span class="material-symbols-rounded repo-icon">
-                  {repo.private ? 'lock' : repo.fork ? 'fork_right' : 'book'}
-                </span>
+                {#if repo.private}
+                  <Lock size={18} class="repo-icon" />
+                {:else if repo.fork}
+                  <GitFork size={18} class="repo-icon" />
+                {:else}
+                  <BookText size={18} class="repo-icon" />
+                {/if}
                 <div class="repo-names">
                   <span class="owner">{repo.owner.username} /</span>
                   <strong class="name">{repo.name}</strong>
@@ -96,11 +101,11 @@
               
               <div class="repo-stats">
                 <div class="stat">
-                  <span class="material-symbols-rounded">star</span>
+                  <Star size={16} />
                   {repo.stars_count}
                 </div>
                 <div class="stat">
-                  <span class="material-symbols-rounded">fork_right</span>
+                  <GitFork size={16} />
                   {repo.forks_count}
                 </div>
                 {#if repo.language}
@@ -124,7 +129,7 @@
       </div>
     {:else}
       <div class="empty-state tonal">
-        <span class="material-symbols-rounded">search_off</span>
+        <SearchX size={48} />
         <h3>No repositories found</h3>
         <p>Try searching for something else or changing filters.</p>
       </div>
@@ -158,7 +163,7 @@
                     class:active={selectedTopic === topic.Name}
                     onclick={() => selectedTopic = topic.Name}
                 >
-                    <span class="material-symbols-rounded" style="font-size: 1.1rem; opacity: {selectedTopic === topic.Name ? 1 : 0.4}">tag</span>
+                    <Tag size={14} style="opacity: {selectedTopic === topic.Name ? 1 : 0.4}" />
                     {topic.Name}
                 </button>
             {/each}
@@ -186,7 +191,7 @@
   :global(.repo-card) { display: flex !important; flex-direction: column !important; gap: 1rem !important; }
 
   .repo-header { display: flex; align-items: center; gap: 0.75rem; }
-  .repo-icon { font-size: 1.5rem; color: var(--md-sys-color-primary); opacity: 0.8; }
+  :global(.repo-icon) { color: var(--md-sys-color-primary); opacity: 0.8; }
   .repo-names { font-size: 1.1rem; }
   .owner { opacity: 0.6; font-weight: 400; font-size: 0.9em; }
   .name { font-weight: 700; color: var(--md-sys-color-on-surface); }
@@ -201,7 +206,6 @@
   .repo-topics { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
 
   .empty-state { padding: 5rem; text-align: center; border-radius: 2rem; background: var(--md-sys-color-surface-container-low); }
-  .empty-state span { font-size: 4rem; color: var(--md-sys-color-primary); opacity: 0.3; }
   
   .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
   :global(.skeleton-card) { height: 180px; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container-low); }

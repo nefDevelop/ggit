@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { 
+    Package, Lock, GitFork, History, GitBranch, AlertCircle, 
+    GitPullRequest, Check, Copy 
+  } from "lucide-svelte";
   import { getLanguageColor } from '$lib/utils/languages';
   import { goto } from '$app/navigation';
 
@@ -62,7 +66,7 @@
       <img src={repo.avatar_url} alt={repo.name} class="repo-avatar" onerror={() => avatarError = true} />
     {/if}
     <div class="repo-icon-placeholder" style="background-color: {getLanguageColor(repo.language || 'Plain Text')}20; color: {getLanguageColor(repo.language || 'Plain Text')}">
-      <span class="material-symbols-rounded">inventory_2</span>
+      <Package size={24} />
     </div>
   </div>
 
@@ -87,10 +91,10 @@
 
     <div class="desc-line">
       {#if repo.private}
-        <span class="material-symbols-rounded status-icon" title="Private">lock</span>
+        <Lock size={14} class="status-icon" />
       {/if}
       {#if repo.fork}
-        <span class="material-symbols-rounded status-icon" title="Fork">account_tree</span>
+        <GitFork size={14} class="status-icon" />
       {/if}
       <p class="repo-desc">
         {repo.description || 'No description provided.'}
@@ -111,26 +115,30 @@
 
   <div class="stats-info">
     <div class="stat-item {repo.num_commits > 0 ? 'active' : 'dim'}" title="Commits">
-      <span class="material-symbols-rounded {isRecentCommit() ? 'blink-active' : ''}">history</span>
+      <History size={16} class={isRecentCommit() ? 'blink-active' : ''} />
       {repo.num_commits || 0}
     </div>
     <div class="stat-item {repo.num_branches > 0 ? 'active' : 'dim'}" title="Branches">
-      <span class="material-symbols-rounded {isRecentBranch() ? 'blink-active' : ''}">account_tree</span>
+      <GitBranch size={16} class={isRecentBranch() ? 'blink-active' : ''} />
       {repo.num_branches || 0}
     </div>
     <div class="stat-item {repo.open_issues_count > 0 ? 'active' : 'dim'}" title="Issues">
-      <span class="material-symbols-rounded {isRecentIssue() ? 'blink-active' : ''}">error</span>
+      <AlertCircle size={16} class={isRecentIssue() ? 'blink-active' : ''} />
       {repo.open_issues_count || 0}
     </div>
     <div class="stat-item {repo.open_pulls_count > 0 ? 'active' : 'dim'}" title="Pull Requests">
-      <span class="material-symbols-rounded {isRecentPull() ? 'blink-active' : ''}">merge</span>
+      <GitPullRequest size={16} class={isRecentPull() ? 'blink-active' : ''} />
       {repo.open_pulls_count || 0}
     </div>
   </div>
 
   <div class="actions-info">
     <button class="btn-icon-minimal" onclick={(e) => { e.stopPropagation(); copyToClipboard(repo.clone_url); }} title="Copy Clone URL">
-      <span class="material-symbols-rounded" class:success-icon={copied}>{copied ? 'check' : 'content_copy'}</span>
+      {#if copied}
+        <Check size={18} class="success-icon" />
+      {:else}
+        <Copy size={18} />
+      {/if}
     </button>
     <span class="time">{timeAgo(repo.updated_at)}</span>
   </div>
@@ -203,7 +211,7 @@
     50% { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 0 4px var(--tertiary)); color: var(--tertiary); }
   }
 
-  .blink-active {
+  :global(.blink-active) {
     animation: activity-blink 3.5s infinite ease-in-out;
   }
 
@@ -223,7 +231,7 @@
   .lang-segment { height: 100%; }
 
   .desc-line { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
-  .status-icon { font-size: 1rem; color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
+  :global(.status-icon) { color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
   .repo-name { 
     font-weight: 700; 
     color: var(--primary-color); 
@@ -258,15 +266,12 @@
     white-space: nowrap;
   }
   
-  .stat-item .material-symbols-rounded {
-    font-size: 1.1rem;
-  }
 
   .stat-item.dim { opacity: 0.2; }
   .stat-item.active { color: var(--primary-color); font-weight: 700; }
 
   .actions-info { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
-  .success-icon { color: var(--md-sys-color-primary) !important; }
+  :global(.success-icon) { color: var(--md-sys-color-primary) !important; }
   .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
   @media (max-width: 1200px) {

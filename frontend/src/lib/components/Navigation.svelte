@@ -1,4 +1,9 @@
 <script lang="ts">
+  import { 
+    LayoutGrid, Search, ShieldCheck, UserRoundCog, User, BookText, 
+    Building2, Lock, Settings, Activity, Hammer, ScrollText, 
+    Shield, Trash2, Bell, Palette, Mail, Key, Coins, LogOut, Plus 
+  } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { authState } from "$lib/auth.svelte";
   import { i18n } from "$lib/i18n.svelte";
@@ -37,13 +42,13 @@
   });
 
   const navItems = $derived([
-    { name: i18n.t("dashboard"), icon: "grid_view", path: "/dashboard" },
-    { name: i18n.t("explore"), icon: "search", path: "/explore" },
+    { name: i18n.t("dashboard"), icon: LayoutGrid, path: "/dashboard" },
+    { name: i18n.t("explore"), icon: Search, path: "/explore" },
     ...(authState.user?.is_admin
       ? [
           {
             name: i18n.t("admin_panel"),
-            icon: "security",
+            icon: ShieldCheck,
             path: "/admin/users",
             isParent: true,
           },
@@ -51,7 +56,7 @@
       : []),
     {
       name: i18n.t("settings_title"),
-      icon: "manage_accounts",
+      icon: UserRoundCog,
       path: "/user/settings",
       isParent: true,
       isSettings: true,
@@ -61,71 +66,71 @@
   const adminSubItems = $derived([
     {
       name: i18n.t("admin.users") || "Users",
-      icon: "person",
+      icon: User,
       path: "/admin/users",
     },
     {
       name: i18n.t("admin.repositories") || "Repositories",
-      icon: "book",
+      icon: BookText,
       path: "/admin/repos",
     },
     {
       name: i18n.t("admin.organizations") || "Organizations",
-      icon: "corporate_fare",
+      icon: Building2,
       path: "/admin/orgs",
     },
     {
       name: i18n.t("admin.auths") || "Authentication",
-      icon: "lock",
+      icon: Lock,
       path: "/admin/auth",
     },
     {
       name: i18n.t("admin.config") || "Configuration",
-      icon: "settings",
+      icon: Settings,
       path: "/admin/config",
     },
     {
       name: i18n.t("admin.monitor") || "Monitor",
-      icon: "monitoring",
+      icon: Activity,
       path: "/admin/monitor",
     },
     {
       name: i18n.t("admin.maintenance") || "Maintenance",
-      icon: "build",
+      icon: Hammer,
       path: "/admin/maintenance",
     },
     {
       name: i18n.t("admin.audit_log") || "Audit Log",
-      icon: "history_edu",
+      icon: ScrollText,
       path: "/admin/audit_log",
     },
     {
       name: i18n.t("admin.security") || "Seguridad",
-      icon: "shield",
+      icon: Shield,
       path: "/admin/security",
     },
     {
       name: i18n.t("admin.janitor") || "Janitor",
-      icon: "mop",
+      icon: Trash2,
       path: "/admin/janitor",
     },
     {
       name: i18n.t("admin.notices") || "Notices",
-      icon: "notifications",
+      icon: Bell,
       path: "/admin/notices",
     },
   ]);
 
   const settingsSubItems = $derived([
-    { name: i18n.t("settings.profile") || "Profile", icon: "person", path: "/user/settings?tab=profile" },
-    { name: i18n.t("settings.my_ggit") || "My Ggit", icon: "grid_view", path: "/user/settings?tab=myggit" },
-    { name: i18n.t("settings.appearance") || "Appearance", icon: "palette", path: "/user/settings?tab=appearance" },
-    { name: i18n.t("settings.emails") || "Emails", icon: "mail", path: "/user/settings?tab=emails" },
-    { name: i18n.t("settings.security") || "Security", icon: "security", path: "/user/settings?tab=security" },
-    { name: i18n.t("settings.ssh_keys") || "SSH Keys", icon: "key", path: "/user/settings?tab=keys" },
-    { name: i18n.t("settings.access_tokens") || "Tokens", icon: "token", path: "/user/settings?tab=tokens" },
-    { name: i18n.t("settings.repositories") || "Repositories", icon: "book", path: "/user/settings?tab=repos" },
-    { name: i18n.t("settings.organizations") || "Organizations", icon: "corporate_fare", path: "/user/settings?tab=orgs" },
+    { name: i18n.t("settings.profile") || "Profile", icon: User, path: "/user/settings?tab=profile" },
+    { name: i18n.t("settings.my_ggit") || "My Ggit", icon: LayoutGrid, path: "/user/settings?tab=myggit" },
+    { name: i18n.t("settings.appearance") || "Appearance", icon: Palette, path: "/user/settings?tab=appearance" },
+    { name: i18n.t("settings.emails") || "Emails", icon: Mail, path: "/user/settings?tab=emails" },
+    { name: i18n.t("settings.security") || "Security", icon: Shield, path: "/user/settings?tab=security" },
+    { name: i18n.t("settings.ssh_keys") || "SSH Keys", icon: Key, path: "/user/settings?tab=keys" },
+    { name: i18n.t("settings.access_tokens") || "Tokens", icon: Coins, path: "/user/settings?tab=tokens" },
+    { name: i18n.t("settings.repositories") || "Repositories", icon: BookText, path: "/user/settings?tab=repos" },
+    { name: i18n.t("settings.organizations") || "Organizations", icon: Building2, path: "/user/settings?tab=orgs" },
   ]);
   
   const isAdminPath = $derived(page.url.pathname.startsWith("/admin"));
@@ -174,26 +179,28 @@
         <span class="user-handle">@{authState.user?.username}</span>
       </div>
       <button class="minimal-logout" onclick={(e) => { e.stopPropagation(); handleLogout(); }} title="Logout">
-        <span class="material-symbols-rounded">logout</span>
+        <LogOut size={20} />
       </button>
     </div>
   {/if}
 
   <div class="nav-links">
     {#each navItems as item}
+      {@const Icon = item.icon}
       <a
         href={item.path}
         class="nav-item"
         class:active={page.url.pathname === item.path ||
           (item.isParent && ((isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings)))}
       >
-        <span class="material-symbols-rounded">{item.icon}</span>
+        <Icon size={20} />
         <span class="item-label">{item.name}</span>
       </a>
 
       {#if item.isParent && ((isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings))}
         <div class="sub-nav-links">
           {#each (item.isSettings ? settingsSubItems : adminSubItems) as sub, idx}
+            {@const SubIcon = sub.icon}
             <a
               href={sub.path}
               class="sub-nav-item"
@@ -203,7 +210,7 @@
                 (idx === 0 && page.url.pathname === sub.path.split('?')[0] && page.url.search === '')
               }
             >
-              <span class="material-symbols-rounded">{sub.icon}</span>
+              <SubIcon size={16} />
               <span class="item-label">{sub.name}</span>
             </a>
           {/each}
@@ -216,7 +223,7 @@
       <div class="nav-section-title">
         <span>{i18n.t("organizations") || "Organizaciones"}</span>
         <a href="/org/create" class="mini-add" title="Nueva Organización">
-          <span class="material-symbols-rounded">add</span>
+          <Plus size={18} />
         </a>
       </div>
       <div class="nav-org-list">
@@ -272,7 +279,7 @@
       onclick={() => (showThemePanel = !showThemePanel)}
       title="Apariencia"
     >
-      <span class="material-symbols-rounded">palette</span>
+      <Palette size={20} />
     </button>
   </div>
 
@@ -472,9 +479,6 @@
   .mini-add:hover {
     color: var(--primary-color);
   }
-  .mini-add span {
-    font-size: 1.25rem;
-  }
 
   .nav-empty-hint {
     font-size: 0.75rem;
@@ -519,9 +523,6 @@
     box-shadow: var(--shadow-sm);
   }
 
-  .sub-nav-item .material-symbols-rounded {
-    font-size: 1.1rem;
-  }
 
   /* BRAND SECTION BOTTOM */
   .brand-section-bottom {
@@ -617,9 +618,6 @@
   .minimal-theme-btn:hover {
     color: var(--primary-color);
     background: rgba(var(--primary-rgb), 0.1);
-  }
-  .minimal-theme-btn span {
-    font-size: 1.25rem;
   }
 
   .mobile-avatar-item {

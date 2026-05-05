@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { Search, SearchX, FileText } from 'lucide-svelte';
 
   interface Props {
     query?: string;
@@ -46,7 +47,7 @@
 <div class="search-results-overlay">
   <header class="results-header">
     <div class="header-main">
-        <span class="material-symbols-rounded">search</span>
+        <Search size={18} />
         <span class="title">Results for "{query}"</span>
         <span class="count-badge">{results.length} matches</span>
     </div>
@@ -61,7 +62,7 @@
     <div class="error-msg">{error}</div>
   {:else if results.length === 0 && query.length >= 2 && !loading}
     <div class="no-results">
-        <span class="material-symbols-rounded">search_off</span>
+        <SearchX size={48} />
         <p>No matches found for this keyword.</p>
     </div>
   {:else}
@@ -69,7 +70,7 @@
       {#each results as match}
         <a href={`/${username}/${reponame}/src/${branch}/${match.filename}#L${match.line}`} class="match-item">
           <div class="match-file">
-            <span class="material-symbols-rounded">description</span>
+            <FileText size={16} />
             <span class="filename">{match.filename}</span>
             <span class="line-num">Line {match.line}</span>
           </div>
@@ -112,7 +113,6 @@
   .match-item:hover { background: var(--surface-variant); }
 
   .match-file { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.75rem; }
-  .match-file .material-symbols-rounded { font-size: 1.2rem; color: var(--text-muted); }
   .filename { font-weight: 700; color: var(--primary-color); font-size: 0.95rem; }
   .line-num { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; margin-left: 0.5rem; }
 
@@ -150,5 +150,4 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .no-results .material-symbols-rounded { font-size: 3rem; opacity: 0.3; }
 </style>

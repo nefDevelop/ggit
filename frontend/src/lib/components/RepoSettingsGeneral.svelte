@@ -11,6 +11,7 @@
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
   import { i18n } from "$lib/i18n.svelte";
+  import { Settings, RefreshCw, Upload, Trash2, FileText, Bug, GitPullRequest, AlertTriangle } from "lucide-svelte";
 
   import PageHeader from "./ui/PageHeader.svelte";
 
@@ -191,7 +192,7 @@
   <PageHeader 
     title="Ajustes del Repositorio"
     subtitle="Configuración general, visibilidad y metadatos básicos de tu proyecto."
-    icon="settings"
+    icon={Settings}
   />
 
   <div class="settings-content">
@@ -210,7 +211,7 @@
             />
             {#if avatarUploading}
               <div class="avatar-overlay">
-                <span class="material-symbols-rounded spin">sync</span>
+                <RefreshCw size={24} class="spin" />
               </div>
             {/if}
           </div>
@@ -220,11 +221,11 @@
               <p>Cambia el icono que identifica a este proyecto en la plataforma.</p>
             </header>
             <div class="action-buttons">
-              <Button variant="outline" size="sm" icon="upload" onclick={() => document.getElementById('repo-avatar-input')?.click()}>
+              <Button variant="outline" size="sm" icon={Upload} onclick={() => document.getElementById('repo-avatar-input')?.click()}>
                 Subir Imagen
               </Button>
               {#if settings.use_custom_avatar}
-                <Button variant="ghost" size="sm" icon="delete" class="danger-text" onclick={deleteAvatar}>
+                <Button variant="ghost" size="sm" icon={Trash2} class="danger-text" onclick={deleteAvatar}>
                   Eliminar
                 </Button>
               {/if}
@@ -302,7 +303,7 @@
         <div class="advanced-stack">
           <div class="advanced-section tonal">
             <header class="adv-header">
-              <span class="material-symbols-rounded">description</span>
+              <FileText size={24} />
               <strong>Documentación y Wiki</strong>
             </header>
             <div class="adv-content">
@@ -347,7 +348,7 @@
 
           <div class="advanced-section tonal">
             <header class="adv-header">
-              <span class="material-symbols-rounded">bug_report</span>
+              <Bug size={24} />
               <strong>Issues y Seguimiento</strong>
             </header>
             <div class="adv-content">
@@ -382,7 +383,7 @@
 
           <div class="advanced-section tonal">
             <header class="adv-header">
-              <span class="material-symbols-rounded">merge</span>
+              <GitPullRequest size={24} />
               <strong>Pull Requests</strong>
             </header>
             <div class="adv-content">
@@ -427,7 +428,7 @@
 <div class="danger-zone-container">
   <Card class="tonal" padding="none">
     <header class="danger-header">
-      <span class="material-symbols-rounded">warning</span>
+      <AlertTriangle size={32} />
       <h3>Zona de Peligro</h3>
     </header>
     
@@ -477,7 +478,7 @@
   .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding: 2rem; border-radius: 2rem; }
   .avatar-preview-wrap { position: relative; border-radius: 2.5rem; overflow: hidden; background: var(--md-sys-color-surface-container-highest); border: 2px solid var(--md-sys-color-outline-variant); flex-shrink: 0; box-shadow: var(--shadow-md); }
   .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; }
-  .spin { animation: spin 1s linear infinite; }
+  :global(.spin) { animation: spin 1s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
   .avatar-actions { display: flex; flex-direction: column; gap: 1rem; }
@@ -560,7 +561,6 @@
   .advanced-stack { display: flex; flex-direction: column; gap: 1.25rem; }
   .advanced-section { padding: 1.75rem; border-radius: 1.75rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .adv-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; color: var(--primary-color); }
-  .adv-header span { font-size: 1.5rem; opacity: 0.7; }
   .adv-header strong { font-weight: 950; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
   
   .nested-box { margin-top: 1.25rem; padding-left: 2rem; border-left: 2px solid var(--md-sys-color-outline-variant); display: flex; flex-direction: column; gap: 1.25rem; animation: fadeIn 0.3s ease-out; }
@@ -571,7 +571,6 @@
   .danger-zone-container { margin-top: 4rem; }
   .danger-zone-container :global(.card) { border: 2px solid var(--md-sys-color-error) !important; }
   .danger-header { padding: 2rem 2.5rem; border-bottom: 1px solid rgba(var(--error-rgb), 0.1); display: flex; align-items: center; gap: 1rem; color: var(--error); }
-  .danger-header span { font-size: 2rem; }
   .danger-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
 
   .danger-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }

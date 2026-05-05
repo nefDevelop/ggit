@@ -10,7 +10,7 @@
     class?: string;
     onclick?: (e: MouseEvent) => void;
     children?: Snippet;
-    icon?: string;
+    icon?: any;
     href?: string;
     title?: string;
   }
@@ -52,8 +52,11 @@
     class="btn {variants[variant]} {sizes[size]} {className}" 
     onclick={(e) => !disabled && onclick?.(e as any)}
   >
-    {#if icon}
+    {#if typeof icon === 'string'}
       <span class="material-symbols-rounded">{icon}</span>
+    {:else if icon}
+      {@const Icon = icon}
+      <Icon size={18} />
     {/if}
     {#if children}
       {@render children()}
@@ -70,8 +73,11 @@
     {#if loading}
       <span class="spinner"></span>
     {:else}
-      {#if icon}
+      {#if typeof icon === 'string'}
         <span class="material-symbols-rounded">{icon}</span>
+      {:else if icon}
+        {@const Icon = icon}
+        <Icon size={18} />
       {/if}
       {#if children}
         {@render children()}

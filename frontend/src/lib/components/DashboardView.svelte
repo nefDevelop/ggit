@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { 
+    LayoutDashboard, Plus, History, List, FolderOpen, Inbox, 
+    Rocket, Folder, CheckCircle2, GitPullRequest, AlertCircle, Building2 
+  } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';
   import { userPrefs } from '$lib/settings.svelte';
@@ -127,11 +131,11 @@
         <PageHeader 
             title="Dashboard" 
             subtitle="Gestiona tus proyectos y actividad reciente"
-            icon="dashboard"
+            icon={LayoutDashboard}
         >
             {#snippet actions()}
                 <a class="btn-action-primary" href="/repo/create">
-                    <span class="material-symbols-rounded">add</span>
+                    <Plus size={18} />
                     <span class="hide-mobile">Nuevo Repositorio</span>
                 </a>
             {/snippet}
@@ -143,12 +147,12 @@
                 { 
                     id: 'temporal', 
                     label: 'Activity', 
-                    icon: 'schedule',
+                    icon: History,
                     hasBadge: (groupedRepos.recent?.length ?? 0) > 0 && (groupedRepos.recent?.some(r => (Date.now() - new Date(r.updated_at).getTime()) < (24 * 60 * 60 * 1000)))
                 },
-                { id: 'list', label: 'Alphabetical', icon: 'list' },
-                { id: 'folders', label: 'Folders', icon: 'folder_open' },
-                { id: 'inbox', label: 'Inbox', icon: 'inbox', hasBadge: inboxItems.length > 0 }
+                { id: 'list', label: 'Alphabetical', icon: List },
+                { id: 'folders', label: 'Folders', icon: FolderOpen },
+                { id: 'inbox', label: 'Inbox', icon: Inbox, hasBadge: inboxItems.length > 0 }
             ]}
         />
 
@@ -159,7 +163,7 @@
                 </div>
             {:else if allRepos.length === 0}
                 <div class="empty-dashboard">
-                    <span class="material-symbols-rounded">rocket_launch</span>
+                    <Rocket size={48} />
                     <h3>Start your first project</h3>
                     <p>No repositories found. Create one to begin your journey.</p>
                 </div>
@@ -183,7 +187,7 @@
                     {#each Object.entries(groupedRepos.folders || {}) as [name, repos]}
                         <div class="folder-group">
                             <div class="folder-header">
-                                <span class="material-symbols-rounded">folder</span>
+                                <Folder size={20} />
                                 <h3>{name}</h3>
                                 <span class="badge">{repos.length}</span>
                             </div>
@@ -208,7 +212,7 @@
                             </div>
                         {:else if inboxItems.length === 0}
                             <div class="empty-dashboard">
-                                <span class="material-symbols-rounded">check_circle</span>
+                                <CheckCircle2 size={48} />
                                 <h3>You're all caught up!</h3>
                                 <p>No issues or pull requests assigned to you.</p>
                             </div>
@@ -216,7 +220,11 @@
                             {#each inboxItems as item}
                                 <a href={`/${item.repo_owner}/${item.repo_name}/${item.is_pull ? 'pulls' : 'issues'}/${item.index}`} class="inbox-card tonal">
                                     <div class="inbox-icon {item.is_pull ? 'pull' : 'issue'}">
-                                        <span class="material-symbols-rounded">{item.is_pull ? 'merge' : 'error'}</span>
+                                        {#if item.is_pull}
+                                            <GitPullRequest size={20} />
+                                        {:else}
+                                            <AlertCircle size={20} />
+                                        {/if}
                                     </div>
                                     <div class="inbox-content">
                                         <div class="inbox-repo-line">
@@ -246,7 +254,7 @@
         {#if data.organizations.length > 0 && userPrefs.current.showSidebarOrgs}
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
-                    <span class="material-symbols-rounded">corporate_fare</span>
+                    <Building2 size={18} />
                     <h4>Organizations</h4>
                 </header>
                 <div class="org-grid">
@@ -415,13 +423,11 @@
 
   .folder-group { margin-bottom: 2rem; }
   .folder-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; color: var(--text-muted); }
-  .folder-header span { font-size: 1.5rem; color: var(--primary-color); }
   .folder-header h3 { font-size: 1rem; font-weight: 800; margin: 0; color: var(--text-color); }
   .folder-header .badge { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; }
   .folder-repos { display: flex; flex-direction: column; gap: 1rem; border-left: 2px solid var(--md-sys-color-outline-variant); padding-left: 1.5rem; margin-left: 0.75rem; }
 
   .empty-dashboard { padding: 2rem; text-align: center; color: var(--text-muted); }
-  .empty-dashboard span { font-size: 4rem; opacity: 0.3; margin-bottom: 1rem; }
 
   .skeleton-list { display: flex; flex-direction: column; gap: 1px; background: var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; }
   .skeleton-row { height: 80px; background: var(--bg-color); animation: pulse 1.5s infinite; }

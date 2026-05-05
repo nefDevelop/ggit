@@ -4,7 +4,7 @@
   interface Props {
     title: string;
     subtitle?: string;
-    icon?: string;
+    icon?: any;
     actions?: Snippet;
     avatar?: Snippet;
     compact?: boolean; // For smaller cards
@@ -21,7 +21,12 @@
       </div>
     {:else if icon}
       <div class="icon-slot">
-        <span class="material-symbols-rounded">{icon}</span>
+        {#if typeof icon === 'string'}
+          <span class="material-symbols-rounded">{icon}</span>
+        {:else if icon}
+          {@const Icon = icon}
+          <Icon size={32} />
+        {/if}
       </div>
     {/if}
     

@@ -9,6 +9,7 @@
   import { i18n } from '$lib/i18n.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { Building2, Eye, Edit2, Trash2 } from 'lucide-svelte';
   
   let orgs = $state<any[]>([]);
   let loading = $state(true);
@@ -46,7 +47,7 @@
   <PageHeader 
     title={i18n.t('admin.organizations') || "Organizations"}
     subtitle="Gestión y supervisión de las entidades organizacionales"
-    icon="corporate_fare"
+    icon={Building2}
   />
 
   <div class="admin-orgs-body">
@@ -95,9 +96,9 @@
               </td>
               <td data-label="Acciones">
                 <div class="action-row">
-                  <Button variant="ghost" size="sm" icon="visibility" href="/org/{org.username}" />
-                  <Button variant="ghost" size="sm" icon="edit" onclick={() => editingOrg = org} />
-                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteOrg(org.id)} />
+                  <Button variant="ghost" size="sm" icon={Eye} href="/org/{org.username}" />
+                  <Button variant="ghost" size="sm" icon={Edit2} onclick={() => editingOrg = org} />
+                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteOrg(org.id)} />
                 </div>
               </td>
             </tr>
@@ -128,24 +129,8 @@
     to { opacity: 1; transform: translateY(0); }
   }
   
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   @media (max-width: 600px) {
-    .header-flex { flex-direction: column; align-items: stretch; text-align: center; }
-    .title-with-icon { flex-direction: column; gap: 1rem; }
-  }
-
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
+    /* Mobile adjustments if needed */
   }
 
   @media (max-width: 1024px) {

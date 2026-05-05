@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { 
+    AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, 
+    Folder, FileText, File, Edit, Download, Binary, BookText 
+  } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -179,7 +183,7 @@
     </div>
   {:else if error}
     <div class="empty-state">
-      <span class="material-symbols-rounded">error_outline</span>
+      <AlertCircle size={48} />
       <h3>No content found</h3>
       <p>{error || 'This repository is empty or the path does not exist.'}</p>
     </div>
@@ -189,7 +193,7 @@
     {:else if repoData.is_bare}
       <div class="empty-state-push">
         <div class="empty-icon-ring">
-          <span class="material-symbols-rounded">terminal</span>
+          <Terminal size={40} />
         </div>
         <h2>Push your code</h2>
         <div class="setup-commands">
@@ -226,7 +230,11 @@ git push -u origin main</code></pre>
                     <code class="sha">{repoData.last_commit.id?.slice(0,7)}</code>
                   </a>
                   <button class="btn-sidebar-toggle" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
-                    <span class="material-symbols-rounded">{sidebarCollapsed ? 'side_navigation' : 'right_panel_close'}</span>
+                    {#if sidebarCollapsed}
+                      <PanelLeftOpen size={20} />
+                    {:else}
+                      <PanelRightClose size={20} />
+                    {/if}
                   </button>
                 </div>
             </div>
@@ -249,9 +257,11 @@ git push -u origin main</code></pre>
                   {#each repoData.entries as entry}
                     <tr class="file-row clickable" onclick={() => goto(`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`)}>
                       <td class="name-cell">
-                        <span class="material-symbols-rounded icon-{entry.type === 'tree' ? 'tree' : 'blob'}">
-                          {entry.type === 'tree' ? 'folder' : 'description'}
-                        </span>
+                        {#if entry.type === 'tree'}
+                          <Folder size={18} class="icon-tree" />
+                        {:else}
+                          <FileText size={18} class="icon-blob" />
+                        {/if}
                         <a href={`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`} onclick={(e) => e.stopPropagation()}>
                           {entry.name}
                         </a>
@@ -268,7 +278,7 @@ git push -u origin main</code></pre>
               <div class="file-viewer">
                 <div class="file-header">
                    <div class="file-meta">
-                     <span class="material-symbols-rounded">draft</span>
+                     <File size={18} />
                      <span class="filename">{repoData.name}</span>
                      <span class="filesize">{formatSize(repoData.size)}</span>
                    </div>
@@ -278,20 +288,24 @@ git push -u origin main</code></pre>
                            {#if blameLoading}
                              <div class="mini-spinner"></div>
                            {:else}
-                             <span class="material-symbols-rounded">history</span>
+                             <History size={16} />
                              Blame
                            {/if}
                         </button>
                         <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn">
-                          <span class="material-symbols-rounded">edit</span>
+                          <Edit size={16} />
                         </a>
                       {/if}
                       <a href={`/api/v2/${username}/${reponame}/raw/${repoData.branch}/${realPath()}`} target="_blank" class="tool-btn">Raw</a>
-                      <a href={`/api/v2/${username}/${reponame}/media/${repoData.branch}/${realPath()}`} class="tool-btn" download>
-                        <span class="material-symbols-rounded">download</span>
+                      <a href={`/api/v2/${username}/${reponame}/media/${repoData.branch}/${realPath()}`} class="tool-btn" download title="Download">
+                        <Download size={16} />
                       </a>
                       <button class="tool-btn btn-sidebar-toggle-inline" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
-                        <span class="material-symbols-rounded">{sidebarCollapsed ? 'side_navigation' : 'right_panel_close'}</span>
+                        {#if sidebarCollapsed}
+                          <PanelLeftOpen size={18} />
+                        {:else}
+                          <PanelRightClose size={18} />
+                        {/if}
                       </button>
                     </div>
                 </div>
@@ -315,7 +329,7 @@ git push -u origin main</code></pre>
                        </div>
                     {:else}
                       <div class="binary-placeholder">
-                        <span class="material-symbols-rounded">deployed_code</span>
+                        <Binary size={48} />
                         <p>Binary file — {formatSize(repoData.size)}</p>
                       </div>
                    {/if}
@@ -324,7 +338,7 @@ git push -u origin main</code></pre>
                 {#if repoData.readme_content}
                    <div class="file-readme-integrated">
                       <header class="readme-header small">
-                         <span class="material-symbols-rounded">menu_book</span>
+                         <BookText size={16} />
                          README Preview
                       </header>
                       <div class="readme-content">
@@ -343,7 +357,7 @@ git push -u origin main</code></pre>
           {#if repoData.readme}
             <div class="readme-section">
                 <header class="readme-header">
-                    <span class="material-symbols-rounded">menu_book</span>
+                    <BookText size={18} />
                     {repoData.readme.name}
                 </header>
                 <div class="readme-content">
@@ -509,9 +523,6 @@ git push -u origin main</code></pre>
     background: rgba(var(--primary-rgb), 0.1);
     color: var(--primary-color);
   }
-  .btn-sidebar-toggle span {
-    font-size: 1.4rem;
-  }
 
   /* FILE TABLE */
   .content-view { 
@@ -543,8 +554,8 @@ git push -u origin main</code></pre>
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .icon-tree { color: #facc15; font-size: 1.4rem; }
-  .icon-blob { color: var(--text-muted); font-size: 1.4rem; opacity: 0.7; }
+  :global(.icon-tree) { color: #facc15; }
+  :global(.icon-blob) { color: var(--text-muted); opacity: 0.7; }
   
   .msg-cell { 
     font-size: 0.85rem; 
@@ -621,7 +632,6 @@ git push -u origin main</code></pre>
   .lang-progress { height: 100%; transition: width 1s ease; }
   .lang-list { display: flex; flex-direction: column; gap: 0.6rem; }
   .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }
-  .lang-item.active { background: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); font-weight: 800; }
   .lang-item .dot { width: 10px; height: 10px; border-radius: 50%; }
   .lang-item .name { font-weight: 700; }
   .lang-item .percent { color: var(--text-muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
@@ -640,10 +650,8 @@ git push -u origin main</code></pre>
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
   .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
-  .empty-state span { font-size: 3rem; opacity: 0.3; }
   .empty-state-push { padding: 5rem 2rem; text-align: center; }
   .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--tertiary); }
-  .empty-icon-ring span { font-size: 2.5rem; }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.75rem; text-transform: uppercase; }
 

@@ -12,7 +12,7 @@
     class?: string;
     multiline?: boolean;
     rows?: number;
-    icon?: string;
+    icon?: any;
     min?: string | number;
     max?: string | number;
     step?: string | number;
@@ -44,8 +44,13 @@
   {/if}
   
   <div class="input-container {error ? 'has-error' : ''} {icon ? 'with-icon' : ''}">
-    {#if icon}
+    {#if typeof icon === 'string'}
       <span class="material-symbols-rounded input-icon">{icon}</span>
+    {:else if icon}
+      {@const Icon = icon}
+      <div class="input-icon">
+        <Icon size={18} />
+      </div>
     {/if}
     
     {#if multiline}

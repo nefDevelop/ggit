@@ -3,6 +3,11 @@
   import { authState } from '$lib/auth.svelte';
   import { onMount } from 'svelte';
   import Avatar from '$lib/components/Avatar.svelte';
+  import { 
+    PlusSquare, History, GitBranch, AlertCircle, 
+    GitMerge, MessageSquare, CheckCircle2, XCircle, 
+    Activity, GitCommit
+  } from "lucide-svelte";
 
   let feeds = $state<any[]>([]);
   let loading = $state(true);
@@ -21,51 +26,16 @@
     }
   }
 
-  function formatAction(act: any) {
+  function getPushData(act: any) {
     try {
-      const actorLink = `<a href="/${act.act_user_name}" class="repo-link">${act.act_user_name}</a>`;
-      const repoLink = `<a href="/${act.repo_user_name}/${act.repo_name}" class="repo-link">${act.repo_name}</a>`;
-      const opType = Number(act.op_type);
-      
-      switch (opType) {
-        case 1: // CreateRepo
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">add_box</span> created repo ${repoLink}</span>`;
-        case 5: // CommitRepo
-          let pushData: any = { Len: 0 };
-          try {
-            pushData = typeof act.content === 'string' ? JSON.parse(act.content) : act.content;
-          } catch (err) {
-            try {
-              const fixed = act.content.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
-              pushData = JSON.parse(fixed);
-            } catch (err2) {
-              console.error("Failed to parse pushData content", err2);
-            }
-          }
-          return `
-            <div class="action-summary">
-              <span class="action-pill"><span class="material-symbols-rounded mini">history</span> ${pushData.Len || 0} commits</span>
-              <span class="action-pill"><span class="material-symbols-rounded mini">fork_right</span> ${act.ref_name || 'main'}</span>
-              <span class="repo-link-wrap">in ${repoLink}</span>
-            </div>
-          `;
-        case 6: // CreateBranch
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">fork_right</span> created branch <span class="action-pill">${act.ref_name}</span> in ${repoLink}</span>`;
-        case 10: // CreateIssue
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">error</span> opened issue <a href="/${act.repo_user_name}/${act.repo_name}/issues/${act.content}" class="repo-link">#${act.content}</a> in ${repoLink}</span>`;
-        case 11: // MergePullRequest
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">call_merge</span> merged PR into ${repoLink}</span>`;
-        case 12: // CommentIssue
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">chat_bubble</span> commented on issue in ${repoLink}</span>`;
-        case 13: // CloseIssue
-          return `<span class="action-summary"><span class="material-symbols-rounded mini">check_circle</span> closed issue in ${repoLink}</span>`;
-        case 17: // ClosePull
-           return `<span class="action-summary"><span class="material-symbols-rounded mini">cancel</span> closed PR in ${repoLink}</span>`;
-        default:
-          return `<span class="action-summary">${act.content || 'activity'} in ${repoLink}</span>`;
+      return typeof act.content === 'string' ? JSON.parse(act.content) : act.content;
+    } catch (err) {
+      try {
+        const fixed = act.content.replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+        return JSON.parse(fixed);
+      } catch (err2) {
+        return { Len: 0 };
       }
-    } catch (e) {
-      return act.content;
     }
   }
 
@@ -96,9 +66,11 @@
                 <div class="avatar-box">
                   <Avatar src={act.act_avatar} username={act.act_user_name} size={32} class="user-avatar" />
                   <div class="type-icon {Number(act.op_type) === 5 ? 'push' : 'create'}">
-                    <span class="material-symbols-rounded">
-                      {Number(act.op_type) === 5 ? 'commit' : 'add_box'}
-                    </span>
+                    {#if Number(act.op_type) === 5}
+                      <GitCommit size={10} />
+                    {:else}
+                      <PlusSquare size={10} />
+                    {/if}
                   </div>
                 </div>
                 <div class="marker-line"></div>
@@ -109,7 +81,41 @@
                   <span class="timestamp">{new Date(act.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                 </div>
                 <div class="entry-body">
-                  {@html formatAction(act)}
+                  <span class="action-summary">
+                    {#if Number(act.op_type) === 1}
+                      <PlusSquare size={14} class="mini-icon" /> 
+                      created repo 
+                      <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else if Number(act.op_type) === 5}
+                      {@const pushData = getPushData(act)}
+                      <span class="action-pill"><History size={12} /> {pushData.Len || 0} commits</span>
+                      <span class="action-pill"><GitBranch size={12} /> {act.ref_name || 'main'}</span>
+                      <span class="repo-link-wrap">in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a></span>
+                    {:else if Number(act.op_type) === 6}
+                      <GitBranch size={14} class="mini-icon" />
+                      created branch <span class="action-pill">{act.ref_name}</span> 
+                      in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else if Number(act.op_type) === 10}
+                      <AlertCircle size={14} class="mini-icon" />
+                      opened issue <a href="/{act.repo_user_name}/{act.repo_name}/issues/{act.content}" class="repo-link">#{act.content}</a> 
+                      in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else if Number(act.op_type) === 11}
+                      <GitMerge size={14} class="mini-icon" />
+                      merged PR into <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else if Number(act.op_type) === 12}
+                      <MessageSquare size={14} class="mini-icon" />
+                      commented on issue in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else if Number(act.op_type) === 13}
+                      <CheckCircle2 size={14} class="mini-icon" />
+                      closed issue in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else if Number(act.op_type) === 17}
+                      <XCircle size={14} class="mini-icon" />
+                      closed PR in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {:else}
+                      {act.content || 'activity'} 
+                      in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
+                    {/if}
+                  </span>
                 </div>
               </div>
             </div>
@@ -117,7 +123,7 @@
         </div>
       {:else}
         <div class="empty-activity">
-          <span class="material-symbols-rounded">history</span>
+          <History size={48} />
           <p>No activity yet</p>
         </div>
       {/if}
@@ -228,7 +234,6 @@
     border: 2px solid var(--bg-color);
   }
 
-  .type-icon span { font-size: 10px; color: white; }
   .type-icon.push { background: #10b981; }
   .type-icon.create { background: #3b82f6; }
 
@@ -301,9 +306,6 @@
     text-align: center;
   }
 
-  .empty-activity span {
-    font-size: 3rem;
-  }
 
   .empty-activity p {
     font-size: 0.9rem;

@@ -5,6 +5,7 @@
   import MarkdownRenderer from "$lib/components/ui/MarkdownRenderer.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import Select from "$lib/components/ui/Select.svelte";
+  import { CheckCircle2, AlertCircle, Settings, X, Calendar } from "lucide-svelte";
 
   let { index } = $props();
   const repo: any = getContext("repo");
@@ -138,9 +139,11 @@
       <div class="issue-title-row">
         <h1>{issue.title} <span class="index-tag">#{issue.number}</span></h1>
         <div class="status-pill" class:closed={issue.state === "closed"}>
-          <span class="material-symbols-rounded">
-            {issue.state === "closed" ? "check_circle" : "error"}
-          </span>
+          {#if issue.state === "closed"}
+            <CheckCircle2 size={18} />
+          {:else}
+            <AlertCircle size={18} />
+          {/if}
           {issue.state === "closed" ? "Closed" : "Open"}
         </div>
       </div>
@@ -235,7 +238,7 @@
             <h4 class="side-title">Assignee</h4>
             <Button 
               variant="ghost" 
-              icon={showAssigneeEditor ? "close" : "settings"} 
+              icon={showAssigneeEditor ? X : Settings} 
               size="sm" 
               onclick={() => showAssigneeEditor = !showAssigneeEditor}
             />
@@ -273,7 +276,7 @@
             <h4 class="side-title">Labels</h4>
             <Button 
               variant="ghost" 
-              icon={showLabelEditor ? "close" : "settings"} 
+              icon={showLabelEditor ? X : Settings} 
               size="sm" 
               onclick={() => showLabelEditor = !showLabelEditor} 
             />
@@ -322,7 +325,7 @@
             <h4 class="side-title">Milestone</h4>
             <Button 
               variant="ghost" 
-              icon={showMilestoneEditor ? "close" : "settings"} 
+              icon={showMilestoneEditor ? X : Settings} 
               size="sm" 
               onclick={() => showMilestoneEditor = !showMilestoneEditor} 
             />
@@ -341,7 +344,7 @@
               </div>
             {:else if issue.milestone}
               <div class="milestone-pill">
-                <span class="material-symbols-rounded mini">event</span>
+                <Calendar size={16} />
                 {issue.milestone.title}
               </div>
             {:else}
@@ -572,10 +575,6 @@
     padding: 0.4rem 0.75rem;
     border-radius: 8px;
     width: fit-content;
-  }
-  .milestone-pill .mini {
-    font-size: 1.1rem;
-    opacity: 0.7;
   }
 
   .labels-grid {
