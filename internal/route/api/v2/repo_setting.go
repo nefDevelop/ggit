@@ -66,6 +66,7 @@ func UpdateRepoSettings(c *context.APIContext) {
 	repo.IsUnlisted = f.Unlisted
 	repo.IsArchived = f.Archived
 	repo.WikiFolderName = f.WikiFolderName
+	repo.ADRFolderName = f.ADRFolderName
 
 	// Advanced settings
 	repo.EnableWiki = f.EnableWiki

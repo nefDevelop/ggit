@@ -114,6 +114,7 @@ type RepoSetting struct {
 	PullsAllowRebase      bool `json:"pulls_allow_rebase"`
 	PullsAllowManualMerge bool `json:"pulls_allow_manual_merge"`
 	WikiFolderName        string `json:"wiki_folder_name"`
+	ADRFolderName         string `json:"adr_folder_name"`
 }
 
 func (f *RepoSetting) Validate(ctx ValidationContext, errs Errors) Errors {

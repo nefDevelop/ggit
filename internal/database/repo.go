@@ -271,6 +271,7 @@ type Repository struct {
 	EnableExternalWiki    bool
 	ExternalWikiURL       string
 	WikiFolderName        string `gorm:"type:VARCHAR(255);not null;default:'docs'"`
+	ADRFolderName         string `gorm:"type:VARCHAR(255);not null;default:'ADR'"`
 	EnableIssues          bool   `gorm:"not null;default:TRUE"`
 	AllowPublicIssues     bool
 	EnableExternalTracker bool

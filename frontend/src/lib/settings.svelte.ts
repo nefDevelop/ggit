@@ -7,7 +7,7 @@ export interface UserPreferences {
     wiki: boolean;
     branch: boolean;
     commits: boolean;
-    docs: boolean;
+    adr: boolean;
   };
   showSidebarOrgs: boolean;
 }
@@ -19,7 +19,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     wiki: true,
     branch: true,
     commits: true,
-    docs: true,
+    adr: true,
   },
   showSidebarOrgs: true
 };
@@ -30,7 +30,12 @@ function createPreferences() {
     const saved = localStorage.getItem('ggit_user_preferences');
     if (saved) {
       try {
-        initial = { ...DEFAULT_PREFERENCES, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        initial = { 
+          ...DEFAULT_PREFERENCES, 
+          ...parsed,
+          repoTabs: { ...DEFAULT_PREFERENCES.repoTabs, ...parsed.repoTabs }
+        };
       } catch (e) {
         console.error('Failed to parse preferences', e);
       }

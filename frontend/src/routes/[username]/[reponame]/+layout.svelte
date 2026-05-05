@@ -64,7 +64,7 @@
     currentPath.includes('/issues') ? 'issues' :
     currentPath.includes('/pulls') ? 'pulls' :
     currentPath.includes('/wiki') ? 'wiki' :
-    currentPath.includes('/docs') ? 'docs' :
+    currentPath.includes('/adr') ? 'adr' :
     currentPath.includes('/branches') ? 'branches' : 
     currentPath.includes('/labels') ? 'labels' :
     currentPath.includes('/milestones') ? 'milestones' : 'code'
@@ -260,10 +260,10 @@
             </a>
           {/if}
 
-          {#if userPrefs.current.repoTabs.docs}
-            <a href={`/${username}/${reponame}/docs`} class="tab" class:active={activeTab === 'docs'}>
-              <span class="material-symbols-rounded">article</span>
-              {#if activeTab === 'docs'}<span class="tab-label">Docs</span>{/if}
+          {#if userPrefs.current.repoTabs.adr}
+            <a href={`/${username}/${reponame}/adr`} class="tab" class:active={activeTab === 'adr'}>
+              <span class="material-symbols-rounded">gavel</span>
+              {#if activeTab === 'adr'}<span class="tab-label">ADR</span>{/if}
             </a>
           {/if}
 

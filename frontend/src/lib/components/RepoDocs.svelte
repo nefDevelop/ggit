@@ -7,7 +7,8 @@
   import PageHeader from './ui/PageHeader.svelte';
 
   const repo: any = getContext('repo');
-  let currentPath = $state('docs');
+  let adrFolder = $derived(repo.data.adr_folder_name || 'ADR');
+  let currentPath = $state(repo.data.adr_folder_name || 'ADR');
   let entries = $state<any[]>([]);
   let currentFile = $state<any>(null);
   let loading = $state(true);
@@ -29,43 +30,43 @@
           currentPath = path;
         }
       } else {
-        // If 'docs' doesn't exist, try 'ADR' or root
-        if (path === 'docs') {
-           return loadPath('ADR');
+        // If 'ADR' folder doesn't exist, try 'docs' as fallback for tech notes
+        if (path === adrFolder) {
+           return loadPath('docs');
         }
-        error = 'Documentation folder not found. Create a "docs/" folder in your repository.';
+        error = `ADR folder "${path}" not found. Create a folder to track architectural decisions.`;
       }
     } catch (e) {
-      error = 'Failed to load documentation.';
+      error = 'Failed to load architectural records.';
     } finally {
       loading = false;
     }
   }
 
   function isADR(filename: string) {
-      return filename.toLowerCase().includes('adr') || currentPath.toLowerCase().includes('adr');
+      return true; // Everything in this component is treated with the ADR style
   }
 
   onMount(() => {
-    loadPath('docs');
+    loadPath(adrFolder);
   });
 
   function goBack() {
     const parts = currentPath.split('/');
     parts.pop();
-    loadPath(parts.join('/') || 'docs');
+    loadPath(parts.join('/') || adrFolder);
   }
 </script>
 
 <div class="repo-docs-container">
   <PageHeader 
-    title="Technotes & ADRs" 
-    subtitle="Documentation and architectural decisions stored in the repository"
-    icon="article"
+    title="Architectural Decision Records" 
+    subtitle="Keep track of the 'why' behind your technical decisions"
+    icon="gavel"
     compact
   >
     {#snippet actions()}
-        {#if currentPath !== 'docs' && currentPath !== 'ADR'}
+        {#if currentPath !== adrFolder && currentPath !== 'docs'}
             <Button variant="secondary" size="sm" icon="arrow_back" onclick={goBack}>Back</Button>
         {/if}
     {/snippet}

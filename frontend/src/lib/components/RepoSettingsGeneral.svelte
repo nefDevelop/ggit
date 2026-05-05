@@ -318,6 +318,11 @@
                     bind:value={settings.wiki_folder_name} 
                     placeholder="docs" 
                   />
+                  <Input 
+                    label="Nombre de Carpeta ADR" 
+                    bind:value={settings.adr_folder_name} 
+                    placeholder="ADR" 
+                  />
                   <Checkbox 
                     label="Acceso Público" 
                     description="Permitir que cualquiera vea la wiki incluso en repositorios privados." 

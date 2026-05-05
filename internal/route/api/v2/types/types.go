@@ -75,6 +75,7 @@ type RepositoryResponse struct {
 	SSHURL        string                `json:"ssh_url"`
 	DefaultBranch  string                `json:"default_branch"`
 	WikiFolderName string                `json:"wiki_folder_name"`
+	ADRFolderName  string                `json:"adr_folder_name"`
 	EnableWiki            bool   `json:"enable_wiki"`
 	EnableExternalWiki    bool   `json:"enable_external_wiki"`
 	ExternalWikiURL       string `json:"external_wiki_url"`
