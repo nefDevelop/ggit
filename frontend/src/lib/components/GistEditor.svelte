@@ -4,6 +4,7 @@
   import Input from "./ui/Input.svelte";
   import Badge from "./ui/Badge.svelte";
   import CodeEditor from "./ui/CodeEditor.svelte";
+  import Modal from "./Modal.svelte";
 
   let { gist = $bindable(null), onsave, ondelete, saving = false, isEdit = false } = $props<{ 
     gist?: any,
@@ -16,6 +17,7 @@
   let description = $state("");
   let isPublic = $state(true);
   let files = $state([{ filename: "file1.txt", content: "", language: "text" }]);
+  let showDeleteModal = $state(false);
 
   $effect(() => {
     if (gist) {
@@ -63,9 +65,27 @@
     }
     onsave();
   }
+
+  function confirmDelete() {
+    showDeleteModal = false;
+    ondelete?.();
+  }
 </script>
 
 <div class="gist-editor">
+  {#if isEdit && ondelete}
+    <Modal show={showDeleteModal} title="Eliminar Gist" onclose={() => showDeleteModal = false} maxWidth="400px">
+      <div class="delete-confirm">
+        <p>¿Estás seguro de que deseas eliminar este Gist? Esta acción no se puede deshacer.</p>
+        <div class="modal-actions">
+          <Button variant="ghost" onclick={() => showDeleteModal = false}>Cancelar</Button>
+          <Button variant="primary" class="delete-gist-btn-final" onclick={confirmDelete}>
+            Eliminar Definitivamente
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  {/if}
   <div class="editor-header">
     <Input 
       placeholder="Gist description..." 
@@ -116,7 +136,7 @@
       <Badge variant="secondary">{files.length} {files.length === 1 ? 'file' : 'files'}</Badge>
     </div>
     {#if isEdit && ondelete}
-      <Button variant="ghost" onclick={ondelete} class="delete-gist-btn">
+      <Button variant="ghost" onclick={() => showDeleteModal = true} class="delete-gist-btn">
         <span class="material-symbols-rounded">delete</span>
         Eliminar Gist
       </Button>
@@ -165,4 +185,8 @@
 
   :global(.delete-gist-btn) { color: var(--md-sys-color-error) !important; }
   :global(.delete-gist-btn:hover) { background: var(--md-sys-color-error-container) !important; }
+
+  .delete-confirm p { margin-bottom: 2rem; color: var(--text-muted); }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 1rem; }
+  :global(.delete-gist-btn-final) { background: var(--md-sys-color-error) !important; color: white !important; }
 </style>

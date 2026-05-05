@@ -68,7 +68,7 @@
   </div>
   <div class="editor-container">
     <div class="backdrop" bind:this={backdrop}>
-      <pre><code>{@html highlightedCode}</code></pre>
+      <pre><code class="hljs">{@html highlightedCode}</code></pre>
     </div>
     <textarea
       bind:this={textarea}
@@ -141,7 +141,7 @@
     top: 0;
     left: 0;
     pointer-events: none;
-    color: transparent;
+    color: #e6edf3; /* Base color for unhighlighted text */
     overflow: hidden;
     z-index: 1;
   }

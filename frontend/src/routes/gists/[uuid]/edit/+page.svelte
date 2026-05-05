@@ -57,7 +57,6 @@
   }
 
   async function handleDelete() {
-    if (!confirm("Are you sure you want to delete this gist?")) return;
     try {
       const res = await apiFetch(`/api/v2/gists/${uuid}`, { method: "DELETE" });
       if (res.ok) {
