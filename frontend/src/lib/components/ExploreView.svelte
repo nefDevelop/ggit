@@ -9,8 +9,8 @@
   import PageHeader from './ui/PageHeader.svelte';
 
   let { defaultTab = 'repos' } = $props();
-  let activeTab = $state(defaultTab);
-  $effect(() => { activeTab = defaultTab; });
+  let activeTab = $state('repos');
+  $effect(() => { if (defaultTab) activeTab = defaultTab; });
   let searchQuery = $state('');
 
   const tabs = [

@@ -150,7 +150,8 @@
     align-items: center;
     gap: 1rem;
   }
-  .member-avatar {
+  
+  :global(.member-avatar) {
     width: 44px;
     height: 44px;
     border-radius: 12px;

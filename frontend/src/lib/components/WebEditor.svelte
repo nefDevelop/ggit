@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import CommitPanel from "./CommitPanel.svelte";
+  import CodeEditor from "./ui/CodeEditor.svelte";
 
   let {
     username,
@@ -102,11 +103,10 @@
         </div>
       {:else}
         <div class="editor-wrapper">
-          <textarea
-            bind:value={content}
-            spellcheck="false"
-            placeholder="Start typing..."
-          ></textarea>
+          <CodeEditor 
+            bind:value={content} 
+            placeholder="Start typing..." 
+          />
         </div>
       {/if}
     </main>
@@ -184,26 +184,8 @@
   .editor-wrapper {
     flex: 1;
     display: flex;
-    background: #0d1117; /* High contrast dark background for code */
   }
 
-  textarea {
-    flex: 1;
-    background: transparent;
-    color: #e6edf3;
-    border: none;
-    padding: 2rem;
-    font-family: "JetBrains Mono", "Fira Code", monospace;
-    font-size: 1rem;
-    line-height: 1.6;
-    resize: none;
-    overflow-y: auto;
-    outline: none;
-  }
-
-  textarea::selection {
-    background: rgba(var(--primary-rgb), 0.3);
-  }
 
   .loader-container {
     flex: 1;

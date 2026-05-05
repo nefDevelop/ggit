@@ -4,7 +4,10 @@
   
   let { org, onSave, onCancel } = $props();
   
-  let editingOrg = $state({ ...org });
+  let editingOrg = $state({ username: '', full_name: '', website: '', description: '', location: '' });
+  $effect(() => {
+    if (org) editingOrg = { ...org };
+  });
   let saving = $state(false);
   let error = $state('');
 

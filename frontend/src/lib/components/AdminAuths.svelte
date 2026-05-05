@@ -135,12 +135,7 @@
     to { opacity: 1; transform: translateY(0); }
   }
   
-  .section-header { margin-bottom: 4rem; }
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
+  .id-cell { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-weight: 700; opacity: 0.5; font-size: 0.85rem; }
 
 
 

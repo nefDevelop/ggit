@@ -36,11 +36,12 @@
     max = undefined,
     step = undefined
   }: Props = $props();
+  let inputId = $derived(id || `input-${Math.random().toString(36).substring(2, 9)}`);
 </script>
 
 <div class="field {className}">
   {#if label}
-    <label class="label">{label}</label>
+    <label class="label" for={inputId}>{label}</label>
   {/if}
   
   <div class="input-container {error ? 'has-error' : ''} {icon ? 'with-icon' : ''}">
@@ -55,7 +56,7 @@
     
     {#if multiline}
       <textarea 
-        {id}
+        id={inputId}
         bind:value 
         {placeholder} 
         {disabled} 
@@ -64,7 +65,7 @@
       ></textarea>
     {:else}
       <input 
-        {id}
+        id={inputId}
         {type} 
         bind:value 
         {placeholder} 

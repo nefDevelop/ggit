@@ -4,7 +4,10 @@
   
   let { section, data, onSave, onCancel } = $props();
   
-  let editingData = $state($state.snapshot(data));
+  let editingData = $state<Record<string, any>>({});
+  $effect(() => {
+    if (data) editingData = $state.snapshot(data);
+  });
   let saving = $state(false);
   let error = $state('');
 

@@ -21,13 +21,13 @@
   let error = $state('');
 
   // Form State
-  let name = $state(source?.name || '');
-  let type = $state(source?.type || 2); // Default LDAP
-  let activated = $state(source?.is_actived ?? true);
-  let isDefault = $state(source?.is_default ?? false);
+  let name = $state('');
+  let type = $state(2); // Default LDAP
+  let activated = $state(true);
+  let isDefault = $state(false);
 
   // Config State (LDAP)
-  let config = $state(source?.RawConfig ? JSON.parse(source.RawConfig) : {
+  let config = $state({
     Host: '',
     Port: 389,
     SecurityProtocol: 0,
@@ -48,6 +48,16 @@
     GroupFilter: '',
     GroupMemberUID: '',
     UserUID: ''
+  });
+
+  $effect(() => {
+    name = source?.name || '';
+    type = source?.type || 2;
+    activated = source?.is_actived ?? true;
+    isDefault = source?.is_default ?? false;
+    if (source?.RawConfig) {
+        try { config = JSON.parse(source.RawConfig); } catch(e) {}
+    }
   });
 
   const typeOptions = [
@@ -245,7 +255,7 @@
   }
   .section-title-row h3 { margin-bottom: 0; }
 
-  .form-card {
+  :global(.form-card) {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -298,7 +308,7 @@
     gap: 1rem;
   }
 
-  .anim-in {
+  :global(.anim-in) {
     animation: expand 0.3s ease-out;
   }
 

@@ -12,10 +12,10 @@ type CreateGistForm struct {
 	Description string `json:"description"`
 	IsPublic    bool   `json:"is_public"`
 	Files       []struct {
-		Filename string `json:"filename" binding:"Required"`
-		Content  string `json:"content" binding:"Required"`
+		Filename string `json:"filename" binding:"required"`
+		Content  string `json:"content" binding:"required"`
 		Language string `json:"language"`
-	} `json:"files" binding:"Required"`
+	} `json:"files" binding:"required"`
 }
 
 func CreateGist(c *context.APIContext) {

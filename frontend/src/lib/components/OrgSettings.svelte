@@ -262,7 +262,7 @@
 
   .form-footer { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  .danger-card { border: 1px solid rgba(var(--error-rgb), 0.2); }
+  :global(.danger-card) { border: 1px solid rgba(var(--error-rgb), 0.2); }
   .danger-zone-content { padding: 2.5rem; }
   .danger-item { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .danger-info strong { font-size: 1.1rem; color: var(--error); display: block; margin-bottom: 0.25rem; }

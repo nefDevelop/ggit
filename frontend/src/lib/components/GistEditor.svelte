@@ -3,6 +3,7 @@
   import Button from "./ui/Button.svelte";
   import Input from "./ui/Input.svelte";
   import Badge from "./ui/Badge.svelte";
+  import CodeEditor from "./ui/CodeEditor.svelte";
 
   let { onSave, loading = false } = $props<{ 
     onSave: (data: any) => void,
@@ -58,11 +59,10 @@
           {/if}
         </div>
         <div class="file-body">
-          <textarea 
+          <CodeEditor 
+            bind:value={file.content} 
             placeholder="Enter file content..." 
-            bind:value={file.content}
-            spellcheck="false"
-          ></textarea>
+          />
         </div>
       </Card>
     {/each}
@@ -113,13 +113,6 @@
   .delete-btn:hover { background: var(--md-sys-color-error-container); }
 
   .file-body { padding: 0; }
-  textarea {
-    width: 100%; min-height: 300px; padding: 1.5rem;
-    background: var(--md-sys-color-surface-container-low); border: none;
-    color: var(--md-sys-color-on-surface); font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem; line-height: 1.6; outline: none;
-    resize: vertical; border-radius: 0 0 1.25rem 1.25rem;
-  }
 
   .editor-footer { display: flex; align-items: center; gap: 1.5rem; padding-top: 1rem; }
   
