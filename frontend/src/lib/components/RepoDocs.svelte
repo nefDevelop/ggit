@@ -129,8 +129,6 @@
   .spinner { width: 32px; height: 32px; border: 3px solid var(--md-sys-color-outline-variant); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s infinite linear; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .error-card { padding: 3rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .error-card span { font-size: 3rem; opacity: 0.2; }
   .hint { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
 
   .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }

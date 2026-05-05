@@ -215,13 +215,9 @@
 </div>
 
 <style>
-  .header-actions-right { display: flex; justify-content: flex-end; padding: 1.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1.25rem; }
-
-  .page-header { display: flex; align-items: center; justify-content: space-between; }
-  .header-left { display: flex; align-items: center; gap: 0.75rem; }
-  .header-icon { font-size: 1.5rem; color: var(--primary-color); }
-  h2 { margin: 0; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
-  .count-chip { font-size: 0.8rem; background: var(--primary-container); color: var(--on-primary-container); padding: 0.1rem 0.5rem; border-radius: 999px; font-weight: 700; }
+  .tags-page { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .tags-content { padding: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .header-actions-right { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1.25rem; }
 
   /* New tag form */
   .new-tag-form { padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--primary-color); display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.25rem; }
@@ -234,10 +230,6 @@
   .form-error { color: #f87171; font-size: 0.85rem; margin: 0; }
   .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
-  .tags-page { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
-  .tags-content { padding: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
-
-  .header-actions-right { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   /* Tag list */
   .tag-list { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -245,7 +237,6 @@
   .tag-row:hover { border-color: var(--primary-color); }
   .tag-info { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
   .tag-name { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.95rem; text-decoration: none; color: var(--primary-color); }
-  .tag-name span { font-size: 1.1rem; }
   .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.15); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
   .tag-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
@@ -255,9 +246,6 @@
   .danger:hover { background: rgba(248, 113, 113, 0.1); }
   .danger.confirm { color: #fb923c; border-color: #fb923c; }
 
-  /* Empty */
-  .repo-branches { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
-  .branches-content { padding: 2rem; }
   .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; border-radius: 1rem; border: 1px dashed var(--border-color); text-align: center; }
   .empty-icon { font-size: 3rem; color: var(--primary-color); opacity: 0.4; }
   .empty-state h3 { margin: 0; font-size: 1.1rem; }

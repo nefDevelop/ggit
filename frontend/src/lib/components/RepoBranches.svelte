@@ -103,6 +103,7 @@
           </div>
         {/each}
       {/if}
+    </div>
   {:else}
     <div class="empty-state">
       <span class="material-symbols-rounded">error_outline</span>

@@ -226,7 +226,6 @@
   .success-text { color: var(--success); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
 
   .info-zone { margin-top: 1rem; }
-  .warning-card { border: 1px dashed var(--primary-color) !important; background: rgba(var(--primary-rgb), 0.03) !important; }
   .info-content { display: flex; gap: 1.5rem; align-items: flex-start; }
   .warning-icon { font-size: 2rem; color: var(--primary-color); opacity: 0.8; }
   .info-text strong { display: block; margin-bottom: 0.25rem; font-size: 1.1rem; font-weight: 800; }

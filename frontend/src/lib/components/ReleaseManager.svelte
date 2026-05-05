@@ -134,26 +134,6 @@
   
   .header-actions-right { display: flex; justify-content: flex-end; }
 
-  .view-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .title-group {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .title-group span {
-    font-size: 1.75rem;
-    color: var(--primary-color);
-  }
-  .view-header h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 800;
-  }
-
   .release-list {
     display: flex;
     flex-direction: column;

@@ -145,6 +145,7 @@
         </Card>
       {/each}
     {/if}
+    </div>
   </div>
 </div>
 
