@@ -85,6 +85,8 @@
     </Button>
   </header>
 
+  <div class="labels-content">
+
   {#if showEditor}
     <Card class="label-editor tonal" padding="lg">
       <h3 class="editor-title">{editingLabel ? 'Edit Label' : 'Create New Label'}</h3>
@@ -124,7 +126,9 @@
       <div class="loading-state">Loading labels...</div>
     {:else if labels.length === 0}
       <div class="empty-state">
-        <p>No labels defined yet for this repository.</p>
+        <span class="material-symbols-rounded">error_outline</span>
+        <h3>No labels found</h3>
+        <p>There are no labels defined yet for this repository.</p>
       </div>
     {:else}
       {#each labels as label}
@@ -145,8 +149,9 @@
 </div>
 
 <style>
-  .repo-labels { display: flex; flex-direction: column; gap: 2rem; }
-  .section-actions { display: flex; justify-content: flex-end; }
+  .repo-labels { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .labels-content { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+  .section-actions { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   .editor-title { margin-top: 0; margin-bottom: 1.5rem; font-weight: 800; color: var(--primary-color); }
   .editor-grid { display: grid; grid-template-columns: 2fr 1.5fr 1fr; gap: 2rem; align-items: flex-end; margin-bottom: 2rem; }

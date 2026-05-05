@@ -59,18 +59,6 @@
 </script>
 
 <div class="repo-docs-container">
-  <PageHeader 
-    title="" 
-    subtitle=""
-    icon=""
-    compact
-  >
-    {#snippet actions()}
-        {#if currentPath !== adrFolder && currentPath !== 'docs'}
-            <Button variant="secondary" size="sm" icon="arrow_back" onclick={goBack}>Back</Button>
-        {/if}
-    {/snippet}
-  </PageHeader>
 
   <div class="docs-layout">
     {#if loading}
@@ -79,21 +67,24 @@
         <p>Loading documentation...</p>
       </div>
     {:else if error}
-      <Card class="error-card tonal">
-        <span class="material-symbols-rounded">info</span>
+      <div class="empty-state">
+        <span class="material-symbols-rounded">error_outline</span>
         <h3>No documentation found</h3>
         <p>{error}</p>
         <div class="hint">
             Tip: Create a <code>docs/</code> or <code>ADR/</code> folder in your root branch to see it here.
         </div>
-      </Card>
+      </div>
     {:else if currentFile}
       <div class="file-view">
         <div class="file-header">
-            <h2 class="file-name">
-                <span class="material-symbols-rounded">{isADR(currentFile.name) ? 'gavel' : 'description'}</span>
-                {currentFile.name}
-            </h2>
+            <div class="header-main-row">
+              <h2 class="file-name">
+                  <span class="material-symbols-rounded">{isADR(currentFile.name) ? 'gavel' : 'description'}</span>
+                  {currentFile.name}
+              </h2>
+              <Button variant="secondary" size="sm" icon="arrow_back" onclick={goBack}>Back to List</Button>
+            </div>
             {#if currentFile.last_commit}
                 <div class="last-update">
                     Last updated {new Date(currentFile.last_commit.author.when).toLocaleDateString()} by {currentFile.last_commit.author.name}
@@ -128,7 +119,10 @@
 </div>
 
 <style>
-  .repo-docs-container { display: flex; flex-direction: column; gap: 1.5rem; }
+  .repo-docs-container { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .docs-layout { min-height: 400px; padding: 2rem; }
+  
+  .header-main-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
   .docs-layout { min-height: 400px; }
 
   .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; gap: 1rem; color: var(--text-muted); }

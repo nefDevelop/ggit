@@ -34,6 +34,7 @@
 </script>
 
 <div class="repo-branches">
+  <div class="branches-content">
   {#if loading}
     <div class="skeleton-table"></div>
   {:else if data}
@@ -102,12 +103,19 @@
           </div>
         {/each}
       {/if}
+  {:else}
+    <div class="empty-state">
+      <span class="material-symbols-rounded">error_outline</span>
+      <h3>No branches found</h3>
+      <p>This repository has no branches yet.</p>
     </div>
   {/if}
+  </div>
 </div>
 
 <style>
-  .repo-branches { display: flex; flex-direction: column; }
+  .repo-branches { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .branches-content { padding: 2rem; }
   
   .branch-list-container {
     border: 1px solid var(--md-sys-color-outline-variant);
@@ -174,4 +182,7 @@
 
   .skeleton-table { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; text-align: center; color: var(--text-muted); opacity: 0.6; }
+  .empty-state span { font-size: 3rem; }
 </style>

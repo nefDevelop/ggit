@@ -5,6 +5,8 @@
   import Card from "./ui/Card.svelte";
   import { dialog } from "$lib/dialog.svelte";
   import { Trash2, Plus, Globe, Shield } from "lucide-svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
+  import Input from "./ui/Input.svelte";
 
   const repo: any = getContext("repo");
   let remotes = $state<string[]>([]);
@@ -83,257 +85,153 @@
 </script>
 
 <div class="remotes-settings">
-  <Card padding="lg">
-    <header class="section-header">
-      <div class="title-info">
-        <h3>Gestionar Remotos</h3>
-        <p>Configura destinos adicionales para sincronizar tu código.</p>
-      </div>
-    </header>
+  <Card padding="none" class="settings-premium-card">
+    <PageHeader 
+      title="Gestionar Remotos"
+      subtitle="Configura destinos adicionales para sincronizar tu código con otros servicios."
+      icon="sync"
+    />
 
-    <div class="add-remote-form tonal">
-      <div class="form-row">
-        <div class="input-group">
-          <label for="remote-name">Nombre</label>
-          <input 
-            type="text" 
-            id="remote-name" 
+    <div class="settings-content">
+      <div class="add-remote-section island">
+        <header class="section-meta">
+          <strong>Añadir Nuevo Remoto</strong>
+          <p>Vincula este repositorio con otro servidor externo.</p>
+        </header>
+
+        <form class="form-grid" onsubmit={(e) => { e.preventDefault(); addRemote(); }}>
+          <Input 
+            label="Nombre" 
             bind:value={newName} 
             placeholder="ej: github, backup" 
           />
-        </div>
-        <div class="input-group grow">
-          <label for="remote-url">URL del Repositorio</label>
-          <input 
-            type="text" 
-            id="remote-url" 
+          <Input 
+            label="URL del Repositorio" 
             bind:value={newURL} 
             placeholder="https://github.com/usuario/repo.git" 
+            class="grow"
           />
-        </div>
-        <div class="btn-container">
-          <Button 
-            variant="primary" 
-            onclick={addRemote} 
-            disabled={adding || !newName || !newURL}
-            icon="add"
-          >
-            {adding ? "Añadiendo..." : "Añadir"}
-          </Button>
-        </div>
+          <div class="form-actions-inline">
+            <Button 
+              variant="primary" 
+              type="submit"
+              disabled={adding || !newName || !newURL}
+              icon="add"
+              loading={adding}
+            >
+              Añadir Remoto
+            </Button>
+          </div>
+        </form>
+        {#if error}<p class="error-text">{error}</p>{/if}
+        {#if message}<p class="success-text">{message}</p>{/if}
       </div>
-      {#if error}<p class="error-text">{error}</p>{/if}
-      {#if message}<p class="success-text">{message}</p>{/if}
-    </div>
 
-    <div class="remotes-list">
-      {#if loading}
-        <div class="loading-placeholder">Cargando remotos...</div>
-      {:else if remotes.length === 0}
-        <div class="empty-state">
-          <Globe size={40} />
-          <p>No hay remotos adicionales configurados.</p>
-        </div>
-      {:else}
-        <div class="list-grid">
-          {#each remotes as remote}
-            <div class="remote-item tonal">
-              <div class="remote-info">
-                <div class="remote-icon">
-                  <Shield size={20} />
+      <div class="remotes-list-section">
+        <header class="list-header">
+          <span class="material-symbols-rounded">list</span>
+          <strong>Remotos Configurados</strong>
+        </header>
+
+        {#if loading}
+          <div class="skeleton-list"></div>
+        {:else if remotes.length === 0}
+          <div class="empty-state">
+            <span class="material-symbols-rounded">globe</span>
+            <h3>No hay remotos configurados</h3>
+            <p>Este repositorio solo existe localmente en Ggit.</p>
+          </div>
+        {:else}
+          <div class="remotes-grid">
+            {#each remotes as remote}
+              <div class="remote-item tonal">
+                <div class="remote-main">
+                  <div class="remote-icon-wrap">
+                    <span class="material-symbols-rounded">cloud_sync</span>
+                  </div>
+                  <div class="remote-details">
+                    <span class="remote-name">{remote}</span>
+                    <span class="remote-url-hint">Sincronización bidireccional</span>
+                  </div>
                 </div>
-                <div class="remote-meta">
-                  <span class="remote-name">{remote}</span>
-                  <span class="remote-hint">Configurado en el servidor</span>
-                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  class="danger-text"
+                  icon="delete"
+                  onclick={() => deleteRemote(remote)}
+                  disabled={deleting === remote}
+                />
               </div>
-              <button 
-                class="btn-delete" 
-                onclick={() => deleteRemote(remote)}
-                disabled={deleting === remote}
-                title="Eliminar remoto"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          {/each}
-        </div>
-      {/if}
-    </div>
-  </Card>
-
-  <Card class="info-card variant" padding="md">
-    <div class="info-content">
-      <Globe size={24} />
-      <div>
-        <strong>Nota sobre Autenticación</strong>
-        <p>Actualmente, el servidor de Ggit debe tener acceso pre-configurado (vía SSH o tokens en el entorno) para interactuar con estos remotos externos.</p>
+            {/each}
+          </div>
+        {/if}
       </div>
     </div>
   </Card>
+
+  <div class="info-zone">
+    <Card class="tonal warning-card" padding="lg">
+      <div class="info-content">
+        <span class="material-symbols-rounded warning-icon">info</span>
+        <div class="info-text">
+          <strong>Nota sobre Autenticación</strong>
+          <p>Actualmente, el servidor de Ggit debe tener acceso pre-configurado (vía SSH o tokens en el entorno) para interactuar con estos remotos externos.</p>
+        </div>
+      </div>
+    </Card>
+  </div>
 </div>
 
 <style>
-  .remotes-settings {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+  .remotes-settings { display: flex; flex-direction: column; gap: 2.5rem; }
+  .settings-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 3rem; }
+  @media (max-width: 1300px) { .settings-content { padding: 2rem; } }
+  
+  .add-remote-section { padding: 2rem; border-radius: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+  .section-meta strong { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
+  .section-meta p { margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; align-items: flex-end; }
+  .form-actions-inline { grid-column: span 2; display: flex; justify-content: flex-end; padding-top: 1rem; }
+
+  @media (max-width: 1300px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .form-actions-inline { grid-column: span 1; }
   }
 
-  .section-header {
-    margin-bottom: 2rem;
-  }
+  .remotes-list-section { display: flex; flex-direction: column; gap: 1.5rem; }
+  .list-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
+  .list-header span { font-size: 1.5rem; opacity: 0.7; }
+  .list-header strong { font-weight: 950; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
-  .section-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 800;
-  }
+  .remotes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.25rem; }
+  @media (max-width: 1100px) { .remotes-grid { grid-template-columns: 1fr; } }
 
-  .section-header p {
-    margin: 0.5rem 0 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
+  .remote-item { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; }
+  .remote-item:hover { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
-  .add-remote-form {
-    padding: 1.5rem;
-    border-radius: 1.25rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
+  .remote-main { display: flex; align-items: center; gap: 1.25rem; }
+  .remote-icon-wrap { width: 44px; height: 44px; border-radius: 12px; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; }
+  .remote-icon-wrap span { font-size: 1.5rem; }
 
-  .form-row {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-end;
-  }
+  .remote-details { display: flex; flex-direction: column; }
+  .remote-name { font-weight: 800; font-size: 1.1rem; color: var(--text-color); }
+  .remote-url-hint { font-size: 0.75rem; color: var(--text-muted); opacity: 0.8; }
 
-  .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
+  .empty-state span { font-size: 3rem; }
 
-  .input-group.grow { flex: 1; }
+  .error-text { color: var(--error); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
+  .success-text { color: var(--success); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
 
-  .input-group label {
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding-left: 0.5rem;
-  }
+  .info-zone { margin-top: 1rem; }
+  .warning-card { border: 1px dashed var(--primary-color) !important; background: rgba(var(--primary-rgb), 0.03) !important; }
+  .info-content { display: flex; gap: 1.5rem; align-items: flex-start; }
+  .warning-icon { font-size: 2rem; color: var(--primary-color); opacity: 0.8; }
+  .info-text strong { display: block; margin-bottom: 0.25rem; font-size: 1.1rem; font-weight: 800; }
+  .info-text p { margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
 
-  input {
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--md-sys-color-outline-variant);
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    color: var(--text-color);
-    font-size: 0.9rem;
-    outline: none;
-    transition: all 0.2s;
-  }
-
-  input:focus {
-    border-color: var(--primary-color);
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  .remotes-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .list-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1rem;
-  }
-
-  .remote-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 1.25rem;
-    border-radius: 1.25rem;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .remote-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .remote-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: rgba(var(--primary-rgb), 0.1);
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .remote-meta {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .remote-name {
-    font-weight: 800;
-    font-size: 1rem;
-  }
-
-  .remote-hint {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
-
-  .btn-delete {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 8px;
-    transition: all 0.2s;
-  }
-
-  .btn-delete:hover {
-    color: #ef4444;
-    background: rgba(239, 68, 68, 0.1);
-  }
-
-  .empty-state {
-    padding: 4rem 2rem;
-    text-align: center;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .error-text { color: #ef4444; font-size: 0.85rem; margin-top: 1rem; }
-  .success-text { color: #10b981; font-size: 0.85rem; margin-top: 1rem; }
-
-  .info-card.variant {
-    background: rgba(var(--primary-rgb), 0.05);
-    border: 1px dashed var(--primary-color);
-  }
-
-  .info-content {
-    display: flex;
-    gap: 1.25rem;
-    align-items: flex-start;
-    color: var(--text-color);
-  }
-
-  .info-content strong { display: block; margin-bottom: 0.25rem; }
-  .info-content p { margin: 0; font-size: 0.85rem; color: var(--text-muted); }
+  .skeleton-list { height: 200px; background: var(--md-sys-color-surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
 </style>

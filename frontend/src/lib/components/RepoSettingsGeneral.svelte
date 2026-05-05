@@ -480,6 +480,7 @@
   }
 
   .settings-content { padding: 2.5rem; }
+  @media (max-width: 1300px) { .settings-content { padding: 2rem; } }
   @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .settings-form { display: flex; flex-direction: column; gap: 3rem; }
@@ -494,6 +495,12 @@
   .avatar-actions strong { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
   .avatar-actions p { margin: 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; }
   .action-buttons { display: flex; gap: 0.75rem; align-items: center; }
+
+  @media (max-width: 1300px) {
+    .avatar-settings-section { gap: 1.5rem; padding: 1.5rem; border-radius: 1.5rem; }
+    .avatar-preview-wrap { border-radius: 1.75rem; }
+    :global(.repo-avatar-img) { width: 90px !important; height: 90px !important; }
+  }
 
   @media (max-width: 650px) {
     .avatar-settings-section { flex-direction: column; text-align: center; padding: 1.5rem; }
@@ -546,6 +553,11 @@
     font-weight: 500;
     margin-left: 0.25rem;
     opacity: 0.8;
+  }
+
+  @media (max-width: 1300px) {
+    .form-grid { gap: 1rem; }
+    .options-grid { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 800px) {

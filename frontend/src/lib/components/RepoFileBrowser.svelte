@@ -178,15 +178,16 @@
         <div class="skeleton-side"></div>
     </div>
   {:else if error}
-    <div class="error-state">
-      <span class="material-symbols-rounded">error</span>
-      <p>{error}</p>
+    <div class="empty-state">
+      <span class="material-symbols-rounded">error_outline</span>
+      <h3>No content found</h3>
+      <p>{error || 'This repository is empty or the path does not exist.'}</p>
     </div>
   {:else if repoData}
     {#if searchQuery}
       <RepoSearchResults query={searchQuery} branch={repoData.branch || 'HEAD'} />
     {:else if repoData.is_bare}
-      <div class="empty-state">
+      <div class="empty-state-push">
         <div class="empty-icon-ring">
           <span class="material-symbols-rounded">terminal</span>
         </div>
@@ -393,13 +394,14 @@ git push -u origin main</code></pre>
 </div>
 
 <style>
-  .workspace-area { height: 100%; }
+  .workspace-area { height: 100%; margin: -2rem; }
 
   .technical-grid {
     display: grid;
     grid-template-columns: 1fr 280px;
     gap: 2.5rem;
     transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    padding: 2rem;
   }
 
   .technical-grid.sidebar-collapsed {
@@ -637,7 +639,9 @@ git push -u origin main</code></pre>
   .skeleton-main, .skeleton-side { background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
-  .empty-state { padding: 5rem 2rem; text-align: center; }
+  .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
+  .empty-state span { font-size: 3rem; opacity: 0.3; }
+  .empty-state-push { padding: 5rem 2rem; text-align: center; }
   .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--tertiary); }
   .empty-icon-ring span { font-size: 2.5rem; }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }

@@ -41,6 +41,23 @@
 <div class="pulls-view">
   <PageHeader title="" icon="" compact>
     {#snippet actions()}
+      <div class="pill-filter-group-inline">
+        <button 
+          class="tab-pill" 
+          class:active={stateFilter === 'open'} 
+          onclick={() => stateFilter = 'open'}
+        >
+          Open
+        </button>
+        <button 
+          class="tab-pill" 
+          class:active={stateFilter === 'closed'} 
+          onclick={() => stateFilter = 'closed'}
+        >
+          Closed
+        </button>
+      </div>
+
       <a href="./pulls/new" class="btn-action-primary">
         <span class="material-symbols-rounded">add</span>
         New Pull Request
@@ -48,24 +65,6 @@
     {/snippet}
   </PageHeader>
 
-  <div class="pill-filter-group">
-    <button 
-      class="tab-pill" 
-      class:active={stateFilter === 'open'} 
-      onclick={() => stateFilter = 'open'}
-    >
-      <span class="material-symbols-rounded mini">merge</span>
-      Open
-    </button>
-    <button 
-      class="tab-pill" 
-      class:active={stateFilter === 'closed'} 
-      onclick={() => stateFilter = 'closed'}
-    >
-      <span class="material-symbols-rounded mini">history_edu</span>
-      Closed
-    </button>
-  </div>
 
   {#if loading}
     <div class="skeleton-list"></div>
@@ -73,7 +72,7 @@
     <div class="error-msg">{error}</div>
   {:else if pulls.length === 0}
     <div class="empty-state">
-      <span class="material-symbols-rounded">merge</span>
+      <span class="material-symbols-rounded">error_outline</span>
       <h3>No pull requests found</h3>
       <p>There are no {stateFilter} pull requests in this repository.</p>
     </div>
@@ -133,8 +132,35 @@
   .pulls-view {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0;
     animation: fadeIn 0.3s ease-out;
+    margin: -2rem;
+  }
+
+  .pill-filter-group-inline {
+    display: flex;
+    background: var(--surface-variant);
+    padding: 4px;
+    border-radius: 10px;
+    margin-right: 1rem;
+  }
+  
+  .tab-pill {
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .tab-pill.active {
+    background: var(--bg-color);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
   }
 
   @keyframes fadeIn {

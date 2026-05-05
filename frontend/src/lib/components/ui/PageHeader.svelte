@@ -96,7 +96,19 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    transition: font-size 0.3s ease;
+    transition: all 0.3s ease;
+  }
+
+  @media (max-width: 1400px) {
+    h2 { font-size: 1.85rem; }
+    .icon-slot { font-size: 2.25rem; padding: 1rem; border-radius: 1.5rem; }
+    .page-header { padding: 2rem; gap: 1.5rem; }
+  }
+
+  @media (max-width: 1100px) {
+    h2 { font-size: 1.5rem; }
+    .subtitle { font-size: 1rem; }
+    .icon-slot { font-size: 1.75rem; padding: 0.8rem; border-radius: 1.25rem; }
   }
 
   .page-header.compact h2 {

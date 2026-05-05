@@ -116,8 +116,9 @@
 
     {#if commitsData.commits.length === 0}
       <div class="empty-state">
-        <span class="material-symbols-rounded">history</span>
-        <p>No commits found in this repository.</p>
+        <span class="material-symbols-rounded">error_outline</span>
+        <h3>No commits found</h3>
+        <p>There are no commits in this repository yet.</p>
       </div>
     {/if}
   {/if}
@@ -128,6 +129,8 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    margin: -2rem;
+    padding: 2rem;
   }
 
   .commits-list {
@@ -237,11 +240,14 @@
     text-align: center;
     padding: 4rem;
     color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
   }
 
   .empty-state .material-symbols-rounded {
     font-size: 3rem;
-    margin-bottom: 1rem;
     opacity: 0.3;
   }
 

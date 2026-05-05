@@ -49,11 +49,9 @@
     </div>
   {:else if releases.length === 0}
     <div class="empty-state">
-      <h3>No releases yet</h3>
-      <p>
-        Releases provide a way to package software and provide binary assets to
-        your users.
-      </p>
+      <span class="material-symbols-rounded">error_outline</span>
+      <h3>No releases found</h3>
+      <p>There are no releases in this repository yet. Releases provide a way to package software and provide binary assets to your users.</p>
     </div>
   {:else}
     <div class="release-list">

@@ -113,109 +113,109 @@
     </button>
   </div>
 
-  {#if showNewTag}
-    <div class="new-tag-form tonal" transition:fade={{ duration: 150 }}>
-      <h3>Create a new tag</h3>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="tag-name">Tag name</label>
-          <input id="tag-name" class="form-control" placeholder="v1.0.0" bind:value={newTagName} />
+  <div class="tags-content">
+    {#if showNewTag}
+      <div class="new-tag-form tonal" transition:fade={{ duration: 150 }}>
+        <h3>Create a new tag</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tag-name">Tag name</label>
+            <input id="tag-name" class="form-control" placeholder="v1.0.0" bind:value={newTagName} />
+          </div>
+          <div class="form-group">
+            <label for="tag-target">Target branch or commit SHA</label>
+            <input id="tag-target" class="form-control" placeholder="main or abc1234" bind:value={newTagTarget} />
+          </div>
         </div>
-        <div class="form-group">
-          <label for="tag-target">Target branch or commit SHA</label>
-          <input id="tag-target" class="form-control" placeholder="main or abc1234" bind:value={newTagTarget} />
+        {#if createError}
+          <p class="form-error">{createError}</p>
+        {/if}
+        <div class="form-actions">
+          <button class="btn btn-ghost btn-sm" onclick={() => showNewTag = false}>Cancel</button>
+          <button class="btn btn-primary btn-sm" onclick={createTag} disabled={creating || !newTagName || !newTagTarget}>
+            {#if creating}
+              <span class="material-symbols-rounded spin">sync</span>
+            {:else}
+              <span class="material-symbols-rounded">sell</span>
+            {/if}
+            Create tag
+          </button>
         </div>
       </div>
-      {#if createError}
-        <p class="form-error">{createError}</p>
-      {/if}
-      <div class="form-actions">
-        <button class="btn btn-ghost btn-sm" onclick={() => showNewTag = false}>Cancel</button>
-        <button class="btn btn-primary btn-sm" onclick={createTag} disabled={creating || !newTagName || !newTagTarget}>
-          {#if creating}
-            <span class="material-symbols-rounded spin">sync</span>
-          {:else}
-            <span class="material-symbols-rounded">sell</span>
-          {/if}
-          Create tag
+    {/if}
+
+    {#if error}
+      <div class="alert-error">{error}</div>
+    {/if}
+
+    {#if loading}
+      <div class="skeleton-list">
+        {#each [1,2,3] as _}
+          <div class="skeleton-row tonal"></div>
+        {/each}
+      </div>
+    {:else if tags.length === 0}
+      <div class="empty-state">
+        <span class="material-symbols-rounded empty-icon">error_outline</span>
+        <h3>No tags found</h3>
+        <p>There are no tags in this repository. Tags mark specific points in the history as important — use them for releases.</p>
+        <button class="btn btn-primary btn-sm" onclick={() => showNewTag = true}>
+          <span class="material-symbols-rounded">add</span>
+          Create first tag
         </button>
       </div>
-    </div>
-  {/if}
-
-  {#if error}
-    <div class="alert-error">{error}</div>
-  {/if}
-
-  {#if loading}
-    <div class="skeleton-list">
-      {#each [1,2,3] as _}
-        <div class="skeleton-row tonal"></div>
-      {/each}
-    </div>
-  {:else if tags.length === 0}
-    <div class="empty-state tonal">
-      <span class="material-symbols-rounded empty-icon">sell</span>
-      <h3>No tags yet</h3>
-      <p>Tags mark specific points in the history as important — use them for releases.</p>
-      <button class="btn btn-primary btn-sm" onclick={() => showNewTag = true}>
-        <span class="material-symbols-rounded">add</span>
-        Create first tag
-      </button>
-    </div>
-  {:else}
-    <div class="tag-list">
-      {#each tags as tag (tag.name)}
-        <div class="tag-row tonal" transition:fade={{ duration: 120 }}>
-          <div class="tag-info">
-            <a href={`/${username}/${reponame}/releases`} class="tag-name">
-              {tag.name}
-            </a>
-            {#if tag.sha}
-              <code class="tag-sha">{tag.sha.slice(0, 8)}</code>
-            {/if}
-          </div>
-
-          <div class="tag-actions">
-            <a href={tag.zip_url} class="btn btn-ghost btn-xs" title="Download ZIP">
-              <span class="material-symbols-rounded">folder_zip</span>
-              zip
-            </a>
-            <a href={tag.tar_url} class="btn btn-ghost btn-xs" title="Download TAR.GZ">
-              <span class="material-symbols-rounded">inventory_2</span>
-              tar.gz
-            </a>
-            <a href={`/${username}/${reponame}/releases`} class="btn btn-ghost btn-xs">
-              <span class="material-symbols-rounded">rocket_launch</span>
-              Release
-            </a>
-            <button
-              class="btn btn-ghost btn-xs danger"
-              class:confirm={deleteConfirm === tag.name}
-              onclick={() => deleteTag(tag.name)}
-              disabled={deleting === tag.name}
-              title={deleteConfirm === tag.name ? 'Click again to confirm delete' : 'Delete tag'}
-            >
-              {#if deleting === tag.name}
-                <span class="material-symbols-rounded spin">sync</span>
-              {:else if deleteConfirm === tag.name}
-                <span class="material-symbols-rounded">warning</span>
-                Confirm?
-              {:else}
-                <span class="material-symbols-rounded">delete</span>
+    {:else}
+      <div class="tag-list">
+        {#each tags as tag (tag.name)}
+          <div class="tag-row tonal" transition:fade={{ duration: 120 }}>
+            <div class="tag-info">
+              <a href={`/${username}/${reponame}/releases`} class="tag-name">
+                {tag.name}
+              </a>
+              {#if tag.sha}
+                <code class="tag-sha">{tag.sha.slice(0, 8)}</code>
               {/if}
-            </button>
+            </div>
+
+            <div class="tag-actions">
+              <a href={tag.zip_url} class="btn btn-ghost btn-xs" title="Download ZIP">
+                <span class="material-symbols-rounded">folder_zip</span>
+                zip
+              </a>
+              <a href={tag.tar_url} class="btn btn-ghost btn-xs" title="Download TAR.GZ">
+                <span class="material-symbols-rounded">inventory_2</span>
+                tar.gz
+              </a>
+              <a href={`/${username}/${reponame}/releases`} class="btn btn-ghost btn-xs">
+                <span class="material-symbols-rounded">rocket_launch</span>
+                Release
+              </a>
+              <button
+                class="btn btn-ghost btn-xs danger"
+                class:confirm={deleteConfirm === tag.name}
+                onclick={() => deleteTag(tag.name)}
+                disabled={deleting === tag.name}
+                title={deleteConfirm === tag.name ? 'Click again to confirm delete' : 'Delete tag'}
+              >
+                {#if deleting === tag.name}
+                  <span class="material-symbols-rounded spin">sync</span>
+                {:else if deleteConfirm === tag.name}
+                  <span class="material-symbols-rounded">warning</span>
+                  Confirm?
+                {:else}
+                  <span class="material-symbols-rounded">delete</span>
+                {/if}
+              </button>
+            </div>
           </div>
-        </div>
-      {/each}
-    </div>
-  {/if}
+        {/each}
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style>
-  .tags-page { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.25rem; }
-
-  .header-actions-right { display: flex; justify-content: flex-end; margin-bottom: 0.5rem; }
+  .header-actions-right { display: flex; justify-content: flex-end; padding: 1.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1.25rem; }
 
   .page-header { display: flex; align-items: center; justify-content: space-between; }
   .header-left { display: flex; align-items: center; gap: 0.75rem; }
@@ -224,7 +224,7 @@
   .count-chip { font-size: 0.8rem; background: var(--primary-container); color: var(--on-primary-container); padding: 0.1rem 0.5rem; border-radius: 999px; font-weight: 700; }
 
   /* New tag form */
-  .new-tag-form { padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--primary-color); display: flex; flex-direction: column; gap: 1rem; }
+  .new-tag-form { padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--primary-color); display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.25rem; }
   .new-tag-form h3 { margin: 0; font-size: 1rem; font-weight: 700; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
@@ -233,6 +233,11 @@
   .form-control:focus { border-color: var(--primary-color); }
   .form-error { color: #f87171; font-size: 0.85rem; margin: 0; }
   .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+  .tags-page { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .tags-content { padding: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .header-actions-right { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   /* Tag list */
   .tag-list { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -251,6 +256,8 @@
   .danger.confirm { color: #fb923c; border-color: #fb923c; }
 
   /* Empty */
+  .repo-branches { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .branches-content { padding: 2rem; }
   .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; border-radius: 1rem; border: 1px dashed var(--border-color); text-align: center; }
   .empty-icon { font-size: 3rem; color: var(--primary-color); opacity: 0.4; }
   .empty-state h3 { margin: 0; font-size: 1.1rem; }

@@ -44,6 +44,23 @@
 <div class="issues-view">
   <PageHeader title="" icon="" compact>
     {#snippet actions()}
+      <div class="pill-filter-group-inline">
+        <button
+          class="tab-pill"
+          class:active={stateFilter === "open"}
+          onclick={() => (stateFilter = "open")}
+        >
+          {repo.data?.open_issues_count || 0} Open
+        </button>
+        <button
+          class="tab-pill"
+          class:active={stateFilter === "closed"}
+          onclick={() => (stateFilter = "closed")}
+        >
+          {repo.data?.closed_issues_count || 0} Closed
+        </button>
+      </div>
+
       <div class="view-toggle">
         <button 
           class="btn-icon" 
@@ -72,24 +89,6 @@
     {/snippet}
   </PageHeader>
 
-  <div class="pill-filter-group">
-    <button
-      class="tab-pill"
-      class:active={stateFilter === "open"}
-      onclick={() => (stateFilter = "open")}
-    >
-      <span class="material-symbols-rounded mini">error</span>
-      {repo.data?.open_issues_count || 0} Open
-    </button>
-    <button
-      class="tab-pill"
-      class:active={stateFilter === "closed"}
-      onclick={() => (stateFilter = "closed")}
-    >
-      <span class="material-symbols-rounded mini">check_circle</span>
-      {repo.data?.closed_issues_count || 0} Closed
-    </button>
-  </div>
 
   {#if loading}
     <div class="loading-state">
@@ -164,8 +163,36 @@
   .issues-view {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 0;
     animation: fadeIn 0.3s ease-out;
+    margin: -2rem; /* Negate parent padding for full-width header if needed, but let's just use gap 0 */
+  }
+
+  /* ... existing styles ... */
+  .pill-filter-group-inline {
+    display: flex;
+    background: var(--surface-variant);
+    padding: 4px;
+    border-radius: 10px;
+    margin-right: 1rem;
+  }
+  
+  .tab-pill {
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .tab-pill.active {
+    background: var(--bg-color);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
   }
 
   @keyframes fadeIn {

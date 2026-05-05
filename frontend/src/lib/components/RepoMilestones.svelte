@@ -222,13 +222,14 @@
         <p>Loading milestones...</p>
       </div>
     {:else if milestones.length === 0}
-      <div class="empty-state tonal">
-        <span class="material-symbols-rounded">event_busy</span>
-        <p>No milestones found for this repository.</p>
+      <div class="empty-state">
+        <span class="material-symbols-rounded">error_outline</span>
+        <h3>No milestones found</h3>
+        <p>There are no milestones in this repository.</p>
       </div>
     {:else}
       {#each milestones as ms}
-        <Card class="milestone-card tonal" padding="lg">
+        <Card class="milestone-card" padding="lg">
           <div class="ms-main">
             <div class="ms-header">
               <div class="ms-title-row">
@@ -250,7 +251,7 @@
               {ms.description || 'No description provided.'}
             </div>
 
-            <div class="hill-chart-display-box tonal">
+            <div class="hill-chart-display-box">
               <svg viewBox="0 0 100 45" preserveAspectRatio="none" class="hill-chart-large">
                 <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
                 <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
@@ -296,8 +297,9 @@
 </div>
 
 <style>
-  .repo-milestones { display: flex; flex-direction: column; gap: 2rem; }
-  .section-actions { display: flex; justify-content: flex-end; }
+  .repo-milestones { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; }
+  .section-actions { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   .editor-title { margin: 0; font-weight: 800; color: var(--primary-color); }
   .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 2rem; }
