@@ -5,9 +5,10 @@
   import Badge from "./ui/Badge.svelte";
   import CodeEditor from "./ui/CodeEditor.svelte";
 
-  let { gist = $bindable(null), onsave, saving = false, isEdit = false } = $props<{ 
+  let { gist = $bindable(null), onsave, ondelete, saving = false, isEdit = false } = $props<{ 
     gist?: any,
     onsave: () => void,
+    ondelete?: () => void,
     saving?: boolean,
     isEdit?: boolean
   }>();
@@ -35,6 +36,23 @@
       files.splice(index, 1);
     }
   }
+
+  function detectLanguage(filename: string) {
+    const ext = filename.split('.').pop()?.toLowerCase();
+    const map: Record<string, string> = {
+      'js': 'javascript', 'ts': 'typescript', 'py': 'python', 'go': 'go',
+      'md': 'markdown', 'json': 'json', 'html': 'html', 'css': 'css',
+      'rs': 'rust', 'c': 'c', 'cpp': 'cpp', 'java': 'java', 'rb': 'ruby',
+      'sh': 'bash', 'yaml': 'yaml', 'yml': 'yaml', 'xml': 'xml', 'sql': 'sql'
+    };
+    return map[ext || ''] || 'text';
+  }
+
+  $effect(() => {
+    files.forEach(f => {
+      f.language = detectLanguage(f.filename);
+    });
+  });
 
   function handleSubmit() {
     // Update the gist prop or a local object to send back
@@ -76,6 +94,7 @@
           <CodeEditor 
             bind:value={file.content} 
             placeholder="Enter file content..." 
+            language={file.language}
           />
         </div>
       </Card>
@@ -96,6 +115,12 @@
       </div>
       <Badge variant="secondary">{files.length} {files.length === 1 ? 'file' : 'files'}</Badge>
     </div>
+    {#if isEdit && ondelete}
+      <Button variant="ghost" onclick={ondelete} class="delete-gist-btn">
+        <span class="material-symbols-rounded">delete</span>
+        Eliminar Gist
+      </Button>
+    {/if}
     <Button variant="primary" onclick={handleSubmit} loading={saving}>
       {#if isEdit}
         {saving ? 'Updating...' : 'Update Gist'}
@@ -137,4 +162,7 @@
   .footer-meta { display: flex; align-items: center; gap: 1.5rem; }
   .visibility-toggle { display: flex; align-items: center; gap: 0.5rem; color: var(--md-sys-color-on-surface-variant); font-weight: 600; }
   .visibility-toggle label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+
+  :global(.delete-gist-btn) { color: var(--md-sys-color-error) !important; }
+  :global(.delete-gist-btn:hover) { background: var(--md-sys-color-error-container) !important; }
 </style>

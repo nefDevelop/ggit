@@ -56,6 +56,21 @@
     }
   }
 
+  async function handleDelete() {
+    if (!confirm("Are you sure you want to delete this gist?")) return;
+    try {
+      const res = await apiFetch(`/api/v2/gists/${uuid}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Gist deleted");
+        goto("/gists");
+      } else {
+        toast.error("Failed to delete gist");
+      }
+    } catch (e) {
+      toast.error("Network error");
+    }
+  }
+
   onMount(fetchGist);
 </script>
 
@@ -67,7 +82,7 @@
         <div class="skeleton-body"></div>
       </div>
     {:else if gist}
-      <GistEditor bind:gist onsave={handleSave} {saving} isEdit={true} />
+      <GistEditor bind:gist onsave={handleSave} ondelete={handleDelete} {saving} isEdit={true} />
     {/if}
   </div>
 </div>

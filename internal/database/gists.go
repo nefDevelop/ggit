@@ -239,8 +239,48 @@ func (s *gistsStore) Update(gist *domain.Gist) error {
 		}
 
 		dir := s.gistDir(gist.UUID)
+		
+		// Track IDs of files that are still present
+		var currentFileIDs []int64
 		for _, file := range gist.Files {
-			// Find latest version
+			var gf GistFile
+			if file.ID > 0 {
+				// Update existing file record
+				if err := tx.Where("id = ? AND gist_id = ?", file.ID, gist.ID).First(&gf).Error; err == nil {
+					// Check if filename changed to rename files on disk? 
+					// For now let's just update the DB record.
+					if gf.Filename != file.Filename {
+						// Optional: rename existing .vX files to new filename
+						for v := 1; v <= conf.Gist.MaxVersions; v++ {
+							oldPath := filepath.Join(dir, fmt.Sprintf("%s.v%d", gf.Filename, v))
+							newPath := filepath.Join(dir, fmt.Sprintf("%s.v%d", file.Filename, v))
+							_ = os.Rename(oldPath, newPath)
+						}
+					}
+					
+					gf.Filename = file.Filename
+					gf.Language = file.Language
+					if err := tx.Save(&gf).Error; err != nil {
+						return err
+					}
+					currentFileIDs = append(currentFileIDs, gf.ID)
+				}
+			} else {
+				// Create new file record
+				gf = GistFile{
+					GistID:   gist.ID,
+					Filename: file.Filename,
+					Language: file.Language,
+				}
+				if err := tx.Create(&gf).Error; err != nil {
+					return err
+				}
+				file.ID = gf.ID
+				currentFileIDs = append(currentFileIDs, gf.ID)
+			}
+
+			// Write new version to disk
+			// Find latest version for THIS filename
 			latestVer := 0
 			for v := 1; v <= conf.Gist.MaxVersions; v++ {
 				path := filepath.Join(dir, fmt.Sprintf("%s.v%d", file.Filename, v))
@@ -252,14 +292,7 @@ func (s *gistsStore) Update(gist *domain.Gist) error {
 			}
 
 			newVer := latestVer + 1
-			// Rolling history logic
 			if newVer > conf.Gist.MaxVersions {
-				// Shift versions? No, simpler: just delete v1, rename v2->v1, etc.
-				// OR just use a circular index.
-				// For now, let's keep it simple: if > Max, delete v1 and shift all others down.
-				// Actually, a simpler way is to just delete the oldest one and use newVer = Max.
-				// But that changes the order.
-				// Let's do shifting for now.
 				for v := 1; v < conf.Gist.MaxVersions; v++ {
 					oldPath := filepath.Join(dir, fmt.Sprintf("%s.v%d", file.Filename, v+1))
 					newPath := filepath.Join(dir, fmt.Sprintf("%s.v%d", file.Filename, v))
@@ -273,6 +306,18 @@ func (s *gistsStore) Update(gist *domain.Gist) error {
 				return err
 			}
 		}
+
+		// Delete files that were removed from the Gist
+		if err := tx.Where("gist_id = ? AND id NOT IN ?", gist.ID, currentFileIDs).Delete(&GistFile{}).Error; err != nil {
+			// If currentFileIDs is empty, NOT IN might fail in some DBs, but GORM handles it.
+			// Actually, let's be safe.
+			if len(currentFileIDs) == 0 {
+				if err := tx.Where("gist_id = ?", gist.ID).Delete(&GistFile{}).Error; err != nil {
+					return err
+				}
+			}
+		}
+
 		return nil
 	})
 }
