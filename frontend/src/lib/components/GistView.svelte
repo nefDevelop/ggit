@@ -9,6 +9,7 @@
   import hljs from "highlight.js";
   import "highlight.js/styles/github-dark.css";
   import Avatar from "./Avatar.svelte";
+  import CodeViewer from "./ui/CodeViewer.svelte";
   import { toast } from "$lib/toast.svelte";
 
   let { gist } = $props<{ gist: any }>();
@@ -74,7 +75,7 @@
               {@html renderMarkdown(file.content)}
             </div>
           {:else}
-            <pre><code class="language-{file.language || 'text'}">{file.content}</code></pre>
+            <CodeViewer code={file.content} language={file.language} />
           {/if}
         </div>
       </Card>
@@ -105,10 +106,9 @@
   .filename { font-weight: 600; color: var(--md-sys-color-on-surface); }
   .spacer { flex: 1; }
 
-  .file-content { padding: 1.5rem; background: var(--md-sys-color-surface-container-low); border-radius: 0 0 1.25rem 1.25rem; }
+  .file-content { padding: 0; background: var(--md-sys-color-surface-container-low); border-radius: 0 0 1.25rem 1.25rem; }
   
-  pre { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; overflow-x: auto; }
-  code { border-radius: 0.5rem; }
+  :global(.file-content .code-viewer) { border-radius: 0 0 1.25rem 1.25rem; border: none; }
 
   .markdown-body { color: var(--md-sys-color-on-surface); line-height: 1.6; }
 </style>
