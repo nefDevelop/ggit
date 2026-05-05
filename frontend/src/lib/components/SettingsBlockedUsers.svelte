@@ -123,12 +123,6 @@
 <style>
   .blocks-settings { display: flex; flex-direction: column; gap: 2rem; }
   
-  .section-header { margin-bottom: 2.5rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 1.5rem; }
-  .hero-icon { font-size: 2.5rem; color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem; border-radius: 1.5rem; }
-  
-  h2 { margin: 0; font-size: 1.75rem; font-weight: 900; }
-  .subtitle { margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 1rem; }
 
   .add-block-form { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 2rem; }
   .form-row { display: flex; gap: 1rem; align-items: flex-end; }

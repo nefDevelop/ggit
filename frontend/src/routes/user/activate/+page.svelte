@@ -159,11 +159,6 @@
     margin-bottom: 0.5rem;
   }
 
-  .auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
 
   .btn-primary, .btn-secondary {
     width: 100%;

@@ -283,7 +283,7 @@
   }
 
   .file-content {
-    background: #0d0e10;
+    background: var(--md-sys-color-surface-container-lowest);
     overflow-x: auto;
   }
 
@@ -291,19 +291,24 @@
     display: flex;
     font-family: "JetBrains Mono", "Fira Code", monospace;
     font-size: 13px;
-    line-height: 20px;
+    line-height: 1.6;
     white-space: pre;
+    align-items: stretch;
   }
 
   .line-num {
     width: 45px;
     min-width: 45px;
     text-align: right;
-    padding-right: 10px;
-    color: var(--text-tertiary);
-    background: rgba(255, 255, 255, 0.02);
+    padding: 0 10px;
+    color: var(--text-muted);
+    background: var(--md-sys-color-surface-container-low);
     user-select: none;
     border-right: 1px solid var(--md-sys-color-outline-variant);
+    opacity: 0.6;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
 
   .line-sign {
@@ -311,16 +316,24 @@
     min-width: 25px;
     text-align: center;
     user-select: none;
-    color: var(--text-tertiary);
+    color: var(--text-muted);
+    opacity: 0.5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .line-code {
     flex: 1;
-    padding-left: 5px;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
   }
 
   .line-code pre {
     margin: 0;
+    line-height: 1.6;
+    color: var(--text-base);
   }
 
   .diff-line-wrapper {
@@ -414,35 +427,36 @@
 
   /* Colors */
   .line-add {
-    background: rgba(103, 225, 163, 0.1);
+    background: rgba(var(--primary-rgb), 0.1);
   }
   .line-add .line-num {
-    background: rgba(103, 225, 163, 0.15);
-    color: #8ef9c1;
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary-color);
   }
   .line-add .line-sign {
-    color: #8ef9c1;
+    color: var(--primary-color);
   }
 
   .line-del {
-    background: rgba(255, 180, 171, 0.1);
+    background: rgba(var(--md-sys-color-error-rgb), 0.1);
   }
   .line-del .line-num {
-    background: rgba(255, 180, 171, 0.15);
-    color: #ffcdc7;
+    background: rgba(var(--md-sys-color-error-rgb), 0.15);
+    color: var(--error);
   }
   .line-del .line-sign {
-    color: #ffcdc7;
+    color: var(--error);
   }
 
   .line-section {
-    background: rgba(168, 199, 250, 0.05);
-    color: var(--primary);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
     font-weight: 600;
   }
   .line-section .line-num {
-    background: rgba(168, 199, 250, 0.1);
-    color: var(--primary);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    opacity: 0.5;
   }
 
   @keyframes fadeIn {

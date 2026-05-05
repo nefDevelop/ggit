@@ -1,0 +1,72 @@
+/* Custom Highlight.js theme using MD3 tokens for Ggit */
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+  color: var(--md-sys-color-on-surface);
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--md-sys-color-outline);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: var(--md-sys-color-primary);
+  font-weight: 700;
+}
+
+.hljs-number,
+.hljs-string,
+.hljs-meta,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-substitution {
+  color: var(--md-sys-color-tertiary);
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-attribute {
+  color: var(--md-sys-color-primary);
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-regexp,
+.hljs-link,
+.hljs-selector-id,
+.hljs-selector-class {
+  color: var(--md-sys-color-secondary);
+}
+
+.hljs-built_in,
+.hljs-deletion {
+  color: var(--md-sys-color-error);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+/* Specific string color override for better readability */
+.hljs-string {
+  color: var(--success, #146c43);
+}
+
+[data-color-scheme="dark"] .hljs-string {
+  color: var(--success, #67e1a3);
+}

@@ -7,7 +7,6 @@
   import RepoSearchResults from './RepoSearchResults.svelte';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   import hljs from 'highlight.js';
-  import 'highlight.js/styles/github-dark.css';
   
   let { path = '' } = $props();
   let username = $derived(page.params.username);
@@ -19,23 +18,28 @@
   
   let searchQuery = $state('');
 
-  let highlightedLines = $derived(() => {
+  let codeRows = $derived(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];
     
-    // Server-side syntax highlighting (Chroma)
+    let lines: string[];
     if (repoData.highlighted_content) {
-      return repoData.highlighted_content.split('\n');
+      lines = repoData.highlighted_content.split('\n');
+    } else {
+      const language = repoData.name.split('.').pop() || '';
+      let html: string;
+      try {
+        html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
+      } catch (e) {
+        html = hljs.highlightAuto(repoData.content).value;
+      }
+      lines = html.split('\n');
     }
 
-    // Client-side fallback (Highlight.js)
-    const language = repoData.name.split('.').pop() || '';
-    let html: string;
-    try {
-      html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
-    } catch (e) {
-      html = hljs.highlightAuto(repoData.content).value;
-    }
-    return html.split('\n');
+    return lines.map((content, i) => ({
+      num: i + 1,
+      content: content || '&nbsp;',
+      blame: showBlame ? blameData[i] : null
+    }));
   });
 
   function handleSearch(e: any) {
@@ -291,26 +295,24 @@ git push -u origin main</code></pre>
                     </div>
                 </div>
                 <div class="code-box">
-                   {#if repoData.is_text_file}
-                      <div class="code-grid" class:with-blame={showBlame}>
-                        {#if showBlame}
-                           <div class="blame-col">
-                             {#each blameData as hunk}
-                                <div class="blame-line" title="{hunk.author} - {new Date(hunk.time * 1000).toLocaleString()}">
-                                   <span class="blame-author">{hunk.author.split(' ')[0]}</span>
-                                   <span class="blame-time">{timeAgo(hunk.time * 1000)}</span>
-                                </div>
-                             {/each}
-                           </div>
-                        {/if}
-                        <div class="ln-col">
-                          {#each highlightedLines() as _, i}
-                            <span>{i + 1}</span>
+                    {#if repoData.is_text_file}
+                       <div class="code-container" class:with-blame={showBlame}>
+                          {#each codeRows() as row}
+                            <div class="code-line-row">
+                               {#if showBlame && row.blame}
+                                  <div class="blame-cell" title="{row.blame.author} - {new Date(row.blame.time * 1000).toLocaleString()}">
+                                     <span class="blame-author">{row.blame.author.split(' ')[0]}</span>
+                                     <span class="blame-time">{timeAgo(row.blame.time * 1000)}</span>
+                                  </div>
+                               {/if}
+                               <div class="ln-cell">{row.num}</div>
+                               <div class="code-cell">
+                                 <pre class="hljs"><code>{@html row.content}</code></pre>
+                               </div>
+                            </div>
                           {/each}
-                        </div>
-                        <pre class="code-pre hljs">{#each highlightedLines() as line}<div class="line">{@html line || '&nbsp;'}</div>{/each}</pre>
-                      </div>
-                   {:else}
+                       </div>
+                    {:else}
                       <div class="binary-placeholder">
                         <span class="material-symbols-rounded">deployed_code</span>
                         <p>Binary file — {formatSize(repoData.size)}</p>
@@ -573,20 +575,18 @@ git push -u origin main</code></pre>
   .file-tools.side-by-side { display: flex; align-items: center; gap: 0; }
   .file-tools.side-by-side .tool-btn { border-radius: 0; border-left-width: 0; }
   .file-tools.side-by-side .tool-btn:first-child { border-top-left-radius: 0.6rem; border-bottom-left-radius: 0.6rem; border-left-width: 1px; }
-  .file-tools.side-by-side .tool-btn:last-child { border-top-right-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }
+  .file-tools.side-by-side .tool-btn:last-child { border-top-right-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }  .code-box { background: var(--md-sys-color-surface-container-lowest); overflow-x: auto; border: 1px solid var(--md-sys-color-outline-variant); margin: 1rem; border-radius: 0.75rem; }
+  .code-container { display: flex; flex-direction: column; }
+  .code-line-row { display: flex; align-items: stretch; min-height: 1.6rem; }
+  .code-line-row:hover { background: rgba(var(--primary-rgb), 0.05); }
+  
+  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: center; justify-content: flex-end; }
+  
+  .code-cell { flex: 1; padding: 0 1rem; display: flex; align-items: center; overflow-x: auto; }
+  .code-cell pre { margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.6; background: transparent; }
+  .code-cell pre code { background: transparent; padding: 0; }
 
-  .code-box { background: #0d0e11; overflow-x: auto; }
-  .code-grid { display: grid; grid-template-columns: 60px 1fr; }
-  .ln-col { border-right: 1px solid rgba(255,255,255,0.05); padding: 1.5rem 0; text-align: right; background: rgba(255,255,255,0.01); }
-  .ln-col span { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.3; padding-right: 1.25rem; line-height: 1.6; }
-  .code-pre { margin: 0; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.6; color: #e6edf3; }
-  .code-pre.hljs { background: transparent; }
-  .line { white-space: pre; }
-
-  .code-grid.with-blame { grid-template-columns: 140px 60px 1fr; }
-  .blame-col { border-right: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.3); padding: 1.5rem 0; display: flex; flex-direction: column; overflow: hidden; }
-  .blame-line { padding: 0 0.75rem; font-size: 0.75rem; line-height: 1.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; gap: 0.5rem; opacity: 0.5; transition: opacity 0.2s; border-left: 2px solid transparent; }
-  .blame-line:hover { opacity: 1; border-left-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
+  .blame-cell { width: 140px; min-width: 140px; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); padding: 0 0.75rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.6; }
   .blame-author { font-weight: 800; color: var(--primary-color); }
   .blame-time { color: var(--text-muted); font-size: 0.7rem; }
 

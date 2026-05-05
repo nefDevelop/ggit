@@ -156,12 +156,12 @@
 
   /* Code Block Styling - Integrated with Ggit Theme */
   :global(.markdown-body pre) {
-    background-color: var(--md-sys-color-surface-container-low, #f0f2f5);
+    background-color: var(--md-sys-color-surface-container-low);
     padding: 1.5rem;
     border-radius: 16px;
     overflow-x: auto;
     margin: 1.5rem 0;
-    border: 1px solid var(--md-sys-color-outline-variant, rgba(0,0,0,0.05));
+    border: 1px solid var(--md-sys-color-outline-variant);
     font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
     font-size: 0.85rem;
     line-height: 1.6;
@@ -171,17 +171,7 @@
   :global(.markdown-body code.hljs) {
     padding: 0;
     background: transparent;
-    color: var(--md-sys-color-on-surface-variant);
   }
-
-  /* Customizing Highlight.js colors to match Ggit's vibe */
-  :global(.hljs-keyword, .hljs-selector-tag) { color: var(--md-sys-color-primary, #6750a4); font-weight: 600; }
-  :global(.hljs-string, .hljs-doctag) { color: #1e8e3e; } 
-  :global(.hljs-title, .hljs-section, .hljs-selector-id) { color: var(--md-sys-color-tertiary, #7d5260); font-weight: bold; }
-  :global(.hljs-comment) { color: var(--md-sys-color-outline, #79747e); font-style: italic; }
-  :global(.hljs-number, .hljs-literal) { color: #b05c00; }
-  :global(.hljs-type, .hljs-class) { color: var(--md-sys-color-secondary, #625b71); }
-  :global(.hljs-attr, .hljs-variable) { color: #8e24aa; }
 
   /* MDX-style Callouts */
   :global(.markdown-body Warning, .markdown-body Note, .markdown-body Tip, .markdown-body Important, .markdown-body Caution) {

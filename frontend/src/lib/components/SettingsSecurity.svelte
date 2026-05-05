@@ -323,51 +323,7 @@
 </div>
 
 <style>
-  .section-header {
-    margin-bottom: 4rem;
-  }
-  @media (max-width: 600px) {
-    .section-header {
-      margin-bottom: 2rem;
-    }
-    .title-with-icon {
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .hero-icon {
-      font-size: 1.5rem;
-      padding: 0.6rem;
-      border-radius: 1rem;
-    }
-    h2 {
-      font-size: 1.5rem;
-    }
-  }
 
-  .title-with-icon {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-  .hero-icon {
-    font-size: 3rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.1);
-    padding: 1.25rem;
-    border-radius: 2rem;
-    flex-shrink: 0;
-  }
-  h2 {
-    margin: 0;
-    font-size: 2.25rem;
-    font-weight: 950;
-    letter-spacing: -0.04em;
-  }
-  .subtitle {
-    margin: 0.5rem 0 0 0;
-    color: var(--text-muted);
-    font-size: 1.1rem;
-  }
 
   .modular-stack {
     display: flex;
@@ -462,10 +418,6 @@
     .form-footer {
       flex-direction: column;
       align-items: stretch;
-    }
-    .form-footer button {
-      width: 100%;
-      order: 2;
     }
     .status-alert {
       order: 1;
@@ -656,11 +608,6 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-  }
-  @media (max-width: 600px) {
-    .actions-row button {
-      width: 100%;
-    }
   }
   :global(.danger-btn:hover) {
     color: var(--error) !important;

@@ -101,13 +101,7 @@
 </div>
 
 <style>
-  .section-header { margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 2rem; }
-  @media (max-width: 800px) { .section-header { flex-direction: column; align-items: stretch; } }
 
-  .title-with-icon { display: flex; align-items: center; gap: 1.5rem; }
-  .hero-icon { font-size: 2.5rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1rem; border-radius: 1.5rem; }
-  h2 { margin: 0; font-size: 1.75rem; font-weight: 900; }
-  .subtitle { margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 1rem; }
 
   .sessions-list { display: flex; flex-direction: column; gap: 1rem; }
   

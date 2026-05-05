@@ -131,19 +131,7 @@
 
 <style>
   
-  .section-header { margin-bottom: 4rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
-  h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
-  @media (max-width: 600px) {
-    .section-header { margin-bottom: 2rem; }
-    h2 { font-size: 1.5rem; }
-    .hero-icon { font-size: 1.5rem; padding: 0.6rem; border-radius: 1rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { font-size: 0.9rem; }
-  }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
   .module-tag span { font-size: 1.25rem; }
@@ -179,7 +167,6 @@
   .form-box { padding: 3rem; background: rgba(255,255,255,0.01); }
   @media (max-width: 600px) {
     .form-box { padding: 1.5rem; }
-    .form-footer button { width: 100%; }
   }
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }

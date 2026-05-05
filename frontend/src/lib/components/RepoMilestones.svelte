@@ -180,7 +180,7 @@
                  window.addEventListener('mouseup', onMouseUp);
               }}
             >
-              <path d="M 0 40 Q 50 -10 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
+              <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
               <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="3" stroke-width="0.5" />
               
               <!-- Background Clickable Area -->
@@ -188,7 +188,7 @@
 
               <circle 
                 cx={form.hill_state} 
-                cy={40 - (Math.sin((form.hill_state / 100) * Math.PI) * 35)} 
+                cy={40 - 140 * (form.hill_state / 100) + 140 * Math.pow(form.hill_state / 100, 2)} 
                 r="3.5" 
                 fill="var(--primary-color)" 
                 filter="drop-shadow(0 0 6px var(--primary-color))"
@@ -249,11 +249,11 @@
 
             <div class="hill-chart-display-box tonal">
               <svg viewBox="0 0 100 45" class="hill-chart-large">
-                <path d="M 0 40 Q 50 -10 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.2" />
+                <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.2" />
                 <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
                 <circle 
                   cx={ms.hill_state} 
-                  cy={40 - (Math.sin((ms.hill_state / 100) * Math.PI) * 35)} 
+                  cy={40 - 140 * (ms.hill_state / 100) + 140 * Math.pow(ms.hill_state / 100, 2)} 
                   r="3" 
                   fill="var(--primary-color)" 
                   filter="drop-shadow(0 0 5px var(--primary-color))"
