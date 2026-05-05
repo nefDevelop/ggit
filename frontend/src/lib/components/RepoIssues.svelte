@@ -44,6 +44,24 @@
 <div class="issues-view">
   <PageHeader title="Issues" icon="bug_report" compact>
     {#snippet actions()}
+      <div class="view-toggle">
+        <button 
+          class="btn-icon" 
+          class:active={view === 'list'} 
+          onclick={() => view = 'list'}
+          title="List View"
+        >
+          <span class="material-symbols-rounded">list</span>
+        </button>
+        <button 
+          class="btn-icon" 
+          class:active={view === 'board'} 
+          onclick={() => view = 'board'}
+          title="Board View"
+        >
+          <span class="material-symbols-rounded">dashboard</span>
+        </button>
+      </div>
       <a
         href="/{repo.data.owner.username}/{repo.data.name}/issues/new"
         class="btn-action-primary"
@@ -87,54 +105,58 @@
       <p>There are no {stateFilter} issues in this repository.</p>
     </div>
   {:else}
-    <div class="issues-list-modern">
-      {#each issues as issue}
-        <div class="issue-row">
-          <div class="issue-icon" style="color: {getStatusColor(issue)}">
-            <span class="material-symbols-rounded">
-              {issue.is_closed ? "check_circle" : "error"}
-            </span>
-          </div>
-          <div class="issue-main">
-            <div class="issue-title-row">
-              <a
-                href="/{repo.data.owner.username}/{repo.data
-                  .name}/issues/{issue.number}"
-                class="issue-title"
-              >
-                {issue.title}
-              </a>
-              {#each issue.labels || [] as label}
-                <span
-                  class="label-tag"
-                  style="background: {label.color}"
-                  class:scoped={label.name.includes("::")}
+    {#if view === 'list'}
+      <div class="issues-list-modern">
+        {#each issues as issue}
+          <div class="issue-row">
+            <div class="issue-icon" style="color: {getStatusColor(issue)}">
+              <span class="material-symbols-rounded">
+                {issue.is_closed ? "check_circle" : "error"}
+              </span>
+            </div>
+            <div class="issue-main">
+              <div class="issue-title-row">
+                <a
+                  href="/{repo.data.owner.username}/{repo.data
+                    .name}/issues/{issue.number}"
+                  class="issue-title"
                 >
-                  {#if label.name.includes("::")}
-                    {@const [key, val] = label.name.split("::")}
-                    <span class="key">{key}</span>
-                    <span class="val">{val}</span>
-                  {:else}
-                    {label.name}
-                  {/if}
-                </span>
-              {/each}
+                  {issue.title}
+                </a>
+                {#each issue.labels || [] as label}
+                  <span
+                    class="label-tag"
+                    style="background: {label.color}"
+                    class:scoped={label.name.includes("::")}
+                  >
+                    {#if label.name.includes("::")}
+                      {@const [key, val] = label.name.split("::")}
+                      <span class="key">{key}</span>
+                      <span class="val">{val}</span>
+                    {:else}
+                      {label.name}
+                    {/if}
+                  </span>
+                {/each}
+              </div>
+              <div class="issue-meta">
+                #{issue.number} opened {new Date(
+                  issue.created_at,
+                ).toLocaleDateString()} by <strong>{issue.user?.username}</strong>
+              </div>
             </div>
-            <div class="issue-meta">
-              #{issue.number} opened {new Date(
-                issue.created_at,
-              ).toLocaleDateString()} by <strong>{issue.user?.username}</strong>
-            </div>
+            {#if issue.comments > 0}
+              <div class="issue-comments-count">
+                <span class="material-symbols-rounded">chat_bubble</span>
+                {issue.comments}
+              </div>
+            {/if}
           </div>
-          {#if issue.comments > 0}
-            <div class="issue-comments-count">
-              <span class="material-symbols-rounded">chat_bubble</span>
-              {issue.comments}
-            </div>
-          {/if}
-        </div>
-      {/each}
-    </div>
+        {/each}
+      </div>
+    {:else}
+      <IssueBoard {issues} />
+    {/if}
   {/if}
 </div>
 

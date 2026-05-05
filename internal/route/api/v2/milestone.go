@@ -10,20 +10,7 @@ import (
 )
 
 func toIssueMilestone(m *database.Milestone) *apiv2types.IssueMilestoneResponse {
-	state := apiv2types.IssueStateOpen
-	if m.IsClosed {
-		state = apiv2types.IssueStateClosed
-	}
-
-	return &apiv2types.IssueMilestoneResponse{
-		ID:           m.ID,
-		Title:        m.Name,
-		Description:  m.Content,
-		State:        state,
-		OpenIssues:   m.NumOpenIssues,
-		ClosedIssues: m.NumClosedIssues,
-		Deadline:     &m.Deadline,
-	}
+	return m.APIFormat()
 }
 
 // ListMilestones returns a list of milestones for the repository.
@@ -57,6 +44,7 @@ type MilestoneOptions struct {
 	Description string     `json:"description"`
 	Deadline    *time.Time `json:"due_on"`
 	State       *string    `json:"state"`
+	HillState   int        `json:"hill_state"`
 }
 
 // CreateMilestone creates a new milestone for the repository.
@@ -73,10 +61,11 @@ func CreateRepoMilestone(c *context.APIContext) {
 	}
 
 	milestone := &database.Milestone{
-		RepoID:   c.Repo.Repository.ID,
-		Name:     f.Title,
-		Content:  f.Description,
-		Deadline: *f.Deadline,
+		RepoID:    c.Repo.Repository.ID,
+		Name:      f.Title,
+		Content:   f.Description,
+		Deadline:  *f.Deadline,
+		HillState: f.HillState,
 	}
 
 	if err := database.NewMilestone(milestone); err != nil {
@@ -110,6 +99,7 @@ func UpdateRepoMilestone(c *context.APIContext) {
 	if f.Deadline != nil && !f.Deadline.IsZero() {
 		milestone.Deadline = *f.Deadline
 	}
+	milestone.HillState = f.HillState
 
 	if f.State != nil {
 		if err = milestone.ChangeStatus(apiv2types.IssueStateClosed == apiv2types.IssueStateType(*f.State)); err != nil {

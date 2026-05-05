@@ -406,7 +406,13 @@ func GetRepoBlame(c *context.APIContext) {
 	defer gitutil.Release()
 
 	// Use --porcelain for machine-readable output
-	stdout, err := git.NewCommand("blame", "--porcelain", "--", c.Repo.TreePath).RunInDir(c.Repo.Repository.RepoPath())
+	args := []string{"blame", "--porcelain"}
+	if c.Repo.CommitID != "" {
+		args = append(args, c.Repo.CommitID)
+	}
+	args = append(args, "--", c.Repo.TreePath)
+
+	stdout, err := git.NewCommand(args...).RunInDir(c.Repo.Repository.RepoPath())
 	if err != nil {
 		c.Error(err, "git blame")
 		return
