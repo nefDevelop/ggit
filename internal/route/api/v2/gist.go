@@ -122,3 +122,47 @@ func DeleteGist(c *context.APIContext) {
 
 	c.Status(http.StatusNoContent)
 }
+
+func UpdateGist(c *context.APIContext) {
+	uuid := c.Params(":uuid")
+	gist, err := database.Handle.Gists().GetByUUID(uuid)
+	if err != nil {
+		if domain.IsErrGistNotFound(err) {
+			c.Status(http.StatusNotFound)
+		} else {
+			c.Error(err, "Get gist for update")
+		}
+		return
+	}
+
+	if c.User.ID != gist.UserID && !c.User.IsAdmin {
+		c.Status(http.StatusForbidden)
+		return
+	}
+
+	var form CreateGistForm
+	if err := c.BindJSON(&form); err != nil {
+		c.StatusErrorf(http.StatusBadRequest, "BindJSON: %v", err)
+		return
+	}
+
+	gist.Description = form.Description
+	gist.IsPublic = form.IsPublic
+	
+	// For simplicity, we replace files (Update method in gist store should handle versioning)
+	gist.Files = make([]*domain.GistFile, 0, len(form.Files))
+	for _, f := range form.Files {
+		gist.Files = append(gist.Files, &domain.GistFile{
+			Filename: f.Filename,
+			Content:  f.Content,
+			Language: f.Language,
+		})
+	}
+
+	if err := database.Handle.Gists().Update(gist); err != nil {
+		c.Error(err, "Update gist")
+		return
+	}
+
+	c.JSON(http.StatusOK, gist)
+}

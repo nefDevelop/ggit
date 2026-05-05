@@ -110,8 +110,8 @@ func (s *gistsStore) GetByUUID(uuid string) (*domain.Gist, error) {
 		return nil, err
 	}
 
-	var user GistUser
-	if err := s.db.Table("users").Where("id = ?", g.UserID).First(&user).Error; err != nil {
+	var user User
+	if err := s.db.Where("id = ?", g.UserID).First(&user).Error; err != nil {
 		return nil, err
 	}
 

@@ -14,7 +14,6 @@
   import { toast } from "$lib/toast.svelte";
   let showThemePanel = $state(false);
   let userOrgs = $state<any[]>([]);
-  let userGists = $state<any[]>([]);
   let pageLoadTime = $state(13);
   let templateTime = $state(4);
 
@@ -28,20 +27,9 @@
     }
   }
 
-  async function fetchUserGists() {
-    if (!authState.isAuthenticated) return;
-    try {
-      const res = await apiFetch(`/api/v2/users/${authState.user?.username}/gists`);
-      if (res.ok) userGists = await res.json();
-    } catch (e) {
-      console.error("Failed to load sidebar gists", e);
-    }
-  }
-
   $effect(() => {
     if (authState.isAuthenticated) {
       fetchUserOrgs();
-      fetchUserGists();
     }
   });
 
@@ -58,6 +46,7 @@
   const navItems = $derived([
     { name: i18n.t("dashboard"), icon: LayoutGrid, path: "/dashboard" },
     { name: i18n.t("explore"), icon: Search, path: "/explore" },
+    { name: "Gists", icon: ScrollText, path: "/gists" },
     ...(authState.user?.is_admin
       ? [
           {
@@ -231,34 +220,6 @@
         </div>
       {/if}
     {/each}
-
-    <!-- GISTS SECTION -->
-    {#if authState.isAuthenticated}
-      <div class="nav-section-title">
-        <span>Gists</span>
-        <a href="/gists/new" class="mini-add" title="Nuevo Gist">
-          <Plus size={18} />
-        </a>
-      </div>
-      <div class="nav-org-list">
-        {#each userGists.slice(0, 5) as gist}
-          <a
-            href="/gists/{gist.uuid}"
-            class="nav-item org-item"
-            class:active={page.url.pathname === `/gists/${gist.uuid}`}
-          >
-            <ScrollText size={18} />
-            <span class="item-label">{gist.description || 'Untitled Gist'}</span>
-          </a>
-        {/each}
-        {#if userGists.length > 5}
-           <a href="/{authState.user?.username}?tab=gists" class="nav-empty-hint" style="text-decoration: none;">Ver todos...</a>
-        {/if}
-        {#if userGists.length === 0}
-          <p class="nav-empty-hint">No tienes gists aún.</p>
-        {/if}
-      </div>
-    {/if}
 
     <!-- ORGANIZATIONS SECTION -->
     {#if authState.isAuthenticated && userPrefs.current.showSidebarOrgs}

@@ -6,18 +6,24 @@
   let loading = $state(false);
   let error = $state("");
 
-  async function handleSave(data: any) {
+  let gist = $state({
+    description: "",
+    is_public: true,
+    files: [{ filename: "file1.txt", content: "", language: "text" }]
+  });
+
+  async function handleSave() {
     loading = true;
     error = "";
     try {
       const res = await apiFetch("/api/v2/gists", {
         method: "POST",
-        body: JSON.stringify(data)
+        body: JSON.stringify(gist)
       });
       
       if (res.ok) {
-        const gist = await res.json();
-        goto(`/gists/${gist.uuid}`);
+        const result = await res.json();
+        goto(`/gists/${result.uuid}`);
       } else {
         const errData = await res.json();
         error = errData.message || "Failed to create gist";
@@ -46,7 +52,7 @@
       </div>
     {/if}
 
-    <GistEditor onSave={handleSave} {loading} />
+    <GistEditor bind:gist onsave={handleSave} saving={loading} />
   </div>
 </div>
 

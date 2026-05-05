@@ -334,6 +334,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		gist.GET("", ginx.Handle(ListPublicGists))
 		gist.POST("", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateGist))
 		gist.GET("/:uuid", ginx.Handle(GetGist))
+		gist.PUT("/:uuid", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(UpdateGist))
 		gist.DELETE("/:uuid", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(DeleteGist))
 	}
 }

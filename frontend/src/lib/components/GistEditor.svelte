@@ -5,14 +5,26 @@
   import Badge from "./ui/Badge.svelte";
   import CodeEditor from "./ui/CodeEditor.svelte";
 
-  let { onSave, loading = false } = $props<{ 
-    onSave: (data: any) => void,
-    loading?: boolean 
+  let { gist = $bindable(null), onsave, saving = false, isEdit = false } = $props<{ 
+    gist?: any,
+    onsave: () => void,
+    saving?: boolean,
+    isEdit?: boolean
   }>();
 
   let description = $state("");
   let isPublic = $state(true);
   let files = $state([{ filename: "file1.txt", content: "", language: "text" }]);
+
+  $effect(() => {
+    if (gist) {
+      description = gist.description || "";
+      isPublic = gist.is_public ?? true;
+      if (gist.files && gist.files.length > 0) {
+        files = JSON.parse(JSON.stringify(gist.files)); // Deep copy to avoid direct mutation
+      }
+    }
+  });
 
   function addFile() {
     files.push({ filename: `file${files.length + 1}.txt`, content: "", language: "text" });
@@ -25,11 +37,13 @@
   }
 
   function handleSubmit() {
-    onSave({
-      description,
-      is_public: isPublic,
-      files
-    });
+    // Update the gist prop or a local object to send back
+    if (gist) {
+      gist.description = description;
+      gist.is_public = isPublic;
+      gist.files = files;
+    }
+    onsave();
   }
 </script>
 
@@ -82,8 +96,12 @@
       </div>
       <Badge variant="secondary">{files.length} {files.length === 1 ? 'file' : 'files'}</Badge>
     </div>
-    <Button variant="primary" onclick={handleSubmit} {loading}>
-      {loading ? 'Creating...' : 'Create Gist'}
+    <Button variant="primary" onclick={handleSubmit} loading={saving}>
+      {#if isEdit}
+        {saving ? 'Updating...' : 'Update Gist'}
+      {:else}
+        {saving ? 'Creating...' : 'Create Gist'}
+      {/if}
     </Button>
   </div>
 </div>
