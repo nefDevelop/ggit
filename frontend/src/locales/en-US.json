@@ -209,7 +209,15 @@
     "issues_detected": "Issues detected",
     "recoverable_space": "Recoverable space",
     "analysis_date": "Analysis date",
-    "cleanup_hint": "When clicking Clean Selected, Ggit will create a new commit removing the files and updating the .gitignore automatically."
+    "cleanup_hint": "When clicking Clean Selected, Ggit will create a new commit removing the files and updating the .gitignore automatically.",
+    "tags": "Tags",
+    "tags_desc": "Manage code versions and tags to mark development milestones.",
+    "milestones": "Milestones",
+    "milestones_desc": "Organize work into temporal milestones for progress tracking.",
+    "releases": "Releases",
+    "releases_desc": "Manage published versions, release notes, and binary assets.",
+    "labels": "Labels",
+    "labels_desc": "Categorize issues and Pull Requests with custom colored labels."
   },
   "settings_title": "Settings",
   "sign_in": "Sign In",

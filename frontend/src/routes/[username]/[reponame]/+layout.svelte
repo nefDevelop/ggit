@@ -206,7 +206,7 @@
                 </div>
               {/if}
             </div>
-            <a href={`/${username}/${reponame}/settings`} class="settings-link" title="Settings">
+            <a href={`/${username}/${reponame}/settings`} class="settings-link" class:active={activeTab === 'settings'} title="Settings">
               <span class="material-symbols-rounded">settings</span>
             </a>
           </div>

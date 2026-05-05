@@ -209,7 +209,15 @@
     "issues_detected": "Problemas detectados",
     "recoverable_space": "Espacio recuperable",
     "analysis_date": "Fecha del análisis",
-    "cleanup_hint": "Al pulsar Limpiar Seleccionados, Ggit creará un nuevo commit eliminando los archivos y actualizando el .gitignore automáticamente."
+    "cleanup_hint": "Al pulsar Limpiar Seleccionados, Ggit creará un nuevo commit eliminando los archivos y actualizando el .gitignore automáticamente.",
+    "tags": "Etiquetas",
+    "tags_desc": "Gestiona versiones y etiquetas del código para marcar hitos de desarrollo.",
+    "milestones": "Hitos (Milestones)",
+    "milestones_desc": "Organiza el trabajo en hitos temporales para el seguimiento del progreso.",
+    "releases": "Lanzamientos (Releases)",
+    "releases_desc": "Gestiona las versiones publicadas, notas de lanzamiento y binarios.",
+    "labels": "Etiquetas (Labels)",
+    "labels_desc": "Clasifica incidencias y Pull Requests con etiquetas de colores personalizadas."
   },
   "settings_title": "Configuración",
   "sign_in": "Iniciar sesión",

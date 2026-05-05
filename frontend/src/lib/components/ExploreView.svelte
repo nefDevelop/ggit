@@ -27,8 +27,8 @@
   });
 </script>
 
-<div class="explore-page">
-  <div class="explore-content-inner">
+<div class="dashboard-grid full-width">
+  <div class="dashboard-main-content">
     <PageHeader 
         title="Explorar"
         subtitle="Descubre nuevos repositorios, usuarios y comunidades"
@@ -36,7 +36,7 @@
     />
     <ViewHeader {tabs} bind:activeTab />
 
-    <main class="explore-main-stream">
+    <main class="explore-content">
       {#if activeTab === 'repos'}
         <ExploreRepos q={searchQuery} />
       {:else if activeTab === 'users'}
@@ -51,9 +51,17 @@
 </div>
 
 <style>
-  .explore-page { display: flex; flex-direction: column; gap: 0; margin: -2rem; min-height: 100%; }
-  .explore-content-inner { padding: 0; display: flex; flex-direction: column; }
-  .explore-main-stream { padding: 2rem; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; box-sizing: border-box; }
-  
+  .dashboard-grid { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+  }
+
+  .dashboard-main-content { 
+    display: flex; 
+    flex-direction: column; 
+  }
+
+  .explore-content { padding: 0 1.5rem 4rem; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 </style>

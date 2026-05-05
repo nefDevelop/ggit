@@ -16,10 +16,10 @@
     { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: 'menu_book', desc: i18n.t('settings.wiki_desc') },
     { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: 'fork_right', desc: i18n.t('settings.branch_desc') },
     { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: 'history', desc: i18n.t('settings.commits_desc') },
-    { id: 'tags', label: i18n.t('settings.tags') || 'Tags', icon: 'sell', desc: 'Gestiona versiones y etiquetas del código' },
-    { id: 'milestones', label: i18n.t('settings.milestones') || 'Milestones', icon: 'event', desc: 'Organiza el trabajo en hitos temporales' },
-    { id: 'releases', label: i18n.t('settings.releases') || 'Releases', icon: 'rocket_launch', desc: 'Gestiona las versiones publicadas y binarios' },
-    { id: 'labels', label: i18n.t('settings.labels') || 'Labels', icon: 'label', desc: 'Clasifica issues y PRs con etiquetas personalizadas' }
+    { id: 'tags', label: i18n.t('settings.tags') || 'Tags', icon: 'sell', desc: i18n.t('settings.tags_desc') || 'Gestiona versiones y etiquetas del código' },
+    { id: 'milestones', label: i18n.t('settings.milestones') || 'Milestones', icon: 'event', desc: i18n.t('settings.milestones_desc') || 'Organiza el trabajo en hitos temporales' },
+    { id: 'releases', label: i18n.t('settings.releases') || 'Releases', icon: 'rocket_launch', desc: i18n.t('settings.releases_desc') || 'Gestiona las versiones publicadas y binarios' },
+    { id: 'labels', label: i18n.t('settings.labels') || 'Labels', icon: 'label', desc: i18n.t('settings.labels_desc') || 'Clasifica issues y PRs con etiquetas personalizadas' }
   ]);
 
   let profile = $state<any>({ disable_news_feed: false });
