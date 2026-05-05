@@ -191,6 +191,8 @@
                 cy={40 - 140 * (form.hill_state / 100) + 140 * Math.pow(form.hill_state / 100, 2)} 
                 r="3.5" 
                 fill="var(--primary-color)" 
+                stroke="var(--bg-color)"
+                stroke-width="1"
                 filter="drop-shadow(0 0 6px var(--primary-color))"
                 style="cursor: grab"
               />
@@ -249,7 +251,7 @@
 
             <div class="hill-chart-display-box tonal">
               <svg viewBox="0 0 100 45" class="hill-chart-large">
-                <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.2" />
+                <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
                 <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
                 <circle 
                   cx={ms.hill_state} 

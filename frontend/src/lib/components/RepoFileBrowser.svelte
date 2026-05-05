@@ -580,10 +580,10 @@ git push -u origin main</code></pre>
   .code-line-row { display: flex; align-items: stretch; min-height: 1.6rem; }
   .code-line-row:hover { background: rgba(var(--primary-rgb), 0.05); }
   
-  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: center; justify-content: flex-end; }
+  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: center; justify-content: flex-end; }
   
   .code-cell { flex: 1; padding: 0 1rem; display: flex; align-items: center; overflow-x: auto; }
-  .code-cell pre { margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; line-height: 1.6; background: transparent; }
+  .code-cell pre { margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; background: transparent; }
   .code-cell pre code { background: transparent; padding: 0; }
 
   .blame-cell { width: 140px; min-width: 140px; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); padding: 0 0.75rem; font-size: 0.75rem; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.6; }

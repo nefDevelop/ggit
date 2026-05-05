@@ -193,7 +193,6 @@ func (issue *Issue) APIFormat() *apiv2types.IssueResponse {
 	apiIssue := &apiv2types.IssueResponse{
 		ID:        issue.ID,
 		Index:     issue.Index,
-		Poster:    issue.Poster.APIFormat(),
 		Title:     issue.Title,
 		Body:      issue.Content,
 		Labels:    apiLabels,
@@ -203,11 +202,14 @@ func (issue *Issue) APIFormat() *apiv2types.IssueResponse {
 		UpdatedAt: issue.Updated,
 	}
 
-	if issue.Milestone != nil {
-		apiIssue.Milestone = issue.Milestone.APIFormat()
+	if issue.Poster != nil {
+		apiIssue.Poster = issue.Poster.APIFormat()
 	}
 	if issue.Assignee != nil {
 		apiIssue.Assignee = issue.Assignee.APIFormat()
+	}
+	if issue.Milestone != nil {
+		apiIssue.Milestone = issue.Milestone.APIFormat()
 	}
 	if issue.IsPull {
 		apiIssue.PullRequest = &apiv2types.PullRequestMetaResponse{

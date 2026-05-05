@@ -17,6 +17,7 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/gitutil"
+	"github.com/nef734/ggit/internal/gitx"
 	"github.com/nef734/ggit/internal/markup"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
@@ -202,10 +203,15 @@ func GetRepoView(c *context.APIContext) {
 		return
 	}
 
+	if c.Repo.Commit == nil {
+		c.Status(http.StatusNoContent)
+		return
+	}
+
 	entry, err := c.Repo.Commit.TreeEntry(c.Repo.TreePath)
 	if err != nil {
 		log.Trace("TreeEntry error after %v: %v", time.Since(start), err)
-		c.NotFoundOrError(err, "get tree entry")
+		c.NotFoundOrError(gitx.NewError(err), "get tree entry")
 		return
 	}
 
@@ -221,7 +227,7 @@ func getRepoDirectory(c *context.APIContext) {
 	start := time.Now()
 	tree, err := c.Repo.Commit.Subtree(c.Repo.TreePath)
 	if err != nil {
-		c.Error(err, "get subtree")
+		c.NotFoundOrError(gitx.NewError(err), "get subtree")
 		return
 	}
 	log.Trace("getRepoDirectory: Subtree took %v", time.Since(start))

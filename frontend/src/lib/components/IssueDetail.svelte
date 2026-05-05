@@ -18,6 +18,8 @@
 
   let showLabelEditor = $state(false);
   let showMilestoneEditor = $state(false);
+  let showAssigneeEditor = $state(false);
+  let allCollaborators = $state<any[]>([]);
 
   let labelOptions = $derived(allLabels.map((l: any) => ({ value: l.id, label: l.name })));
   let milestoneOptions = $derived([
@@ -32,7 +34,7 @@
     loading = true;
     error = "";
     try {
-      const [issueRes, commentsRes, labelsRes, milestonesRes] = await Promise.all([
+      const [issueRes, commentsRes, labelsRes, milestonesRes, collabsRes] = await Promise.all([
         apiFetch(
           `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}`,
         ),
@@ -45,6 +47,9 @@
         apiFetch(
             `/api/v2/${repo.data.owner.username}/${repo.data.name}/milestones`,
         ),
+        apiFetch(
+            `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/collaborators`,
+        ),
       ]);
 
       if (issueRes.ok && commentsRes.ok) {
@@ -52,6 +57,7 @@
         comments = await commentsRes.json();
         if (labelsRes.ok) allLabels = await labelsRes.json();
         if (milestonesRes.ok) allMilestones = await milestonesRes.json();
+        if (collabsRes.ok) allCollaborators = await collabsRes.json();
       } else {
         error = "Issue not found.";
       }
@@ -227,9 +233,26 @@
         <div class="side-item">
           <div class="side-header">
             <h4 class="side-title">Assignee</h4>
-            <Button variant="ghost" icon="settings" size="sm" />
+            <Button 
+              variant="ghost" 
+              icon={showAssigneeEditor ? "close" : "settings"} 
+              size="sm" 
+              onclick={() => showAssigneeEditor = !showAssigneeEditor}
+            />
           </div>
           <div class="side-val">
+            {#if showAssigneeEditor}
+              <div class="editor-popover">
+                <Select 
+                  options={[{value: 0, label: 'Unassigned'}, ...allCollaborators.map(c => ({ value: c.id, label: c.username }))]} 
+                  value={issue.assignee?.id || 0}
+                  onchange={(id) => {
+                    updateIssue({ assignee_id: id === 0 ? -1 : id });
+                    showAssigneeEditor = false;
+                  }}
+                />
+              </div>
+            {/if}
             {#if issue.assignee}
               <div class="user-pill">
                 <Avatar
