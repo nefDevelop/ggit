@@ -208,7 +208,7 @@
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
   @media (max-width: 900px) {
-    .explore-repos-layout { display: flex; flex-direction: column; gap: 1.5rem; }
+    .explore-repos-layout { display: flex; flex-direction: column; gap: 1.5rem; align-items: stretch; }
     .lang-sidebar { order: -1; position: static; border-radius: 1.5rem; padding: 1.25rem; }
     .sidebar-title { display: none; }
     .lang-list { flex-direction: row; flex-wrap: wrap; }
