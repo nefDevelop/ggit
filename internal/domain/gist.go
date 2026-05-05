@@ -6,26 +6,26 @@ import (
 
 // Gist represents a snippet of code or text.
 type Gist struct {
-	ID          int64
-	UUID        string
-	UserID      int64
-	Description string
-	IsPublic    bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          int64     `json:"id"`
+	UUID        string    `json:"uuid"`
+	UserID      int64     `json:"user_id"`
+	Description string    `json:"description"`
+	IsPublic    bool      `json:"is_public"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 
 	// Files associated with this Gist.
-	Files []*GistFile
+	Files []*GistFile `json:"files,omitempty"`
 }
 
 // GistFile represents a single file within a Gist.
 type GistFile struct {
-	ID        int64
-	GistID    int64
-	Filename  string
-	Content   string
-	Language  string
-	CreatedAt time.Time
+	ID        int64     `json:"id"`
+	GistID    int64     `json:"gist_id"`
+	Filename  string    `json:"filename"`
+	Content   string    `json:"content"`
+	Language  string    `json:"language"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // GistStore is the persistence layer for Gists.

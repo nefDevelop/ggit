@@ -16,37 +16,37 @@ const (
 
 // User represents the object of an individual or an organization.
 type User struct {
-	ID                 int64
-	LowerName          string
-	Name               string
-	FullName           string
-	Email              string
-	Password           string
-	LoginSource        int64
-	LoginName          string
-	Type               UserType
-	Location           string
-	Website            string
-	Rands              string
-	Salt               string
-	Created            time.Time
-	Updated            time.Time
-	LastRepoVisibility bool
-	MaxRepoCreation    int
-	IsActive           bool
-	IsAdmin            bool
-	AllowGitHook       bool
-	AllowImportLocal   bool
-	ProhibitLogin      bool
-	Avatar             string
-	AvatarEmail        string
-	UseCustomAvatar    bool
-	NumStars           int
-	NumRepos           int
-	Description        string
-	NumTeams           int
-	NumMembers         int
-	DisableNewsFeed    bool
+	ID                 int64    `json:"id"`
+	LowerName          string   `json:"lower_name"`
+	Name               string   `json:"username"`
+	FullName           string   `json:"full_name"`
+	Email              string   `json:"email"`
+	Password           string   `json:"-"`
+	LoginSource        int64    `json:"login_source"`
+	LoginName          string   `json:"login_name"`
+	Type               UserType `json:"type"`
+	Location           string   `json:"location"`
+	Website            string   `json:"website"`
+	Rands              string   `json:"-"`
+	Salt               string   `json:"-"`
+	Created            time.Time `json:"created_at"`
+	Updated            time.Time `json:"updated_at"`
+	LastRepoVisibility bool      `json:"last_repo_visibility"`
+	MaxRepoCreation    int       `json:"max_repo_creation"`
+	IsActive           bool      `json:"is_active"`
+	IsAdmin            bool      `json:"is_admin"`
+	AllowGitHook       bool      `json:"allow_git_hook"`
+	AllowImportLocal   bool      `json:"allow_import_local"`
+	ProhibitLogin      bool      `json:"prohibit_login"`
+	Avatar             string    `json:"avatar_url"`
+	AvatarEmail        string    `json:"avatar_email"`
+	UseCustomAvatar    bool      `json:"use_custom_avatar"`
+	NumStars           int       `json:"num_stars"`
+	NumRepos           int       `json:"num_repos"`
+	Description        string    `json:"description"`
+	NumTeams           int       `json:"num_teams"`
+	NumMembers         int       `json:"num_members"`
+	DisableNewsFeed    bool      `json:"disable_news_feed"`
 }
 
 // EmailAddress represents an email address of a user.
