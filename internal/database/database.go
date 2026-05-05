@@ -47,6 +47,7 @@ var Tables = []any{
 	new(Collaboration), new(Comment), new(CommitStatus),
 	new(DeployKey),
 	new(EmailAddress),
+	new(Gist), new(GistFile),
 	new(HookTask),
 	new(Issue), new(IssueLabel), new(IssueUser),
 	new(Label), new(LFSObject), new(LoginSession), new(LoginSource),
@@ -280,4 +281,8 @@ func (db *DB) PullReviewComments() *PullReviewCommentsStore {
 
 func (db *DB) UserBlocks() domain.UserBlocksStore {
 	return newUserBlocksStore(db.db)
+}
+
+func (db *DB) Gists() domain.GistStore {
+	return newGistsStore(db.db)
 }

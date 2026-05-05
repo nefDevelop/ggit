@@ -4,6 +4,7 @@
   import { page } from "$app/state";
   import RepoRow from "$lib/components/RepoRow.svelte";
   import UserRow from "$lib/components/UserRow.svelte";
+  import GistRow from "$lib/components/GistRow.svelte";
   import Avatar from "$lib/components/Avatar.svelte";
   import Card from "$lib/components/ui/Card.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
@@ -139,6 +140,13 @@
             <span class="material-symbols-rounded">star</span>
             Stars
           </button>
+          <button
+            class:active={activeTab === "gists"}
+            onclick={() => fetchTabData("gists")}
+          >
+            <span class="material-symbols-rounded">code</span>
+            Gists
+          </button>
         </nav>
       </aside>
 
@@ -163,6 +171,8 @@
               <Card hover variant="low" padding="none" class="row-card">
                 {#if activeTab === "repos" || activeTab === "stars"}
                   <RepoRow repo={item} />
+                {:else if activeTab === "gists"}
+                  <GistRow gist={item} />
                 {:else}
                   <UserRow user={item} />
                 {/if}

@@ -182,7 +182,6 @@
 - [x] **Blindaje Anti-OOM:** Limitador de procesos Git concurrentes basado en RAM disponible. **Integrated 🛡️**
 - [x] **Modo Supervivencia:** Switch a "Solo Lectura" si el espacio en disco es crítico. **Tested**.
 - [x] **Dashboard Leído:** Animación de parpadeo en contadores de dashboard para items nuevos.
-- [ ] **Ggit Credential Helper:** Almacenamiento seguro para tokens de remotos HTTP.
 - [x] **Secret Guardian 🛡️:** Detección proactiva de secretos (API keys, .env) en tiempo de push. **Tested**.
 
 ---
@@ -225,12 +224,6 @@
 - [x] **Commit Status API:** Integración de iconos de CI (✅/❌) en listas de commits y PRs.
 - [x] **Scoped Labels:** Soporte para etiquetas excluyentes `key::value` en el panel lateral.
 
-### 2. Cirugía de Git en la Web (Herramientas de Código)
-- [ ] **Web Cherry-Pick:** Botón directo en la vista de commit para copiar cambios a otra rama.
-- [ ] **Conflict Resolver:** Editor visual integrado en la vista de PR para resolver choques de código.
-- [ ] **Web-based Rebase:** Interfaz para reordenar o hacer squash de commits desde la web.
-- [ ] **Web Stash Manager:** Nueva zona de "Herramientas" para guardar cambios temporales sin commit.
-- [ ] **Reflog Explorer:** Sección en Mantenimiento para recuperar commits mediante el historial de HEAD.
 
 ### 3. Productividad & Navegación
 - [x] **Unified Inbox:** Nueva pestaña en el Dashboard para gestionar tareas de todos los repositorios.
@@ -240,7 +233,7 @@
 ### 4. Organización & Planificación
 - [x] **Kanban Virtual:** Selector de vista en la lista de Issues para pasar de modo Lista a Tablero.
 - [x] **Hill Charts:** Integración de gráficas de incertidumbre en la vista de Hitos (Milestones). **Integrated 🏔️**
-- [ ] **Gists Integrados:** Nueva zona global para gestionar snippets de código personales.
+- [ ] **Gists Integrados:** Nueva zona global para gestionar snippets de código. **Lean Hybrid Model (DB+FS) 📦**
 - [x] **Technotes / ADR:** Nueva pestaña "Docs" en el repositorio para diarios técnicos y decisiones. **Integrated 📝**
 
 ### 5. Core & Janitor (Mantenimiento)
@@ -264,7 +257,6 @@
 | **Ggit Health Sentinel** | 22 | Completado | Alto | Orquestación de `git fsck` periódico sin degradar el rendimiento. |
 | **Self-Healing Hooks** | 22 | Completado | Bajo | Detección y recreación automática de scripts de hooks faltantes. |
 | **Blindaje Anti-OOM** | 26 | Completado | Medio | Limitador de concurrencia dinámico basado en la RAM disponible. |
-| **Ggit Credential Helper** | 22 | Media | Bajo | Sistema de cifrado y almacenamiento para tokens de remotos HTTP. |
 | **Gestión de Colaboradores** | 23 | Completado | Bajo | Nueva UI de búsqueda y gestión de roles granulares. |
 | **Deploy Keys & Git Hooks** | 23 | Completado | Bajo | Editores web con validación de sintaxis y seguridad en servidor. |
 | **Label & Milestone Manager** | 23 | Completado | Bajo | Refactorización de gestión de metadatos a componentes Material 3. |
@@ -343,7 +335,6 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 
 ### Conectividad y Ecosistema (Medio Plazo)
 - [ ] **OIDC (OpenID Connect):** Soporte estándar para login externo.
-- [ ] **Ggit Credential Helper:** Almacenamiento seguro de credenciales para remotos HTTP. 
 - [x] **Pattern Store (Fase 1):** Unificación de accesos a DB para entidades Core. **Completado 🗄️**
 
 ### Funcionalidades Avanzadas (Largo Plazo / 2.0)

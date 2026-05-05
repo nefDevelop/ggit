@@ -354,6 +354,13 @@ type LFSOpts struct {
 // LFS settings
 var LFS LFSOpts
 
+type GistOpts struct {
+	MaxVersions int
+}
+
+// Gist settings
+var Gist GistOpts
+
 type UIUserOpts struct {
 	RepoPagingNum     int
 	NewsFeedPagingNum int
@@ -423,7 +430,7 @@ func checkInvalidOptions(config *ini.File) (warnings []string) {
 		"service": "auth",
 	}
 	for oldSection, newSection := range renamedSections {
-		if len(config.Section(oldSection).KeyStrings()) > 0 {
+		if config.Section(oldSection).HasKey(oldSection) {
 			warnings = append(warnings, fmt.Sprintf("section [%s] is invalid, use [%s] instead", oldSection, newSection))
 		}
 	}

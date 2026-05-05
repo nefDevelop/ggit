@@ -44,6 +44,7 @@
   const navItems = $derived([
     { name: i18n.t("dashboard"), icon: LayoutGrid, path: "/dashboard" },
     { name: i18n.t("explore"), icon: Search, path: "/explore" },
+    { name: "Gists", icon: Plus, path: "/gists/new" },
     ...(authState.user?.is_admin
       ? [
           {

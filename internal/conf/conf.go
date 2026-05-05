@@ -311,6 +311,11 @@ func Init(customConf string) error {
 	LFS.ObjectsPath = ensureAbs(LFS.ObjectsPath)
 	LFS.ObjectsTempPath = ensureAbs(LFS.ObjectsTempPath)
 
+	Gist.MaxVersions = 10
+	if err = File.Section("gist").MapTo(&Gist); err != nil {
+		return errors.Wrap(err, "mapping [gist] section")
+	}
+
 	handleDeprecated()
 	if !HookMode {
 		for _, warning := range checkInvalidOptions(File) {

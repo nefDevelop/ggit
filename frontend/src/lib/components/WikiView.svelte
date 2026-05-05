@@ -5,18 +5,8 @@
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import { 
-    FileText, 
-    Edit, 
-    History, 
-    Plus, 
-    Save, 
-    X, 
-    Trash2,
-    ArrowLeft,
-    MoreVertical,
-    Folder,
-    ChevronRight,
-    BookText
+    FileText, Edit, History, Plus, Save, X, Trash2, 
+    ArrowLeft, MoreVertical, Folder, ChevronRight, BookText 
   } from 'lucide-svelte';
   import { slide } from 'svelte/transition';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
