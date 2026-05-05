@@ -176,9 +176,6 @@
     color: var(--primary-color);
     font-size: 0.95rem;
   }
-  .tag-badge span {
-    font-size: 1.1rem;
-  }
 
   .status-badge {
     font-size: 0.7rem;

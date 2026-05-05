@@ -151,7 +151,7 @@
         </div>
         <div class="full-width hill-state-editor-box tonal">
           <div class="hill-editor-header">
-            <label>Hill Chart Progress: {form.hill_state}%</label>
+            <span class="label-text">Hill Chart Progress: {form.hill_state}%</span>
             <span class="hill-phase-label">{form.hill_state < 50 ? 'Uphill: Figuring it out' : 'Downhill: Making it happen'}</span>
           </div>
           
@@ -160,11 +160,24 @@
               viewBox="0 0 100 45" 
               preserveAspectRatio="none"
               class="hill-chart-edit"
+              role="slider"
+              aria-label="Hill Chart Progress"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow={form.hill_state}
+              tabindex="0"
               onclick={(e) => {
                 const svg = e.currentTarget;
                 const rect = svg.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 form.hill_state = Math.round(Math.max(0, Math.min(100, x)));
+              }}
+              onkeydown={(e) => {
+                if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                  form.hill_state = Math.min(100, form.hill_state + 1);
+                } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                  form.hill_state = Math.max(0, form.hill_state - 1);
+                }
               }}
               onmousedown={(e) => {
                  const svg = e.currentTarget;
@@ -340,7 +353,7 @@
 
   .hill-state-editor-box { padding: 1.5rem; border-radius: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .hill-editor-header { display: flex; justify-content: space-between; align-items: baseline; }
-  .hill-editor-header label { font-size: 0.9rem; font-weight: 800; color: var(--text-color); }
+  .label-text { font-size: 0.9rem; font-weight: 800; color: var(--text-color); }
   .hill-phase-label { font-size: 0.75rem; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.05em; }
   
   .interactive-hill-container { padding: 0.5rem 1rem; }

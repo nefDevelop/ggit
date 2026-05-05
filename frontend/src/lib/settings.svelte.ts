@@ -8,6 +8,10 @@ export interface UserPreferences {
     branch: boolean;
     commits: boolean;
     adr: boolean;
+    tags: boolean;
+    milestones: boolean;
+    releases: boolean;
+    labels: boolean;
   };
   showSidebarOrgs: boolean;
 }
@@ -20,6 +24,10 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     branch: true,
     commits: true,
     adr: true,
+    tags: true,
+    milestones: true,
+    releases: true,
+    labels: true,
   },
   showSidebarOrgs: true
 };

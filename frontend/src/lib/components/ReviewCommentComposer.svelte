@@ -8,7 +8,7 @@
     initialValue?: string;
   }>();
 
-  let content = $state(initialValue);
+  let content = $state("");
   $effect(() => {
     content = initialValue;
   });
@@ -34,7 +34,6 @@
       <textarea 
         bind:value={content} 
         placeholder="Deja un comentario..."
-        autofocus
       ></textarea>
     {/if}
   </div>

@@ -116,10 +116,6 @@
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .admin-header { display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2.5rem; }
-  .admin-header .icon { font-size: 3rem; color: var(--primary-color); }
-  .admin-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
-  .admin-header p { margin: 0.25rem 0 0; color: var(--text-muted); }
 
   .patterns-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
   .pattern-card { padding: 1.5rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }

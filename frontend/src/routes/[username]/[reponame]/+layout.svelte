@@ -69,7 +69,8 @@
     currentPath.includes('/releases') ? 'releases' :
     currentPath.includes('/tags') ? 'tags' :
     currentPath.includes('/labels') ? 'labels' :
-    currentPath.includes('/milestones') ? 'milestones' : 'code'
+    currentPath.includes('/milestones') ? 'milestones' : 
+    currentPath.includes('/settings') ? 'settings' : 'code'
   );
 
   let showCloneDropdown = $state(false);
@@ -233,16 +234,20 @@
             </a>
           {/if}
 
-          <a href={`/${username}/${reponame}/tags`} class="tab" class:active={activeTab === 'tags'}>
-            <span class="material-symbols-rounded">sell</span>
-            <span class="tab-count">{gitStats.tags}</span>
-            {#if activeTab === 'tags'}<span class="tab-label">Tags</span>{/if}
-          </a>
+          {#if userPrefs.current.repoTabs.tags}
+            <a href={`/${username}/${reponame}/tags`} class="tab" class:active={activeTab === 'tags'}>
+              <span class="material-symbols-rounded">sell</span>
+              <span class="tab-count">{gitStats.tags}</span>
+              {#if activeTab === 'tags'}<span class="tab-label">Tags</span>{/if}
+            </a>
+          {/if}
 
-          <a href={`/${username}/${reponame}/releases`} class="tab" class:active={activeTab === 'releases'}>
-            <span class="material-symbols-rounded">rocket_launch</span>
-            {#if activeTab === 'releases'}<span class="tab-label">Releases</span>{/if}
-          </a>
+          {#if userPrefs.current.repoTabs.releases}
+            <a href={`/${username}/${reponame}/releases`} class="tab" class:active={activeTab === 'releases'}>
+              <span class="material-symbols-rounded">rocket_launch</span>
+              {#if activeTab === 'releases'}<span class="tab-label">Releases</span>{/if}
+            </a>
+          {/if}
 
           {#if repoData.enable_issues && userPrefs.current.repoTabs.issue}
             <a href={repoData.enable_external_tracker ? repoData.external_tracker_url : `/${username}/${reponame}/issues`} 
@@ -280,15 +285,19 @@
             </a>
           {/if}
 
-          <a href={`/${username}/${reponame}/labels`} class="tab" class:active={activeTab === 'labels'}>
-            <span class="material-symbols-rounded">label</span>
-            {#if activeTab === 'labels'}<span class="tab-label">Labels</span>{/if}
-          </a>
+          {#if userPrefs.current.repoTabs.labels}
+            <a href={`/${username}/${reponame}/labels`} class="tab" class:active={activeTab === 'labels'}>
+              <span class="material-symbols-rounded">label</span>
+              {#if activeTab === 'labels'}<span class="tab-label">Labels</span>{/if}
+            </a>
+          {/if}
 
-          <a href={`/${username}/${reponame}/milestones`} class="tab" class:active={activeTab === 'milestones'}>
-            <span class="material-symbols-rounded">event</span>
-            {#if activeTab === 'milestones'}<span class="tab-label">Milestones</span>{/if}
-          </a>
+          {#if userPrefs.current.repoTabs.milestones}
+            <a href={`/${username}/${reponame}/milestones`} class="tab" class:active={activeTab === 'milestones'}>
+              <span class="material-symbols-rounded">event</span>
+              {#if activeTab === 'milestones'}<span class="tab-label">Milestones</span>{/if}
+            </a>
+          {/if}
 
           <a href={`/${username}/${reponame}/settings`} class="tab mobile-settings-tab" class:active={activeTab === 'settings'}>
             <span class="material-symbols-rounded">settings</span>
