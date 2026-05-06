@@ -138,6 +138,7 @@ func (c *Context) HTML(status int, name string) {
 	log.Trace("Legacy HTML call (disconnected): %s", name)
 	if status >= 400 {
 		c.JSON(status, map[string]any{"error": name})
+		c.Abort()
 	}
 }
 
@@ -151,6 +152,7 @@ func (c *Context) Redirect(location string, status ...int) {
 		code = status[0]
 	}
 	c.Context.Redirect(code, template.EscapePound(location))
+	c.Abort()
 }
 
 func (c *Context) RedirectSubpath(location string, status ...int) {
@@ -166,9 +168,11 @@ func (c *Context) RenderWithErr(msg string, status int, tpl string, form any) {
 func (c *Context) NotFound() {
 	if strings.HasPrefix(c.Request.URL.Path, "/api/v2") {
 		c.JSON(http.StatusNotFound, map[string]any{"error": "Resource not found"})
+		c.Abort()
 		return
 	}
 	c.HTML(http.StatusNotFound, "status/404")
+	c.Abort()
 }
 
 func (c *Context) QueryBool(name string) bool {

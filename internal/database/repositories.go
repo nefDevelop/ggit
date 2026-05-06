@@ -42,6 +42,9 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 
 	cloneLink := repox.NewCloneLink(owner.Name, r.Name)
 
+	var numReleases int64
+	_ = Handle.db.Model(&Release{}).Where("repo_id = ? AND is_draft = ?", r.ID, false).Count(&numReleases).Error
+
 	return &apiv2types.RepositoryResponse{
 		ID:            r.ID,
 		Owner:         owner.APIFormat(),
@@ -57,6 +60,7 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		OpenPulls:     r.NumOpenPulls,
 		NumCommits:    r.NumCommits,
 		NumBranches:   r.NumBranches,
+		NumReleases:   int(numReleases),
 		IsPrivate:     r.IsPrivate,
 		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
 		CloneURL:      cloneLink.HTTPS,

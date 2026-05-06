@@ -1,7 +1,8 @@
 <script lang="ts">
   import { 
     AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, 
-    Folder, FileText, File, Edit, Download, Binary, BookText 
+    Folder, FileText, File, Edit, Download, Binary, BookText,
+    Rocket, ChevronRight
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
@@ -369,9 +370,29 @@ git push -u origin main</code></pre>
             </div>
           {/if}
         </div>
-
-        <!-- Sidebar -->
+        
         <aside class="side-column" class:hidden-sidebar={sidebarCollapsed}>
+
+          <div class="side-section">
+            <h4 class="side-title">About</h4>
+            <p class="about-text">{repoContext.data?.description || 'No description provided.'}</p>
+          </div>
+
+          <div class="side-section">
+            <h4 class="side-title">Releases</h4>
+            {#if repoContext.stats.releases > 0}
+               <a href={`/${username}/${reponame}/releases`} class="side-item-link">
+                  <div class="side-item-main">
+                     <Rocket size={18} class="icon-primary" />
+                     <span class="side-item-text"><b>{repoContext.stats.releases}</b> releases</span>
+                  </div>
+                  <ChevronRight size={18} />
+               </a>
+            {:else}
+               <p class="about-text">No releases published.</p>
+            {/if}
+          </div>
+
           {#if langEntries().length > 0}
             <div class="side-section desktop-only">
                 <h4 class="side-title">Languages</h4>
@@ -396,11 +417,6 @@ git push -u origin main</code></pre>
                 {/if}
             </div>
           {/if}
-
-          <div class="side-section">
-            <h4 class="side-title">About</h4>
-            <p class="about-text">{repoContext.data?.description || 'No description provided.'}</p>
-          </div>
         </aside>
       </div>
     {/if}
@@ -618,6 +634,35 @@ git push -u origin main</code></pre>
   .side-column.hidden-sidebar { opacity: 0; pointer-events: none; }
   .side-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 1rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 0.5rem; }
   .about-text { font-size: 0.95rem; line-height: 1.6; color: var(--text-color); opacity: 0.85; }
+  
+  .side-item-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 0.75rem 1rem;
+    background: rgba(var(--primary-rgb), 0.05);
+    border-radius: 12px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    transition: all 0.2s;
+  }
+  .side-item-link:hover {
+    background: rgba(var(--primary-rgb), 0.1);
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+  }
+  .side-item-main {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  :global(.icon-primary) {
+    color: var(--primary-color);
+  }
+  .side-item-text {
+    font-size: 0.9rem;
+  }
   
   .lang-bar { 
     height: 12px; 

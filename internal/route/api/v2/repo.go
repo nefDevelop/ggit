@@ -331,9 +331,13 @@ func getRepoDirectory(c *context.APIContext) {
 		stats["commits"] = c.Repo.Repository.NumCommits
 		stats["branches"] = int64(c.Repo.Repository.NumBranches)
 
-		// Tags are usually fast, but we can also cache them if needed.
 		tags, _ := c.Repo.GitRepo.Tags()
 		stats["tags"] = int64(len(tags))
+
+		var numReleases int64
+		_ = database.Handle.DB().Model(&database.Release{}).Where("repo_id = ? AND is_draft = ?", c.Repo.Repository.ID, false).Count(&numReleases).Error
+		stats["releases"] = numReleases
+
 		res["stats"] = stats
 
 		// Fetch language stats from database cache

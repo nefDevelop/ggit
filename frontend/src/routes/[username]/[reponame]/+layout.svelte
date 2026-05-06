@@ -14,7 +14,7 @@
   let currentPath = $derived(page.url.pathname);
 
   let repoData = $state<any>(null);
-  let gitStats = $state<any>({ commits: 0, branches: 0, tags: 0 });
+  let gitStats = $state<any>({ commits: 0, branches: 0, tags: 0, releases: 0 });
   let languages = $state<any>(null);
   let loading = $state(true);
   let error = $state('');
@@ -245,6 +245,7 @@
           {#if userPrefs.current.repoTabs.releases}
             <a href={`/${username}/${reponame}/releases`} class="tab" class:active={activeTab === 'releases'}>
               <span class="material-symbols-rounded">rocket_launch</span>
+              <span class="tab-count">{gitStats.releases || 0}</span>
               {#if activeTab === 'releases'}<span class="tab-label">Releases</span>{/if}
             </a>
           {/if}

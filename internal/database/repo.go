@@ -677,6 +677,9 @@ func (r *Repository) DeleteAvatar() error {
 func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission, user ...*User) *apiv2types.RepositoryResponse {
 	cloneLink := repox.NewCloneLink(r.Owner.Name, r.Name)
 
+	var numReleases int64
+	_ = Handle.db.Model(&Release{}).Where("repo_id = ? AND is_draft = ?", r.ID, false).Count(&numReleases).Error
+
 	apiRepo := &apiv2types.RepositoryResponse{
 		CreatedAt:   time.Unix(r.CreatedUnix, 0),
 		UpdatedAt:   time.Unix(r.UpdatedUnix, 0),
