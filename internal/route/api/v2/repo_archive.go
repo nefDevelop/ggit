@@ -12,6 +12,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/tool"
 )
@@ -63,8 +64,16 @@ func GetRepoArchive(c *context.APIContext) {
 	} else if len(refName) >= 7 && len(refName) <= 40 {
 		commit, err = gitRepo.CatFileCommit(refName)
 	} else {
-		c.Status(http.StatusNotFound)
-		return
+		// Fallback: Check if there is a release with this tag name and use its stored SHA.
+		rel, err := database.GetRelease(c.Repo.Repository.ID, refName)
+		if err == nil && rel.Sha1 != "" {
+			commit, err = gitRepo.CatFileCommit(rel.Sha1)
+		}
+
+		if err != nil || commit == nil {
+			c.Status(http.StatusNotFound)
+			return
+		}
 	}
 
 	if err != nil {
