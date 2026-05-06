@@ -101,6 +101,11 @@ func DeleteRepoBranch(c *context.APIContext) {
 		return
 	}
 
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
+		return
+	}
+
 	if err := c.Repo.GitRepo.DeleteBranch(branchName, git.DeleteBranchOptions{Force: true}); err != nil {
 		c.Error(err, "delete branch")
 		return
@@ -117,6 +122,11 @@ func CreateRepoBranch(c *context.APIContext) {
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
 		return
 	}
 

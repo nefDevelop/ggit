@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/form"
@@ -50,6 +51,11 @@ func CreateRelease(c *context.APIContext) {
 		return
 	}
 
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
+		return
+	}
+
 	// Basic validation
 	if !c.Repo.GitRepo.HasBranch(f.Target) {
 		c.StatusError(http.StatusUnprocessableEntity, "Target branch does not exist.", nil)
@@ -81,6 +87,35 @@ func CreateRelease(c *context.APIContext) {
 	c.JSON(http.StatusCreated, rel)
 }
 
+// UploadReleaseAttachment uploads a release attachment.
+func UploadReleaseAttachment(c *context.APIContext) {
+	if !conf.Attachment.Enabled {
+		c.Status(http.StatusNotImplemented)
+		return
+	}
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.Error(err, "get file")
+		return
+	}
+	defer file.Close()
+
+	buf := make([]byte, 1024)
+	n, _ := file.Read(buf)
+	if n > 0 {
+		buf = buf[:n]
+	}
+
+	attach, err := database.NewAttachment(header.Filename, buf, file)
+	if err != nil {
+		c.Error(err, "new attachment")
+		return
+	}
+
+	c.JSON(http.StatusOK, attach)
+}
+
 // UpdateRelease updates an existing release.
 func UpdateRelease(c *context.APIContext) {
 	id := c.ParamsInt64("id")
@@ -98,6 +133,11 @@ func UpdateRelease(c *context.APIContext) {
 	var f form.EditRelease
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
 		return
 	}
 

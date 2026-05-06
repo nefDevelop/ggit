@@ -62,6 +62,17 @@ func NewContext() {
 			go database.SyncRepoHooks()
 		}
 	}
+
+	// Orphaned attachments cleanup (Every 24h)
+	_, _ = c.AddFunc("Cleanup orphaned attachments", "@every 24h", func() {
+		count, err := database.DeleteOrphanedAttachments(24 * time.Hour)
+		if err != nil {
+			log.Error("Cron.(cleanup orphaned attachments): %v", err)
+		} else if count > 0 {
+			log.Trace("Cron.(cleanup orphaned attachments): deleted %d files", count)
+		}
+	})
+
 	c.Start()
 }
 

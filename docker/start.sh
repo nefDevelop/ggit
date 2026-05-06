@@ -15,7 +15,7 @@ create_volume_subfolder() {
     fi
 
     # Create VOLUME subfolder
-    for f in /data/ggit/data /data/ggit/repositories /data/ggit/conf /data/ggit/log /data/git /data/ssh; do
+    for f in /data/ggit/data /data/ggit/repositories /data/ggit/conf /data/ggit/log /data/git /data/ssh /data/ggit/data/attachments; do
         if ! test -d $f; then
             gosu "$USER" mkdir -p $f
         fi

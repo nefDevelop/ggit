@@ -20,6 +20,10 @@ type TagResponse struct {
 
 // ListRepoTags returns all tags for a repository.
 func ListRepoTags(c *context.APIContext) {
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
+		return
+	}
 	tags, err := c.Repo.GitRepo.Tags()
 	if err != nil {
 		c.Error(err, "list tags")
@@ -60,6 +64,11 @@ func CreateRepoTag(c *context.APIContext) {
 		return
 	}
 
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
+		return
+	}
+
 	if err := c.Repo.GitRepo.CreateTag(f.Name, f.Target); err != nil {
 		c.Error(err, "create tag")
 		return
@@ -80,6 +89,11 @@ func DeleteRepoTag(c *context.APIContext) {
 	tagName := c.Params("tag")
 	if tagName == "" {
 		c.StatusError(http.StatusBadRequest, "Tag name is required.", nil)
+		return
+	}
+
+	if c.Repo.GitRepo == nil {
+		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
 		return
 	}
 

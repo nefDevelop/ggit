@@ -204,3 +204,16 @@ func DeleteAttachmentsByComment(commentID int64, remove bool) (int, error) {
 
 	return DeleteAttachments(attachments, remove)
 }
+
+// DeleteOrphanedAttachments deletes attachments that are not linked to any issue, comment, or release
+// and are older than the specified duration.
+func DeleteOrphanedAttachments(olderThan time.Duration) (int, error) {
+	var attachments []*Attachment
+	err := Handle.db.Where("issue_id = 0 AND comment_id = 0 AND release_id = 0 AND created_unix < ?",
+		time.Now().Add(-olderThan).Unix()).Find(&attachments).Error
+	if err != nil {
+		return 0, err
+	}
+
+	return DeleteAttachments(attachments, true)
+}
