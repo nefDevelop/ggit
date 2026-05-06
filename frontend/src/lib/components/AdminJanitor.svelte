@@ -109,7 +109,7 @@
     flex-direction: column; 
     gap: 2rem !important; 
     padding: 2rem !important;
-    border-radius: 2.5rem !important;
+    border-radius: 1.25rem !important;
   }
   
   .repo-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
@@ -122,7 +122,7 @@
     align-items: center; 
     gap: 0.5rem; 
     padding: 0.75rem 1.25rem; 
-    border-radius: 1.25rem; 
+    border-radius: 0.5rem; 
     background: var(--md-sys-color-surface-container-high); 
     font-weight: 900; 
     font-size: 0.95rem;
@@ -135,17 +135,17 @@
     gap: 1.5rem; 
     padding: 1.5rem; 
     background: var(--md-sys-color-surface-container-low); 
-    border-radius: 1.75rem;
+    border-radius: 0.75rem;
     border: 1px solid var(--md-sys-color-outline-variant);
   }
   .detail-item { display: flex; flex-direction: column; gap: 0.4rem; }
   .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--md-sys-color-on-surface-variant); font-weight: 800; opacity: 0.8; }
   .value { font-size: 1.1rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
   .card-actions { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
-  :global(.card-actions .btn) { border-radius: 1rem !important; font-weight: 700 !important; }
+  :global(.card-actions .btn) { border-radius: 0.5rem !important; font-weight: 700 !important; }
   :global(.empty-card) { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   :global(.empty-card span) { font-size: 4rem; opacity: 0.2; }
   .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2rem; }
-  .skeleton-card { height: 260px; background: var(--md-sys-color-surface-container-high); border-radius: 2.5rem; animation: pulse 1.5s infinite; }
+  .skeleton-card { height: 260px; background: var(--md-sys-color-surface-container-high); border-radius: 1.25rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 </style>

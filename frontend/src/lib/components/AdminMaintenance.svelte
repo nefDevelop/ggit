@@ -152,7 +152,7 @@
         <aside class="console-box">
           <div class="console-header">
             <span>Terminal de Actividad</span>
-            <button onclick={() => activityLog = []}>Limpiar</button>
+            <Button variant="ghost" size="sm" onclick={() => activityLog = []}>Limpiar</Button>
           </div>
           <div class="console-content">
             {#each activityLog as entry}
@@ -184,7 +184,7 @@
   .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
 
   .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-  .stat-bubble { padding: 1.5rem; border-radius: 2rem; display: flex; align-items: center; gap: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .stat-bubble { padding: 1.5rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .stat-bubble span { font-size: 2.5rem; color: var(--primary-color); opacity: 0.8; }
   .stat-info .label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); }
   .stat-info .value { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
@@ -193,16 +193,16 @@
   @media (max-width: 1100px) { .ops-layout { grid-template-columns: 1fr; } }
 
   .ops-grid { display: flex; flex-direction: column; gap: 1rem; }
-  .op-bubble { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; border-radius: 2rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 0; }
+  .op-bubble { display: flex; align-items: center; gap: 1.5rem; padding: 1.5rem; border-radius: 0.75rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 0; }
   .op-bubble:hover { transform: translateX(8px); background: rgba(255,255,255,0.02); border-color: var(--primary-color); }
   :global(#main-content) .op-bubble.island { border-bottom: none !important; }
-  .op-icon { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .op-icon { width: 56px; height: 56px; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .op-icon span { font-size: 2rem; }
   .op-text { flex: 1; }
   .op-text h4 { margin: 0; font-size: 1.1rem; font-weight: 800; }
   .op-text p { margin: 0.2rem 0 0 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.4; }
 
-  .console-box { background: #08080c; border-radius: 2rem; border: 1px solid #1a1a24; overflow: hidden; display: flex; flex-direction: column; height: 650px; position: sticky; top: 2rem; }
+  .console-box { background: #08080c; border-radius: 0.75rem; border: 1px solid #1a1a24; overflow: hidden; display: flex; flex-direction: column; height: 650px; position: sticky; top: 2rem; }
   .console-header { padding: 1rem 1.5rem; background: #0d0d14; border-bottom: 1px solid #1a1a24; display: flex; justify-content: space-between; align-items: center; }
   .console-header span { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #444; letter-spacing: 0.1em; }
   .console-header button { background: transparent; border: none; color: #666; font-size: 0.75rem; font-weight: 700; cursor: pointer; }

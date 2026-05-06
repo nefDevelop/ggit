@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import Button from './ui/Button.svelte';
+  import { Settings, X, TriangleAlert } from 'lucide-svelte';
   
   let { section, data, onSave, onCancel } = $props();
   
@@ -41,10 +42,10 @@
   <div class="editor-modal island">
     <header class="modal-header">
       <div class="title-wrap">
-        <span class="material-symbols-rounded">settings</span>
+        <Settings size={20} />
         <h3>Editar Sección: [{section}]</h3>
       </div>
-      <Button variant="ghost" icon="close" onclick={onCancel} />
+      <Button variant="ghost" icon={X} onclick={onCancel} />
     </header>
 
     <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
@@ -70,7 +71,7 @@
 
       <footer class="modal-footer">
         <div class="warning-box">
-          <span class="material-symbols-rounded">warning</span>
+          <TriangleAlert size={20} />
           <p>Algunos cambios pueden requerir un reinicio del servidor para aplicarse.</p>
         </div>
         <div class="actions">
@@ -102,7 +103,7 @@
   .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
   .form-group label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.8; }
   
-  input { background: rgba(var(--primary-rgb), 0.03); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 1rem; color: var(--text-color); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
+  input { background: rgba(var(--primary-rgb), 0.03); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 0.75rem; color: var(--text-color); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
   input:focus { outline: none; border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.08); }
 
   .error-msg { color: var(--error); font-size: 0.9rem; font-weight: 700; margin: 0 2rem 1rem; padding: 1rem; background: rgba(var(--error-rgb), 0.1); border-radius: 1rem; }

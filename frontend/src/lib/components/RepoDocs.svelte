@@ -5,6 +5,7 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { ArrowLeft, Scale, FileText, Folder, AlertCircle } from 'lucide-svelte';
 
   const repo: any = getContext('repo');
   let adrFolder = $derived(repo.data.adr_folder_name || 'ADR');
@@ -79,7 +80,7 @@
       </div>
     {:else if error}
       <div class="empty-state">
-        <span class="material-symbols-rounded">error_outline</span>
+        <AlertCircle size={48} />
         <h3>No documentation found</h3>
         <p>{error}</p>
         <div class="hint">
@@ -91,10 +92,14 @@
         <div class="file-header">
             <div class="header-main-row">
               <h2 class="file-name">
-                  <span class="material-symbols-rounded">{isADR(currentFile.name) ? 'gavel' : 'description'}</span>
+                  {#if isADR(currentFile.name)}
+                    <Scale size={32} />
+                  {:else}
+                    <FileText size={32} />
+                  {/if}
                   {currentFile.name}
               </h2>
-              <Button variant="secondary" size="sm" icon="arrow_back" onclick={goBack}>Back to List</Button>
+              <Button variant="secondary" size="sm" icon={ArrowLeft} onclick={goBack}>Back to List</Button>
             </div>
             {#if currentFile.last_commit}
                 <div class="last-update">
@@ -110,11 +115,15 @@
     {:else}
       <div class="docs-grid">
         {#each entries.filter(e => e.type === 'dir' || e.name.endsWith('.md')) as entry}
-          <button class="doc-tile tonal" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
+          <Button variant="tonal" class="doc-tile" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
             <div class="tile-icon">
-              <span class="material-symbols-rounded">
-                {entry.type === 'dir' ? 'folder' : (isADR(entry.name) ? 'gavel' : 'description')}
-              </span>
+              {#if entry.type === 'dir'}
+                <Folder size={24} />
+              {:else if isADR(entry.name)}
+                <Scale size={24} />
+              {:else}
+                <FileText size={24} />
+              {/if}
             </div>
             <div class="tile-info">
               <span class="tile-name">{entry.name}</span>
@@ -122,7 +131,7 @@
                 <span class="tile-meta">{entry.last_commit.summary}</span>
               {/if}
             </div>
-          </button>
+          </Button>
         {/each}
       </div>
     {/if}
@@ -143,8 +152,8 @@
   .hint { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
 
   .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  .doc-tile { border: none; padding: 1.25rem; border-radius: 1.25rem; display: flex; align-items: center; gap: 1.25rem; text-align: left; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
-  .doc-tile:hover { transform: translateY(-2px); background: var(--md-sys-color-surface-container-high); box-shadow: var(--shadow-md); }
+  :global(.doc-tile) { border: none !important; padding: 1.25rem !important; height: auto !important; display: flex !important; align-items: center !important; gap: 1.25rem !important; text-align: left !important; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; cursor: pointer !important; justify-content: flex-start !important; }
+  :global(.doc-tile:hover) { transform: translateY(-2px) !important; background: var(--md-sys-color-surface-container-high) !important; box-shadow: var(--shadow-md) !important; }
   
   .tile-icon { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.75rem; border-radius: 1rem; display: flex; }
   .tile-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
@@ -156,7 +165,6 @@
 
   .file-header { display: flex; flex-direction: column; gap: 0.25rem; }
   .file-name { margin: 0; display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 900; }
-  .file-name span { font-size: 2rem; color: var(--primary-color); }
   .last-update { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
   :global(.markdown-body-card) { padding: 2.5rem !important; border-radius: 2rem !important; background: var(--bg-color) !important; border: 1px solid var(--md-sys-color-outline-variant) !important; }

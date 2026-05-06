@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { generateMd3Palette } from '$lib/utils/color';
+  import Button from './ui/Button.svelte';
+  import { Palette, X, Sun, Moon } from 'lucide-svelte';
 
   let { show = $bindable(false) } = $props();
 
@@ -132,12 +134,10 @@
 <div class="theme-panel island">
   <div class="panel-header">
     <div class="title-box">
-      <span class="material-symbols-rounded">palette</span>
+      <Palette size={20} />
       <h3>Apariencia</h3>
     </div>
-    <button class="close-btn" onclick={() => show = false}>
-      <span class="material-symbols-rounded">close</span>
-    </button>
+    <Button variant="ghost" size="sm" icon={X} onclick={() => show = false} />
   </div>
 
   <div class="config-stack">
@@ -150,14 +150,14 @@
           onclick={() => setScheme('light')}
           title="Modo Claro"
         >
-          <span class="material-symbols-rounded">light_mode</span>
+          <Sun size={18} />
         </button>
         <button 
           class:active={currentScheme === 'dark'} 
           onclick={() => setScheme('dark')}
           title="Modo Oscuro"
         >
-          <span class="material-symbols-rounded">dark_mode</span>
+          <Moon size={18} />
         </button>
       </div>
     </div>
@@ -222,7 +222,7 @@
     box-shadow: var(--shadow-xl);
     border: 1px solid var(--md-sys-color-outline-variant);
     background: var(--md-sys-color-surface-container);
-    border-radius: 2rem;
+    border-radius: 1.25rem;
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -245,7 +245,6 @@
     color: var(--primary-color);
   }
 
-  .title-box span { font-size: 1.5rem; }
   .title-box h3 {
     margin: 0;
     font-family: var(--font-heading);
@@ -254,21 +253,6 @@
     color: var(--text-base);
   }
 
-  .close-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-variant);
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .close-btn:hover { background: var(--surface-variant-hover); color: var(--text-base); }
 
   .config-stack {
     display: flex;
@@ -326,7 +310,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem;
-    border-radius: 1.25rem;
+    border-radius: 0.75rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     background: var(--md-sys-color-surface-container-low);
     cursor: pointer;

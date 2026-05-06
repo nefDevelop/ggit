@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import BranchSelector from "./BranchSelector.svelte";
   import Button from "./ui/Button.svelte";
+  import { X, CloudUpload, FileText, Trash2 } from "lucide-svelte";
 
   let { 
     username, 
@@ -136,7 +137,7 @@
 <div class="release-editor shadow-xl">
   <header class="editor-header">
     <h3>{release ? "Edit Release" : "New Release"}</h3>
-    <Button variant="ghost" icon="close" onclick={onCancel} aria-label="Close editor" />
+    <Button variant="ghost" icon={X} onclick={onCancel} aria-label="Close editor" />
   </header>
 
   <div class="editor-grid">
@@ -193,7 +194,7 @@
       <div class="attachments-zone">
         <span class="field-label">Binary Attachments</span>
         <div class="upload-area" class:uploading>
-          <span class="material-symbols-rounded">cloud_upload</span>
+          <CloudUpload size={48} />
           <p>Drag and drop assets here, or <strong>browse</strong></p>
           <input id="release-attachments" type="file" multiple onchange={handleFileUpload} aria-label="Upload attachments" />
         </div>
@@ -202,15 +203,16 @@
           <div class="attachment-list">
             {#each attachments as a}
               <div class="attachment-item tonal">
-                <span class="material-symbols-rounded">description</span>
+                <FileText size={18} />
                 <span class="name">{a.name}</span>
-                <button
-                  class="remove-btn"
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  icon={Trash2}
+                  class="danger-btn"
                   onclick={() => removeAttachment(a.uuid)}
                   aria-label={`Remove ${a.name}`}
-                >
-                  <span class="material-symbols-rounded">delete</span>
-                </button>
+                />
               </div>
             {/each}
           </div>
@@ -391,10 +393,6 @@
     opacity: 0;
     cursor: pointer;
   }
-  .upload-area span {
-    font-size: 3rem;
-    opacity: 0.5;
-  }
   .upload-area.uploading {
     opacity: 0.5;
     pointer-events: none;
@@ -420,21 +418,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .remove-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    border-radius: 50%;
-    transition: all 0.2s;
-  }
-  .remove-btn:hover {
-    background: var(--md-sys-color-error-container);
-    color: var(--md-sys-color-error);
-  }
-
   .editor-sidebar {
     display: flex;
     flex-direction: column;

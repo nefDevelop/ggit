@@ -327,7 +327,7 @@
     margin-bottom: 2rem;
     background: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);
-    border-radius: 1.5rem;
+    border-radius: 0.75rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     transition: all 0.3s ease;
   }
@@ -425,7 +425,7 @@
     padding: 0.85rem 1.25rem;
     color: var(--text-muted);
     text-decoration: none;
-    border-radius: 1rem;
+    border-radius: 0.5rem;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 600;
     font-size: 0.95rem;
@@ -509,7 +509,7 @@
     padding: 0.65rem 1rem;
     color: var(--text-muted);
     text-decoration: none;
-    border-radius: 0.75rem;
+    border-radius: 0.4rem;
     transition: all 0.2s;
     font-size: 0.85rem;
     font-weight: 600;
@@ -584,8 +584,7 @@
     .item-label,
     .nav-section-title,
     .sub-nav-links,
-    .nav-empty-hint,
-    span:not(.material-symbols-rounded) {
+    .nav-empty-hint {
       display: none;
     }
     .nav-links {

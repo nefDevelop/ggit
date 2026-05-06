@@ -147,7 +147,7 @@
 
   .time-cell { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); font-weight: 700; opacity: 0.8; }
   
-  .op-capsule { padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 900; background: rgba(var(--op-color, 255, 255, 255), 0.1); color: var(--op-color, #fff); border: 1px solid rgba(var(--op-color, 255, 255, 255), 0.1); text-transform: uppercase; letter-spacing: 0.05em; }
+  .op-capsule { padding: 0.4rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; font-weight: 900; background: rgba(var(--op-color, 255, 255, 255), 0.1); color: var(--op-color, #fff); border: 1px solid rgba(var(--op-color, 255, 255, 255), 0.1); text-transform: uppercase; letter-spacing: 0.05em; }
 
   .actor-brand { display: flex; align-items: center; gap: 0.75rem; }
   .actor-brand strong { color: var(--text-color); font-weight: 800; font-size: 1rem; }
@@ -155,12 +155,12 @@
   .repo-link { color: var(--primary-color); text-decoration: none; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
   .repo-link:hover { text-decoration: underline; }
 
-  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.85rem; font-size: 0.85rem; color: #999; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
+  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: #999; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
   .muted-value { color: #555; font-weight: 800; }
   .null-value { color: #444; font-style: italic; font-size: 0.85rem; }
 
   .footer-actions { margin-top: 3rem; display: flex; justify-content: center; }
-  :global(.load-more-btn) { width: auto; min-width: 300px; border-radius: 1.5rem !important; }
+  :global(.load-more-btn) { width: auto; min-width: 300px; border-radius: 0.75rem !important; }
 
   .empty-state { padding: 5rem; text-align: center; color: var(--text-muted); font-weight: 700; opacity: 0.5; }
 </style>

@@ -8,6 +8,7 @@
   import AdminAuthEditor from './AdminAuthEditor.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { ShieldHalf, Plus, Database, ShieldCheck, Settings, Trash2 } from 'lucide-svelte';
 
   let sources = $state<any[]>([]);
   let loading = $state(true);
@@ -56,10 +57,10 @@
     <PageHeader 
       title={i18n.t('admin.auths') || "Fuentes de Autenticación"}
       subtitle="Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos"
-      icon="lock_person"
+      icon={ShieldHalf}
     >
       {#snippet actions()}
-        <Button variant="primary" icon="add_moderator" onclick={newSource}>Nueva Fuente</Button>
+        <Button variant="primary" icon={Plus} onclick={newSource}>Nueva Fuente</Button>
       {/snippet}
     </PageHeader>
 
@@ -90,7 +91,11 @@
               <td>
                 <div class="source-cell">
                   <div class="source-icon tonal">
-                    <span class="material-symbols-rounded">{source.type === 2 || source.type === 5 ? "hub" : "verified_user"}</span>
+                    {#if source.type === 2 || source.type === 5}
+                      <Database size={24} />
+                    {:else}
+                      <ShieldCheck size={24} />
+                    {/if}
                   </div>
                   <div class="source-info">
                     <strong>{source.name}</strong>
@@ -110,8 +115,8 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <Button variant="ghost" size="sm" icon="settings" onclick={() => editSource(source)} />
-                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteAuth(source.id)} />
+                  <Button variant="ghost" size="sm" icon={Settings} onclick={() => editSource(source)} />
+                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteAuth(source.id)} />
                 </div>
               </td>
             </tr>
@@ -142,16 +147,16 @@
   .id-cell { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-weight: 700; opacity: 0.5; font-size: 0.85rem; }
   
   .source-cell { display: flex; align-items: center; gap: 1.25rem; }
-  .source-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 1rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
+  .source-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
   .source-icon span { font-size: 1.75rem; }
   
   .source-info { display: flex; flex-direction: column; }
   .source-info strong { font-size: 1.1rem; font-weight: 800; color: var(--text-color); }
   .source-info span { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
 
-  .type-badge { font-size: 0.75rem; font-weight: 900; color: var(--accent); background: rgba(156, 39, 176, 0.1); padding: 0.4rem 1rem; border-radius: 100px; border: 1px solid rgba(156, 39, 176, 0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .type-badge { font-size: 0.75rem; font-weight: 900; color: var(--accent); background: rgba(156, 39, 176, 0.1); padding: 0.4rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(156, 39, 176, 0.2); text-transform: uppercase; letter-spacing: 0.05em; }
   
-  .status-chip { display: inline-block; padding: 0.3rem 1rem; border-radius: 100px; font-size: 0.7rem; font-weight: 900; background: rgba(255,255,255,0.05); color: var(--text-muted); text-transform: uppercase; border: 1px solid var(--md-sys-color-outline-variant); }
+  .status-chip { display: inline-block; padding: 0.3rem 1rem; border-radius: 0.5rem; font-size: 0.7rem; font-weight: 900; background: rgba(255,255,255,0.05); color: var(--text-muted); text-transform: uppercase; border: 1px solid var(--md-sys-color-outline-variant); }
   .status-chip.active { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
 
   .action-buttons { display: flex; gap: 0.5rem; }

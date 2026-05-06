@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import { i18n } from '$lib/i18n.svelte';
   import Card from './ui/Card.svelte';
+  import Button from './ui/Button.svelte';
+  import { Contrast, SunMoon, Sun, Moon, Palette, CheckCircle2 } from 'lucide-svelte';
   import { generateMd3Palette } from '$lib/utils/color';
 
   let currentTheme = $state('default');
@@ -34,9 +36,9 @@
   ];
 
   const schemes = [
-    { id: 'auto', name: 'Sistema Dual', icon: 'brightness_auto' },
-    { id: 'light', name: 'Modo Claro', icon: 'light_mode' },
-    { id: 'dark', name: 'Modo Oscuro', icon: 'dark_mode' }
+    { id: 'auto', name: 'Sistema Dual', icon: SunMoon },
+    { id: 'light', name: 'Modo Claro', icon: Sun },
+    { id: 'dark', name: 'Modo Oscuro', icon: Moon }
   ];
 
   onMount(() => {
@@ -178,11 +180,12 @@
     <!-- COLOR SCHEME -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">contrast</span>
+        <Contrast size={18} />
         Modo de Color
       </div>
       <div class="scheme-grid">
         {#each schemes as scheme}
+          {@const Icon = scheme.icon}
           <button 
             type="button" 
             class="scheme-modular-card island" 
@@ -190,7 +193,7 @@
             onclick={() => applyScheme(scheme.id)}
           >
             <div class="scheme-icon-box">
-              <span class="material-symbols-rounded">{scheme.icon}</span>
+              <Icon size={32} />
             </div>
             <span class="scheme-name">{scheme.name}</span>
             {#if currentScheme === scheme.id}
@@ -204,7 +207,7 @@
     <!-- ACCENT THEME -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">colorize</span>
+        <Palette size={18} />
         Tema de Acento
       </div>
       <div class="theme-modular-grid">
@@ -228,7 +231,7 @@
               <span class="hex">{theme.palette[0]}</span>
             </div>
             {#if currentTheme === theme.id}
-               <span class="material-symbols-rounded check-icon">check_circle</span>
+               <CheckCircle2 size={24} class="check-icon" />
             {/if}
           </button>
         {/each}
@@ -273,7 +276,7 @@
             </div>
           </div>
           {#if currentTheme === 'custom'}
-             <span class="material-symbols-rounded check-icon">check_circle</span>
+             <CheckCircle2 size={24} class="check-icon" />
           {/if}
         </div>
       </div>
@@ -288,20 +291,19 @@
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .module-tag span { font-size: 1.25rem; }
 
   /* Scheme Selector */
   .scheme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
   .scheme-modular-card {
     position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
-    padding: 3rem 2rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant);
+    padding: 3rem 2rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant);
     background: rgba(255,255,255,0.01); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
   }
   .scheme-modular-card:hover { transform: translateY(-8px); background: rgba(255,255,255,0.03); border-color: var(--primary-color); }
   .scheme-modular-card.active { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); box-shadow: var(--shadow-xl); }
 
   .scheme-icon-box { width: 64px; height: 64px; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); display: flex; align-items: center; justify-content: center; color: var(--primary-color); }
-  .scheme-icon-box span { font-size: 2.5rem; }
   .scheme-name { font-weight: 900; font-size: 1.1rem; color: var(--text-color); }
 
   .active-dot { position: absolute; top: 1.5rem; right: 1.5rem; width: 12px; height: 12px; background: var(--primary-color); border-radius: 50%; box-shadow: 0 0 15px var(--primary-color); }
@@ -310,7 +312,7 @@
   .theme-modular-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
   .theme-modular-tile {
     display: flex; align-items: center; gap: 1.5rem;
-    padding: 1.25rem 1.5rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant);
+    padding: 1.25rem 1.5rem; border-radius: 1rem; border: 1px solid var(--md-sys-color-outline-variant);
     background: rgba(0,0,0,0.1); transition: all 0.3s;
     cursor: pointer;
     text-align: left;
@@ -331,7 +333,7 @@
   
   .scheme-mini-switcher { display: flex; gap: 4px; margin-top: 4px; }
   .mini-chip { 
-    padding: 2px 8px; border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); 
+    padding: 2px 10px; border-radius: 0.5rem; border: 1px solid var(--md-sys-color-outline-variant); 
     background: transparent; color: var(--text-muted); font-size: 0.65rem; font-weight: 700; 
     text-transform: uppercase; cursor: pointer; transition: all 0.2s;
   }

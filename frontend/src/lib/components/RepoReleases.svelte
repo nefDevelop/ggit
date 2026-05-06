@@ -7,6 +7,10 @@
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
   import Badge from "./ui/Badge.svelte";
+  import { 
+    Tag, Rocket, Plus, Edit, Trash2, ChevronsLeft, 
+    ChevronRight, Calendar, GitMerge, Download, FileArchive 
+  } from "lucide-svelte";
 
   let { username, reponame } = $props();
 
@@ -117,10 +121,10 @@
     <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
     <div class="empty-releases">
-      <span class="material-symbols-rounded icon">sell</span>
+      <Tag size={64} class="icon" />
       <h3>No releases yet</h3>
       <p>Start tagging your milestones.</p>
-      <Button onclick={handleAdd} icon="rocket_launch">Create Release</Button>
+      <Button onclick={handleAdd} icon={Rocket}>Create Release</Button>
     </div>
   {:else}
     <div class="releases-timeline">
@@ -128,7 +132,7 @@
         <Button
           variant="ghost"
           onclick={handleAdd}
-          icon="add"
+          icon={Plus}
           size="sm"
           class="add-release-btn"
         />
@@ -148,7 +152,7 @@
                       class="tag-icon-link"
                       title="View tag on Git"
                     >
-                      <span class="material-symbols-rounded">sell</span>
+                      <Tag size={18} />
                     </a>
                   </h3>
                   <div class="badge-row">
@@ -166,18 +170,18 @@
                 <div class="meta-row">
                   {#if release.title && release.title !== release.tag_name}
                     <span class="tag-subtext">
-                      <span class="material-symbols-rounded">tag</span>
+                      <Tag size={14} />
                       {release.tag_name}
                     </span>
                   {/if}
                   {#if release.target}
                     <span class="target">
-                      <span class="material-symbols-rounded">merge_type</span>
+                      <GitMerge size={14} />
                       {release.target}
                     </span>
                   {/if}
                   <span class="date">
-                    <span class="material-symbols-rounded">calendar_today</span>
+                    <Calendar size={14} />
                     {new Date(release.created_at * 1000).toLocaleDateString(
                       undefined,
                       { dateStyle: "long" },
@@ -191,13 +195,13 @@
                   <Button
                     variant="ghost"
                     size="sm"
-                    icon="edit"
+                    icon={Edit}
                     onclick={() => handleEdit(release)}
                   />
                   <Button
                     variant="ghost"
                     size="sm"
-                    icon="delete"
+                    icon={Trash2}
                     class="danger-icon"
                     onclick={() => handleDelete(release.id)}
                   />
@@ -227,7 +231,7 @@
                           class="asset-item"
                           download
                         >
-                          <span class="material-symbols-rounded">get_app</span>
+                          <Download size={16} />
                           <span class="name">{asset.name}</span>
                         </a>
                       {/each}
@@ -237,7 +241,7 @@
                       class="asset-item source"
                       download
                     >
-                      <span class="material-symbols-rounded">folder_zip</span>
+                      <FileArchive size={16} />
                       <span class="name">Source code (zip)</span>
                     </a>
                     <a
@@ -245,7 +249,7 @@
                       class="asset-item source"
                       download
                     >
-                      <span class="material-symbols-rounded">archive</span>
+                      <FileArchive size={16} />
                       <span class="name">Source code (tar.gz)</span>
                     </a>
                   </div>
@@ -280,14 +284,14 @@
           variant="secondary"
           onclick={() => fetchReleases("")}
           disabled={loading || !hasPrevious}
-          icon="first_page"
+          icon={ChevronsLeft}
         >
           Newest
         </Button>
         <Button
           onclick={() => fetchReleases(nextAfter)}
           disabled={loading || !hasNext}
-          icon="navigate_next"
+          icon={ChevronRight}
         >
           Older releases
         </Button>
@@ -328,7 +332,6 @@
     color: var(--text-muted);
   }
   .empty-releases .icon {
-    font-size: 4rem;
     color: var(--md-sys-color-surface-variant);
     margin-bottom: 1rem;
   }
@@ -366,7 +369,7 @@
   :global(.add-release-btn) {
     background: var(--md-sys-color-background) !important;
     border: 3px solid var(--md-sys-color-surface-variant) !important;
-    border-radius: 50% !important;
+    border-radius: 0.5rem !important;
     width: 36px !important;
     height: 36px !important;
     padding: 0 !important;
@@ -437,9 +440,6 @@
   .tag-icon-link:hover {
     opacity: 1;
   }
-  .tag-icon-link .material-symbols-rounded {
-    font-size: 1.5rem;
-  }
 
   .badge-row {
     display: flex;
@@ -448,7 +448,6 @@
 
   .meta-row { display: flex; gap: 1.25rem; align-items: center; margin-top: 1rem; flex-wrap: nowrap; width: 100%; }
   .meta-row span { white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
-  .meta-row .material-symbols-rounded { font-size: 1.25rem; opacity: 0.7; }
 
   .header-actions {
     display: flex;
@@ -513,13 +512,6 @@
     transform: translateX(4px);
   }
   .asset-item.source {
-    color: var(--text-muted);
-    font-weight: 600;
-  }
-  .asset-item .material-symbols-rounded {
-    font-size: 1.2rem;
-    opacity: 0.8;
-  }
   .asset-item .name {
     font-size: 0.85rem;
   }

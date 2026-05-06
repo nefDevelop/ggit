@@ -3,6 +3,8 @@
   import { apiFetch } from "$lib/api";
   import { dialog } from '$lib/dialog.svelte';
   import Avatar from "$lib/components/Avatar.svelte";
+  import Button from "./ui/Button.svelte";
+  import { UserPlus, UserMinus, AlertCircle, UserX } from "lucide-svelte";
 
   let { orgName } = $props();
 
@@ -58,9 +60,9 @@
 <div class="org-members card-surface">
   <div class="header-actions">
     <h3 class="section-label">Organization Members</h3>
-    <button class="btn btn-primary btn-sm">
-      <span class="material-symbols-rounded">person_add</span> Invite Member
-    </button>
+    <Button variant="primary" size="sm" icon={UserPlus}>
+      Invite Member
+    </Button>
   </div>
 
   <div class="members-list">
@@ -70,12 +72,12 @@
       </div>
     {:else if error}
       <div class="error-state tonal-error">
-        <span class="material-symbols-rounded">error</span>
+        <AlertCircle size={48} />
         <p>{error}</p>
       </div>
     {:else if members.length === 0}
       <div class="empty-state tonal">
-        <span class="material-symbols-rounded">person_off</span>
+        <UserX size={48} />
         <p>This organization has no members yet.</p>
       </div>
     {:else}
@@ -97,12 +99,15 @@
               </div>
             </div>
             <div class="member-actions">
-              <button
-                class="btn btn-ghost error btn-sm"
+              <Button
+                variant="ghost" 
+                size="sm" 
+                icon={UserMinus}
+                class="danger-btn"
                 onclick={() => removeMember(member.username)}
               >
-                <span class="material-symbols-rounded">person_remove</span> Remove
-              </button>
+                Remove
+              </Button>
             </div>
           </div>
         {/each}
@@ -202,16 +207,5 @@
     gap: 1rem;
     border-radius: 1rem;
   }
-  .empty-state span,
-  .error-state span {
-    font-size: 3rem;
-    opacity: 0.2;
-  }
-
-  .btn-ghost.error {
-    color: #ef4444;
-  }
-  .btn-ghost.error:hover {
-    background: rgba(239, 68, 68, 0.1);
   }
 </style>

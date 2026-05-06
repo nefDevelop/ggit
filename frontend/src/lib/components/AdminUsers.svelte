@@ -160,12 +160,12 @@
   .email-cell { font-weight: 600; color: var(--text-color); opacity: 0.8; }
   .date-cell { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
 
-  .admin-badge { border: none; font-family: inherit; cursor: pointer; padding: 0.35rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.3s; }
+  .admin-badge { border: none; font-family: inherit; cursor: pointer; padding: 0.35rem 1rem; border-radius: 0.75rem; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.3s; }
   .admin-badge.is-admin { background: rgba(var(--primary-rgb), 0.15); color: var(--primary-color); border-color: var(--primary-color); }
   .admin-badge:hover { transform: scale(1.05); filter: brightness(1.2); }
 
   .action-buttons { display: flex; gap: 0.5rem; }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
-  .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.03); }
+  .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 2rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.03); }
 </style>

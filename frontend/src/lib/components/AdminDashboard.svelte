@@ -5,6 +5,10 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { 
+    BarChart3, Users, Building2, Book, Key, 
+    Star, Bell, GitMerge, Eye, CloudOff, RefreshCw 
+  } from 'lucide-svelte';
 
   let stats = $state<any>(null);
   let loading = $state(true);
@@ -24,7 +28,7 @@
   <PageHeader 
     title="Panel de Estadísticas"
     subtitle="Resumen global de objetos y uso del sistema"
-    icon="analytics"
+    icon={BarChart3}
   />
 
   {#if loading}
@@ -33,7 +37,7 @@
     <div class="stats-grid">
       <div class="stat-premium-card island tonal-hover role-primary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">group</span>
+          <Users size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.User}</span>
@@ -43,7 +47,7 @@
 
       <div class="stat-premium-card island tonal-hover role-secondary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">corporate_fare</span>
+          <Building2 size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.Org}</span>
@@ -53,7 +57,7 @@
 
       <div class="stat-premium-card island tonal-hover role-tertiary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">book</span>
+          <Book size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.Repo}</span>
@@ -63,7 +67,7 @@
 
       <div class="stat-premium-card island tonal-hover role-primary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">vpn_key</span>
+          <Key size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.PublicKey}</span>
@@ -73,7 +77,7 @@
 
       <div class="stat-premium-card island tonal-hover role-tertiary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">star</span>
+          <Star size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.Star}</span>
@@ -83,7 +87,7 @@
 
       <div class="stat-premium-card island tonal-hover role-error">
         <div class="card-icon">
-          <span class="material-symbols-rounded">notifications</span>
+          <Bell size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.Notice}</span>
@@ -93,7 +97,7 @@
 
       <div class="stat-premium-card island tonal-hover role-secondary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">merge_type</span>
+          <GitMerge size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.Attachment}</span>
@@ -103,7 +107,7 @@
 
       <div class="stat-premium-card island tonal-hover role-primary">
         <div class="card-icon">
-          <span class="material-symbols-rounded">visibility</span>
+          <Eye size={32} />
         </div>
         <div class="card-data">
           <span class="value">{stats.Counter.Watch}</span>
@@ -114,12 +118,12 @@
   {:else}
     <div class="premium-error-zone island">
       <div class="error-visual">
-         <span class="material-symbols-rounded">cloud_off</span>
+         <CloudOff size={48} />
       </div>
       <div class="error-text">
         <h3>Error de Conexión</h3>
         <p>No se han podido recuperar las estadísticas del sistema. Verifica que tienes privilegios de administrador y que el backend está respondiendo correctamente.</p>
-        <Button variant="primary" icon="refresh" onclick={fetchStats}>Reintentar Conexión</Button>
+        <Button variant="primary" icon={RefreshCw} onclick={fetchStats}>Reintentar Conexión</Button>
       </div>
     </div>
   {/if}
@@ -132,7 +136,7 @@
 
   .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
   
-  .stat-premium-card { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border-radius: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }
+  .stat-premium-card { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }
   .stat-premium-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.03); box-shadow: var(--shadow-xl); }
   
   .stat-premium-card.role-primary:hover { border-color: var(--primary-color); }
@@ -145,15 +149,15 @@
   .stat-premium-card.role-tertiary .card-icon { color: var(--tertiary); background: var(--md-sys-color-tertiary-container); }
   .stat-premium-card.role-error .card-icon { color: var(--error); background: var(--md-sys-color-error-container); }
 
-  .card-icon { width: 64px; height: 64px; border-radius: 1.5rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--md-sys-color-outline-variant); }
+  .card-icon { width: 64px; height: 64px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--md-sys-color-outline-variant); }
   .card-icon span { font-size: 2.5rem; }
 
   .card-data { display: flex; flex-direction: column; gap: 0.1rem; }
   .card-data .value { font-size: 2rem; font-weight: 950; color: var(--text-color); letter-spacing: -0.02em; }
   .card-data .label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; }
 
-  .premium-error-zone { padding: 4rem; display: flex; align-items: center; gap: 3rem; background: rgba(var(--error-rgb), 0.05); border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 3rem; }
-  .error-visual { width: 100px; height: 100px; border-radius: 50%; background: rgba(var(--error-rgb), 0.1); color: var(--error); display: flex; align-items: center; justify-content: center; }
+  .premium-error-zone { padding: 4rem; display: flex; align-items: center; gap: 3rem; background: rgba(var(--error-rgb), 0.05); border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 1.5rem; }
+  .error-visual { width: 100px; height: 100px; border-radius: 0.75rem; background: rgba(var(--error-rgb), 0.1); color: var(--error); display: flex; align-items: center; justify-content: center; }
   .error-visual span { font-size: 4rem; }
   .error-text h3 { margin: 0 0 0.75rem 0; font-size: 1.75rem; font-weight: 900; }
   .error-text p { margin: 0 0 2rem 0; color: var(--text-muted); font-size: 1.1rem; max-width: 500px; line-height: 1.5; }

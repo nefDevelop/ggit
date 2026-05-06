@@ -49,6 +49,7 @@
   let avatarError = $state(false);
 
   import { toast } from '$lib/toast.svelte';
+  import Button from './ui/Button.svelte';
 
   let copied = $state(false);
   function copyToClipboard(text: string) {
@@ -133,13 +134,14 @@
   </div>
 
   <div class="actions-info">
-    <button class="btn-icon-minimal" onclick={(e) => { e.stopPropagation(); copyToClipboard(repo.clone_url); }} title="Copy Clone URL">
-      {#if copied}
-        <Check size={18} class="success-icon" />
-      {:else}
-        <Copy size={18} />
-      {/if}
-    </button>
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      icon={copied ? Check : Copy} 
+      class={copied ? 'success-text' : ''}
+      onclick={(e) => { e.stopPropagation(); copyToClipboard(repo.clone_url); }} 
+      aria-label="Copy Clone URL" 
+    />
     <span class="time">{timeAgo(repo.updated_at)}</span>
   </div>
 </div>

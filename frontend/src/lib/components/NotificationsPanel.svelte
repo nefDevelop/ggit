@@ -4,6 +4,8 @@
   import { authState } from "$lib/auth.svelte";
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
+  import Button from "./ui/Button.svelte";
+  import { X, Eraser, BellOff, CheckCircle2, AlertCircle, AlertTriangle, Info, RefreshCw } from "lucide-svelte";
 
   interface Props {
     show: boolean;
@@ -66,9 +68,7 @@
       <header class="panel-header">
         <div class="header-top">
           <h3>Centro de Avisos</h3>
-          <button class="icon-btn close-btn" onclick={closePanel} title="Cerrar panel">
-            <span class="material-symbols-rounded">close</span>
-          </button>
+          <Button variant="ghost" size="sm" icon={X} onclick={closePanel} aria-label="Cerrar panel" />
         </div>
 
         {#if authState.user?.is_admin}
@@ -100,38 +100,37 @@
             <div class="section-actions">
               <span class="section-title">Historial de sesión</span>
               {#if toast.history.length > 0}
-                <button
-                  class="action-text-btn"
+                <Button
+                  variant="ghost" 
+                  size="sm"
+                  icon={Eraser}
                   onclick={() => toast.clearHistory()}
                 >
-                  <span class="material-symbols-rounded mini-icon">delete_sweep</span>
                   Limpiar historial
-                </button>
+                </Button>
               {/if}
             </div>
 
             {#if toast.history.length === 0}
               <div class="empty-state">
-                <span class="material-symbols-rounded empty-icon">notifications_off</span>
+                <BellOff size={40} class="empty-icon" />
                 <p>No hay notificaciones recientes.</p>
               </div>
             {:else}
               <div class="notices-list">
                 {#each toast.history as item (item.id)}
                   <div class="notice-item {item.type}">
-                    <span class="material-symbols-rounded type-icon">
-                      {#if item.type === 'success'}check_circle
-                      {:else if item.type === 'error'}error
-                      {:else if item.type === 'warning'}warning
-                      {:else}info{/if}
-                    </span>
+                    <div class="type-icon">
+                      {#if item.type === 'success'}<CheckCircle2 size={18} />
+                      {:else if item.type === 'error'}<AlertCircle size={18} />
+                      {:else if item.type === 'warning'}<AlertTriangle size={18} />
+                      {:else}<Info size={18} />{/if}
+                    </div>
                     <div class="notice-text">
                       <p class="message">{item.message}</p>
                       <span class="time">{new Date(item.timestamp).toLocaleTimeString()}</span>
                     </div>
-                    <button class="remove-btn" onclick={() => toast.remove(item.id)}>
-                      <span class="material-symbols-rounded">close</span>
-                    </button>
+                    <Button variant="ghost" size="sm" icon={X} onclick={() => toast.remove(item.id)} />
                   </div>
                 {/each}
               </div>
@@ -141,10 +140,9 @@
           <div class="list-section">
             <div class="section-actions">
               <span class="section-title">Avisos globales del sistema</span>
-              <button class="action-text-btn" onclick={fetchSystemNotices}>
-                <span class="material-symbols-rounded mini-icon">refresh</span>
+              <Button variant="ghost" size="sm" icon={RefreshCw} onclick={fetchSystemNotices}>
                 Actualizar
-              </button>
+              </Button>
             </div>
 
             {#if loadingSystemNotices}
@@ -155,18 +153,18 @@
               </div>
             {:else if systemNotices.length === 0}
               <div class="empty-state">
-                <span class="material-symbols-rounded empty-icon">check_circle</span>
+                <CheckCircle2 size={40} class="empty-icon" />
                 <p>No se encontraron avisos de sistema.</p>
               </div>
             {:else}
               <div class="notices-list">
                 {#each systemNotices as item}
                   <div class="notice-item system tier-{item.type}">
-                    <span class="material-symbols-rounded type-icon">
-                      {#if item.type === 3}error
-                      {:else if item.type === 2}warning
-                      {:else}info{/if}
-                    </span>
+                    <div class="type-icon">
+                      {#if item.type === 3}<AlertCircle size={18} />
+                      {:else if item.type === 2}<AlertTriangle size={18} />
+                      {:else}<Info size={18} />{/if}
+                    </div>
                     <div class="notice-text">
                       <span class="system-badge">{item.type_name}</span>
                       <p class="message">{item.description}</p>

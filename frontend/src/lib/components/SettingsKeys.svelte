@@ -5,6 +5,7 @@
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
+  import { Key, ShieldOff, Fingerprint, Link2, Trash2 } from 'lucide-svelte';
 
   let keys = $state<any[]>([]);
   let loading = $state(true);
@@ -61,7 +62,7 @@
     <!-- KEYS LIST -->
     <div class="flex-col gap-md">
       <div class="module-tag">
-        <span class="material-symbols-rounded">vpn_key</span>
+        <Key size={18} />
         Llaves Activas
       </div>
       <div class="tonal-list">
@@ -69,7 +70,7 @@
            <div class="skeleton-keys"></div>
         {:else if keys.length === 0}
            <div class="empty-state-box">
-              <span class="material-symbols-rounded">no_encryption</span>
+              <ShieldOff size={48} />
               <p>No hay claves SSH configuradas.</p>
            </div>
         {:else}
@@ -77,7 +78,7 @@
             <div class="key-row">
               <div class="key-main">
                 <div class="key-type-icon tonal">
-                   <span class="material-symbols-rounded">fingerprint</span>
+                   <Fingerprint size={28} />
                 </div>
                 <div class="key-info">
                    <span class="key-title">{key.title}</span>
@@ -86,7 +87,7 @@
                 </div>
               </div>
               <div class="key-actions">
-                <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteKey(key.id)} />
+                <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteKey(key.id)} />
               </div>
             </div>
           {/each}
@@ -97,7 +98,7 @@
     <!-- ADD KEY FORM -->
     <div class="flex-col gap-md">
       <div class="module-tag">
-        <span class="material-symbols-rounded">add_link</span>
+        <Link2 size={18} />
         Añadir Nueva Clave
       </div>
       <div class="form-box">
@@ -118,11 +119,11 @@
            {#if error}
               <p class="error-msg">{error}</p>
            {/if}
-           <div class="form-footer">
-              <Button type="submit" variant="primary" icon="key" disabled={submitting || !newKeyContent}>
+            <div class="form-footer">
+              <Button type="submit" variant="primary" icon={Key} disabled={submitting || !newKeyContent}>
                  {submitting ? 'Añadiendo...' : 'Vincular Clave SSH'}
               </Button>
-           </div>
+            </div>
         </form>
       </div>
     </div>
@@ -134,9 +135,8 @@
 
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .module-tag span { font-size: 1.25rem; }
 
-  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   @media (max-width: 600px) {
     .tonal-list { border-radius: 1.25rem; }
   }
@@ -155,8 +155,7 @@
   .key-row:hover { background: rgba(255,255,255,0.02); }
 
   .key-main { display: flex; align-items: center; gap: 1.5rem; min-width: 0; }
-  .key-type-icon { width: 56px; height: 56px; border-radius: 1.25rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); flex-shrink: 0; }
-  .key-type-icon span { font-size: 2rem; }
+  .key-type-icon { width: 56px; height: 56px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); flex-shrink: 0; }
 
   .key-info { display: flex; flex-direction: column; gap: 0.4rem; overflow: hidden; flex: 1; }
   .key-title { font-size: 1.25rem; font-weight: 900; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -170,7 +169,7 @@
   }
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
-  .field input, .field textarea { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; }
+  .field input, .field textarea { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; }
   .field textarea { font-family: 'JetBrains Mono', monospace; min-height: 160px; font-size: 0.95rem; line-height: 1.6; resize: vertical; }
   .field input:focus, .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 

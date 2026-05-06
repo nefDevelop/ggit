@@ -155,16 +155,16 @@
   .spec-code { font-family: 'JetBrains Mono', monospace; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.4rem 0.75rem; border-radius: 0.75rem; font-size: 0.85rem; font-weight: 700; }
   .time-stamp { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
 
-  .exec-pill { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.03); padding: 0.4rem 1rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05); }
+  .exec-pill { display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.03); padding: 0.4rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(255,255,255,0.05); }
   .exec-pill .val { font-weight: 900; font-size: 1rem; color: var(--text-color); }
   .exec-pill .lab { font-size: 0.6rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); }
 
   .pid-cell code { font-family: 'JetBrains Mono', monospace; font-weight: 900; color: var(--primary-color); }
   .proc-desc { color: var(--text-color); font-weight: 700; max-width: 500px; }
 
-  .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 2.5rem; animation: pulse 1.5s infinite; }
+  .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 1.25rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 
-  .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: rgba(0,0,0,0.1); border-radius: 2rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
+  .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: rgba(0,0,0,0.1); border-radius: 1.25rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
   .empty-monitor-state p { margin: 0; font-size: 1.1rem; font-weight: 600; }
 </style>

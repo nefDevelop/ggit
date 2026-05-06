@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import Button from './ui/Button.svelte';
+  import { X } from 'lucide-svelte';
   
   let { org, onSave, onCancel } = $props();
   
@@ -39,7 +40,7 @@
   <div class="editor-modal island">
     <header class="modal-header">
       <h3>Editar Organización: {org.username}</h3>
-      <Button variant="ghost" icon="close" onclick={onCancel} />
+      <Button variant="ghost" icon={X} onclick={onCancel} />
     </header>
 
     <form onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>

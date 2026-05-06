@@ -5,6 +5,7 @@
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import Input from './ui/Input.svelte';
+  import { PlusCircle, Info, Edit, Trash2 } from 'lucide-svelte';
 
   const repo: any = getContext('repo');
   let labels = $state<any[]>([]);
@@ -80,7 +81,7 @@
 
 <div class="repo-labels">
   <header class="section-actions">
-    <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon="add_circle">
+    <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon={PlusCircle}>
       New Label
     </Button>
   </header>
@@ -126,7 +127,7 @@
       <div class="loading-state">Loading labels...</div>
     {:else if labels.length === 0}
       <div class="empty-state">
-        <span class="material-symbols-rounded">error_outline</span>
+        <Info size={48} />
         <h3>No labels found</h3>
         <p>There are no labels defined yet for this repository.</p>
       </div>
@@ -139,8 +140,8 @@
             </span>
           </div>
           <div class="label-actions">
-            <Button variant="ghost" icon="edit" onclick={() => handleEdit(label)} />
-            <Button variant="ghost" icon="delete" class="danger-btn" onclick={() => deleteLabel(label.id)} />
+            <Button variant="ghost" icon={Edit} onclick={() => handleEdit(label)} />
+            <Button variant="ghost" icon={Trash2} class="danger-btn" onclick={() => deleteLabel(label.id)} />
           </div>
         </Card>
       {/each}
@@ -188,7 +189,7 @@
     align-items: center; 
     justify-content: space-between; 
     padding: 1rem 1.5rem !important; 
-    border-radius: 1rem;
+    border-radius: 0.75rem;
   }
 
   .label-tag { 
@@ -206,5 +207,4 @@
   :global(.danger-btn:hover) { color: var(--error) !important; }
 
   .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
-  .empty-state span { font-size: 3rem; }
 </style>

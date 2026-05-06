@@ -8,6 +8,7 @@
   import Input from "./ui/Input.svelte";
   import Card from "./ui/Card.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
+  import { ShieldCheck, Trash2, Plus } from "lucide-svelte";
 
   let loading = $state(true);
   let patterns = $state<any[]>([]);
@@ -68,7 +69,7 @@
     <PageHeader 
       title={i18n.t("admin.security_global") || "Seguridad Global"}
       subtitle={i18n.t("admin.security_global_desc") || "Gestión de patrones globales para repositorios"}
-      icon="security"
+      icon={ShieldCheck}
     />
 
     <div class="admin-security-body">
@@ -81,7 +82,7 @@
           <div class="pattern-card tonal">
             <div class="pattern-header">
               <span class="pattern-name">{pattern.Name}</span>
-              <Button variant="ghost" icon="delete" class="danger-text" onclick={() => deletePattern(pattern.ID)} />
+              <Button variant="ghost" icon={Trash2} size="sm" class="danger-text" onclick={() => deletePattern(pattern.ID)} />
             </div>
             <code class="regex-box">{pattern.Regex}</code>
             <p class="pattern-desc">{pattern.Description || i18n.t("admin.no_description")}</p>
@@ -98,7 +99,7 @@
       </div>
       <Input label="Descripción" bind:value={newPattern.description} />
       <div class="form-actions">
-        <Button variant="primary" icon="add" onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
+        <Button variant="primary" icon={Plus} onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
           {i18n.t("admin.save_global_pattern")}
         </Button>
       </div>
@@ -108,7 +109,7 @@
 
 <style>
   .admin-security-body {
-    padding: 2rem 1.5rem 4rem;
+    padding: 0 1.5rem 4rem;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -118,14 +119,14 @@
   }
 
   .patterns-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-  .pattern-card { padding: 1.5rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .pattern-card { padding: 1.5rem; border-radius: 0.75rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .pattern-header { display: flex; justify-content: space-between; align-items: center; }
   .pattern-name { font-weight: 850; font-size: 1.1rem; }
   
   .regex-box { font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.08); padding: 0.75rem; border-radius: 0.75rem; word-break: break-all; }
   .pattern-desc { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
 
-  .add-global-pattern { padding: 2rem; border-radius: 2rem; border: 2px dashed var(--md-sys-color-outline-variant); }
+  .add-global-pattern { padding: 2rem; border-radius: 1.25rem; border: 2px dashed var(--md-sys-color-outline-variant); }
   .add-global-pattern h4 { margin: 0 0 1.5rem; font-weight: 900; }
   .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; margin-bottom: 1rem; }
   .form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }

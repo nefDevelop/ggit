@@ -178,7 +178,7 @@
   .repo-stats { display: flex; gap: 2rem; }
   .stat { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; font-weight: 800; color: var(--text-muted); }
 
-  .badge { padding: 0.5rem 1rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; background: rgba(var(--primary-rgb), 0.12); color: var(--primary-color); border: 2px solid rgba(var(--primary-rgb), 0.2); }
+  .badge { padding: 0.5rem 1rem; border-radius: 0.75rem; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; background: rgba(var(--primary-rgb), 0.12); color: var(--primary-color); border: 2px solid rgba(var(--primary-rgb), 0.2); }
   .badge.private { background: rgba(var(--error-rgb), 0.12); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }
 
   .action-row { display: flex; gap: 0.75rem; }

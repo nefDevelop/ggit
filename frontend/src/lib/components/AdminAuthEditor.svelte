@@ -5,6 +5,7 @@
   import Select from './ui/Select.svelte';
   import Checkbox from './ui/Checkbox.svelte';
   import Card from './ui/Card.svelte';
+  import { ArrowLeft, TriangleAlert } from 'lucide-svelte';
   
   let { 
     source = null, 
@@ -110,13 +111,13 @@
 
 <div class="auth-editor">
   <div class="editor-header">
-    <Button variant="ghost" icon="arrow_back" onclick={onCancel}>Volver</Button>
+    <Button variant="ghost" icon={ArrowLeft} onclick={onCancel}>Volver</Button>
     <h2>{isNew ? 'Nueva Fuente de Autenticación' : `Editar: ${name}`}</h2>
   </div>
 
   {#if error}
     <div class="error-banner">
-      <span class="material-symbols-rounded">error</span>
+      <TriangleAlert size={20} />
       {error}
     </div>
   {/if}
@@ -283,14 +284,14 @@
     gap: 1rem;
     background: rgba(0,0,0,0.2);
     padding: 1.5rem;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
   }
 
   .error-banner {
     background: rgba(var(--error-rgb), 0.1);
     color: var(--error);
     padding: 1.25rem;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
     display: flex;
     align-items: center;
     gap: 1rem;

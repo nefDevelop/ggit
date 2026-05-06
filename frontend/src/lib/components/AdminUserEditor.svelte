@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import Button from "./ui/Button.svelte";
   import { UserCog, UserPlus, AlertCircle, RefreshCw, Save } from "lucide-svelte";
 
   let {
@@ -225,17 +226,17 @@
       {/if}
 
       <div class="form-actions">
-        <button type="button" class="btn btn-ghost" onclick={onCancel}>
+        <Button variant="ghost" onclick={onCancel}>
           {i18n.t('cancel')}
-        </button>
-        <button type="submit" class="btn btn-primary btn-lg" disabled={submitting}>
+        </Button>
+        <Button type="submit" variant="primary" size="lg" disabled={submitting}>
           {#if submitting}
             <RefreshCw size={20} class="spin" />
           {:else}
             <Save size={20} />
           {/if}
           {submitting ? i18n.t('settings.saving') : i18n.t('admin.save_user')}
-        </button>
+        </Button>
       </div>
     </form>
   {/if}
@@ -244,7 +245,7 @@
 <style>
   .user-editor {
     padding: 3rem;
-    border-radius: 3rem;
+    border-radius: 2rem;
     background: rgba(var(--surface-rgb), 0.5);
     border: 1px solid var(--md-sys-color-outline-variant);
     backdrop-filter: blur(24px);
@@ -255,7 +256,7 @@
 
   .editor-header { margin-bottom: 4rem; }
   .title-row { display: flex; align-items: center; gap: 2rem; }
-  :global(.icon-hero) { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; }
+  :global(.icon-hero) { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 1rem; }
   
   h3 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
@@ -268,7 +269,7 @@
 
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.9rem; font-weight: 700; color: var(--text-color); margin-left: 0.5rem; }
-  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.05rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1rem; color: var(--text-color); font-size: 1.05rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
   .field input:focus { border-color: var(--primary-color); outline: none; background: rgba(var(--primary-rgb), 0.05); box-shadow: 0 0 0 5px rgba(var(--primary-rgb), 0.15); }
   .hint { margin: 0.25rem 0 0 0.5rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; font-style: italic; }
 
@@ -281,7 +282,7 @@
     padding: 1.5rem;
     background: var(--surface-variant);
     border: 2px solid transparent;
-    border-radius: 1.75rem;
+    border-radius: 1.25rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
