@@ -125,7 +125,12 @@
             <header class="release-card-header">
                <div class="header-main-info">
                  <div class="title-row-flat">
-                   <h3>{release.title || release.tag_name}</h3>
+                   <h3>
+                     {release.title || release.tag_name}
+                     <a href={`/${username}/${reponame}/src/tag/${release.tag_name}`} class="tag-icon-link" title="View tag on Git">
+                       <span class="material-symbols-rounded">sell</span>
+                     </a>
+                   </h3>
                    <div class="badge-row">
                      {#if release.is_draft}
                        <Badge variant="neutral">Draft</Badge>
@@ -139,10 +144,12 @@
                  </div>
 
                  <div class="meta-row">
-                   <a href={`/${username}/${reponame}/src/tag/${release.tag_name}`} class="tag clickable" title="View tag on Git">
-                     <span class="material-symbols-rounded">sell</span>
-                     {release.tag_name}
-                   </a>
+                   {#if release.title && release.title !== release.tag_name}
+                     <span class="tag-subtext">
+                        <span class="material-symbols-rounded">tag</span>
+                        {release.tag_name}
+                     </span>
+                   {/if}
                    {#if release.target}
                      <span class="target">
                        <span class="material-symbols-rounded">merge_type</span>
@@ -254,13 +261,16 @@
   
   .release-item { position: relative; padding-bottom: 2rem; transition: transform 0.2s; }
   .release-item.is-draft { opacity: 0.8; }
-  .release-marker { position: absolute; left: -2.78rem; top: 2rem; width: 14px; height: 14px; border-radius: 50%; background: var(--md-sys-color-outline-variant); border: 4px solid var(--md-sys-color-background); z-index: 1; transition: all 0.3s; }
+  .release-marker { position: absolute; left: -2.85rem; top: 2rem; width: 14px; height: 14px; border-radius: 50%; background: var(--md-sys-color-outline-variant); border: 4px solid var(--md-sys-color-background); z-index: 1; transition: all 0.3s; }
   .release-item:hover .release-marker { background: var(--md-sys-color-primary); transform: scale(1.2); }
 
   .release-card-header { padding: 2rem; display: flex; justify-content: space-between; align-items: flex-start; background: var(--md-sys-color-background); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   
-  .title-row-flat { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; min-width: 400px; }
-  .title-row-flat h3 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; color: var(--md-sys-color-on-surface); }
+  .title-row-flat { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .title-row-flat h3 { margin: 0; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; color: var(--md-sys-color-on-surface); display: flex; align-items: center; gap: 0.75rem; }
+  .tag-icon-link { color: var(--md-sys-color-primary); display: flex; align-items: center; opacity: 0.7; transition: opacity 0.2s; }
+  .tag-icon-link:hover { opacity: 1; }
+  .tag-icon-link .material-symbols-rounded { font-size: 1.5rem; }
   
   .badge-row { display: flex; gap: 0.5rem; }
 
