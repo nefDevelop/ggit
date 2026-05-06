@@ -39,7 +39,17 @@
   />
 
   {#if loading}
-    <div class="skeleton-dashboard"></div>
+    <div class="stats-grid">
+      {#each Array(8) as _}
+        <div class="stat-premium-card skeleton-card">
+          <div class="card-icon skeleton-pulse"></div>
+          <div class="card-data">
+            <div class="skeleton-pulse val-skeleton"></div>
+            <div class="skeleton-pulse lab-skeleton"></div>
+          </div>
+        </div>
+      {/each}
+    </div>
   {:else if stats}
     <div class="stats-grid">
       <div class="stat-premium-card island tonal-hover role-primary">
@@ -141,7 +151,12 @@
 
 
 
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+  .stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 1.5rem; 
+    animation: fadeIn 0.4s ease-out;
+  }
   
   .stat-premium-card { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }
   .stat-premium-card:hover { transform: translateY(-8px) scale(1.02); background: rgba(255,255,255,0.03); box-shadow: var(--shadow-xl); }
@@ -167,8 +182,12 @@
   .error-text h3 { margin: 0 0 0.75rem 0; font-size: 1.75rem; font-weight: 900; }
   .error-text p { margin: 0 0 2rem 0; color: var(--text-muted); font-size: 1.1rem; max-width: 500px; line-height: 1.5; }
 
-  .skeleton-dashboard { height: 500px; background: var(--surface-variant); border-radius: 3rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
+  .skeleton-card { border-color: var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.01); pointer-events: none; }
+  .skeleton-pulse { background: var(--md-sys-color-surface-variant); animation: pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
+  .val-skeleton { height: 2rem; width: 4rem; margin-bottom: 0.5rem; }
+  .lab-skeleton { height: 0.8rem; width: 6rem; }
+
+  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
   @media (max-width: 600px) {
     .premium-error-zone { flex-direction: column; text-align: center; padding: 2rem; }

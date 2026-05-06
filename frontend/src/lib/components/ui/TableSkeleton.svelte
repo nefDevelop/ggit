@@ -13,7 +13,7 @@
   <tr class="skeleton-row">
     <td colspan={columns}>
       <div class="row-flex">
-        <Skeleton height="2rem" radius="0.75rem" />
+        <Skeleton height="3.5rem" radius="0.75rem" />
       </div>
     </td>
   </tr>
