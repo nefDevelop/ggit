@@ -106,7 +106,7 @@
       target: target,
       title: title,
       content: note,
-      draft: !publish && isDraft ? "on" : "", // Legacy form compatibility if needed, but our API uses bool or string
+      draft: !publish && isDraft,
       prerelease: isPrerelease,
       files: attachments.map((a) => a.uuid),
     };

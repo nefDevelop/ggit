@@ -1,5 +1,9 @@
 <script lang="ts">
-  import ReleaseManager from '$lib/components/ReleaseManager.svelte';
+  import RepoReleases from '$lib/components/RepoReleases.svelte';
+  import { page } from '$app/state';
+
+  let username = $derived(page.params.username);
+  let reponame = $derived(page.params.reponame);
 </script>
 
 <svelte:head>
@@ -7,13 +11,11 @@
 </svelte:head>
 
 <div class="page-container">
-  <ReleaseManager />
+  <RepoReleases {username} {reponame} />
 </div>
 
 <style>
   .page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    padding: 0;
   }
 </style>
