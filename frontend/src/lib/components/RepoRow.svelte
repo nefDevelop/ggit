@@ -64,7 +64,7 @@
   
   <div class="repo-avatar-container">
     {#if repo.avatar_url && !avatarError}
-      <img src={repo.avatar_url} alt={repo.name} class="repo-avatar" onerror={() => avatarError = true} />
+      <img src={repo.avatar_url} alt={repo.name} class="repo-avatar" loading="lazy" onerror={() => avatarError = true} />
     {/if}
     <div class="repo-icon-placeholder" style="background-color: {getLanguageColor(repo.language || 'Plain Text')}20; color: {getLanguageColor(repo.language || 'Plain Text')}">
       <Package size={24} />
@@ -73,7 +73,7 @@
 
   <div class="main-info">
     <div class="title-line">
-      <a href="/{repo.full_name}" class="repo-name" onclick={(e) => e.stopPropagation()}>
+      <a href="/{repo.full_name}" class="repo-name" data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
         {repo.name}
       </a>
       {#if repo.empty}

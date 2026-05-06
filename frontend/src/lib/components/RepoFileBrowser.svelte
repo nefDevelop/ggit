@@ -32,10 +32,16 @@
     } else {
       const language = repoData.name.split('.').pop() || '';
       let html: string;
-      try {
-        html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
-      } catch (e) {
-        html = hljs.highlightAuto(repoData.content).value;
+      
+      // Skip highlighting for very large files to prevent UI thread lock
+      if (repoData.content.length > 100000) {
+        html = repoData.content.replace(/[&<>"']/g, (m: string) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m] || m));
+      } else {
+        try {
+          html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
+        } catch (e) {
+          html = hljs.highlightAuto(repoData.content).value;
+        }
       }
       lines = html.split('\n');
     }
@@ -178,9 +184,29 @@
 
 <div class="workspace-area">
   {#if loading}
-    <div class="skeleton-grid">
-        <div class="skeleton-main"></div>
-        <div class="skeleton-side"></div>
+    <div class="technical-grid skeleton-mode">
+      <div class="main-column">
+        <div class="skeleton-pulse last-commit-skeleton"></div>
+        <div class="content-view skeleton-table-view">
+          {#each Array(8) as _}
+            <div class="skeleton-row-item">
+              <div class="skeleton-pulse icon-placeholder"></div>
+              <div class="skeleton-pulse text-placeholder"></div>
+              <div class="skeleton-pulse msg-placeholder"></div>
+            </div>
+          {/each}
+        </div>
+      </div>
+      <aside class="side-column">
+        <div class="side-section">
+          <div class="skeleton-pulse title-placeholder"></div>
+          <div class="skeleton-pulse text-placeholder" style="height: 4rem;"></div>
+        </div>
+        <div class="side-section">
+          <div class="skeleton-pulse title-placeholder"></div>
+          <div class="skeleton-pulse lang-bar-placeholder"></div>
+        </div>
+      </aside>
     </div>
   {:else if error}
     <div class="empty-state">
@@ -263,7 +289,7 @@ git push -u origin main</code></pre>
                         {:else}
                           <FileText size={18} class="icon-blob" />
                         {/if}
-                        <a href={`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`} onclick={(e) => e.stopPropagation()}>
+                        <a href={`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`} data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
                           {entry.name}
                         </a>
                       </td>
@@ -690,9 +716,21 @@ git push -u origin main</code></pre>
     .desktop-only { display: none; }
   }
 
-  .skeleton-grid { display: grid; grid-template-columns: 1fr 280px; gap: 2.5rem; height: 500px; }
-  .skeleton-main, .skeleton-side { background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+  .skeleton-mode { pointer-events: none; }
+  .skeleton-pulse { background: var(--md-sys-color-surface-variant); animation: pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
+  
+  .last-commit-skeleton { height: 60px; width: 100%; margin-bottom: 1.5rem; border-radius: 1rem; }
+  .skeleton-table-view { background: transparent; border-color: var(--md-sys-color-outline-variant); }
+  
+  .skeleton-row-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .icon-placeholder { width: 20px; height: 20px; flex-shrink: 0; }
+  .text-placeholder { height: 1rem; width: 150px; flex-shrink: 0; }
+  .msg-placeholder { height: 0.8rem; width: 100%; opacity: 0.5; }
+  
+  .title-placeholder { height: 1rem; width: 100px; margin-bottom: 1rem; }
+  .lang-bar-placeholder { height: 12px; width: 100%; border-radius: 6px; }
+
+  @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
   .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
   .empty-state-push { padding: 5rem 2rem; text-align: center; }

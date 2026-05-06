@@ -284,7 +284,7 @@
                 <div class="org-grid">
                     {#each data.organizations as org}
                         <a href="/org/{org.username}" class="org-chip" title={org.full_name || org.username}>
-                            <img src={org.avatar_url} alt={org.username} />
+                            <img src={org.avatar_url} alt={org.username} loading="lazy" />
                         </a>
                     {/each}
                 </div>
