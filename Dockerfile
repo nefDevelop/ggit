@@ -58,7 +58,7 @@ VOLUME ["/data", "/backup"]
 EXPOSE 22 3005
 
 # Healthcheck apuntando al nuevo puerto
-HEALTHCHECK CMD (curl --noproxy localhost -o /dev/null -sS http://localhost:3005/healthcheck) || exit 1
+HEALTHCHECK CMD (curl --noproxy localhost -o /dev/null -sS http://localhost:3005/health) || exit 1
 
 ENTRYPOINT ["/app/ggit/docker/start.sh"]
 CMD ["/usr/bin/s6-svscan", "/app/ggit/docker/s6/"]

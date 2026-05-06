@@ -61,6 +61,10 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 		r.Use(otelgin.Middleware("ggit"))
 	}
 
+	// API v2
+	v2Group := r.Group("/api/v2", context.APIContexter())
+	apiv2.RegisterRoutes(v2Group)
+
 	// Git HTTP
 	repoHTTP := r.Group("/:username/:reponame", repo.HTTPContexter(repo.NewStore()))
 	{
@@ -83,10 +87,6 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 			gitSuffix.GET("/objects/*path", repo.HTTP)
 		}
 	}
-
-	// API v2
-	v2Group := r.Group("/api/v2", context.APIContexter())
-	apiv2.RegisterRoutes(v2Group)
 
 	// Swagger UI
 	registerSwagger(r.Engine)
