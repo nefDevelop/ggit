@@ -201,11 +201,11 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		releaseGroup := repo.Group("/releases")
 		{
 			releaseGroup.GET("", ginx.Handle(ListReleases))
-			releaseGroup.POST("", ginx.Handle(CreateRelease))
+			releaseGroup.POST("", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRelease))
 			releaseGroup.GET("/:id", ginx.Handle(GetRelease))
-			releaseGroup.PATCH("/:id", ginx.Handle(UpdateRelease))
-			releaseGroup.DELETE("/:id", ginx.Handle(DeleteRelease))
-			releaseGroup.POST("/attachments", ginx.Handle(UploadReleaseAttachment))
+			releaseGroup.PATCH("/:id", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(UpdateRelease))
+			releaseGroup.DELETE("/:id", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(DeleteRelease))
+			releaseGroup.POST("/attachments", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(UploadReleaseAttachment))
 		}
 
 		repo.GET("/branches", ginx.Handle(ListRepoBranches))

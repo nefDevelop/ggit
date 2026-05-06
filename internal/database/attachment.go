@@ -18,15 +18,15 @@ import (
 
 // Attachment represent a attachment of issue/comment/release.
 type Attachment struct {
-	ID        int64  `gorm:"primaryKey"`
-	UUID      string `gorm:"unique;not null"`
-	IssueID   int64  `gorm:"index"`
-	CommentID int64  `gorm:"index"`
-	ReleaseID int64  `gorm:"index"`
-	Name      string `gorm:"not null"`
+	ID        int64  `json:"id" gorm:"primaryKey"`
+	UUID      string `json:"uuid" gorm:"unique;not null"`
+	IssueID   int64  `json:"issue_id" gorm:"index"`
+	CommentID int64  `json:"comment_id" gorm:"index"`
+	ReleaseID int64  `json:"release_id" gorm:"index"`
+	Name      string `json:"name" gorm:"not null"`
 
 	Created     time.Time `json:"-" gorm:"-"`
-	CreatedUnix int64
+	CreatedUnix int64     `json:"created_at"`
 }
 
 // BeforeCreate implements the GORM create hook.
