@@ -48,7 +48,18 @@
   }
 
   onMount(() => {
-    loadPath(adrFolder);
+    // Check if the folder exists in root before trying to load it
+    const hasADR = repo.entries?.some((e: any) => e.name === adrFolder && e.type === 'dir');
+    const hasDocs = repo.entries?.some((e: any) => e.name === 'docs' && e.type === 'dir');
+
+    if (hasADR) {
+      loadPath(adrFolder);
+    } else if (hasDocs) {
+      loadPath('docs');
+    } else {
+      loading = false;
+      error = `No documentation folder found (looked for "${adrFolder}" or "docs").`;
+    }
   });
 
   function goBack() {

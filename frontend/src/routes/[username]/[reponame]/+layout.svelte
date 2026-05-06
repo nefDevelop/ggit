@@ -14,6 +14,7 @@
   let currentPath = $derived(page.url.pathname);
 
   let repoData = $state<any>(null);
+  let rootEntries = $state<any[]>([]);
   let gitStats = $state<any>({ commits: 0, branches: 0, tags: 0, releases: 0 });
   let languages = $state<any>(null);
   let loading = $state(true);
@@ -32,6 +33,7 @@
       if (repoRes.ok) {
         const res = await repoRes.json();
         repoData = res.repository;
+        rootEntries = res.entries || [];
         if (res.stats) {
             gitStats = res.stats;
         }
@@ -54,6 +56,7 @@
 
   setContext('repo', {
     get data() { return repoData; },
+    get entries() { return rootEntries; },
     get stats() { return gitStats; },
     get languages() { return languages; },
     get loading() { return loading; }
