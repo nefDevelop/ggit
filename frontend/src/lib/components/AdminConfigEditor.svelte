@@ -91,7 +91,6 @@
   
   .modal-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.05); }
   .title-wrap { display: flex; align-items: center; gap: 1rem; }
-  .title-wrap span { font-size: 1.5rem; color: var(--primary-color); }
   .modal-header h3 { margin: 0; font-size: 1.25rem; font-weight: 900; letter-spacing: -0.02em; }
 
   form { display: flex; flex-direction: column; overflow: hidden; }
@@ -111,7 +110,6 @@
   .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; justify-content: space-between; gap: 2rem; background: rgba(0,0,0,0.1); }
   
   .warning-box { display: flex; align-items: center; gap: 0.75rem; color: #fbbf24; }
-  .warning-box span { font-size: 1.5rem; }
   .warning-box p { margin: 0; font-size: 0.85rem; font-weight: 700; max-width: 300px; line-height: 1.3; }
 
   .actions { display: flex; gap: 1rem; }

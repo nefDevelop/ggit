@@ -150,7 +150,6 @@
   .stat-premium-card.role-error .card-icon { color: var(--error); background: var(--md-sys-color-error-container); }
 
   .card-icon { width: 64px; height: 64px; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; border: 1px solid var(--md-sys-color-outline-variant); }
-  .card-icon span { font-size: 2.5rem; }
 
   .card-data { display: flex; flex-direction: column; gap: 0.1rem; }
   .card-data .value { font-size: 2rem; font-weight: 950; color: var(--text-color); letter-spacing: -0.02em; }

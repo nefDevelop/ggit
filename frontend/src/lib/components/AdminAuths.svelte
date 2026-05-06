@@ -148,7 +148,6 @@
   
   .source-cell { display: flex; align-items: center; gap: 1.25rem; }
   .source-icon { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 0.75rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
-  .source-icon span { font-size: 1.75rem; }
   
   .source-info { display: flex; flex-direction: column; }
   .source-info strong { font-size: 1.1rem; font-weight: 800; color: var(--text-color); }

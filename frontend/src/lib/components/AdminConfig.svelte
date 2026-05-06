@@ -193,7 +193,6 @@
   .special-action-card { padding: 3rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
   @media (max-width: 600px) {
     .special-action-card { padding: 1.5rem; border-radius: 1.5rem; }
-    .action-header span { font-size: 1.5rem; }
     .action-header h4 { font-size: 1.1rem; }
     .field-row { grid-template-columns: 1fr; }
     .form-actions :global(button) { width: 100%; }
