@@ -186,11 +186,11 @@
                          </a>
                        {/each}
                      {/if}
-                     <a href={`/${username}/${reponame}/archive/${release.tag_name}.zip`} class="asset-item source">
+                     <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="asset-item source" download>
                        <span class="material-symbols-rounded">zip_box</span>
                        <span class="name">Source code (zip)</span>
                      </a>
-                     <a href={`/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="asset-item source">
+                     <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="asset-item source" download>
                        <span class="material-symbols-rounded">archive</span>
                        <span class="name">Source code (tar.gz)</span>
                      </a>
