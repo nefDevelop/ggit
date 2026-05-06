@@ -32,8 +32,11 @@
 
 	onMount(() => {
 		const init = async () => {
-			await checkAuth();
-			const installed = await checkInstallation();
+			// Run auth and installation checks in parallel to save time
+			const [authResult, installResult] = await Promise.all([
+				checkAuth(),
+				checkInstallation()
+			]);
 
 			// Cargar el idioma guardado o el del navegador
 			const savedLocale =
@@ -44,9 +47,9 @@
 
 			// Redirection Logic
 			const path = $page.url.pathname;
-			if (!installed && path !== "/install") {
+			if (!installResult && path !== "/install") {
 				goto("/install");
-			} else if (installed && path === "/install") {
+			} else if (installResult && path === "/install") {
 				goto("/");
 			}
 

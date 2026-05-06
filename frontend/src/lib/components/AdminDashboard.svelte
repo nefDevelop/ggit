@@ -5,10 +5,17 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import PageHeader from './ui/PageHeader.svelte';
-  import { 
-    BarChart3, Users, Building2, Book, Key, 
-    Star, Bell, GitMerge, Eye, CloudOff, RefreshCw 
-  } from 'lucide-svelte';
+  import BarChart3 from "lucide-svelte/icons/bar-chart-3";
+  import Users from "lucide-svelte/icons/users";
+  import Building2 from "lucide-svelte/icons/building-2";
+  import Book from "lucide-svelte/icons/book";
+  import Key from "lucide-svelte/icons/key";
+  import Star from "lucide-svelte/icons/star";
+  import Bell from "lucide-svelte/icons/bell";
+  import GitMerge from "lucide-svelte/icons/git-merge";
+  import Eye from "lucide-svelte/icons/eye";
+  import CloudOff from "lucide-svelte/icons/cloud-off";
+  import RefreshCw from "lucide-svelte/icons/refresh-cw";
 
   let stats = $state<any>(null);
   let loading = $state(true);

@@ -8,6 +8,21 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [sveltekit()],
+		build: {
+			target: 'esnext',
+			cssMinify: true,
+			rollupOptions: {
+				output: {
+					manualChunks: (id) => {
+						if (id.includes('lucide-svelte')) return 'icons';
+						if (id.includes('highlight.js')) return 'hljs';
+						if (id.includes('marked') || id.includes('dompurify')) return 'utils';
+						if (id.includes('node_modules')) return 'vendor';
+					}
+				}
+			},
+			chunkSizeWarningLimit: 1000
+		},
 		server: {
 			proxy: {
 				'/api': {

@@ -49,6 +49,7 @@
     return list;
   });
 
+  const clipId = $derived(`clip-${hash}`);
   const bgColor = $derived(`rgba(${parseInt(palette[0].slice(1,3), 16)}, ${parseInt(palette[0].slice(3,5), 16)}, ${parseInt(palette[0].slice(5,7), 16)}, 0.15)`);
 </script>
 
@@ -61,12 +62,12 @@
   style="background: {bgColor}; max-width: 100%; height: auto;"
 >
   <defs>
-    <clipPath id="circle-clip">
+    <clipPath id={clipId}>
       <circle cx="50" cy="50" r="50" />
     </clipPath>
   </defs>
 
-  <g clip-path="url(#circle-clip)">
+  <g clip-path="url(#{clipId})">
     {#each shapes as s}
       {#if s.type === 0}
         <circle cx={s.x} cy={s.y} r={s.r} fill={s.color} fill-opacity={s.opacity} />

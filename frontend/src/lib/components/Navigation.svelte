@@ -1,9 +1,25 @@
 <script lang="ts">
-  import { 
-    LayoutGrid, Search, ShieldCheck, UserRoundCog, User, BookText, 
-    Building2, Lock, Settings, Activity, Hammer, ScrollText, 
-    Shield, Trash2, Bell, Palette, Mail, Key, Coins, LogOut, Plus 
-  } from "lucide-svelte";
+  import LayoutGrid from "lucide-svelte/icons/layout-grid";
+  import Search from "lucide-svelte/icons/search";
+  import ShieldCheck from "lucide-svelte/icons/shield-check";
+  import UserRoundCog from "lucide-svelte/icons/user-round-cog";
+  import User from "lucide-svelte/icons/user";
+  import BookText from "lucide-svelte/icons/book-text";
+  import Building2 from "lucide-svelte/icons/building-2";
+  import Lock from "lucide-svelte/icons/lock";
+  import Settings from "lucide-svelte/icons/settings";
+  import Activity from "lucide-svelte/icons/activity";
+  import Hammer from "lucide-svelte/icons/hammer";
+  import ScrollText from "lucide-svelte/icons/scroll-text";
+  import Shield from "lucide-svelte/icons/shield";
+  import Trash2 from "lucide-svelte/icons/trash-2";
+  import Bell from "lucide-svelte/icons/bell";
+  import Palette from "lucide-svelte/icons/palette";
+  import Mail from "lucide-svelte/icons/mail";
+  import Key from "lucide-svelte/icons/key";
+  import Coins from "lucide-svelte/icons/coins";
+  import LogOut from "lucide-svelte/icons/log-out";
+  import Plus from "lucide-svelte/icons/plus";
   import { apiFetch } from "$lib/api";
   import { authState } from "$lib/auth.svelte";
   import { i18n } from "$lib/i18n.svelte";
