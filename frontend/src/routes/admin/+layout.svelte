@@ -20,6 +20,10 @@
   ].map(item => ({ ...item, label: item.name }));
 </script>
 
+<svelte:head>
+  <title>{adminSubItems.find(i => i.id === page.url.pathname)?.name || 'Admin'} · Ggit</title>
+</svelte:head>
+
 <div class="admin-layout-container" class:edge-to-edge={page.url.pathname.startsWith('/admin')}>
   <main class="admin-content-full">
     {@render children()}

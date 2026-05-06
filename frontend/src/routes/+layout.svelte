@@ -77,6 +77,7 @@
 </script>
 
 <svelte:head>
+	<title>Ggit</title>
 	<link rel="icon" href={favicon} />
 	<script>
 		// Prevent FOUC (Flash of Unstyled Content) by setting theme synchronously

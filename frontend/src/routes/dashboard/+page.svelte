@@ -11,6 +11,10 @@
   });
 </script>
 
+<svelte:head>
+  <title>Dashboard · Ggit</title>
+</svelte:head>
+
 {#if authState.isAuthenticated}
   <DashboardView />
 {:else}

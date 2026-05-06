@@ -73,6 +73,10 @@
   });
 </script>
 
+<svelte:head>
+  <title>{username} · Ggit</title>
+</svelte:head>
+
 <div class="profile-page">
   {#if error && !user}
     <div class="error-container">
