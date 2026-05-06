@@ -98,11 +98,19 @@ func (r *Release) LoadAttributes() error {
 func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
 	attachments := make([]*apiv2types.AttachmentResponse, len(r.Attachments))
 	for i, a := range r.Attachments {
+		downloadURL := conf.Server.ExternalURL + "/api/v2/attachments/" + a.UUID
 		attachments[i] = &apiv2types.AttachmentResponse{
 			ID:          a.ID,
 			UUID:        a.UUID,
 			Name:        a.Name,
-			DownloadURL: conf.Server.ExternalURL + "/api/v2/attachments/" + a.UUID,
+			Size:        a.Size,
+			DownloadURL: downloadURL,
+
+			// Legacy
+			NamePascal:        a.Name,
+			UUIDPascal:        a.UUID,
+			DownloadURLPascal: downloadURL,
+			SizePascal:        a.Size,
 		}
 	}
 
@@ -205,9 +213,11 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 		}
 
 		if len(uuids) > 0 {
-			if err = tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID).Error; err != nil {
-				return errors.Newf("link attachments: %v", err)
+			res := tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID)
+			if res.Error != nil {
+				return errors.Newf("link attachments: %v", res.Error)
 			}
+			log.Trace("Linked %d attachments to release [id: %d]", res.RowsAffected, r.ID)
 		}
 		return nil
 	})
@@ -346,9 +356,11 @@ func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bo
 		}
 
 		if len(uuids) > 0 {
-			if err = tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID).Error; err != nil {
-				return errors.Newf("link attachments: %v", err)
+			res := tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID)
+			if res.Error != nil {
+				return errors.Newf("link attachments: %v", res.Error)
 			}
+			log.Trace("Linked %d attachments to release [id: %d]", res.RowsAffected, r.ID)
 		}
 		return nil
 	})

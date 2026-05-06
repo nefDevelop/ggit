@@ -18,7 +18,10 @@ import (
 
 // GetRepoArchive serves the repository as a zip or tar.gz archive.
 func GetRepoArchive(c *context.APIContext) {
-	archiveName := c.Params("*")
+	archiveName := c.Params("name")
+	if archiveName == "" {
+		archiveName = c.Params("*")
+	}
 	var (
 		ext           string
 		archivePath   string
@@ -92,7 +95,10 @@ func GetRepoMediaFile(c *context.APIContext) {
 
 func serveRawFile(c *context.APIContext, isMedia bool) {
 	refName := c.Params("ref")
-	treePath := strings.TrimPrefix(c.Params("*"), "/")
+	treePath := strings.TrimPrefix(c.Params("path"), "/")
+	if treePath == "" {
+		treePath = strings.TrimPrefix(c.Params("*"), "/")
+	}
 
 	gitRepo := c.Repo.GitRepo
 	var (

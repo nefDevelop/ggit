@@ -24,6 +24,7 @@ type Attachment struct {
 	CommentID int64  `json:"comment_id" gorm:"index"`
 	ReleaseID int64  `json:"release_id" gorm:"index"`
 	Name      string `json:"name" gorm:"not null"`
+	Size      int64  `json:"size" gorm:"not null;default:0"`
 
 	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64     `json:"created_at"`
@@ -74,6 +75,13 @@ func NewAttachment(name string, buf []byte, file multipart.File) (_ *Attachment,
 	} else if _, err = io.Copy(fw, file); err != nil {
 		return nil, errors.Newf("copy: %v", err)
 	}
+
+	// Get file size
+	fi, err := fw.Stat()
+	if err != nil {
+		return nil, errors.Newf("stat: %v", err)
+	}
+	attach.Size = fi.Size()
 
 	if err = Handle.db.Create(attach).Error; err != nil {
 		return nil, err

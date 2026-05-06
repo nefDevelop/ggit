@@ -65,6 +65,14 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	v2Group := r.Group("/api/v2", context.APIContexter())
 	apiv2.RegisterRoutes(v2Group)
 
+	// Repository Download Routes (Non-API)
+	repoDownloads := r.Group("/:username/:reponame", context.Toggle(&context.ToggleOptions{SignInRequired: false}), context.RepoAssignment())
+	{
+		repoDownloads.GET("/archive/*name", context.RepoRef(), ginx.Handle(apiv2.GetRepoArchive))
+		repoDownloads.GET("/raw/:ref/*path", ginx.Handle(apiv2.GetRepoRawFile))
+		repoDownloads.GET("/media/:ref/*path", ginx.Handle(apiv2.GetRepoMediaFile))
+	}
+
 	// Git HTTP
 	repoHTTP := r.Group("/:username/:reponame", repo.HTTPContexter(repo.NewStore()))
 	{

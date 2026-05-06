@@ -115,7 +115,14 @@ type AttachmentResponse struct {
 	ID          int64  `json:"id"`
 	UUID        string `json:"uuid"`
 	Name        string `json:"name"`
+	Size        int64  `json:"size"`
 	DownloadURL string `json:"download_url"`
+
+	// Legacy support
+	NamePascal        string `json:"Name"`
+	UUIDPascal        string `json:"UUID"`
+	DownloadURLPascal string `json:"DownloadURL"`
+	SizePascal        int64  `json:"Size"`
 }
 
 // RepositoryReleaseResponse represents a release of a repository.

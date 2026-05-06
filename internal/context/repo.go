@@ -443,6 +443,7 @@ func RequireRepoAdmin() gin.HandlerFunc {
 		gctx := c.MustGet("context").(*Context)
 		if !gctx.IsLogged || (!gctx.Repo.IsAdmin() && !gctx.User.IsAdmin) {
 			gctx.NotFound()
+			c.Abort()
 			return
 		}
 	}
@@ -453,6 +454,7 @@ func RequireRepoWriter() gin.HandlerFunc {
 		gctx := c.MustGet("context").(*Context)
 		if !gctx.IsLogged || (!gctx.Repo.IsWriter() && !gctx.User.IsAdmin) {
 			gctx.NotFound()
+			c.Abort()
 			return
 		}
 	}
@@ -463,6 +465,7 @@ func GitHookService() gin.HandlerFunc {
 		gctx := c.MustGet("context").(*Context)
 		if !gctx.User.CanEditGitHook() {
 			gctx.NotFound()
+			c.Abort()
 			return
 		}
 	}
