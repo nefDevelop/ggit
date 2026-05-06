@@ -120,6 +120,7 @@ type RepositoryReleaseResponse struct {
 	Draft           bool          `json:"draft"`
 	Prerelease      bool          `json:"prerelease"`
 	Author          *UserResponse `json:"author"`
+	Attachments     []any         `json:"attachments"`
 	CreatedAt       time.Time     `json:"created_at"`
 }
 

@@ -168,7 +168,10 @@ func UpdateRelease(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, rel)
+	// Load attributes (like Publisher and Attachments) to ensure standard API response
+	_ = rel.LoadAttributes()
+
+	c.JSON(http.StatusOK, rel.APIFormat())
 }
 
 // DeleteRelease deletes a release.

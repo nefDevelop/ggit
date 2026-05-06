@@ -91,6 +91,11 @@ func (r *Release) LoadAttributes() error {
 // This method assumes some fields assigned with values:
 // Required - Publisher
 func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
+	attachments := make([]any, len(r.Attachments))
+	for i, a := range r.Attachments {
+		attachments[i] = a
+	}
+
 	return &apiv2types.RepositoryReleaseResponse{
 		ID:              r.ID,
 		TagName:         r.TagName,
@@ -100,6 +105,7 @@ func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
 		Draft:           r.IsDraft,
 		Prerelease:      r.IsPrerelease,
 		Author:          r.Publisher.APIFormat(),
+		Attachments:     attachments,
 		CreatedAt:       r.Created,
 	}
 }
