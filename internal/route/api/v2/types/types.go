@@ -127,9 +127,19 @@ type RepositoryReleaseResponse struct {
 	Body            string                `json:"body"`
 	Draft           bool                  `json:"draft"`
 	Prerelease      bool                  `json:"prerelease"`
+	Sha1            string                `json:"sha1"`
 	Author          *UserResponse         `json:"author"`
 	Attachments     []*AttachmentResponse `json:"attachments"`
 	CreatedAt       int64                 `json:"created_at"`
+
+	// Legacy frontend compatibility
+	TagNamePascal    string `json:"TagName"`
+	TitlePascal      string `json:"Title"`
+	NotePascal       string `json:"Note"`
+	IsDraftPascal    bool   `json:"IsDraft"`
+	IsPrereleasePascal bool   `json:"IsPrerelease"`
+	Sha1Pascal       string `json:"Sha1"`
+	CreatedPascal    time.Time `json:"Created"`
 }
 
 // RepositoryHookResponse represents a webhook for a repository.

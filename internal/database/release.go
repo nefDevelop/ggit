@@ -56,6 +56,10 @@ func (r *Release) AfterFind(_ *gorm.DB) error {
 }
 
 func (r *Release) loadAttributes(tx *gorm.DB) (err error) {
+	if r.Created.IsZero() && r.CreatedUnix > 0 {
+		r.Created = time.Unix(r.CreatedUnix, 0).Local()
+	}
+
 	if r.Repo == nil {
 		r.Repo, err = getRepositoryByID(tx, r.RepoID)
 		if err != nil {
@@ -110,9 +114,19 @@ func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
 		Body:            r.Note,
 		Draft:           r.IsDraft,
 		Prerelease:      r.IsPrerelease,
+		Sha1:            r.Sha1,
 		Author:          r.Publisher.APIFormat(),
 		Attachments:     attachments,
 		CreatedAt:       r.CreatedUnix,
+
+		// Legacy support
+		TagNamePascal:    r.TagName,
+		TitlePascal:      r.Title,
+		NotePascal:       r.Note,
+		IsDraftPascal:    r.IsDraft,
+		IsPrereleasePascal: r.IsPrerelease,
+		Sha1Pascal:       r.Sha1,
+		CreatedPascal:    r.Created,
 	}
 }
 
