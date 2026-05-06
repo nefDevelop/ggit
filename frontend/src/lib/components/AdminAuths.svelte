@@ -115,8 +115,12 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <Button variant="ghost" size="sm" icon={Settings} onclick={() => editSource(source)} />
-                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteAuth(source.id)} />
+                  <button class="icon-btn" onclick={() => editSource(source)} title="Configurar">
+                    <Settings size={18} />
+                  </button>
+                  <button class="icon-btn danger" onclick={() => deleteAuth(source.id)} title="Eliminar">
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </td>
             </tr>
@@ -159,7 +163,26 @@
   .status-chip.active { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
 
   .action-buttons { display: flex; gap: 0.5rem; }
-  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+  .icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover {
+    background: var(--md-sys-color-surface-variant);
+    color: var(--text-color);
+  }
+  .icon-btn.danger:hover {
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
+  }
 
   .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 1.1rem; opacity: 0.5; }
 </style>

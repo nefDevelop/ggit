@@ -127,9 +127,15 @@
               </td>
               <td data-label="Acciones">
                 <div class="action-row">
-                  <Button variant="ghost" size="sm" icon={Eye} href="/{repo.owner?.username}/{repo.name}" />
-                  <Button variant="ghost" size="sm" icon={ShieldCheck} onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad" />
-                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteRepo(repo.id, repo.name)} />
+                  <a class="icon-btn" href="/{repo.owner?.username}/{repo.name}" title="Ver">
+                    <Eye size={18} />
+                  </a>
+                  <button class="icon-btn" onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad">
+                    <ShieldCheck size={18} />
+                  </button>
+                  <button class="icon-btn danger" onclick={() => deleteRepo(repo.id, repo.name)} title="Eliminar">
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </td>
             </tr>
@@ -182,5 +188,25 @@
   .badge.private { background: rgba(var(--error-rgb), 0.12); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }
 
   .action-row { display: flex; gap: 0.75rem; }
-  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.15) !important; }
+  .icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .icon-btn:hover {
+    background: var(--md-sys-color-surface-variant);
+    color: var(--text-color);
+  }
+  .icon-btn.danger:hover {
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
+  }
 </style>

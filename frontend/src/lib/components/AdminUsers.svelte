@@ -115,8 +115,12 @@
                 </td>
                 <td data-label="Acciones">
                   <div class="action-buttons">
-                    <Button variant="ghost" size="sm" icon={Edit} onclick={() => editingUserId = user.id} />
-                    <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteUser(user.id)} />
+                    <button class="icon-btn" onclick={() => editingUserId = user.id} title="Editar">
+                      <Edit size={18} />
+                    </button>
+                    <button class="icon-btn danger" onclick={() => deleteUser(user.id)} title="Eliminar">
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -165,7 +169,26 @@
   .admin-badge:hover { transform: scale(1.05); filter: brightness(1.2); }
 
   .action-buttons { display: flex; gap: 0.5rem; }
-  :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
+  .icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover {
+    background: var(--md-sys-color-surface-variant);
+    color: var(--text-color);
+  }
+  .icon-btn.danger:hover {
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
+  }
 
   .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 2rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.03); }
 </style>

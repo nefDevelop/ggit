@@ -1,9 +1,25 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
 
+  const variants = {
+    primary: 'btn-primary',
+    secondary: 'btn-secondary',
+    tertiary: 'btn-tertiary',
+    danger: 'btn-danger',
+    ghost: 'btn-ghost',
+    outline: 'btn-outline',
+    tonal: 'btn-tonal'
+  };
+
+  const sizes = {
+    sm: 'btn-sm',
+    md: 'btn-md',
+    lg: 'btn-lg'
+  };
+
   interface Props {
-    variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'outline' | 'tonal';
-    size?: 'sm' | 'md' | 'lg';
+    variant?: keyof typeof variants;
+    size?: keyof typeof sizes;
     type?: 'button' | 'submit' | 'reset';
     loading?: boolean;
     disabled?: boolean;
@@ -30,22 +46,6 @@
     title,
     "aria-label": ariaLabel
   }: Props = $props();
-
-  const variants: Record<NonNullable<Props['variant']>, string> = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    tertiary: 'btn-tertiary',
-    danger: 'btn-danger',
-    ghost: 'btn-ghost',
-    outline: 'btn-outline',
-    tonal: 'btn-tonal'
-  };
-
-  const sizes: Record<NonNullable<Props['size']>, string> = {
-    sm: 'btn-sm',
-    md: 'btn-md',
-    lg: 'btn-lg'
-  };
 </script>
 
 {#if href}

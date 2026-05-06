@@ -192,19 +192,12 @@
 
               {#if release.id}
                 <div class="header-actions">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={Edit}
-                    onclick={() => handleEdit(release)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={Trash2}
-                    class="danger-icon"
-                    onclick={() => handleDelete(release.id)}
-                  />
+                  <button class="icon-btn" onclick={() => handleEdit(release)} title="Editar">
+                    <Edit size={18} />
+                  </button>
+                  <button class="icon-btn danger" onclick={() => handleDelete(release.id)} title="Eliminar">
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               {/if}
             </header>
@@ -453,8 +446,25 @@
     display: flex;
     gap: 0.25rem;
   }
-  :global(.danger-icon:hover) {
-    color: var(--color-danger) !important;
+  .icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover {
+    background: var(--md-sys-color-surface-variant);
+    color: var(--text-color);
+  }
+  .icon-btn.danger:hover {
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
   }
 
   .release-body {
