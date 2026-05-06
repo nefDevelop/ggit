@@ -7,7 +7,7 @@
   interface Tab {
     id: string;
     label: string;
-    icon: string;
+    icon: string | any;
     path?: string;
   }
 
@@ -22,7 +22,7 @@
     items: Tab[];
     activeId: string;
     title?: string;
-    titleIcon?: string;
+    titleIcon?: string | any;
     onSelect?: (id: string) => void;
     class?: string;
   } = $props();
@@ -32,7 +32,12 @@
   {#if title}
     <div class="chip-nav-header">
       {#if titleIcon}
-        <span class="material-symbols-rounded">{titleIcon}</span>
+        {#if typeof titleIcon === 'string'}
+          <span class="material-symbols-rounded">{titleIcon}</span>
+        {:else}
+          {@const Icon = titleIcon}
+          <Icon size={24} />
+        {/if}
       {/if}
       <h3 class="chip-nav-title">{title}</h3>
     </div>
@@ -47,7 +52,12 @@
           class:active={activeId === item.id || activeId === item.path || (item.path !== '/' && activeId.startsWith(item.path + '/'))}
           onclick={() => onSelect?.(item.id)}
         >
-          <span class="material-symbols-rounded">{item.icon}</span>
+          {#if typeof item.icon === 'string'}
+            <span class="material-symbols-rounded">{item.icon}</span>
+          {:else}
+            {@const Icon = item.icon}
+            <Icon size={18} />
+          {/if}
           <span class="label">{item.label}</span>
         </a>
       {:else}
@@ -57,7 +67,12 @@
           class:active={activeId === item.id}
           onclick={() => onSelect?.(item.id)}
         >
-          <span class="material-symbols-rounded">{item.icon}</span>
+          {#if typeof item.icon === 'string'}
+            <span class="material-symbols-rounded">{item.icon}</span>
+          {:else}
+            {@const Icon = item.icon}
+            <Icon size={18} />
+          {/if}
           <span class="label">{item.label}</span>
         </button>
       {/if}
@@ -114,7 +129,7 @@
     align-items: center;
     gap: 0.6rem;
     padding: 0.75rem 1.25rem;
-    border-radius: 100px;
+    border-radius: 0.75rem;
     background: rgba(255, 255, 255, 0.04);
     color: var(--text-muted);
     text-decoration: none;

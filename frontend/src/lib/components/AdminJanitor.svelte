@@ -6,6 +6,7 @@
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
+  import { Sparkles, Book, Trash2, Settings, CheckCircle2, Trash } from "lucide-svelte";
 
   let loading = $state(true);
   let stats = $state<any[]>([]);
@@ -32,7 +33,7 @@
   <PageHeader 
     title={i18n.t("admin.janitor_global") || "Ggit Janitor"}
     subtitle={i18n.t("admin.janitor_global_desc") || "Limpieza y mantenimiento de espacio en disco de repositorios"}
-    icon="mop"
+    icon={Sparkles}
   />
 
   <div class="admin-janitor-body">
@@ -45,7 +46,7 @@
     </div>
   {:else if stats.length === 0}
     <Card class="empty-card">
-      <span class="material-symbols-rounded">check_circle</span>
+      <CheckCircle2 size={48} />
       <p>{i18n.t("admin.empty_janitor")}</p>
     </Card>
   {:else}
@@ -54,14 +55,14 @@
         <Card class="repo-stat-card" tonal={repo.waste > 0}>
           <div class="repo-info">
             <div class="repo-main">
-              <span class="material-symbols-rounded repo-icon">book</span>
+              <Book size={24} class="repo-icon" />
               <div class="repo-names">
                 <span class="owner">{repo.owner} /</span>
                 <span class="name">{repo.name}</span>
               </div>
             </div>
             <div class="waste-badge" class:warning={repo.waste > 0}>
-              <span class="material-symbols-rounded">delete</span>
+              <Trash size={18} />
               {tool.fileSize(repo.waste)}
             </div>
           </div>
@@ -78,7 +79,7 @@
           </div>
 
           <div class="card-actions">
-            <Button href="/{repo.owner}/{repo.name}/settings" variant="outline" size="sm" icon="settings">
+            <Button href="/{repo.owner}/{repo.name}/settings" variant="outline" size="sm" icon={Settings}>
               {i18n.t("admin.manage")}
             </Button>
           </div>
@@ -113,13 +114,6 @@
   
   .repo-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
   .repo-main { display: flex; gap: 1.25rem; align-items: center; }
-  .repo-icon { 
-    color: var(--primary-color); 
-    background: rgba(var(--primary-rgb), 0.1);
-    padding: 0.75rem;
-    border-radius: 1rem;
-    font-size: 1.5rem;
-  }
   .repo-names { display: flex; flex-direction: column; gap: 0.15rem; }
   .owner { font-size: 0.85rem; color: var(--md-sys-color-on-surface-variant); font-weight: 700; opacity: 0.7; }
   .name { font-size: 1.35rem; font-weight: 900; color: var(--md-sys-color-on-surface); letter-spacing: -0.01em; }
@@ -135,7 +129,6 @@
     white-space: nowrap;
   }
   .waste-badge.warning { background: color-mix(in srgb, var(--md-sys-color-error), transparent 90%); color: var(--md-sys-color-error); }
-  .waste-badge span { font-size: 1.2rem; }
   .repo-details { 
     display: grid; 
     grid-template-columns: 1fr 1fr; 

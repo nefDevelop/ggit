@@ -55,6 +55,7 @@
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
+
   .page-header.compact {
     padding: 1.5rem 2rem;
   }
@@ -71,7 +72,7 @@
     color: var(--primary-color);
     background: var(--md-sys-color-primary-container);
     padding: 1.25rem;
-    border-radius: 2rem;
+    border-radius: 1rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -106,14 +107,14 @@
 
   @media (max-width: 1400px) {
     h2 { font-size: 1.85rem; }
-    .icon-slot { font-size: 2.25rem; padding: 1rem; border-radius: 1.5rem; }
+    .icon-slot { font-size: 2.25rem; padding: 1rem; border-radius: 1rem; }
     .page-header { padding: 2rem; gap: 1.5rem; }
   }
 
   @media (max-width: 1100px) {
     h2 { font-size: 1.5rem; }
     .subtitle { font-size: 1rem; }
-    .icon-slot { font-size: 1.75rem; padding: 0.8rem; border-radius: 1.25rem; }
+    .icon-slot { font-size: 1.75rem; padding: 0.8rem; border-radius: 0.75rem; }
   }
 
   .page-header.compact h2 {
@@ -152,7 +153,7 @@
     .icon-slot {
       font-size: 1.5rem;
       padding: 0.6rem;
-      border-radius: 1rem;
+      border-radius: 0.75rem;
     }
 
     /* Scaling down avatars if they are wrapped in slots */

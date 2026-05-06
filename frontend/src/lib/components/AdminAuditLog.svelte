@@ -6,6 +6,7 @@
   import Button from './ui/Button.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { ScrollText, RefreshCw, User, ChevronDown } from "lucide-svelte";
 
   let auditLogs = $state<any[]>([]);
   let loading = $state(true);
@@ -52,10 +53,10 @@
   <PageHeader 
     title={i18n.t('admin.audit_log') || "Registro de Auditoría"}
     subtitle="Historial de eventos críticos, cambios de seguridad y acciones administrativas"
-    icon="history_edu"
+    icon={ScrollText}
   >
     {#snippet actions()}
-      <Button variant="ghost" icon="refresh" onclick={() => fetchAuditLogs(1)} disabled={loading}>Actualizar</Button>
+      <Button variant="ghost" icon={RefreshCw} onclick={() => fetchAuditLogs(1)} disabled={loading}>Actualizar</Button>
     {/snippet}
   </PageHeader>
 
@@ -88,7 +89,7 @@
               </td>
               <td data-label="Usuario Responsable">
                 <div class="actor-brand">
-                  <span class="material-symbols-rounded">person</span>
+                  <User size={18} />
                   <strong>{log.actor_name}</strong>
                 </div>
               </td>
@@ -115,7 +116,7 @@
 
   {#if hasMore}
     <div class="footer-actions">
-       <Button variant="primary" icon="expand_more" class="load-more-btn" onclick={() => fetchAuditLogs(page + 1)} disabled={loading}>
+       <Button variant="primary" icon={ChevronDown} class="load-more-btn" onclick={() => fetchAuditLogs(page + 1)} disabled={loading}>
           {loading ? 'Consultando...' : 'Ver registros anteriores'}
        </Button>
     </div>
@@ -149,7 +150,6 @@
   .op-capsule { padding: 0.4rem 1rem; border-radius: 100px; font-size: 0.75rem; font-weight: 900; background: rgba(var(--op-color, 255, 255, 255), 0.1); color: var(--op-color, #fff); border: 1px solid rgba(var(--op-color, 255, 255, 255), 0.1); text-transform: uppercase; letter-spacing: 0.05em; }
 
   .actor-brand { display: flex; align-items: center; gap: 0.75rem; }
-  .actor-brand span { color: var(--primary-color); opacity: 0.6; font-size: 1.25rem; }
   .actor-brand strong { color: var(--text-color); font-weight: 800; font-size: 1rem; }
 
   .repo-link { color: var(--primary-color); text-decoration: none; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }

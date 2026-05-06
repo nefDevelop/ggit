@@ -6,6 +6,10 @@
   import Button from './ui/Button.svelte';
   import AdminConfigEditor from './AdminConfigEditor.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { 
+    Settings, AppWindow, Server, Database, ShieldCheck, 
+    Book, Terminal, Mail, Edit2, ShieldAlert 
+  } from 'lucide-svelte';
 
   let config = $state<any>(null);
   let loading = $state(true);
@@ -50,13 +54,13 @@
   }
 
   const sections = [
-    { key: "app", label: "Aplicación", icon: "apps" },
-    { key: "server", label: "Servidor", icon: "dns" },
-    { key: "database", label: "Base de Datos", icon: "storage" },
-    { key: "security", label: "Seguridad", icon: "security" },
-    { key: "repository", label: "Repositorios", icon: "book" },
-    { key: "git", label: "Git System", icon: "terminal" },
-    { key: "email", label: "Servicio de Correo", icon: "mail" },
+    { key: "app", label: "Aplicación", icon: AppWindow },
+    { key: "server", label: "Servidor", icon: Server },
+    { key: "database", label: "Base de Datos", icon: Database },
+    { key: "security", label: "Seguridad", icon: ShieldCheck },
+    { key: "repository", label: "Repositorios", icon: Book },
+    { key: "git", label: "Git System", icon: Terminal },
+    { key: "email", label: "Servicio de Correo", icon: Mail },
   ];
 
   let testEmail = $state("");
@@ -77,7 +81,7 @@
   <PageHeader 
     title="Configuración del Sistema"
     subtitle="Estado detallado y ajustes del motor Ggit"
-    icon="settings"
+    icon={Settings}
   />
 
   <div class="admin-config-body">
@@ -87,13 +91,14 @@
   {:else}
     <div class="config-stack">
       {#each sections as section}
+        {@const Icon = section.icon}
         <div class="config-modular-section">
           <div class="section-tag-wrapper">
             <div class="section-tag">
-              <span class="material-symbols-rounded">{section.icon}</span>
+              <Icon size={18} />
               {section.label}
             </div>
-            <Button variant="ghost" size="sm" icon="edit" onclick={() => editingSection = section.key}>
+            <Button variant="ghost" size="sm" icon={Edit2} onclick={() => editingSection = section.key}>
               Configurar
             </Button>
           </div>
@@ -110,7 +115,7 @@
 
       <div class="special-action-card island">
         <div class="action-header">
-           <span class="material-symbols-rounded">gpp_good</span>
+           <ShieldAlert size={32} />
            <h4>Seguridad de Registro</h4>
         </div>
         <div class="action-body">
@@ -174,7 +179,6 @@
   
   .section-tag-wrapper { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; gap: 1rem; }
   .section-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: none; padding-bottom: 0; width: fit-content; }
-  .section-tag span { font-size: 1.25rem; }
 
   .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
   @media (max-width: 600px) {
@@ -195,7 +199,6 @@
     .form-actions :global(button) { width: 100%; }
   }
   .action-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; color: var(--primary-color); }
-  .action-header span { font-size: 2.5rem; }
   .action-header h4 { margin: 0; font-size: 1.5rem; font-weight: 900; }
 
   .action-form { display: flex; flex-direction: column; gap: 2.5rem; margin-top: 2rem; }
