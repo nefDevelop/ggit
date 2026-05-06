@@ -187,7 +187,7 @@
                        {/each}
                      {/if}
                      <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="asset-item source" download>
-                       <span class="material-symbols-rounded">zip_box</span>
+                       <span class="material-symbols-rounded">folder_zip</span>
                        <span class="name">Source code (zip)</span>
                      </a>
                      <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="asset-item source" download>
@@ -274,7 +274,7 @@
   .asset-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--md-sys-color-primary); font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 0.75rem; transition: all 0.2s; }
   .asset-item:hover { background: var(--md-sys-color-primary-container); transform: translateX(4px); }
   .asset-item.source { color: var(--text-muted); font-weight: 600; }
-  .asset-item span { font-size: 1.4rem; opacity: 0.8; }
+  .asset-item span { font-size: 1.6rem; opacity: 0.9; }
 
   .publisher-info { display: flex; flex-direction: column; gap: 0.75rem; padding-left: 0.5rem; }
   .publisher-info span { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }

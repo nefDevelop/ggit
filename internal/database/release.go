@@ -12,7 +12,6 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 
-	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/errx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
@@ -98,7 +97,7 @@ func (r *Release) LoadAttributes() error {
 func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
 	attachments := make([]*apiv2types.AttachmentResponse, len(r.Attachments))
 	for i, a := range r.Attachments {
-		downloadURL := strings.TrimSuffix(conf.Server.ExternalURL, "/") + "/api/v2/attachments/" + a.UUID
+		downloadURL := "/api/v2/attachments/" + a.UUID
 		attachments[i] = &apiv2types.AttachmentResponse{
 			ID:          a.ID,
 			UUID:        a.UUID,
@@ -128,13 +127,13 @@ func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
 		CreatedAt:       r.CreatedUnix,
 
 		// Legacy support
-		TagNamePascal:    r.TagName,
-		TitlePascal:      r.Title,
-		NotePascal:       r.Note,
-		IsDraftPascal:    r.IsDraft,
+		TagNamePascal:      r.TagName,
+		TitlePascal:        r.Title,
+		NotePascal:         r.Note,
+		IsDraftPascal:      r.IsDraft,
 		IsPrereleasePascal: r.IsPrerelease,
-		Sha1Pascal:       r.Sha1,
-		CreatedPascal:    r.Created,
+		Sha1Pascal:         r.Sha1,
+		CreatedPascal:      r.Created,
 	}
 }
 
