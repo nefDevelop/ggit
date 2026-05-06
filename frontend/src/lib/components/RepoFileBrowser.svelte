@@ -450,7 +450,7 @@ git push -u origin main</code></pre>
 </div>
 
 <style>
-  .workspace-area { height: 100%; margin: -2rem; }
+  .workspace-area { height: 100%; }
 
   .technical-grid {
     display: grid;
@@ -458,6 +458,7 @@ git push -u origin main</code></pre>
     gap: 2.5rem;
     transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
     padding: 2rem;
+    animation: fadeIn 0.4s ease-out;
   }
 
   .technical-grid.sidebar-collapsed {
@@ -717,7 +718,7 @@ git push -u origin main</code></pre>
   }
 
   .skeleton-mode { pointer-events: none; }
-  .skeleton-pulse { background: var(--md-sys-color-surface-variant); animation: pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
+  .skeleton-pulse { background: rgba(var(--primary-rgb), 0.05); animation: pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
   
   .last-commit-skeleton { height: 60px; width: 100%; margin-bottom: 1.5rem; border-radius: 1rem; }
   .skeleton-table-view { background: transparent; border-color: var(--md-sys-color-outline-variant); }

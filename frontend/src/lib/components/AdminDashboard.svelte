@@ -183,7 +183,7 @@
   .error-text p { margin: 0 0 2rem 0; color: var(--text-muted); font-size: 1.1rem; max-width: 500px; line-height: 1.5; }
 
   .skeleton-card { border-color: var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.01); pointer-events: none; }
-  .skeleton-pulse { background: var(--md-sys-color-surface-variant); animation: pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
+  .skeleton-pulse { background: rgba(var(--primary-rgb), 0.05); animation: pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
   .val-skeleton { height: 2rem; width: 4rem; margin-bottom: 0.5rem; }
   .lab-skeleton { height: 0.8rem; width: 6rem; }
 
