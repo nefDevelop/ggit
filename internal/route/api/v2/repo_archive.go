@@ -57,23 +57,25 @@ func GetRepoArchive(c *context.APIContext) {
 		err    error
 	)
 	gitRepo := c.Repo.GitRepo
-	if gitRepo.HasBranch(refName) {
-		commit, err = gitRepo.BranchCommit(refName)
-	} else if gitRepo.HasTag(refName) {
+
+	// Try branch first
+	commit, err = gitRepo.BranchCommit(refName)
+	if err != nil {
+		// Try tag
 		commit, err = gitRepo.TagCommit(refName)
-	} else if len(refName) >= 7 && len(refName) <= 40 {
-		commit, err = gitRepo.CatFileCommit(refName)
-	} else {
+	}
+	
+	if err != nil {
 		// Fallback: Check if there is a release with this tag name and use its stored SHA.
-		rel, err := database.GetRelease(c.Repo.Repository.ID, refName)
-		if err == nil && rel.Sha1 != "" {
+		rel, err2 := database.GetRelease(c.Repo.Repository.ID, refName)
+		if err2 == nil && rel.Sha1 != "" {
 			commit, err = gitRepo.CatFileCommit(rel.Sha1)
 		}
+	}
 
-		if err != nil || commit == nil {
-			c.Status(http.StatusNotFound)
-			return
-		}
+	if err != nil && (len(refName) >= 7 && len(refName) <= 40) {
+		// Try as direct SHA
+		commit, err = gitRepo.CatFileCommit(refName)
 	}
 
 	if err != nil {
