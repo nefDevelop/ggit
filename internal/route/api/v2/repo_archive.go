@@ -15,6 +15,7 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/tool"
+	log "unknwon.dev/clog/v2"
 )
 
 // GetRepoArchive serves the repository as a zip or tar.gz archive.
@@ -58,27 +59,44 @@ func GetRepoArchive(c *context.APIContext) {
 	)
 	gitRepo := c.Repo.GitRepo
 
+	log.Trace("[DEBUG] Resolving archive commit for ref: %s (Repo ID: %d)", refName, c.Repo.Repository.ID)
+
 	// Try branch first
 	commit, err = gitRepo.BranchCommit(refName)
-	if err != nil {
+	if err == nil {
+		log.Trace("[DEBUG] Resolved as branch: %s", refName)
+	} else {
 		// Try tag
 		commit, err = gitRepo.TagCommit(refName)
+		if err == nil {
+			log.Trace("[DEBUG] Resolved as tag: %s", refName)
+		}
 	}
 	
 	if err != nil {
+		log.Trace("[DEBUG] Not found in Git branches/tags, trying release fallback for: %s", refName)
 		// Fallback: Check if there is a release with this tag name and use its stored SHA.
 		rel, err2 := database.GetRelease(c.Repo.Repository.ID, refName)
 		if err2 == nil && rel.Sha1 != "" {
+			log.Trace("[DEBUG] Found release in DB with SHA: %s", rel.Sha1)
 			commit, err = gitRepo.CatFileCommit(rel.Sha1)
+			if err == nil {
+				log.Trace("[DEBUG] Resolved via release SHA: %s", rel.Sha1)
+			}
+		} else if err2 != nil {
+			log.Trace("[DEBUG] Release not found in DB: %v", err2)
+		} else {
+			log.Trace("[DEBUG] Release found but has no SHA")
 		}
 	}
 
 	if err != nil && (len(refName) >= 7 && len(refName) <= 40) {
-		// Try as direct SHA
+		log.Trace("[DEBUG] Trying as direct SHA: %s", refName)
 		commit, err = gitRepo.CatFileCommit(refName)
 	}
 
 	if err != nil {
+		log.Trace("[DEBUG] Failed to resolve commit for %s: %v", refName, err)
 		c.Error(err, "get commit")
 		return
 	}
