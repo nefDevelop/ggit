@@ -338,8 +338,13 @@
   }
   .field input:focus,
   .field textarea:focus {
-    border-color: var(--primary-color);
-    background: var(--md-sys-color-primary-container);
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface-container-high);
+  }
+  .tonal {
+    background: var(--md-sys-color-surface-container);
+    border-radius: 1.25rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
   }
   .field textarea {
     height: 350px;
@@ -430,8 +435,8 @@
     transition: all 0.2s;
   }
   .remove-btn:hover {
-    background: var(--color-danger);
-    color: var(--color-danger);
+    background: var(--md-sys-color-error-container);
+    color: var(--md-sys-color-error);
   }
 
   .editor-sidebar {
@@ -495,9 +500,10 @@
     gap: 0.75rem;
   }
   .btn.lg {
-    height: 56px;
-    font-weight: 800;
-    font-size: 1rem;
+    height: 52px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 1rem;
   }
 
   .spinner-sm {
