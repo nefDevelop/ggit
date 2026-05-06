@@ -89,7 +89,13 @@ func CreateRelease(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, rel)
+	// Load attributes (like Publisher) to avoid nil pointer in APIFormat
+	if err := rel.LoadAttributes(); err != nil {
+		c.Error(err, "load attributes")
+		return
+	}
+
+	c.JSON(http.StatusCreated, rel.APIFormat())
 }
 
 // UploadReleaseAttachment uploads a release attachment.

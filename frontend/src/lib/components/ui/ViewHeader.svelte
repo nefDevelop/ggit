@@ -13,6 +13,7 @@
     tabs?: Tab[];
     activeTab?: string;
     showSearch?: boolean;
+    noPills?: boolean;
     actions?: Snippet;
     onSelect?: (id: string) => void;
   }
@@ -21,6 +22,7 @@
     tabs = [], 
     activeTab = $bindable(''), 
     showSearch = true,
+    noPills = false,
     actions,
     onSelect
   }: Props = $props();
@@ -41,6 +43,7 @@
           {#each tabs as tab}
             <button 
               class="tab-pill" 
+              class:no-pills={noPills}
               class:active={activeTab === tab.id}
               onclick={() => { activeTab = tab.id; onSelect?.(tab.id); }}
             >
@@ -127,6 +130,26 @@
   }
   .tab-pill:hover { background: var(--md-sys-color-surface-container-low); color: var(--text-color); }
   .tab-pill.active { background: var(--primary-color); color: var(--md-sys-color-on-primary); border-color: var(--primary-color); }
+  
+  .tab-pill.no-pills {
+    border: none;
+    border-radius: 0.75rem;
+    padding: 0.6rem 1.25rem;
+    background: transparent;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+  .tab-pill.no-pills:hover {
+    background: var(--md-sys-color-surface-container-low);
+    opacity: 1;
+    color: var(--text-color);
+  }
+  .tab-pill.no-pills.active {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+    opacity: 1;
+    box-shadow: none;
+  }
   
   .tab-content-wrapper {
     display: flex;

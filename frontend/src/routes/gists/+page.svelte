@@ -36,30 +36,32 @@
   const displayGists = $derived(activeTab === "mine" ? myGists : publicGists);
 </script>
 
-<div class="gists-home">
-  <div class="container">
+<div class="dashboard-grid full-width">
+  <div class="dashboard-main-content">
     <PageHeader 
       title="Gists" 
       subtitle="Snippet management and public code sharing"
       icon={ScrollText}
     >
       {#snippet actions()}
-        <a href="/gists/new" class="btn-primary">
+        <a href="/gists/new" class="btn-action-primary">
           <Plus size={18} />
-          <span>New Gist</span>
+          <span class="hide-mobile">New Gist</span>
         </a>
       {/snippet}
     </PageHeader>
-
+  
     <ViewHeader 
       bind:activeTab 
+      noPills={true}
       tabs={[
         { id: "mine", label: "My Gists", icon: User },
         { id: "public", label: "Explore", icon: Search }
       ]}
     />
-
-    <div class="gist-list">
+  
+    <main class="gists-content">
+      <div class="gist-list">
       {#if loading}
         <div class="skeleton-list">
           {#each Array(5) as _}
@@ -78,23 +80,17 @@
         {/each}
       {/if}
     </div>
-  </div>
+  </main>
+</div>
 </div>
 
 <style>
-  .gists-home { padding: 2rem; min-height: 100vh; background: var(--bg-color); }
-  .container { max-width: 900px; margin: 0 auto; }
+  .dashboard-grid { display: flex; flex-direction: column; height: 100%; }
+  .dashboard-main-content { display: flex; flex-direction: column; }
+  .gists-content { padding: 0 1.5rem 4rem; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
-  .gist-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
-
-  .btn-primary {
-    display: flex; align-items: center; gap: 0.5rem;
-    background: var(--primary-color); color: white;
-    padding: 0.75rem 1.25rem; border-radius: 1rem;
-    text-decoration: none; font-weight: 700;
-    transition: all 0.2s;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); opacity: 0.9; }
+  .gist-list { display: flex; flex-direction: column; gap: 1rem; }
 
   .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }
   .skeleton-row { height: 80px; background: var(--md-sys-color-surface-container-low); border-radius: 1.25rem; animation: pulse 1.5s infinite; }
@@ -102,4 +98,8 @@
 
   .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-state h3 { margin: 0; color: var(--text-color); }
+
+  @media (max-width: 600px) {
+    .hide-mobile { display: none; }
+  }
 </style>
