@@ -79,6 +79,8 @@ var migrations = []Migration{
 	NewMigration("add hill_state to milestone table", v31),
 	// v31 -> v32:v0.13.1
 	NewMigration("add adr_folder_name to repository table", v32),
+	// v32 -> v33:v0.13.2
+	NewMigration("add size to attachment table", v33),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")
