@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
 
   interface Props {
-    variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'outline';
+    variant?: 'primary' | 'secondary' | 'tertiary' | 'danger' | 'ghost' | 'outline' | 'tonal';
     size?: 'sm' | 'md' | 'lg';
     type?: 'button' | 'submit' | 'reset';
     loading?: boolean;
@@ -13,6 +13,7 @@
     icon?: any;
     href?: string;
     title?: string;
+    "aria-label"?: string;
   }
 
   let { 
@@ -26,7 +27,8 @@
     children,
     icon,
     href,
-    title
+    title,
+    "aria-label": ariaLabel
   }: Props = $props();
 
   const variants: Record<NonNullable<Props['variant']>, string> = {
@@ -35,7 +37,8 @@
     tertiary: 'btn-tertiary',
     danger: 'btn-danger',
     ghost: 'btn-ghost',
-    outline: 'btn-outline'
+    outline: 'btn-outline',
+    tonal: 'btn-tonal'
   };
 
   const sizes: Record<NonNullable<Props['size']>, string> = {
@@ -49,6 +52,7 @@
   <a 
     {href}
     {title}
+    aria-label={ariaLabel}
     class="btn {variants[variant]} {sizes[size]} {className}" 
     onclick={(e) => !disabled && onclick?.(e as any)}
   >
@@ -67,6 +71,7 @@
     {type} 
     disabled={disabled || loading} 
     {title}
+    aria-label={ariaLabel}
     class="btn {variants[variant]} {sizes[size]} {className}" 
     onclick={(e) => !loading && onclick?.(e)}
   >
@@ -165,6 +170,14 @@
   .btn-outline:hover:not(:disabled) {
     background: var(--md-sys-color-primary-container);
     border-color: var(--md-sys-color-primary);
+  }
+  
+  .btn-tonal {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
+  .btn-tonal:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--md-sys-color-secondary-container), var(--md-sys-color-on-secondary-container) 8%);
   }
 
   .material-symbols-rounded { 

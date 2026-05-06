@@ -7,6 +7,7 @@
   import GlobalSearch from './GlobalSearch.svelte';
   import ViewHeader from './ui/ViewHeader.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import { Compass, GitBranch, Users, Building2, Hash } from "lucide-svelte";
 
   let { defaultTab = 'repos' } = $props();
   let activeTab = $state('repos');
@@ -14,10 +15,10 @@
   let searchQuery = $state('');
 
   const tabs = [
-    { id: 'repos', label: 'Repositories', icon: 'account_tree' },
-    { id: 'users', label: 'Users', icon: 'person_search' },
-    { id: 'organizations', label: 'Organizations', icon: 'corporate_fare' },
-    { id: 'topics', label: 'Topics', icon: 'tag' }
+    { id: 'repos', label: 'Repositories', icon: GitBranch },
+    { id: 'users', label: 'Users', icon: Users },
+    { id: 'organizations', label: 'Organizations', icon: Building2 },
+    { id: 'topics', label: 'Topics', icon: Hash }
   ];
 
   onMount(() => {
@@ -32,7 +33,7 @@
     <PageHeader 
         title="Explorar"
         subtitle="Descubre nuevos repositorios, usuarios y comunidades"
-        icon="explore"
+        icon={Compass}
     />
     <ViewHeader {tabs} bind:activeTab />
 

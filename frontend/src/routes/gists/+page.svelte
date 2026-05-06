@@ -5,6 +5,7 @@
   import GistRow from "$lib/components/GistRow.svelte";
   import PageHeader from "$lib/components/ui/PageHeader.svelte";
   import ViewHeader from "$lib/components/ui/ViewHeader.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
   import { ScrollText, Plus, User, Search } from "lucide-svelte";
 
   let myGists = $state<any[]>([]);
@@ -44,20 +45,16 @@
       icon={ScrollText}
     >
       {#snippet actions()}
-        <a href="/gists/new" class="btn-action-primary">
-          <Plus size={18} />
+        <Button href="/gists/new" icon={Plus}>
           <span class="hide-mobile">New Gist</span>
-        </a>
+        </Button>
       {/snippet}
     </PageHeader>
   
     <ViewHeader 
       bind:activeTab 
       noPills={true}
-      tabs={[
-        { id: "mine", label: "My Gists", icon: User },
-        { id: "public", label: "Explore", icon: Search }
-      ]}
+      tabs={[]}
     />
   
     <main class="gists-content">

@@ -11,6 +11,7 @@
   import GlobalSearch from './GlobalSearch.svelte';
   import ViewHeader from './ui/ViewHeader.svelte';
   import PageHeader from './ui/PageHeader.svelte';
+  import Button from './ui/Button.svelte';
 
   let data = $state<{
     repositories: any[],
@@ -140,10 +141,9 @@
             icon={LayoutDashboard}
         >
             {#snippet actions()}
-                <a class="btn-action-primary" href="/repo/create">
-                    <Plus size={18} />
+                <Button href="/repo/create" icon={Plus}>
                     <span class="hide-mobile">Nuevo Repositorio</span>
-                </a>
+                </Button>
             {/snippet}
         </PageHeader>
 

@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import BranchSelector from "./BranchSelector.svelte";
+  import Button from "./ui/Button.svelte";
 
   let { 
     username, 
@@ -135,9 +136,7 @@
 <div class="release-editor shadow-xl">
   <header class="editor-header">
     <h3>{release ? "Edit Release" : "New Release"}</h3>
-    <button class="btn-icon" onclick={onCancel} aria-label="Close editor">
-      <span class="material-symbols-rounded">close</span>
-    </button>
+    <Button variant="ghost" icon="close" onclick={onCancel} aria-label="Close editor" />
   </header>
 
   <div class="editor-grid">
@@ -244,23 +243,20 @@
       </div>
 
       <div class="actions">
-        <button
-          class="btn btn-primary lg"
+        <Button
+          variant="primary"
+          size="lg"
           onclick={() => save(!isDraft)}
           disabled={saving}
+          loading={saving}
         >
-          {#if saving}
-            <span class="spinner-sm"></span>
-            Saving...
-          {:else}
-            {release?.is_draft && !isDraft
-              ? "Publish Release"
-              : release
-                ? "Update Release"
-                : "Create Release"}
-          {/if}
-        </button>
-        <button class="btn btn-tonal" onclick={onCancel}>Cancel</button>
+          {release?.is_draft && !isDraft
+            ? "Publish Release"
+            : release
+              ? "Update Release"
+              : "Create Release"}
+        </Button>
+        <Button variant="tonal" onclick={onCancel}>Cancel</Button>
       </div>
     </aside>
   </div>
@@ -499,24 +495,5 @@
     flex-direction: column;
     gap: 0.75rem;
   }
-  .btn.lg {
-    height: 52px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    border-radius: 1rem;
-  }
 
-  .spinner-sm {
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
 </style>

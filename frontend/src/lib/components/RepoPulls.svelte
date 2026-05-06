@@ -2,6 +2,8 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import PageHeader from "./ui/PageHeader.svelte";
+  import Button from "./ui/Button.svelte";
+  import { Plus } from "lucide-svelte";
   
   const repo: any = getContext('repo');
   let pulls = $state<any[]>([]);
@@ -42,27 +44,25 @@
   <PageHeader title="" icon="" compact>
     {#snippet actions()}
       <div class="pill-filter-group-inline">
-        <button 
-          class="tab-pill" 
-          class:active={stateFilter === 'open'} 
+        <Button 
+          variant={stateFilter === 'open' ? 'primary' : 'ghost'} 
+          size="sm"
           onclick={() => stateFilter = 'open'}
         >
           Open
-        </button>
-        <button 
-          class="tab-pill" 
-          class:active={stateFilter === 'closed'} 
+        </Button>
+        <Button 
+          variant={stateFilter === 'closed' ? 'primary' : 'ghost'} 
+          size="sm"
           onclick={() => stateFilter = 'closed'}
         >
           Closed
-        </button>
+        </Button>
       </div>
 
-      <a href="./pulls/new" class="btn-action-primary">
-        <span class="material-symbols-rounded">add</span>
+      <Button variant="primary" href="./pulls/new" icon={Plus}>
         New Pull Request
-      </a>
-    {/snippet}
+      </Button>    {/snippet}
   </PageHeader>
 
 

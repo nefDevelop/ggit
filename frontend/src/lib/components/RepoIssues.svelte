@@ -3,6 +3,7 @@
   import { onMount, getContext } from "svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   import IssueBoard from "./IssueBoard.svelte";
+  import Button from "./ui/Button.svelte";
   import { List, LayoutDashboard, Plus, AlertCircle, CheckCircle2, MessageSquare } from "lucide-svelte";
 
   const repo: any = getContext("repo");
@@ -46,39 +47,35 @@
   <PageHeader title="" icon="" compact>
     {#snippet actions()}
       <div class="pill-filter-group-inline">
-        <button
-          class="tab-pill"
-          class:active={stateFilter === "open"}
+        <Button
+          variant={stateFilter === "open" ? "primary" : "ghost"}
+          size="sm"
           onclick={() => (stateFilter = "open")}
         >
           {repo.data?.open_issues_count || 0} Open
-        </button>
-        <button
-          class="tab-pill"
-          class:active={stateFilter === "closed"}
+        </Button>
+        <Button
+          variant={stateFilter === "closed" ? "primary" : "ghost"}
+          size="sm"
           onclick={() => (stateFilter = "closed")}
         >
           {repo.data?.closed_issues_count || 0} Closed
-        </button>
+        </Button>
       </div>
 
       <div class="view-toggle">
-        <button 
-          class="btn-icon" 
-          class:active={view === 'list'} 
+        <Button 
+          variant={view === 'list' ? 'tonal' : 'ghost'} 
+          size="sm"
+          icon={List}
           onclick={() => view = 'list'}
-          title="List View"
-        >
-          <List size={18} />
-        </button>
-        <button 
-          class="btn-icon" 
-          class:active={view === 'board'} 
+        />
+        <Button 
+          variant={view === 'board' ? 'tonal' : 'ghost'} 
+          size="sm"
+          icon={LayoutDashboard}
           onclick={() => view = 'board'}
-          title="Board View"
-        >
-          <LayoutDashboard size={18} />
-        </button>
+        />
       </div>
       <a
         href="/{repo.data.owner.username}/{repo.data.name}/issues/new"
@@ -178,24 +175,6 @@
     padding: 4px;
     border-radius: 10px;
     margin-right: 1rem;
-  }
-  
-  .tab-pill {
-    background: transparent;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  
-  .tab-pill.active {
-    background: var(--bg-color);
-    color: var(--primary-color);
-    box-shadow: var(--shadow-sm);
   }
 
   @keyframes fadeIn {
@@ -333,30 +312,5 @@
     padding: 4px;
     border-radius: 10px;
     margin-right: 0.5rem;
-  }
-
-  .btn-icon {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-icon:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-color);
-  }
-
-  .btn-icon.active {
-    background: var(--bg-color);
-    color: var(--primary-color);
-    box-shadow: var(--shadow-sm);
   }
 </style>
