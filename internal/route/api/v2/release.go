@@ -146,6 +146,11 @@ func UpdateRelease(c *context.APIContext) {
 		return
 	}
 
+	if c.User == nil {
+		c.StatusError(http.StatusUnauthorized, "Only authenticated user is allowed to call APIs.", nil)
+		return
+	}
+
 	isPublish := rel.IsDraft && !f.Draft
 	rel.Title = f.Title
 	rel.Note = f.Content

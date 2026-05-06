@@ -118,6 +118,7 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 
 		// Check if Ggit is installed/locked
 		if !database.HasEngine || database.Handle == nil {
+			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
 
@@ -276,9 +277,11 @@ func RepoRef() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		gctx := c.MustGet("context").(*Context)
 		if gctx.Repo.Repository == nil {
+			c.AbortWithStatus(http.StatusNotFound)
 			return
 		}
 		if gctx.Repo.Repository.IsBare {
+			c.AbortWithStatus(http.StatusNoContent)
 			return
 		}
 
