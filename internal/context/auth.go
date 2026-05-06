@@ -38,18 +38,21 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 		if gctx.IsLogged && gctx.User.ProhibitLogin {
 			gctx.Data["Title"] = gctx.Tr("auth.prohibit_login")
 			gctx.Success("user/auth/prohibit_login")
+			c.Abort()
 			return
 		}
 
 		// Check non-logged users landing page.
 		if !gctx.IsLogged && gctx.Request.RequestURI == "/" && conf.Server.LandingURL != "/" {
 			gctx.RedirectSubpath(conf.Server.LandingURL)
+			c.Abort()
 			return
 		}
 
 		// Redirect to dashboard if user tries to visit any non-login page.
 		if options.SignOutRequired && gctx.IsLogged && gctx.Request.RequestURI != "/" {
 			gctx.RedirectSubpath("/")
+			c.Abort()
 			return
 		}
 
@@ -65,15 +68,18 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 					gctx.JSON(http.StatusUnauthorized, map[string]string{
 						"message": "Only authenticated user is allowed to call APIs.",
 					})
+					c.Abort()
 					return
 				}
 
 				gctx.SetCookie("redirect_to", url.QueryEscape(conf.Server.Subpath+gctx.Request.RequestURI), 0, conf.Server.Subpath, "", false, false)
 				gctx.RedirectSubpath("/user/login")
+				c.Abort()
 				return
 			} else if !gctx.User.IsActive && conf.Auth.RequireEmailConfirmation {
 				gctx.Title("auth.active_your_account")
 				gctx.Success("user/auth/activate")
+				c.Abort()
 				return
 			}
 		}
@@ -84,6 +90,7 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 			if len(u) > 0 {
 				gctx.SetCookie("redirect_to", url.QueryEscape(conf.Server.Subpath+gctx.Request.RequestURI), 0, conf.Server.Subpath, "", false, false)
 				gctx.RedirectSubpath("/user/login")
+				c.Abort()
 				return
 			}
 		}
@@ -92,6 +99,7 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 			if !gctx.User.IsAdmin {
 				log.Warn("403: AdminRequired but user is not admin. Path: %s, User: %s", gctx.Request.URL.Path, gctx.User.Name)
 				gctx.Status(http.StatusForbidden)
+				c.Abort()
 				return
 			}
 			gctx.PageIs("Admin")

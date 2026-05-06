@@ -56,6 +56,11 @@ func CreateRelease(c *context.APIContext) {
 		return
 	}
 
+	if c.User == nil {
+		c.StatusError(http.StatusUnauthorized, "Only authenticated user is allowed to call APIs.", nil)
+		return
+	}
+
 	// Basic validation
 	if !c.Repo.GitRepo.HasBranch(f.Target) {
 		c.StatusError(http.StatusUnprocessableEntity, "Target branch does not exist.", nil)
