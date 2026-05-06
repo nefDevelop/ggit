@@ -78,78 +78,80 @@
 </script>
 
 <div class="admin-config-container">
-  <PageHeader 
-    title="Configuración del Sistema"
-    subtitle="Estado detallado y ajustes del motor Ggit"
-    icon={Settings}
-  />
+  <Card class="settings-premium-card" padding="none">
+    <PageHeader 
+      title="Configuración del Sistema"
+      subtitle="Estado detallado y ajustes del motor Ggit"
+      icon={Settings}
+      compact
+    />
 
-  <div class="admin-config-body">
-
-  {#if loading}
-     <div class="skeleton-config"></div>
-  {:else}
-    <div class="config-stack">
-      {#each sections as section}
-        {@const Icon = section.icon}
-        <div class="config-modular-section">
-          <div class="section-tag-wrapper">
-            <div class="section-tag">
-              <Icon size={18} />
-              {section.label}
-            </div>
-            <Button variant="ghost" size="sm" icon={Edit2} onclick={() => editingSection = section.key}>
-              Configurar
-            </Button>
-          </div>
-          <div class="config-grid">
-            {#each Object.entries(config[section.key] || {}) as [label, value]}
-              <div class="config-tile tonal">
-                <span class="tile-key">{label}</span>
-                <span class="tile-val">{typeof value === 'object' ? JSON.stringify(value) : (value || '—')}</span>
-              </div>
-            {/each}
-          </div>
-        </div>
-      {/each}
-
-      <div class="special-action-card island">
-        <div class="action-header">
-           <ShieldAlert size={32} />
-           <h4>Seguridad de Registro</h4>
-        </div>
-        <div class="action-body">
-           <p>Configura una pregunta de seguridad para evitar registros automatizados de bots. El sistema cuenta además con un Honeypot integrado para bloquear el SPAM de manera silenciosa.</p>
-           <div class="action-form">
-              <label class="premium-switch">
-                 <input type="checkbox" bind:checked={regSecurity.enable} />
-                 <span class="switch-slider"></span>
-                 <span class="switch-label">Habilitar Pregunta de Seguridad</span>
-              </label>
-              
-              {#if regSecurity.enable}
-                <div class="field-row">
-                  <div class="field">
-                    <label for="reg-q">Pregunta</label>
-                    <input id="reg-q" type="text" bind:value={regSecurity.question} placeholder="Ej: ¿Cuál es el nombre de este servicio?" />
-                  </div>
-                  <div class="field">
-                    <label for="reg-a">Respuesta</label>
-                    <input id="reg-a" type="text" bind:value={regSecurity.answer} placeholder="Ej: Ggit" />
-                  </div>
+    <div class="admin-config-body">
+      {#if loading}
+        <div class="skeleton-config"></div>
+      {:else}
+        <div class="config-stack">
+          {#each sections as section}
+            {@const Icon = section.icon}
+            <div class="config-modular-section">
+              <div class="section-tag-wrapper">
+                <div class="section-tag">
+                  <Icon size={18} />
+                  {section.label}
                 </div>
-              {/if}
-              <div class="form-actions">
-                <Button variant="primary" onclick={updateAuthSettings} disabled={savingSecurity}>
-                  {savingSecurity ? 'Guardando...' : 'Guardar Ajustes de Seguridad'}
+                <Button variant="ghost" size="sm" icon={Edit2} onclick={() => editingSection = section.key}>
+                  Configurar
                 </Button>
               </div>
-           </div>
+              <div class="config-grid">
+                {#each Object.entries(config[section.key] || {}) as [label, value]}
+                  <div class="config-tile tonal">
+                    <span class="tile-key">{label}</span>
+                    <span class="tile-val">{typeof value === 'object' ? JSON.stringify(value) : (value || '—')}</span>
+                  </div>
+                {/each}
+              </div>
+            </div>
+          {/each}
+
+          <div class="special-action-card island">
+            <div class="action-header">
+               <ShieldAlert size={32} />
+               <h4>Seguridad de Registro</h4>
+            </div>
+            <div class="action-body">
+               <p>Configura una pregunta de seguridad para evitar registros automatizados de bots. El sistema cuenta además con un Honeypot integrado para bloquear el SPAM de manera silenciosa.</p>
+               <div class="action-form">
+                  <label class="premium-switch">
+                     <input type="checkbox" bind:checked={regSecurity.enable} />
+                     <span class="switch-slider"></span>
+                     <span class="switch-label">Habilitar Pregunta de Seguridad</span>
+                  </label>
+                  
+                  {#if regSecurity.enable}
+                    <div class="field-row">
+                      <div class="field">
+                        <label for="reg-q">Pregunta</label>
+                        <input id="reg-q" type="text" bind:value={regSecurity.question} placeholder="Ej: ¿Cuál es el nombre de este servicio?" />
+                      </div>
+                      <div class="field">
+                        <label for="reg-a">Respuesta</label>
+                        <input id="reg-a" type="text" bind:value={regSecurity.answer} placeholder="Ej: Ggit" />
+                      </div>
+                    </div>
+                  {/if}
+                  <div class="form-actions">
+                    <Button variant="primary" onclick={updateAuthSettings} disabled={savingSecurity}>
+                      {savingSecurity ? 'Guardando...' : 'Guardar Ajustes de Seguridad'}
+                    </Button>
+                  </div>
+               </div>
+            </div>
+          </div>
         </div>
-      </div>
+      {/if}
     </div>
-  {/if}
-  </div>
+  </Card>
 </div>
 
 {#if editingSection}
@@ -163,7 +165,7 @@
 
 <style>
   .admin-config-body {
-    padding: 2rem 1.5rem 4rem;
+    padding: 0 1.5rem 4rem;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

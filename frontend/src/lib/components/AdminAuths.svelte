@@ -54,82 +54,84 @@
   />
 {:else}
   <div class="admin-auths-container">
-    <PageHeader 
-      title={i18n.t('admin.auths') || "Fuentes de Autenticación"}
-      subtitle="Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos"
-      icon={ShieldHalf}
-    >
-      {#snippet actions()}
-        <Button variant="primary" icon={Plus} onclick={newSource}>Nueva Fuente</Button>
-      {/snippet}
-    </PageHeader>
+    <Card class="settings-premium-card" padding="none">
+      <PageHeader 
+        title={i18n.t('admin.auths') || "Fuentes de Autenticación"}
+        subtitle="Gestión centralizada de protocolos LDAP, OAuth2, PAM y servicios externos"
+        icon={ShieldHalf}
+        compact
+      >
+        {#snippet actions()}
+          <Button variant="primary" icon={Plus} onclick={newSource}>Nueva Fuente</Button>
+        {/snippet}
+      </PageHeader>
 
-    <div class="admin-auths-body">
-
-  <div class="modern-table-card">
-    <table class="modern-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre del Origen</th>
-          <th>Tipo / Protocolo</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#if loading}
-          <TableSkeleton columns={5} rows={3} />
-        {:else if sources.length === 0}
-          <tr>
-            <td colspan="5" class="empty-state">No hay orígenes de autenticación configurados.</td>
-          </tr>
-        {:else}
-          {#each sources as source}
-            <tr class="hover-row">
-              <td class="id-cell">#{source.id}</td>
-              <td>
-                <div class="source-cell">
-                  <div class="source-icon tonal">
-                    {#if source.type === 2 || source.type === 5}
-                      <Database size={24} />
-                    {:else}
-                      <ShieldCheck size={24} />
-                    {/if}
-                  </div>
-                  <div class="source-info">
-                    <strong>{source.name}</strong>
-                    <span>{source.type === 2 ? 'Servidor LDAP' : source.type === 6 ? 'Servicio SMTP' : 'Autenticación Externa'}</span>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : '#9c27b0'}">
-                   {source.type_name || "Protocolo Estándar"}
-                </span>
-              </td>
-              <td>
-                <span class="status-chip" class:active={source.is_actived}>
-                  {source.is_actived ? 'Operativo' : 'Inactivo'}
-                </span>
-              </td>
-              <td>
-                <div class="action-buttons">
-                  <button class="icon-btn" onclick={() => editSource(source)} title="Configurar">
-                    <Settings size={18} />
-                  </button>
-                  <button class="icon-btn danger" onclick={() => deleteAuth(source.id)} title="Eliminar">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          {/each}
-        {/if}
-      </tbody>
-    </table>
-  </div>
-    </div>
+      <div class="admin-auths-body">
+        <div class="modern-table-card">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre del Origen</th>
+                <th>Tipo / Protocolo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#if loading}
+                <TableSkeleton columns={5} rows={3} />
+              {:else if sources.length === 0}
+                <tr>
+                  <td colspan="5" class="empty-state">No hay orígenes de autenticación configurados.</td>
+                </tr>
+              {:else}
+                {#each sources as source}
+                  <tr class="hover-row">
+                    <td class="id-cell">#{source.id}</td>
+                    <td>
+                      <div class="source-cell">
+                        <div class="source-icon tonal">
+                          {#if source.type === 2 || source.type === 5}
+                            <Database size={24} />
+                          {:else}
+                            <ShieldCheck size={24} />
+                          {/if}
+                        </div>
+                        <div class="source-info">
+                          <strong>{source.name}</strong>
+                          <span>{source.type === 2 ? 'Servidor LDAP' : source.type === 6 ? 'Servicio SMTP' : 'Autenticación Externa'}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : '#9c27b0'}">
+                         {source.type_name || "Protocolo Estándar"}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-chip" class:active={source.is_actived}>
+                        {source.is_actived ? 'Operativo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="icon-btn" onclick={() => editSource(source)} title="Configurar">
+                          <Settings size={18} />
+                        </button>
+                        <button class="icon-btn danger" onclick={() => deleteAuth(source.id)} title="Eliminar">
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              {/if}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Card>
   </div>
 {/if}
 

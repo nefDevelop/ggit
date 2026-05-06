@@ -11,6 +11,7 @@
   import AdminOrgs from "./AdminOrgs.svelte";
   import AdminMaintenance from "./AdminMaintenance.svelte";
   import AdminAuditLog from "./AdminAuditLog.svelte";
+  import AdminSecurity from "./AdminSecurity.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   import ViewHeader from "./ui/ViewHeader.svelte";
 
@@ -25,6 +26,7 @@
     { id: "config", label: i18n.t('admin.config'), icon: "settings" },
     { id: "monitor", label: i18n.t('admin.monitor'), icon: "monitoring" },
     { id: "maintenance", label: i18n.t('admin.maintenance'), icon: "build" },
+    { id: "security", label: i18n.t('admin.security'), icon: "shield_check" },
     { id: "audit", label: i18n.t('admin.audit_log'), icon: "history_edu" },
     { id: "notices", label: i18n.t('admin.notices'), icon: "notifications" },
   ];
@@ -60,6 +62,8 @@
       <AdminMonitor />
     {:else if activeTab === "maintenance"}
       <AdminMaintenance />
+    {:else if activeTab === "security"}
+      <AdminSecurity />
     {:else if activeTab === "audit"}
       <AdminAuditLog />
     {:else if activeTab === "notices"}

@@ -65,47 +65,49 @@
   onMount(fetchPatterns);
 </script>
 
-<div class="admin-security-container">
-    <PageHeader 
-      title={i18n.t("admin.security_global") || "Seguridad Global"}
-      subtitle={i18n.t("admin.security_global_desc") || "Gestión de patrones globales para repositorios"}
-      icon={ShieldCheck}
-    />
+  <div class="admin-security-container">
+    <Card class="settings-premium-card" padding="none">
+      <PageHeader 
+        title={i18n.t("admin.security_global") || "Seguridad Global"}
+        subtitle={i18n.t("admin.security_global_desc") || "Gestión de patrones globales para repositorios"}
+        icon={ShieldCheck}
+        compact
+      />
 
-    <div class="admin-security-body">
+      <div class="admin-security-body">
+        <div class="patterns-grid">
+          {#if loading}
+            <div class="skeleton-list"></div>
+          {:else}
+            {#each patterns as pattern}
+              <div class="pattern-card tonal">
+                <div class="pattern-header">
+                  <span class="pattern-name">{pattern.Name}</span>
+                  <Button variant="ghost" icon={Trash2} size="sm" class="danger-text" onclick={() => deletePattern(pattern.ID)} />
+                </div>
+                <code class="regex-box">{pattern.Regex}</code>
+                <p class="pattern-desc">{pattern.Description || i18n.t("admin.no_description")}</p>
+              </div>
+            {/each}
+          {/if}
+        </div>
 
-    <div class="patterns-grid">
-      {#if loading}
-        <div class="skeleton-list"></div>
-      {:else}
-        {#each patterns as pattern}
-          <div class="pattern-card tonal">
-            <div class="pattern-header">
-              <span class="pattern-name">{pattern.Name}</span>
-              <Button variant="ghost" icon={Trash2} size="sm" class="danger-text" onclick={() => deletePattern(pattern.ID)} />
-            </div>
-            <code class="regex-box">{pattern.Regex}</code>
-            <p class="pattern-desc">{pattern.Description || i18n.t("admin.no_description")}</p>
+        <div class="add-global-pattern tonal">
+          <h4>{i18n.t("admin.add_global_pattern")}</h4>
+          <div class="form-row">
+            <Input label="Nombre" bind:value={newPattern.name} />
+            <Input label="Regex" bind:value={newPattern.regex} />
           </div>
-        {/each}
-      {/if}
-    </div>
-
-    <div class="add-global-pattern tonal">
-      <h4>{i18n.t("admin.add_global_pattern")}</h4>
-      <div class="form-row">
-        <Input label="Nombre" bind:value={newPattern.name} />
-        <Input label="Regex" bind:value={newPattern.regex} />
+          <Input label="Descripción" bind:value={newPattern.description} />
+          <div class="form-actions">
+            <Button variant="primary" icon={Plus} onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
+              {i18n.t("admin.save_global_pattern")}
+            </Button>
+          </div>
+        </div>
       </div>
-      <Input label="Descripción" bind:value={newPattern.description} />
-      <div class="form-actions">
-        <Button variant="primary" icon={Plus} onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
-          {i18n.t("admin.save_global_pattern")}
-        </Button>
-      </div>
-    </div>
+    </Card>
   </div>
-</div>
 
 <style>
   .admin-security-body {
