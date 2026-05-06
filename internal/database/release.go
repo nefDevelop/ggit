@@ -98,7 +98,7 @@ func (r *Release) LoadAttributes() error {
 func (r *Release) APIFormat() *apiv2types.RepositoryReleaseResponse {
 	attachments := make([]*apiv2types.AttachmentResponse, len(r.Attachments))
 	for i, a := range r.Attachments {
-		downloadURL := conf.Server.ExternalURL + "/api/v2/attachments/" + a.UUID
+		downloadURL := strings.TrimSuffix(conf.Server.ExternalURL, "/") + "/api/v2/attachments/" + a.UUID
 		attachments[i] = &apiv2types.AttachmentResponse{
 			ID:          a.ID,
 			UUID:        a.UUID,

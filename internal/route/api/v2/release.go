@@ -9,6 +9,7 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/form"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	log "unknwon.dev/clog/v2"
 )
 
 // ListReleases returns a list of releases for the repository.
@@ -132,6 +133,8 @@ func UploadReleaseAttachment(c *context.APIContext) {
 		c.Error(err, "new attachment")
 		return
 	}
+
+	log.Trace("[API] New release attachment uploaded: %s (UUID: %s, Size: %d bytes)", attach.Name, attach.UUID, attach.Size)
 
 	c.JSON(http.StatusOK, attach)
 }
