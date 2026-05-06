@@ -14,6 +14,7 @@ import (
 
 	"github.com/nef734/ggit/internal/errx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/tool"
 )
 
 // Release represents a release of repository.
@@ -204,6 +205,34 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 	if err = createTag(gitRepo, r); err != nil {
 		return err
 	}
+
+	// Auto-changelog if note is empty
+	if r.Note == "" {
+		releases, _ := GetReleasesByRepoID(r.RepoID)
+		var prevTag string
+		if len(releases) > 0 {
+			prevTag = releases[0].TagName
+		}
+
+		var commits []*git.Commit
+		if prevTag == "" {
+			// First release, get first 20 commits
+			commits, _ = gitRepo.Log(r.TagName, git.LogOptions{MaxCount: 20})
+		} else {
+			// Commits between tags
+			commits, _ = gitRepo.RevList([]string{prevTag + "..." + r.TagName})
+		}
+
+		if len(commits) > 0 {
+			var changelog strings.Builder
+			changelog.WriteString("### Changelog\n\n")
+			for _, c := range commits {
+				changelog.WriteString(fmt.Sprintf("- %s (%s)\n", strings.Split(c.Summary(), "\n")[0], tool.ShortSHA1(c.ID.String())))
+			}
+			r.Note = changelog.String()
+		}
+	}
+
 	r.LowerTagName = strings.ToLower(r.TagName)
 
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {

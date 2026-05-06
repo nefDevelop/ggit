@@ -95,11 +95,7 @@
     </div>
   {/if}
 
-  <header class="section-actions-minimal">
-     <Button onclick={handleAdd} icon="add_circle">
-       Draft Release
-     </Button>
-  </header>
+   <!-- Header actions removed, moved to timeline start -->
 
   {#if loading && releases.length === 0}
     <div class="skeleton-list">
@@ -118,6 +114,9 @@
     </div>
   {:else}
     <div class="releases-timeline">
+      <div class="timeline-start-action" title="Create draft release">
+        <Button variant="ghost" onclick={handleAdd} icon="add" size="sm" class="add-release-btn" />
+      </div>
       {#each releases as release}
         <div class="release-item" class:is-draft={release.is_draft}>
           <div class="release-marker"></div>
@@ -229,16 +228,29 @@
 <style>
   .repo-releases { display: flex; flex-direction: column; gap: 3rem; min-height: 400px; padding: 1rem; }
   
-  .editor-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 4rem; overflow-y: auto; }
-
-  .section-actions-minimal { display: flex; justify-content: flex-end; }
+  .editor-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: flex-start; justify-content: center; padding: 2rem; overflow-y: auto; }
 
   .empty-releases { text-align: center; padding: 6rem 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
   .empty-releases .icon { font-size: 4rem; color: var(--md-sys-color-surface-variant); margin-bottom: 1rem; }
   .empty-releases h3 { margin: 0; font-size: 1.5rem; color: var(--md-sys-color-on-surface); }
 
-  .releases-timeline { display: flex; flex-direction: column; position: relative; padding-left: 2.5rem; gap: 1rem; }
-  .releases-timeline::before { content: ''; position: absolute; left: 0; top: 1rem; bottom: 1rem; width: 4px; background: var(--md-sys-color-surface-variant); border-radius: 2px; }
+  .releases-timeline { display: flex; flex-direction: column; position: relative; padding-left: 2.5rem; gap: 1rem; margin-top: 2rem; }
+  .releases-timeline::before { content: ''; position: absolute; left: 0; top: 0rem; bottom: 1rem; width: 4px; background: var(--md-sys-color-surface-variant); border-radius: 2px; }
+
+  .timeline-start-action { position: absolute; left: -1rem; top: -1rem; z-index: 10; }
+  :global(.add-release-btn) { 
+    background: var(--md-sys-color-background) !important; 
+    border: 3px solid var(--md-sys-color-surface-variant) !important; 
+    border-radius: 50% !important; 
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0 !important;
+    color: var(--md-sys-color-primary) !important;
+  }
+  :global(.add-release-btn:hover) {
+    border-color: var(--md-sys-color-primary) !important;
+    transform: scale(1.1);
+  }
   
   .release-item { position: relative; padding-bottom: 2rem; transition: transform 0.2s; }
   .release-item.is-draft { opacity: 0.8; }
@@ -270,8 +282,8 @@
   
   :global(.assets-box) { background: var(--md-sys-color-background) !important; }
   :global(.assets-box) h4 { margin: 0 0 1rem 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; font-weight: 800; }
-  .asset-links { display: flex; flex-direction: column; gap: 0.25rem; }
-  .asset-item { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--md-sys-color-primary); font-weight: 700; font-size: 0.95rem; padding: 0.75rem; border-radius: 0.75rem; transition: all 0.2s; }
+  .asset-links { display: flex; flex-direction: column; gap: 0.15rem; }
+  .asset-item { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; color: var(--md-sys-color-primary); font-weight: 700; font-size: 0.85rem; padding: 0.5rem 0.75rem; border-radius: 0.6rem; transition: all 0.2s; }
   .asset-item:hover { background: var(--md-sys-color-primary-container); transform: translateX(4px); }
   .asset-item.source { color: var(--text-muted); font-weight: 600; }
   .asset-item span { font-size: 1.6rem; opacity: 0.9; }

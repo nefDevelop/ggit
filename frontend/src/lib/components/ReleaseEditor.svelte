@@ -268,11 +268,13 @@
 
 <style>
   .release-editor {
+    width: 100%;
+    max-width: 1100px;
     padding: 2.5rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    background: var(--md3-surface-1);
+    background: var(--md-sys-color-surface);
     border-radius: 2rem;
     border: 1px solid var(--md-sys-color-outline-variant);
   }
