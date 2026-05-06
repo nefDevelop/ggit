@@ -158,7 +158,6 @@
 
   .premium-error-zone { padding: 4rem; display: flex; align-items: center; gap: 3rem; background: rgba(var(--error-rgb), 0.05); border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 1.5rem; }
   .error-visual { width: 100px; height: 100px; border-radius: 0.75rem; background: rgba(var(--error-rgb), 0.1); color: var(--error); display: flex; align-items: center; justify-content: center; }
-  .error-visual span { font-size: 4rem; }
   .error-text h3 { margin: 0 0 0.75rem 0; font-size: 1.75rem; font-weight: 900; }
   .error-text p { margin: 0 0 2rem 0; color: var(--text-muted); font-size: 1.1rem; max-width: 500px; line-height: 1.5; }
 

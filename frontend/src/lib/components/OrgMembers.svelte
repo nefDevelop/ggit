@@ -207,5 +207,4 @@
     gap: 1rem;
     border-radius: 1rem;
   }
-  }
 </style>

@@ -205,7 +205,6 @@
   .console-box { background: #08080c; border-radius: 0.75rem; border: 1px solid #1a1a24; overflow: hidden; display: flex; flex-direction: column; height: 650px; position: sticky; top: 2rem; }
   .console-header { padding: 1rem 1.5rem; background: #0d0d14; border-bottom: 1px solid #1a1a24; display: flex; justify-content: space-between; align-items: center; }
   .console-header span { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: #444; letter-spacing: 0.1em; }
-  .console-header button { background: transparent; border: none; color: #666; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
   .console-content { flex: 1; overflow-y: auto; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
   .log-line { margin-bottom: 0.5rem; line-height: 1.5; padding-left: 0.75rem; border-left: 2px solid transparent; }
   .log-line.info { border-color: #3b82f6; color: #93c5fd; }

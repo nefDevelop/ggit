@@ -306,7 +306,7 @@
 
   .form-actions { display: flex; justify-content: flex-end; gap: 1.5rem; margin-top: 4rem; padding-top: 2.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   
-  .btn-lg { padding: 1.25rem 2.5rem; border-radius: 1.5rem; font-weight: 800; gap: 1rem; font-size: 1.1rem; }
+
 
   .loading-state { height: 500px; display: flex; align-items: center; justify-content: center; }
   .loading-spinner { width: 48px; height: 48px; border: 4px solid rgba(var(--primary-rgb), 0.1); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; }

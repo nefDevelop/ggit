@@ -331,7 +331,7 @@
     gap: 1rem;
     color: var(--text-muted);
   }
-  .empty-releases .icon {
+  .empty-releases :global(.icon) {
     color: var(--md-sys-color-surface-variant);
     margin-bottom: 1rem;
   }
@@ -511,7 +511,6 @@
     background: var(--md-sys-color-primary-container);
     transform: translateX(4px);
   }
-  .asset-item.source {
   .asset-item .name {
     font-size: 0.85rem;
   }

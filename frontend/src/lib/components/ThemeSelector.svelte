@@ -340,7 +340,7 @@
   .mini-chip:hover { border-color: var(--primary-color); color: var(--primary-color); }
   .mini-chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
-  .check-icon { color: var(--primary-color); font-size: 1.5rem; }
+  :global(.check-icon) { color: var(--primary-color); font-size: 1.5rem; }
 
   @media (max-width: 800px) {
 
