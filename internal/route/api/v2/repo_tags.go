@@ -3,19 +3,18 @@ package v2
 import (
 	"net/http"
 	"sort"
-	"time"
 
 	"github.com/nef734/ggit/internal/context"
 )
 
 type TagResponse struct {
-	Name      string    `json:"name"`
-	SHA       string    `json:"sha"`
-	Message   string    `json:"message"`
-	Tagger    string    `json:"tagger"`
-	CreatedAt time.Time `json:"created_at"`
-	ZipURL    string    `json:"zip_url"`
-	TarURL    string    `json:"tar_url"`
+	Name      string `json:"name"`
+	SHA       string `json:"sha"`
+	Message   string `json:"message"`
+	Tagger    string `json:"tagger"`
+	CreatedAt int64  `json:"created_at"`
+	ZipURL    string `json:"zip_url"`
+	TarURL    string `json:"tar_url"`
 }
 
 // ListRepoTags returns all tags for a repository.
@@ -35,10 +34,16 @@ func ListRepoTags(c *context.APIContext) {
 
 	resp := make([]*TagResponse, 0, len(tags))
 	for _, tag := range tags {
+		createdAt := int64(0)
+		if commit, err := c.Repo.GitRepo.TagCommit(tag); err == nil {
+			createdAt = commit.Committer.When.Unix()
+		}
+
 		resp = append(resp, &TagResponse{
-			Name:   tag,
-			ZipURL: "/api/v2/" + username + "/" + reponame + "/archive/" + tag + ".zip",
-			TarURL: "/api/v2/" + username + "/" + reponame + "/archive/" + tag + ".tar.gz",
+			Name:      tag,
+			CreatedAt: createdAt,
+			ZipURL:    "/api/v2/" + username + "/" + reponame + "/archive/" + tag + ".zip",
+			TarURL:    "/api/v2/" + username + "/" + reponame + "/archive/" + tag + ".tar.gz",
 		})
 	}
 

@@ -110,18 +110,26 @@ type RepositoryBranchResponse struct {
 	Commit *WebhookPayloadCommit `json:"commit"`
 }
 
+// AttachmentResponse represents an attachment in the API v2.
+type AttachmentResponse struct {
+	ID          int64  `json:"id"`
+	UUID        string `json:"uuid"`
+	Name        string `json:"name"`
+	DownloadURL string `json:"download_url"`
+}
+
 // RepositoryReleaseResponse represents a release of a repository.
 type RepositoryReleaseResponse struct {
-	ID              int64         `json:"id"`
-	TagName         string        `json:"tag_name"`
-	TargetCommitish string        `json:"target_commitish"`
-	Name            string        `json:"name"`
-	Body            string        `json:"body"`
-	Draft           bool          `json:"draft"`
-	Prerelease      bool          `json:"prerelease"`
-	Author          *UserResponse `json:"author"`
-	Attachments     []any         `json:"attachments"`
-	CreatedAt       time.Time     `json:"created_at"`
+	ID              int64                 `json:"id"`
+	TagName         string                `json:"tag_name"`
+	TargetCommitish string                `json:"target_commitish"`
+	Name            string                `json:"name"`
+	Body            string                `json:"body"`
+	Draft           bool                  `json:"draft"`
+	Prerelease      bool                  `json:"prerelease"`
+	Author          *UserResponse         `json:"author"`
+	Attachments     []*AttachmentResponse `json:"attachments"`
+	CreatedAt       int64                 `json:"created_at"`
 }
 
 // RepositoryHookResponse represents a webhook for a repository.

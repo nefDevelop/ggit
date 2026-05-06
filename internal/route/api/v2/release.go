@@ -8,6 +8,7 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/form"
+	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 
 // ListReleases returns a list of releases for the repository.
@@ -18,11 +19,13 @@ func ListReleases(c *context.APIContext) {
 		return
 	}
 
-	for _, r := range releases {
+	resp := make([]*apiv2types.RepositoryReleaseResponse, len(releases))
+	for i, r := range releases {
 		_ = r.LoadAttributes()
+		resp[i] = r.APIFormat()
 	}
 
-	c.JSON(http.StatusOK, releases)
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetRelease returns a single release by its ID.
@@ -40,7 +43,7 @@ func GetRelease(c *context.APIContext) {
 	}
 
 	_ = rel.LoadAttributes()
-	c.JSON(http.StatusOK, rel)
+	c.JSON(http.StatusOK, rel.APIFormat())
 }
 
 // CreateRelease creates a new release.
@@ -100,7 +103,7 @@ func CreateRelease(c *context.APIContext) {
 
 // UploadReleaseAttachment uploads a release attachment.
 func UploadReleaseAttachment(c *context.APIContext) {
-	if !conf.Attachment.Enabled {
+	if !conf.Release.Attachment.Enabled {
 		c.Status(http.StatusNotImplemented)
 		return
 	}
@@ -111,6 +114,12 @@ func UploadReleaseAttachment(c *context.APIContext) {
 		return
 	}
 	defer file.Close()
+
+	// Size check
+	if conf.Release.Attachment.MaxSize > 0 && header.Size > conf.Release.Attachment.MaxSize*1024*1024 {
+		c.StatusError(http.StatusRequestEntityTooLarge, "File is too large.", nil)
+		return
+	}
 
 	buf := make([]byte, 1024)
 	n, _ := file.Read(buf)
@@ -125,6 +134,18 @@ func UploadReleaseAttachment(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, attach)
+}
+
+// GetAttachment serves an attachment file.
+func GetAttachment(c *context.APIContext) {
+	uuid := c.Params(":uuid")
+	attach, err := database.GetAttachmentByUUID(uuid)
+	if err != nil {
+		c.NotFoundOrError(err, "get attachment")
+		return
+	}
+
+	c.ServeFile(attach.LocalPath(), attach.Name)
 }
 
 // UpdateRelease updates an existing release.

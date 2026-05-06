@@ -94,6 +94,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		user.POST("/repos/migrate", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(MigrateRepo))
 	}
 
+	// Global attachment download
+	r.GET("/attachments/:uuid", context.APIContexter(), ginx.Handle(GetAttachment))
+
 	explore := r.Group("/explore", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{
 		explore.GET("/repos", ginx.Handle(ExploreRepos))
