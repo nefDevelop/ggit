@@ -20,9 +20,9 @@ import (
 
 // GetRepoArchive serves the repository as a zip or tar.gz archive.
 func GetRepoArchive(c *context.APIContext) {
-	archiveName := c.Params("name")
+	archiveName := strings.TrimPrefix(c.Params("name"), "/")
 	if archiveName == "" {
-		archiveName = c.Params("*")
+		archiveName = strings.TrimPrefix(c.Params("*"), "/")
 	}
 	var (
 		ext           string
