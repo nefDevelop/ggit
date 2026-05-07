@@ -108,7 +108,7 @@ func initRepoCommit(tmpDir string, sig *git.Signature, branch string) error {
 
 	if _, stderr, err = process.ExecDir(-1,
 		tmpDir, fmt.Sprintf("initRepoCommit (git commit): %s", tmpDir),
-		"git", "commit", fmt.Sprintf("--author='%s <%s>'", sig.Name, sig.Email),
+		"git", "commit", fmt.Sprintf("--author=%s <%s>", sig.Name, sig.Email),
 		"-m", "Initial commit"); err != nil {
 		return errors.Newf("git commit: %s", stderr)
 	}
