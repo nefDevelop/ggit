@@ -134,7 +134,7 @@
     flex-direction: column;
     gap: 0;
     animation: fadeIn 0.3s ease-out;
-    margin: -2rem;
+    padding: 2rem;
   }
 
   .pill-filter-group-inline {

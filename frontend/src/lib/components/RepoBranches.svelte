@@ -115,7 +115,7 @@
 </div>
 
 <style>
-  .repo-branches { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .repo-branches { display: flex; flex-direction: column; gap: 0; }
   .branches-content { padding: 2rem; }
   
   .branch-list-container {

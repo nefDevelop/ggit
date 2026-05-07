@@ -96,15 +96,34 @@
 
 <div class="workspace-shell">
   {#if loading && !repoData}
-    <div class="skeleton-master tonal" out:fade={{ duration: 150 }}></div>
+    <div class="skeleton-master" out:fade={{ duration: 150 }}>
+      <div class="repo-header-region">
+        <div class="tonal-search-bar">
+          <div class="skeleton-pulse search-skeleton"></div>
+        </div>
+
+        <div class="repo-identity-bar">
+          <div class="skeleton-pulse identity-skeleton"></div>
+          <div class="skeleton-pulse actions-skeleton"></div>
+        </div>
+
+        <div class="rich-tabs">
+          <div class="skeleton-pulse tabs-skeleton"></div>
+        </div>
+      </div>
+
+      <div class="master-body-skeleton">
+        <div class="skeleton-pulse body-skeleton"></div>
+      </div>
+    </div>
   {:else if error}
-    <div class="tonal error-tonal">
+    <div class="tonal error-tonal" in:fade>
       <span class="material-symbols-rounded">error</span>
       <p>{error}</p>
       <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
     </div>
   {:else if repoData}
-    <div class="master-tonal tonal">
+    <div class="master-tonal tonal" in:fade={{ duration: 250, delay: 50 }}>
       <div class="repo-header-region">
         <div class="tonal-search-bar">
           <GlobalSearch />
@@ -393,11 +412,20 @@
     .clone-dropdown { width: calc(100vw - 3rem); right: -1.5rem; }
   }
 
-  .master-body { flex: 1; overflow-y: auto; padding: 2rem; background: var(--bg-color); }
+  .master-body { flex: 1; overflow-y: auto; background: var(--bg-color); }
+  .master-body-skeleton { flex: 1; padding: 2rem; display: flex; flex-direction: column; }
   @media (max-width: 600px) {
     .master-body { padding: 1rem; }
   }
-  .skeleton-master { flex: 1; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }
+  .skeleton-master { flex: 1; display: flex; flex-direction: column; background: var(--bg-color); }
+  .skeleton-pulse { background: var(--surface-variant); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; opacity: 0.5; }
+  
+  .search-skeleton { height: 44px; width: 100%; max-width: 800px; border-radius: 14px; }
+  .identity-skeleton { height: 32px; width: 320px; }
+  .actions-skeleton { height: 36px; width: 180px; border-radius: 12px; }
+  .tabs-skeleton { height: 48px; width: 100%; border-radius: 12px 12px 0 0; }
+  .body-skeleton { height: 100%; width: 100%; border-radius: 1rem; }
+
+  @keyframes skeleton-pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
   .error-tonal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: #f87171; }
 </style>

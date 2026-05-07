@@ -165,7 +165,7 @@
     flex-direction: column;
     gap: 0;
     animation: fadeIn 0.3s ease-out;
-    margin: -2rem; /* Negate parent padding for full-width header if needed, but let's just use gap 0 */
+    padding: 2rem;
   }
 
   /* ... existing styles ... */

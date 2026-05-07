@@ -139,7 +139,7 @@
 </div>
 
 <style>
-  .repo-docs-container { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .repo-docs-container { display: flex; flex-direction: column; gap: 0; }
   .docs-layout { min-height: 400px; padding: 2rem; }
   
   .header-main-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }

@@ -311,7 +311,7 @@
 </div>
 
 <style>
-  .repo-milestones { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .repo-milestones { display: flex; flex-direction: column; gap: 0; }
   .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; }
   .section-actions { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 

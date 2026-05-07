@@ -151,7 +151,7 @@
 </div>
 
 <style>
-  .repo-labels { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
+  .repo-labels { display: flex; flex-direction: column; gap: 0; }
   .labels-content { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
   .section-actions { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 

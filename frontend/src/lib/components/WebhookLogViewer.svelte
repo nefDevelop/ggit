@@ -163,7 +163,7 @@
 </div>
 
 <style>
-  .webhook-logs { display: flex; flex-direction: column; height: 100%; margin: -2rem; }
+  .webhook-logs { display: flex; flex-direction: column; height: 100%; }
   
   .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.05); }
   .url-hint { font-size: 0.75rem; opacity: 0.5; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
