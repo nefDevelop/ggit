@@ -16,12 +16,31 @@
   let { path = '' } = $props();
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
-
+  const repoContext = getContext<any>('repo');
+  
   let repoData = $state<any>(null);
   let loading = $state(true);
   let error = $state('');
   
   let searchQuery = $state('');
+  let lastFetched = $state({ user: '', repo: '', path: '' });
+
+  // Initialize from context if at root to avoid flicker
+  if (!path && repoContext.data) {
+    repoData = {
+      ...repoContext.data,
+      entries: repoContext.entries,
+      type: 'directory',
+      languages: repoContext.languages
+    };
+    loading = false;
+    // Set lastFetched to prevent immediate re-fetch
+    lastFetched = { 
+      user: page.params.username || '', 
+      repo: page.params.reponame || '', 
+      path: '' 
+    };
+  }
 
   let codeRows = $derived(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];
@@ -71,7 +90,6 @@
     return p;
   });
 
-  let lastFetched = { user: '', repo: '', path: '' };
 
   async function fetchRepo() {
     const currentPath = realPath();
@@ -105,8 +123,6 @@
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
-
-  const repoContext = getContext<any>('repo');
 
   // Calculate language percentages - Fallback to global context if local repoData doesn't have them
   const langEntries = $derived(() => {

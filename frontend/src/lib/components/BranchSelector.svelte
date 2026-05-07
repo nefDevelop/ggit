@@ -133,7 +133,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .expand {
+  :global(.expand) {
     font-size: 1.25rem;
     opacity: 0.5;
   }

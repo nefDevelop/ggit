@@ -101,35 +101,36 @@
 </script>
 
 <div class="workspace-shell">
-  {#if loading && !repoData}
-    <div class="skeleton-master" out:fade={{ duration: 150 }}>
-      <div class="repo-header-region">
-        <div class="tonal-search-bar">
-          <div class="skeleton-pulse search-skeleton"></div>
+  <div class="master-container">
+    {#if loading && !repoData}
+      <div class="skeleton-master" out:fade={{ duration: 200 }}>
+        <div class="repo-header-region">
+          <div class="tonal-search-bar">
+            <div class="skeleton-pulse search-skeleton"></div>
+          </div>
+
+          <div class="repo-identity-bar">
+            <div class="skeleton-pulse identity-skeleton"></div>
+            <div class="skeleton-pulse actions-skeleton"></div>
+          </div>
+
+          <div class="rich-tabs">
+            <div class="skeleton-pulse tabs-skeleton"></div>
+          </div>
         </div>
 
-        <div class="repo-identity-bar">
-          <div class="skeleton-pulse identity-skeleton"></div>
-          <div class="skeleton-pulse actions-skeleton"></div>
-        </div>
-
-        <div class="rich-tabs">
-          <div class="skeleton-pulse tabs-skeleton"></div>
+        <div class="master-body-skeleton">
+          <div class="skeleton-pulse body-skeleton"></div>
         </div>
       </div>
-
-      <div class="master-body-skeleton">
-        <div class="skeleton-pulse body-skeleton"></div>
+    {:else if error}
+      <div class="tonal error-tonal" in:fade>
+        <AlertCircle size={48} />
+        <p>{error}</p>
+        <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
       </div>
-    </div>
-  {:else if error}
-    <div class="tonal error-tonal" in:fade>
-      <AlertCircle size={48} />
-      <p>{error}</p>
-      <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
-    </div>
-  {:else if repoData}
-    <div class="master-tonal tonal" in:fade={{ duration: 250, delay: 50 }}>
+    {:else if repoData}
+      <div class="master-tonal tonal" in:fade={{ duration: 300, delay: 100 }}>
       <div class="repo-header-region">
         <div class="tonal-search-bar">
           <GlobalSearch />
@@ -341,10 +342,14 @@
     </div>
   {/if}
 </div>
+</div>
 
 <style>
-  .workspace-shell { height: 100%; width: 100%; display: flex; flex-direction: column; }
-  .master-tonal { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .workspace-shell { height: 100%; width: 100%; display: flex; flex-direction: column; overflow: hidden; }
+  .master-container { flex: 1; display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr; overflow: hidden; }
+  .skeleton-master, .master-tonal, .error-tonal { grid-area: 1 / 1 / 2 / 2; display: flex; flex-direction: column; overflow: hidden; }
+  .master-tonal { z-index: 2; }
+  .skeleton-master { z-index: 1; }
 
   .tonal-search-bar { padding: 1.5rem 1.5rem 0.75rem; background: rgba(255,255,255,0.01); }
 
@@ -419,7 +424,7 @@
   @media (max-width: 600px) {
     .master-body { padding: 1rem; }
   }
-  .skeleton-master { flex: 1; display: flex; flex-direction: column; background: var(--bg-color); }
+  .skeleton-master { background: var(--md-sys-color-surface-container-low); }
   .skeleton-pulse { background: var(--surface-variant); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; opacity: 0.5; }
   
   .search-skeleton { height: 44px; width: 100%; max-width: 800px; border-radius: 14px; }
