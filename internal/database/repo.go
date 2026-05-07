@@ -1925,6 +1925,7 @@ func UpdateRepository(r *Repository, visibilityChanged bool) (err error) {
 
 // DeleteRepository deletes a repository for a user or organization.
 func DeleteRepository(ownerID, repoID int64) error {
+	log.Trace("DeleteRepository: ownerID: %d, repoID: %d", ownerID, repoID)
 	repo := new(Repository)
 	err := Handle.db.Where("id = ? AND owner_id = ?", repoID, ownerID).First(repo).Error
 	if err != nil {
@@ -1945,7 +1946,9 @@ func DeleteRepository(ownerID, repoID int64) error {
 	fsTx := fsx.NewTransaction()
 	defer fsTx.Rollback()
 
+	log.Trace("DeleteRepository [repo_id: %d]: Starting database transaction", repoID)
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
+		log.Trace("DeleteRepository [repo_id: %d]: Starting transaction", repoID)
 		if org.IsOrganization() {
 			if err = org.getTeams(tx); err != nil {
 				return err
@@ -2047,6 +2050,7 @@ func DeleteRepository(ownerID, repoID int64) error {
 
 		// Stage repository and wiki files for deletion
 		repoPath := repo.RepoPath()
+		log.Trace("DeleteRepository [repo_id: %d]: Staging FS deletion for %s", repoID, repoPath)
 		if err = fsTx.StageDelete(repoPath, repoPath+".trash"); err != nil {
 			return err
 		}
@@ -2065,9 +2069,11 @@ func DeleteRepository(ownerID, repoID int64) error {
 	}
 
 	// Commit FS transaction after DB success
+	log.Trace("DeleteRepository [repo_id: %d]: Committing FS transaction", repoID)
 	if err := fsTx.Commit(); err != nil {
 		log.Error("DeleteRepository [repo_id: %d]: commit fs transaction: %v", repoID, err)
 	}
+	log.Trace("DeleteRepository [repo_id: %d]: FS transaction committed", repoID)
 
 	if repo.NumForks > 0 {
 		if err = Handle.db.Exec("UPDATE repository SET fork_id=0,is_fork=? WHERE fork_id=?", false, repo.ID).Error; err != nil {

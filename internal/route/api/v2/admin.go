@@ -351,17 +351,20 @@ func CreateAdminOrg(c *context.APIContext) {
 // DeleteAdminRepo deletes a repository administratively.
 func DeleteAdminRepo(c *context.APIContext) {
 	repoID := c.ParamsInt64("id")
+	log.Trace("Admin: Deleting repository [repo_id: %d]", repoID)
 	repo, err := database.GetRepositoryByID(repoID)
 	if err != nil {
 		c.Error(err, "get repository")
 		return
 	}
 
+	log.Trace("Admin: Repository found: %s/%s. Starting database deletion...", repo.Owner.Name, repo.Name)
 	if err := database.DeleteRepository(repo.OwnerID, repo.ID); err != nil {
 		c.Error(err, "delete repository")
 		return
 	}
 
+	log.Trace("Admin: Repository deleted successfully: [repo_id: %d]", repoID)
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 

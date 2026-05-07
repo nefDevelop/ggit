@@ -4,6 +4,7 @@
     GitFork, Eye, ShieldCheck, Trash2 
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
+  import { toast } from "$lib/toast.svelte";
   import { onMount } from "svelte";
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
@@ -15,6 +16,7 @@
 
   let repos = $state<any[]>([]);
   let loading = $state(true);
+  let deletingIds = $state<Set<number>>(new Set());
   let page = $state(1);
 
   async function fetchRepos() {
@@ -34,13 +36,17 @@
   async function deleteRepo(id: number, name: string) {
     if (!await dialog.confirm(`Are you sure you want to delete repository "${name}"? This action cannot be undone.`)) return;
 
+    deletingIds.add(id);
     try {
       const res = await apiFetch(`/api/v2/admin/repos/${id}`, { method: "DELETE" });
       if (res.ok) {
         repos = repos.filter((r) => r.id !== id);
+        toast.success(`Repository "${name}" deleted successfully.`);
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      deletingIds.delete(id);
     }
   }
 
@@ -133,8 +139,17 @@
                   <button class="icon-btn" onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad">
                     <ShieldCheck size={18} />
                   </button>
-                  <button class="icon-btn danger" onclick={() => deleteRepo(repo.id, repo.name)} title="Eliminar">
-                    <Trash2 size={18} />
+                  <button 
+                    class="icon-btn danger" 
+                    onclick={() => deleteRepo(repo.id, repo.name)} 
+                    title="Eliminar"
+                    disabled={deletingIds.has(repo.id)}
+                  >
+                    {#if deletingIds.has(repo.id)}
+                      <div class="spinner-small"></div>
+                    {:else}
+                      <Trash2 size={18} />
+                    {/if}
                   </button>
                 </div>
               </td>
@@ -208,5 +223,22 @@
   .icon-btn.danger:hover {
     background: rgba(var(--error-rgb), 0.1);
     color: var(--error);
+  }
+  .icon-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .spinner-small {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 </style>
