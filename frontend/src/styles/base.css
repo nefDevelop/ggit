@@ -1,13 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* 
-@font-face {
-  font-family: 'Material Symbols Rounded';
-  font-style: normal;
-  font-weight: normal;
-  src: url('/fonts/material-symbols-rounded.woff2') format('woff2');
-}
-
 .material-symbols-rounded {
   font-family: 'Material Symbols Rounded';
   font-weight: normal;
@@ -28,7 +20,6 @@
 .material-symbols-rounded.mini {
   font-size: 1.15rem;
 }
-*/
 
 
 *, *::before, *::after {

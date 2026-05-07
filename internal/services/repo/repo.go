@@ -27,6 +27,9 @@ func Init(db *database.DB) {
 
 // Create crea un nuevo repositorio tanto en base de datos como en disco.
 func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.User, opts CreateOptions) (*database.Repository, error) {
+	if opts.DefaultBranch == "" {
+		opts.DefaultBranch = "main"
+	}
 	var repo *database.Repository
 
 	finalRepoPath := repox.RepositoryPath(owner.Name, opts.Name)
