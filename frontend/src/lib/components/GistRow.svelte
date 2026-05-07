@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Code, ChevronRight } from "lucide-svelte";
   import Badge from "./ui/Badge.svelte";
 
   let { gist } = $props<{ gist: any }>();
@@ -6,7 +7,7 @@
 
 <a href="/gists/{gist.uuid}" class="gist-row">
   <div class="row-icon">
-    <span class="material-symbols-rounded">code</span>
+    <Code size={24} />
   </div>
   <div class="row-info">
     <div class="title-line">
@@ -22,7 +23,7 @@
     </div>
   </div>
   <div class="row-arrow">
-    <span class="material-symbols-rounded">chevron_right</span>
+    <ChevronRight size={24} />
   </div>
 </a>
 

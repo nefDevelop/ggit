@@ -3,6 +3,7 @@
   import { onMount, getContext } from "svelte";
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
+  import { Folder, ArrowLeft, Info, CheckCircle2, AlertCircle, GitMerge, Diff, History, GitFork } from "lucide-svelte";
   import DiffViewer from "$lib/components/DiffViewer.svelte";
   import CommitRow from "$lib/components/CommitRow.svelte";
   import BranchSelector from "$lib/components/BranchSelector.svelte";
@@ -159,7 +160,7 @@
         <div class="repo-info">
           <span class="label">Base Repository</span>
           <div class="repo-name">
-            <span class="material-symbols-rounded">folder</span>
+            <Folder size={18} />
             {username}/{reponame}
           </div>
         </div>
@@ -171,7 +172,7 @@
       </div>
 
       <div class="comparison-arrow">
-        <span class="material-symbols-rounded">arrow_back</span>
+        <ArrowLeft size={24} />
       </div>
 
       <div class="selector-group">
@@ -187,24 +188,24 @@
           label="Compare Branch"
           branches={metadata.head_branches.map((b: string) => ({ name: b }))}
           bind:selected={headBranch}
-          icon="call_split"
+          icon={GitFork}
         />
       </div>
 
       <div class="comparison-status">
         {#if baseBranch === headBranch && metadata.head_repo.id === metadata.base_repo.id}
           <div class="status-chip neutral">
-            <span class="material-symbols-rounded">info</span>
+            <Info size={18} />
             Choose different branches
           </div>
         {:else if comparison}
           <div class="status-chip success">
-            <span class="material-symbols-rounded">check_circle</span>
+            <CheckCircle2 size={18} />
             Able to merge
           </div>
         {:else if !loadingComp}
           <div class="status-chip error">
-            <span class="material-symbols-rounded">error</span>
+            <AlertCircle size={18} />
             Conflict detected
           </div>
         {/if}
@@ -252,7 +253,7 @@
                 <span class="spinner-sm"></span>
                 Creating...
               {:else}
-                <span class="material-symbols-rounded">merge</span>
+                <GitMerge size={20} />
                 Create Pull Request
               {/if}
             </button>
@@ -265,7 +266,7 @@
               class:active={activeTab === "diff"}
               onclick={() => (activeTab = "diff")}
             >
-              <span class="material-symbols-rounded">difference</span>
+              <Diff size={20} />
               Changes
               <span class="badge">{comparison.diff?.Files?.length || 0}</span>
             </button>
@@ -273,7 +274,7 @@
               class:active={activeTab === "commits"}
               onclick={() => (activeTab = "commits")}
             >
-              <span class="material-symbols-rounded">history</span>
+              <History size={20} />
               Commits
               <span class="badge">{comparison.num_commits}</span>
             </button>
@@ -359,9 +360,8 @@
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  .repo-name span:last-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .repo-name :global(svg) {
+    flex-shrink: 0;
   }
   .repo-selector select {
     background: rgba(255, 255, 255, 0.02);

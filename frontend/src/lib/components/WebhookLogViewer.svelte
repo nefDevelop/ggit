@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { RefreshCw, Info, CheckCircle2, AlertCircle, RotateCcw, MousePointerClick } from 'lucide-svelte';
   import Button from './ui/Button.svelte';
 
   let { hook, onclose } = $props();
@@ -55,7 +56,7 @@
         <header class="sidebar-header">
            <span class="url-hint">{hook.url}</span>
            <button class="btn-icon-minimal" onclick={fetchLogs} title="Refresh">
-             <span class="material-symbols-rounded">refresh</span>
+             <RefreshCw size={18} />
            </button>
         </header>
         {#if loading}
@@ -68,7 +69,7 @@
           <div class="error-msg">{error}</div>
         {:else if logs.length === 0}
           <div class="empty-logs">
-            <span class="material-symbols-rounded">info</span>
+            <Info size={32} />
             <p>No delivery attempts yet.</p>
           </div>
         {:else}
@@ -81,9 +82,11 @@
                 class:failure={!log.is_succeed}
                 onclick={() => selectedLog = log}
               >
-                <span class="material-symbols-rounded status-icon">
-                  {log.is_succeed ? 'check_circle' : 'error'}
-                </span>
+                {#if log.is_succeed}
+                  <CheckCircle2 size={20} class="status-icon" />
+                {:else}
+                  <AlertCircle size={20} class="status-icon" />
+                {/if}
                 <div class="log-info">
                    <div class="log-top">
                      <span class="uuid">{log.uuid.substring(0, 8)}</span>
@@ -110,7 +113,7 @@
                   <h3>Detalles del Envío</h3>
                   <span class="full-uuid">UUID: {selectedLog.uuid}</span>
                 </div>
-                <Button variant="secondary" size="sm" icon="replay" onclick={() => redeliver(selectedLog.uuid)}>
+                <Button variant="secondary" size="sm" icon={RotateCcw} onclick={() => redeliver(selectedLog.uuid)}>
                   Reenviar
                 </Button>
               </header>
@@ -154,7 +157,7 @@
            </div>
         {:else}
            <div class="no-selection">
-              <span class="material-symbols-rounded">ads_click</span>
+              <MousePointerClick size={64} />
               <p>Selecciona un envío para ver los detalles</p>
            </div>
         {/if}
@@ -177,9 +180,9 @@
   .log-item:hover { background: rgba(255,255,255,0.03); }
   .log-item.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); border-right: 3px solid var(--primary-color); }
   
-  .status-icon { font-size: 1.5rem; }
-  .log-item.success .status-icon { color: #4ade80; }
-  .log-item.failure .status-icon { color: #f87171; }
+  :global(.status-icon) { flex-shrink: 0; }
+  .log-item.success :global(.status-icon) { color: #4ade80; }
+  .log-item.failure :global(.status-icon) { color: #f87171; }
   
   .log-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
   .log-top { display: flex; justify-content: space-between; align-items: center; }
@@ -192,7 +195,7 @@
 
   .log-details { overflow-y: auto; padding: 2rem; position: relative; }
   .no-selection { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--text-muted); opacity: 0.5; }
-  .no-selection span { font-size: 4rem; }
+  .no-selection :global(svg) { font-size: 4rem; }
 
   .details-content { display: flex; flex-direction: column; gap: 2rem; }
   
@@ -215,7 +218,7 @@
   .body-preview pre { margin: 0; white-space: pre-wrap; word-break: break-all; opacity: 0.9; line-height: 1.5; }
 
   .empty-logs { padding: 3rem; text-align: center; color: var(--text-muted); }
-  .empty-logs span { font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; }
+  .empty-logs :global(svg) { font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; }
 
   .skeleton-log-item { height: 60px; background: rgba(255,255,255,0.05); margin: 0.5rem 1rem; border-radius: 0.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 0.3; } }

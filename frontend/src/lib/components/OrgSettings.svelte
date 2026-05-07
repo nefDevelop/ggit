@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
+  import { Building2, RefreshCw, Upload, Trash2, HeartCrack } from "lucide-svelte";
   import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
@@ -113,7 +114,7 @@
 <Card padding="none" class="settings-premium-card">
   <header class="section-header-premium">
     <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon">corporate_fare</span>
+      <Building2 size={48} class="hero-icon" />
       <div>
         <h2>Ajustes de la Organización</h2>
         <p class="subtitle">Gestiona la identidad y visibilidad de tu organización</p>
@@ -136,7 +137,7 @@
           />
           {#if avatarUploading}
             <div class="avatar-overlay">
-              <span class="material-symbols-rounded spin">sync</span>
+              <RefreshCw size={24} class="spin" />
             </div>
           {/if}
         </div>
@@ -146,11 +147,11 @@
             <p>Sube una imagen personalizada para tu organización.</p>
           </header>
           <div class="action-buttons">
-            <Button variant="outline" icon="upload" onclick={() => document.getElementById('org-avatar-input')?.click()}>
+            <Button variant="outline" icon={Upload} onclick={() => document.getElementById('org-avatar-input')?.click()}>
               Subir Imagen
             </Button>
             {#if org.use_custom_avatar}
-              <Button variant="ghost" icon="delete" class="danger-text" onclick={deleteAvatar}>
+              <Button variant="ghost" icon={Trash2} class="danger-text" onclick={deleteAvatar}>
                 Eliminar
               </Button>
             {/if}
@@ -196,7 +197,7 @@
 <Card padding="none" class="settings-premium-card danger-card">
   <header class="section-header-premium danger">
     <div class="title-with-icon">
-      <span class="material-symbols-rounded hero-icon danger">heart_broken</span>
+      <HeartCrack size={48} class="hero-icon danger" />
       <div>
         <h2 class="danger-text">Zona de Peligro</h2>
         <p class="subtitle">Acciones irreversibles sobre la organización</p>
@@ -221,8 +222,8 @@
 <style>
   .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-  .hero-icon.danger { color: var(--error); background: rgba(var(--error-rgb), 0.1); }
+  :global(.hero-icon) { background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
+  :global(.hero-icon.danger) { background: rgba(var(--error-rgb), 0.1); }
   
   h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
   .danger-text { color: var(--error); }
@@ -231,7 +232,7 @@
   @media (max-width: 600px) {
     .section-header-premium { padding: 1.5rem; }
     h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    :global(.hero-icon) { padding: 0.5rem; border-radius: 0.75rem; }
     .title-with-icon { gap: 0.75rem; }
     .subtitle { display: none; }
   }
@@ -244,7 +245,7 @@
   .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1rem; }
   .avatar-preview-wrap { position: relative; border-radius: 50%; overflow: hidden; background: var(--md-sys-color-surface-container-highest); border: 2px solid var(--md-sys-color-outline-variant); flex-shrink: 0; }
   .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; }
-  .spin { animation: spin 1s linear infinite; }
+  :global(.spin) { animation: spin 1s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
   .avatar-actions { display: flex; flex-direction: column; gap: 1.5rem; }

@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { Database, Search } from 'lucide-svelte';
 
   const reponame = $derived(page.params.reponame);
   const isRepoContext = $derived(!!reponame);
@@ -33,9 +34,11 @@
 
 <div class="search-pill-container">
   <div class="search-pill">
-    <span class="material-symbols-rounded icon">
-      {isRepoContext ? 'database' : 'search'}
-    </span>
+    {#if isRepoContext}
+      <Database size={20} class="icon" />
+    {:else}
+      <Search size={20} class="icon" />
+    {/if}
     <input 
       bind:this={searchInput}
       bind:value={query}
@@ -71,8 +74,7 @@
     transform: scale(1.02);
   }
 
-  .icon {
-    font-size: 1.25rem;
+  :global(.icon) {
     color: var(--primary-color);
     opacity: 0.8;
   }

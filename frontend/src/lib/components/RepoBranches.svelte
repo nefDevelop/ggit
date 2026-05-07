@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
+  import { Star, GitFork, History, Trash2, AlertCircle } from 'lucide-svelte';
   
   let { username, reponame } = $props();
   
@@ -42,7 +43,7 @@
     <div class="branch-list-container">
       <div class="branch-row-item primary-row">
         <div class="branch-main-info">
-          <span class="material-symbols-rounded branch-icon-acc">stars</span>
+          <Star size={18} class="branch-icon-acc" />
           <div class="branch-name-stack">
             <a href={`/${username}/${reponame}/src/branch/${data.default.name}`} class="branch-name-text">{data.default.name}</a>
             <div class="badges-row">
@@ -64,7 +65,7 @@
         {#each data.active as branch}
           <div class="branch-row-item">
             <div class="branch-main-info">
-              <span class="material-symbols-rounded branch-icon">fork_right</span>
+              <GitFork size={18} class="branch-icon" />
               <div class="branch-name-stack">
                 <a href={`/${username}/${reponame}/src/branch/${branch.name}`} class="branch-name-text">{branch.name}</a>
                 {#if branch.is_protected}
@@ -76,7 +77,7 @@
             <div class="branch-meta-info">
                <span class="meta-label">{branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'Recently'}</span>
                <button class="row-btn delete-btn" disabled={branch.is_protected} onclick={() => deleteBranch(branch.name)}>
-                 <span class="material-symbols-rounded">delete</span>
+                 <Trash2 size={16} />
                </button>
             </div>
           </div>
@@ -89,7 +90,7 @@
         {#each data.stale as branch}
           <div class="branch-row-item stale-row">
             <div class="branch-main-info">
-              <span class="material-symbols-rounded branch-icon">history</span>
+              <History size={18} class="branch-icon" />
               <div class="branch-name-stack">
                 <a href={`/${username}/${reponame}/src/branch/${branch.name}`} class="branch-name-text">{branch.name}</a>
               </div>
@@ -97,7 +98,7 @@
             <div class="branch-meta-info">
                <span class="meta-label">Old: {branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'N/A'}</span>
                <button class="row-btn delete-btn" onclick={() => deleteBranch(branch.name)}>
-                 <span class="material-symbols-rounded">delete</span>
+                 <Trash2 size={16} />
                </button>
             </div>
           </div>
@@ -106,7 +107,7 @@
     </div>
   {:else}
     <div class="empty-state">
-      <span class="material-symbols-rounded">error_outline</span>
+      <AlertCircle size={48} />
       <h3>No branches found</h3>
       <p>This repository has no branches yet.</p>
     </div>
@@ -151,8 +152,8 @@
   }
 
   .branch-main-info { display: flex; align-items: center; gap: 1.25rem; }
-  .branch-icon { font-size: 1.25rem; color: var(--text-muted); opacity: 0.5; }
-  .branch-icon-acc { font-size: 1.25rem; color: var(--primary-color); }
+  :global(.branch-icon) { color: var(--text-muted); opacity: 0.5; }
+  :global(.branch-icon-acc) { color: var(--primary-color); }
   
   .branch-name-stack { display: flex; align-items: center; gap: 0.75rem; }
   .branch-name-text { font-weight: 800; font-size: 1.05rem; color: var(--text-color); text-decoration: none; transition: color 0.2s; }
@@ -185,5 +186,5 @@
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
   .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; text-align: center; color: var(--text-muted); opacity: 0.6; }
-  .empty-state span { font-size: 3rem; }
+  .empty-state :global(svg) { font-size: 3rem; }
 </style>

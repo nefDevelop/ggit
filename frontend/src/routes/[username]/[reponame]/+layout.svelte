@@ -4,6 +4,12 @@
   import { onMount, setContext } from 'svelte';
   import GlobalSearch from '$lib/components/GlobalSearch.svelte';
   import { userPrefs } from '$lib/settings.svelte';
+  import { 
+    LayoutGrid, Lock, Scale, Download, ChevronDown, Copy, 
+    Database, GitBranch, FileArchive, Archive, Code, 
+    Terminal, Settings, History, Tag, Rocket, 
+    AlertCircle, GitMerge, Book, Gavel, Calendar 
+  } from 'lucide-svelte';
   
   import { fade } from 'svelte/transition';
   
@@ -118,7 +124,7 @@
     </div>
   {:else if error}
     <div class="tonal error-tonal" in:fade>
-      <span class="material-symbols-rounded">error</span>
+      <AlertCircle size={48} />
       <p>{error}</p>
       <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
     </div>
@@ -131,18 +137,18 @@
 
         <header class="repo-identity-bar">
           <div class="breadcrumb-nav">
-            <a href="/dashboard" class="bc-home"><span class="material-symbols-rounded">grid_view</span></a>
+            <a href="/dashboard" class="bc-home"><LayoutGrid size={20} /></a>
             <span class="bc-sep">/</span>
             <a href={`/${username}`} class="bc-item">{username}</a>
             <span class="bc-sep">/</span>
             <h1 class="bc-item active">{reponame}</h1>
-            {#if repoData.private}<span class="lock-icon material-symbols-rounded">lock</span>{/if}
+            {#if repoData.private}<Lock size={16} class="lock-icon" />{/if}
           </div>
 
           <div class="repo-meta-actions">
             {#if repoData.license}
               <div class="license-tag">
-                <span class="material-symbols-rounded">balance</span>
+                <Scale size={16} />
                 {repoData.license}
               </div>
             {/if}
@@ -150,11 +156,11 @@
             <div class="clone-zone">
               <div class="split-btn-group">
                 <button class="btn btn-sm btn-primary main-clone-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
-                  <span class="material-symbols-rounded">download</span>
+                  <Download size={18} />
                   <span class="clone-text">Clone</span>
                 </button>
                 <button class="btn btn-sm btn-primary arrow-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
-                  <span class="material-symbols-rounded">keyboard_arrow_down</span>
+                  <ChevronDown size={20} />
                 </button>
               </div>
 
@@ -168,7 +174,7 @@
                     <div class="clone-copy-row">
                       <code class="url-display">{cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url}</code>
                       <button class="copy-action" onclick={() => copyCloneUrl(cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url)}>
-                        <span class="material-symbols-rounded">content_copy</span>
+                        <Copy size={18} />
                       </button>
                     </div>
                     <p class="protocol-hint">
@@ -182,12 +188,12 @@
                     <span class="section-title">Features</span>
                     <div class="feature-list">
                       <div class="feature-item" title="Git Large File Storage">
-                        <span class="material-symbols-rounded">database</span>
+                        <Database size={18} />
                         <span>Git LFS enabled</span>
                       </div>
                       {#if repoData.has_submodules}
                       <div class="feature-item">
-                        <span class="material-symbols-rounded">account_tree</span>
+                        <GitBranch size={18} />
                         <span>Submodules included</span>
                       </div>
                       {/if}
@@ -200,11 +206,11 @@
                     <span class="section-title">Download Source</span>
                     <div class="archive-grid-compact">
                       <a href={`/api/v2/${username}/${reponame}/archive/${repoData.default_branch}.zip`} class="archive-tile">
-                        <span class="material-symbols-rounded">folder_zip</span>
+                        <FileArchive size={20} />
                         <span>ZIP</span>
                       </a>
                       <a href={`/api/v2/${username}/${reponame}/archive/${repoData.default_branch}.tar.gz`} class="archive-tile">
-                        <span class="material-symbols-rounded">inventory_2</span>
+                        <Archive size={20} />
                         <span>TAR.GZ</span>
                       </a>
                     </div>
@@ -216,11 +222,11 @@
                     <span class="section-title">Open in IDE</span>
                     <div class="archive-grid-compact">
                       <a href={`vscode://vscode.git/clone?url=${encodeURIComponent(cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url)}`} class="archive-tile">
-                        <span class="material-symbols-rounded">code</span>
+                        <Code size={20} />
                         <span>VS Code</span>
                       </a>
                       <a href={`vscodium://vscode.git/clone?url=${encodeURIComponent(cloneProtocol === 'https' ? repoData.clone_url : repoData.ssh_url)}`} class="archive-tile">
-                        <span class="material-symbols-rounded">terminal</span>
+                        <Terminal size={20} />
                         <span>VSCodium</span>
                       </a>
                     </div>
@@ -229,20 +235,20 @@
               {/if}
             </div>
             <a href={`/${username}/${reponame}/settings`} class="settings-link" class:active={activeTab === 'settings'} title="Settings">
-              <span class="material-symbols-rounded">settings</span>
+              <Settings size={20} />
             </a>
           </div>
         </header>
 
         <nav class="rich-tabs">
           <a href={`/${username}/${reponame}`} class="tab" class:active={activeTab === 'code'}>
-            <span class="material-symbols-rounded">code</span>
+            <Code size={18} />
             {#if activeTab === 'code'}<span class="tab-label">Code</span>{/if}
           </a>
 
           {#if userPrefs.current.repoTabs.commits}
             <a href={`/${username}/${reponame}/commits`} class="tab" class:active={activeTab === 'commits'}>
-              <span class="material-symbols-rounded">history</span>
+              <History size={18} />
               <span class="tab-count">{gitStats.commits}</span>
               {#if activeTab === 'commits'}<span class="tab-label">Commits</span>{/if}
             </a>
@@ -250,7 +256,7 @@
 
           {#if userPrefs.current.repoTabs.branch}
             <a href={`/${username}/${reponame}/branches`} class="tab" class:active={activeTab === 'branches'}>
-              <span class="material-symbols-rounded">account_tree</span>
+              <GitBranch size={18} />
               <span class="tab-count">{gitStats.branches}</span>
               {#if activeTab === 'branches'}<span class="tab-label">Branches</span>{/if}
             </a>
@@ -258,7 +264,7 @@
 
           {#if userPrefs.current.repoTabs.tags}
             <a href={`/${username}/${reponame}/tags`} class="tab" class:active={activeTab === 'tags'}>
-              <span class="material-symbols-rounded">sell</span>
+              <Tag size={18} />
               <span class="tab-count">{gitStats.tags}</span>
               {#if activeTab === 'tags'}<span class="tab-label">Tags</span>{/if}
             </a>
@@ -266,7 +272,7 @@
 
           {#if userPrefs.current.repoTabs.releases}
             <a href={`/${username}/${reponame}/releases`} class="tab" class:active={activeTab === 'releases'}>
-              <span class="material-symbols-rounded">rocket_launch</span>
+              <Rocket size={18} />
               <span class="tab-count">{gitStats.releases || 0}</span>
               {#if activeTab === 'releases'}<span class="tab-label">Releases</span>{/if}
             </a>
@@ -277,7 +283,7 @@
                target={repoData.enable_external_tracker ? "_blank" : ""}
                rel={repoData.enable_external_tracker ? "noopener noreferrer" : ""}
                class="tab" class:active={activeTab === 'issues'}>
-              <span class="material-symbols-rounded">error</span>
+              <AlertCircle size={18} />
               <span class="tab-count">{repoData.open_issues_count || 0}</span>
               {#if activeTab === 'issues'}<span class="tab-label">Issues</span>{/if}
             </a>
@@ -285,7 +291,7 @@
 
           {#if repoData.enable_pulls && userPrefs.current.repoTabs.pr}
             <a href={`/${username}/${reponame}/pulls`} class="tab" class:active={activeTab === 'pulls'}>
-              <span class="material-symbols-rounded">merge</span>
+              <GitMerge size={18} />
               <span class="tab-count">{repoData.open_pulls_count || 0}</span>
               {#if activeTab === 'pulls'}<span class="tab-label">PRs</span>{/if}
             </a>
@@ -296,34 +302,34 @@
                target={repoData.enable_external_wiki ? "_blank" : ""}
                rel={repoData.enable_external_wiki ? "noopener noreferrer" : ""}
                class="tab" class:active={activeTab === 'wiki'}>
-              <span class="material-symbols-rounded">book</span>
+              <Book size={18} />
               {#if activeTab === 'wiki'}<span class="tab-label">Wiki</span>{/if}
             </a>
           {/if}
 
           {#if userPrefs.current.repoTabs.adr}
             <a href={`/${username}/${reponame}/adr`} class="tab" class:active={activeTab === 'adr'}>
-              <span class="material-symbols-rounded">gavel</span>
+              <Gavel size={18} />
               {#if activeTab === 'adr'}<span class="tab-label">ADR</span>{/if}
             </a>
           {/if}
 
           {#if userPrefs.current.repoTabs.labels}
             <a href={`/${username}/${reponame}/labels`} class="tab" class:active={activeTab === 'labels'}>
-              <span class="material-symbols-rounded">label</span>
+              <Tag size={18} />
               {#if activeTab === 'labels'}<span class="tab-label">Labels</span>{/if}
             </a>
           {/if}
 
           {#if userPrefs.current.repoTabs.milestones}
             <a href={`/${username}/${reponame}/milestones`} class="tab" class:active={activeTab === 'milestones'}>
-              <span class="material-symbols-rounded">event</span>
+              <Calendar size={18} />
               {#if activeTab === 'milestones'}<span class="tab-label">Milestones</span>{/if}
             </a>
           {/if}
 
           <a href={`/${username}/${reponame}/settings`} class="tab mobile-settings-tab" class:active={activeTab === 'settings'}>
-            <span class="material-symbols-rounded">settings</span>
+            <Settings size={18} />
             {#if activeTab === 'settings'}<span class="tab-label">Settings</span>{/if}
           </a>
         </nav>
@@ -348,11 +354,9 @@
   h1.bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.25rem; margin: 0; word-break: break-all; }
   .bc-home { color: var(--text-muted); display: flex; opacity: 0.6; align-self: center; }
   .bc-sep { opacity: 0.2; }
-  .lock-icon { font-size: 1rem; color: var(--primary-color); margin-left: 0.5rem; }
 
   .repo-meta-actions { display: flex; align-items: center; gap: 1.5rem; }
   .license-tag { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-  .license-tag span { font-size: 1.1rem; }
   .settings-link { color: var(--text-muted); display: flex; padding: 4px; transition: color 0.2s; text-decoration: none; }
   .settings-link:hover { color: var(--primary-color); }
 
@@ -361,7 +365,6 @@
   .split-btn-group:hover { transform: translateY(-1px); }
   .main-clone-btn { border-radius: 0; padding-right: 0.75rem; border-right: 1px solid rgba(255,255,255,0.1); font-size: 0.9rem; }
   .arrow-btn { border-radius: 0; padding-left: 0.4rem; padding-right: 0.4rem; width: auto; }
-  .arrow-btn span { font-size: 1.25rem; }
 
   .clone-dropdown { position: absolute; top: calc(100% + 0.5rem); right: 0; width: 340px; z-index: 1000; padding: 1.25rem; background: var(--md3-surface-2); border-radius: 1.25rem; border: 1px solid var(--border-color); animation: slideUp 0.2s ease-out; }
   @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -387,7 +390,6 @@
   .archive-grid-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   .archive-tile { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem; background: rgba(var(--primary-rgb), 0.05); border: 1px solid var(--border-color); border-radius: 12px; text-decoration: none; color: var(--text-color); font-size: 0.8rem; font-weight: 700; transition: all 0.2s; }
   .archive-tile:hover { background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary-color); }
-  .archive-tile .material-symbols-rounded { font-size: 1.25rem; color: var(--primary-color); }
 
   .repo-header-region { background-color: var(--surface-variant); border-bottom: none; }
   .rich-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }

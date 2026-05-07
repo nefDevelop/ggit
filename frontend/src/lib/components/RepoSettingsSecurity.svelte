@@ -7,6 +7,7 @@
   import Button from "./ui/Button.svelte";
   import Input from "./ui/Input.svelte";
   import Card from "./ui/Card.svelte";
+  import { Shield, Trash2, ShieldPlus, ShieldCheck, Plus } from "lucide-svelte";
   import { i18n } from "$lib/i18n.svelte";
 
   const repo: any = getContext("repo");
@@ -99,7 +100,7 @@
   <header class="section-header-premium">
     <div class="header-flex">
       <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon" class:active={data.enabled}>shield</span>
+        <Shield size={48} class="hero-icon {data.enabled ? 'active' : ''}" />
         <div>
           <h2>Secret Guardian</h2>
           <p class="subtitle">Protección proactiva contra la subida de secretos, API keys y archivos sensibles en tus commits.</p>
@@ -152,7 +153,7 @@
                   {/if}
                 </div>
                 {#if !pattern.IsGlobal}
-                  <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deletePattern(pattern.ID)} />
+                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deletePattern(pattern.ID)} />
                 {/if}
               </div>
             {/each}
@@ -160,7 +161,7 @@
 
           <div class="add-pattern-box tonal">
             <header class="add-header">
-              <span class="material-symbols-rounded">add_moderator</span>
+              <ShieldPlus size={28} />
               <strong>Añadir Patrón Personalizado</strong>
             </header>
             <div class="form-grid">
@@ -169,7 +170,7 @@
               <Input label="Descripción" bind:value={newPattern.description} placeholder="¿Qué detecta este patrón?" class="full-width" />
             </div>
             <div class="form-actions">
-              <Button variant="primary" icon="add" onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
+              <Button variant="primary" icon={Plus} onclick={addPattern} disabled={!newPattern.name || !newPattern.regex}>
                 Registrar Patrón
               </Button>
             </div>
@@ -178,7 +179,7 @@
       </div>
     {:else}
       <div class="empty-state-guardian island">
-        <span class="material-symbols-rounded">verified_user</span>
+        <ShieldCheck size={80} />
         <h3>Guardián Desactivado</h3>
         <p>Activa el Guardián para proteger este repositorio de fugas accidentales de información sensible.</p>
         <Button variant="primary" onclick={() => { data.enabled = true; saveSettings(); }}>Activar Protección</Button>
@@ -191,8 +192,8 @@
   .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; transition: all 0.3s; }
-  .hero-icon.active { background: var(--primary-color); color: var(--on-primary); }
+  :global(.hero-icon) { background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; transition: all 0.3s; }
+  :global(.hero-icon.active) { background: var(--primary-color); color: var(--on-primary); }
   
   h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
@@ -201,7 +202,7 @@
     .section-header-premium { padding: 1.5rem; }
     .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
     h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
+    :global(.hero-icon) { padding: 0.5rem; border-radius: 0.75rem; }
     .title-with-icon { gap: 0.75rem; }
     .subtitle { display: none; }
   }
@@ -239,7 +240,7 @@
 
   .add-pattern-box { padding: 2.5rem; border-radius: 2rem; border: 1px dashed var(--md-sys-color-outline); display: flex; flex-direction: column; gap: 2rem; }
   .add-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
-  .add-header span { font-size: 1.75rem; }
+  .add-header :global(svg) { flex-shrink: 0; }
   .add-header strong { font-weight: 950; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
@@ -247,7 +248,7 @@
   .form-actions { display: flex; justify-content: flex-end; }
 
   .empty-state-guardian { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-  .empty-state-guardian span { font-size: 5rem; color: var(--primary-color); opacity: 0.2; }
+  .empty-state-guardian :global(svg) { color: var(--primary-color); opacity: 0.2; }
   .empty-state-guardian h3 { margin: 0; font-size: 1.75rem; font-weight: 950; }
   .empty-state-guardian p { max-width: 500px; margin: 0; color: var(--text-muted); font-size: 1.1rem; line-height: 1.5; }
 

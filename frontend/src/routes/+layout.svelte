@@ -13,6 +13,7 @@
 	import NotificationsPanel from "$lib/components/NotificationsPanel.svelte";
 	import { toast } from "$lib/toast.svelte";
 	import { page } from "$app/stores";
+	import { TriangleAlert } from "lucide-svelte";
 
 	let { children } = $props();
 
@@ -145,7 +146,7 @@
 	<div id="main-container-wrapper">
 		{#if isSurvivalMode}
 			<div class="survival-mode-banner">
-				<span class="material-symbols-rounded">warning</span>
+				<TriangleAlert size={20} />
 				<p>
 					<strong>Modo Supervivencia Activo:</strong> El espacio en disco
 					es crítico. Las operaciones de escritura están bloqueadas temporalmente.
@@ -189,7 +190,7 @@
 		font-size: 0.9rem;
 		font-weight: 600;
 	}
-	.survival-mode-banner span {
+	.survival-mode-banner :global(svg) {
 		color: var(--error);
 	}
 

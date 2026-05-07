@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { GitBranch, ChevronDown, Search, Check } from "lucide-svelte";
+
   let {
     branches = [],
     selected = $bindable(),
     label = "",
-    icon = "account_tree",
+    icon = GitBranch,
   } = $props();
 
   let isOpen = $state(false);
@@ -30,15 +32,20 @@
   {/if}
   <div class="selector-control">
     <button class="selector-trigger tonal" onclick={() => (isOpen = !isOpen)}>
-      <span class="material-symbols-rounded">{icon}</span>
+      {#if typeof icon === 'string'}
+        <GitBranch size={18} />
+      {:else}
+        {@const Icon = icon}
+        <Icon size={18} />
+      {/if}
       <span class="current-name">{selected || "Select branch..."}</span>
-      <span class="material-symbols-rounded expand">expand_more</span>
+      <ChevronDown size={20} class="expand" />
     </button>
 
     {#if isOpen}
       <div class="selector-dropdown shadow-xl">
         <div class="search-box">
-          <span class="material-symbols-rounded">search</span>
+          <Search size={20} />
           <input
             type="text"
             placeholder="Filter branches..."
@@ -56,7 +63,7 @@
               class:active={b.name === selected}
               onclick={() => select(b.name)}
             >
-              <span class="material-symbols-rounded">check</span>
+              <Check size={18} />
               <span class="name">{b.name}</span>
             </button>
           {/each}
@@ -166,8 +173,7 @@
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
     background: rgba(0, 0, 0, 0.2);
   }
-  .search-box span {
-    font-size: 1.25rem;
+  .search-box :global(svg) {
     color: var(--text-muted);
   }
   .search-box input {
@@ -202,8 +208,7 @@
     background: rgba(255, 255, 255, 0.05);
     color: #fff;
   }
-  .branch-item .material-symbols-rounded {
-    font-size: 1.1rem;
+  .branch-item :global(svg) {
     opacity: 0;
   }
   .branch-item.active {
@@ -211,7 +216,7 @@
     color: var(--primary-color);
     font-weight: 700;
   }
-  .branch-item.active .material-symbols-rounded {
+  .branch-item.active :global(svg) {
     opacity: 1;
   }
 

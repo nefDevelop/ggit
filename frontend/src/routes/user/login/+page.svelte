@@ -7,6 +7,7 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Checkbox from '$lib/components/ui/Checkbox.svelte';
   import { i18n } from '$lib/i18n.svelte';
+  import { Terminal, AlertCircle, User, Lock } from 'lucide-svelte';
 
   let username = $state('');
   let password = $state('');
@@ -66,7 +67,7 @@
       <div class="login-layout">
         <div class="login-brand">
           <div class="brand-content">
-            <span class="material-symbols-rounded logo-icon">terminal</span>
+            <Terminal size={64} class="logo-icon" />
             <h1>Ggit</h1>
             <p>El servicio de Git más ligero y elegante, ahora rediseñado para ti.</p>
           </div>
@@ -83,7 +84,7 @@
 
           {#if errorMsg}
             <div class="error-banner animate-in">
-              <span class="material-symbols-rounded">error</span>
+              <AlertCircle size={20} />
               <p>{errorMsg}</p>
             </div>
           {/if}
@@ -92,7 +93,7 @@
             <Input 
               label="Usuario o Email" 
               bind:value={username} 
-              icon="person" 
+              icon={User} 
               placeholder="tu_usuario" 
               required
             />
@@ -101,7 +102,7 @@
               label="Contraseña" 
               type="password" 
               bind:value={password} 
-              icon="lock" 
+              icon={Lock} 
               placeholder="••••••••" 
               required
             />
@@ -230,8 +231,7 @@
     gap: 1.5rem;
   }
 
-  .logo-icon {
-    font-size: 4rem;
+  :global(.logo-icon) {
     color: var(--primary-color);
   }
 

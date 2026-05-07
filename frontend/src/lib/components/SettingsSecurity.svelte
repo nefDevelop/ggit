@@ -3,6 +3,7 @@
   import { apiFetch } from "$lib/api";
   import { i18n } from "$lib/i18n.svelte";
   import { dialog } from "$lib/dialog.svelte";
+  import { KeyRound, CheckCircle2, AlertCircle, SmartphoneNfc, ShieldCheck, ShieldAlert, ShieldPlus, Key, ShieldOff } from "lucide-svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
 
@@ -134,7 +135,7 @@
     <!-- PASSWORD SECTION -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">password</span>
+        <KeyRound size={20} />
         Cambiar Contraseña
       </div>
       <div class="island form-box">
@@ -181,9 +182,11 @@
           <div class="form-footer">
             {#if message}
               <div class="status-alert" class:is-error={isError}>
-                <span class="material-symbols-rounded"
-                  >{isError ? "error" : "check_circle"}</span
-                >
+                {#if isError}
+                  <AlertCircle size={20} />
+                {:else}
+                  <CheckCircle2 size={20} />
+                {/if}
                 {message}
               </div>
             {/if}
@@ -202,15 +205,17 @@
     <!-- 2FA SECTION -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">phonelink_lock</span>
+        <SmartphoneNfc size={20} />
         Doble Factor (2FA)
       </div>
       <div class="island enrollment-box" class:is-protected={twoFactorEnabled}>
         <div class="enrollment-header">
           <div class="status-indicator">
-            <span class="material-symbols-rounded"
-              >{twoFactorEnabled ? "verified_user" : "gpp_maybe"}</span
-            >
+            {#if twoFactorEnabled}
+              <ShieldCheck size={48} />
+            {:else}
+              <ShieldAlert size={48} />
+            {/if}
             <div class="status-text">
               <strong
                 >{twoFactorEnabled
@@ -227,7 +232,7 @@
           {#if !twoFactorEnabled && !enrollment}
             <Button
               variant="primary"
-              icon="enhanced_encryption"
+              icon={ShieldPlus}
               onclick={initiate2FA}>Configurar 2FA</Button
             >
           {/if}
@@ -296,7 +301,7 @@
             <div class="actions-row">
               <Button
                 variant="outline"
-                icon="key"
+                icon={Key}
                 onclick={async () => {
                   const res = await apiFetch(
                     "/api/v2/user/settings/security/two_factor/recovery_codes",
@@ -310,7 +315,7 @@
               >
               <Button
                 variant="ghost"
-                icon="no_encryption"
+                icon={ShieldOff}
                 class="danger-btn"
                 onclick={disable2FA}>Desactivar 2FA</Button
               >
@@ -350,7 +355,7 @@
     width: fit-content;
     opacity: 0.8;
   }
-  .module-tag span {
+  .module-tag :global(svg) {
     font-size: 1.25rem;
   }
 

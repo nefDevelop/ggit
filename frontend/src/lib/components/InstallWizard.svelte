@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { ShieldCheck } from 'lucide-svelte';
   
   let settings = $state<any>(null);
   let loading = $state(true);
@@ -91,7 +92,7 @@
       </section>
 
       <div class="info-banner island tonal">
-        <span class="material-symbols-rounded">admin_panel_settings</span>
+        <ShieldCheck size={40} />
         <div class="info-text">
           <strong>Automatic Administration</strong>
           <p>For your convenience, the first user account created after installation will automatically be granted full administrator privileges.</p>
@@ -129,7 +130,7 @@
   .error-banner { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 0.75rem; text-align: center; font-weight: 700; }
 
   .info-banner { display: flex; gap: 1rem; align-items: center; padding: 1.5rem; border: 1px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
-  .info-banner span { font-size: 2.5rem; color: var(--primary-color); }
+  .info-banner :global(svg) { color: var(--primary-color); flex-shrink: 0; }
   .info-text strong { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 0.25rem; }
   .info-text p { margin: 0; font-size: 0.9rem; line-height: 1.4; }
 

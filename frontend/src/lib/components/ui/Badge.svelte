@@ -6,7 +6,7 @@
     size?: 'sm' | 'md';
     class?: string;
     children?: Snippet;
-    icon?: string;
+    icon?: string | any;
   }
 
   let { 
@@ -36,7 +36,12 @@
 
 <span class="badge {variants[variant]} {sizes[size]} {className}">
   {#if icon}
-    <span class="material-symbols-rounded icon">{icon}</span>
+    {#if typeof icon === 'string'}
+      <span class="material-symbols-rounded icon">{icon}</span>
+    {:else}
+      {@const Icon = icon}
+      <Icon size={size === 'sm' ? 12 : 14} class="icon" />
+    {/if}
   {/if}
   {#if children}
     {@render children()}

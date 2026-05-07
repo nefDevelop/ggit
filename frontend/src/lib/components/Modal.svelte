@@ -1,5 +1,6 @@
 <script lang="ts">
   import { fade, fly } from "svelte/transition";
+  import { X } from "lucide-svelte";
 
   interface Props {
     show: boolean;
@@ -33,7 +34,7 @@
       <header class="modal-header">
         <h3>{title}</h3>
         <button class="close-btn" onclick={onclose}>
-          <span class="material-symbols-rounded">close</span>
+          <X size={20} />
         </button>
       </header>
       <div class="modal-body">

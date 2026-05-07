@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { Users, Building2, LogOut } from "lucide-svelte";
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
@@ -44,7 +45,7 @@
   <div class="modular-stack">
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">groups</span>
+        <Users size={20} />
         Equipos y Entidades
       </div>
       <div class="island tonal-list">
@@ -52,7 +53,7 @@
           <div class="skeleton-orgs"></div>
         {:else if orgs.length === 0}
           <div class="empty-orgs-box">
-             <span class="material-symbols-rounded">corporate_fare</span>
+             <Building2 size={64} />
              <p>No perteneces a ninguna organización todavía.</p>
           </div>
         {:else}
@@ -71,7 +72,7 @@
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  icon="logout" 
+                  icon={LogOut} 
                   class="danger-btn" 
                   onclick={() => leaveOrg(org.id, org.username)}
                 >Abandonar</Button>
@@ -95,7 +96,6 @@
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .module-tag span { font-size: 1.25rem; }
 
   .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   @media (max-width: 600px) {
@@ -124,7 +124,7 @@
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   .empty-orgs-box { padding: 5rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
-  .empty-orgs-box span { font-size: 4rem; opacity: 0.2; }
+  .empty-orgs-box :global(svg) { opacity: 0.2; }
 
   .skeleton-orgs { height: 240px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 </style>

@@ -5,6 +5,8 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';
   
+  import { MapPin, Link, Building2 } from 'lucide-svelte';
+  
   let { q = '' } = $props();
   
   let orgs = $state<any[]>([]);
@@ -57,12 +59,12 @@
                 {/if}
                 <div class="org-meta">
                    {#if org.location}
-                     <Badge variant="ghost" icon="location_on" size="sm">
+                     <Badge variant="ghost" icon={MapPin} size="sm">
                        {org.location}
                      </Badge>
                    {/if}
                    {#if org.website}
-                      <Badge variant="ghost" icon="link" size="sm">
+                      <Badge variant="ghost" icon={Link} size="sm">
                         {org.website.replace(/^https?:\/\//, '')}
                       </Badge>
                    {/if}
@@ -74,7 +76,7 @@
       </div>
     {:else}
       <div class="empty-state tonal">
-        <span class="material-symbols-rounded">corporate_fare</span>
+        <Building2 size={64} />
         <h3>No organizations found</h3>
         <p>Try searching for a different organization name.</p>
       </div>
@@ -113,7 +115,7 @@
   .org-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
 
   .empty-state { padding: 5rem; text-align: center; background: var(--md-sys-color-surface-container-low); border-radius: 2rem; }
-  .empty-state span { font-size: 4rem; color: var(--md-sys-color-primary); opacity: 0.3; }
+  .empty-state :global(svg) { font-size: 4rem; color: var(--md-sys-color-primary); opacity: 0.3; }
 
   .skeletons { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
   :global(.skeleton-org) { height: 140px; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container-low); }
