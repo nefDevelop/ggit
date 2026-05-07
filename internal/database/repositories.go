@@ -178,6 +178,7 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 		EnableIssues:   options.EnableIssues,
 		EnablePulls:    options.EnablePulls,
 		IsArchived:     options.IsArchived,
+		IsBare:         true,
 		IsFork:         options.Fork,
 		ForkID:         options.ForkID,
 	}

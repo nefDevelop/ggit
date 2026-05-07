@@ -83,6 +83,10 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 		return nil, errors.Wrap(err, "commit filesystem transaction")
 	}
 
+	if opts.AutoInit {
+		_ = s.db.Repositories().Touch(ctx, repo.ID)
+	}
+
 	// 4. Detectar lenguajes si se auto-inicializó (ya en la ruta final)
 	if opts.AutoInit {
 		if err := UpdateRepositoryLanguages(repo); err != nil {
