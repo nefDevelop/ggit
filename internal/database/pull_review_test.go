@@ -16,42 +16,42 @@ func TestPullReviews(t *testing.T) {
 	ctx := context.Background()
 	store := newPullReviewsStore(db)
 
+	// Setup common test data
+	user := &User{
+		LowerName: "test-user",
+		Name:      "test-user",
+		Email:     "test@example.com",
+	}
+	require.NoError(t, db.Create(user).Error)
+
+	repo := &Repository{
+		OwnerID:   user.ID,
+		LowerName: "test-repo",
+		Name:      "test-repo",
+	}
+	require.NoError(t, db.Create(repo).Error)
+
+	issue := &Issue{
+		RepoID: repo.ID,
+		Index:  1,
+		Title:  "test-issue",
+	}
+	require.NoError(t, db.Create(issue).Error)
+
+	pr := &PullRequest{
+		IssueID:    issue.ID,
+		BaseRepoID: repo.ID,
+		HeadRepoID: repo.ID,
+	}
+	require.NoError(t, db.Create(pr).Error)
+
 	t.Run("Superación: Crear y listar aprobaciones", func(t *testing.T) {
-		// Need to create a user, repository, issue and pull request record first
-		user := &User{
-			LowerName: "test-user",
-			Name:      "test-user",
-			Email:     "test@example.com",
-		}
-		require.NoError(t, db.Create(user).Error)
-
-		repo := &Repository{
-			OwnerID:   user.ID,
-			LowerName: "test-repo",
-			Name:      "test-repo",
-		}
-		require.NoError(t, db.Create(repo).Error)
-
-		issue := &Issue{
-			RepoID: repo.ID,
-			Index:  1,
-			Title:  "test-issue",
-		}
-		require.NoError(t, db.Create(issue).Error)
-
-		err := db.Create(&PullRequest{
-			IssueID:    issue.ID,
-			BaseRepoID: repo.ID,
-			HeadRepoID: repo.ID,
-		}).Error
-		require.NoError(t, err)
-
 		review := &PullReview{
 			IssueID:    issue.ID,
 			ReviewerID: user.ID,
 			Type:       PullReviewTypeApprove,
 		}
-		err = store.Create(ctx, review)
+		err := store.Create(ctx, review)
 		assert.NoError(t, err)
 
 		reviews, err := store.ListByIssueID(ctx, issue.ID)
@@ -71,7 +71,7 @@ func TestPullReviews(t *testing.T) {
 		
 		comment := &PullReviewComment{
 			ReviewID: reviewID,
-			IssueID:  100,
+			IssueID:  issue.ID,
 			Content:  "Excelente cambio en esta línea",
 			Line:     42,
 			TreePath: "main.go",

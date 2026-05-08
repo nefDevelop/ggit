@@ -40,7 +40,9 @@ func TestMain(m *testing.M) {
 }
 
 func newTestDB(t *testing.T, suite string) *gorm.DB {
-	return dbtest.NewDB(t, suite, Tables...)
+	db := dbtest.NewDB(t, suite, Tables...)
+	SetHandle(db)
+	return db
 }
 
 func clearTables(t *testing.T, db *gorm.DB) error {

@@ -103,7 +103,7 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 				return u.ToDomain(), nil
 			}
 
-			return nil, auth.ErrBadCredentials{Args: map[string]any{"login": login, "UserID": u.ID}}
+			return nil, auth.ErrBadCredentials{Args: map[string]any{"login": login, "userID": u.ID}}
 		}
 
 		authSourceID = u.LoginSource
@@ -371,7 +371,8 @@ func (s *UsersStore) Create(ctx context.Context, Username, email string, opts an
 	}
 	u.Password = userx.EncodePassword(u.Password, u.Salt)
 
-	return u.ToDomain(), s.db.WithContext(ctx).Create(u).Error
+	err = s.db.WithContext(ctx).Create(u).Error
+	return u.ToDomain(), err
 }
 
 // DeleteCustomAvatar deletes the current User custom avatar and falls back to
@@ -437,14 +438,14 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 	if err != nil {
 		return errors.Wrap(err, "count repositories")
 	} else if count > 0 {
-		return ErrUserOwnRepos{args: errx.Args{"UserID": UserID}}
+		return ErrUserOwnRepos{args: errx.Args{"userID": UserID}}
 	}
 
 	err = s.db.WithContext(ctx).Model(&OrgUser{}).Where("uid = ?", UserID).Count(&count).Error
 	if err != nil {
 		return errors.Wrap(err, "count organization membership")
 	} else if count > 0 {
-		return ErrUserHasOrgs{args: errx.Args{"UserID": UserID}}
+		return ErrUserHasOrgs{args: errx.Args{"userID": UserID}}
 	}
 
 	needsRewriteAuthorizedKeys := false
@@ -858,19 +859,25 @@ func (s *UsersStore) Update(ctx context.Context, UserID int64, opts any) error {
 	}
 
 	if options.FullName != nil {
-		updates["full_name"] = *options.FullName
+		updates["full_name"] = strx.Truncate(*options.FullName, 255)
 	}
 	if options.Email != nil {
+		_, err := s.getByEmail(ctx, *options.Email)
+		if err == nil {
+			return ErrEmailAlreadyUsed{args: errx.Args{"email": *options.Email}}
+		} else if !IsErrUserNotExist(err) {
+			return err
+		}
 		updates["email"] = *options.Email
 	}
 	if options.Website != nil {
-		updates["website"] = *options.Website
+		updates["website"] = strx.Truncate(*options.Website, 255)
 	}
 	if options.Location != nil {
-		updates["location"] = *options.Location
+		updates["location"] = strx.Truncate(*options.Location, 255)
 	}
 	if options.Description != nil {
-		updates["description"] = *options.Description
+		updates["description"] = strx.Truncate(*options.Description, 255)
 	}
 
 	if options.MaxRepoCreation != nil {
@@ -897,10 +904,10 @@ func (s *UsersStore) Update(ctx context.Context, UserID int64, opts any) error {
 	}
 
 	if options.Avatar != nil {
-		updates["avatar"] = *options.Avatar
+		updates["avatar"] = strx.Truncate(*options.Avatar, 2048)
 	}
 	if options.AvatarEmail != nil {
-		updates["avatar_email"] = *options.AvatarEmail
+		updates["avatar_email"] = strx.Truncate(*options.AvatarEmail, 255)
 	}
 
 	if options.DisableNewsFeed != nil {

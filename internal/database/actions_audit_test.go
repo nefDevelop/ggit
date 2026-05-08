@@ -38,7 +38,7 @@ func TestActionsStore_ListAuditLog(t *testing.T) {
 		logs, err := store.ListAuditLog(ctx, 1)
 		assert.NoError(t, err)
 		assert.Len(t, logs, 2, "Solo deben devolverse las acciones de auditoría (UserID == ActUserID)")
-		assert.Equal(t, ActionUpdateConfig, logs[0].OpType)
+		assert.Equal(t, int(ActionUpdateConfig), logs[0].OpType)
 	})
 
 	t.Run("Fallo: Paginación fuera de rango", func(t *testing.T) {

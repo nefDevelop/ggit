@@ -285,24 +285,25 @@ func reposTouch(t *testing.T, ctx context.Context, s *RepositoriesStore) {
 }
 
 func reposListWatches(t *testing.T, ctx context.Context, s *RepositoriesStore) {
-	err := s.Watch(ctx, 1, 1)
+	usersStore := NewUsersStore(s.db)
+	user1, err := usersStore.Create(ctx, "user1", "user1@example.com", CreateUserOptions{})
 	require.NoError(t, err)
-	err = s.Watch(ctx, 2, 1)
+	user2, err := usersStore.Create(ctx, "user2", "user2@example.com", CreateUserOptions{})
 	require.NoError(t, err)
-	err = s.Watch(ctx, 2, 2)
+
+	err = s.Watch(ctx, user1.ID, 1)
+	require.NoError(t, err)
+	err = s.Watch(ctx, user2.ID, 1)
+	require.NoError(t, err)
+	err = s.Watch(ctx, user2.ID, 2)
 	require.NoError(t, err)
 
 	got, err := s.ListWatches(ctx, 1)
 	require.NoError(t, err)
-	for _, w := range got {
-		w.ID = 0
-	}
 
-	want := []*Watch{
-		{UserID: 1, RepoID: 1},
-		{UserID: 2, RepoID: 1},
-	}
-	assert.Equal(t, want, got)
+	assert.Len(t, got, 2)
+	assert.Equal(t, "user1", got[0].Name)
+	assert.Equal(t, "user2", got[1].Name)
 }
 
 func reposWatch(t *testing.T, ctx context.Context, s *RepositoriesStore) {

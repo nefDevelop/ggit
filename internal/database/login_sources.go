@@ -340,23 +340,33 @@ func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *domain.Lo
 // Save persists all values of given login source to database or local file. The
 // Updated field is set to current time automatically.
 func (s *LoginSourcesStore) Save(ctx context.Context, source *domain.LoginSource) error {
-	m := FromDomainLoginSource(source)
-	if m.File == nil {
-		return s.db.WithContext(ctx).Save(m).Error
+	m, err := s.files.GetByID(source.ID)
+	if err == nil && m != nil {
+		// It's a file-backed source
+		m.Name = source.Name
+		m.IsActived = source.IsActived
+		m.IsDefault = source.IsDefault
+		m.Config = source.Config
+
+		m.File.SetGeneral("name", m.Name)
+		m.File.SetGeneral("is_activated", strconv.FormatBool(m.IsActived))
+		m.File.SetGeneral("is_default", strconv.FormatBool(m.IsDefault))
+
+		// If it's a file-backed source, AfterFind was already called during loading,
+		// and Provider should be set.
+		if m.Provider != nil {
+			if err := m.File.SetConfig(m.Provider.Config()); err != nil {
+				return errors.Wrap(err, "set config")
+			}
+		}
+		if err := m.File.Save(); err != nil {
+			return errors.Wrap(err, "save file")
+		}
+		return nil
+	} else if err != nil && !IsErrLoginSourceNotExist(err) {
+		return err
 	}
 
-	m.File.SetGeneral("name", m.Name)
-	m.File.SetGeneral("is_activated", strconv.FormatBool(m.IsActived))
-	m.File.SetGeneral("is_default", strconv.FormatBool(m.IsDefault))
-	// Warning: Provider might be nil if only FromDomainLoginSource was called without loading.
-	// But usually Save is called on an existing object.
-	if m.Provider != nil {
-		if err := m.File.SetConfig(m.Provider.Config()); err != nil {
-			return errors.Wrap(err, "set config")
-		}
-	}
-	if err := m.File.Save(); err != nil {
-		return errors.Wrap(err, "save file")
-	}
-	return nil
+	m = FromDomainLoginSource(source)
+	return s.db.WithContext(ctx).Save(m).Error
 }

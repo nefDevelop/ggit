@@ -323,7 +323,12 @@ func (pr *PullRequest) CheckMergeChecks(ctx context.Context, doer *User) error {
 }
 
 // CalculateAttentionState calculates the current attention state of the pull request.
-func (pr *PullRequest) CalculateAttentionState(ctx context.Context) (AttentionState, error) {
+func (pr *PullRequest) CalculateAttentionState(ctx context.Context, tx *gorm.DB) (AttentionState, error) {
+	db := Handle
+	if tx != nil {
+		db = Handle.WithTransaction(tx)
+	}
+
 	if pr.Issue == nil {
 		if err := pr.LoadIssue(); err != nil {
 			return AttentionStateNone, err
@@ -333,7 +338,7 @@ func (pr *PullRequest) CalculateAttentionState(ctx context.Context) (AttentionSt
 		return AttentionStateClosed, nil
 	}
 
-	stats, err := Handle.PullReviews().GetReviewStatsByIssueID(ctx, pr.IssueID)
+	stats, err := db.PullReviews().GetReviewStatsByIssueID(ctx, pr.IssueID)
 	if err != nil {
 		return AttentionStateNone, err
 	}
@@ -344,7 +349,7 @@ func (pr *PullRequest) CalculateAttentionState(ctx context.Context) (AttentionSt
 	}
 
 	// 2. If there are unresolved conversations, author needs to take action.
-	comments, err := Handle.PullReviewComments().ListByIssueID(ctx, pr.IssueID)
+	comments, err := db.PullReviewComments().ListByIssueID(ctx, pr.IssueID)
 	if err != nil {
 		return AttentionStateNone, err
 	}
@@ -356,7 +361,7 @@ func (pr *PullRequest) CalculateAttentionState(ctx context.Context) (AttentionSt
 
 	// 3. If everything is resolved and approved (based on repo/branch rules).
 	if pr.BaseRepo == nil {
-		_ = pr.loadAttributes(Handle.db)
+		_ = pr.loadAttributes(db.db)
 	}
 	
 	requiredApprovals := pr.BaseRepo.RequiredApprovals
@@ -376,7 +381,7 @@ func (pr *PullRequest) CalculateAttentionState(ctx context.Context) (AttentionSt
 
 // RefreshAttentionState recalculates and updates the attention state of the pull request.
 func (pr *PullRequest) RefreshAttentionState(ctx context.Context, tx *gorm.DB) error {
-	state, err := pr.CalculateAttentionState(ctx)
+	state, err := pr.CalculateAttentionState(ctx, tx)
 	if err != nil {
 		return err
 	}

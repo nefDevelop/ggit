@@ -144,7 +144,8 @@ func TestLoginSources(t *testing.T) {
 
 	ctx := context.Background()
 	s := &LoginSourcesStore{
-		db: newTestDB(t, "LoginSourcesStore"),
+		db:    newTestDB(t, "LoginSourcesStore"),
+		files: NewMockLoginSourceFilesStore(),
 	}
 
 	for _, tc := range []struct {
@@ -480,11 +481,16 @@ func loginSourcesSave(t *testing.T, ctx context.Context, s *LoginSourcesStore) {
 	t.Run("save to file", func(t *testing.T) {
 		mockFile := NewMockLoginSourceFileStore()
 		source := &LoginSource{
+			ID: 999,
 			Provider: ldap.NewProvider(false, &ldap.Config{
 				Host: "ldap.example.com",
 			}),
 			File: mockFile,
 		}
+
+		mockFilesStore := s.files.(*MockLoginSourceFilesStore)
+		mockFilesStore.GetByIDFunc.SetDefaultReturn(source, nil)
+
 		err := s.Save(ctx, source.ToDomain())
 		require.NoError(t, err)
 		mockrequire.Called(t, mockFile.SaveFunc)

@@ -186,7 +186,7 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 		repo.CreatedUnix = options.CreatedAt.Unix()
 		repo.UpdatedUnix = repo.CreatedUnix
 	}
-	return repo.ToDomain(), s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err = tx.Create(repo).Error
 		if err != nil {
 			return errors.Wrap(err, "create")
@@ -198,6 +198,7 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 		}
 		return nil
 	})
+	return repo.ToDomain(), err
 }
 
 type UpdateRepoOptions struct {
@@ -456,7 +457,7 @@ func (s *RepositoriesStore) ListWatches(ctx context.Context, repoID int64) ([]*d
 	var users []*User
 	err := s.db.WithContext(ctx).
 		Table("user").
-		Joins("JOIN watch ON watch.uid = user.id").
+		Joins("JOIN watch ON watch.user_id = user.id").
 		Where("watch.repo_id = ?", repoID).
 		Find(&users).
 		Error
