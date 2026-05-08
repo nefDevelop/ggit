@@ -2035,20 +2035,18 @@ func DeleteRepository(ownerID, repoID int64) error {
 			return err
 		}
 
-		log.Trace("DeleteRepository [repo_id: %d]: Updating user repo count", repoID)
-		if err = tx.Model(new(User)).Where("id = ?", ownerID).Update("num_repos", gorm.Expr("num_repos-1")).Error; err != nil {
-			return err
-		}
-
 		// Stage repository and wiki files for deletion
 		repoPath := repo.RepoPath()
-		log.Trace("DeleteRepository [repo_id: %d]: Staging FS deletion for %s", repoID, repoPath)
-		if err = fsTx.StageDelete(repoPath, repoPath+".trash"); err != nil {
-			return err
+		if osx.IsDir(repoPath) {
+			log.Trace("DeleteRepository [repo_id: %d]: Staging FS deletion for %s", repoID, repoPath)
+			if err = fsTx.StageDelete(repoPath, repoPath+".trash"); err != nil {
+				return err
+			}
 		}
 
 		wikiPath := repo.WikiPath()
 		if osx.IsDir(wikiPath) {
+			log.Trace("DeleteRepository [repo_id: %d]: Staging FS deletion for wiki: %s", repoID, wikiPath)
 			if err = fsTx.StageDelete(wikiPath, wikiPath+".trash"); err != nil {
 				return err
 			}
@@ -2065,7 +2063,14 @@ func DeleteRepository(ownerID, repoID int64) error {
 	if err := fsTx.Commit(); err != nil {
 		log.Error("DeleteRepository [repo_id: %d]: commit fs transaction: %v", repoID, err)
 	}
-	log.Trace("DeleteRepository [repo_id: %d]: FS transaction committed", repoID)
+
+	// Update user repo count in a separate step to avoid long locks on User table
+	log.Trace("DeleteRepository [repo_id: %d]: Updating user repo count (separate step)", ownerID)
+	if err = Handle.db.Model(new(User)).Where("id = ?", ownerID).Update("num_repos", gorm.Expr("num_repos - 1")).Error; err != nil {
+		log.Error("DeleteRepository [repo_id: %d]: Failed to update user repo count: %v", ownerID, err)
+	} else {
+		log.Trace("DeleteRepository [repo_id: %d]: User repo count updated successfully", ownerID)
+	}
 
 	if repo.NumForks > 0 {
 		if err = Handle.db.Exec("UPDATE repository SET fork_id=0,is_fork=? WHERE fork_id=?", false, repo.ID).Error; err != nil {
