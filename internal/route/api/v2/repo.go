@@ -226,8 +226,17 @@ func GetRepoView(c *context.APIContext) {
 
 func getRepoDirectory(c *context.APIContext) {
 	start := time.Now()
+	log.Trace("getRepoDirectory: treePath=%q", c.Repo.TreePath)
+	
+	if c.Repo.Commit == nil {
+		log.Trace("getRepoDirectory: commit is nil, returning no content")
+		c.Status(http.StatusNoContent)
+		return
+	}
+
 	tree, err := c.Repo.Commit.Subtree(c.Repo.TreePath)
 	if err != nil {
+		log.Trace("getRepoDirectory: Subtree error: %v", err)
 		c.NotFoundOrError(gitx.NewError(err), "get subtree")
 		return
 	}
@@ -236,6 +245,7 @@ func getRepoDirectory(c *context.APIContext) {
 	startEntries := time.Now()
 	entries, err := tree.Entries()
 	if err != nil {
+		log.Trace("getRepoDirectory: Entries error: %v", err)
 		c.Error(err, "list entries")
 		return
 	}
@@ -261,43 +271,46 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
-	// Fetching last commit for each entry can be slow, but it's essential for a good UI.
-	// We use a simple goroutine-based approach for small counts to improve speed.
-	log.Trace("GetRepoView: Fetching last commits for %d entries", len(apiEntries))
-	
-	type commitResult struct {
-		index  int
-		commit *git.Commit
-	}
-	results := make(chan commitResult, len(apiEntries))
-	
-	for i := range apiEntries {
-		go func(idx int, entryName string) {
-			lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{
-				Path:     path.Join(c.Repo.TreePath, entryName),
-				MaxCount: 1,
-			})
-			if err == nil && len(lastCommit) > 0 {
-				results <- commitResult{index: idx, commit: lastCommit[0]}
-			} else {
-				results <- commitResult{index: idx, commit: nil}
-			}
-		}(i, apiEntries[i].Name)
-	}
+	if len(apiEntries) > 0 {
+		// Fetching last commit for each entry can be slow, but it's essential for a good UI.
+		// We use a simple goroutine-based approach for small counts to improve speed.
+		log.Trace("GetRepoView: Fetching last commits for %d entries in parallel", len(apiEntries))
+		
+		type commitResult struct {
+			index  int
+			commit *git.Commit
+		}
+		results := make(chan commitResult, len(apiEntries))
+		
+		for i := range apiEntries {
+			go func(idx int, entryName string) {
+				lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{
+					Path:     path.Join(c.Repo.TreePath, entryName),
+					MaxCount: 1,
+				})
+				if err == nil && len(lastCommit) > 0 {
+					results <- commitResult{index: idx, commit: lastCommit[0]}
+				} else {
+					results <- commitResult{index: idx, commit: nil}
+				}
+			}(i, apiEntries[i].Name)
+		}
 
-	for range apiEntries {
-		res := <-results
-		if res.commit != nil {
-			apiEntries[res.index].LastCommit = map[string]any{
-				"id":      res.commit.ID.String(),
-				"summary": res.commit.Summary(),
-				"author": map[string]any{
-					"name":  res.commit.Author.Name,
-					"email": res.commit.Author.Email,
-					"when":  res.commit.Author.When,
-				},
+		for range apiEntries {
+			res := <-results
+			if res.commit != nil {
+				apiEntries[res.index].LastCommit = map[string]any{
+					"id":      res.commit.ID.String(),
+					"summary": res.commit.Summary(),
+					"author": map[string]any{
+						"name":  res.commit.Author.Name,
+						"email": res.commit.Author.Email,
+						"when":  res.commit.Author.When,
+					},
+				}
 			}
 		}
+		log.Trace("GetRepoView: Finished fetching parallel commits")
 	}
 
 	res := map[string]any{
