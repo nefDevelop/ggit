@@ -422,7 +422,17 @@ func GetUserRepositories(c *context.APIContext) {
 		c.Error(err, "load attributes")
 		return
 	}
-	c.JSON(http.StatusOK, repos)
+
+	res := make([]*apiv2types.RepositoryResponse, len(repos))
+	for i, repo := range repos {
+		if err = repo.GetOwner(); err != nil {
+			c.Error(err, "get owner")
+			return
+		}
+		res[i] = repo.APIFormat(repo.Owner)
+		res[i].ContextUser = c.User.Name
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 // LeaveUserRepository leaves a collaborative repository.
@@ -450,7 +460,12 @@ func GetUserOrganizations(c *context.APIContext) {
 		c.Error(err, "get organizations by user ID")
 		return
 	}
-	c.JSON(http.StatusOK, orgs)
+
+	res := make([]*apiv2types.UserResponse, len(orgs))
+	for i, org := range orgs {
+		res[i] = org.APIFormat()
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 // LeaveUserOrganization leaves an organization.
@@ -498,7 +513,7 @@ func CreateUserOrganization(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, org)
+	c.JSON(http.StatusCreated, org.APIFormat())
 }
 
 // DeleteUserAccount deletes the current user's account.

@@ -103,6 +103,8 @@ type RepositoryResponse struct {
 
 	// Sentinel Info
 	LastHealthCheckAt time.Time `json:"last_health_check_at"`
+
+	ContextUser string `json:"context_user,omitempty"`
 }
 
 // RepositoryBranchResponse represents a branch in a repository.
