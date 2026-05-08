@@ -271,7 +271,7 @@ func getRepoDirectory(c *context.APIContext) {
 	}
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
-	if len(apiEntries) > 0 {
+	if len(apiEntries) > 0 && c.Repo.Commit != nil {
 		// Fetching last commit for each entry can be slow, but it's essential for a good UI.
 		// We use a simple goroutine-based approach for small counts to improve speed.
 		log.Trace("GetRepoView: Fetching last commits for %d entries in parallel", len(apiEntries))
@@ -321,17 +321,19 @@ func getRepoDirectory(c *context.APIContext) {
 		"repository": c.Repo.Repository.APIFormat(c.Repo.Owner),
 	}
 
-	log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
-	lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
-	if err == nil && len(lastCommit) > 0 {
-		res["last_commit"] = map[string]any{
-			"id":      lastCommit[0].ID.String(),
-			"summary": lastCommit[0].Summary(),
-			"author": map[string]any{
-				"name":  lastCommit[0].Author.Name,
-				"email": lastCommit[0].Author.Email,
-				"when":  lastCommit[0].Author.When,
-			},
+	if c.Repo.Commit != nil {
+		log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
+		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
+		if err == nil && len(lastCommit) > 0 {
+			res["last_commit"] = map[string]any{
+				"id":      lastCommit[0].ID.String(),
+				"summary": lastCommit[0].Summary(),
+				"author": map[string]any{
+					"name":  lastCommit[0].Author.Name,
+					"email": lastCommit[0].Author.Email,
+					"when":  lastCommit[0].Author.When,
+				},
+			}
 		}
 	}
 	log.Trace("Directory %s has %d entries", c.Repo.TreePath, len(apiEntries))
