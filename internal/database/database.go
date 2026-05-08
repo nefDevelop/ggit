@@ -154,6 +154,17 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 		return nil, errors.Wrap(err, "initialize default secret patterns")
 	}
 
+	if conf.Database.Type == "sqlite3" {
+		sqlDB, err := db.DB()
+		if err == nil {
+			// Enable WAL mode for better concurrency
+			_, _ = sqlDB.Exec("PRAGMA journal_mode=WAL;")
+			// Set busy timeout to 5 seconds to prevent infinite hangs
+			_, _ = sqlDB.Exec("PRAGMA busy_timeout=5000;")
+			log.Trace("SQLite: WAL mode and busy_timeout(5s) enabled")
+		}
+	}
+
 	return db, nil
 }
 
