@@ -39,6 +39,7 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 	defer fsTx.Rollback()
 
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		log.Trace("Creating repository record in DB for %s/%s", owner.Name, opts.Name)
 		// 1. Crear el registro en la base de datos
 		domainRepo, err := s.db.WithTransaction(tx).Repositories().Create(ctx, owner.ID, database.CreateRepoOptions{
 			Name:           opts.Name,
@@ -59,6 +60,7 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 			WikiFolderName: "docs", // Default
 		})
 		if err != nil {
+			log.Error("Failed to create repository record: %v", err)
 			return err
 		}
 		repo = database.FromDomainRepository(domainRepo)
@@ -66,21 +68,25 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 		repo.Owner = owner
 
 		// 2. Inicializar el repositorio Git en ruta temporal
+		log.Trace("Initializing Git repository at temp path: %s", tempRepoPath)
 		err = initRepository(tempRepoPath, doer, repo, opts)
 		if err != nil {
+			log.Error("Failed to initialize Git repository: %v", err)
 			return errors.Wrap(err, "init repository")
 		}
 
-		log.Trace("Repository DB record created and staged on FS: %s/%s", owner.Name, repo.Name)
+		// 3. Commit del FS dentro de la transacción de DB para atomicidad total
+		log.Trace("Committing filesystem transaction for %s/%s", owner.Name, repo.Name)
+		if err := fsTx.Commit(); err != nil {
+			log.Error("Failed to commit filesystem transaction: %v", err)
+			return errors.Wrap(err, "commit filesystem transaction")
+		}
+
+		log.Trace("Repository created successfully: %s/%s", owner.Name, repo.Name)
 		return nil
 	})
 	if err != nil {
 		return nil, err
-	}
-
-	// 3. Commit del FS después de que la DB haya confirmado
-	if err := fsTx.Commit(); err != nil {
-		return nil, errors.Wrap(err, "commit filesystem transaction")
 	}
 
 	if opts.AutoInit {

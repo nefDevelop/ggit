@@ -262,17 +262,39 @@ func getRepoDirectory(c *context.APIContext) {
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
 	// Fetching last commit for each entry can be slow, but it's essential for a good UI.
-	// We'll fetch them here.
+	// We use a simple goroutine-based approach for small counts to improve speed.
+	log.Trace("GetRepoView: Fetching last commits for %d entries", len(apiEntries))
+	
+	type commitResult struct {
+		index  int
+		commit *git.Commit
+	}
+	results := make(chan commitResult, len(apiEntries))
+	
 	for i := range apiEntries {
-		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: path.Join(c.Repo.TreePath, apiEntries[i].Name), MaxCount: 1})
-		if err == nil && len(lastCommit) > 0 {
-			apiEntries[i].LastCommit = map[string]any{
-				"id":      lastCommit[0].ID.String(),
-				"summary": lastCommit[0].Summary(),
+		go func(idx int, entryName string) {
+			lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{
+				Path:     path.Join(c.Repo.TreePath, entryName),
+				MaxCount: 1,
+			})
+			if err == nil && len(lastCommit) > 0 {
+				results <- commitResult{index: idx, commit: lastCommit[0]}
+			} else {
+				results <- commitResult{index: idx, commit: nil}
+			}
+		}(i, apiEntries[i].Name)
+	}
+
+	for range apiEntries {
+		res := <-results
+		if res.commit != nil {
+			apiEntries[res.index].LastCommit = map[string]any{
+				"id":      res.commit.ID.String(),
+				"summary": res.commit.Summary(),
 				"author": map[string]any{
-					"name":  lastCommit[0].Author.Name,
-					"email": lastCommit[0].Author.Email,
-					"when":  lastCommit[0].Author.When,
+					"name":  res.commit.Author.Name,
+					"email": res.commit.Author.Email,
+					"when":  res.commit.Author.When,
 				},
 			}
 		}
@@ -286,6 +308,7 @@ func getRepoDirectory(c *context.APIContext) {
 		"repository": c.Repo.Repository.APIFormat(c.Repo.Owner),
 	}
 
+	log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
 	lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 	if err == nil && len(lastCommit) > 0 {
 		res["last_commit"] = map[string]any{
