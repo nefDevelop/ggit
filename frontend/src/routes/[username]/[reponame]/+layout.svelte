@@ -103,7 +103,7 @@
 <div class="workspace-shell">
   <div class="master-container">
     {#if loading && !repoData}
-      <div class="skeleton-master" out:fade={{ duration: 200 }}>
+      <div class="skeleton-master" out:fade={{ duration: 100 }}>
         <div class="repo-header-region">
           <div class="tonal-search-bar">
             <div class="skeleton-pulse search-skeleton"></div>
@@ -124,13 +124,13 @@
         </div>
       </div>
     {:else if error}
-      <div class="tonal error-tonal" in:fade>
+      <div class="tonal error-tonal" in:fade={{ duration: 100 }}>
         <AlertCircle size={48} />
         <p>{error}</p>
         <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
       </div>
     {:else if repoData}
-      <div class="master-tonal tonal" in:fade={{ duration: 300, delay: 100 }}>
+      <div class="master-tonal tonal" in:fade={{ duration: 150 }}>
       <div class="repo-header-region">
         <div class="tonal-search-bar">
           <GlobalSearch />

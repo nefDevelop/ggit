@@ -62,6 +62,7 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		NumBranches:   r.NumBranches,
 		NumReleases:   int(numReleases),
 		IsPrivate:     r.IsPrivate,
+		IsBare:        r.IsBare,
 		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
 		CloneURL:      cloneLink.HTTPS,
 		SSHURL:        cloneLink.SSH,

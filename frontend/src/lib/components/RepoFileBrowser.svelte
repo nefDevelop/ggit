@@ -472,9 +472,9 @@ git push -u origin main</code></pre>
     display: grid;
     grid-template-columns: 1fr 280px;
     gap: 2.5rem;
-    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
     padding: 2rem;
-    animation: fadeIn 0.4s ease-out;
+    animation: fadeIn 0.2s ease-out;
   }
 
   .technical-grid.sidebar-collapsed {
@@ -756,4 +756,6 @@ git push -u origin main</code></pre>
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.75rem; text-transform: uppercase; }
 
   :global(.markdown-body) { color: var(--text-color); font-size: 1rem; line-height: 1.7; }
+</style>
+color: var(--text-color); font-size: 1rem; line-height: 1.7; }
 </style>

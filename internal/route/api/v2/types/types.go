@@ -71,6 +71,7 @@ type RepositoryResponse struct {
 	NumBranches   int                   `json:"num_branches"`
 	NumReleases   int                   `json:"num_releases_count"`
 	IsPrivate     bool                  `json:"is_private"`
+	IsBare        bool                  `json:"is_bare"`
 	HTMLURL       string                `json:"html_url"`
 	CloneURL      string                `json:"clone_url"`
 	SSHURL        string                `json:"ssh_url"`
