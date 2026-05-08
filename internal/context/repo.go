@@ -281,7 +281,7 @@ func RepoRef() gin.HandlerFunc {
 			return
 		}
 		if gctx.Repo.Repository.IsBare {
-			c.AbortWithStatus(http.StatusNoContent)
+			c.Next()
 			return
 		}
 
