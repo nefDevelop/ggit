@@ -38,13 +38,8 @@
   let cloneUrl = $derived(repoData?.clone_url || repoData?.repository?.clone_url || '');
 
   // Initialize from context if at root to avoid flicker
-  if (!path && repoContext.data) {
-    repoData = {
-      ...repoContext.data,
-      entries: repoContext.entries,
-      type: 'directory',
-      languages: repoContext.languages
-    };
+  if (!path && repoContext.full) {
+    repoData = repoContext.full;
     loading = false;
     // Set lastFetched to prevent immediate re-fetch
     lastFetched = { 

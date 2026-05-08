@@ -20,6 +20,7 @@
   let currentPath = $derived(page.url.pathname);
 
   let repoData = $state<any>(null);
+  let fullRepoRes = $state<any>(null);
   let rootEntries = $state<any[]>([]);
   let gitStats = $state<any>({ commits: 0, branches: 0, tags: 0, releases: 0 });
   let languages = $state<any>(null);
@@ -39,6 +40,7 @@
       if (repoRes.ok) {
         const res = await repoRes.json();
         repoData = res.repository;
+        fullRepoRes = res; // Store the full response
         rootEntries = res.entries || [];
         if (res.stats) {
             gitStats = res.stats;
@@ -62,6 +64,7 @@
 
   setContext('repo', {
     get data() { return repoData; },
+    get full() { return fullRepoRes; }, // New full response
     get entries() { return rootEntries; },
     get stats() { return gitStats; },
     get languages() { return languages; },
@@ -103,7 +106,7 @@
 <div class="workspace-shell">
   <div class="master-container">
     {#if loading && !repoData}
-      <div class="skeleton-master" out:fade={{ duration: 100 }}>
+      <div class="skeleton-master">
         <div class="repo-header-region">
           <div class="tonal-search-bar">
             <div class="skeleton-pulse search-skeleton"></div>
@@ -124,13 +127,13 @@
         </div>
       </div>
     {:else if error}
-      <div class="tonal error-tonal" in:fade={{ duration: 100 }}>
+      <div class="tonal error-tonal">
         <AlertCircle size={48} />
         <p>{error}</p>
         <a href="/dashboard" class="btn btn-tonal">Back to Dashboard</a>
       </div>
     {:else if repoData}
-      <div class="master-tonal tonal" in:fade={{ duration: 150 }}>
+      <div class="master-tonal tonal">
       <div class="repo-header-region">
         <div class="tonal-search-bar">
           <GlobalSearch />
