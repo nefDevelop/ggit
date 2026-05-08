@@ -423,19 +423,19 @@
   }
 
   .master-body { flex: 1; overflow-y: auto; background: var(--bg-color); }
-  .master-body-skeleton { flex: 1; padding: 2rem; display: flex; flex-direction: column; }
+  .master-body-skeleton { flex: 1; padding: 2rem; display: flex; flex-direction: column; background: var(--bg-color); }
   @media (max-width: 600px) {
     .master-body { padding: 1rem; }
   }
-  .skeleton-master { background: var(--md-sys-color-surface-container-low); }
-  .skeleton-pulse { background: var(--surface-variant); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; opacity: 0.5; }
+  .skeleton-master { background: var(--md-sys-color-surface-container-low); height: 100vh; display: flex; flex-direction: column; }
+  .skeleton-pulse { background: var(--md-sys-color-surface-container-high); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
   
-  .search-skeleton { height: 44px; width: 100%; max-width: 800px; border-radius: 14px; }
-  .identity-skeleton { height: 32px; width: 320px; }
-  .actions-skeleton { height: 36px; width: 180px; border-radius: 12px; }
-  .tabs-skeleton { height: 48px; width: 100%; border-radius: 12px 12px 0 0; }
-  .body-skeleton { height: 100%; width: 100%; border-radius: 1rem; }
+  .search-skeleton { height: 44px; width: 100%; max-width: 800px; border-radius: 14px; margin: 1rem; }
+  .identity-skeleton { height: 32px; width: 320px; margin: 1rem; }
+  .actions-skeleton { height: 36px; width: 180px; border-radius: 12px; margin: 1rem; }
+  .tabs-skeleton { height: 48px; width: 100%; border-radius: 12px 12px 0 0; margin-top: auto; }
+  .body-skeleton { height: 100%; width: 100%; border-radius: 1rem; background: var(--md-sys-color-surface-container-low); }
 
-  @keyframes skeleton-pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
+  @keyframes skeleton-pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
   .error-tonal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: #f87171; }
 </style>
