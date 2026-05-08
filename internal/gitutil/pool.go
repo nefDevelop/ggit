@@ -4,9 +4,8 @@ import (
 	"runtime"
 	"sync"
 
-	"github.com/shirou/gopsutil/v3/mem"
-
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/osutil"
 )
 
 var (
@@ -15,7 +14,7 @@ var (
 )
 
 func calculateRAMLimit() int {
-	v, err := mem.VirtualMemory()
+	available, err := osutil.AvailableMemory()
 	if err != nil {
 		// Fallback to CPU cores if RAM check fails
 		return runtime.NumCPU() * 2
@@ -24,7 +23,7 @@ func calculateRAMLimit() int {
 	// Blindaje Anti-OOM Heuristic: 
 	// Each git process can spike up to 256MB-512MB in heavy operations (like diff/pack).
 	// We use 50% of available RAM as a safe concurrency zone.
-	availableMB := v.Available / 1024 / 1024
+	availableMB := available / 1024 / 1024
 	limit := int(availableMB / 384) // Conservative 384MB per process
 
 	if limit < 2 {

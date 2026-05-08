@@ -5,7 +5,6 @@ go 1.25.9
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/semver/v3 v3.4.0
-	github.com/alecthomas/chroma/v2 v2.24.1
 	github.com/cockroachdb/errors v1.12.0
 	github.com/coreos/go-oidc/v3 v3.18.0
 	github.com/derision-test/go-mockgen/v2 v2.1.1
@@ -14,7 +13,6 @@ require (
 	github.com/gin-contrib/sessions v1.1.0
 	github.com/gin-gonic/gin v1.12.0
 	github.com/glebarez/sqlite v1.11.0
-	github.com/go-enry/go-enry/v2 v2.9.6
 	github.com/go-ldap/ldap/v3 v3.4.13
 	github.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f
 	github.com/gogs/cron v0.0.0-20171120032916-9f6c956d3e14
@@ -27,7 +25,6 @@ require (
 	github.com/pquerna/otp v1.5.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sergi/go-diff v1.4.0
-	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/sourcegraph/run v0.12.0
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/files v1.0.1
@@ -71,7 +68,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/djherbis/buffer v1.2.0 // indirect
 	github.com/djherbis/nio/v3 v3.0.1 // indirect
-	github.com/dlclark/regexp2 v1.12.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
@@ -79,11 +75,9 @@ require (
 	github.com/gin-contrib/sse v1.1.1 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
 	github.com/go-asn1-ber/asn1-ber v1.5.8-0.20250403174932-29230038a667 // indirect
-	github.com/go-enry/go-oniguruma v1.2.1 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/jsonpointer v0.23.0 // indirect
 	github.com/go-openapi/jsonreference v0.21.5 // indirect
 	github.com/go-openapi/spec v0.22.4 // indirect
@@ -117,7 +111,6 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
-	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.21 // indirect
 	github.com/mattn/go-runewidth v0.0.23 // indirect
@@ -132,7 +125,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.3.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
@@ -140,11 +132,8 @@ require (
 	github.com/quic-go/quic-go v0.59.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	github.com/tklauser/go-sysconf v0.3.12 // indirect
-	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.3.1 // indirect
-	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.bobheadxi.dev/streamline v1.3.2 // indirect
 	go.mongodb.org/mongo-driver/v2 v2.5.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect

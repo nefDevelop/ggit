@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,12 +13,14 @@ func TestSurvivalModeMiddleware(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	t.Run("Disk space OK", func(t *testing.T) {
-		mockUsage := func(path string) (*disk.UsageStat, error) {
-			return &disk.UsageStat{UsedPercent: 50.0}, nil
+		old := diskUsage
+		diskUsage = func(path string) (uint64, uint64, error) {
+			return 1000, 500, nil // 50% used
 		}
+		defer func() { diskUsage = old }()
 
 		r := gin.New()
-		r.Use(SurvivalModeMiddleware(mockUsage))
+		r.Use(SurvivalModeMiddleware())
 		r.POST("/test", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
@@ -32,12 +33,14 @@ func TestSurvivalModeMiddleware(t *testing.T) {
 	})
 
 	t.Run("Disk space Critical - Block POST", func(t *testing.T) {
-		mockUsage := func(path string) (*disk.UsageStat, error) {
-			return &disk.UsageStat{UsedPercent: 98.0}, nil
+		old := diskUsage
+		diskUsage = func(path string) (uint64, uint64, error) {
+			return 1000, 20, nil // 98% used
 		}
+		defer func() { diskUsage = old }()
 
 		r := gin.New()
-		r.Use(SurvivalModeMiddleware(mockUsage))
+		r.Use(SurvivalModeMiddleware())
 		r.POST("/test", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
@@ -51,12 +54,14 @@ func TestSurvivalModeMiddleware(t *testing.T) {
 	})
 
 	t.Run("Disk space Critical - Allow GET", func(t *testing.T) {
-		mockUsage := func(path string) (*disk.UsageStat, error) {
-			return &disk.UsageStat{UsedPercent: 98.0}, nil
+		old := diskUsage
+		diskUsage = func(path string) (uint64, uint64, error) {
+			return 1000, 20, nil // 98% used
 		}
+		defer func() { diskUsage = old }()
 
 		r := gin.New()
-		r.Use(SurvivalModeMiddleware(mockUsage))
+		r.Use(SurvivalModeMiddleware())
 		r.GET("/test", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})

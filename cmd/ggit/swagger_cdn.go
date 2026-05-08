@@ -4,7 +4,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "github.com/nef734/ggit/docs"
 )
 
 func init() {

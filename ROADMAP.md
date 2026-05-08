@@ -159,7 +159,7 @@
 - [ ] **Merge Checks:** Bloqueo de fusión si hay conversaciones pendientes o falta de aprobaciones.
 
 ### 2. CI/CD & Automatización
-- [ ] **Commit Status API:** Modelo DB y API para reportar resultados de CI (iconos ✅/❌).
+- [x] **Commit Status API:** Modelo DB y API para reportar resultados de CI (iconos ✅/❌).
 - [x] **Webhooks Seguros:** Firma de payloads mediante `HMAC-SHA256`. **Tested**.
 - [x] **Prometheus & Health Checks:** Exposición de `/metrics` y `/health` detallados. **Tested**.
 
@@ -239,6 +239,23 @@
 - [x] **Stale Detection:** Nueva regla en el **Janitor** existente para detectar ramas e issues muertas. **Healed 🛡️**
 - [x] **Blindaje Anti-OOM:** Monitor de recursos dinámico y limitador de concurrencia.
 - [x] **Atomic Consist. & Pattern Store:** Refactorización interna para integridad y mantenibilidad. **Completado 🛡️**
+- [x] **OIDC Auth Support:** Soporte estándar para login externo mediante OpenID Connect. **Completado 🔐**
+
+---
+
+## Fase 27: Binary Lean & Optimization (The Minimalist Era) 💎
+**Objetivo:** Reducir la huella del binario y optimizar el almacenamiento para despliegues ligeros.
+
+### 1. Desprendimiento de Dependencias Pesadas
+- [ ] **Frontend Syntax Highlighting:** Sustituir `Chroma` (Backend) por una solución en el Frontend (ej. `highlight.js`).
+- [ ] **Native Syscalls:** Eliminar `gopsutil` y usar llamadas al sistema nativas para métricas de Disco y RAM.
+- [ ] **Lightweight Lang Detection:** Sustituir `go-enry` por un mapeo estático basado en extensiones y reglas `IsVendor`.
+- [ ] **Swagger Build-Time:** Generar `swagger.json` en compilación y servirlo como estático, eliminando dependencias de `swaggo` en el binario de prod.
+
+### 2. Optimización de Almacenamiento (Commit Status)
+- [ ] **Normalización de Contextos:** Tabla maestra para `CommitStatusContext` para reducir redundancia de strings.
+- [ ] **State Enum:** Migrar estados de strings a enteros (`uint8`) para reducir el tamaño de índices y registros.
+- [ ] **Update-in-Place:** Opcionalmente actualizar el estado del commit en lugar de insertar historial infinito.
 
 ---
 

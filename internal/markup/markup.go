@@ -1,54 +1,15 @@
 package markup
 
 import (
-	"bytes"
 	"strings"
 
-	"github.com/alecthomas/chroma/v2"
-	"github.com/alecthomas/chroma/v2/formatters"
-	"github.com/alecthomas/chroma/v2/formatters/html"
-	"github.com/alecthomas/chroma/v2/lexers"
-	"github.com/alecthomas/chroma/v2/styles"
 	"github.com/nef734/ggit/internal/lazyregexp"
 	"gopkg.in/yaml.v3"
 )
 
-// Highlight highlights the given code using Chroma.
+// Highlight is now a no-op as highlighting is done on the frontend.
 func Highlight(code, language, styleName string) (string, error) {
-	lexer := lexers.Get(language)
-	if lexer == nil {
-		lexer = lexers.Analyse(code)
-	}
-	if lexer == nil {
-		lexer = lexers.Fallback
-	}
-	lexer = chroma.Coalesce(lexer)
-
-	style := styles.Get(styleName)
-	if style == nil {
-		style = styles.GitHub
-	}
-
-	formatter := formatters.Get("html")
-	if formatter == nil {
-		formatter = formatters.TTY
-	}
-
-	// Use inline styles and no pre wrapper to allow frontend to handle line numbers
-	htmlFormatter := html.New(html.WithClasses(false), html.PreventSurroundingPre(true))
-
-	iterator, err := lexer.Tokenise(nil, code)
-	if err != nil {
-		return "", err
-	}
-
-	var buf bytes.Buffer
-	err = htmlFormatter.Format(&buf, style, iterator)
-	if err != nil {
-		return "", err
-	}
-
-	return buf.String(), nil
+	return code, nil
 }
 
 // IsReadmeFile reports whether name looks like a README file based on its extension.

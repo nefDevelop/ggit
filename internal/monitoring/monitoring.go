@@ -10,7 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/shirou/gopsutil/v3/disk"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -20,6 +19,7 @@ import (
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/osutil"
 )
 
 var (
@@ -115,12 +115,14 @@ func HealthCheckHandler(c *gin.Context) {
 	// Check Disk
 	diskInfo := make(map[string]interface{})
 	survival := false
-	usage, err := disk.Usage(conf.Repository.Root)
+	total, free, err := osutil.DiskUsage(conf.Repository.Root)
 	if err == nil {
-		diskInfo["total"] = usage.Total
-		diskInfo["free"] = usage.Free
-		diskInfo["used_percent"] = usage.UsedPercent
-		if usage.UsedPercent > 95 {
+		used := total - free
+		usedPercent := float64(used) / float64(total) * 100
+		diskInfo["total"] = total
+		diskInfo["free"] = free
+		diskInfo["used_percent"] = usedPercent
+		if usedPercent > 95 {
 			status = "CRITICAL"
 			survival = true
 		}
@@ -174,24 +176,22 @@ func InitTracing() (func(context.Context) error, error) {
 	return tp.Shutdown, nil
 }
 
-// DiskUsageFunc defines the function signature for checking disk usage.
-type DiskUsageFunc func(path string) (*disk.UsageStat, error)
+var diskUsage = osutil.DiskUsage
 
 // SurvivalModeMiddleware blocks write requests if disk space is critical.
-func SurvivalModeMiddleware(usageFunc ...DiskUsageFunc) gin.HandlerFunc {
-	f := disk.Usage
-	if len(usageFunc) > 0 && usageFunc[0] != nil {
-		f = usageFunc[0]
-	}
-
+func SurvivalModeMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if c.Request.Method != http.MethodGet && c.Request.Method != http.MethodHead && c.Request.Method != http.MethodOptions {
-			usage, err := f(conf.Repository.Root)
-			if err == nil && usage.UsedPercent > 95 {
-				c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{
-					"error": "Survival Mode: Disk space is critical (>95%). Write operations are blocked.",
-				})
-				return
+			total, free, err := diskUsage(conf.Repository.Root)
+			if err == nil {
+				used := total - free
+				usedPercent := float64(used) / float64(total) * 100
+				if usedPercent > 95 {
+					c.AbortWithStatusJSON(http.StatusServiceUnavailable, gin.H{
+						"error": "Survival Mode: Disk space is critical (>95%). Write operations are blocked.",
+					})
+					return
+				}
 			}
 		}
 		c.Next()

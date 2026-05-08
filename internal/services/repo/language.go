@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/go-enry/go-enry/v2"
 	"github.com/gogs/git-module"
 	log "unknwon.dev/clog/v2"
 
@@ -77,11 +76,11 @@ func walkTree(tree *git.Tree, path string, languages map[string]int64) error {
 			continue
 		}
 
-		if enry.IsVendor(entry.Name()) || enry.IsDotFile(entry.Name()) || enry.IsDocumentation(entry.Name()) || enry.IsConfiguration(entry.Name()) {
+		if isVendor(entry.Name()) || isDotFile(entry.Name()) || isDocumentation(entry.Name()) || isConfiguration(entry.Name()) {
 			continue
 		}
 
-		lang, _ := enry.GetLanguageByExtension(entry.Name())
+		lang := getLanguageByExtension(entry.Name())
 		if lang == "" {
 			continue
 		}
