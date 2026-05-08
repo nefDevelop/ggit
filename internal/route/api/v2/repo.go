@@ -325,9 +325,11 @@ func getRepoDirectory(c *context.APIContext) {
 		log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
 		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 		if err == nil && len(lastCommit) > 0 {
+			sha := lastCommit[0].ID.String()
 			res["last_commit"] = map[string]any{
-				"id":      lastCommit[0].ID.String(),
+				"id":      sha,
 				"summary": lastCommit[0].Summary(),
+				"status":  string(database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)),
 				"author": map[string]any{
 					"name":  lastCommit[0].Author.Name,
 					"email": lastCommit[0].Author.Email,
@@ -411,9 +413,11 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 
 	lastCommit, _ := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 	if len(lastCommit) > 0 {
+		sha := lastCommit[0].ID.String()
 		res["last_commit"] = map[string]any{
-			"id":      lastCommit[0].ID.String(),
+			"id":      sha,
 			"summary": lastCommit[0].Summary(),
+			"status":  string(database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)),
 			"author": map[string]any{
 				"name":  lastCommit[0].Author.Name,
 				"email": lastCommit[0].Author.Email,
@@ -529,11 +533,12 @@ func GetRepoBlame(c *context.APIContext) {
 	c.JSON(http.StatusOK, results)
 }
 
-// matchUsersWithCommitEmails matches existing users using commit author emails.
-func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit) []map[string]any {
+// matchUsersWithCommitEmails matches existing users using commit author emails and includes commit statuses.
+func matchUsersWithCommitEmails(ctx stdcontext.Context, repoID int64, oldCommits []*git.Commit) []map[string]any {
 	emailToUsers := make(map[string]*database.User)
 	newCommits := make([]map[string]any, len(oldCommits))
 	usersStore := database.Handle.Users()
+	statusStore := database.Handle.CommitStatuses()
 	for i := range oldCommits {
 		var u *database.User
 		if v, ok := emailToUsers[oldCommits[i].Author.Email]; !ok {
@@ -544,9 +549,10 @@ func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit
 			u = v
 		}
 
+		sha := oldCommits[i].ID.String()
 		newCommits[i] = map[string]any{
 			"user":    u,
-			"id":      oldCommits[i].ID.String(),
+			"id":      sha,
 			"message": oldCommits[i].Message,
 			"author": map[string]any{
 				"name":  oldCommits[i].Author.Name,
@@ -558,6 +564,7 @@ func matchUsersWithCommitEmails(ctx stdcontext.Context, oldCommits []*git.Commit
 				"email": oldCommits[i].Committer.Email,
 				"when":  oldCommits[i].Committer.When,
 			},
+			"status": string(statusStore.GetCombinedStatusBySHA(ctx, repoID, sha)),
 		}
 	}
 	return newCommits
@@ -590,7 +597,7 @@ func GetRepoCommits(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusOK, map[string]any{
-		"commits":  matchUsersWithCommitEmails(c.Req.Context(), commits),
+		"commits":  matchUsersWithCommitEmails(c.Req.Context(), c.Repo.Repository.ID, commits),
 		"page":     page,
 		"pageSize": pageSize,
 	})

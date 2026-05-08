@@ -11,6 +11,7 @@
   import { getLanguageColor } from '$lib/utils/languages';
   import RepoSearchResults from './RepoSearchResults.svelte';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
+  import CommitStatusIcon from './CommitStatusIcon.svelte';
   import hljs from 'highlight.js';
   
   let { path = '' } = $props();
@@ -315,6 +316,7 @@ git push -u origin main</code></pre>
                     </a>
                   </div>
                   <div class="commit-meta-row">
+                      <CommitStatusIcon status={repoData.last_commit.status} size={16} class="status-icon-inline" />
                       <span class="author">{repoData.last_commit.author?.name}</span>
                       <span class="separator">committed</span>
                       <span class="time">{timeAgo(repoData.last_commit.author?.when)}</span>
@@ -603,6 +605,11 @@ git push -u origin main</code></pre>
     color: var(--primary-color);
     text-decoration: underline;
   }
+  
+  :global(.status-icon-inline) {
+    margin-right: 0.25rem;
+  }
+
   .sha {
     font-family: monospace;
     background: var(--md-sys-color-tertiary-container);

@@ -4,6 +4,8 @@
   import { page } from '$app/state';
   import DiffViewer from '$lib/components/DiffViewer.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
+  import CommitStatusIcon from '$lib/components/CommitStatusIcon.svelte';
+  import { ExternalLink, CheckCircle2, XCircle, AlertCircle } from 'lucide-svelte';
 
   const repo: any = getContext('repo');
   let sha = $derived(page.params.sha);
@@ -75,7 +77,33 @@
           <div class="avatar-ph">{commitData.author?.name?.[0] || 'U'}</div>
           <span><strong>{commitData.author?.name}</strong> committed {timeAgo(commitData.author?.when)}</span>
         </div>
+        
+        {#if commitData.status}
+          <div class="status-summary">
+            <CommitStatusIcon status={commitData.status} size={20} />
+            <span class="status-label">{commitData.status}</span>
+          </div>
+        {/if}
       </div>
+
+      {#if commitData.statuses && commitData.statuses.length > 0}
+        <div class="statuses-list island tonal">
+          <header class="statuses-header">Commit Statuses</header>
+          {#each commitData.statuses as s}
+            <div class="status-detail-row">
+              <CommitStatusIcon status={s.State} size={18} />
+              <div class="status-text-info">
+                <span class="status-context"><b>{s.Context}</b> — {s.Description || 'No description'}</span>
+              </div>
+              {#if s.TargetURL}
+                <a href={s.TargetURL} target="_blank" class="status-link">
+                  Details <ExternalLink size={14} />
+                </a>
+              {/if}
+            </div>
+          {/each}
+        </div>
+      {/if}
     </div>
 
     {#if diffData}
@@ -157,6 +185,57 @@
     font-size: 0.9rem;
     color: var(--md-sys-color-on-surface-variant);
   }
+
+  .status-summary {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface-variant);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .status-label { font-weight: 800; font-size: 0.85rem; text-transform: capitalize; }
+
+  .statuses-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .statuses-header {
+    background: var(--surface-variant);
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .status-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .status-detail-row:last-child { border-bottom: none; }
+  .status-text-info { flex: 1; min-width: 0; }
+  .status-context { font-size: 0.9rem; }
+  .status-link {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  .status-link:hover { text-decoration: underline; }
 
   .avatar-ph {
     width: 32px;

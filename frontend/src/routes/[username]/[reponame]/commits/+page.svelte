@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import Avatar from "$lib/components/Avatar.svelte";
+  import CommitStatusIcon from "$lib/components/CommitStatusIcon.svelte";
 
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
@@ -83,6 +84,7 @@
           <!-- Middle: Message & Meta -->
           <div class="commit-info-cell">
             <div class="commit-header">
+              <CommitStatusIcon status={c.status} size={18} class="status-icon-margin" />
               <a href={`/${username}/${reponame}/commit/${id}`} class="commit-message-link">
                 <span class="commit-message">{String(message || '').split('\n')[0]}</span>
               </a>
@@ -169,6 +171,11 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+  }
+
+  :global(.status-icon-margin) {
+    margin-right: 0.75rem;
+    align-self: center;
   }
 
   .commit-message { font-weight: 700; font-size: 0.95rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

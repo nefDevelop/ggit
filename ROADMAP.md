@@ -333,7 +333,7 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 - [x] **Consistencia Atómica (2PC):** Coordinación estricta entre DB y sistema de archivos. **Completado 🛡️**
 
 ### Conectividad y Ecosistema (Medio Plazo)
-- [ ] **OIDC (OpenID Connect):** Soporte estándar para login externo.
+- [x] **OIDC (OpenID Connect):** Soporte estándar para login externo.
 - [x] **Pattern Store (Fase 1):** Unificación de accesos a DB para entidades Core. **Completado 🗄️**
 
 ### Funcionalidades Avanzadas (Largo Plazo / 2.0)

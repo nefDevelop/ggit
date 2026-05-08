@@ -6,6 +6,7 @@ import (
 	"github.com/gogs/git-module"
 
 	"github.com/nef734/ggit/internal/context"
+	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/gitx"
 )
 
@@ -42,6 +43,9 @@ func GetSingleCommit(c *context.APIContext) {
 		return
 	}
 
+	statuses, _ := database.Handle.CommitStatuses().GetLatestBySHA(c.Req.Context(), c.Repo.Repository.ID, commit.ID.String())
+	combined := database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, commit.ID.String())
+
 	c.JSON(http.StatusOK, map[string]any{
 		"commit": map[string]any{
 			"id":      commit.ID.String(),
@@ -57,6 +61,8 @@ func GetSingleCommit(c *context.APIContext) {
 				"email": commit.Committer.Email,
 				"when":  commit.Committer.When,
 			},
+			"status":   string(combined),
+			"statuses": statuses,
 		},
 		"diff": diff,
 	})

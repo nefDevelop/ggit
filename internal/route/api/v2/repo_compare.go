@@ -85,7 +85,7 @@ func GetComparison(c *context.APIContext) {
 	}
 
 	resp["merge_base"] = meta.MergeBase
-	resp["commits"] = matchUsersWithCommitEmails(c.Req.Context(), meta.Commits)
+	resp["commits"] = matchUsersWithCommitEmails(c.Req.Context(), c.Repo.Repository.ID, meta.Commits)
 	resp["num_commits"] = len(meta.Commits)
 	resp["diff"] = diff
 
