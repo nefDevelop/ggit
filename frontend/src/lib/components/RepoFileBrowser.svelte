@@ -757,5 +757,3 @@ git push -u origin main</code></pre>
 
   :global(.markdown-body) { color: var(--text-color); font-size: 1rem; line-height: 1.7; }
 </style>
-color: var(--text-color); font-size: 1rem; line-height: 1.7; }
-</style>
