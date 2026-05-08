@@ -25,6 +25,8 @@
   let searchQuery = $state('');
   let lastFetched = $state({ user: '', repo: '', path: '' });
 
+  let cloneUrl = $derived(repoData?.clone_url || repoData?.repository?.clone_url || '');
+
   // Initialize from context if at root to avoid flicker
   if (!path && repoContext.data) {
     repoData = {
@@ -242,7 +244,7 @@
         <div class="setup-commands">
           <div class="command-block">
             <span class="cmd-label">Quick Setup — if you've done this before</span>
-            <pre><code>git remote add origin {repoData.repository?.clone_url}
+            <pre><code>git remote add origin {cloneUrl}
 git branch -M main
 git push -u origin main</code></pre>
           </div>
@@ -254,13 +256,13 @@ git init
 git add README.md
 git commit -m "first commit"
 git branch -M main
-git remote add origin {repoData.repository?.clone_url}
+git remote add origin {cloneUrl}
 git push -u origin main</code></pre>
           </div>
 
           <div class="command-block">
             <span class="cmd-label">Push an existing repository from the command line</span>
-            <pre><code>git remote add origin {repoData.repository?.clone_url}
+            <pre><code>git remote add origin {cloneUrl}
 git branch -M main
 git push -u origin main</code></pre>
           </div>

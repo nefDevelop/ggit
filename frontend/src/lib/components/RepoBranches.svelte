@@ -41,23 +41,27 @@
   {:else if data}
     <!-- Primary Branch -->
     <div class="branch-list-container">
-      <div class="branch-row-item primary-row">
-        <div class="branch-main-info">
-          <Star size={18} class="branch-icon-acc" />
-          <div class="branch-name-stack">
-            <a href={`/${username}/${reponame}/src/branch/${data.default.name}`} class="branch-name-text">{data.default.name}</a>
-            <div class="badges-row">
-              <span class="badge-v2 primary">Primary</span>
-              {#if data.default.is_protected}
-                <span class="badge-v2 protected">Protected</span>
-              {/if}
+      {#if data.default}
+        <div class="branch-row-item primary-row">
+          <div class="branch-main-info">
+            <Star size={18} class="branch-icon-acc" />
+            <div class="branch-name-stack">
+              <a href={`/${username}/${reponame}/src/branch/${data.default.name}`} class="branch-name-text">{data.default.name}</a>
+              <div class="badges-row">
+                <span class="badge-v2 primary">Primary</span>
+                {#if data.default.is_protected}
+                  <span class="badge-v2 protected">Protected</span>
+                {/if}
+              </div>
             </div>
           </div>
+          <div class="branch-meta-info">
+             <span class="meta-label">Updated {data.default.commit?.committer?.when ? new Date(data.default.commit.committer.when).toLocaleDateString() : 'No commits'}</span>
+          </div>
         </div>
-        <div class="branch-meta-info">
-           <span class="meta-label">Updated {data.default.commit?.committer?.when ? new Date(data.default.commit.committer.when).toLocaleDateString() : 'Active'}</span>
-        </div>
-      </div>
+      {:else}
+        <div class="empty-state-simple">No branches found.</div>
+      {/if}
 
       <!-- Active Branches -->
       {#if data.active.length > 0}

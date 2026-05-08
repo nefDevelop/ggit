@@ -19,9 +19,13 @@ type Branch struct {
 func ListRepoBranches(c *context.APIContext) {
 	if c.Repo.Repository.IsBare {
 		c.JSON(http.StatusOK, map[string]any{
-			"default": nil,
-			"active":  []*Branch{},
-			"stale":   []*Branch{},
+			"default": &Branch{
+				Name:        c.Repo.Repository.DefaultBranch,
+				Commit:      nil,
+				IsProtected: false,
+			},
+			"active": []*Branch{},
+			"stale":  []*Branch{},
 		})
 		return
 	}
