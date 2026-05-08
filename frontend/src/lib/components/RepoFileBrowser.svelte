@@ -241,7 +241,25 @@
         <h2>Push your code</h2>
         <div class="setup-commands">
           <div class="command-block">
-            <span class="cmd-label">Quick Setup</span>
+            <span class="cmd-label">Quick Setup — if you've done this before</span>
+            <pre><code>git remote add origin {repoData.repository?.clone_url}
+git branch -M main
+git push -u origin main</code></pre>
+          </div>
+
+          <div class="command-block">
+            <span class="cmd-label">Create a new repository on the command line</span>
+            <pre><code>echo "# {reponame}" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin {repoData.repository?.clone_url}
+git push -u origin main</code></pre>
+          </div>
+
+          <div class="command-block">
+            <span class="cmd-label">Push an existing repository from the command line</span>
             <pre><code>git remote add origin {repoData.repository?.clone_url}
 git branch -M main
 git push -u origin main</code></pre>

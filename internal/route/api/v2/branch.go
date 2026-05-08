@@ -17,6 +17,15 @@ type Branch struct {
 
 // ListRepoBranches returns a list of branches for the repository.
 func ListRepoBranches(c *context.APIContext) {
+	if c.Repo.Repository.IsBare {
+		c.JSON(http.StatusOK, map[string]any{
+			"default": nil,
+			"active":  []*Branch{},
+			"stale":   []*Branch{},
+		})
+		return
+	}
+
 	rawBranches, err := c.Repo.Repository.GetBranches()
 	if err != nil {
 		c.Error(err, "get branches")

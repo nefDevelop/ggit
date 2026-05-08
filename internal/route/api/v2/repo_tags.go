@@ -19,6 +19,11 @@ type TagResponse struct {
 
 // ListRepoTags returns all tags for a repository.
 func ListRepoTags(c *context.APIContext) {
+	if c.Repo.Repository.IsBare {
+		c.JSON(http.StatusOK, []*TagResponse{})
+		return
+	}
+
 	if c.Repo.GitRepo == nil {
 		c.StatusError(http.StatusInternalServerError, "Git repository is not initialized.", nil)
 		return
