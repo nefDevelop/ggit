@@ -2,7 +2,7 @@
   import { 
     AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, 
     Folder, FileText, File, Edit, Download, Binary, BookText,
-    Rocket, ChevronRight
+    Rocket, ChevronRight, Copy, Check
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
@@ -24,6 +24,16 @@
   
   let searchQuery = $state('');
   let lastFetched = $state({ user: '', repo: '', path: '' });
+
+  let copiedId = $state<string | null>(null);
+
+  function copyToClipboard(text: string, id: string) {
+    navigator.clipboard.writeText(text);
+    copiedId = id;
+    setTimeout(() => {
+      if (copiedId === id) copiedId = null;
+    }, 2000);
+  }
 
   let cloneUrl = $derived(repoData?.clone_url || repoData?.repository?.clone_url || '');
 
@@ -243,14 +253,32 @@
         <h2>Push your code</h2>
         <div class="setup-commands">
           <div class="command-block">
-            <span class="cmd-label">Quick Setup — if you've done this before</span>
+            <div class="command-header">
+              <span class="cmd-label">Quick Setup — if you've done this before</span>
+              <button class="copy-btn" onclick={() => copyToClipboard(`git remote add origin ${cloneUrl}\ngit branch -M main\ngit push -u origin main`, 'quick')} title="Copy to clipboard">
+                {#if copiedId === 'quick'}
+                  <Check size={16} class="success-icon" />
+                {:else}
+                  <Copy size={16} />
+                {/if}
+              </button>
+            </div>
             <pre><code>git remote add origin {cloneUrl}
 git branch -M main
 git push -u origin main</code></pre>
           </div>
 
           <div class="command-block">
-            <span class="cmd-label">Create a new repository on the command line</span>
+            <div class="command-header">
+              <span class="cmd-label">Create a new repository on the command line</span>
+              <button class="copy-btn" onclick={() => copyToClipboard(`echo "# ${reponame}" >> README.md\ngit init\ngit add README.md\ngit commit -m "first commit"\ngit branch -M main\ngit remote add origin ${cloneUrl}\ngit push -u origin main`, 'new')} title="Copy to clipboard">
+                {#if copiedId === 'new'}
+                  <Check size={16} class="success-icon" />
+                {:else}
+                  <Copy size={16} />
+                {/if}
+              </button>
+            </div>
             <pre><code>echo "# {reponame}" >> README.md
 git init
 git add README.md
@@ -261,7 +289,16 @@ git push -u origin main</code></pre>
           </div>
 
           <div class="command-block">
-            <span class="cmd-label">Push an existing repository from the command line</span>
+            <div class="command-header">
+              <span class="cmd-label">Push an existing repository from the command line</span>
+              <button class="copy-btn" onclick={() => copyToClipboard(`git remote add origin ${cloneUrl}\ngit branch -M main\ngit push -u origin main`, 'existing')} title="Copy to clipboard">
+                {#if copiedId === 'existing'}
+                  <Check size={16} class="success-icon" />
+                {:else}
+                  <Copy size={16} />
+                {/if}
+              </button>
+            </div>
             <pre><code>git remote add origin {cloneUrl}
 git branch -M main
 git push -u origin main</code></pre>
@@ -773,7 +810,12 @@ git push -u origin main</code></pre>
   .empty-state-push { padding: 5rem 2rem; text-align: center; }
   .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--tertiary); }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
-  .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; margin-bottom: 0.75rem; text-transform: uppercase; }
+  .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; text-transform: uppercase; }
+  
+  .command-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .copy-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+  .copy-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary-color); color: var(--primary-color); }
+  .copy-btn .success-icon { color: #4ade80; }
 
   :global(.markdown-body) { color: var(--text-color); font-size: 1rem; line-height: 1.7; }
 </style>
