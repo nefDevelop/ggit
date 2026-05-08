@@ -78,6 +78,7 @@ type UsersStore interface {
 	GetByID(ctx context.Context, id int64) (*User, error)
 	GetByUsername(ctx context.Context, username string) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
+	GetByLoginSource(ctx context.Context, loginSourceID int64, loginName string) (*User, error)
 	List(ctx context.Context, page, pageSize int) ([]*User, error)
 	SearchByName(ctx context.Context, keyword string, page, pageSize int, orderBy string) ([]*User, int64, error)
 	Create(ctx context.Context, username, email string, opts any) (*User, error)

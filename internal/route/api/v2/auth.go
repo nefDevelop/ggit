@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/nef734/ggit/internal/auth"
+	"github.com/nef734/ggit/internal/auth/oidc"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
@@ -19,6 +20,102 @@ import (
 	"github.com/nef734/ggit/internal/userx"
 	log "unknwon.dev/clog/v2"
 )
+
+// LoginOIDC handles initiating OIDC login flow.
+func LoginOIDC(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	source, err := database.Handle.LoginSources().GetByID(c.Req.Context(), id)
+	if err != nil {
+		c.Error(err, "get login source")
+		return
+	}
+	if source.Type != int(auth.OIDC) || !source.IsActived {
+		c.StatusError(http.StatusBadRequest, "Invalid login source", nil)
+		return
+	}
+
+	dbSource := database.FromDomainLoginSource(source)
+	oidcProvider := dbSource.Provider.(*oidc.Provider)
+
+	oauth2Config, err := oidcProvider.OAuth2Config(c.Req.Context())
+	if err != nil {
+		c.Error(err, "get oauth2 config")
+		return
+	}
+
+	state, _ := strx.RandomChars(32)
+	c.Session.Set("oidc_state", state)
+	c.Session.Set("oidc_source_id", id)
+	_ = c.Session.Save()
+
+	c.Redirect(oauth2Config.AuthCodeURL(state))
+}
+
+// LoginOIDCCallback handles OIDC callback.
+func LoginOIDCCallback(c *context.APIContext) {
+	id := c.ParamsInt64("id")
+	state := c.Query("state")
+	code := c.Query("code")
+
+	sessState := c.Session.Get("oidc_state")
+	if sessState == nil || state != sessState.(string) {
+		c.StatusError(http.StatusBadRequest, "Invalid state", nil)
+		return
+	}
+
+	source, err := database.Handle.LoginSources().GetByID(c.Req.Context(), id)
+	if err != nil {
+		c.Error(err, "get login source")
+		return
+	}
+
+	dbSource := database.FromDomainLoginSource(source)
+	oidcProvider := dbSource.Provider.(*oidc.Provider)
+
+	extAccount, err := oidcProvider.VerifyCallback(c.Req.Context(), code)
+	if err != nil {
+		c.Error(err, "verify OIDC callback")
+		return
+	}
+
+	// Try to find user by login source and login name
+	u, err := database.Handle.Users().GetByLoginSource(c.Req.Context(), id, extAccount.Login)
+	if err != nil {
+		if !database.IsErrUserNotExist(err) {
+			c.Error(err, "get user by login source")
+			return
+		}
+
+		// Check if user with same name or email already exists
+		// In a real OIDC integration, we might want to link them or error out.
+		// For now, we follow the LDAP pattern and try to create if not exists.
+		
+		// Map external account to ggit user
+		u, err = database.Handle.Users().Create(c.Req.Context(), extAccount.Login, extAccount.Email, database.CreateUserOptions{
+			FullName:    extAccount.FullName,
+			LoginSource: id,
+			LoginName:   extAccount.Login,
+			Activated:   true,
+		})
+		if err != nil {
+			c.Error(err, "create user from OIDC")
+			return
+		}
+	}
+
+	// Successful login
+	if u.ProhibitLogin {
+		c.StatusError(http.StatusForbidden, "Login prohibited", nil)
+		return
+	}
+
+	// Create session
+	_ = authservice.Auth.CreateSession(c.Req.Context(), c.Session, database.FromDomainUser(u))
+	
+	// Redirect to dashboard or return success
+	// Since this is a redirect flow, we redirect to frontend dashboard
+	c.Redirect("/dashboard")
+}
 
 type loginPayload struct {
 	UserName    string `json:"username" binding:"required"`
@@ -83,18 +180,9 @@ func Login(c *context.APIContext) {
 		c.SetSuperSecureCookie(u.Rands+u.Password, conf.Security.CookieRememberName, u.Name, days, conf.Server.Subpath, "", conf.Security.CookieSecure, true)
 	}
 
-	c.Session.Set("uid", u.ID)
-	c.Session.Set("uname", u.Name)
-
-	sid, _ := strx.RandomChars(32)
-	c.Session.Set("sid", sid)
-	_, err = database.Handle.LoginSessions().Create(c.Req.Context(), u.ID, sid, c.Request.UserAgent(), c.ClientIP())
-	if err != nil {
-		log.Error("Failed to create login session: %v", err)
-	}
-
-	if err := c.Session.Save(); err != nil {
-		c.Error(err, "save session")
+	// Create session
+	if err := authservice.Auth.CreateSession(c.Req.Context(), c.Session, u); err != nil {
+		c.Error(err, "create session")
 		return
 	}
 
@@ -503,5 +591,22 @@ func GetRegistrationSettings(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
 		"enable_question": conf.Auth.EnableRegistrationQuestion,
 		"question":        conf.Auth.RegistrationQuestion,
+	})
+}
+
+// GetLoginSettings returns the current login settings and enabled external sources.
+func GetLoginSettings(c *context.APIContext) {
+	sources, _ := database.Handle.LoginSources().List(c.Req.Context(), domain.ListLoginSourceOptions{OnlyActivated: true})
+	oidcSources := make([]map[string]any, 0)
+	for _, s := range sources {
+		if s.Type == int(auth.OIDC) {
+			oidcSources = append(oidcSources, map[string]any{
+				"id":   s.ID,
+				"name": s.Name,
+			})
+		}
+	}
+	c.JSON(http.StatusOK, map[string]any{
+		"oidc_sources": oidcSources,
 	})
 }

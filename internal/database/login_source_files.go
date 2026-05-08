@@ -13,6 +13,7 @@ import (
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/auth/oidc"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/osx"
@@ -169,6 +170,15 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			}
 			loginSource.Type = auth.DLDAP
 			loginSource.Provider = ldap.NewProvider(true, &cfg)
+
+		case "oidc":
+			var cfg oidc.Config
+			err = cfgSection.MapTo(&cfg)
+			if err != nil {
+				return errors.Wrap(err, `map "config" section`)
+			}
+			loginSource.Type = auth.OIDC
+			loginSource.Provider = oidc.NewProvider(&cfg)
 
 		default:
 			return errors.Newf("unknown type %q", authType)

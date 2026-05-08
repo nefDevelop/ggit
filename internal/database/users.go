@@ -597,32 +597,28 @@ func (s *UsersStore) getByEmail(ctx context.Context, email string) (*User, error
 	}
 	email = strings.ToLower(email)
 
-	/*
-		Equivalent SQL for PostgreSQL:
-
-		SELECT * FROM "User"
-		LEFT JOIN email_address ON email_address.uid = "User".id
-		WHERE
-			"User".type = @UserType
-		AND (
-				"User".email = @email AND "User".is_active = TRUE
-			OR  email_address.email = @email AND email_address.is_activated = TRUE
-		)
-	*/
-	User := new(User)
-	err := s.db.WithContext(ctx).
-		Joins(dbx.Quote("LEFT JOIN email_address ON email_address.uid = %s.id", "User")).
-		Where(dbx.Quote("%s.type = ?", "User"), UserTypeIndividual).
-		Where(dbx.Quote("(%[1]s.email = ? AND %[1]s.is_active = ?) OR (email_address.email = ? AND email_address.is_activated = ?)", "User"), email, true, email, true).
-		First(&User).
-		Error
+	var u User
+	err := s.db.WithContext(ctx).Where("email = ?", email).First(&u).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotExist{args: errx.Args{"email": email}}
 		}
-		return nil, err
+		return nil, errors.Wrap(err, "get user by email")
 	}
-	return User, nil
+	return &u, nil
+}
+
+// GetByLoginSource returns the user with given login source ID and login name.
+func (s *UsersStore) GetByLoginSource(ctx context.Context, loginSourceID int64, loginName string) (*domain.User, error) {
+	var u User
+	err := s.db.WithContext(ctx).Where("login_source = ? AND login_name = ?", loginSourceID, loginName).First(&u).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotExist{args: errx.Args{"login_source": loginSourceID, "login_name": loginName}}
+		}
+		return nil, errors.Wrap(err, "get user by login source")
+	}
+	return u.ToDomain(), nil
 }
 
 // GetByEmail returns the User (not organization) with given email. It ignores

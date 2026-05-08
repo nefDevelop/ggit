@@ -25,7 +25,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 	user := r.Group("/user")
 	{
 		user.GET("/registration_settings", ginx.Handle(GetRegistrationSettings))
+		user.GET("/login/settings", ginx.Handle(GetLoginSettings))
 		user.POST("/login", ginx.Handle(Login))
+		user.GET("/login/oidc/:id", ginx.Handle(LoginOIDC))
+		user.GET("/login/oidc/:id/callback", ginx.Handle(LoginOIDCCallback))
 		user.POST("/register", ginx.Handle(Register))
 
 		user.GET("/check", ginx.Handle(CheckAuth))

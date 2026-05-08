@@ -160,7 +160,6 @@
 
 ### 2. CI/CD & Automatización
 - [ ] **Commit Status API:** Modelo DB y API para reportar resultados de CI (iconos ✅/❌).
-- [ ] **OAuth2/OIDC Provider:** Flujo para que el CI pueda autenticar usuarios vía `ggit`.
 - [x] **Webhooks Seguros:** Firma de payloads mediante `HMAC-SHA256`. **Tested**.
 - [x] **Prometheus & Health Checks:** Exposición de `/metrics` y `/health` detallados. **Tested**.
 
@@ -233,7 +232,7 @@
 ### 4. Organización & Planificación
 - [x] **Kanban Virtual:** Selector de vista en la lista de Issues para pasar de modo Lista a Tablero.
 - [x] **Hill Charts:** Integración de gráficas de incertidumbre en la vista de Hitos (Milestones). **Integrated 🏔️**
-- [ ] **Gists Integrados:** Nueva zona global para gestionar snippets de código. **Lean Hybrid Model (DB+FS) 📦**
+- [x] **Gists Integrados:** Nueva zona global para gestionar snippets de código. **Lean Hybrid Model (DB+FS) 📦**
 - [x] **Technotes / ADR:** Nueva pestaña "Docs" en el repositorio para diarios técnicos y decisiones. **Integrated 📝**
 
 ### 5. Core & Janitor (Mantenimiento)

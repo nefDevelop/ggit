@@ -97,6 +97,7 @@ func TestUsers(t *testing.T) {
 		{"DeleteByID", usersDeleteByID},
 		{"DeleteInactivated", usersDeleteInactivated},
 		{"GetByEmail", usersGetByEmail},
+		{"GetByLoginSource", usersGetByLoginSource},
 		{"GetByID", usersGetByID},
 		{"GetByUsername", usersGetByUsername},
 		{"GetByKeyID", usersGetByKeyID},
@@ -763,6 +764,32 @@ func usersGetByEmail(t *testing.T, ctx context.Context, s *UsersStore) {
 		user, err := s.GetByEmail(ctx, email2)
 		require.NoError(t, err)
 		assert.Equal(t, bob.Name, user.Name)
+	})
+}
+
+func usersGetByLoginSource(t *testing.T, ctx context.Context, s *UsersStore) {
+	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{
+		LoginSource: 1,
+		LoginName:   "alice-ext",
+	})
+	require.NoError(t, err)
+
+	t.Run("found", func(t *testing.T) {
+		user, err := s.GetByLoginSource(ctx, 1, "alice-ext")
+		require.NoError(t, err)
+		assert.Equal(t, alice.Name, user.Name)
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		_, err := s.GetByLoginSource(ctx, 1, "bob-ext")
+		wantErr := ErrUserNotExist{args: errx.Args{"login_source": int64(1), "login_name": "bob-ext"}}
+		assert.Equal(t, wantErr, err)
+	})
+
+	t.Run("mismatch source", func(t *testing.T) {
+		_, err := s.GetByLoginSource(ctx, 2, "alice-ext")
+		wantErr := ErrUserNotExist{args: errx.Args{"login_source": int64(2), "login_name": "alice-ext"}}
+		assert.Equal(t, wantErr, err)
 	})
 }
 

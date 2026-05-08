@@ -1,19 +1,22 @@
 package auth
 
 import (
-	"context"
+	gocontext "context"
 
+	"github.com/gin-contrib/sessions"
 	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
+	"github.com/nef734/ggit/internal/strx"
 )
 
 // AuthService define las operaciones de negocio para la gestión de usuarios y acceso.
 type AuthService interface {
-	Authenticate(ctx context.Context, opts LoginOptions) (*database.User, error)
-	Register(ctx context.Context, opts SignupOptions) (*database.User, error)
+	Authenticate(ctx gocontext.Context, opts LoginOptions) (*database.User, error)
+	Register(ctx gocontext.Context, opts SignupOptions) (*database.User, error)
+	CreateSession(ctx gocontext.Context, sess sessions.Session, u *database.User) error
 }
 
 type authService struct {
@@ -30,7 +33,7 @@ func Init(db *database.DB) {
 	}
 }
 
-func (s *authService) Authenticate(ctx context.Context, opts LoginOptions) (*database.User, error) {
+func (s *authService) Authenticate(ctx gocontext.Context, opts LoginOptions) (*database.User, error) {
 	u, err := s.db.Users().Authenticate(ctx, opts.Username, opts.Password, opts.LoginSource)
 	if err != nil {
 		return nil, err
@@ -38,7 +41,7 @@ func (s *authService) Authenticate(ctx context.Context, opts LoginOptions) (*dat
 	return database.FromDomainUser(u), nil
 }
 
-func (s *authService) Register(ctx context.Context, opts SignupOptions) (*database.User, error) {
+func (s *authService) Register(ctx gocontext.Context, opts SignupOptions) (*database.User, error) {
 	du, err := s.db.Users().Create(
 		ctx,
 		opts.Username,
@@ -77,4 +80,18 @@ func (s *authService) Register(ctx context.Context, opts SignupOptions) (*databa
 	}
 
 	return user, nil
+}
+
+func (s *authService) CreateSession(ctx gocontext.Context, sess sessions.Session, u *database.User) error {
+	sess.Set("uid", u.ID)
+	sess.Set("uname", u.Name)
+
+	sid, _ := strx.RandomChars(32)
+	sess.Set("sid", sid)
+	_, err := s.db.LoginSessions().Create(ctx, u.ID, sid, "", "") // UA and IP are optional here or handled by caller if needed
+	if err != nil {
+		log.Error("Failed to create login session: %v", err)
+	}
+
+	return sess.Save()
 }

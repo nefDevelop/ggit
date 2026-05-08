@@ -51,20 +51,38 @@
     UserUID: ''
   });
 
+  const typeOptions = [
+    { value: 2, label: 'LDAP (via BindDN)' },
+    { value: 5, label: 'LDAP (Simple Auth)' },
+    { value: 6, label: 'OpenID Connect' }
+  ];
+
+  // Config State (OIDC) - We use the same 'config' object but with different fields
+  let oidcConfig = $state({
+    IssuerURL: '',
+    ClientID: '',
+    ClientSecret: '',
+    Scopes: ['openid', 'profile', 'email'],
+    RedirectURL: '',
+    AttributeUsername: '',
+    AttributeName: '',
+    AttributeEmail: '',
+    SkipVerify: false
+  });
+
   $effect(() => {
     name = source?.name || '';
     type = source?.type || 2;
     activated = source?.is_actived ?? true;
     isDefault = source?.is_default ?? false;
     if (source?.RawConfig) {
-        try { config = JSON.parse(source.RawConfig); } catch(e) {}
+        try { 
+            const parsed = JSON.parse(source.RawConfig);
+            if (type === 6) oidcConfig = { ...oidcConfig, ...parsed };
+            else config = { ...config, ...parsed };
+        } catch(e) {}
     }
   });
-
-  const typeOptions = [
-    { value: 2, label: 'LDAP (via BindDN)' },
-    { value: 5, label: 'LDAP (Simple Auth)' }
-  ];
 
   const protocolOptions = [
     { value: 0, label: 'Unencrypted' },
@@ -83,7 +101,7 @@
         type: Number(type),
         activated,
         default: isDefault,
-        config: config
+        config: type === 6 ? oidcConfig : config
       };
 
       const url = isNew ? '/api/v2/admin/auths' : `/api/v2/admin/auths/${source.id}`;
@@ -137,6 +155,40 @@
       </Card>
     </section>
 
+    {#if type === 6}
+    <section class="config-section">
+      <h3>Configuración OIDC</h3>
+      <Card tonal padding="lg" class="form-card">
+        <div class="form-row">
+          <Input bind:value={oidcConfig.IssuerURL} label="URL del Emisor (Discovery)" placeholder="https://accounts.google.com" />
+        </div>
+        <div class="form-row">
+          <Input bind:value={oidcConfig.ClientID} label="Client ID" />
+          <Input bind:value={oidcConfig.ClientSecret} label="Client Secret" type="password" />
+        </div>
+        <div class="form-row">
+          <Input bind:value={oidcConfig.RedirectURL} label="URL de Redirección (Callback)" placeholder="https://ggit.example.com/api/v2/user/login/oidc/CALLBACK" />
+        </div>
+        <div class="form-row">
+          <div class="check-wrapper">
+             <Checkbox bind:checked={oidcConfig.SkipVerify} label="Omitir verificación TLS" />
+          </div>
+        </div>
+      </Card>
+    </section>
+
+    <section class="config-section">
+      <h3>Mapeo de Atributos (Claims)</h3>
+      <Card tonal padding="lg" class="form-card">
+        <p class="section-hint">Claims para extraer información del usuario del ID Token</p>
+        <div class="attribute-grid">
+          <Input bind:value={oidcConfig.AttributeUsername} label="Claim Usuario" placeholder="preferred_username" />
+          <Input bind:value={oidcConfig.AttributeName} label="Claim Nombre" placeholder="name" />
+          <Input bind:value={oidcConfig.AttributeEmail} label="Claim Email" placeholder="email" />
+        </div>
+      </Card>
+    </section>
+    {:else}
     <section class="config-section">
       <h3>Conexión</h3>
       <Card tonal padding="lg" class="form-card">
@@ -205,6 +257,7 @@
         </Card>
       {/if}
     </section>
+    {/if}
   </div>
 
   <div class="editor-footer">

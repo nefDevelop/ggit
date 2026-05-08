@@ -16,6 +16,7 @@ const (
 	Plain      // 1
 	LDAP       // 2
 	DLDAP      // 5
+	OIDC       // 6
 
 	Mock Type = 999
 )
@@ -25,6 +26,7 @@ func Name(typ Type) string {
 	return map[Type]string{
 		LDAP:  "LDAP (via BindDN)",
 		DLDAP: "LDAP (simple auth)", // Via direct bind
+		OIDC:  "OpenID Connect",
 	}[typ]
 }
 

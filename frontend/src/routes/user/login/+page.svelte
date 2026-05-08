@@ -14,6 +14,21 @@
   let remember = $state(false);
   let errorMsg = $state('');
   let loading = $state(false);
+  let oidcSources = $state<any[]>([]);
+
+  async function fetchSettings() {
+    try {
+      const res = await apiFetch('/api/v2/user/login/settings');
+      if (res.ok) {
+        const data = await res.json();
+        oidcSources = data.oidc_sources || [];
+      }
+    } catch (e) {}
+  }
+
+  onMount(() => {
+    fetchSettings();
+  });
 
   async function handleLogin(e: Event) {
     e.preventDefault();
@@ -116,6 +131,24 @@
               Iniciar Sesión
             </Button>
           </form>
+
+          {#if oidcSources.length > 0}
+            <div class="oauth-divider">
+              <span>O continuar con</span>
+            </div>
+            
+            <div class="oauth-buttons">
+              {#each oidcSources as source}
+                <Button 
+                  variant="outline" 
+                  class="oidc-btn" 
+                  href={`/api/v2/user/login/oidc/${source.id}`}
+                >
+                  {source.name}
+                </Button>
+              {/each}
+            </div>
+          {/if}
 
           <footer class="form-footer">
             <p>¿No tienes una cuenta? <a href="/user/sign_up">Regístrate ahora</a></p>
@@ -347,6 +380,43 @@
 
   .form-footer a:hover {
     text-decoration: underline;
+  }
+  
+  .oauth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .oauth-divider::before,
+  .oauth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--md-sys-color-outline-variant);
+  }
+  
+  .oauth-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  :global(.oidc-btn) {
+    height: 3.5rem !important;
+    border-radius: 1.25rem !important;
+    font-weight: 700 !important;
+    border-color: var(--md-sys-color-outline-variant) !important;
+  }
+  
+  :global(.oidc-btn:hover) {
+    background: var(--md-sys-color-surface-container-high) !important;
   }
 
   @keyframes slideUp {

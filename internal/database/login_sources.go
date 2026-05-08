@@ -12,6 +12,7 @@ import (
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
+	"github.com/nef734/ggit/internal/auth/oidc"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
@@ -95,6 +96,14 @@ func (s *LoginSource) AfterFind(_ *gorm.DB) error {
 		mockProvider.AuthenticateFunc.SetDefaultReturn(cfg.ExternalAccount, nil)
 		s.Provider = mockProvider
 
+	case auth.OIDC:
+		var cfg oidc.Config
+		err := json.Unmarshal([]byte(s.Config), &cfg)
+		if err != nil {
+			return err
+		}
+		s.Provider = oidc.NewProvider(&cfg)
+
 	default:
 		return errors.Newf("unrecognized login source type: %v", s.Type)
 	}
@@ -113,8 +122,16 @@ func (s *LoginSource) IsDLDAP() bool {
 	return s.Type == auth.DLDAP
 }
 
+func (s *LoginSource) IsOIDC() bool {
+	return s.Type == auth.OIDC
+}
+
 func (s *LoginSource) LDAP() *ldap.Config {
 	return s.Provider.Config().(*ldap.Config)
+}
+
+func (s *LoginSource) OIDC() *oidc.Config {
+	return s.Provider.Config().(*oidc.Config)
 }
 
 func (s *LoginSource) ToDomain() *domain.LoginSource {
