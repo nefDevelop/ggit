@@ -247,15 +247,10 @@
 **Objetivo:** Reducir la huella del binario y optimizar el almacenamiento para despliegues ligeros.
 
 ### 1. Desprendimiento de Dependencias Pesadas
-- [ ] **Frontend Syntax Highlighting:** Sustituir `Chroma` (Backend) por una solución en el Frontend (ej. `highlight.js`).
-- [ ] **Native Syscalls:** Eliminar `gopsutil` y usar llamadas al sistema nativas para métricas de Disco y RAM.
-- [ ] **Lightweight Lang Detection:** Sustituir `go-enry` por un mapeo estático basado en extensiones y reglas `IsVendor`.
-- [ ] **Swagger Build-Time:** Generar `swagger.json` en compilación y servirlo como estático, eliminando dependencias de `swaggo` en el binario de prod.
-
-### 2. Optimización de Almacenamiento (Commit Status)
-- [ ] **Normalización de Contextos:** Tabla maestra para `CommitStatusContext` para reducir redundancia de strings.
-- [ ] **State Enum:** Migrar estados de strings a enteros (`uint8`) para reducir el tamaño de índices y registros.
-- [ ] **Update-in-Place:** Opcionalmente actualizar el estado del commit en lugar de insertar historial infinito.
+- [x] **Frontend Syntax Highlighting:** Sustituir `Chroma` (Backend) por una solución en el Frontend (ej. `highlight.js`).
+- [x] **Native Syscalls:** Eliminar `gopsutil` y usar llamadas al sistema nativas para métricas de Disco y RAM.
+- [x] **Lightweight Lang Detection:** Sustituir `go-enry` por un mapeo estático basado en extensiones y reglas `IsVendor`.
+- [x] **Swagger Build-Time:** Generar `swagger.json` en compilación y servirlo como estático, eliminando dependencias de `swaggo` en el binario de prod.
 
 ---
 
