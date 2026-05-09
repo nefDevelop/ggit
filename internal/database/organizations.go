@@ -2,12 +2,11 @@ package database
 
 import (
 	"context"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
+	"errors"
 
 	"github.com/nef734/ggit/internal/dbx"
 	"github.com/nef734/ggit/internal/domain"
+	"gorm.io/gorm"
 )
 
 // OrganizationsStore is the storage layer for organizations.

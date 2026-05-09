@@ -4,10 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/nef734/ggit/internal/dbtest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/nef734/ggit/internal/dbtest"
 )
 
 func TestPullReviews(t *testing.T) {
@@ -68,7 +67,7 @@ func TestPullReviews(t *testing.T) {
 	t.Run("Superación: Comentarios en línea (Inline Comments)", func(t *testing.T) {
 		commentStore := newPullReviewCommentsStore(db)
 		reviewID := int64(1)
-		
+
 		comment := &PullReviewComment{
 			ReviewID: reviewID,
 			IssueID:  issue.ID,
@@ -88,7 +87,7 @@ func TestPullReviews(t *testing.T) {
 	t.Run("Seguridad: Integridad del revisor", func(t *testing.T) {
 		// Verificar que no se puede crear una revisión sin tipo válido o sin issue asociado
 		badReview := &PullReview{
-			IssueID: 0, // Inválido
+			IssueID: 0,   // Inválido
 			Type:    999, // Tipo inexistente
 		}
 		err := store.Create(ctx, badReview)

@@ -11,12 +11,12 @@ func TestSentinelDecisionLogic(t *testing.T) {
 	now := time.Now().Unix()
 
 	tests := []struct {
-		name                string
-		lastCheck           int64
-		commitsSinceCheck   int64
-		activityCooldown    int
-		idleCheckDays       int
-		wantShouldRun       bool
+		name              string
+		lastCheck         int64
+		commitsSinceCheck int64
+		activityCooldown  int
+		idleCheckDays     int
+		wantShouldRun     bool
 	}{
 		{
 			name:              "Initial check (never checked)",
@@ -71,7 +71,9 @@ func TestSentinelDecisionLogic(t *testing.T) {
 				shouldRun = true
 			} else if tt.commitsSinceCheck > 0 {
 				cooldown := int64(tt.activityCooldown)
-				if cooldown == 0 { cooldown = 7 }
+				if cooldown == 0 {
+					cooldown = 7
+				}
 				if timeSinceLast > cooldown*24*60*60 {
 					shouldRun = true
 				} else if tt.commitsSinceCheck >= 100 {
@@ -79,7 +81,9 @@ func TestSentinelDecisionLogic(t *testing.T) {
 				}
 			} else {
 				idleDays := int64(tt.idleCheckDays)
-				if idleDays == 0 { idleDays = 14 }
+				if idleDays == 0 {
+					idleDays = 14
+				}
 				if timeSinceLast > idleDays*24*60*60 {
 					shouldRun = true
 				}
@@ -114,13 +118,13 @@ func TestSentinelCorruptionHandling(t *testing.T) {
 	t.Run("Malintención: Intento de inyección de comandos en ruta", func(t *testing.T) {
 		// Si un atacante logra crear un repositorio con nombre malicioso
 		maliciousPath := "/path/repo.git; rm -rf /"
-		
+
 		// La validación estricta debe rechazar rutas que no pertenezcan al contexto seguro
 		sanitizePath := func(p string) bool {
 			// En la implementación real esto chequearía contra un regex estricto de nombres de repos [a-zA-Z0-9-_.]
 			return !assert.ObjectsAreEqual(p, maliciousPath) // Simulación básica
 		}
-		
+
 		isSafe := sanitizePath(maliciousPath)
 		assert.False(t, isSafe, "El Sentinel debe rechazar la ejecución del fsck en rutas inyectadas para evitar RCE")
 	})

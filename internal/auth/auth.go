@@ -1,9 +1,8 @@
 package auth
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/cockroachdb/errors"
 
 	"github.com/nef734/ggit/internal/errx"
 )

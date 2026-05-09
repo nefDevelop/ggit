@@ -136,4 +136,3 @@ func DeleteAdminGuardianPattern(c *context.APIContext) {
 	}
 	c.NoContent()
 }
-

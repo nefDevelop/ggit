@@ -35,7 +35,7 @@ func TestDanglingRepositoriesCleanup(t *testing.T) {
 
 	t.Run("Superación: Repositorio huérfano (No existe en disco sano)", func(t *testing.T) {
 		missingPath := "/tmp/this-repo-was-deleted-manually-by-admin.git"
-		
+
 		shouldDelete := simulateCleanupDecision(missingPath, true)
 		assert.True(t, shouldDelete, "Si el disco está sano y la carpeta no está, el limpiador debe borrar el registro huérfano")
 	})
@@ -43,10 +43,10 @@ func TestDanglingRepositoriesCleanup(t *testing.T) {
 	t.Run("Error Catastrófico: Falso Positivo por fallo de disco de red (NFS/EFS)", func(t *testing.T) {
 		// El repositorio es válido y crítico para la empresa
 		criticalRepoPath := "/mnt/nfs_storage/ggit-repositories/admin/critical-app.git"
-		
+
 		// ERROR: El disco de red se desconecta temporalmente (diskMounted = false)
 		shouldDelete := simulateCleanupDecision(criticalRepoPath, false)
-		
+
 		// El test demuestra que la lógica actual CAUSARÍA PÉRDIDA DE DATOS.
 		// En una implementación segura, el limpiador debe comprobar si la raíz del almacenamiento está disponible
 		// antes de procesar el borrado de repositorios individuales.

@@ -7,10 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/nef734/ggit/internal/conf"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/nef734/ggit/internal/conf"
 )
 
 func TestPublicKeys(t *testing.T) {

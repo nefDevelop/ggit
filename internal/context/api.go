@@ -5,9 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 type APIContext struct {
@@ -58,7 +57,7 @@ func APIContexter() gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
-		
+
 		actx := &APIContext{Context: gctx.(*Context)}
 		c.Set("apiContext", actx)
 		c.Next()

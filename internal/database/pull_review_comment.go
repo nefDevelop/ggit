@@ -2,25 +2,25 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"gorm.io/gorm"
 )
 
 // PullReviewComment represents a comment on a specific line of a pull request diff.
 type PullReviewComment struct {
-	ID       int64  `gorm:"primaryKey"`
-	ReviewID int64  `gorm:"index"` // Linked to PullReview
-	IssueID  int64  `gorm:"index"` // Linked to PullRequest Issue
-	
-	TreePath string `gorm:"type:TEXT"`
-	Line     int64  
-	CommitID string `gorm:"type:VARCHAR(40)"` // SHA of the commit
-	Content  string `gorm:"type:TEXT"`
-	IsResolved bool `gorm:"not null;default:FALSE"`
-	
+	ID       int64 `gorm:"primaryKey"`
+	ReviewID int64 `gorm:"index"` // Linked to PullReview
+	IssueID  int64 `gorm:"index"` // Linked to PullRequest Issue
+
+	TreePath   string `gorm:"type:TEXT"`
+	Line       int64
+	CommitID   string `gorm:"type:VARCHAR(40)"` // SHA of the commit
+	Content    string `gorm:"type:TEXT"`
+	IsResolved bool   `gorm:"not null;default:FALSE"`
+
 	CreatedUnix int64 `gorm:"not null"`
 	UpdatedUnix int64 `gorm:"not null"`
 }
@@ -66,7 +66,7 @@ func (s *PullReviewCommentsStore) ListByIssueID(ctx context.Context, issueID int
 	comments := make([]*PullReviewComment, 0, 10)
 	err := s.db.WithContext(ctx).Where("issue_id = ?", issueID).Order("created_unix ASC").Find(&comments).Error
 	if err != nil {
-		return nil, errors.Wrap(err, "list review comments")
+		return nil, fmt.Errorf("list review comments"+": %w", err)
 	}
 	return comments, nil
 }
@@ -76,7 +76,7 @@ func (s *PullReviewCommentsStore) ListByReviewID(ctx context.Context, reviewID i
 	comments := make([]*PullReviewComment, 0, 5)
 	err := s.db.WithContext(ctx).Where("review_id = ?", reviewID).Order("created_unix ASC").Find(&comments).Error
 	if err != nil {
-		return nil, errors.Wrap(err, "list review comments by review ID")
+		return nil, fmt.Errorf("list review comments by review ID"+": %w", err)
 	}
 	return comments, nil
 }

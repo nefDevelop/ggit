@@ -9,12 +9,11 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthenticate(t *testing.T) {
@@ -50,7 +49,7 @@ func TestAuthenticate(t *testing.T) {
 			expHeader: http.Header{
 				"Content-Type": []string{"text/plain; charset=utf-8"},
 			},
-			expBody:       "Users with 2FA enabled are not allowed to authenticate via username and password.",
+			expBody: "Users with 2FA enabled are not allowed to authenticate via username and password.",
 		},
 		{
 			name: "both user and access token do not exist",

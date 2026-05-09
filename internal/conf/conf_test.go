@@ -6,10 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/nef734/ggit/internal/testx"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/ini.v1"
-
-	"github.com/nef734/ggit/internal/testx"
 )
 
 func init() {

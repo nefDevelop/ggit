@@ -2,14 +2,13 @@ package repo
 
 import (
 	"context"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
+	"fmt"
 
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/fsx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/repox"
+	"gorm.io/gorm"
 )
 
 // RepositoryService define las operaciones de negocio sobre los repositorios.
@@ -72,14 +71,14 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 		err = initRepository(tempRepoPath, doer, repo, opts)
 		if err != nil {
 			log.Error("Failed to initialize Git repository: %v", err)
-			return errors.Wrap(err, "init repository")
+			return fmt.Errorf("init repository"+": %w", err)
 		}
 
 		// 3. Commit del FS dentro de la transacción de DB para atomicidad total
 		log.Trace("Committing filesystem transaction for %s/%s", owner.Name, repo.Name)
 		if err := fsTx.Commit(); err != nil {
 			log.Error("Failed to commit filesystem transaction: %v", err)
-			return errors.Wrap(err, "commit filesystem transaction")
+			return fmt.Errorf("commit filesystem transaction"+": %w", err)
 		}
 
 		log.Trace("Repository created successfully: %s/%s", owner.Name, repo.Name)
@@ -102,4 +101,3 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 
 	return repo, nil
 }
-

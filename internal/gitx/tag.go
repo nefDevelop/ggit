@@ -1,7 +1,7 @@
 package gitx
 
 import (
-	"github.com/cockroachdb/errors"
+	"fmt"
 )
 
 // TagsPage contains a list of tags and pagination information.
@@ -19,7 +19,7 @@ type TagsPage struct {
 func (module) ListTagsAfter(repoPath, after string, limit int) (*TagsPage, error) {
 	all, err := Module.RepoTags(repoPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "get tags")
+		return nil, fmt.Errorf("get tags"+": %w", err)
 	}
 	total := len(all)
 

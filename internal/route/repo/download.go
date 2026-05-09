@@ -1,12 +1,11 @@
 package repo
 
 import (
+	"fmt"
 	"net/http"
 	"path"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/gitx"
@@ -16,7 +15,7 @@ import (
 func serveData(c *context.Context, name string, data []byte) error {
 	commit, err := c.Repo.Commit.CommitByPath(git.CommitByRevisionOptions{Path: c.Repo.TreePath})
 	if err != nil {
-		return errors.Newf("get commit by path %q: %v", c.Repo.TreePath, err)
+		return fmt.Errorf("get commit by path %q: %v", c.Repo.TreePath, err)
 	}
 	c.Resp.Header().Set("Last-Modified", commit.Committer.When.Format(http.TimeFormat))
 
@@ -30,7 +29,7 @@ func serveData(c *context.Context, name string, data []byte) error {
 	}
 
 	if _, err := c.Resp.Write(data); err != nil {
-		return errors.Newf("write buffer to response: %v", err)
+		return fmt.Errorf("write buffer to response: %v", err)
 	}
 	return nil
 }

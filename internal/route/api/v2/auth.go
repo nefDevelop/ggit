@@ -14,11 +14,11 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/email"
+	log "github.com/nef734/ggit/internal/log"
 	authservice "github.com/nef734/ggit/internal/services/auth"
 	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/tool"
 	"github.com/nef734/ggit/internal/userx"
-	log "unknwon.dev/clog/v2"
 )
 
 // LoginOIDC handles initiating OIDC login flow.
@@ -89,7 +89,7 @@ func LoginOIDCCallback(c *context.APIContext) {
 		// Check if user with same name or email already exists
 		// In a real OIDC integration, we might want to link them or error out.
 		// For now, we follow the LDAP pattern and try to create if not exists.
-		
+
 		// Map external account to ggit user
 		u, err = database.Handle.Users().Create(c.Req.Context(), extAccount.Login, extAccount.Email, database.CreateUserOptions{
 			FullName:    extAccount.FullName,
@@ -111,7 +111,7 @@ func LoginOIDCCallback(c *context.APIContext) {
 
 	// Create session
 	_ = authservice.Auth.CreateSession(c.Req.Context(), c.Session, database.FromDomainUser(u))
-	
+
 	// Redirect to dashboard or return success
 	// Since this is a redirect flow, we redirect to frontend dashboard
 	c.Redirect("/dashboard")
@@ -165,7 +165,7 @@ func Login(c *context.APIContext) {
 	if database.Handle.TwoFactors().IsEnabled(c.Req.Context(), u.ID) {
 		c.Session.Set("twoFactorRemember", payload.Remember)
 		c.Session.Set("twoFactorUserID", u.ID)
-		
+
 		c.JSON(http.StatusAccepted, map[string]any{
 			"status": "two_factor_required",
 		})
@@ -296,7 +296,7 @@ func Register(c *context.APIContext) {
 	}
 
 	c.JSON(http.StatusCreated, map[string]any{
-		"status": "ok",
+		"status":                    "ok",
 		"requires_email_activation": !u.IsActive && conf.Auth.RequireEmailConfirmation && u.ID > 1,
 	})
 }
@@ -384,11 +384,11 @@ func LoginTwoFactor(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
 		"status": "ok",
 		"user": map[string]any{
-			"id":       u.ID,
-			"username": u.Name,
-			"email":    u.Email,
-			"avatar":   u.AvatarURL(),
-			"is_admin": u.IsAdmin,
+			"id":                u.ID,
+			"username":          u.Name,
+			"email":             u.Email,
+			"avatar":            u.AvatarURL(),
+			"is_admin":          u.IsAdmin,
 			"disable_news_feed": u.DisableNewsFeed,
 		},
 	})
@@ -560,11 +560,11 @@ func Activate(c *context.APIContext) {
 		}
 
 		log.Trace("User activated: %s", u.Name)
-		
+
 		// Setup session immediately
 		c.Session.Set("uid", u.ID)
 		c.Session.Set("uname", u.Name)
-		
+
 		c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 		return
 	}

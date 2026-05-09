@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/nef734/ggit/internal/conf"
 )
 
@@ -16,12 +15,12 @@ import (
 func CreateMetadataBackup() (string, error) {
 	backupDir := filepath.Join(conf.Server.AppDataPath, "backups")
 	if err := os.MkdirAll(backupDir, 0755); err != nil {
-		return "", errors.Wrap(err, "create backup directory")
+		return "", fmt.Errorf("create backup directory"+": %w", err)
 	}
 
 	backupName := fmt.Sprintf("ggit-metadata-%s.zip", time.Now().Format("20060102-150405"))
 	backupPath := filepath.Join(backupDir, backupName)
-	
+
 	zipFile, err := os.Create(backupPath)
 	if err != nil {
 		return "", err
@@ -35,7 +34,7 @@ func CreateMetadataBackup() (string, error) {
 	// NOTE: For SQLite, copying the file while active might be slightly risky but usually works for simple backups.
 	// In the future, we could use "VACUUM INTO" for a clean copy.
 	if err := addFileToZip(archive, conf.Database.Path, "ggit.db"); err != nil {
-		return "", errors.Wrap(err, "add database")
+		return "", fmt.Errorf("add database"+": %w", err)
 	}
 
 	// 2. Attachments

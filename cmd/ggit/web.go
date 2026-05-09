@@ -7,18 +7,16 @@ import (
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
-	"github.com/urfave/cli/v3"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
-
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/ginx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/monitoring"
 	"github.com/nef734/ggit/internal/route"
 	apiv2 "github.com/nef734/ggit/internal/route/api/v2"
 	"github.com/nef734/ggit/internal/route/lfs"
 	"github.com/nef734/ggit/internal/route/repo"
+	"github.com/urfave/cli/v3"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 

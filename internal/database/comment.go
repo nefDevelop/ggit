@@ -2,19 +2,18 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/markup"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"gorm.io/gorm"
 )
 
 // CommentType defines whether a comment is just a simple comment, an action (like close) or a reference.
@@ -47,15 +46,15 @@ const (
 
 // Comment represents a comment in commit and issue page.
 type Comment struct {
-	ID              int64       `gorm:"primaryKey"`
-	Type            CommentType `gorm:"not null"`
-	PosterID        int64       `gorm:"index"`
-	Poster          *User       `json:"-" gorm:"-"`
-	IssueID         int64       `gorm:"index"`
-	Issue           *Issue      `json:"-" gorm:"-"`
-	CommitID        int64
-	Line            int64
-	Content         string `gorm:"type:TEXT"`
+	ID       int64       `gorm:"primaryKey"`
+	Type     CommentType `gorm:"not null"`
+	PosterID int64       `gorm:"index"`
+	Poster   *User       `json:"-" gorm:"-"`
+	IssueID  int64       `gorm:"index"`
+	Issue    *Issue      `json:"-" gorm:"-"`
+	CommitID int64
+	Line     int64
+	Content  string `gorm:"type:TEXT"`
 
 	Created     time.Time `json:"-" gorm:"-"`
 	CreatedUnix int64
@@ -170,7 +169,7 @@ func (c *Comment) loadAttributes(tx *gorm.DB) (err error) {
 				c.PosterID = -1
 				c.Poster = NewGhostUser()
 			} else {
-				return errors.Newf("GetByID.(Poster) [%d]: %v", c.PosterID, err)
+				return fmt.Errorf("GetByID.(Poster) [%d]: %v", c.PosterID, err)
 			}
 		} else {
 			c.Poster = FromDomainUser(u)
@@ -180,12 +179,12 @@ func (c *Comment) loadAttributes(tx *gorm.DB) (err error) {
 	if c.Issue == nil {
 		c.Issue, err = getRawIssueByID(tx, c.IssueID)
 		if err != nil {
-			return errors.Newf("getIssueByID [%d]: %v", c.IssueID, err)
+			return fmt.Errorf("getIssueByID [%d]: %v", c.IssueID, err)
 		}
 		if c.Issue.Repo == nil {
 			c.Issue.Repo, err = getRepositoryByID(tx, c.Issue.RepoID)
 			if err != nil {
-				return errors.Newf("getRepositoryByID [%d]: %v", c.Issue.RepoID, err)
+				return fmt.Errorf("getRepositoryByID [%d]: %v", c.Issue.RepoID, err)
 			}
 		}
 	}
@@ -193,7 +192,7 @@ func (c *Comment) loadAttributes(tx *gorm.DB) (err error) {
 	if c.Attachments == nil {
 		c.Attachments, err = getAttachmentsByCommentID(tx, c.ID)
 		if err != nil {
-			return errors.Newf("getAttachmentsByCommentID [%d]: %v", c.ID, err)
+			return fmt.Errorf("getAttachmentsByCommentID [%d]: %v", c.ID, err)
 		}
 	}
 
@@ -240,7 +239,7 @@ func (c *Comment) EventTag() string {
 func (c *Comment) mailParticipants(tx *gorm.DB, opType ActionType, issue *Issue) (err error) {
 	mentions := markup.FindAllMentions(c.Content)
 	if err = updateIssueMentions(tx, c.IssueID, mentions); err != nil {
-		return errors.Newf("UpdateIssueMentions [%d]: %v", c.IssueID, err)
+		return fmt.Errorf("UpdateIssueMentions [%d]: %v", c.IssueID, err)
 	}
 
 	switch opType {
@@ -302,7 +301,7 @@ func createComment(tx *gorm.DB, opts *CreateCommentOptions) (_ *Comment, err err
 				if IsErrAttachmentNotExist(err) {
 					continue
 				}
-				return nil, errors.Newf("getAttachmentByUUID [%s]: %v", uuid, err)
+				return nil, fmt.Errorf("getAttachmentByUUID [%s]: %v", uuid, err)
 			}
 			attachments = append(attachments, attach)
 		}
@@ -314,7 +313,7 @@ func createComment(tx *gorm.DB, opts *CreateCommentOptions) (_ *Comment, err err
 				"issue_id":   opts.Issue.ID,
 				"comment_id": comment.ID,
 			}).Error; err != nil {
-				return nil, errors.Newf("update attachment [%d]: %v", attachments[i].ID, err)
+				return nil, fmt.Errorf("update attachment [%d]: %v", attachments[i].ID, err)
 			}
 		}
 
@@ -350,7 +349,7 @@ func createComment(tx *gorm.DB, opts *CreateCommentOptions) (_ *Comment, err err
 	}
 
 	if err = tx.Model(new(Issue)).Where("id = ?", opts.Issue.ID).Update("updated_unix", time.Now().Unix()).Error; err != nil {
-		return nil, errors.Newf("update issue 'updated_unix': %v", err)
+		return nil, fmt.Errorf("update issue 'updated_unix': %v", err)
 	}
 
 	// Notify watchers for whatever action comes in, ignore if no action type.
@@ -412,7 +411,7 @@ func CreateIssueComment(doer *User, repo *Repository, issue *Issue, content stri
 		Attachments: attachments,
 	})
 	if err != nil {
-		return nil, errors.Newf("CreateComment: %v", err)
+		return nil, fmt.Errorf("CreateComment: %v", err)
 	}
 
 	comment.Issue = issue
@@ -432,14 +431,14 @@ func CreateIssueComment(doer *User, repo *Repository, issue *Issue, content stri
 // CreateRefComment creates a commit reference comment to issue.
 func CreateRefComment(doer *User, repo *Repository, issue *Issue, content, commitSHA string) error {
 	if commitSHA == "" {
-		return errors.Newf("cannot create reference with empty commit SHA")
+		return fmt.Errorf("cannot create reference with empty commit SHA")
 	}
 
 	// Check if same reference from same commit has already existed.
 	err := Handle.db.Where("type = ? AND issue_id = ? AND commit_sha = ?", CommentTypeCommitRef, issue.ID, commitSHA).First(new(Comment)).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.Newf("check reference comment: %v", err)
+			return fmt.Errorf("check reference comment: %v", err)
 		}
 	} else {
 		return nil
@@ -496,7 +495,7 @@ func GetCommentByID(id int64) (*Comment, error) {
 func loadCommentsAttributes(tx *gorm.DB, comments []*Comment) (err error) {
 	for i := range comments {
 		if err = comments[i].loadAttributes(tx); err != nil {
-			return errors.Newf("loadAttributes [%d]: %v", comments[i].ID, err)
+			return fmt.Errorf("loadAttributes [%d]: %v", comments[i].ID, err)
 		}
 	}
 
@@ -599,7 +598,7 @@ func DeleteCommentByID(doer *User, id int64) error {
 		return nil
 	})
 	if err != nil {
-		return errors.Newf("delete comment: %v", err)
+		return fmt.Errorf("delete comment: %v", err)
 	}
 
 	_, err = DeleteAttachmentsByComment(comment.ID, true)

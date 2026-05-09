@@ -7,9 +7,8 @@ import (
 	"strings"
 
 	"github.com/gogs/git-module"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // Violation represents a found secret in a push.
@@ -64,7 +63,7 @@ func ScanPush(ctx context.Context, repoID int64, oldCommitID, newCommitID string
 	// We scan the entire tree of newCommitID or just the new commits?
 	// Standard practice is to scan the diff between old and new.
 	if oldCommitID == git.EmptyID {
-		// For new branches, we could scan the whole commit content, 
+		// For new branches, we could scan the whole commit content,
 		// but let's stick to the new commit's changes compared to its parent for performance.
 		// Or if it's the very first push, compare against empty tree.
 		oldCommitID = "4b825dc642cb6eb9a060e54bf8d69288fbee4904" // Empty tree SHA

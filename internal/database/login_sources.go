@@ -3,18 +3,17 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
 	"github.com/nef734/ggit/internal/auth/oidc"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	"gorm.io/gorm"
 )
 
 // LoginSource represents an external way for authorizing users.
@@ -105,7 +104,7 @@ func (s *LoginSource) AfterFind(_ *gorm.DB) error {
 		s.Provider = oidc.NewProvider(&cfg)
 
 	default:
-		return errors.Newf("unrecognized login source type: %v", s.Type)
+		return fmt.Errorf("unrecognized login source type: %v", s.Type)
 	}
 	return nil
 }
@@ -184,7 +183,8 @@ type ErrLoginSourceAlreadyExist struct {
 }
 
 func IsErrLoginSourceAlreadyExist(err error) bool {
-	return errors.As(err, &ErrLoginSourceAlreadyExist{})
+	var target ErrLoginSourceAlreadyExist
+	return errors.As(err, &target)
 }
 
 func (err ErrLoginSourceAlreadyExist) Error() string {
@@ -237,7 +237,7 @@ func (s *LoginSourcesStore) Update(ctx context.Context, id int64, opts domain.Up
 	if opts.Config != nil {
 		data, err := json.Marshal(opts.Config)
 		if err != nil {
-			return errors.Wrap(err, "marshal config")
+			return fmt.Errorf("marshal config"+": %w", err)
 		}
 		updates["cfg"] = string(data)
 	}
@@ -265,7 +265,8 @@ type ErrLoginSourceInUse struct {
 }
 
 func IsErrLoginSourceInUse(err error) bool {
-	return errors.As(err, &ErrLoginSourceInUse{})
+	var target ErrLoginSourceInUse
+	return errors.As(err, &target)
 }
 
 func (err ErrLoginSourceInUse) Error() string {
@@ -345,7 +346,7 @@ func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *domain.Lo
 		if source.File != nil && source.ID != dflt.ID {
 			source.File.SetGeneral("is_default", "false")
 			if err = source.File.Save(); err != nil {
-				return errors.Wrap(err, "save file")
+				return fmt.Errorf("save file"+": %w", err)
 			}
 		}
 	}
@@ -373,11 +374,11 @@ func (s *LoginSourcesStore) Save(ctx context.Context, source *domain.LoginSource
 		// and Provider should be set.
 		if m.Provider != nil {
 			if err := m.File.SetConfig(m.Provider.Config()); err != nil {
-				return errors.Wrap(err, "set config")
+				return fmt.Errorf("set config"+": %w", err)
 			}
 		}
 		if err := m.File.Save(); err != nil {
-			return errors.Wrap(err, "save file")
+			return fmt.Errorf("save file"+": %w", err)
 		}
 		return nil
 	} else if err != nil && !IsErrLoginSourceNotExist(err) {

@@ -9,15 +9,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	"gorm.io/gorm/schema"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/dbx"
 	"github.com/nef734/ggit/internal/domain"
+	log "github.com/nef734/ggit/internal/log"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"gorm.io/gorm/schema"
 )
 
 func newLogWriter() (logger.Writer, error) {
@@ -32,7 +30,7 @@ func newLogWriter() (logger.Writer, error) {
 		},
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, `create "gorm.log"`)
+		return nil, fmt.Errorf(`create "gorm.log"`+": %w", err)
 	}
 	return &dbx.Logger{Writer: w}, nil
 }
@@ -82,7 +80,7 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 		absPath, _ := filepath.Abs(conf.Database.Path)
 		log.Trace("Opening SQLite3 database at: %s", absPath)
 		if err := os.MkdirAll(filepath.Dir(conf.Database.Path), 0755); err != nil {
-			return nil, errors.Wrap(err, "create database directory")
+			return nil, fmt.Errorf("create database directory"+": %w", err)
 		}
 	}
 
@@ -99,12 +97,12 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 		},
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "open database")
+		return nil, fmt.Errorf("open database"+": %w", err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		return nil, errors.Wrap(err, "get underlying *sql.DB")
+		return nil, fmt.Errorf("get underlying *sql.DB"+": %w", err)
 	}
 
 	maxOpenConns := conf.Database.MaxOpenConns
@@ -126,9 +124,9 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 	// tables, and do customize migration with future changes.
 	for _, table := range Tables {
 		name := strings.TrimPrefix(fmt.Sprintf("%T", table), "*database.")
-		
+
 		// NOTE: AutoMigrate is safe to run on existing tables to add missing columns.
-		// We only skip it if it's not a Repository table and already exists, 
+		// We only skip it if it's not a Repository table and already exists,
 		// but for Repository we MUST ensure new features are migrated.
 		if db.Migrator().HasTable(table) && name != "Repository" {
 			continue
@@ -136,14 +134,14 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 
 		err = db.Migrator().AutoMigrate(table)
 		if err != nil {
-			return nil, errors.Wrapf(err, "auto migrate %q", name)
+			return nil, fmt.Errorf("auto migrate %q: %w", name, err)
 		}
 		log.Trace("Auto migrated %q", name)
 	}
 
 	loadedLoginSourceFilesStore, err = loadLoginSourceFiles(filepath.Join(conf.CustomDir(), "conf", "auth.d"), db.NowFunc)
 	if err != nil {
-		return nil, errors.Wrap(err, "load login source files")
+		return nil, fmt.Errorf("load login source files"+": %w", err)
 	}
 
 	// Initialize the database handle.
@@ -151,7 +149,7 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 
 	// Initialize default secret patterns
 	if err := Handle.SecretPatterns().InitDefaultPatterns(context.Background()); err != nil {
-		return nil, errors.Wrap(err, "initialize default secret patterns")
+		return nil, fmt.Errorf("initialize default secret patterns"+": %w", err)
 	}
 
 	if conf.Database.Type == "sqlite3" {

@@ -5,9 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/testx"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestIsProdMode(t *testing.T) {

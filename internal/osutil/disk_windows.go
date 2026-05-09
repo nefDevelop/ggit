@@ -17,12 +17,12 @@ func DiskUsage(path string) (total, free uint64, err error) {
 	lpFreeBytesAvailable := uint64(0)
 	lpTotalNumberOfBytes := uint64(0)
 	lpTotalNumberOfFreeBytes := uint64(0)
-	
+
 	pathPtr, err := syscall.UTF16PtrFromString(path)
 	if err != nil {
 		return 0, 0, err
 	}
-	
+
 	r1, _, e1 := procGetDiskFreeSpaceEx.Call(
 		uintptr(unsafe.Pointer(pathPtr)),
 		uintptr(unsafe.Pointer(&lpFreeBytesAvailable)),

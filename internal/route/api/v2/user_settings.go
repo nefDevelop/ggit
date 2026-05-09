@@ -3,22 +3,21 @@ package v2
 import (
 	"bytes"
 	"encoding/base64"
+	"errors"
 	"image/png"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"github.com/pquerna/otp/totp"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/userx"
+	"github.com/pquerna/otp/totp"
 )
 
 type TwoFactorStatus struct {
@@ -95,9 +94,9 @@ func UpdateUserProfileSettings(c *context.APIContext) {
 			err := database.Handle.Users().ChangeUsername(c.Req.Context(), c.User.ID, f.Name)
 			if err != nil {
 				switch {
-				case database.IsErrUserAlreadyExist(errors.Cause(err)):
+				case database.IsErrUserAlreadyExist(err):
 					c.StatusError(http.StatusUnprocessableEntity, "Username has already been taken.", err)
-				case database.IsErrNameNotAllowed(errors.Cause(err)):
+				case database.IsErrNameNotAllowed(err):
 					c.StatusError(http.StatusBadRequest, "Username is not allowed.", err)
 				default:
 					c.Error(err, "change username")

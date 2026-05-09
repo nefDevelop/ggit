@@ -11,32 +11,31 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func NewTestAPIContext(req *http.Request) (*context.APIContext, *httptest.ResponseRecorder) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Request = req
-	
+
 	gctx := &context.Context{
 		Context: c,
 		Data:    make(map[string]any),
 		Req:     req,
 	}
-	
+
 	return &context.APIContext{Context: gctx}, w
 }
 
 func TestUpdateUserAvatar(t *testing.T) {
 	db := dbtest.NewDB(t, "UpdateUserAvatar", new(database.User))
 	database.SetHandle(db)
-	
+
 	user := &database.User{ID: 1, Name: "alice", LowerName: "alice", Email: "alice@example.com"}
 	require.NoError(t, db.Create(user).Error)
 
@@ -61,10 +60,10 @@ func TestUpdateUserAvatar(t *testing.T) {
 
 		c, w := NewTestAPIContext(req)
 		c.User = user
-		
+
 		UpdateUserAvatar(c)
 		assert.Equal(t, http.StatusOK, w.Code)
-		
+
 		// Verificar que el usuario ahora tiene avatar personalizado
 		updatedUser, _ := database.Handle.Users().GetByID(c.Req.Context(), user.ID)
 		assert.True(t, updatedUser.UseCustomAvatar)
@@ -74,7 +73,7 @@ func TestUpdateUserAvatar(t *testing.T) {
 		req, _ := http.NewRequest(http.MethodPost, "/api/v2/user/settings/avatar", nil)
 		c, w := NewTestAPIContext(req)
 		c.User = user
-		
+
 		UpdateUserAvatar(c)
 		assert.Equal(t, http.StatusOK, w.Code, "Debe devolver OK incluso si no hay archivo (pero no cambia nada)")
 	})

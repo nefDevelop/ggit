@@ -9,9 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-
 	embedConf "github.com/nef734/ggit/conf"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
@@ -36,7 +34,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 	// Clone to temporary path and do the init commit.
 	err := git.Clone(repoPath, tmpDir, git.CloneOptions{})
 	if err != nil {
-		return errors.Wrap(err, "clone")
+		return fmt.Errorf("clone"+": %w", err)
 	}
 
 	// README
@@ -46,7 +44,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 	}
 	data, err := getRepoInitFile("readme", readmeName)
 	if err != nil {
-		return errors.Newf("getRepoInitFile[%s]: %v", readmeName, err)
+		return fmt.Errorf("getRepoInitFile[%s]: %v", readmeName, err)
 	}
 
 	cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name)
@@ -58,7 +56,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 	}
 	if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
 		[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
-		return errors.Newf("write README.md: %v", err)
+		return fmt.Errorf("write README.md: %v", err)
 	}
 
 	// .gitignore
@@ -68,7 +66,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 		for _, name := range names {
 			data, err = getRepoInitFile("gitignore", name)
 			if err != nil {
-				return errors.Newf("getRepoInitFile[%s]: %v", name, err)
+				return fmt.Errorf("getRepoInitFile[%s]: %v", name, err)
 			}
 			buf.WriteString("# ---> " + name + "\n")
 			buf.Write(data)
@@ -77,7 +75,7 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 
 		if buf.Len() > 0 {
 			if err = os.WriteFile(filepath.Join(tmpDir, ".gitignore"), buf.Bytes(), 0o644); err != nil {
-				return errors.Newf("write .gitignore: %v", err)
+				return fmt.Errorf("write .gitignore: %v", err)
 			}
 		}
 	}
@@ -86,11 +84,11 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 	if len(opts.License) > 0 {
 		data, err = getRepoInitFile("license", opts.License)
 		if err != nil {
-			return errors.Newf("getRepoInitFile[%s]: %v", opts.License, err)
+			return fmt.Errorf("getRepoInitFile[%s]: %v", opts.License, err)
 		}
 
 		if err = os.WriteFile(filepath.Join(tmpDir, "LICENSE"), data, 0o644); err != nil {
-			return errors.Newf("write LICENSE: %v", err)
+			return fmt.Errorf("write LICENSE: %v", err)
 		}
 	}
 
@@ -103,20 +101,20 @@ func initRepoCommit(tmpDir string, sig *git.Signature, branch string) error {
 	if _, stderr, err = process.ExecDir(-1,
 		tmpDir, fmt.Sprintf("initRepoCommit (git add): %s", tmpDir),
 		"git", "add", "--all"); err != nil {
-		return errors.Newf("git add: %s", stderr)
+		return fmt.Errorf("git add: %s", stderr)
 	}
 
 	if _, stderr, err = process.ExecDir(-1,
 		tmpDir, fmt.Sprintf("initRepoCommit (git commit): %s", tmpDir),
 		"git", "commit", "--author", fmt.Sprintf("%s <%s>", sig.Name, sig.Email),
 		"-m", "Initial commit"); err != nil {
-		return errors.Newf("git commit: %s", stderr)
+		return fmt.Errorf("git commit: %s", stderr)
 	}
 
 	if _, stderr, err = process.ExecDir(-1,
 		tmpDir, fmt.Sprintf("initRepoCommit (git push): %s", tmpDir),
 		"git", "push", "origin", branch); err != nil {
-		return errors.Newf("git push: %s", stderr)
+		return fmt.Errorf("git push: %s", stderr)
 	}
 	return nil
 }
@@ -124,9 +122,9 @@ func initRepoCommit(tmpDir string, sig *git.Signature, branch string) error {
 func initRepository(repoPath string, doer *database.User, repo *database.Repository, opts CreateOptions) error {
 	// Init bare new repository.
 	if err := git.Init(repoPath, git.InitOptions{Bare: true}); err != nil {
-		return errors.Newf("init repository: %v", err)
+		return fmt.Errorf("init repository: %v", err)
 	} else if err := repox.CreateDelegateHooks(repoPath); err != nil {
-		return errors.Newf("CreateDelegateHooks: %v", err)
+		return fmt.Errorf("CreateDelegateHooks: %v", err)
 	}
 
 	// Set default branch
@@ -138,7 +136,7 @@ func initRepository(repoPath string, doer *database.User, repo *database.Reposit
 		},
 	)
 	if err != nil {
-		return errors.Wrap(err, "set default branch")
+		return fmt.Errorf("set default branch"+": %w", err)
 	}
 
 	if opts.AutoInit {
@@ -151,7 +149,7 @@ func initRepository(repoPath string, doer *database.User, repo *database.Reposit
 		}()
 
 		if err = prepareRepoCommit(repo, tmpDir, repoPath, opts); err != nil {
-			return errors.Newf("prepareRepoCommit: %v", err)
+			return fmt.Errorf("prepareRepoCommit: %v", err)
 		}
 
 		// Apply changes and commit.
@@ -165,7 +163,7 @@ func initRepository(repoPath string, doer *database.User, repo *database.Reposit
 			repo.DefaultBranch,
 		)
 		if err != nil {
-			return errors.Newf("initRepoCommit: %v", err)
+			return fmt.Errorf("initRepoCommit: %v", err)
 		}
 	}
 

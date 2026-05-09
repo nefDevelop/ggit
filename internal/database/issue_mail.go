@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/cockroachdb/errors"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/email"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/markup"
 	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/userx"
@@ -104,11 +102,11 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 
 	watchers, err := GetWatchers(issue.RepoID)
 	if err != nil {
-		return errors.Newf("GetWatchers [repo_id: %d]: %v", issue.RepoID, err)
+		return fmt.Errorf("GetWatchers [repo_id: %d]: %v", issue.RepoID, err)
 	}
 	participants, err := GetParticipantsByIssueID(issue.ID)
 	if err != nil {
-		return errors.Newf("GetParticipantsByIssueID [issue_id: %d]: %v", issue.ID, err)
+		return fmt.Errorf("GetParticipantsByIssueID [issue_id: %d]: %v", issue.ID, err)
 	}
 
 	// In case the issue poster is not watching the repository,
@@ -126,7 +124,7 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 
 		to, err := Handle.Users().GetByID(ctx, watchers[i].UserID)
 		if err != nil {
-			return errors.Newf("GetUserByID [%d]: %v", watchers[i].UserID, err)
+			return fmt.Errorf("GetUserByID [%d]: %v", watchers[i].UserID, err)
 		}
 		if to.IsOrganization() || !to.IsActive {
 			continue
@@ -152,7 +150,7 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 		}
 	}
 	if err = email.SendIssueCommentMail(NewMailerIssue(issue), NewMailerRepo(issue.Repo), NewMailerUser(doer), tos); err != nil {
-		return errors.Wrap(err, "send issue comment mail")
+		return fmt.Errorf("send issue comment mail"+": %w", err)
 	}
 
 	// Mail mentioned people and exclude watchers.
@@ -168,10 +166,10 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 
 	tos, err = Handle.Users().GetMailableEmailsByUsernames(ctx, toUsernames)
 	if err != nil {
-		return errors.Wrap(err, "get mailable emails by usernames")
+		return fmt.Errorf("get mailable emails by usernames"+": %w", err)
 	}
 	if err = email.SendIssueMentionMail(NewMailerIssue(issue), NewMailerRepo(issue.Repo), NewMailerUser(doer), tos); err != nil {
-		return errors.Wrap(err, "send issue mention mail")
+		return fmt.Errorf("send issue mention mail"+": %w", err)
 	}
 	return nil
 }
@@ -181,7 +179,7 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 func (issue *Issue) MailParticipants() (err error) {
 	mentions := markup.FindAllMentions(issue.Content)
 	if err = updateIssueMentions(Handle.db, issue.ID, mentions); err != nil {
-		return errors.Newf("UpdateIssueMentions [%d]: %v", issue.ID, err)
+		return fmt.Errorf("UpdateIssueMentions [%d]: %v", issue.ID, err)
 	}
 
 	if err = mailIssueCommentToParticipants(issue, issue.Poster, mentions); err != nil {

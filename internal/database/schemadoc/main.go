@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
+	log "github.com/nef734/ggit/internal/log"
 	"os"
 	"sort"
 	"strings"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/cockroachdb/errors"
 	"github.com/glebarez/sqlite"
+	"github.com/nef734/ggit/internal/database"
 	"github.com/olekukonko/tablewriter"
 	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/olekukonko/tablewriter/tw"
@@ -17,8 +17,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"gorm.io/gorm/schema"
-
-	"github.com/nef734/ggit/internal/database"
 )
 
 //go:generate go run main.go ../../../docs/dev/database_schema.md
@@ -26,13 +24,13 @@ import (
 func main() {
 	w, err := os.Create(os.Args[1])
 	if err != nil {
-		log.Fatalf("Failed to create file: %v", err)
+		log.Fatal("Failed to create file: %v", err)
 	}
 	defer func() { _ = w.Close() }()
 
 	conn, _, err := sqlmock.New()
 	if err != nil {
-		log.Fatalf("Failed to get mock connection: %v", err)
+		log.Fatal("Failed to get mock connection: %v", err)
 	}
 	defer func() { _ = conn.Close() }()
 
@@ -46,7 +44,7 @@ func main() {
 	for i, dialector := range dialectors {
 		tableInfos, err := generate(dialector)
 		if err != nil {
-			log.Fatalf("Failed to get table info of %d: %v", i, err)
+			log.Fatal("Failed to get table info of %d: %v", i, err)
 		}
 
 		collected = append(collected, tableInfos)
@@ -134,7 +132,7 @@ func generate(dialector gorm.Dialector) ([]*tableInfo, error) {
 		},
 	)
 	if err != nil {
-		return nil, errors.Wrap(err, "open database")
+		return nil, fmt.Errorf("open database"+": %w", err)
 	}
 
 	m := conn.Migrator().(interface {
@@ -189,7 +187,7 @@ func generate(dialector gorm.Dialector) ([]*tableInfo, error) {
 			return nil
 		})
 		if err != nil {
-			return nil, errors.Wrap(err, "gather table information")
+			return nil, fmt.Errorf("gather table information"+": %w", err)
 		}
 	}
 

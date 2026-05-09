@@ -2,20 +2,18 @@ package gitx
 
 import (
 	"bytes"
+	"fmt"
 	"html"
 	"html/template"
 	"io"
 	"sync"
 
-	"github.com/cockroachdb/errors"
+	"github.com/gogs/git-module"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/tool"
 	"github.com/sergi/go-diff/diffmatchpatch"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/transform"
-
-	"github.com/gogs/git-module"
-
-	"github.com/nef734/ggit/internal/conf"
-	"github.com/nef734/ggit/internal/tool"
 )
 
 // DiffSection is a wrapper to git.DiffSection with helper methods.
@@ -170,7 +168,7 @@ func ParseDiff(r io.Reader, maxFiles, maxFileLines, maxLineChars int) (*Diff, er
 
 	result := <-done
 	if result.Err != nil {
-		return nil, errors.Newf("stream parse diff: %v", result.Err)
+		return nil, fmt.Errorf("stream parse diff: %v", result.Err)
 	}
 	return NewDiff(result.Diff), nil
 }
@@ -179,7 +177,7 @@ func ParseDiff(r io.Reader, maxFiles, maxFileLines, maxLineChars int) (*Diff, er
 func RepoDiff(repo *git.Repository, rev string, maxFiles, maxFileLines, maxLineChars int, opts ...git.DiffOptions) (*Diff, error) {
 	diff, err := repo.Diff(rev, maxFiles, maxFileLines, maxLineChars, opts...)
 	if err != nil {
-		return nil, errors.Newf("get diff: %v", err)
+		return nil, fmt.Errorf("get diff: %v", err)
 	}
 	return NewDiff(diff), nil
 }

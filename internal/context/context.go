@@ -11,11 +11,10 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/template"
 )
 
@@ -188,7 +187,7 @@ func (c *Context) PageIs(name string) {
 	c.Data["PageIs"+name] = true
 }
 
-func (c *Context) RequireHighlightJS()   {}
+func (c *Context) RequireHighlightJS()  {}
 func (c *Context) RequireSimpleMDE()    {}
 func (c *Context) RequireSimpleMDECDE() {}
 func (c *Context) RequireAutosize()     {}
@@ -359,7 +358,7 @@ func Contexter(store Store) gin.HandlerFunc {
 			Org:     &Organization{},
 		}
 		gctx.Data["Flash"] = gctx.Flash
-		
+
 		if database.HasEngine && database.Handle != nil {
 			gctx.User, gctx.IsBasicAuth, gctx.IsTokenAuth = authenticatedUser(store, c, sess)
 			if gctx.User != nil {
@@ -371,7 +370,6 @@ func Contexter(store Store) gin.HandlerFunc {
 		c.Next()
 	}
 }
-
 
 func (c *Context) GetData() map[string]any {
 	return c.Data

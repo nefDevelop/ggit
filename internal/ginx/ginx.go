@@ -1,6 +1,7 @@
 package ginx
 
 import (
+	"io/fs"
 	"mime"
 	"net/http"
 	"path/filepath"
@@ -10,14 +11,12 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/form"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/public"
-	"io/fs"
 )
 
 type Engine struct {
@@ -70,11 +69,11 @@ func Handle(h any) gin.HandlerFunc {
 			return
 		}
 		gctx := c.MustGet("context").(*context.Context)
-		
+
 		inputs := make([]reflect.Value, t.NumIn())
 		for i := 0; i < t.NumIn(); i++ {
 			argType := t.In(i)
-			
+
 			// Detect known types
 			switch argType.String() {
 			case "*context.Context":
@@ -150,7 +149,7 @@ func setupStatic(r *Engine) {
 	_ = mime.AddExtensionType(".woff2", "font/woff2")
 
 	customPublic := filepath.Join(conf.CustomDir(), "public")
-	
+
 	serveStatic := func(prefix, path string) {
 		r.Static(prefix, path)
 	}
@@ -177,11 +176,11 @@ func setupStatic(r *Engine) {
 
 	r.Static(conf.UsersAvatarPathPrefix, conf.Picture.AvatarUploadPath)
 	r.Static(database.RepoAvatarURLPrefix, conf.Picture.RepositoryAvatarUploadPath)
-	
+
 	// Svelte Build Static Files
 	svelteBuildDir := filepath.Join(conf.WorkDir(), "frontend/build")
 	r.Static("/_app", filepath.Join(svelteBuildDir, "_app"))
-	
+
 	// Static Assets (Fonts, etc.)
 	r.Static("/fonts", filepath.Join("frontend", "build", "fonts"))
 }

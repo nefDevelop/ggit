@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	log "github.com/nef734/ggit/internal/log"
 	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
 )
 
 // NoticesStore is the storage layer for system notices.

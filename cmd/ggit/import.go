@@ -4,16 +4,15 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"github.com/urfave/cli/v3"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/osx"
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -46,14 +45,14 @@ func runImportLocale(_ context.Context, cmd *cli.Command) error {
 		return errors.New("target directory is not specified")
 	}
 	if !osx.IsDir(cmd.String("source")) {
-		return errors.Newf("source directory %q does not exist or is not a directory", cmd.String("source"))
+		return fmt.Errorf("source directory %q does not exist or is not a directory", cmd.String("source"))
 	} else if !osx.IsDir(cmd.String("target")) {
-		return errors.Newf("target directory %q does not exist or is not a directory", cmd.String("target"))
+		return fmt.Errorf("target directory %q does not exist or is not a directory", cmd.String("target"))
 	}
 
 	err := conf.Init(configFromLineage(cmd))
 	if err != nil {
-		return errors.Wrap(err, "init configuration")
+		return fmt.Errorf("init configuration"+": %w", err)
 	}
 
 	now := time.Now()
@@ -75,12 +74,12 @@ func runImportLocale(_ context.Context, cmd *cli.Command) error {
 		// this breaks INI parser, we need to fix that.
 		sr, err := os.Open(source)
 		if err != nil {
-			return errors.Newf("open: %v", err)
+			return fmt.Errorf("open: %v", err)
 		}
 
 		tw, err := os.Create(target)
 		if err != nil {
-			return errors.Newf("create: %v", err)
+			return fmt.Errorf("create: %v", err)
 		}
 
 		scanner := bufio.NewScanner(sr)

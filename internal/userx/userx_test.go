@@ -5,13 +5,12 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/tool"
 	"github.com/nef734/ggit/public"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDashboardURLPath(t *testing.T) {
@@ -56,7 +55,6 @@ func TestCustomAvatarPath(t *testing.T) {
 	want := "data/avatars/1"
 	assert.Equal(t, want, got)
 }
-
 
 func TestSaveAvatar(t *testing.T) {
 	if runtime.GOOS == "windows" {

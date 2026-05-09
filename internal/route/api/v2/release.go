@@ -8,8 +8,8 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/form"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
-	log "unknwon.dev/clog/v2"
 )
 
 // ListReleases returns a list of releases for the repository.

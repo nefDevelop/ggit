@@ -1,14 +1,16 @@
 package repo
 
-import "time"
+import (
+	"time"
+)
 
 type CreateOptions struct {
-	Name        string
-	Description string
-	Gitignores  string
-	License     string
-	Readme      string
-	Website      string
+	Name          string
+	Description   string
+	Gitignores    string
+	License       string
+	Readme        string
+	Website       string
 	DefaultBranch string
 	IsPrivate     bool
 	IsUnlisted    bool

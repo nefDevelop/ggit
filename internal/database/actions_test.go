@@ -7,12 +7,11 @@ import (
 	"time"
 
 	"github.com/gogs/git-module"
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
-
-	"github.com/nef734/ggit/internal/conf"
-	"github.com/nef734/ggit/internal/domain"
 )
 
 func TestIssueReferencePattern(t *testing.T) {
@@ -186,10 +185,10 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		require.Len(t, got, 1)
 		got[0].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionCommitRepo,
+				OpType:       int(ActionCommitRepo),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
@@ -198,10 +197,9 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RefName:      "main",
 				IsPrivate:    false,
 				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit","AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":"alice/example/compare/ca82a6dff817ec66f44342007202690a93763949...085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7"}`,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 
@@ -247,10 +245,10 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		got[0].ID = 0
 		got[1].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionCommitRepo,
+				OpType:       int(ActionCommitRepo),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
@@ -259,11 +257,11 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RefName:      "main",
 				IsPrivate:    false,
 				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit","AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":""}`,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 			{
 				UserID:       alice.ID,
-				OpType:       ActionCreateBranch,
+				OpType:       int(ActionCreateBranch),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
@@ -272,11 +270,9 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RefName:      "main",
 				IsPrivate:    false,
 				Content:      `{"Len":1,"Commits":[{"Sha1":"085bb3bcb608e1e8451d4b2432f8ecbe6306e7e7","Message":"A random commit","AuthorEmail":"alice@example.com","AuthorName":"alice","CommitterEmail":"alice@example.com","CommitterName":"alice","Timestamp":"2020-05-04T05:08:06Z"}],"CompareURL":""}`,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
-		want[1].Created = time.Unix(want[1].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 
@@ -303,10 +299,10 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		require.Len(t, got, 1)
 		got[0].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionDeleteBranch,
+				OpType:       int(ActionDeleteBranch),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
@@ -314,10 +310,9 @@ func actionsCommitRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RepoName:     repo.Name,
 				RefName:      "main",
 				IsPrivate:    false,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 }
@@ -466,10 +461,10 @@ func actionsMergePullRequest(t *testing.T, ctx context.Context, s *ActionsStore)
 	require.Len(t, got, 1)
 	got[0].ID = 0
 
-	want := []*Action{
+	want := []*domain.Action{
 		{
 			UserID:       alice.ID,
-			OpType:       ActionMergePullRequest,
+			OpType:       int(ActionMergePullRequest),
 			ActUserID:    alice.ID,
 			ActUserName:  alice.Name,
 			RepoID:       repo.ID,
@@ -477,10 +472,9 @@ func actionsMergePullRequest(t *testing.T, ctx context.Context, s *ActionsStore)
 			RepoName:     repo.Name,
 			IsPrivate:    false,
 			Content:      `1|Fix issue 1`,
-			CreatedUnix:  s.db.NowFunc().Unix(),
+			Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 		},
 	}
-	want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 	assert.Equal(t, want, got)
 }
 
@@ -515,20 +509,19 @@ func actionsNewRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		require.Len(t, got, 1)
 		got[0].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionCreateRepo,
+				OpType:       int(ActionCreateRepo),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
 				RepoUserName: alice.Name,
 				RepoName:     repo.Name,
 				IsPrivate:    false,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 
@@ -547,20 +540,19 @@ func actionsNewRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 		require.Len(t, got, 1)
 		got[0].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionForkRepo,
+				OpType:       int(ActionForkRepo),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
 				RepoUserName: alice.Name,
 				RepoName:     repo.Name,
 				IsPrivate:    false,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 }
@@ -608,10 +600,10 @@ func actionsPushTag(t *testing.T, ctx context.Context, s *ActionsStore) {
 		require.Len(t, got, 1)
 		got[0].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionPushTag,
+				OpType:       int(ActionPushTag),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
@@ -619,10 +611,9 @@ func actionsPushTag(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RepoName:     repo.Name,
 				RefName:      "v1.0.0",
 				IsPrivate:    false,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 
@@ -648,10 +639,10 @@ func actionsPushTag(t *testing.T, ctx context.Context, s *ActionsStore) {
 		require.Len(t, got, 1)
 		got[0].ID = 0
 
-		want := []*Action{
+		want := []*domain.Action{
 			{
 				UserID:       alice.ID,
-				OpType:       ActionDeleteTag,
+				OpType:       int(ActionDeleteTag),
 				ActUserID:    alice.ID,
 				ActUserName:  alice.Name,
 				RepoID:       repo.ID,
@@ -659,10 +650,9 @@ func actionsPushTag(t *testing.T, ctx context.Context, s *ActionsStore) {
 				RepoName:     repo.Name,
 				RefName:      "v1.0.0",
 				IsPrivate:    false,
-				CreatedUnix:  s.db.NowFunc().Unix(),
+				Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 			},
 		}
-		want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 		assert.Equal(t, want, got)
 	})
 }
@@ -692,10 +682,10 @@ func actionsRenameRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 	require.Len(t, got, 1)
 	got[0].ID = 0
 
-	want := []*Action{
+	want := []*domain.Action{
 		{
 			UserID:       alice.ID,
-			OpType:       ActionRenameRepo,
+			OpType:       int(ActionRenameRepo),
 			ActUserID:    alice.ID,
 			ActUserName:  alice.Name,
 			RepoID:       repo.ID,
@@ -703,10 +693,9 @@ func actionsRenameRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 			RepoName:     repo.Name,
 			IsPrivate:    false,
 			Content:      "oldExample",
-			CreatedUnix:  s.db.NowFunc().Unix(),
+			Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 		},
 	}
-	want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 	assert.Equal(t, want, got)
 }
 
@@ -737,10 +726,10 @@ func actionsTransferRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 	require.Len(t, got, 1)
 	got[0].ID = 0
 
-	want := []*Action{
+	want := []*domain.Action{
 		{
 			UserID:       alice.ID,
-			OpType:       ActionTransferRepo,
+			OpType:       int(ActionTransferRepo),
 			ActUserID:    alice.ID,
 			ActUserName:  alice.Name,
 			RepoID:       repo.ID,
@@ -748,9 +737,8 @@ func actionsTransferRepo(t *testing.T, ctx context.Context, s *ActionsStore) {
 			RepoName:     repo.Name,
 			IsPrivate:    false,
 			Content:      "alice/example",
-			CreatedUnix:  s.db.NowFunc().Unix(),
+			Created:      time.Unix(s.db.NowFunc().Unix(), 0),
 		},
 	}
-	want[0].Created = time.Unix(want[0].CreatedUnix, 0)
 	assert.Equal(t, want, got)
 }

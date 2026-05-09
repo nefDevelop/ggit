@@ -1,18 +1,17 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"strconv"
 	"strings"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/lazyregexp"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"gorm.io/gorm"
 )
 
 var labelColorPattern = lazyregexp.New("#([a-fA-F0-9]{6})")
@@ -22,7 +21,7 @@ var labelColorPattern = lazyregexp.New("#([a-fA-F0-9]{6})")
 func GetLabelTemplateFile(name string) ([][2]string, error) {
 	data, err := getRepoInitFile("label", name)
 	if err != nil {
-		return nil, errors.Newf("getRepoInitFile: %v", err)
+		return nil, fmt.Errorf("getRepoInitFile: %v", err)
 	}
 
 	lines := strings.Split(string(data), "\n")
@@ -35,11 +34,11 @@ func GetLabelTemplateFile(name string) ([][2]string, error) {
 
 		fields := strings.SplitN(line, " ", 2)
 		if len(fields) != 2 {
-			return nil, errors.Newf("line is malformed: %s", line)
+			return nil, fmt.Errorf("line is malformed: %s", line)
 		}
 
 		if !labelColorPattern.MatchString(fields[0]) {
-			return nil, errors.Newf("bad HTML color code in line: %s", line)
+			return nil, fmt.Errorf("bad HTML color code in line: %s", line)
 		}
 
 		fields[1] = strings.TrimSpace(fields[1])
@@ -246,7 +245,7 @@ func GetLabelsByRepoID(repoID int64) ([]*Label, error) {
 func getLabelsByIssueID(tx *gorm.DB, issueID int64) ([]*Label, error) {
 	issueLabels, err := getIssueLabels(tx, issueID)
 	if err != nil {
-		return nil, errors.Newf("getIssueLabels: %v", err)
+		return nil, fmt.Errorf("getIssueLabels: %v", err)
 	} else if len(issueLabels) == 0 {
 		return []*Label{}, nil
 	}
@@ -329,7 +328,7 @@ func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 			Where("issue_label.issue_id = ? AND label.name LIKE ?", issue.ID, key+"%").
 			Find(&existingLabels).Error
 		if err != nil {
-			return errors.Newf("find existing scoped labels: %v", err)
+			return fmt.Errorf("find existing scoped labels: %v", err)
 		}
 
 		for _, el := range existingLabels {
@@ -337,7 +336,7 @@ func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 				continue
 			}
 			if err = deleteIssueLabel(tx, issue, el); err != nil {
-				return errors.Newf("deleteIssueLabel: %v", err)
+				return fmt.Errorf("deleteIssueLabel: %v", err)
 			}
 		}
 	}
@@ -355,7 +354,7 @@ func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 	}
 
 	if err = updateLabel(tx, label); err != nil {
-		return errors.Newf("updateLabel: %v", err)
+		return fmt.Errorf("updateLabel: %v", err)
 	}
 
 	issue.Labels = append(issue.Labels, label)
@@ -380,7 +379,7 @@ func newIssueLabels(tx *gorm.DB, issue *Issue, labels []*Label) (err error) {
 		}
 
 		if err = newIssueLabel(tx, issue, labels[i]); err != nil {
-			return errors.Newf("newIssueLabel: %v", err)
+			return fmt.Errorf("newIssueLabel: %v", err)
 		}
 	}
 
@@ -415,7 +414,7 @@ func deleteIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 		label.NumClosedIssues--
 	}
 	if err = updateLabel(tx, label); err != nil {
-		return errors.Newf("updateLabel: %v", err)
+		return fmt.Errorf("updateLabel: %v", err)
 	}
 
 	for i := range issue.Labels {

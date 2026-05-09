@@ -5,9 +5,8 @@ import (
 	"encoding/json"
 
 	"github.com/gogs/git-module"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // UpdateRepositoryLanguages analyzes the repository and updates its language statistics.
@@ -41,7 +40,7 @@ func UpdateRepositoryLanguages(repo *database.Repository) error {
 		log.Trace("Updating languages for %s: %s", repo.FullName(), primary)
 		langJSON, _ := json.Marshal(languages)
 		langStr := string(langJSON)
-		
+
 		err := database.Handle.Repositories().Update(context.Background(), repo.ID, database.UpdateRepoOptions{
 			PrimaryLanguage: &primary,
 			Languages:       &langStr,

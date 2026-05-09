@@ -19,7 +19,6 @@ func GetUserProfile(c *context.APIContext) {
 	}
 	user := database.FromDomainUser(du)
 
-
 	c.JSON(http.StatusOK, user.APIFormat())
 }
 
@@ -32,7 +31,6 @@ func GetUserPublicRepositories(c *context.APIContext) {
 		return
 	}
 	user := database.FromDomainUser(du)
-
 
 	repos, err := database.GetUserRepositories(&database.UserRepoOptions{
 		UserID:   user.ID,
@@ -63,7 +61,6 @@ func GetUserStars(c *context.APIContext) {
 	}
 	user := database.FromDomainUser(du)
 
-
 	repos, err := database.Handle.Repositories().ListStarred(c.Req.Context(), user.ID, 1, 50)
 	if err != nil {
 		c.Error(err, "get starred repositories")
@@ -89,7 +86,6 @@ func GetUserPublicOrganizations(c *context.APIContext) {
 		return
 	}
 	user := database.FromDomainUser(du)
-
 
 	orgs, err := database.Handle.Organizations().List(c.Req.Context(), domain.ListOrgsOptions{
 		MemberID:              user.ID,

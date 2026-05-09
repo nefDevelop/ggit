@@ -9,7 +9,7 @@ func addNumCommitsAndBranchesToRepository(db *gorm.DB) error {
 		NumCommits  int64
 		NumBranches int
 	}
-	
+
 	if err := db.Migrator().AutoMigrate(&repository{}); err != nil {
 		return err
 	}

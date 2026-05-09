@@ -3,9 +3,8 @@ package database
 import (
 	"context"
 
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/domain"
+	"gorm.io/gorm"
 )
 
 // IssuesStore es el almacén de datos para issues utilizando GORM.

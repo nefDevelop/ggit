@@ -6,8 +6,6 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"gopkg.in/ini.v1"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
@@ -15,6 +13,7 @@ import (
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/route"
 	"github.com/nef734/ggit/internal/strx"
+	"gopkg.in/ini.v1"
 )
 
 // GetInstallSettings returns the default settings for the installation page.

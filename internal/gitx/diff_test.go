@@ -4,10 +4,9 @@ import (
 	"html/template"
 	"testing"
 
+	"github.com/gogs/git-module"
 	dmp "github.com/sergi/go-diff/diffmatchpatch"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/gogs/git-module"
 )
 
 func Test_diffsToHTML(t *testing.T) {

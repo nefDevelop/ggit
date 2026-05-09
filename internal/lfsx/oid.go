@@ -1,7 +1,7 @@
 package lfsx
 
 import (
-	"github.com/cockroachdb/errors"
+	"errors"
 
 	"github.com/nef734/ggit/internal/lazyregexp"
 )

@@ -44,11 +44,11 @@ func TestCommitStatuses_Create(t *testing.T) {
 	t.Run("Duplicate context for same SHA", func(t *testing.T) {
 		// Should allow creating another status for same context (history)
 		status2 := &CommitStatus{
-			RepoID:      repo.ID,
-			SHA:         status.SHA,
-			State:       CommitStatusFailure,
-			Context:     status.Context,
-			CreatorID:   1,
+			RepoID:    repo.ID,
+			SHA:       status.SHA,
+			State:     CommitStatusFailure,
+			Context:   status.Context,
+			CreatorID: 1,
 		}
 		err := handle.CommitStatuses().Create(ctx, status2)
 		assert.NoError(t, err)
@@ -56,11 +56,11 @@ func TestCommitStatuses_Create(t *testing.T) {
 
 	t.Run("Different context", func(t *testing.T) {
 		status3 := &CommitStatus{
-			RepoID:      repo.ID,
-			SHA:         status.SHA,
-			State:       CommitStatusPending,
-			Context:     "security/snyk",
-			CreatorID:   1,
+			RepoID:    repo.ID,
+			SHA:       status.SHA,
+			State:     CommitStatusPending,
+			Context:   "security/snyk",
+			CreatorID: 1,
 		}
 		err := handle.CommitStatuses().Create(ctx, status3)
 		assert.NoError(t, err)
@@ -82,7 +82,7 @@ func TestCommitStatuses_GetLatestBySHA(t *testing.T) {
 	// Add some statuses
 	statuses := []*CommitStatus{
 		{RepoID: repoID, SHA: sha, State: CommitStatusSuccess, Context: "ci", CreatedAt: 100},
-		{RepoID: repoID, SHA: sha, State: CommitStatusFailure, Context: "ci", CreatedAt: 200}, // Latest for "ci"
+		{RepoID: repoID, SHA: sha, State: CommitStatusFailure, Context: "ci", CreatedAt: 200},       // Latest for "ci"
 		{RepoID: repoID, SHA: sha, State: CommitStatusPending, Context: "security", CreatedAt: 150}, // Latest for "security"
 		{RepoID: repoID, SHA: "other", State: CommitStatusSuccess, Context: "ci"},
 	}
@@ -123,7 +123,7 @@ func TestCommitStatuses_GetCombinedStatusBySHA(t *testing.T) {
 	ctx := context.Background()
 
 	repoID := int64(1)
-	
+
 	tests := []struct {
 		name     string
 		statuses []*CommitStatus
@@ -178,7 +178,7 @@ func TestCommitStatuses_GetCombinedStatusBySHA(t *testing.T) {
 			expected: CommitStatusWarning,
 		},
 		{
-			name: "Empty",
+			name:     "Empty",
 			statuses: []*CommitStatus{},
 			expected: "",
 		},

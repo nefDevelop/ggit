@@ -3,9 +3,8 @@ package v2
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/database"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCommitStatusLogic(t *testing.T) {
@@ -81,7 +80,7 @@ func TestCommitStatusLogic(t *testing.T) {
 			if states[database.CommitStatusWarning] > 0 {
 				return database.CommitStatusWarning
 			}
-			// Default to success if nothing else matches, but we should probably 
+			// Default to success if nothing else matches, but we should probably
 			// be more strict if we want to be "secure".
 			// However, GORM protects against SQL injection in the state field.
 			return database.CommitStatusSuccess

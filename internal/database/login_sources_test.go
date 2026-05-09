@@ -7,14 +7,13 @@ import (
 	"time"
 
 	mockrequire "github.com/derision-test/go-mockgen/v2/testutil/require"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
 
 func TestLoginSource_BeforeSave(t *testing.T) {

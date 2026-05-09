@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 	"strings"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 )
 
@@ -52,7 +52,7 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 	isNewRef := strings.HasPrefix(opts.OldCommitID, git.EmptyID)
 	isDelRef := strings.HasPrefix(opts.NewCommitID, git.EmptyID)
 	if isNewRef && isDelRef {
-		return errors.Newf("both old and new revisions are %q", git.EmptyID)
+		return fmt.Errorf("both old and new revisions are %q", git.EmptyID)
 	}
 
 	repoPath := RepoPath(opts.RepoUserName, opts.RepoName)
@@ -60,32 +60,31 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 	gitUpdate := exec.Command("git", "update-server-info")
 	gitUpdate.Dir = repoPath
 	if err = gitUpdate.Run(); err != nil {
-		return errors.Newf("run 'git update-server-info': %v", err)
+		return fmt.Errorf("run 'git update-server-info': %v", err)
 	}
 
 	gitRepo, err := git.Open(repoPath)
 	if err != nil {
-		return errors.Newf("open repository: %v", err)
+		return fmt.Errorf("open repository: %v", err)
 	}
 
 	u, err := Handle.Users().GetByUsername(ctx, opts.RepoUserName)
 	if err != nil {
-		return errors.Newf("GetUserByName: %v", err)
+		return fmt.Errorf("GetUserByName: %v", err)
 	}
 	owner := FromDomainUser(u)
 
-
 	repo, err := GetRepositoryByName(owner.ID, opts.RepoName)
 	if err != nil {
-		return errors.Newf("GetRepositoryByName: %v", err)
+		return fmt.Errorf("GetRepositoryByName: %v", err)
 	}
 
 	if err = repo.UpdateSize(); err != nil {
-		return errors.Newf("UpdateSize: %v", err)
+		return fmt.Errorf("UpdateSize: %v", err)
 	}
 
 	if err = repo.UpdateCounters(); err != nil {
-		return errors.Newf("UpdateCounters: %v", err)
+		return fmt.Errorf("UpdateCounters: %v", err)
 	}
 
 	// Push tags
@@ -100,7 +99,7 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 			},
 		)
 		if err != nil {
-			return errors.Wrap(err, "create action for push tag")
+			return fmt.Errorf("create action for push tag"+": %w", err)
 		}
 		return nil
 	}
@@ -111,19 +110,19 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 		// Push new branch
 		newCommit, err := gitRepo.CatFileCommit(opts.NewCommitID)
 		if err != nil {
-			return errors.Newf("GetCommit [commit_id: %s]: %v", opts.NewCommitID, err)
+			return fmt.Errorf("GetCommit [commit_id: %s]: %v", opts.NewCommitID, err)
 		}
 
 		if isNewRef {
 			commits, err = newCommit.Ancestors(git.LogOptions{MaxCount: 9})
 			if err != nil {
-				return errors.Newf("CommitsBeforeLimit [commit_id: %s]: %v", newCommit.ID, err)
+				return fmt.Errorf("CommitsBeforeLimit [commit_id: %s]: %v", newCommit.ID, err)
 			}
 			commits = append([]*git.Commit{newCommit}, commits...)
 		} else {
 			commits, err = newCommit.CommitsAfter(opts.OldCommitID)
 			if err != nil {
-				return errors.Newf("CommitsBeforeUntil [commit_id: %s]: %v", opts.OldCommitID, err)
+				return fmt.Errorf("CommitsBeforeUntil [commit_id: %s]: %v", opts.OldCommitID, err)
 			}
 		}
 	}
@@ -140,7 +139,7 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 		},
 	)
 	if err != nil {
-		return errors.Wrap(err, "create action for commit push")
+		return fmt.Errorf("create action for commit push"+": %w", err)
 	}
 	return nil
 }

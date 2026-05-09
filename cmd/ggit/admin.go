@@ -2,15 +2,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"runtime"
 
-	"github.com/cockroachdb/errors"
-	"github.com/urfave/cli/v3"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/urfave/cli/v3"
 )
 
 var (
@@ -153,12 +152,12 @@ func runCreateUser(ctx context.Context, cmd *cli.Command) error {
 
 	err := conf.Init(configFromLineage(cmd))
 	if err != nil {
-		return errors.Wrap(err, "init configuration")
+		return fmt.Errorf("init configuration"+": %w", err)
 	}
 	conf.InitLogging(true)
 
 	if _, err = database.SetEngine(); err != nil {
-		return errors.Wrap(err, "set engine")
+		return fmt.Errorf("set engine"+": %w", err)
 	}
 
 	user, err := database.Handle.Users().Create(
@@ -173,13 +172,13 @@ func runCreateUser(ctx context.Context, cmd *cli.Command) error {
 	)
 	if err != nil {
 		if !database.IsErrUserAlreadyExist(err) {
-			return errors.Wrap(err, "create user")
+			return fmt.Errorf("create user"+": %w", err)
 		}
 
 		// If user already exists, update password and admin status to ensure test credentials are correct
 		u, err := database.Handle.Users().GetByUsername(ctx, cmd.String("name"))
 		if err != nil {
-			return errors.Wrap(err, "get existing user")
+			return fmt.Errorf("get existing user"+": %w", err)
 		}
 
 		pass := cmd.String("password")
@@ -189,7 +188,7 @@ func runCreateUser(ctx context.Context, cmd *cli.Command) error {
 			IsAdmin:  &isAdmin,
 		})
 		if err != nil {
-			return errors.Wrap(err, "update existing user")
+			return fmt.Errorf("update existing user"+": %w", err)
 		}
 		fmt.Printf("User %q already existed, password and admin status have been updated.\n", u.Name)
 		return nil
@@ -203,17 +202,17 @@ func adminDashboardOperation(operation func() error, successMessage string) func
 	return func(_ context.Context, cmd *cli.Command) error {
 		err := conf.Init(configFromLineage(cmd))
 		if err != nil {
-			return errors.Wrap(err, "init configuration")
+			return fmt.Errorf("init configuration"+": %w", err)
 		}
 		conf.InitLogging(true)
 
 		if _, err = database.SetEngine(); err != nil {
-			return errors.Wrap(err, "set engine")
+			return fmt.Errorf("set engine"+": %w", err)
 		}
 
 		if err := operation(); err != nil {
 			functionName := runtime.FuncForPC(reflect.ValueOf(operation).Pointer()).Name()
-			return errors.Newf("%s: %v", functionName, err)
+			return fmt.Errorf("%s: %v", functionName, err)
 		}
 
 		fmt.Printf("%s\n", successMessage)

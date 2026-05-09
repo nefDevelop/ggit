@@ -6,11 +6,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/lfsx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/strx"
 )
 

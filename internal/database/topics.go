@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/nef734/ggit/internal/domain"
-	"github.com/cockroachdb/errors"
 	"gorm.io/gorm"
 )
 
@@ -61,7 +61,7 @@ func (s *RepositoriesStore) GetTopicsByRepoID(ctx context.Context, repoID int64)
 		Find(&topics).
 		Error
 	if err != nil {
-		return nil, errors.Wrap(err, "get topics by repo ID")
+		return nil, fmt.Errorf("get topics by repo ID"+": %w", err)
 	}
 	return topics, nil
 }
@@ -72,7 +72,7 @@ func (s *RepositoriesStore) AddTopics(ctx context.Context, repoID int64, topics 
 		// Remove existing relations
 		err := tx.Where("repo_id = ?", repoID).Delete(&RepoTopic{}).Error
 		if err != nil {
-			return errors.Wrap(err, "delete existing repo topics")
+			return fmt.Errorf("delete existing repo topics"+": %w", err)
 		}
 
 		for _, name := range topics {
@@ -84,7 +84,7 @@ func (s *RepositoriesStore) AddTopics(ctx context.Context, repoID int64, topics 
 			var topic Topic
 			err = tx.Where("name = ?", name).FirstOrCreate(&topic, Topic{Name: name}).Error
 			if err != nil {
-				return errors.Wrapf(err, "first or create topic %q", name)
+				return fmt.Errorf("first or create topic %q: %w", name, err)
 			}
 
 			err = tx.Create(&RepoTopic{
@@ -92,7 +92,7 @@ func (s *RepositoriesStore) AddTopics(ctx context.Context, repoID int64, topics 
 				TopicID: topic.ID,
 			}).Error
 			if err != nil {
-				return errors.Wrapf(err, "create repo topic relation for %q", name)
+				return fmt.Errorf("create repo topic relation for %q: %w", name, err)
 			}
 		}
 		return nil
@@ -112,7 +112,7 @@ func (s *RepositoriesStore) ListPopularTopics(ctx context.Context, limit int) ([
 		Find(&topics).
 		Error
 	if err != nil {
-		return nil, errors.Wrap(err, "list popular topics")
+		return nil, fmt.Errorf("list popular topics"+": %w", err)
 	}
 
 	dtops := make([]*domain.Topic, len(topics))

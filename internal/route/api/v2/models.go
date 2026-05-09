@@ -4,8 +4,8 @@ import (
 	"context"
 	"path"
 	"time"
-	"github.com/nef734/ggit/internal/auth"
 
+	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/route/api/v2/types"
@@ -16,18 +16,18 @@ func ToUserResponse(u *database.User) *types.UserResponse {
 		return nil
 	}
 	return &types.UserResponse{
-		ID:              u.ID,
-		Username:        u.Name,
-		FullName:        u.FullName,
-		Email:           u.Email,
-		AvatarURL:       u.AvatarURL(),
-		IsAdmin:         u.IsAdmin,
-		DisableNewsFeed: u.DisableNewsFeed,
+		ID:               u.ID,
+		Username:         u.Name,
+		FullName:         u.FullName,
+		Email:            u.Email,
+		AvatarURL:        u.AvatarURL(),
+		IsAdmin:          u.IsAdmin,
+		DisableNewsFeed:  u.DisableNewsFeed,
 		ProhibitLogin:    u.ProhibitLogin,
 		AllowGitHook:     u.AllowGitHook,
 		AllowImportLocal: u.AllowImportLocal,
 		MaxRepoCreation:  u.MaxRepoCreation,
-		CreatedAt:       time.Unix(u.CreatedUnix, 0),
+		CreatedAt:        time.Unix(u.CreatedUnix, 0),
 	}
 }
 
@@ -110,12 +110,12 @@ func ToWebhookHistoryResponse(t *database.HookTask) *types.WebhookHistoryRespons
 	if t == nil {
 		return nil
 	}
-	
+
 	reqHeaders := make(map[string]string)
 	if t.RequestInfo != nil {
 		reqHeaders = t.RequestInfo.Headers
 	}
-	
+
 	respHeaders := make(map[string]string)
 	respStatus := 0
 	respBody := ""

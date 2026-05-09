@@ -3,13 +3,10 @@ package database
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/cockroachdb/errors"
-	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
@@ -18,6 +15,8 @@ import (
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
 	"github.com/nef734/ggit/internal/testx"
+	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
 
 func TestDumpAndImport(t *testing.T) {
@@ -145,7 +144,6 @@ func setupDBToDump(t *testing.T, db *gorm.DB) {
 			IsActivated: true,
 		},
 
-
 		&LFSObject{
 			RepoID:      1,
 			OID:         "ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f",
@@ -221,7 +219,7 @@ func importTables(t *testing.T, backupTables []any, db *gorm.DB) {
 			golden := filepath.Join("testdata", "backup", tableName+".golden.json")
 			f, err := os.Open(golden)
 			if err != nil {
-				return errors.Wrap(err, "open table file")
+				return fmt.Errorf("open table file"+": %w", err)
 			}
 			defer func() { _ = f.Close() }()
 

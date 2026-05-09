@@ -2,16 +2,15 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/fsx"
 	"github.com/nef734/ggit/internal/lfsx"
+	"gorm.io/gorm"
 )
 
 // LFSObject represents an LFS object.
@@ -113,7 +112,8 @@ type ErrLFSObjectNotExist struct {
 }
 
 func IsErrLFSObjectNotExist(err error) bool {
-	return errors.As(err, &ErrLFSObjectNotExist{})
+	var target ErrLFSObjectNotExist
+	return errors.As(err, &target)
 }
 
 func (err ErrLFSObjectNotExist) Error() string {
@@ -162,4 +162,3 @@ func (s *LFSStore) GetObjectsByOIDs(ctx context.Context, repoID int64, oids ...l
 	}
 	return res, nil
 }
-

@@ -2,7 +2,6 @@ package v2
 
 import (
 	"github.com/gin-gonic/gin"
-
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/ginx"
 )
@@ -302,7 +301,6 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			}
 		}
 	}
-
 
 	orgs := r.Group("/orgs", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{

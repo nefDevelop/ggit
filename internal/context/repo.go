@@ -8,16 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/editorconfig/editorconfig-core-go/v2"
 	"github.com/gin-gonic/gin"
-
 	"github.com/gogs/git-module"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/repox"
 )
 
@@ -62,17 +59,17 @@ func (r *Repository) CanEnableEditor() bool {
 func (r *Repository) Editorconfig() (*editorconfig.Editorconfig, error) {
 	commit, err := r.GitRepo.BranchCommit(r.Repository.DefaultBranch)
 	if err != nil {
-		return nil, errors.Wrapf(err, "get commit of branch %q ", r.Repository.DefaultBranch)
+		return nil, fmt.Errorf("get commit of branch %q : %w", r.Repository.DefaultBranch, err)
 	}
 
 	entry, err := commit.TreeEntry(".editorconfig")
 	if err != nil {
-		return nil, errors.Wrap(err, "get .editorconfig")
+		return nil, fmt.Errorf("get .editorconfig"+": %w", err)
 	}
 
 	p, err := entry.Blob().Bytes()
 	if err != nil {
-		return nil, errors.Wrap(err, "read .editorconfig")
+		return nil, fmt.Errorf("read .editorconfig"+": %w", err)
 	}
 	return editorconfig.Parse(bytes.NewReader(p))
 }

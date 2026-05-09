@@ -6,9 +6,8 @@ import (
 	"os"
 	"time"
 
-	"gopkg.in/ini.v1"
-
 	"github.com/nef734/ggit/conf"
+	"gopkg.in/ini.v1"
 )
 
 // ℹ️ README: This file contains static values that should only be set at initialization time.
@@ -148,13 +147,13 @@ var (
 	// Cron tasks
 	Cron struct {
 		RepoHealthCheck struct {
-			Enabled               bool
-			RunAtStart            bool
-			Schedule              string
-			Timeout               time.Duration
-			Args                  []string `delim:" "`
-			CommitThreshold       int      `ini:"COMMIT_THRESHOLD"`
-			MaxDaysSinceActivity  int      `ini:"MAX_DAYS_SINCE_ACTIVITY"`
+			Enabled              bool
+			RunAtStart           bool
+			Schedule             string
+			Timeout              time.Duration
+			Args                 []string `delim:" "`
+			CommitThreshold      int      `ini:"COMMIT_THRESHOLD"`
+			MaxDaysSinceActivity int      `ini:"MAX_DAYS_SINCE_ACTIVITY"`
 		} `ini:"cron.repo_health_check"`
 		CheckRepoStats struct {
 			Enabled    bool
@@ -230,11 +229,11 @@ type AppOpts struct {
 var App AppOpts
 
 type AuthOpts struct {
-	ActivateCodeLives         int
-	ResetPasswordCodeLives    int
-	RequireEmailConfirmation  bool
-	RequireSigninView         bool `ini:"REQUIRE_SIGNIN_VIEW"`
-	DisableRegistration       bool
+	ActivateCodeLives        int
+	ResetPasswordCodeLives   int
+	RequireEmailConfirmation bool
+	RequireSigninView        bool `ini:"REQUIRE_SIGNIN_VIEW"`
+	DisableRegistration      bool
 
 	// Simple Captcha (Question/Math)
 	EnableRegistrationQuestion bool

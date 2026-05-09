@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
 

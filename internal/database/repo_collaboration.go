@@ -1,19 +1,20 @@
 package database
 
 import (
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
+	"errors"
+	"fmt"
 
 	"github.com/nef734/ggit/internal/domain"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"gorm.io/gorm"
 )
 
 // Collaboration represent the relation between an individual and a repository.
 type Collaboration struct {
-	ID     int64      `gorm:"primaryKey"`
-	UserID int64      `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
-	RepoID int64      `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
+	ID     int64             `gorm:"primaryKey"`
+	UserID int64             `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
+	RepoID int64             `gorm:"uniqueIndex:collaboration_user_repo_unique;index;not null"`
 	Mode   domain.AccessMode `gorm:"not null;default:2"`
 }
 
@@ -66,7 +67,7 @@ func (r *Repository) AddCollaborator(u *User) error {
 		}
 
 		if err = r.recalculateAccesses(tx); err != nil {
-			return errors.Newf("recalculateAccesses [repo_id: %v]: %v", r.ID, err)
+			return fmt.Errorf("recalculateAccesses [repo_id: %v]: %v", r.ID, err)
 		}
 		return nil
 	})
@@ -98,7 +99,7 @@ func (c *Collaborator) APIFormat() *apiv2types.RepositoryCollaboratorResponse {
 func (r *Repository) getCollaborators(tx *gorm.DB) ([]*Collaborator, error) {
 	collaborations, err := r.getCollaborations(tx)
 	if err != nil {
-		return nil, errors.Newf("getCollaborations: %v", err)
+		return nil, fmt.Errorf("getCollaborations: %v", err)
 	}
 
 	collaborators := make([]*Collaborator, len(collaborations))
@@ -133,7 +134,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil
 		}
-		return errors.Newf("get collaboration: %v", err)
+		return fmt.Errorf("get collaboration: %v", err)
 	}
 
 	if collaboration.Mode == mode {
@@ -145,7 +146,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 	if r.Owner.IsOrganization() {
 		teams, err := GetUserTeams(r.OwnerID, userID)
 		if err != nil {
-			return errors.Newf("GetUserTeams: [org_id: %d, user_id: %d]: %v", r.OwnerID, userID, err)
+			return fmt.Errorf("GetUserTeams: [org_id: %d, user_id: %d]: %v", r.OwnerID, userID, err)
 		}
 		for i := range teams {
 			if mode < teams[i].Authorize {
@@ -156,7 +157,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(collaboration).Updates(collaboration).Error; err != nil {
-			return errors.Newf("update collaboration: %v", err)
+			return fmt.Errorf("update collaboration: %v", err)
 		}
 
 		access := &Access{
@@ -165,7 +166,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 		}
 		err = tx.Where("user_id = ? AND repo_id = ?", userID, r.ID).First(access).Error
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.Newf("get access record: %v", err)
+			return fmt.Errorf("get access record: %v", err)
 		}
 
 		if err == nil {

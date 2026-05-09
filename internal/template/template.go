@@ -10,20 +10,17 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/editorconfig/editorconfig-core-go/v2"
-	"golang.org/x/net/html/charset"
-	"golang.org/x/text/transform"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/cryptox"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/gitx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/tool"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/transform"
 )
 
 var (
@@ -71,12 +68,12 @@ func FuncMap() []template.FuncMap {
 			"Sanitize": func(s string) string {
 				return s
 			},
-			"Str2HTML":         Str2HTML,
-			"NewLine2br":       NewLine2br,
-			"TimeSince":        tool.TimeSince,
-			"RawTimeSince":     tool.RawTimeSince,
-			"FileSize":         tool.FileSize,
-			"Subtract":         tool.Subtract,
+			"Str2HTML":     Str2HTML,
+			"NewLine2br":   NewLine2br,
+			"TimeSince":    tool.TimeSince,
+			"RawTimeSince": tool.RawTimeSince,
+			"FileSize":     tool.FileSize,
+			"Subtract":     tool.Subtract,
 			"Add": func(a, b int) int {
 				return a + b
 			},
@@ -158,7 +155,7 @@ func ToUTF8WithErr(content []byte) (string, error) {
 
 	encoding, _ := charset.Lookup(charsetLabel)
 	if encoding == nil {
-		return string(content), errors.Newf("unknown encoding: %s", charsetLabel)
+		return string(content), fmt.Errorf("unknown encoding: %s", charsetLabel)
 	}
 
 	// If there is an error, we concatenate the nicely decoded part and the

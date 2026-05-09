@@ -1,9 +1,9 @@
 package gitx
 
 import (
-	"github.com/cockroachdb/errors"
-	"github.com/gogs/git-module"
+	"errors"
 
+	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/errx"
 )
 
@@ -27,16 +27,16 @@ func NewError(err error) error {
 // IsErrSubmoduleNotExist returns true if the underlying error is
 // git.ErrSubmoduleNotExist.
 func IsErrSubmoduleNotExist(err error) bool {
-	return errors.Cause(err) == git.ErrSubmoduleNotExist
+	return errors.Is(err, git.ErrSubmoduleNotExist)
 }
 
 // IsErrRevisionNotExist returns true if the underlying error is
 // git.ErrRevisionNotExist.
 func IsErrRevisionNotExist(err error) bool {
-	return errors.Cause(err) == git.ErrRevisionNotExist
+	return errors.Is(err, git.ErrRevisionNotExist)
 }
 
 // IsErrNoMergeBase returns true if the underlying error is git.ErrNoMergeBase.
 func IsErrNoMergeBase(err error) bool {
-	return errors.Cause(err) == git.ErrNoMergeBase
+	return errors.Is(err, git.ErrNoMergeBase)
 }

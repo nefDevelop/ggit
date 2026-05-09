@@ -9,13 +9,12 @@ import (
 	"strings"
 
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/tool"
-	log "unknwon.dev/clog/v2"
 )
 
 // GetRepoArchive serves the repository as a zip or tar.gz archive.
@@ -72,7 +71,7 @@ func GetRepoArchive(c *context.APIContext) {
 			log.Trace("[DEBUG] Resolved as tag: %s", refName)
 		}
 	}
-	
+
 	if err != nil {
 		log.Trace("[DEBUG] Not found in Git branches/tags, trying release fallback for: %s", refName)
 		// Fallback: Check if there is a release with this tag name and use its stored SHA.
@@ -134,7 +133,7 @@ func serveRawFile(c *context.APIContext, isMedia bool) {
 		commit *git.Commit
 		err    error
 	)
-	
+
 	if gitRepo.HasBranch(refName) {
 		commit, err = gitRepo.BranchCommit(refName)
 	} else if gitRepo.HasTag(refName) {

@@ -6,23 +6,22 @@ import (
 	"crypto/tls"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/httplib"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/netx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/sync"
+	"gorm.io/gorm"
 )
 
 var HookQueue = sync.NewUniqueQueue(1000)
@@ -594,7 +593,7 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 			EventType:        event,
 			IsSSL:            w.IsSSL,
 		}); err != nil {
-			return errors.Newf("createHookTask: %v", err)
+			return fmt.Errorf("createHookTask: %v", err)
 		}
 	}
 
@@ -608,7 +607,7 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 func PrepareWebhooksWithDB(db *gorm.DB, repo *Repository, event HookEventType, p apiv2types.WebhookPayloader) error {
 	webhooks, err := getActiveWebhooksByRepoID(db, repo.ID)
 	if err != nil {
-		return errors.Newf("getActiveWebhooksByRepoID [%d]: %v", repo.ID, err)
+		return fmt.Errorf("getActiveWebhooksByRepoID [%d]: %v", repo.ID, err)
 	}
 
 	// check if repo belongs to org and append additional webhooks
@@ -616,7 +615,7 @@ func PrepareWebhooksWithDB(db *gorm.DB, repo *Repository, event HookEventType, p
 		// get hooks for org
 		orgws, err := getActiveWebhooksByOrgID(db, repo.OwnerID)
 		if err != nil {
-			return errors.Newf("getActiveWebhooksByOrgID [%d]: %v", repo.OwnerID, err)
+			return fmt.Errorf("getActiveWebhooksByOrgID [%d]: %v", repo.OwnerID, err)
 		}
 		webhooks = append(webhooks, orgws...)
 	}
@@ -644,7 +643,7 @@ func TestWebhook(repo *Repository, event HookEventType, p apiv2types.WebhookPayl
 	}
 	webhook, err := GetWebhookOfRepoByID(repo.ID, webhookID)
 	if err != nil {
-		return errors.Newf("GetWebhookOfRepoByID [repo_id: %d, id: %d]: %v", repo.ID, webhookID, err)
+		return fmt.Errorf("GetWebhookOfRepoByID [repo_id: %d, id: %d]: %v", repo.ID, webhookID, err)
 	}
 	return prepareHookTasks(tx, repo, event, p, []*Webhook{webhook})
 }

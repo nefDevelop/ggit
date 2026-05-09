@@ -5,22 +5,21 @@ import (
 	"net/url"
 	"strings"
 
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 )
 
 type MigrateRepoForm struct {
-	CloneAddr    string `json:"clone_addr" binding:"required"`
-	AuthUsername string `json:"auth_username"`
-	AuthPassword string `json:"auth_password"`
-	UID          int64  `json:"uid" binding:"required"`
-	RepoName     string `json:"repo_name" binding:"required,max=100"`
-	Private      bool   `json:"private"`
-	Unlisted     bool   `json:"unlisted"`
+	CloneAddr     string `json:"clone_addr" binding:"required"`
+	AuthUsername  string `json:"auth_username"`
+	AuthPassword  string `json:"auth_password"`
+	UID           int64  `json:"uid" binding:"required"`
+	RepoName      string `json:"repo_name" binding:"required,max=100"`
+	Private       bool   `json:"private"`
+	Unlisted      bool   `json:"unlisted"`
 	Description   string `json:"description" binding:"max=512"`
 	IsArchived    bool   `json:"is_archived"`
 	Website       string `json:"website" binding:"max=100"`
@@ -66,14 +65,14 @@ func MigrateRepo(c *context.APIContext) {
 	}
 
 	repo, err := database.MigrateRepository(c.User, database.FromDomainUser(ctxUser), database.MigrateRepoOptions{
-		Name:        f.RepoName,
-		Description: f.Description,
+		Name:          f.RepoName,
+		Description:   f.Description,
 		IsPrivate:     f.Private || conf.Repository.ForcePrivate,
 		IsUnlisted:    f.Unlisted,
 		IsArchived:    f.IsArchived,
 		Website:       f.Website,
 		DefaultBranch: f.DefaultBranch,
-		RemoteAddr:  remoteAddr,
+		RemoteAddr:    remoteAddr,
 	})
 
 	if err != nil {
@@ -92,7 +91,7 @@ func MigrateRepo(c *context.APIContext) {
 	}
 
 	log.Trace("Repository migrated [%d]: %s/%s", repo.ID, ctxUser.Name, f.RepoName)
-	
+
 	// Analyze languages after migration
 	if err := reposervice.UpdateRepositoryLanguages(repo); err != nil {
 		log.Error("UpdateRepositoryLanguages after migration: %v", err)

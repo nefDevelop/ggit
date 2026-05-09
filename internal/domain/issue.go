@@ -7,26 +7,26 @@ import (
 
 // Issue represents an issue or pull request of repository.
 type Issue struct {
-	ID              int64
-	RepoID          int64
-	Repo            *Repository
-	Index           int64
-	PosterID        int64
-	Poster          *User
-	Title           string
-	Content         string
-	Labels          []*Label
-	MilestoneID     int64
-	Milestone       *Milestone
-	Priority        int
-	AssigneeID      int64
-	Assignee        *User
-	IsClosed        bool
-	IsPull          bool
-	NumComments     int
-	Deadline        time.Time
-	Created         time.Time
-	Updated         time.Time
+	ID          int64
+	RepoID      int64
+	Repo        *Repository
+	Index       int64
+	PosterID    int64
+	Poster      *User
+	Title       string
+	Content     string
+	Labels      []*Label
+	MilestoneID int64
+	Milestone   *Milestone
+	Priority    int
+	AssigneeID  int64
+	Assignee    *User
+	IsClosed    bool
+	IsPull      bool
+	NumComments int
+	Deadline    time.Time
+	Created     time.Time
+	Updated     time.Time
 }
 
 // Label represents a label for issues.

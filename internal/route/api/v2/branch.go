@@ -183,15 +183,15 @@ func GetBranchProtection(c *context.APIContext) {
 func UpdateBranchProtection(c *context.APIContext) {
 	branchName := c.Params("branch")
 	var f struct {
-		Protected              bool   `json:"protected"`
-		RequirePullRequest     bool   `json:"require_pull_request"`
-		EnableWhitelist        bool   `json:"enable_whitelist"`
-		WhitelistUserIDs       string `json:"whitelist_user_ids"`
-		WhitelistTeamIDs       string `json:"whitelist_team_ids"`
-		RequiredApprovals      int    `json:"required_approvals"`
-		EnableMergeWhitelist   bool   `json:"enable_merge_whitelist"`
-		MergeWhitelistUserIDs  string `json:"merge_whitelist_user_ids"`
-		MergeWhitelistTeamIDs  string `json:"merge_whitelist_team_ids"`
+		Protected             bool   `json:"protected"`
+		RequirePullRequest    bool   `json:"require_pull_request"`
+		EnableWhitelist       bool   `json:"enable_whitelist"`
+		WhitelistUserIDs      string `json:"whitelist_user_ids"`
+		WhitelistTeamIDs      string `json:"whitelist_team_ids"`
+		RequiredApprovals     int    `json:"required_approvals"`
+		EnableMergeWhitelist  bool   `json:"enable_merge_whitelist"`
+		MergeWhitelistUserIDs string `json:"merge_whitelist_user_ids"`
+		MergeWhitelistTeamIDs string `json:"merge_whitelist_team_ids"`
 		BlockOnOutdatedBranch bool   `json:"block_on_outdated_branch"`
 	}
 	if err := c.ShouldBindJSON(&f); err != nil {

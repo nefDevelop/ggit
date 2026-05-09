@@ -1,9 +1,11 @@
 package migrations
 
 import (
-	"github.com/cockroachdb/errors"
+	"errors"
+	"fmt"
+
+	log "github.com/nef734/ggit/internal/log"
 	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
 )
 
 const minDBVersion = 19
@@ -92,7 +94,7 @@ func Migrate(db *gorm.DB) error {
 	if !db.Migrator().HasTable(new(Version)) {
 		err := db.AutoMigrate(new(Version))
 		if err != nil {
-			return errors.Wrap(err, `auto migrate "version" table`)
+			return fmt.Errorf(`auto migrate "version" table`+": %w", err)
 		}
 	}
 
@@ -106,12 +108,12 @@ func Migrate(db *gorm.DB) error {
 			},
 		).Error
 		if err != nil {
-			return errors.Wrap(err, "create the version record")
+			return fmt.Errorf("create the version record"+": %w", err)
 		}
 		return nil
 
 	} else if err != nil {
-		return errors.Wrap(err, "get the version record")
+		return fmt.Errorf("get the version record"+": %w", err)
 	}
 
 	if minDBVersion > current.Version {
@@ -152,7 +154,7 @@ In case you're stilling getting this notice, go through instructions again until
 		log.Info("Migration: %s", m.Description())
 		if err = m.Migrate(db); err != nil {
 			if err != errMigrationSkipped {
-				return errors.Wrap(err, "do migrate")
+				return fmt.Errorf("do migrate"+": %w", err)
 			}
 			log.Trace("The migration %q has been skipped", m.Description())
 		}
@@ -160,7 +162,7 @@ In case you're stilling getting this notice, go through instructions again until
 		current.Version++
 		err = db.Where("id = ?", current.ID).Updates(current).Error
 		if err != nil {
-			return errors.Wrap(err, "update the version record")
+			return fmt.Errorf("update the version record"+": %w", err)
 		}
 	}
 	return nil

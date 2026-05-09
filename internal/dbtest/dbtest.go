@@ -8,12 +8,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/dbx"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-
-	"github.com/nef734/ggit/internal/conf"
-	"github.com/nef734/ggit/internal/dbx"
 )
 
 // NewDB creates a new test database and initializes the given list of tables

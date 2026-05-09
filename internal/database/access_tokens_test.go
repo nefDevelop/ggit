@@ -5,11 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nef734/ggit/internal/errx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
-
-	"github.com/nef734/ggit/internal/errx"
 )
 
 func TestAccessToken_BeforeCreate(t *testing.T) {

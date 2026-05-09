@@ -16,19 +16,19 @@ const (
 
 // User represents the object of an individual or an organization.
 type User struct {
-	ID                 int64    `json:"id"`
-	LowerName          string   `json:"lower_name"`
-	Name               string   `json:"username"`
-	FullName           string   `json:"full_name"`
-	Email              string   `json:"email"`
-	Password           string   `json:"-"`
-	LoginSource        int64    `json:"login_source"`
-	LoginName          string   `json:"login_name"`
-	Type               UserType `json:"type"`
-	Location           string   `json:"location"`
-	Website            string   `json:"website"`
-	Rands              string   `json:"-"`
-	Salt               string   `json:"-"`
+	ID                 int64     `json:"id"`
+	LowerName          string    `json:"lower_name"`
+	Name               string    `json:"username"`
+	FullName           string    `json:"full_name"`
+	Email              string    `json:"email"`
+	Password           string    `json:"-"`
+	LoginSource        int64     `json:"login_source"`
+	LoginName          string    `json:"login_name"`
+	Type               UserType  `json:"type"`
+	Location           string    `json:"location"`
+	Website            string    `json:"website"`
+	Rands              string    `json:"-"`
+	Salt               string    `json:"-"`
 	Created            time.Time `json:"created_at"`
 	Updated            time.Time `json:"updated_at"`
 	LastRepoVisibility bool      `json:"last_repo_visibility"`
@@ -70,7 +70,6 @@ func (u *User) AvatarURLPath() string {
 	}
 	return "/avatars/default"
 }
-
 
 // UsersStore defines the interface for managing users.
 type UsersStore interface {

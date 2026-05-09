@@ -1,18 +1,18 @@
 package conf
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/cockroachdb/errors"
+	log "github.com/nef734/ggit/internal/log"
 	"gopkg.in/ini.v1"
-	log "unknwon.dev/clog/v2"
 )
 
 type loggerConf struct {
-	Buffer int64
-	Config any
+	Level log.Level
+	Path  string
 }
 
 type logConf struct {
@@ -26,9 +26,6 @@ var Log *logConf
 
 // initLogConf returns parsed logging configuration from given INI file. When the
 // argument "hookMode" is true, it only initializes the root path for log files.
-// NOTE: Because we always create a console logger as the primary logger at init time,
-// we need to remove it in case the user doesn't configure to use it after the logging
-// service is initialized.
 func initLogConf(cfg *ini.File, hookMode bool) (_ *logConf, hasConsole bool, _ error) {
 	rootPath := cfg.Section("log").Key("ROOT_PATH").MustString(filepath.Join(WorkDir(), "log"))
 	if hookMode {
@@ -58,39 +55,25 @@ func initLogConf(cfg *ini.File, hookMode bool) (_ *logConf, hasConsole bool, _ e
 		secName := "log." + modes[i]
 		sec, err := cfg.GetSection(secName)
 		if err != nil {
-			return nil, hasConsole, errors.Errorf("missing configuration section [%s] for %q logger", secName, modes[i])
+			return nil, hasConsole, fmt.Errorf("missing configuration section [%s] for %q logger", secName, modes[i])
 		}
 
 		level := levelMappings[strings.ToLower(sec.Key("LEVEL").MustString("trace"))]
-		buffer := sec.Key("BUFFER_LEN").MustInt64(100)
 		var c *loggerConf
 		switch modes[i] {
 		case log.DefaultConsoleName:
 			hasConsole = true
 			c = &loggerConf{
-				Buffer: buffer,
-				Config: log.ConsoleConfig{
-					Level: level,
-				},
+				Level: level,
 			}
 
 		case log.DefaultFileName:
 			logPath := filepath.Join(lc.RootPath, "gogs.log")
 			c = &loggerConf{
-				Buffer: buffer,
-				Config: log.FileConfig{
-					Level:    level,
-					Filename: logPath,
-					FileRotationConfig: log.FileRotationConfig{
-						Rotate:   sec.Key("LOG_ROTATE").MustBool(true),
-						Daily:    sec.Key("DAILY_ROTATE").MustBool(true),
-						MaxSize:  1 << uint(sec.Key("MAX_SIZE_SHIFT").MustInt(28)),
-						MaxLines: sec.Key("MAX_LINES").MustInt64(1000000),
-						MaxDays:  sec.Key("MAX_DAYS").MustInt64(7),
-					},
-				},
+				Level: level,
+				Path:  logPath,
 			}
-			
+
 		default:
 			continue
 		}
@@ -128,23 +111,20 @@ func InitLogging(hookMode bool) {
 		c := logConf.Configs[i]
 
 		var err error
-		var level log.Level
 		switch mode {
 		case log.DefaultConsoleName:
-			level = c.Config.(log.ConsoleConfig).Level
-			err = log.NewConsole(c.Buffer, c.Config)
+			err = log.NewConsole(mode, c.Level)
 		case log.DefaultFileName:
-			level = c.Config.(log.FileConfig).Level
-			err = log.NewFile(c.Buffer, c.Config)
+			err = log.NewFile(mode, c.Path, c.Level)
 		default:
-			panic("unreachable")
+			continue
 		}
 
 		if err != nil {
 			log.Fatal("Failed to init %s logger: %v", mode, err)
 			return
 		}
-		log.Trace("Log mode: %s (%s)", strings.Title(mode), strings.Title(strings.ToLower(level.String())))
+		log.Trace("Log mode: %s (%s)", strings.Title(mode), strings.Title(strings.ToLower(c.Level.String())))
 	}
 
 	// ⚠️ WARNING: It is only safe to remove the primary logger until

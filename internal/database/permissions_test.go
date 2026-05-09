@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/nef734/ggit/internal/domain"
 )
 
 func TestPerms(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // CORS returns a middleware that handles Cross-Origin Resource Sharing.

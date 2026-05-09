@@ -7,21 +7,20 @@ import (
 	"runtime"
 	"time"
 
-	"gopkg.in/ini.v1"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/cron"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/email"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/process"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/services/backup"
 	"github.com/nef734/ggit/internal/services/health"
 	"github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
+	"gopkg.in/ini.v1"
 )
 
 // GetAdminAuditLog returns all actions from the system (for admins).
@@ -227,12 +226,12 @@ func GetAdminUsers(c *context.APIContext) {
 // CreateAdminUser creates a new user account.
 func CreateAdminUser(c *context.APIContext) {
 	var f struct {
-		Username      string `json:"username" binding:"required"`
-		Email         string `json:"email" binding:"required,email,max=254"`
-		Password      string `json:"password" binding:"required,max=255"`
-		FullName      string `json:"full_name"`
-		Website       string `json:"website"`
-		Location      string `json:"location"`
+		Username         string `json:"username" binding:"required"`
+		Email            string `json:"email" binding:"required,email,max=254"`
+		Password         string `json:"password" binding:"required,max=255"`
+		FullName         string `json:"full_name"`
+		Website          string `json:"website"`
+		Location         string `json:"location"`
 		Activated        bool   `json:"activated"`
 		Admin            bool   `json:"admin"`
 		ProhibitLogin    bool   `json:"prohibit_login"`
@@ -372,10 +371,10 @@ func DeleteAdminRepo(c *context.APIContext) {
 func UpdateAdminUser(c *context.APIContext) {
 	userID := c.ParamsInt64("id")
 	var f struct {
-		FullName        *string `json:"full_name"`
-		Website         *string `json:"website"`
-		Location        *string `json:"location"`
-		MaxRepoCreation *int    `json:"max_repo_creation"`
+		FullName         *string `json:"full_name"`
+		Website          *string `json:"website"`
+		Location         *string `json:"location"`
+		MaxRepoCreation  *int    `json:"max_repo_creation"`
 		IsActivated      *bool   `json:"activated"`
 		IsAdmin          *bool   `json:"admin"`
 		ProhibitLogin    *bool   `json:"prohibit_login"`
@@ -486,7 +485,7 @@ func UpdateAdminConfig(c *context.APIContext) {
 		return
 	}
 
-	// Reload config to memory (some parts might need specific mapping, 
+	// Reload config to memory (some parts might need specific mapping,
 	// but for now we write to disk which is the source of truth for next restart)
 	// For immediate effect on some settings, we'd need more complex mapping.
 	// But according to the goal, we are prioritizing manageability.
@@ -649,12 +648,13 @@ func ExportAdminBackup(c *context.APIContext) {
 	}
 
 	c.File(path)
-	
+
 	// Cleanup old backups in the background
 	go func() {
 		_ = backup.CleanupOldBackups()
 	}()
 }
+
 // GetAdminJanitorStats returns a summary of janitor reports for all repositories.
 func GetAdminJanitorStats(c *context.APIContext) {
 	repos, err := database.RepositoriesWithUsers(1, 1000)
@@ -677,7 +677,7 @@ func GetAdminJanitorStats(c *context.APIContext) {
 		if r.JanitorReport == "" {
 			continue
 		}
-		
+
 		var report struct {
 			TotalWaste int64 `json:"total_waste"`
 			Issues     []any `json:"issues"`

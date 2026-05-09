@@ -3,11 +3,11 @@ package lfsx
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-
-	"github.com/cockroachdb/errors"
 
 	"github.com/nef734/ggit/internal/osx"
 )
@@ -89,7 +89,7 @@ func (s *LocalStorage) UploadTemp(oid OID, rc io.ReadCloser) (int64, string, err
 	defer rc.Close()
 
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return 0, "", errors.Wrap(err, "create directories")
+		return 0, "", fmt.Errorf("create directories"+": %w", err)
 	}
 
 	// If the object file already exists, skip the upload and return the
@@ -101,11 +101,11 @@ func (s *LocalStorage) UploadTemp(oid OID, rc io.ReadCloser) (int64, string, err
 
 	// Write to a temp file and verify the content hash before publishing.
 	if err := os.MkdirAll(s.TempDir, os.ModePerm); err != nil {
-		return 0, "", errors.Wrap(err, "create temp directory")
+		return 0, "", fmt.Errorf("create temp directory"+": %w", err)
 	}
 	tmp, err := os.CreateTemp(s.TempDir, "upload-*")
 	if err != nil {
-		return 0, "", errors.Wrap(err, "create temp file")
+		return 0, "", fmt.Errorf("create temp file"+": %w", err)
 	}
 	tmpPath := tmp.Name()
 
@@ -116,7 +116,7 @@ func (s *LocalStorage) UploadTemp(oid OID, rc io.ReadCloser) (int64, string, err
 	}
 	if err != nil {
 		_ = os.Remove(tmpPath)
-		return 0, "", errors.Wrap(err, "write object file")
+		return 0, "", fmt.Errorf("write object file"+": %w", err)
 	}
 
 	if computed := hex.EncodeToString(hash.Sum(nil)); computed != string(oid) {
@@ -130,7 +130,7 @@ func (s *LocalStorage) UploadTemp(oid OID, rc io.ReadCloser) (int64, string, err
 func (s *LocalStorage) Publish(oid OID, tempPath string) error {
 	fpath := s.storagePath(oid)
 	if err := os.Rename(tempPath, fpath); err != nil && !os.IsExist(err) {
-		return errors.Wrap(err, "publish object file")
+		return fmt.Errorf("publish object file"+": %w", err)
 	}
 	return nil
 }
@@ -147,13 +147,13 @@ func (s *LocalStorage) Download(oid OID, w io.Writer) error {
 
 	r, err := os.Open(fpath)
 	if err != nil {
-		return errors.Wrap(err, "open file")
+		return fmt.Errorf("open file"+": %w", err)
 	}
 	defer r.Close()
 
 	_, err = io.Copy(w, r)
 	if err != nil {
-		return errors.Wrap(err, "copy file")
+		return fmt.Errorf("copy file"+": %w", err)
 	}
 	return nil
 }

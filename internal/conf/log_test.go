@@ -4,9 +4,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/ini.v1"
-	log "unknwon.dev/clog/v2"
 )
 
 func Test_initLogConf(t *testing.T) {
@@ -81,23 +81,10 @@ MAX_DAYS = 3
 		},
 		Configs: []*loggerConf{
 			{
-				Buffer: 10,
-				Config: log.ConsoleConfig{
-					Level: log.LevelTrace,
-				},
+				Level: log.LevelTrace,
 			}, {
-				Buffer: 50,
-				Config: log.FileConfig{
-					Level:    log.LevelInfo,
-					Filename: filepath.Join(WorkDir(), "log", "gogs.log"),
-					FileRotationConfig: log.FileRotationConfig{
-						Rotate:   true,
-						Daily:    true,
-						MaxSize:  1 << 20,
-						MaxLines: 1000,
-						MaxDays:  3,
-					},
-				},
+				Level: log.LevelInfo,
+				Path:  filepath.Join(WorkDir(), "log", "gogs.log"),
 			},
 		},
 	}

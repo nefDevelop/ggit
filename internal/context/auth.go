@@ -2,19 +2,18 @@ package context
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/tool"
 )
 
@@ -333,7 +332,7 @@ func authenticatedUser(store AuthStore, ctx *gin.Context, sess any) (_ *database
 func AuthenticateByToken(store AuthStore, ctx context.Context, token string) (*database.User, error) {
 	t, err := store.GetAccessTokenBySHA1(ctx, token)
 	if err != nil {
-		return nil, errors.Wrap(err, "get access token by SHA1")
+		return nil, fmt.Errorf("get access token by SHA1"+": %w", err)
 	}
 	if err = store.TouchAccessTokenByID(ctx, t.ID); err != nil {
 		// NOTE: There is no need to fail the auth flow if we can't touch the token.
@@ -342,7 +341,7 @@ func AuthenticateByToken(store AuthStore, ctx context.Context, token string) (*d
 
 	user, err := store.GetUserByID(ctx, t.UserID)
 	if err != nil {
-		return nil, errors.Wrapf(err, "get user by ID [user_id: %d]", t.UserID)
+		return nil, fmt.Errorf("get user by ID [user_id: %d]: %w", t.UserID, err)
 	}
 	return user, nil
 }

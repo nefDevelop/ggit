@@ -17,32 +17,32 @@ import (
 func GetRepoSettings(c *context.APIContext) {
 	repo := c.Repo.Repository
 	res := map[string]any{
-		"id":                      repo.ID,
-		"name":                    repo.Name,
-		"description":             repo.Description,
-		"website":                 repo.Website,
-		"project_folder":          repo.ProjectFolder,
-		"private":                 repo.IsPrivate,
-		"unlisted":                repo.IsUnlisted,
-		"archived":                repo.IsArchived,
-		"enable_wiki":             repo.EnableWiki,
-		"allow_public_wiki":       repo.AllowPublicWiki,
-		"enable_external_wiki":    repo.EnableExternalWiki,
-		"external_wiki_url":       repo.ExternalWikiURL,
-		"wiki_folder_name":        repo.WikiFolderName,
-		"enable_issues":           repo.EnableIssues,
-		"allow_public_issues":     repo.AllowPublicIssues,
-		"enable_external_tracker": repo.EnableExternalTracker,
-		"external_tracker_url":    repo.ExternalTrackerURL,
-		"external_tracker_format": repo.ExternalTrackerFormat,
-		"external_tracker_style":  repo.ExternalTrackerStyle,
-		"enable_pulls":            repo.EnablePulls,
-		"pulls_ignore_whitespace": repo.PullsIgnoreWhitespace,
-		"pulls_allow_rebase":      repo.PullsAllowRebase,
+		"id":                       repo.ID,
+		"name":                     repo.Name,
+		"description":              repo.Description,
+		"website":                  repo.Website,
+		"project_folder":           repo.ProjectFolder,
+		"private":                  repo.IsPrivate,
+		"unlisted":                 repo.IsUnlisted,
+		"archived":                 repo.IsArchived,
+		"enable_wiki":              repo.EnableWiki,
+		"allow_public_wiki":        repo.AllowPublicWiki,
+		"enable_external_wiki":     repo.EnableExternalWiki,
+		"external_wiki_url":        repo.ExternalWikiURL,
+		"wiki_folder_name":         repo.WikiFolderName,
+		"enable_issues":            repo.EnableIssues,
+		"allow_public_issues":      repo.AllowPublicIssues,
+		"enable_external_tracker":  repo.EnableExternalTracker,
+		"external_tracker_url":     repo.ExternalTrackerURL,
+		"external_tracker_format":  repo.ExternalTrackerFormat,
+		"external_tracker_style":   repo.ExternalTrackerStyle,
+		"enable_pulls":             repo.EnablePulls,
+		"pulls_ignore_whitespace":  repo.PullsIgnoreWhitespace,
+		"pulls_allow_rebase":       repo.PullsAllowRebase,
 		"pulls_allow_manual_merge": repo.PullsAllowManualMerge,
-		"default_branch":          repo.DefaultBranch,
-		"use_custom_avatar":       repo.UseCustomAvatar,
-		"avatar_url":              repo.AvatarLink(),
+		"default_branch":           repo.DefaultBranch,
+		"use_custom_avatar":        repo.UseCustomAvatar,
+		"avatar_url":               repo.AvatarLink(),
 	}
 
 	c.JSON(http.StatusOK, res)
@@ -183,7 +183,7 @@ func GetRepoHooks(c *context.APIContext) {
 		c.Error(err, "get webhooks")
 		return
 	}
-	
+
 	resp := make([]*apiv2types.WebhookResponse, len(ws))
 	for i, w := range ws {
 		resp[i] = ToWebhookResponse(w)
@@ -284,16 +284,16 @@ func UpdateRepoHook(c *context.APIContext) {
 // TestRepoHook triggers a test delivery for a webhook.
 func TestRepoHook(c *context.APIContext) {
 	id := c.ParamsInt64("id")
-	
+
 	// Create a dummy push payload for testing
 	p := &apiv2types.WebhookPushPayload{
-		Ref: "refs/heads/master",
-		Before: "0000000000000000000000000000000000000000",
-		After: "0000000000000000000000000000000000000000",
+		Ref:     "refs/heads/master",
+		Before:  "0000000000000000000000000000000000000000",
+		After:   "0000000000000000000000000000000000000000",
 		Commits: []*apiv2types.WebhookPayloadCommit{},
-		Pusher: ToUserResponse(c.User),
-		Sender: ToUserResponse(c.User),
-		Repo: ToRepositoryResponse(c.Repo.Repository),
+		Pusher:  ToUserResponse(c.User),
+		Sender:  ToUserResponse(c.User),
+		Repo:    ToRepositoryResponse(c.Repo.Repository),
 	}
 
 	if err := database.TestWebhook(c.Repo.Repository, database.HookEventTypePush, p, id); err != nil {

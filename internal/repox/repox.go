@@ -1,15 +1,13 @@
 package repox
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"os"
-	"fmt"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/conf"
 )
 
@@ -88,7 +86,7 @@ func SelfHealHooks(repoPath string) error {
 			if os.IsNotExist(err) {
 				shouldWrite = true
 			} else {
-				return errors.Newf("stat hook '%s': %v", hookPath, err)
+				return fmt.Errorf("stat hook '%s': %v", hookPath, err)
 			}
 		} else {
 			// Check content and permissions
@@ -100,10 +98,10 @@ func SelfHealHooks(repoPath string) error {
 
 		if shouldWrite {
 			if err := os.MkdirAll(filepath.Dir(hookPath), os.ModePerm); err != nil {
-				return errors.Newf("create hooks directory: %v", err)
+				return fmt.Errorf("create hooks directory: %v", err)
 			}
 			if err := os.WriteFile(hookPath, []byte(expectedContent), os.ModePerm); err != nil {
-				return errors.Newf("repair delegate hook '%s': %v", hookPath, err)
+				return fmt.Errorf("repair delegate hook '%s': %v", hookPath, err)
 			}
 		}
 	}

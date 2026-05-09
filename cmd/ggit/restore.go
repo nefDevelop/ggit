@@ -2,20 +2,19 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 
-	"github.com/cockroachdb/errors"
 	zip "github.com/nef734/ggit/internal/archiver"
-	"github.com/urfave/cli/v3"
-	"gopkg.in/ini.v1"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/semverx"
+	"github.com/urfave/cli/v3"
+	"gopkg.in/ini.v1"
 )
 
 var restoreCommand = cli.Command{
@@ -100,13 +99,13 @@ func runRestore(ctx context.Context, cmd *cli.Command) error {
 
 	err = conf.Init(customConf)
 	if err != nil {
-		return errors.Wrap(err, "init configuration")
+		return fmt.Errorf("init configuration"+": %w", err)
 	}
 	conf.InitLogging(true)
 
 	conn, err := database.SetEngine()
 	if err != nil {
-		return errors.Wrap(err, "set engine")
+		return fmt.Errorf("set engine"+": %w", err)
 	}
 
 	// Database

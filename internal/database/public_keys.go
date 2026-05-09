@@ -2,15 +2,15 @@ package database
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/osx"
+	"gorm.io/gorm"
 )
 
 // PublicKeysStore is the storage layer for public keys.
@@ -34,13 +34,13 @@ func (s *PublicKeysStore) RewriteAuthorizedKeys() error {
 
 	err := os.MkdirAll(conf.SSH.RootPath, os.ModePerm)
 	if err != nil {
-		return errors.Wrap(err, "create SSH root path")
+		return fmt.Errorf("create SSH root path"+": %w", err)
 	}
 	fpath := authorizedKeysPath()
 	tempPath := fpath + ".tmp"
 	f, err := os.OpenFile(tempPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
-		return errors.Wrap(err, "create temporary file")
+		return fmt.Errorf("create temporary file"+": %w", err)
 	}
 	defer func() {
 		_ = f.Close()
@@ -51,7 +51,7 @@ func (s *PublicKeysStore) RewriteAuthorizedKeys() error {
 	// putting them in the earlier lines could speed up the key lookup by SSHD.
 	rows, err := s.db.Model(&PublicKey{}).Order("updated_unix DESC").Rows()
 	if err != nil {
-		return errors.Wrap(err, "iterate public keys")
+		return fmt.Errorf("iterate public keys"+": %w", err)
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -59,31 +59,31 @@ func (s *PublicKeysStore) RewriteAuthorizedKeys() error {
 		var key PublicKey
 		err = s.db.ScanRows(rows, &key)
 		if err != nil {
-			return errors.Wrap(err, "scan rows")
+			return fmt.Errorf("scan rows"+": %w", err)
 		}
 
 		_, err = f.WriteString(key.AuthorizedString())
 		if err != nil {
-			return errors.Wrapf(err, "write key %d", key.ID)
+			return fmt.Errorf("write key %d: %w", key.ID, err)
 		}
 	}
 	if err = rows.Err(); err != nil {
-		return errors.Wrap(err, "check rows.Err")
+		return fmt.Errorf("check rows.Err"+": %w", err)
 	}
 
 	err = f.Close()
 	if err != nil {
-		return errors.Wrap(err, "close temporary file")
+		return fmt.Errorf("close temporary file"+": %w", err)
 	}
 	if osx.Exist(fpath) {
 		err = os.Remove(fpath)
 		if err != nil {
-			return errors.Wrap(err, "remove")
+			return fmt.Errorf("remove"+": %w", err)
 		}
 	}
 	err = os.Rename(tempPath, fpath)
 	if err != nil {
-		return errors.Wrap(err, "rename")
+		return fmt.Errorf("rename"+": %w", err)
 	}
 	return nil
 }
@@ -176,7 +176,7 @@ func (s *PublicKeysStore) DeletePublicKey(ctx context.Context, doer *domain.User
 		if IsErrKeyNotExist(err) {
 			return nil
 		}
-		return errors.Newf("GetPublicKeyByID: %v", err)
+		return fmt.Errorf("GetPublicKeyByID: %v", err)
 	}
 
 	// Check if user has access to delete this key.
@@ -216,13 +216,13 @@ func (s *PublicKeysStore) AddDeployKey(ctx context.Context, repoID int64, name, 
 		// First time use this deploy key.
 		if !has {
 			if err = addKey(tx, pkey); err != nil {
-				return errors.Newf("addKey: %v", err)
+				return fmt.Errorf("addKey: %v", err)
 			}
 		}
 
 		dk, err = addDeployKey(tx, pkey.ID, repoID, name, pkey.Fingerprint, mode)
 		if err != nil {
-			return errors.Newf("addDeployKey: %v", err)
+			return fmt.Errorf("addDeployKey: %v", err)
 		}
 		return nil
 	})
@@ -272,14 +272,14 @@ func (s *PublicKeysStore) DeleteDeployKey(ctx context.Context, doer *domain.User
 		if IsErrDeployKeyNotExist(err) {
 			return nil
 		}
-		return errors.Newf("GetDeployKeyByID: %v", err)
+		return fmt.Errorf("GetDeployKeyByID: %v", err)
 	}
 
 	// Check if user has access to delete this key.
 	if !doer.IsAdmin {
 		repo, err := Handle.Repositories().GetByID(ctx, key.RepoID)
 		if err != nil {
-			return errors.Newf("GetRepositoryByID: %v", err)
+			return fmt.Errorf("GetRepositoryByID: %v", err)
 		}
 		if !Handle.Permissions().Authorize(ctx, doer.ID, repo.ID, domain.AccessModeAdmin,
 			domain.AccessModeOptions{
@@ -293,7 +293,7 @@ func (s *PublicKeysStore) DeleteDeployKey(ctx context.Context, doer *domain.User
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err = tx.Where("id = ?", key.ID).Delete(new(DeployKey)).Error; err != nil {
-			return errors.Newf("delete deploy key [%d]: %v", key.ID, err)
+			return fmt.Errorf("delete deploy key [%d]: %v", key.ID, err)
 		}
 
 		// Check if this is the last reference to same key content.
@@ -324,4 +324,3 @@ func (s *PublicKeysStore) ListDeployKeys(ctx context.Context, repoID int64) ([]*
 	}
 	return res, nil
 }
-

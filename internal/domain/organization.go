@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 // ListOrgsOptions contains options for listing organizations.
 type ListOrgsOptions struct {

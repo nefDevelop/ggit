@@ -40,22 +40,22 @@ type Repository struct {
 	IsMaintenance bool
 
 	// Advanced settings
-	EnableWiki            bool
-	AllowPublicWiki       bool
-	EnableExternalWiki    bool
-	ExternalWikiURL       string
-	WikiFolderName        string
-	ADRFolderName         string
-	EnableIssues          bool
-	AllowPublicIssues     bool
-	EnableExternalTracker bool
-	ExternalTrackerURL    string
-	ExternalTrackerFormat string
-	ExternalTrackerStyle  string
-	EnablePulls           bool
-	PullsIgnoreWhitespace bool
-	PullsAllowRebase      bool
-	PullsAllowManualMerge bool
+	EnableWiki                          bool
+	AllowPublicWiki                     bool
+	EnableExternalWiki                  bool
+	ExternalWikiURL                     string
+	WikiFolderName                      string
+	ADRFolderName                       string
+	EnableIssues                        bool
+	AllowPublicIssues                   bool
+	EnableExternalTracker               bool
+	ExternalTrackerURL                  string
+	ExternalTrackerFormat               string
+	ExternalTrackerStyle                string
+	EnablePulls                         bool
+	PullsIgnoreWhitespace               bool
+	PullsAllowRebase                    bool
+	PullsAllowManualMerge               bool
 	BlockMergeOnPendingReviews          bool
 	BlockMergeOnUnresolvedConversations bool
 	RequiredApprovals                   int

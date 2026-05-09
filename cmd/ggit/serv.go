@@ -10,12 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/urfave/cli/v3"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
+	log "github.com/nef734/ggit/internal/log"
+	"github.com/urfave/cli/v3"
 )
 
 const (
@@ -65,15 +64,7 @@ func setup(cmd *cli.Command, logFile string, connectDB bool) {
 		level = log.LevelError
 	}
 
-	err = log.NewFile(log.FileConfig{
-		Level:    level,
-		Filename: filepath.Join(conf.Log.RootPath, "hooks", logFile),
-		FileRotationConfig: log.FileRotationConfig{
-			Rotate:  true,
-			Daily:   true,
-			MaxDays: 3,
-		},
-	})
+	err = log.NewFile(log.DefaultFileName, filepath.Join(conf.Log.RootPath, "hooks", logFile), level)
 	if err != nil {
 		fail("Internal error", "Failed to init file logger: %v", err)
 	}

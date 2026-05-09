@@ -6,11 +6,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	log "unknwon.dev/clog/v2"
-
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/context"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/tool"
 )

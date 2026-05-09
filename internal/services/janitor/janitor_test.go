@@ -10,10 +10,10 @@ import (
 
 func TestJanitorPatterns(t *testing.T) {
 	tests := []struct {
-		filename    string
-		wantType    string
-		wantDesc    string
-		wantMatch   bool
+		filename  string
+		wantType  string
+		wantDesc  string
+		wantMatch bool
 	}{
 		{".DS_Store", "system", "macOS metadata file", true},
 		{"node_modules", "dependency", "Node.js dependencies (should be in .gitignore)", true},
@@ -41,7 +41,7 @@ func TestJanitorPatterns(t *testing.T) {
 			assert.Equal(t, tt.wantMatch, matchFound)
 			if tt.wantMatch {
 				assert.Equal(t, tt.wantDesc, foundDesc)
-				
+
 				// Test Type Logic
 				issueType := "build"
 				if strings.Contains(foundDesc, "dependencies") || strings.Contains(foundDesc, "environment") {

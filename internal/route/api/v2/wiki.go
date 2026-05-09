@@ -8,13 +8,11 @@ import (
 	"strings"
 	"sync"
 
-	"unknwon.dev/clog/v2"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/markup"
 )
 
@@ -32,7 +30,7 @@ var wikiSidebarCache sync.Map // key: repo_id:commit_sha
 // ListWikiPages returns a tree of wiki pages (Markdown files in the configured wiki folder).
 func ListWikiPages(c *context.APIContext) {
 	branch := c.Repo.Repository.DefaultBranch
-	clog.Trace("Using branch for wiki: %s", branch)
+	log.Trace("Using branch for wiki: %s", branch)
 	commit, err := c.Repo.GitRepo.BranchCommit(branch)
 	if err != nil {
 		c.Error(err, "get branch commit")
@@ -43,7 +41,7 @@ func ListWikiPages(c *context.APIContext) {
 	if wikiFolder == "" {
 		wikiFolder = "docs"
 	}
-	clog.Trace("Listing wiki pages in folder: [ %s ]", wikiFolder)
+	log.Trace("Listing wiki pages in folder: [ %s ]", wikiFolder)
 
 	cacheKey := fmt.Sprintf("%d:%s", c.Repo.Repository.ID, commit.ID.String())
 	if val, ok := wikiSidebarCache.Load(cacheKey); ok {
@@ -54,12 +52,12 @@ func ListWikiPages(c *context.APIContext) {
 	// Root scan
 	tree, err := commit.Subtree(wikiFolder)
 	if err != nil {
-		clog.Trace("Subtree(%s) failed: %v", wikiFolder, err)
+		log.Trace("Subtree(%s) failed: %v", wikiFolder, err)
 		// Fallback to .docs if docs doesn't exist and folder is default
 		if wikiFolder == "docs" {
 			tree, err = commit.Subtree(".docs")
 			if err != nil {
-				clog.Trace("Subtree(.docs) fallback also failed: %v", err)
+				log.Trace("Subtree(.docs) fallback also failed: %v", err)
 			}
 		}
 	}
@@ -70,7 +68,7 @@ func ListWikiPages(c *context.APIContext) {
 	}
 
 	pages := buildWikiTree(c, tree, "")
-	
+
 	// Sort top level
 	sortWikiPages(pages)
 
@@ -83,11 +81,11 @@ func buildWikiTree(c *context.APIContext, tree *git.Tree, relPath string) []*Wik
 	if err != nil {
 		return nil
 	}
-	clog.Trace("buildWikiTree: found %d entries in relPath: '%s'", len(entries), relPath)
+	log.Trace("buildWikiTree: found %d entries in relPath: '%s'", len(entries), relPath)
 
 	pages := make([]*WikiPage, 0, len(entries))
 	for _, entry := range entries {
-		clog.Trace("Processing wiki entry: %s (Type: %v)", entry.Name(), entry.Type())
+		log.Trace("Processing wiki entry: %s (Type: %v)", entry.Name(), entry.Type())
 		if strings.HasPrefix(entry.Name(), ".") {
 			continue // ignore hidden
 		}
@@ -113,11 +111,11 @@ func buildWikiTree(c *context.APIContext, tree *git.Tree, relPath string) []*Wik
 		ext := strings.ToLower(path.Ext(entry.Name()))
 		if ext == ".md" || ext == ".mdx" {
 			name := strings.TrimSuffix(entry.Name(), path.Ext(entry.Name()))
-			
+
 			// Read frontmatter for title and order
 			title := name
 			order := 1000 // default high order
-			
+
 			blob, err := entry.Blob().Bytes()
 			if err == nil {
 				meta, _ := markup.ExtractMetadata(blob)
@@ -156,7 +154,7 @@ func sortWikiPages(pages []*WikiPage) {
 
 func GetWikiPage(c *context.APIContext) {
 	pagePath := strings.TrimPrefix(c.Params("page"), "/")
-	clog.Trace("GetWikiPage params path: %s", pagePath)
+	log.Trace("GetWikiPage params path: %s", pagePath)
 	if pagePath == "" {
 		ListWikiPages(c)
 		return
@@ -174,7 +172,7 @@ func GetWikiPage(c *context.APIContext) {
 	if pagePath == "" {
 		pagePath = "README"
 	}
-	
+
 	branch := c.Repo.Repository.DefaultBranch
 	commit, err := c.Repo.GitRepo.BranchCommit(branch)
 	if err != nil {
@@ -205,7 +203,7 @@ func GetWikiPage(c *context.APIContext) {
 			possiblePaths = append(possiblePaths, path.Join(".docs", "README.mdx"))
 		}
 	}
-	
+
 	// Also try the name directly if it ends with .md or is a folder index
 	// but the UI usually sends the path without .md
 

@@ -78,6 +78,7 @@ func CreateIssue(c *context.APIContext) {
 
 	c.JSON(http.StatusCreated, apiIssue)
 }
+
 // GetIssue returns a single issue by its index.
 func GetIssue(c *context.APIContext) {
 	idx := c.ParamsInt64("index")

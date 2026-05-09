@@ -3,10 +3,9 @@ package migrations
 import (
 	"testing"
 
+	"github.com/nef734/ggit/internal/dbtest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/nef734/ggit/internal/dbtest"
 )
 
 type accessTokenPreV20 struct {

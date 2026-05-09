@@ -2,16 +2,15 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/cryptox"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	"gorm.io/gorm"
 )
 
 // AccessToken is a personal access token.
@@ -95,7 +94,8 @@ type ErrAccessTokenAlreadyExist struct {
 }
 
 func IsErrAccessTokenAlreadyExist(err error) bool {
-	return errors.As(err, &ErrAccessTokenAlreadyExist{})
+	var target ErrAccessTokenAlreadyExist
+	return errors.As(err, &target)
 }
 
 func (err ErrAccessTokenAlreadyExist) Error() string {
@@ -148,7 +148,8 @@ type ErrAccessTokenNotExist struct {
 // IsErrAccessTokenNotExist returns true if the underlying error has the type
 // ErrAccessTokenNotExist.
 func IsErrAccessTokenNotExist(err error) bool {
-	return errors.As(errors.Cause(err), &ErrAccessTokenNotExist{})
+	var target ErrAccessTokenNotExist
+	return errors.As(err, &target)
 }
 
 func (err ErrAccessTokenNotExist) Error() string {

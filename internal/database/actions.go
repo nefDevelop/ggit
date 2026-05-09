@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"path"
 	"strconv"
@@ -10,19 +11,16 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lazyregexp"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/repox"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/strx"
-
 	"github.com/nef734/ggit/internal/tool"
+	"gorm.io/gorm"
 )
 
 // ActionsStore is the storage layer for actions.
@@ -78,9 +76,18 @@ func (s *ActionsStore) listByOrganization(ctx context.Context, orgID, actorID, a
 
 // ListByOrganization returns actions of the organization viewable by the actor.
 // Results are paginated if `afterID` is given.
-func (s *ActionsStore) ListByOrganization(ctx context.Context, orgID, actorID, afterID int64) ([]*Action, error) {
-	actions := make([]*Action, 0, conf.UI.User.NewsFeedPagingNum)
-	return actions, s.listByOrganization(ctx, orgID, actorID, afterID).Find(&actions).Error
+func (s *ActionsStore) ListByOrganization(ctx context.Context, orgID, actorID, afterID int64) ([]*domain.Action, error) {
+	models := make([]*Action, 0, conf.UI.User.NewsFeedPagingNum)
+	err := s.listByOrganization(ctx, orgID, actorID, afterID).Find(&models).Error
+	if err != nil {
+		return nil, err
+	}
+
+	actions := make([]*domain.Action, len(models))
+	for i, m := range models {
+		actions[i] = m.ToDomain()
+	}
+	return actions, nil
 }
 
 func (s *ActionsStore) listByUser(ctx context.Context, userID, actorID, afterID int64, isProfile bool) *gorm.DB {
@@ -156,7 +163,7 @@ func (s *ActionsStore) ListAuditLog(ctx context.Context, page int) ([]*domain.Ac
 func (s *ActionsStore) notifyWatchers(ctx context.Context, act *Action) error {
 	watches, err := NewRepositoriesStore(s.db).ListWatches(ctx, act.RepoID)
 	if err != nil {
-		return errors.Wrap(err, "list watches")
+		return fmt.Errorf("list watches"+": %w", err)
 	}
 
 	// Clone returns a deep copy of the action with UserID assigned
@@ -437,12 +444,12 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 
 	err := NewRepositoriesStore(s.db).Touch(ctx, optionsValue.Repo.ID)
 	if err != nil {
-		return errors.Wrap(err, "touch repository")
+		return fmt.Errorf("touch repository"+": %w", err)
 	}
 
 	pusher, err := NewUsersStore(s.db).getByUsername(ctx, optionsValue.PusherName)
 	if err != nil {
-		return errors.Wrapf(err, "get pusher [name: %s]", optionsValue.PusherName)
+		return fmt.Errorf("get pusher [name: %s]: %w", optionsValue.PusherName, err)
 	}
 
 	isNewRef := optionsValue.OldCommitID == git.EmptyID
@@ -480,13 +487,13 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 			},
 		)
 		if err != nil {
-			return errors.Wrap(err, "prepare webhooks for delete branch")
+			return fmt.Errorf("prepare webhooks for delete branch"+": %w", err)
 		}
 
 		action.OpType = ActionDeleteBranch
 		err = s.notifyWatchers(ctx, action)
 		if err != nil {
-			return errors.Wrap(err, "notify watchers")
+			return fmt.Errorf("notify watchers"+": %w", err)
 		}
 
 		// Delete branch doesn't have anything to push or compare
@@ -506,7 +513,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 
 	data, err := json.Marshal(optionsValue.Commits)
 	if err != nil {
-		return errors.Wrap(err, "marshal JSON")
+		return fmt.Errorf("marshal JSON"+": %w", err)
 	}
 	action.Content = string(data)
 
@@ -525,13 +532,13 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 			},
 		)
 		if err != nil {
-			return errors.Wrap(err, "prepare webhooks for new branch")
+			return fmt.Errorf("prepare webhooks for new branch"+": %w", err)
 		}
 
 		action.OpType = ActionCreateBranch
 		err = s.notifyWatchers(ctx, action)
 		if err != nil {
-			return errors.Wrap(err, "notify watchers")
+			return fmt.Errorf("notify watchers"+": %w", err)
 		}
 	} else {
 		compareURL = conf.Server.ExternalURL + optionsValue.Commits.CompareURL
@@ -543,7 +550,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 		repox.HTMLURL(optionsValue.Owner.Name, optionsValue.Repo.Name),
 	)
 	if err != nil {
-		return errors.Wrap(err, "convert commits to API format")
+		return fmt.Errorf("convert commits to API format"+": %w", err)
 	}
 
 	err = PrepareWebhooks(
@@ -561,13 +568,13 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 		},
 	)
 	if err != nil {
-		return errors.Wrap(err, "prepare webhooks for new commit")
+		return fmt.Errorf("prepare webhooks for new commit"+": %w", err)
 	}
 
 	action.OpType = ActionCommitRepo
 	err = s.notifyWatchers(ctx, action)
 	if err != nil {
-		return errors.Wrap(err, "notify watchers")
+		return fmt.Errorf("notify watchers"+": %w", err)
 	}
 	return nil
 }
@@ -593,14 +600,13 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
 
 	err := NewRepositoriesStore(s.db).Touch(ctx, options.Repo.ID)
 	if err != nil {
-		return errors.Wrap(err, "touch repository")
+		return fmt.Errorf("touch repository"+": %w", err)
 	}
 
 	pusher, err := NewUsersStore(s.db).getByUsername(ctx, options.PusherName)
 	if err != nil {
-		return errors.Wrapf(err, "get pusher [name: %s]", options.PusherName)
+		return fmt.Errorf("get pusher [name: %s]: %w", options.PusherName, err)
 	}
-
 
 	refName := git.RefShortName(options.RefFullName)
 	action := &Action{
@@ -628,13 +634,13 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
 			},
 		)
 		if err != nil {
-			return errors.Wrap(err, "prepare webhooks for delete tag")
+			return fmt.Errorf("prepare webhooks for delete tag"+": %w", err)
 		}
 
 		action.OpType = ActionDeleteTag
 		err = s.notifyWatchers(ctx, action)
 		if err != nil {
-			return errors.Wrap(err, "notify watchers")
+			return fmt.Errorf("notify watchers"+": %w", err)
 		}
 		return nil
 	}
@@ -653,13 +659,13 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
 		},
 	)
 	if err != nil {
-		return errors.Wrapf(err, "prepare webhooks for new tag")
+		return fmt.Errorf("prepare webhooks for new tag: %w", err)
 	}
 
 	action.OpType = ActionPushTag
 	err = s.notifyWatchers(ctx, action)
 	if err != nil {
-		return errors.Wrap(err, "notify watchers")
+		return fmt.Errorf("notify watchers"+": %w", err)
 	}
 	return nil
 }
@@ -913,4 +919,3 @@ func (pcs *PushCommits) AvatarLink(email string) string {
 
 	return pcs.avatars[email]
 }
-

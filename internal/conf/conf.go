@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"fmt"
 	"net/mail"
 	"net/url"
 	"os"
@@ -9,18 +10,16 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gopkg.in/ini.v1"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/conf"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/semverx"
+	"gopkg.in/ini.v1"
 )
 
 func init() {
 	// Initialize the primary logger until logging service is up.
-	err := log.NewConsole()
+	err := log.NewConsole(log.DefaultConsoleName, log.LevelTrace)
 	if err != nil {
 		panic("init console logger: " + err.Error())
 	}
@@ -40,14 +39,14 @@ var File *ini.File
 func Init(customConf string) error {
 	data, err := conf.Files.ReadFile("app.ini")
 	if err != nil {
-		return errors.Wrap(err, `read default "app.ini"`)
+		return fmt.Errorf("read default \"app.ini\": %w", err)
 	}
 
 	File, err = ini.LoadSources(ini.LoadOptions{
 		IgnoreInlineComment: true,
 	}, data)
 	if err != nil {
-		return errors.Wrap(err, `parse "app.ini"`)
+		return fmt.Errorf("parse \"app.ini\": %w", err)
 	}
 	File.NameMapper = ini.SnackCase
 	File.ValueMapper = os.ExpandEnv
@@ -57,21 +56,21 @@ func Init(customConf string) error {
 	} else {
 		customConf, err = filepath.Abs(customConf)
 		if err != nil {
-			return errors.Wrap(err, "get absolute path")
+			return fmt.Errorf("get absolute path: %w", err)
 		}
 	}
 	CustomConf = customConf
 
 	if osx.IsFile(customConf) {
 		if err = File.Append(customConf); err != nil {
-			return errors.Wrapf(err, "append %q", customConf)
+			return fmt.Errorf("append %q: %w", customConf, err)
 		}
 	} else if !HookMode {
 		log.Warn("Custom config %q not found. Ignore this warning if you're running for the first time", customConf)
 	}
 
 	if err = File.Section(ini.DefaultSection).MapTo(&App); err != nil {
-		return errors.Wrap(err, "mapping default section")
+		return fmt.Errorf("mapping default section: %w", err)
 	}
 
 	// ***************************
@@ -79,7 +78,7 @@ func Init(customConf string) error {
 	// ***************************
 
 	if err = File.Section("server").MapTo(&Server); err != nil {
-		return errors.Wrap(err, "mapping [server] section")
+		return fmt.Errorf("mapping [server] section: %w", err)
 	}
 	Server.AppDataPath = ensureAbs(Server.AppDataPath)
 
@@ -88,7 +87,7 @@ func Init(customConf string) error {
 	}
 	Server.URL, err = url.Parse(Server.ExternalURL)
 	if err != nil {
-		return errors.Wrapf(err, "parse '[server] EXTERNAL_URL' %q", err)
+		return fmt.Errorf("parse '[server] EXTERNAL_URL' %q: %w", err, err)
 	}
 
 	// Subpath should start with '/' and end without '/', i.e. '/{subpath}'.
@@ -97,7 +96,7 @@ func Init(customConf string) error {
 
 	unixSocketMode, err := strconv.ParseUint(Server.UnixSocketPermission, 8, 32)
 	if err != nil {
-		return errors.Wrapf(err, "parse '[server] UNIX_SOCKET_PERMISSION' %q", Server.UnixSocketPermission)
+		return fmt.Errorf("parse '[server] UNIX_SOCKET_PERMISSION' %q: %w", Server.UnixSocketPermission, err)
 	}
 	if unixSocketMode > 0o777 {
 		unixSocketMode = 0o666
@@ -111,7 +110,7 @@ func Init(customConf string) error {
 	SSH.RootPath = filepath.Join(HomeDir(), ".ssh")
 	SSH.KeyTestPath = os.TempDir()
 	if err = File.Section("server").MapTo(&SSH); err != nil {
-		return errors.Wrap(err, "mapping SSH settings from [server] section")
+		return fmt.Errorf("mapping SSH settings from [server] section: %w", err)
 	}
 	SSH.RootPath = ensureAbs(SSH.RootPath)
 	SSH.KeyTestPath = ensureAbs(SSH.KeyTestPath)
@@ -119,9 +118,9 @@ func Init(customConf string) error {
 	if !SSH.Disabled {
 		if !SSH.StartBuiltinServer {
 			if err := os.MkdirAll(SSH.RootPath, 0o700); err != nil {
-				return errors.Wrap(err, "create SSH root directory")
+				return fmt.Errorf("create SSH root directory: %w", err)
 			} else if err = os.MkdirAll(SSH.KeyTestPath, 0o644); err != nil {
-				return errors.Wrap(err, "create SSH key test directory")
+				return fmt.Errorf("create SSH key test directory: %w", err)
 			}
 		} else {
 			SSH.RewriteAuthorizedKeysAtStart = false
@@ -134,7 +133,7 @@ func Init(customConf string) error {
 		if SSH.MinimumKeySizeCheck {
 			sshVersion, err := openSSHVersion()
 			if err != nil {
-				return errors.Wrap(err, "get OpenSSH version")
+				return fmt.Errorf("get OpenSSH version: %w", err)
 			}
 
 			if IsWindowsRuntime() || semverx.Compare(sshVersion, "<", "5.1") {
@@ -160,7 +159,7 @@ func Init(customConf string) error {
 
 	Repository.Root = filepath.Join(HomeDir(), "ggit-repositories")
 	if err = File.Section("repository").MapTo(&Repository); err != nil {
-		return errors.Wrap(err, "mapping [repository] section")
+		return fmt.Errorf("mapping [repository] section: %w", err)
 	}
 	Repository.Root = ensureAbs(Repository.Root)
 	Repository.Upload.TempPath = ensureAbs(Repository.Upload.TempPath)
@@ -170,7 +169,7 @@ func Init(customConf string) error {
 	// *****************************
 
 	if err = File.Section("database").MapTo(&Database); err != nil {
-		return errors.Wrap(err, "mapping [database] section")
+		return fmt.Errorf("mapping [database] section: %w", err)
 	}
 	Database.Path = ensureAbs(Database.Path)
 
@@ -179,14 +178,14 @@ func Init(customConf string) error {
 	// *****************************
 
 	if err = File.Section("security").MapTo(&Security); err != nil {
-		return errors.Wrap(err, "mapping [security] section")
+		return fmt.Errorf("mapping [security] section: %w", err)
 	}
 
 	// Check run user when the install is locked.
 	if Security.InstallLock {
 		currentUser, match := CheckRunUser(App.RunUser)
 		if !match {
-			return errors.Newf("user configured to run Ggit is %q, but the current user is %q", App.RunUser, currentUser)
+			return fmt.Errorf("user configured to run Ggit is %q, but the current user is %q", App.RunUser, currentUser)
 		}
 	}
 
@@ -195,7 +194,7 @@ func Init(customConf string) error {
 	// **************************
 
 	if err = File.Section("email").MapTo(&Email); err != nil {
-		return errors.Wrap(err, "mapping [email] section")
+		return fmt.Errorf("mapping [email] section: %w", err)
 	}
 
 	if Email.Enabled {
@@ -205,7 +204,7 @@ func Init(customConf string) error {
 
 		parsed, err := mail.ParseAddress(Email.From)
 		if err != nil {
-			return errors.Wrapf(err, "parse mail address %q", Email.From)
+			return fmt.Errorf("parse mail address %q: %w", Email.From, err)
 		}
 		Email.FromEmail = parsed.Address
 	}
@@ -215,7 +214,7 @@ func Init(customConf string) error {
 	// ***********************************
 
 	if err = File.Section("auth").MapTo(&Auth); err != nil {
-		return errors.Wrap(err, "mapping [auth] section")
+		return fmt.Errorf("mapping [auth] section: %w", err)
 	}
 
 	// *************************
@@ -223,7 +222,7 @@ func Init(customConf string) error {
 	// *************************
 
 	if err = File.Section("user").MapTo(&User); err != nil {
-		return errors.Wrap(err, "mapping [user] section")
+		return fmt.Errorf("mapping [user] section: %w", err)
 	}
 
 	// ****************************
@@ -231,7 +230,7 @@ func Init(customConf string) error {
 	// ****************************
 
 	if err = File.Section("session").MapTo(&Session); err != nil {
-		return errors.Wrap(err, "mapping [session] section")
+		return fmt.Errorf("mapping [session] section: %w", err)
 	}
 
 	// *******************************
@@ -239,12 +238,12 @@ func Init(customConf string) error {
 	// *******************************
 
 	if err = File.Section("attachment").MapTo(&Attachment); err != nil {
-		return errors.Wrap(err, "mapping [attachment] section")
+		return fmt.Errorf("mapping [attachment] section: %w", err)
 	}
 	Attachment.Path = ensureAbs(Attachment.Path)
 
 	if err = File.Section("time").MapTo(&Time); err != nil {
-		return errors.Wrap(err, "mapping [time] section")
+		return fmt.Errorf("mapping [time] section: %w", err)
 	}
 
 	// *******************************
@@ -255,7 +254,7 @@ func Init(customConf string) error {
 	HealthCheck.MaxCommits = 1000
 	HealthCheck.IdleCheckDays = 15
 	if err = File.Section("health_check").MapTo(&HealthCheck); err != nil {
-		return errors.Wrap(err, "mapping [health_check] section")
+		return fmt.Errorf("mapping [health_check] section: %w", err)
 	}
 
 	Time.FormatLayout = map[string]string{
@@ -284,7 +283,7 @@ func Init(customConf string) error {
 	// ****************************
 
 	if err = File.Section("picture").MapTo(&Picture); err != nil {
-		return errors.Wrap(err, "mapping [picture] section")
+		return fmt.Errorf("mapping [picture] section: %w", err)
 	}
 	Picture.AvatarUploadPath = ensureAbs(Picture.AvatarUploadPath)
 	Picture.RepositoryAvatarUploadPath = ensureAbs(Picture.RepositoryAvatarUploadPath)
@@ -295,10 +294,10 @@ func Init(customConf string) error {
 
 	I18n = new(i18nConf)
 	if err = File.Section("i18n").MapTo(I18n); err != nil {
-		return errors.Wrap(err, "mapping [i18n] section")
+		return fmt.Errorf("mapping [i18n] section: %w", err)
 	}
 	I18n.dateLangs = File.Section("i18n.datelang").KeysHash()
-	
+
 	Git.MaxConcurrency = 50
 
 	// *************************
@@ -306,14 +305,14 @@ func Init(customConf string) error {
 	// *************************
 
 	if err = File.Section("lfs").MapTo(&LFS); err != nil {
-		return errors.Wrap(err, "mapping [lfs] section")
+		return fmt.Errorf("mapping [lfs] section: %w", err)
 	}
 	LFS.ObjectsPath = ensureAbs(LFS.ObjectsPath)
 	LFS.ObjectsTempPath = ensureAbs(LFS.ObjectsTempPath)
 
 	Gist.MaxVersions = 10
 	if err = File.Section("gist").MapTo(&Gist); err != nil {
-		return errors.Wrap(err, "mapping [gist] section")
+		return fmt.Errorf("mapping [gist] section: %w", err)
 	}
 
 	handleDeprecated()
@@ -324,27 +323,27 @@ func Init(customConf string) error {
 	}
 
 	if err = File.Section("cache").MapTo(&Cache); err != nil {
-		return errors.Wrap(err, "mapping [cache] section")
+		return fmt.Errorf("mapping [cache] section: %w", err)
 	} else if err = File.Section("http").MapTo(&HTTP); err != nil {
-		return errors.Wrap(err, "mapping [http] section")
+		return fmt.Errorf("mapping [http] section: %w", err)
 	} else if err = File.Section("release").MapTo(&Release); err != nil {
-		return errors.Wrap(err, "mapping [release] section")
+		return fmt.Errorf("mapping [release] section: %w", err)
 	} else if err = File.Section("webhook").MapTo(&Webhook); err != nil {
-		return errors.Wrap(err, "mapping [webhook] section")
+		return fmt.Errorf("mapping [webhook] section: %w", err)
 	} else if err = File.Section("admin").MapTo(&Admin); err != nil {
-		return errors.Wrap(err, "mapping [admin] section")
+		return fmt.Errorf("mapping [admin] section: %w", err)
 	} else if err = File.Section("cron").MapTo(&Cron); err != nil {
-		return errors.Wrap(err, "mapping [cron] section")
+		return fmt.Errorf("mapping [cron] section: %w", err)
 	} else if err = File.Section("git").MapTo(&Git); err != nil {
-		return errors.Wrap(err, "mapping [git] section")
+		return fmt.Errorf("mapping [git] section: %w", err)
 	} else if err = File.Section("api").MapTo(&API); err != nil {
-		return errors.Wrap(err, "mapping [api] section")
+		return fmt.Errorf("mapping [api] section: %w", err)
 	} else if err = File.Section("ui").MapTo(&UI); err != nil {
-		return errors.Wrap(err, "mapping [ui] section")
+		return fmt.Errorf("mapping [ui] section: %w", err)
 	} else if err = File.Section("prometheus").MapTo(&Prometheus); err != nil {
-		return errors.Wrap(err, "mapping [prometheus] section")
+		return fmt.Errorf("mapping [prometheus] section: %w", err)
 	} else if err = File.Section("other").MapTo(&Other); err != nil {
-		return errors.Wrap(err, "mapping [other] section")
+		return fmt.Errorf("mapping [other] section: %w", err)
 	}
 
 	HasRobotsTxt = osx.IsFile(filepath.Join(CustomDir(), "robots.txt"))

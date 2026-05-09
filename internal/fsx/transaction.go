@@ -1,10 +1,9 @@
 package fsx
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/cockroachdb/errors"
 )
 
 type opType int
@@ -41,7 +40,7 @@ func (t *Transaction) StageCreate(tempPath, finalPath string) {
 	})
 }
 
-// StageDelete stages a deletion operation. 
+// StageDelete stages a deletion operation.
 // It immediately moves finalPath to tempPath.
 // On commit, tempPath is permanently deleted.
 // On rollback, tempPath is moved back to finalPath.
@@ -51,11 +50,11 @@ func (t *Transaction) StageDelete(finalPath, tempPath string) error {
 	}
 
 	if err := os.MkdirAll(filepath.Dir(tempPath), 0755); err != nil {
-		return errors.Wrap(err, "mkdir temp path parent")
+		return fmt.Errorf("mkdir temp path parent"+": %w", err)
 	}
 
 	if err := os.Rename(finalPath, tempPath); err != nil {
-		return errors.Wrap(err, "move to temp for deletion")
+		return fmt.Errorf("move to temp for deletion"+": %w", err)
 	}
 
 	t.ops = append(t.ops, operation{
@@ -75,14 +74,14 @@ func (t *Transaction) Commit() error {
 				continue
 			}
 			if err := os.MkdirAll(filepath.Dir(op.finalPath), 0755); err != nil {
-				return errors.Wrap(err, "mkdir final path parent")
+				return fmt.Errorf("mkdir final path parent"+": %w", err)
 			}
 			if err := os.Rename(op.tempPath, op.finalPath); err != nil {
-				return errors.Wrap(err, "rename temp to final")
+				return fmt.Errorf("rename temp to final"+": %w", err)
 			}
 		case opDelete:
 			if err := os.RemoveAll(op.tempPath); err != nil {
-				return errors.Wrap(err, "permanent delete")
+				return fmt.Errorf("permanent delete"+": %w", err)
 			}
 		}
 	}
@@ -105,4 +104,3 @@ func (t *Transaction) Rollback() error {
 	t.ops = nil
 	return nil
 }
-

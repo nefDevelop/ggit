@@ -3,21 +3,19 @@ package v2
 import (
 	stdcontext "context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"path"
 	"strconv"
 	"strings"
 	"time"
 
-
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/gitutil"
 	"github.com/nef734/ggit/internal/gitx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/markup"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
@@ -227,7 +225,7 @@ func GetRepoView(c *context.APIContext) {
 func getRepoDirectory(c *context.APIContext) {
 	start := time.Now()
 	log.Trace("getRepoDirectory: treePath=%q", c.Repo.TreePath)
-	
+
 	if c.Repo.Commit == nil {
 		log.Trace("getRepoDirectory: commit is nil, returning no content")
 		c.Status(http.StatusNoContent)
@@ -275,13 +273,13 @@ func getRepoDirectory(c *context.APIContext) {
 		// Fetching last commit for each entry can be slow, but it's essential for a good UI.
 		// We use a simple goroutine-based approach for small counts to improve speed.
 		log.Trace("GetRepoView: Fetching last commits for %d entries in parallel", len(apiEntries))
-		
+
 		type commitResult struct {
 			index  int
 			commit *git.Commit
 		}
 		results := make(chan commitResult, len(apiEntries))
-		
+
 		for i := range apiEntries {
 			go func(idx int, entryName string) {
 				lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{
@@ -390,8 +388,6 @@ func getRepoDirectory(c *context.APIContext) {
 
 	c.JSON(http.StatusOK, res)
 }
-
-
 
 func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	blob := entry.Blob()

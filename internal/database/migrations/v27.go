@@ -6,10 +6,10 @@ import (
 
 func addBranchProtectionAndReviews(db *gorm.DB) error {
 	type ProtectBranch struct {
-		RequiredApprovals      int
-		EnableMergeWhitelist   bool
-		MergeWhitelistUserIDs  string `gorm:"type:TEXT"`
-		MergeWhitelistTeamIDs  string `gorm:"type:TEXT"`
+		RequiredApprovals     int
+		EnableMergeWhitelist  bool
+		MergeWhitelistUserIDs string `gorm:"type:TEXT"`
+		MergeWhitelistTeamIDs string `gorm:"type:TEXT"`
 		BlockOnOutdatedBranch bool
 	}
 	if err := db.AutoMigrate(&ProtectBranch{}); err != nil {
@@ -17,13 +17,13 @@ func addBranchProtectionAndReviews(db *gorm.DB) error {
 	}
 
 	type PullReview struct {
-		ID          int64 `gorm:"primaryKey"`
-		Type        int   `gorm:"not null"`
-		ReviewerID  int64 `gorm:"index"`
-		IssueID     int64 `gorm:"index"`
+		ID          int64  `gorm:"primaryKey"`
+		Type        int    `gorm:"not null"`
+		ReviewerID  int64  `gorm:"index"`
+		IssueID     int64  `gorm:"index"`
 		Content     string `gorm:"type:TEXT"`
-		CreatedUnix int64 `gorm:"not null"`
-		UpdatedUnix int64 `gorm:"not null"`
+		CreatedUnix int64  `gorm:"not null"`
+		UpdatedUnix int64  `gorm:"not null"`
 	}
 	if err := db.AutoMigrate(&PullReview{}); err != nil {
 		return err

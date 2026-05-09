@@ -3,18 +3,17 @@ package database
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/cryptox"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/strx"
+	"gorm.io/gorm"
 )
 
 // BeforeCreate implements the GORM create hook.
@@ -47,7 +46,7 @@ func newTwoFactorsStore(db *gorm.DB) *TwoFactorsStore {
 func (s *TwoFactorsStore) Create(ctx context.Context, userID int64, key, secret string) error {
 	encrypted, err := cryptox.AESGCMEncrypt(cryptox.MD5Bytes(key), []byte(secret))
 	if err != nil {
-		return errors.Wrap(err, "encrypt secret")
+		return fmt.Errorf("encrypt secret"+": %w", err)
 	}
 	tf := &TwoFactor{
 		UserID: userID,
@@ -56,7 +55,7 @@ func (s *TwoFactorsStore) Create(ctx context.Context, userID int64, key, secret 
 
 	recoveryCodes, err := generateRecoveryCodes(userID, 10)
 	if err != nil {
-		return errors.Wrap(err, "generate recovery codes")
+		return fmt.Errorf("generate recovery codes"+": %w", err)
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -76,7 +75,8 @@ type ErrTwoFactorNotFound struct {
 }
 
 func IsErrTwoFactorNotFound(err error) bool {
-	return errors.As(err, &ErrTwoFactorNotFound{})
+	var target ErrTwoFactorNotFound
+	return errors.As(err, &target)
 }
 
 func (err ErrTwoFactorNotFound) Error() string {
@@ -122,12 +122,12 @@ func (s *TwoFactorsStore) UseRecoveryCode(ctx context.Context, userID int64, cod
 			if err == gorm.ErrRecordNotFound {
 				return ErrTwoFactorRecoveryCodeNotFound{Code: code}
 			}
-			return errors.Wrap(err, "get unused recovery code")
+			return fmt.Errorf("get unused recovery code"+": %w", err)
 		}
 
 		err = tx.Model(&recoveryCode).Update("is_used", true).Error
 		if err != nil {
-			return errors.Wrap(err, "mark recovery code as used")
+			return fmt.Errorf("mark recovery code as used"+": %w", err)
 		}
 		return nil
 	})
@@ -152,14 +152,14 @@ func (s *TwoFactorsStore) GetRecoveryCodesByUserID(ctx context.Context, userID i
 func (s *TwoFactorsStore) RegenerateRecoveryCodes(ctx context.Context, userID int64) error {
 	recoveryCodes, err := generateRecoveryCodes(userID, 10)
 	if err != nil {
-		return errors.Wrap(err, "generate recovery codes")
+		return fmt.Errorf("generate recovery codes"+": %w", err)
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
-			return errors.Wrap(err, "delete recovery codes")
+			return fmt.Errorf("delete recovery codes"+": %w", err)
 		} else if err = tx.Create(recoveryCodes).Error; err != nil {
-			return errors.Wrap(err, "insert new recovery codes")
+			return fmt.Errorf("insert new recovery codes"+": %w", err)
 		}
 		return nil
 	})
@@ -169,9 +169,9 @@ func (s *TwoFactorsStore) RegenerateRecoveryCodes(ctx context.Context, userID in
 func (s *TwoFactorsStore) Delete(ctx context.Context, userID int64) (err error) {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err = tx.Where("user_id = ?", userID).Delete(new(TwoFactor)).Error; err != nil {
-			return errors.Wrap(err, "delete two-factor")
+			return fmt.Errorf("delete two-factor"+": %w", err)
 		} else if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
-			return errors.Wrap(err, "delete recovery codes")
+			return fmt.Errorf("delete recovery codes"+": %w", err)
 		}
 		return nil
 	})
@@ -183,7 +183,7 @@ func generateRecoveryCodes(userID int64, n int) ([]*TwoFactorRecoveryCode, error
 	for i := range n {
 		code, err := strx.RandomChars(10)
 		if err != nil {
-			return nil, errors.Wrap(err, "generate random characters")
+			return nil, fmt.Errorf("generate random characters"+": %w", err)
 		}
 		recoveryCodes[i] = &TwoFactorRecoveryCode{
 			UserID: userID,
@@ -192,4 +192,3 @@ func generateRecoveryCodes(userID int64, n int) ([]*TwoFactorRecoveryCode, error
 	}
 	return recoveryCodes, nil
 }
-

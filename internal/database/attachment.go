@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -8,12 +9,10 @@ import (
 	"path"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/errx"
+	"gorm.io/gorm"
 )
 
 // Attachment represent a attachment of issue/comment/release.
@@ -61,25 +60,25 @@ func NewAttachment(name string, buf []byte, file multipart.File) (_ *Attachment,
 
 	localPath := attach.LocalPath()
 	if err = os.MkdirAll(path.Dir(localPath), os.ModePerm); err != nil {
-		return nil, errors.Newf("MkdirAll: %v", err)
+		return nil, fmt.Errorf("MkdirAll: %v", err)
 	}
 
 	fw, err := os.Create(localPath)
 	if err != nil {
-		return nil, errors.Newf("Create: %v", err)
+		return nil, fmt.Errorf("Create: %v", err)
 	}
 	defer fw.Close()
 
 	if _, err = fw.Write(buf); err != nil {
-		return nil, errors.Newf("write: %v", err)
+		return nil, fmt.Errorf("write: %v", err)
 	} else if _, err = io.Copy(fw, file); err != nil {
-		return nil, errors.Newf("copy: %v", err)
+		return nil, fmt.Errorf("copy: %v", err)
 	}
 
 	// Get file size
 	fi, err := fw.Stat()
 	if err != nil {
-		return nil, errors.Newf("stat: %v", err)
+		return nil, fmt.Errorf("stat: %v", err)
 	}
 	attach.Size = fi.Size()
 

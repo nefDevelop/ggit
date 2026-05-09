@@ -52,7 +52,7 @@ func TestWebhookSignatureLogic(t *testing.T) {
 func TestWebhookSignatureVerification(t *testing.T) {
 	secret := "my-secure-webhook-secret"
 	validPayload := `{"action": "push", "commits": []}`
-	
+
 	// Generar firma válida real para el test
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write([]byte(validPayload))
@@ -62,7 +62,7 @@ func TestWebhookSignatureVerification(t *testing.T) {
 		expectedMac := hmac.New(sha256.New, []byte(secret))
 		expectedMac.Write([]byte(payload))
 		expectedSignature := hex.EncodeToString(expectedMac.Sum(nil))
-		
+
 		// Usamos ConstantTimeCompare para evitar ataques de timing (Timing Attacks)
 		return hmac.Equal([]byte(signature), []byte(expectedSignature))
 	}

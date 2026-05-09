@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/strx"
-	"strings"
 )
 
 // CSRF returns a middleware that adds CSRF protection to the application.
@@ -58,7 +57,7 @@ func CSRF() gin.HandlerFunc {
 			c.Request.Method == http.MethodPut ||
 			c.Request.Method == http.MethodDelete ||
 			c.Request.Method == http.MethodPatch {
-			
+
 			// Bypass CSRF for API requests using token or basic auth
 			if ctx, ok := gctx.(*context.Context); ok && (ctx.IsTokenAuth || ctx.IsBasicAuth) {
 				c.Next()

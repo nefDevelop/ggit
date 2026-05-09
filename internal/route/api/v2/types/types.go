@@ -9,20 +9,19 @@ import (
 
 // UserResponse represents a user in the API v2.
 type UserResponse struct {
-	ID              int64  `json:"id"`
-	Username        string `json:"username"`
-	FullName        string `json:"full_name"`
-	Email           string `json:"email"`
-	AvatarURL       string    `json:"avatar_url"`
-	IsAdmin         bool      `json:"is_admin"`
-	DisableNewsFeed bool      `json:"disable_news_feed"`
+	ID               int64     `json:"id"`
+	Username         string    `json:"username"`
+	FullName         string    `json:"full_name"`
+	Email            string    `json:"email"`
+	AvatarURL        string    `json:"avatar_url"`
+	IsAdmin          bool      `json:"is_admin"`
+	DisableNewsFeed  bool      `json:"disable_news_feed"`
 	ProhibitLogin    bool      `json:"prohibit_login"`
 	AllowGitHook     bool      `json:"allow_git_hook"`
 	AllowImportLocal bool      `json:"allow_import_local"`
 	MaxRepoCreation  int       `json:"max_repo_creation"`
-	CreatedAt       time.Time `json:"created_at"`
-	}
-
+	CreatedAt        time.Time `json:"created_at"`
+}
 
 // UserEmailResponse represents an email address of a user.
 type UserEmailResponse struct {
@@ -55,51 +54,51 @@ type LoginSessionResponse struct {
 
 // RepositoryResponse represents a repository in the API v2.
 type RepositoryResponse struct {
-	ID          int64         `json:"id"`
-	Name          string        `json:"name"`
-	ProjectFolder string        `json:"project_folder"`
-	FullName    string        `json:"full_name"`
-	Description string        `json:"description"`
-	Owner       *UserResponse `json:"owner"`
-	AvatarURL   string        `json:"avatar_url"`
-	NumStars      int                   `json:"num_stars"`
-	NumForks      int                   `json:"num_forks"`
-	NumWatches    int                   `json:"num_watches"`
-	OpenIssues    int                   `json:"open_issues_count"`
-	OpenPulls     int                   `json:"open_pulls_count"`
-	NumCommits    int64                 `json:"num_commits"`
-	NumBranches   int                   `json:"num_branches"`
-	NumReleases   int                   `json:"num_releases_count"`
-	IsPrivate     bool                  `json:"is_private"`
-	IsBare        bool                  `json:"is_bare"`
-	HTMLURL       string                `json:"html_url"`
-	CloneURL      string                `json:"clone_url"`
-	SSHURL        string                `json:"ssh_url"`
-	DefaultBranch  string                `json:"default_branch"`
-	WikiFolderName string                `json:"wiki_folder_name"`
-	ADRFolderName  string                `json:"adr_folder_name"`
-	EnableWiki            bool   `json:"enable_wiki"`
-	EnableExternalWiki    bool   `json:"enable_external_wiki"`
-	ExternalWikiURL       string `json:"external_wiki_url"`
-	EnableIssues          bool   `json:"enable_issues"`
-	EnableExternalTracker bool   `json:"enable_external_tracker"`
-	ExternalTrackerURL    string `json:"external_tracker_url"`
-	ExternalTrackerFormat string `json:"external_tracker_format"`
-	ExternalTrackerStyle  string `json:"external_tracker_style"`
-	EnablePulls           bool   `json:"enable_pulls"`
-	PullsIgnoreWhitespace bool   `json:"pulls_ignore_whitespace"`
-	PullsAllowRebase      bool   `json:"pulls_allow_rebase"`
-	CreatedAt      time.Time             `json:"created_at"`
-	UpdatedAt     time.Time             `json:"updated_at"`
-	Permissions   *RepositoryPermission `json:"permissions,omitempty"`
-	Parent        *RepositoryResponse   `json:"parent,omitempty"`
-	Topics        []string              `json:"topics"`
-	
+	ID                    int64                 `json:"id"`
+	Name                  string                `json:"name"`
+	ProjectFolder         string                `json:"project_folder"`
+	FullName              string                `json:"full_name"`
+	Description           string                `json:"description"`
+	Owner                 *UserResponse         `json:"owner"`
+	AvatarURL             string                `json:"avatar_url"`
+	NumStars              int                   `json:"num_stars"`
+	NumForks              int                   `json:"num_forks"`
+	NumWatches            int                   `json:"num_watches"`
+	OpenIssues            int                   `json:"open_issues_count"`
+	OpenPulls             int                   `json:"open_pulls_count"`
+	NumCommits            int64                 `json:"num_commits"`
+	NumBranches           int                   `json:"num_branches"`
+	NumReleases           int                   `json:"num_releases_count"`
+	IsPrivate             bool                  `json:"is_private"`
+	IsBare                bool                  `json:"is_bare"`
+	HTMLURL               string                `json:"html_url"`
+	CloneURL              string                `json:"clone_url"`
+	SSHURL                string                `json:"ssh_url"`
+	DefaultBranch         string                `json:"default_branch"`
+	WikiFolderName        string                `json:"wiki_folder_name"`
+	ADRFolderName         string                `json:"adr_folder_name"`
+	EnableWiki            bool                  `json:"enable_wiki"`
+	EnableExternalWiki    bool                  `json:"enable_external_wiki"`
+	ExternalWikiURL       string                `json:"external_wiki_url"`
+	EnableIssues          bool                  `json:"enable_issues"`
+	EnableExternalTracker bool                  `json:"enable_external_tracker"`
+	ExternalTrackerURL    string                `json:"external_tracker_url"`
+	ExternalTrackerFormat string                `json:"external_tracker_format"`
+	ExternalTrackerStyle  string                `json:"external_tracker_style"`
+	EnablePulls           bool                  `json:"enable_pulls"`
+	PullsIgnoreWhitespace bool                  `json:"pulls_ignore_whitespace"`
+	PullsAllowRebase      bool                  `json:"pulls_allow_rebase"`
+	CreatedAt             time.Time             `json:"created_at"`
+	UpdatedAt             time.Time             `json:"updated_at"`
+	Permissions           *RepositoryPermission `json:"permissions,omitempty"`
+	Parent                *RepositoryResponse   `json:"parent,omitempty"`
+	Topics                []string              `json:"topics"`
+
 	// Activity Timestamps
-	LastCommitAt   time.Time `json:"last_commit_at"`
-	LastIssueAt    time.Time `json:"last_issue_at"`
-	LastPullAt     time.Time `json:"last_pull_at"`
-	LastBranchAt   time.Time `json:"last_branch_at"`
+	LastCommitAt time.Time `json:"last_commit_at"`
+	LastIssueAt  time.Time `json:"last_issue_at"`
+	LastPullAt   time.Time `json:"last_pull_at"`
+	LastBranchAt time.Time `json:"last_branch_at"`
 
 	// Sentinel Info
 	LastHealthCheckAt time.Time `json:"last_health_check_at"`
@@ -143,13 +142,13 @@ type RepositoryReleaseResponse struct {
 	CreatedAt       int64                 `json:"created_at"`
 
 	// Legacy frontend compatibility
-	TagNamePascal    string `json:"TagName"`
-	TitlePascal      string `json:"Title"`
-	NotePascal       string `json:"Note"`
-	IsDraftPascal    bool   `json:"IsDraft"`
-	IsPrereleasePascal bool   `json:"IsPrerelease"`
-	Sha1Pascal       string `json:"Sha1"`
-	CreatedPascal    time.Time `json:"Created"`
+	TagNamePascal      string    `json:"TagName"`
+	TitlePascal        string    `json:"Title"`
+	NotePascal         string    `json:"Note"`
+	IsDraftPascal      bool      `json:"IsDraft"`
+	IsPrereleasePascal bool      `json:"IsPrerelease"`
+	Sha1Pascal         string    `json:"Sha1"`
+	CreatedPascal      time.Time `json:"Created"`
 }
 
 // RepositoryHookResponse represents a webhook for a repository.
@@ -227,11 +226,11 @@ type CreateMilestoneOption struct {
 
 // EditMilestoneOption represents options for editing a milestone.
 type EditMilestoneOption struct {
-	Title       *string     `json:"title"`
-	Description *string     `json:"description"`
-	State       *string     `json:"state"`
-	Deadline    *time.Time  `json:"due_on"`
-	HillState   *int        `json:"hill_state"`
+	Title       *string    `json:"title"`
+	Description *string    `json:"description"`
+	State       *string    `json:"state"`
+	Deadline    *time.Time `json:"due_on"`
+	HillState   *int       `json:"hill_state"`
 }
 
 // PullRequestMetaResponse represents metadata for a pull request within an issue.
@@ -273,31 +272,31 @@ type IssueCommentResponse struct {
 
 // PullRequestResponse represents a pull request in the API v2.
 type PullRequestResponse struct {
-	ID             int64               `json:"id"`
-	Index          int64               `json:"number"`
-	Poster         *UserResponse       `json:"user"`
-	Title          string              `json:"title"`
-	Body           string              `json:"body"`
-	BodyHTML       string              `json:"body_html"`
-	Labels         []*IssueLabelResponse `json:"labels"`
+	ID             int64                   `json:"id"`
+	Index          int64                   `json:"number"`
+	Poster         *UserResponse           `json:"user"`
+	Title          string                  `json:"title"`
+	Body           string                  `json:"body"`
+	BodyHTML       string                  `json:"body_html"`
+	Labels         []*IssueLabelResponse   `json:"labels"`
 	Milestone      *IssueMilestoneResponse `json:"milestone"`
-	Assignee       *UserResponse       `json:"assignee"`
-	State          IssueStateType      `json:"state"`
-	Comments       int                 `json:"comments"`
-	CreatedAt      time.Time           `json:"created_at"`
-	UpdatedAt      time.Time           `json:"updated_at"`
-	HeadBranch     string              `json:"head_branch"`
-	HeadRepo       *RepositoryResponse `json:"head_repo"`
-	BaseBranch     string              `json:"base_branch"`
-	BaseRepo       *RepositoryResponse `json:"base_repo"`
-	HTMLURL        string              `json:"html_url"`
-	Mergeable      *bool               `json:"mergeable"`
-	HasMerged      bool                `json:"merged"`
-	MergedAt       *time.Time          `json:"merged_at"`
-	MergedCommitID *string             `json:"merged_commit_sha"`
-	MergedBy       *UserResponse       `json:"merged_by"`
-	AttentionState int                 `json:"attention_state"`
-	CombinedStatus string              `json:"combined_status"`
+	Assignee       *UserResponse           `json:"assignee"`
+	State          IssueStateType          `json:"state"`
+	Comments       int                     `json:"comments"`
+	CreatedAt      time.Time               `json:"created_at"`
+	UpdatedAt      time.Time               `json:"updated_at"`
+	HeadBranch     string                  `json:"head_branch"`
+	HeadRepo       *RepositoryResponse     `json:"head_repo"`
+	BaseBranch     string                  `json:"base_branch"`
+	BaseRepo       *RepositoryResponse     `json:"base_repo"`
+	HTMLURL        string                  `json:"html_url"`
+	Mergeable      *bool                   `json:"mergeable"`
+	HasMerged      bool                    `json:"merged"`
+	MergedAt       *time.Time              `json:"merged_at"`
+	MergedCommitID *string                 `json:"merged_commit_sha"`
+	MergedBy       *UserResponse           `json:"merged_by"`
+	AttentionState int                     `json:"attention_state"`
+	CombinedStatus string                  `json:"combined_status"`
 }
 
 // PullReviewCommentResponse represents an inline comment on a pull request review.
@@ -315,12 +314,12 @@ type PullReviewCommentResponse struct {
 
 // PullReviewResponse represents a review on a pull request.
 type PullReviewResponse struct {
-	ID         int64                        `json:"id"`
-	Type       int                          `json:"type"`
-	Reviewer   *UserResponse                `json:"reviewer"`
-	Content    string                       `json:"content"`
-	Comments   []*PullReviewCommentResponse `json:"comments"`
-	CreatedAt  time.Time                    `json:"created_at"`
+	ID        int64                        `json:"id"`
+	Type      int                          `json:"type"`
+	Reviewer  *UserResponse                `json:"reviewer"`
+	Content   string                       `json:"content"`
+	Comments  []*PullReviewCommentResponse `json:"comments"`
+	CreatedAt time.Time                    `json:"created_at"`
 }
 
 // ORGANIZATION MODELS
@@ -382,11 +381,11 @@ type UpdateWebhookRequest struct {
 // WebhookHistoryResponse represents a delivery task of a webhook.
 
 type WebhookHistoryResponse struct {
-	ID              int64     `json:"id"`
-	UUID            string    `json:"uuid"`
-	EventType       string    `json:"event_type"`
-	IsSucceed       bool      `json:"is_succeed"`
-	Delivered       time.Time `json:"delivered_at"`
+	ID              int64             `json:"id"`
+	UUID            string            `json:"uuid"`
+	EventType       string            `json:"event_type"`
+	IsSucceed       bool              `json:"is_succeed"`
+	Delivered       time.Time         `json:"delivered_at"`
 	RequestHeaders  map[string]string `json:"request_headers"`
 	RequestBody     string            `json:"request_body"`
 	ResponseHeaders map[string]string `json:"response_headers"`
@@ -401,6 +400,7 @@ type NoticeResponse struct {
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"created_at"`
 }
+
 // AuditLogResponse represents a system action/audit log entry in the API v2.
 type AuditLogResponse struct {
 	ID        int64     `json:"id"`
@@ -416,14 +416,14 @@ type AuditLogResponse struct {
 
 // CommitStatusResponse represents a commit status in the API v2.
 type CommitStatusResponse struct {
-	ID          int64     `json:"id"`
-	State       string    `json:"state"`
-	TargetURL   string    `json:"target_url"`
-	Description string    `json:"description"`
-	Context     string    `json:"context"`
+	ID          int64         `json:"id"`
+	State       string        `json:"state"`
+	TargetURL   string        `json:"target_url"`
+	Description string        `json:"description"`
+	Context     string        `json:"context"`
 	Creator     *UserResponse `json:"creator"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CreatedAt   time.Time     `json:"created_at"`
+	UpdatedAt   time.Time     `json:"updated_at"`
 }
 
 // CombinedCommitStatusResponse represents combined commit statuses for a SHA.

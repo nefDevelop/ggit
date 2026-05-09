@@ -4,9 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/errx"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestError_NotFound(t *testing.T) {

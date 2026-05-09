@@ -99,20 +99,20 @@ type RepoSetting struct {
 	EnablePrune   bool   `json:"enable_prune"`
 
 	// Advanced settings
-	EnableWiki            bool `json:"enable_wiki"`
-	AllowPublicWiki       bool `json:"allow_public_wiki"`
-	EnableExternalWiki    bool `json:"enable_external_wiki"`
+	EnableWiki            bool   `json:"enable_wiki"`
+	AllowPublicWiki       bool   `json:"allow_public_wiki"`
+	EnableExternalWiki    bool   `json:"enable_external_wiki"`
 	ExternalWikiURL       string `json:"external_wiki_url"`
-	EnableIssues          bool `json:"enable_issues"`
-	AllowPublicIssues     bool `json:"allow_public_issues"`
-	EnableExternalTracker bool `json:"enable_external_tracker"`
+	EnableIssues          bool   `json:"enable_issues"`
+	AllowPublicIssues     bool   `json:"allow_public_issues"`
+	EnableExternalTracker bool   `json:"enable_external_tracker"`
 	ExternalTrackerURL    string `json:"external_tracker_url"`
 	TrackerURLFormat      string `json:"tracker_url_format"`
 	TrackerIssueStyle     string `json:"tracker_issue_style"`
-	EnablePulls           bool `json:"enable_pulls"`
-	PullsIgnoreWhitespace bool `json:"pulls_ignore_whitespace"`
-	PullsAllowRebase      bool `json:"pulls_allow_rebase"`
-	PullsAllowManualMerge bool `json:"pulls_allow_manual_merge"`
+	EnablePulls           bool   `json:"enable_pulls"`
+	PullsIgnoreWhitespace bool   `json:"pulls_ignore_whitespace"`
+	PullsAllowRebase      bool   `json:"pulls_allow_rebase"`
+	PullsAllowManualMerge bool   `json:"pulls_allow_manual_merge"`
 	WikiFolderName        string `json:"wiki_folder_name"`
 	ADRFolderName         string `json:"adr_folder_name"`
 }
@@ -297,10 +297,10 @@ func (f *EditRelease) Validate(ctx ValidationContext, errs Errors) Errors {
 //        \/          \/
 
 type NewWiki struct {
-	OldTitle string
-	Title    string `valid:"Required"`
-	Content  string `valid:"Required"`
-	Message  string
+	OldTitle  string
+	Title     string `valid:"Required"`
+	Content   string `valid:"Required"`
+	Message   string
 	CreatedAt string `json:"created_at"`
 }
 

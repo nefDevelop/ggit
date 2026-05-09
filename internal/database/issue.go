@@ -2,46 +2,45 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/markup"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/tool"
+	"gorm.io/gorm"
 )
 
 var ErrMissingIssueNumber = errors.New("no issue number specified")
 
 // Issue represents an issue or pull request of repository.
 type Issue struct {
-	ID              int64       `gorm:"primaryKey"`
-	RepoID          int64       `gorm:"index;uniqueIndex:issue_repo_index_unique;not null"`
-	Repo            *Repository `json:"-" gorm:"-"`
-	Index           int64       `gorm:"uniqueIndex:issue_repo_index_unique;not null"` // Index in one repository.
-	PosterID        int64       `gorm:"index"`
-	Poster          *User       `json:"-" gorm:"-"`
-	Title           string      `gorm:"column:name;not null"`
-	Content         string      `gorm:"type:TEXT"`
-	Labels          []*Label    `json:"-" gorm:"-"`
-	MilestoneID     int64       `gorm:"index"`
-	Milestone       *Milestone  `json:"-" gorm:"-"`
-	Priority        int
-	AssigneeID      int64 `gorm:"index"`
-	Assignee        *User `json:"-" gorm:"-"`
-	IsClosed        bool
-	IsRead          bool         `json:"-" gorm:"-"`
-	IsPull          bool         // Indicates whether is a pull request or not.
-	PullRequest     *PullRequest `json:"-" gorm:"-"`
-	NumComments     int
+	ID          int64       `gorm:"primaryKey"`
+	RepoID      int64       `gorm:"index;uniqueIndex:issue_repo_index_unique;not null"`
+	Repo        *Repository `json:"-" gorm:"-"`
+	Index       int64       `gorm:"uniqueIndex:issue_repo_index_unique;not null"` // Index in one repository.
+	PosterID    int64       `gorm:"index"`
+	Poster      *User       `json:"-" gorm:"-"`
+	Title       string      `gorm:"column:name;not null"`
+	Content     string      `gorm:"type:TEXT"`
+	Labels      []*Label    `json:"-" gorm:"-"`
+	MilestoneID int64       `gorm:"index"`
+	Milestone   *Milestone  `json:"-" gorm:"-"`
+	Priority    int
+	AssigneeID  int64 `gorm:"index"`
+	Assignee    *User `json:"-" gorm:"-"`
+	IsClosed    bool
+	IsRead      bool         `json:"-" gorm:"-"`
+	IsPull      bool         // Indicates whether is a pull request or not.
+	PullRequest *PullRequest `json:"-" gorm:"-"`
+	NumComments int
 
 	Deadline     time.Time `json:"-" gorm:"-"`
 	DeadlineUnix int64
@@ -87,23 +86,23 @@ func FromDomainIssue(issue *domain.Issue) *Issue {
 		return nil
 	}
 	return &Issue{
-		ID:          issue.ID,
-		RepoID:      issue.RepoID,
-		Repo:        FromDomainRepository(issue.Repo),
-		Index:       issue.Index,
-		PosterID:    issue.PosterID,
-		Poster:      FromDomainUser(issue.Poster),
-		Title:       issue.Title,
-		Content:     issue.Content,
-		Labels:      FromDomainLabelList(issue.Labels),
-		MilestoneID: issue.MilestoneID,
-		Milestone:   FromDomainMilestone(issue.Milestone),
-		Priority:    issue.Priority,
-		AssigneeID:  issue.AssigneeID,
-		Assignee:    FromDomainUser(issue.Assignee),
-		IsClosed:    issue.IsClosed,
-		IsPull:      issue.IsPull,
-		NumComments: issue.NumComments,
+		ID:           issue.ID,
+		RepoID:       issue.RepoID,
+		Repo:         FromDomainRepository(issue.Repo),
+		Index:        issue.Index,
+		PosterID:     issue.PosterID,
+		Poster:       FromDomainUser(issue.Poster),
+		Title:        issue.Title,
+		Content:      issue.Content,
+		Labels:       FromDomainLabelList(issue.Labels),
+		MilestoneID:  issue.MilestoneID,
+		Milestone:    FromDomainMilestone(issue.Milestone),
+		Priority:     issue.Priority,
+		AssigneeID:   issue.AssigneeID,
+		Assignee:     FromDomainUser(issue.Assignee),
+		IsClosed:     issue.IsClosed,
+		IsPull:       issue.IsPull,
+		NumComments:  issue.NumComments,
 		DeadlineUnix: issue.Deadline.Unix(),
 		CreatedUnix:  issue.Created.Unix(),
 		UpdatedUnix:  issue.Updated.Unix(),
@@ -154,7 +153,7 @@ func (issue *Issue) loadAttributes(tx *gorm.DB) (err error) {
 	if issue.Repo == nil {
 		issue.Repo, err = getRepositoryByID(tx, issue.RepoID)
 		if err != nil {
-			return errors.Newf("getRepositoryByID [%d]: %v", issue.RepoID, err)
+			return fmt.Errorf("getRepositoryByID [%d]: %v", issue.RepoID, err)
 		}
 	}
 
@@ -165,7 +164,7 @@ func (issue *Issue) loadAttributes(tx *gorm.DB) (err error) {
 				issue.PosterID = -1
 				issue.Poster = NewGhostUser()
 			} else {
-				return errors.Newf("getUserByID.(Poster) [%d]: %v", issue.PosterID, err)
+				return fmt.Errorf("getUserByID.(Poster) [%d]: %v", issue.PosterID, err)
 			}
 		}
 	}
@@ -173,21 +172,21 @@ func (issue *Issue) loadAttributes(tx *gorm.DB) (err error) {
 	if issue.Labels == nil {
 		issue.Labels, err = getLabelsByIssueID(tx, issue.ID)
 		if err != nil {
-			return errors.Newf("getLabelsByIssueID [%d]: %v", issue.ID, err)
+			return fmt.Errorf("getLabelsByIssueID [%d]: %v", issue.ID, err)
 		}
 	}
 
 	if issue.Milestone == nil && issue.MilestoneID > 0 {
 		issue.Milestone, err = getMilestoneByRepoID(tx, issue.RepoID, issue.MilestoneID)
 		if err != nil {
-			return errors.Newf("getMilestoneByRepoID [repo_id: %d, milestone_id: %d]: %v", issue.RepoID, issue.MilestoneID, err)
+			return fmt.Errorf("getMilestoneByRepoID [repo_id: %d, milestone_id: %d]: %v", issue.RepoID, issue.MilestoneID, err)
 		}
 	}
 
 	if issue.Assignee == nil && issue.AssigneeID > 0 {
 		issue.Assignee, err = getUserByID(tx, issue.AssigneeID)
 		if err != nil {
-			return errors.Newf("getUserByID.(assignee) [%d]: %v", issue.AssigneeID, err)
+			return fmt.Errorf("getUserByID.(assignee) [%d]: %v", issue.AssigneeID, err)
 		}
 	}
 
@@ -195,21 +194,21 @@ func (issue *Issue) loadAttributes(tx *gorm.DB) (err error) {
 		// It is possible pull request is not yet created.
 		issue.PullRequest, err = getPullRequestByIssueID(tx, issue.ID)
 		if err != nil && !IsErrPullRequestNotExist(err) {
-			return errors.Newf("getPullRequestByIssueID [%d]: %v", issue.ID, err)
+			return fmt.Errorf("getPullRequestByIssueID [%d]: %v", issue.ID, err)
 		}
 	}
 
 	if issue.Attachments == nil {
 		issue.Attachments, err = getAttachmentsByIssueID(tx, issue.ID)
 		if err != nil {
-			return errors.Newf("getAttachmentsByIssueID [%d]: %v", issue.ID, err)
+			return fmt.Errorf("getAttachmentsByIssueID [%d]: %v", issue.ID, err)
 		}
 	}
 
 	if issue.Comments == nil {
 		issue.Comments, err = getCommentsByIssueID(tx, issue.ID)
 		if err != nil {
-			return errors.Newf("getCommentsByIssueID [%d]: %v", issue.ID, err)
+			return fmt.Errorf("getCommentsByIssueID [%d]: %v", issue.ID, err)
 		}
 	}
 
@@ -363,7 +362,7 @@ func (issue *Issue) getLabels(tx *gorm.DB) (err error) {
 
 	issue.Labels, err = getLabelsByIssueID(tx, issue.ID)
 	if err != nil {
-		return errors.Newf("getLabelsByIssueID: %v", err)
+		return fmt.Errorf("getLabelsByIssueID: %v", err)
 	}
 	return nil
 }
@@ -384,7 +383,7 @@ func (issue *Issue) RemoveLabel(ctx context.Context, doer *User, label *Label) e
 
 func (issue *Issue) clearLabels(tx *gorm.DB) (err error) {
 	if err = issue.getLabels(tx); err != nil {
-		return errors.Newf("getLabels: %v", err)
+		return fmt.Errorf("getLabels: %v", err)
 	}
 
 	// NOTE: issue.removeLabel slices issue.Labels, so we need to create another slice to be unaffected.
@@ -392,7 +391,7 @@ func (issue *Issue) clearLabels(tx *gorm.DB) (err error) {
 	copy(labels, issue.Labels)
 	for i := range labels {
 		if err = issue.removeLabel(tx, labels[i]); err != nil {
-			return errors.Newf("removeLabel: %v", err)
+			return fmt.Errorf("removeLabel: %v", err)
 		}
 	}
 
@@ -440,9 +439,9 @@ func (issue *Issue) ClearLabels(doer *User) (err error) {
 func (issue *Issue) ReplaceLabels(ctx context.Context, labels []*Label) (err error) {
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = issue.clearLabels(tx); err != nil {
-			return errors.Newf("clearLabels: %v", err)
+			return fmt.Errorf("clearLabels: %v", err)
 		} else if err = issue.addLabels(tx, labels); err != nil {
-			return errors.Newf("addLabels: %v", err)
+			return fmt.Errorf("addLabels: %v", err)
 		}
 		return nil
 	})
@@ -570,7 +569,7 @@ func (issue *Issue) ChangeTitle(ctx context.Context, doer *User, title string) (
 	oldTitle := issue.Title
 	issue.Title = title
 	if err = UpdateIssueCols(issue, "name"); err != nil {
-		return errors.Newf("UpdateIssueCols: %v", err)
+		return fmt.Errorf("UpdateIssueCols: %v", err)
 	}
 
 	if issue.IsPull {
@@ -612,7 +611,7 @@ func (issue *Issue) ChangeContent(ctx context.Context, doer *User, content strin
 	oldContent := issue.Content
 	issue.Content = content
 	if err = UpdateIssueCols(issue, "content"); err != nil {
-		return errors.Newf("UpdateIssueCols: %v", err)
+		return fmt.Errorf("UpdateIssueCols: %v", err)
 	}
 
 	if issue.IsPull {
@@ -653,7 +652,7 @@ func (issue *Issue) ChangeContent(ctx context.Context, doer *User, content strin
 func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID int64) (err error) {
 	issue.AssigneeID = assigneeID
 	if err = UpdateIssueUserByAssignee(issue); err != nil {
-		return errors.Newf("UpdateIssueUserByAssignee: %v", err)
+		return fmt.Errorf("UpdateIssueUserByAssignee: %v", err)
 	}
 
 	u, err := Handle.Users().GetByID(context.TODO(), issue.AssigneeID)
@@ -664,7 +663,6 @@ func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID i
 	if err == nil {
 		issue.Assignee = FromDomainUser(u)
 	}
-
 
 	// Error not nil here means user does not exist, which is remove assignee.
 	isRemoveAssignee := err != nil
@@ -715,7 +713,7 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 	if opts.Issue.MilestoneID > 0 {
 		milestone, err := getMilestoneByRepoID(tx, opts.Issue.RepoID, opts.Issue.MilestoneID)
 		if err != nil && !IsErrMilestoneNotExist(err) {
-			return errors.Newf("getMilestoneByID: %v", err)
+			return fmt.Errorf("getMilestoneByID: %v", err)
 		}
 
 		// Assume milestone is invalid and drop silently.
@@ -732,7 +730,7 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 	if opts.Issue.AssigneeID > 0 {
 		assignee, err := getUserByID(tx, opts.Issue.AssigneeID)
 		if err != nil && !IsErrUserNotExist(err) {
-			return errors.Newf("get user by ID: %v", err)
+			return fmt.Errorf("get user by ID: %v", err)
 		}
 
 		if assignee != nil {
@@ -770,7 +768,7 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 	if len(opts.LableIDs) > 0 {
 		labels := make([]*Label, 0, len(opts.LableIDs))
 		if err = tx.Where("id IN (?)", opts.LableIDs).Find(&labels).Error; err != nil {
-			return errors.Newf("find all labels [label_ids: %v]: %v", opts.LableIDs, err)
+			return fmt.Errorf("find all labels [label_ids: %v]: %v", opts.LableIDs, err)
 		}
 
 		for _, label := range labels {
@@ -780,7 +778,7 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 			}
 
 			if err = opts.Issue.addLabel(tx, label); err != nil {
-				return errors.Newf("addLabel [id: %d]: %v", label.ID, err)
+				return fmt.Errorf("addLabel [id: %d]: %v", label.ID, err)
 			}
 		}
 	}
@@ -792,13 +790,13 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 	if len(opts.Attachments) > 0 {
 		attachments, err := getAttachmentsByUUIDs(tx, opts.Attachments)
 		if err != nil {
-			return errors.Newf("getAttachmentsByUUIDs [uuids: %v]: %v", opts.Attachments, err)
+			return fmt.Errorf("getAttachmentsByUUIDs [uuids: %v]: %v", opts.Attachments, err)
 		}
 
 		for i := range attachments {
 			attachments[i].IssueID = opts.Issue.ID
 			if err = tx.Model(attachments[i]).Update("issue_id", opts.Issue.ID).Error; err != nil {
-				return errors.Newf("update attachment [id: %d]: %v", attachments[i].ID, err)
+				return fmt.Errorf("update attachment [id: %d]: %v", attachments[i].ID, err)
 			}
 		}
 	}
@@ -1012,13 +1010,13 @@ func Issues(opts *IssuesOptions) ([]*Issue, error) {
 
 	issues := make([]*Issue, 0, conf.UI.IssuePagingNum)
 	if err := query.Find(&issues).Error; err != nil {
-		return nil, errors.Newf("find: %v", err)
+		return nil, fmt.Errorf("find: %v", err)
 	}
 
 	// FIXME: use IssueList to improve performance.
 	for i := range issues {
 		if err := issues[i].LoadAttributes(); err != nil {
-			return nil, errors.Newf("LoadAttributes [%d]: %v", issues[i].ID, err)
+			return nil, fmt.Errorf("LoadAttributes [%d]: %v", issues[i].ID, err)
 		}
 	}
 
@@ -1032,7 +1030,7 @@ func GetParticipantsByIssueID(issueID int64) ([]*User, error) {
 		Where("issue_id = ?", issueID).
 		Distinct("poster_id").
 		Pluck("poster_id", &userIDs).Error; err != nil {
-		return nil, errors.Newf("get poster IDs: %v", err)
+		return nil, fmt.Errorf("get poster IDs: %v", err)
 	}
 	if len(userIDs) == 0 {
 		return nil, nil
@@ -1066,7 +1064,7 @@ type IssueUser struct {
 func newIssueUsers(tx *gorm.DB, repo *Repository, issue *Issue) error {
 	assignees, err := repo.getAssignees(tx)
 	if err != nil {
-		return errors.Newf("getAssignees: %v", err)
+		return fmt.Errorf("getAssignees: %v", err)
 	}
 
 	// Poster can be anyone, append later if not one of assignees.
@@ -1169,7 +1167,7 @@ func updateIssueMentions(tx *gorm.DB, issueID int64, mentions []string) error {
 	users := make([]*User, 0, len(mentions))
 
 	if err := tx.Where("lower_name IN (?)", mentions).Order("lower_name ASC").Find(&users).Error; err != nil {
-		return errors.Newf("find mentioned users: %v", err)
+		return fmt.Errorf("find mentioned users: %v", err)
 	}
 
 	ids := make([]int64, 0, len(mentions))
@@ -1182,7 +1180,7 @@ func updateIssueMentions(tx *gorm.DB, issueID int64, mentions []string) error {
 		memberIDs := make([]int64, 0, user.NumMembers)
 		orgUsers, err := getOrgUsersByOrgID(tx, user.ID, 0)
 		if err != nil {
-			return errors.Newf("getOrgUsersByOrgID [%d]: %v", user.ID, err)
+			return fmt.Errorf("getOrgUsersByOrgID [%d]: %v", user.ID, err)
 		}
 
 		for _, orgUser := range orgUsers {
@@ -1193,7 +1191,7 @@ func updateIssueMentions(tx *gorm.DB, issueID int64, mentions []string) error {
 	}
 
 	if err := updateIssueUsersByMentions(tx, issueID, ids); err != nil {
-		return errors.Newf("UpdateIssueUsersByMentions: %v", err)
+		return fmt.Errorf("UpdateIssueUsersByMentions: %v", err)
 	}
 
 	return nil

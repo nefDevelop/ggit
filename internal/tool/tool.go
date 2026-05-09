@@ -12,12 +12,10 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	log "unknwon.dev/clog/v2"
-
 	"github.com/gogs/chardet"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/i18nx"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // ShortSHA1 truncates SHA1 string length to at most 10.

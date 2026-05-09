@@ -9,10 +9,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/nef734/ggit/internal/osx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/nef734/ggit/internal/osx"
 )
 
 func TestLocalStorage_storagePath(t *testing.T) {

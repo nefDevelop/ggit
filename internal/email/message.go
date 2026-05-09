@@ -2,16 +2,15 @@ package email
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
 
-	"github.com/cockroachdb/errors"
-	gomail "github.com/wneessen/go-mail"
-	"github.com/nef734/ggit/internal/strx" // Asegúrate de importar strx
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
+	log "github.com/nef734/ggit/internal/log"
+	"github.com/nef734/ggit/internal/strx" // Asegúrate de importar strx
+	gomail "github.com/wneessen/go-mail"
 )
 
 type message struct {
@@ -25,10 +24,10 @@ func newMessageFrom(to []string, from, subject, htmlBody string) (*message, erro
 
 	m := gomail.NewMsg()
 	if err := m.From(from); err != nil {
-		return nil, errors.Wrapf(err, "set From address %q", from)
+		return nil, fmt.Errorf("set From address %q: %w", from, err)
 	}
 	if err := m.To(to...); err != nil {
-		return nil, errors.Wrap(err, "set To addresses")
+		return nil, fmt.Errorf("set To addresses"+": %w", err)
 	}
 	m.Subject(conf.Email.SubjectPrefix + subject)
 	m.SetDate()

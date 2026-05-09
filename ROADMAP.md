@@ -356,3 +356,38 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 ### Funcionalidades Avanzadas (Largo Plazo / 2.0)
 - [x] **Estados de Atención:** Implementar motor de turnos en PRs.
 - [x] **Kanban Virtual:** Vista de tablero basada en etiquetas.
+
+
+---
+
+## Fase 28: Optimización Estructural y de Dependencias (The Pure Go Path) 💎
+**Objetivo:** Eliminar librerías pesadas de terceros a favor de soluciones nativas o más ligeras para reducir el binario y el consumo de RAM.
+
+### 1. Migración a Estándares de Go 1.25+ ✅
+- [x] **Logging Nativo (`slog`):** Migrado de `unknwon.dev/clog/v2` a un wrapper interno sobre `log/slog`. **Eliminada dependencia.**
+- [x] **Manejo de Errores Nativo:** Migrado de `cockroachdb/errors` a `errors` estándar con soporte para wrapping `%w`. **Eliminada dependencia.**
+- [x] **Unificación de Tipos de Error:** Refactorización de `errors.Is`, `errors.As` y eliminación de `errors.Cause`.
+
+### 2. Poda de Librerías y Redundancias (Próximamente)
+- [ ] **JSON de Alto Rendimiento:** Sustituir `bytedance/sonic` por `goccy/go-json` (Pure Go, más ligero y sin JIT).
+- [ ] **Unificación de Motores YAML:** Consolidar `yaml.v2` y `yaml.v3` únicamente en `yaml.v3` para eliminar código duplicado.
+- [ ] **Métricas Minimalistas:** Sustituir `prometheus/client_golang` por `victoria-metrics/metrics` (drop-in compatible pero mucho más pequeña).
+- [ ] **Identicons Eficientes:** Reemplazar `issue9/identicon` por generación SVG (lado del cliente o servidor) para eliminar el peso de `x/image`.
+
+### 3. Modularización y RAM
+- [ ] **Build Tags para LDAP:** Mover el soporte de LDAP a un tag de compilación (`-tags ldap`) para binarios base más delgados.
+- [ ] **Perfilado de RAM en Idle:** Activar `pprof` para identificar "glotones" de memoria en reposo (ej. caches de GORM o tablas de `x/text`).
+- [ ] **Optimización de Compilación:** Estandarizar flags `-s -w` y considerar **UPX** para distribución final.
+
+---
+### Tabla de Limpieza de Librerías
+
+| Categoría | Librería Actual (Pesada) | Alternativa (Ligera/Nativa) | Estado |
+| :--- | :--- | :--- | :---: |
+| **Logging** | `unknwon.dev/clog/v2` | `log/slog` (Nativo) | ✅ |
+| **Manejo Errores** | `cockroachdb/errors` | `errors` (Nativo) | ✅ |
+| **JSON** | `bytedance/sonic` | `goccy/go-json` | ⏳ |
+| **YAML** | `yaml.v2` y `yaml.v3` | Unificar en `yaml.v3` | ⏳ |
+| **Identicons** | `issue9/identicon` | Generar SVG o Gravatar | ⏳ |
+| **Métricas** | `prometheus/client_golang` | `victoria-metrics/metrics` | ⏳ |
+| **Base de Datos** | `modernc.org/sqlite` | Driver con CGO (Opcional) | ❌ (Keep Pure Go) |

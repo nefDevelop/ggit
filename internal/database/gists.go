@@ -1,17 +1,16 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
+	"gorm.io/gorm"
 )
 
 type GistUser struct {
@@ -35,10 +34,10 @@ type Gist struct {
 // We store filename and other metadata in DB, but content is usually in FS.
 // For the hybrid model, we store "CurrentContent" in a separate table or just in FS.
 type GistFile struct {
-	ID        int64  `gorm:"primaryKey"`
-	GistID    int64  `gorm:"index"`
-	Filename  string `gorm:"size:255"`
-	Language  string `gorm:"size:50"`
+	ID        int64     `gorm:"primaryKey"`
+	GistID    int64     `gorm:"index"`
+	Filename  string    `gorm:"size:255"`
+	Language  string    `gorm:"size:50"`
 	CreatedAt time.Time `gorm:"not null"`
 }
 
@@ -77,7 +76,7 @@ func (s *gistsStore) Create(gist *domain.Gist) error {
 
 		dir := s.gistDir(g.UUID)
 		if err := os.MkdirAll(dir, 0755); err != nil {
-			return errors.Wrap(err, "create gist directory")
+			return fmt.Errorf("create gist directory"+": %w", err)
 		}
 
 		for _, file := range gist.Files {
@@ -94,7 +93,7 @@ func (s *gistsStore) Create(gist *domain.Gist) error {
 			// Write content to v1.md
 			filePath := filepath.Join(dir, fmt.Sprintf("%s.v1", gf.Filename))
 			if err := os.WriteFile(filePath, []byte(file.Content), 0644); err != nil {
-				return errors.Wrap(err, "write gist file content")
+				return fmt.Errorf("write gist file content"+": %w", err)
 			}
 		}
 		return nil
@@ -239,7 +238,7 @@ func (s *gistsStore) Update(gist *domain.Gist) error {
 		}
 
 		dir := s.gistDir(gist.UUID)
-		
+
 		// Track IDs of files that are still present
 		var currentFileIDs []int64
 		for _, file := range gist.Files {
@@ -247,7 +246,7 @@ func (s *gistsStore) Update(gist *domain.Gist) error {
 			if file.ID > 0 {
 				// Update existing file record
 				if err := tx.Where("id = ? AND gist_id = ?", file.ID, gist.ID).First(&gf).Error; err == nil {
-					// Check if filename changed to rename files on disk? 
+					// Check if filename changed to rename files on disk?
 					// For now let's just update the DB record.
 					if gf.Filename != file.Filename {
 						// Optional: rename existing .vX files to new filename
@@ -257,7 +256,7 @@ func (s *gistsStore) Update(gist *domain.Gist) error {
 							_ = os.Rename(oldPath, newPath)
 						}
 					}
-					
+
 					gf.Filename = file.Filename
 					gf.Language = file.Language
 					if err := tx.Save(&gf).Error; err != nil {

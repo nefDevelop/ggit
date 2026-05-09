@@ -1,20 +1,19 @@
 package route
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
-	"github.com/cockroachdb/errors"
-	"github.com/gogs/git-module"
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
+	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/cron"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
-	"github.com/nef734/ggit/internal/ssh"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/services"
+	"github.com/nef734/ggit/internal/ssh"
 )
 
 func checkRunMode() {
@@ -31,7 +30,7 @@ func checkRunMode() {
 func GlobalInit(customConf string) error {
 	err := conf.Init(customConf)
 	if err != nil {
-		return errors.Wrap(err, "init configuration")
+		return fmt.Errorf("init configuration"+": %w", err)
 	}
 
 	conf.InitLogging(false)

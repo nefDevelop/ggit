@@ -148,7 +148,7 @@ func UpdateGist(c *context.APIContext) {
 
 	gist.Description = form.Description
 	gist.IsPublic = form.IsPublic
-	
+
 	// For simplicity, we replace files (Update method in gist store should handle versioning)
 	gist.Files = make([]*domain.GistFile, 0, len(form.Files))
 	for _, f := range form.Files {

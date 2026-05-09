@@ -4,9 +4,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNewCloneLink(t *testing.T) {

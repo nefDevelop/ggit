@@ -1,20 +1,18 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
 	"time"
 
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/tool"
+	"gorm.io/gorm"
 )
 
 // Release represents a release of repository.
@@ -63,7 +61,7 @@ func (r *Release) loadAttributes(tx *gorm.DB) (err error) {
 	if r.Repo == nil {
 		r.Repo, err = getRepositoryByID(tx, r.RepoID)
 		if err != nil {
-			return errors.Newf("getRepositoryByID [repo_id: %d]: %v", r.RepoID, err)
+			return fmt.Errorf("getRepositoryByID [repo_id: %d]: %v", r.RepoID, err)
 		}
 	}
 
@@ -74,7 +72,7 @@ func (r *Release) loadAttributes(tx *gorm.DB) (err error) {
 				r.PublisherID = -1
 				r.Publisher = NewGhostUser()
 			} else {
-				return errors.Newf("getUserByID.(Publisher) [publisher_id: %d]: %v", r.PublisherID, err)
+				return fmt.Errorf("getUserByID.(Publisher) [publisher_id: %d]: %v", r.PublisherID, err)
 			}
 		}
 	}
@@ -82,7 +80,7 @@ func (r *Release) loadAttributes(tx *gorm.DB) (err error) {
 	if r.Attachments == nil {
 		r.Attachments, err = getAttachmentsByReleaseID(tx, r.ID)
 		if err != nil {
-			return errors.Newf("getAttachmentsByReleaseID [%d]: %v", r.ID, err)
+			return fmt.Errorf("getAttachmentsByReleaseID [%d]: %v", r.ID, err)
 		}
 	}
 
@@ -155,7 +153,7 @@ func createTag(gitRepo *git.Repository, r *Release) error {
 		if !gitRepo.HasTag(r.TagName) {
 			commit, err := gitRepo.BranchCommit(r.Target)
 			if err != nil {
-				return errors.Newf("get branch commit: %v", err)
+				return fmt.Errorf("get branch commit: %v", err)
 			}
 
 			// 🚨 SECURITY: Trim any leading '-' to prevent command line argument injection.
@@ -169,13 +167,13 @@ func createTag(gitRepo *git.Repository, r *Release) error {
 		} else {
 			commit, err := gitRepo.TagCommit(r.TagName)
 			if err != nil {
-				return errors.Newf("get tag commit: %v", err)
+				return fmt.Errorf("get tag commit: %v", err)
 			}
 
 			r.Sha1 = commit.ID.String()
 			r.NumCommits, err = commit.CommitsCount()
 			if err != nil {
-				return errors.Newf("count commits: %v", err)
+				return fmt.Errorf("count commits: %v", err)
 			}
 		}
 	}
@@ -237,13 +235,13 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Create(r).Error; err != nil {
-			return errors.Newf("insert: %v", err)
+			return fmt.Errorf("insert: %v", err)
 		}
 
 		if len(uuids) > 0 {
 			res := tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID)
 			if res.Error != nil {
-				return errors.Newf("link attachments: %v", res.Error)
+				return fmt.Errorf("link attachments: %v", res.Error)
 			}
 			log.Trace("Linked %d attachments to release [id: %d]", res.RowsAffected, r.ID)
 		}
@@ -259,7 +257,7 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 	}
 	r, err = GetReleaseByID(r.ID)
 	if err != nil {
-		return errors.Newf("GetReleaseByID: %v", err)
+		return fmt.Errorf("GetReleaseByID: %v", err)
 	}
 	r.preparePublishWebhooks()
 	return nil
@@ -292,7 +290,7 @@ func GetRelease(repoID int64, tagName string) (*Release, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrReleaseNotExist{args: map[string]any{"tag": tagName}}
 		}
-		return nil, errors.Newf("get: %v", err)
+		return nil, fmt.Errorf("get: %v", err)
 	}
 
 	return r, r.LoadAttributes()
@@ -368,25 +366,25 @@ func SortReleases(rels []*Release) {
 // UpdateRelease updates information of a release.
 func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bool, uuids []string) (err error) {
 	if err = createTag(gitRepo, r); err != nil {
-		return errors.Newf("createTag: %v", err)
+		return fmt.Errorf("createTag: %v", err)
 	}
 
 	r.PublisherID = doer.ID
 
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(r).Updates(r).Error; err != nil {
-			return errors.Newf("Update: %v", err)
+			return fmt.Errorf("Update: %v", err)
 		}
 
 		// Unlink all current attachments and link back later if still valid
 		if err = tx.Model(new(Attachment)).Where("release_id = ?", r.ID).Update("release_id", 0).Error; err != nil {
-			return errors.Newf("unlink current attachments: %v", err)
+			return fmt.Errorf("unlink current attachments: %v", err)
 		}
 
 		if len(uuids) > 0 {
 			res := tx.Model(new(Attachment)).Where("uuid IN (?)", uuids).Update("release_id", r.ID)
 			if res.Error != nil {
-				return errors.Newf("link attachments: %v", res.Error)
+				return fmt.Errorf("link attachments: %v", res.Error)
 			}
 			log.Trace("Linked %d attachments to release [id: %d]", res.RowsAffected, r.ID)
 		}
@@ -408,7 +406,7 @@ func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bo
 func DeleteReleaseOfRepoByID(repoID, id int64) error {
 	rel, err := GetReleaseByID(id)
 	if err != nil {
-		return errors.Newf("GetReleaseByID: %v", err)
+		return fmt.Errorf("GetReleaseByID: %v", err)
 	}
 
 	// Mark sure the delete operation against same repository.
@@ -418,20 +416,20 @@ func DeleteReleaseOfRepoByID(repoID, id int64) error {
 
 	repo, err := GetRepositoryByID(rel.RepoID)
 	if err != nil {
-		return errors.Newf("GetRepositoryByID: %v", err)
+		return fmt.Errorf("GetRepositoryByID: %v", err)
 	}
 
 	gitRepo, err := git.Open(repo.RepoPath())
 	if err != nil {
-		return errors.Newf("open repository: %v", err)
+		return fmt.Errorf("open repository: %v", err)
 	}
 	err = gitRepo.DeleteTag(rel.TagName)
 	if err != nil && !strings.Contains(err.Error(), "not found") {
-		return errors.Newf("delete tag: %v", err)
+		return fmt.Errorf("delete tag: %v", err)
 	}
 
 	if err = Handle.db.Where("id = ?", rel.ID).Delete(new(Release)).Error; err != nil {
-		return errors.Newf("delete: %v", err)
+		return fmt.Errorf("delete: %v", err)
 	}
 
 	return nil

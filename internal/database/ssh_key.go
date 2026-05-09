@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math/big"
 	"os"
@@ -13,15 +14,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"golang.org/x/crypto/ssh"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/process"
+	"golang.org/x/crypto/ssh"
+	"gorm.io/gorm"
 )
 
 const (
@@ -132,12 +131,12 @@ func (k *PublicKey) IsDeployKey() bool {
 func extractTypeFromBase64Key(key string) (string, error) {
 	b, err := base64.StdEncoding.DecodeString(key)
 	if err != nil || len(b) < 4 {
-		return "", errors.Newf("invalid key format: %v", err)
+		return "", fmt.Errorf("invalid key format: %v", err)
 	}
 
 	keyLength := int(binary.BigEndian.Uint32(b))
 	if len(b) < 4+keyLength {
-		return "", errors.Newf("invalid key format: not enough length %d", keyLength)
+		return "", fmt.Errorf("invalid key format: not enough length %d", keyLength)
 	}
 
 	return string(b[4 : 4+keyLength]), nil
@@ -181,12 +180,12 @@ func parseKeyString(content string) (string, error) {
 		// If keyType is not given, extract it from content. If given, validate it.
 		t, err := extractTypeFromBase64Key(keyContent)
 		if err != nil {
-			return "", errors.Newf("extractTypeFromBase64Key: %v", err)
+			return "", fmt.Errorf("extractTypeFromBase64Key: %v", err)
 		}
 		if keyType == "" {
 			keyType = t
 		} else if keyType != t {
-			return "", errors.Newf("key type and content does not match: %s - %s", keyType, t)
+			return "", fmt.Errorf("key type and content does not match: %s - %s", keyType, t)
 		}
 	} else {
 		// Parse SSH2 file format.
@@ -206,7 +205,7 @@ func parseKeyString(content string) (string, error) {
 
 		t, err := extractTypeFromBase64Key(keyContent)
 		if err != nil {
-			return "", errors.Newf("extractTypeFromBase64Key: %v", err)
+			return "", fmt.Errorf("extractTypeFromBase64Key: %v", err)
 		}
 		keyType = t
 	}
@@ -218,12 +217,12 @@ func parseKeyString(content string) (string, error) {
 func writeTmpKeyFile(content, keyTestPath string) (string, error) {
 	tmpFile, err := os.CreateTemp(keyTestPath, "gogs_keytest")
 	if err != nil {
-		return "", errors.Newf("TempFile: %v", err)
+		return "", fmt.Errorf("TempFile: %v", err)
 	}
 	defer tmpFile.Close()
 
 	if _, err = tmpFile.WriteString(content); err != nil {
-		return "", errors.Newf("WriteString: %v", err)
+		return "", fmt.Errorf("WriteString: %v", err)
 	}
 	return tmpFile.Name(), nil
 }
@@ -232,13 +231,13 @@ func writeTmpKeyFile(content, keyTestPath string) (string, error) {
 func SSHKeygenParsePublicKey(key, keyTestPath, keygenPath string) (string, int, error) {
 	tmpName, err := writeTmpKeyFile(key, keyTestPath)
 	if err != nil {
-		return "", 0, errors.Newf("writeTmpKeyFile: %v", err)
+		return "", 0, fmt.Errorf("writeTmpKeyFile: %v", err)
 	}
 	defer os.Remove(tmpName)
 
 	stdout, stderr, err := process.Exec("SSHKeygenParsePublicKey", keygenPath, "-lf", tmpName)
 	if err != nil {
-		return "", 0, errors.Newf("fail to parse public key: %s - %s", err, stderr)
+		return "", 0, fmt.Errorf("fail to parse public key: %s - %s", err, stderr)
 	}
 	if strings.Contains(stdout, "is not a public key file") {
 		return "", 0, ErrKeyUnableVerify{stdout}
@@ -246,7 +245,7 @@ func SSHKeygenParsePublicKey(key, keyTestPath, keygenPath string) (string, int, 
 
 	fields := strings.Split(stdout, " ")
 	if len(fields) < 4 {
-		return "", 0, errors.Newf("invalid public key line: %s", stdout)
+		return "", 0, fmt.Errorf("invalid public key line: %s", stdout)
 	}
 
 	keyType := strings.Trim(fields[len(fields)-1], "()\r\n")
@@ -258,7 +257,7 @@ func SSHKeygenParsePublicKey(key, keyTestPath, keygenPath string) (string, int, 
 func SSHNativeParsePublicKey(keyLine string) (string, int, error) {
 	fields := strings.Fields(keyLine)
 	if len(fields) < 2 {
-		return "", 0, errors.Newf("not enough fields in public key line: %s", keyLine)
+		return "", 0, fmt.Errorf("not enough fields in public key line: %s", keyLine)
 	}
 
 	raw, err := base64.StdEncoding.DecodeString(fields[1])
@@ -271,7 +270,7 @@ func SSHNativeParsePublicKey(keyLine string) (string, int, error) {
 		if strings.Contains(err.Error(), "ssh: unknown key algorithm") {
 			return "", 0, ErrKeyUnableVerify{err.Error()}
 		}
-		return "", 0, errors.Newf("ParsePublicKey: %v", err)
+		return "", 0, fmt.Errorf("ParsePublicKey: %v", err)
 	}
 
 	// The ssh library can parse the key, so next we find out what key exactly we have.
@@ -306,7 +305,7 @@ func SSHNativeParsePublicKey(keyLine string) (string, int, error) {
 	case ssh.KeyAlgoED25519:
 		return "ed25519", 256, nil
 	}
-	return "", 0, errors.Newf("unsupported key length detection for type: %s", pkey.Type())
+	return "", 0, fmt.Errorf("unsupported key length detection for type: %s", pkey.Type())
 }
 
 // CheckPublicKeyString checks if the given public key string is recognized by SSH.
@@ -346,16 +345,16 @@ func CheckPublicKeyString(content string) (_ string, err error) {
 		keyType, length, err = SSHKeygenParsePublicKey(content, conf.SSH.KeyTestPath, conf.SSH.KeygenPath)
 	}
 	if err != nil {
-		return "", errors.Newf("%s: %v", fnName, err)
+		return "", fmt.Errorf("%s: %v", fnName, err)
 	}
 	log.Trace("Key info [native: %v]: %s-%d", conf.SSH.StartBuiltinServer, keyType, length)
 
 	if minLen, found := conf.SSH.MinimumKeySizes[keyType]; found && length >= minLen {
 		return content, nil
 	} else if found && length < minLen {
-		return "", errors.Newf("key length is not enough: got %d, needs %d", length, minLen)
+		return "", fmt.Errorf("key length is not enough: got %d, needs %d", length, minLen)
 	}
-	return "", errors.Newf("key type is not allowed: %s", keyType)
+	return "", fmt.Errorf("key type is not allowed: %s", keyType)
 }
 
 // appendAuthorizedKeysToFile appends new SSH keys' content to authorized_keys file.
@@ -418,7 +417,7 @@ func addKey(tx *gorm.DB, key *PublicKey) (err error) {
 
 	stdout, stderr, err := process.Exec("AddPublicKey", conf.SSH.KeygenPath, "-lf", tmpPath)
 	if err != nil {
-		return errors.Newf("fail to parse public key: %s - %s", err, stderr)
+		return fmt.Errorf("fail to parse public key: %s - %s", err, stderr)
 	} else if len(stdout) < 2 {
 		return errors.New("not enough output for calculating fingerprint: " + stdout)
 	}

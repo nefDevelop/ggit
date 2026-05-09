@@ -4,11 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestActionsStore_ListAuditLog(t *testing.T) {
@@ -45,7 +44,7 @@ func TestActionsStore_ListAuditLog(t *testing.T) {
 		logs, err := store.ListAuditLog(ctx, 99)
 		assert.NoError(t, err)
 		assert.Empty(t, logs, "Una página sin resultados debe devolver lista vacía, no error")
-		
+
 		logsZero, err := store.ListAuditLog(ctx, 0)
 		assert.NoError(t, err)
 		assert.NotEmpty(t, logsZero, "Página 0 debe reajustarse automáticamente a página 1")

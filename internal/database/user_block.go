@@ -2,11 +2,12 @@ package database
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
 	"github.com/nef734/ggit/internal/domain"
+	"gorm.io/gorm"
 )
 
 // UserBlock represents a user blocking another user.
@@ -42,7 +43,7 @@ func (s *UserBlocksStore) ListByUserID(ctx context.Context, userID int64) ([]*do
 		Where("user_block.user_id = ?", userID).
 		Find(&users).Error
 	if err != nil {
-		return nil, errors.Wrap(err, "list blocked users")
+		return nil, fmt.Errorf("list blocked users"+": %w", err)
 	}
 
 	res := make([]*domain.User, len(users))
@@ -71,4 +72,3 @@ func (s *UserBlocksStore) IsBlocked(ctx context.Context, userID, blockID int64) 
 	s.db.WithContext(ctx).Model(&UserBlock{}).Where("user_id = ? AND block_id = ?", userID, blockID).Count(&count)
 	return count > 0
 }
-

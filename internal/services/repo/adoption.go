@@ -2,17 +2,16 @@ package repo
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/repox"
+	"gorm.io/gorm"
 )
 
 // UnmanagedRepository represents a repository folder on disk that is not in the database.
@@ -29,7 +28,7 @@ func (s *RepositoryService) ListUnmanagedRepositories(ctx context.Context) ([]*U
 
 	owners, err := os.ReadDir(root)
 	if err != nil {
-		return nil, errors.Wrap(err, "read repo root")
+		return nil, fmt.Errorf("read repo root"+": %w", err)
 	}
 
 	for _, ownerDir := range owners {
@@ -37,7 +36,7 @@ func (s *RepositoryService) ListUnmanagedRepositories(ctx context.Context) ([]*U
 			continue
 		}
 		ownerName := ownerDir.Name()
-		
+
 		owner, _ := database.Handle.Users().GetByUsername(ctx, ownerName)
 
 		repos, err := os.ReadDir(filepath.Join(root, ownerName))
@@ -74,12 +73,12 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 	// 🚨 SECURITY: Prevent Path Traversal & System Hijacking
 	// Strict validation: Only alphanumeric, dash, underscore, and dot allowed.
 	if !database.IsValidRepoName(repoName) {
-		return nil, errors.Newf("invalid or malicious repository name: %q", repoName)
+		return nil, fmt.Errorf("invalid or malicious repository name: %q", repoName)
 	}
 
 	owner, err := database.Handle.Users().GetByUsername(ctx, ownerName)
 	if err != nil {
-		return nil, errors.Wrap(err, "get owner")
+		return nil, fmt.Errorf("get owner"+": %w", err)
 	}
 
 	var repo *database.Repository
@@ -92,7 +91,7 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 			EnablePulls:   true,
 		})
 		if err != nil {
-			return errors.Wrap(err, "create db record")
+			return fmt.Errorf("create db record"+": %w", err)
 		}
 		repo = database.FromDomainRepository(domainRepo)
 
@@ -102,12 +101,12 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 		}
 
 		if _, err := os.Stat(repoPath); os.IsNotExist(err) {
-			return errors.Newf("repository folder does not exist: %s", repoPath)
+			return fmt.Errorf("repository folder does not exist: %s", repoPath)
 		}
 
 		// Fix hooks
 		if err := repox.CreateDelegateHooks(repoPath); err != nil {
-			return errors.Wrap(err, "create delegate hooks")
+			return fmt.Errorf("create delegate hooks"+": %w", err)
 		}
 
 		return nil

@@ -1,10 +1,10 @@
 package v2
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
@@ -29,10 +29,10 @@ func GetComparison(c *context.APIContext) {
 
 	// Gather metadata for the UI (branches, forks, etc.)
 	branches, _ := c.Repo.GitRepo.Branches()
-	
+
 	var allHeadRepos []*apiv2types.RepositoryResponse
 	allHeadRepos = append(allHeadRepos, baseRepo.APIFormat(c.Repo.Owner))
-	
+
 	forks, _ := database.Handle.Repositories().ListForks(c.Req.Context(), baseRepo.ID, 1, 100)
 	for _, fork := range forks {
 		du, _ := database.Handle.Users().GetByID(c.Req.Context(), fork.OwnerID)

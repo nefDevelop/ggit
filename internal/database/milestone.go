@@ -1,17 +1,16 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"time"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"gorm.io/gorm"
 )
 
 // Milestone represents a milestone of repository.

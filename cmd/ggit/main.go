@@ -5,10 +5,9 @@ import (
 	"context"
 	"os"
 
-	"github.com/urfave/cli/v3"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
+	log "github.com/nef734/ggit/internal/log"
+	"github.com/urfave/cli/v3"
 )
 
 func init() {

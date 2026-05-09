@@ -6,13 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"github.com/pquerna/otp/totp"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/cryptox"
 	"github.com/nef734/ggit/internal/domain"
+	"github.com/pquerna/otp/totp"
+	"gorm.io/gorm"
 )
 
 // TwoFactor is a 2FA token of a user.
@@ -53,11 +51,11 @@ func FromDomainTwoFactor(t *domain.TwoFactor) *TwoFactor {
 func (t *TwoFactor) ValidateTOTP(passcode string) (bool, error) {
 	secret, err := base64.StdEncoding.DecodeString(t.Secret)
 	if err != nil {
-		return false, errors.Newf("DecodeString: %v", err)
+		return false, fmt.Errorf("DecodeString: %v", err)
 	}
 	decryptSecret, err := cryptox.AESGCMDecrypt(cryptox.MD5Bytes(conf.Security.SecretKey), secret)
 	if err != nil {
-		return false, errors.Newf("AESGCMDecrypt: %v", err)
+		return false, fmt.Errorf("AESGCMDecrypt: %v", err)
 	}
 	return totp.Validate(passcode, string(decryptSecret)), nil
 }
@@ -137,4 +135,3 @@ func IsTwoFactorRecoveryCodeNotFound(err error) bool {
 func (err ErrTwoFactorRecoveryCodeNotFound) Error() string {
 	return fmt.Sprintf("two-factor recovery code does not found [code: %s]", err.Code)
 }
-

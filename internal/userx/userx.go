@@ -15,14 +15,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cockroachdb/errors"
-	"golang.org/x/crypto/pbkdf2"
-	"golang.org/x/image/draw"
-
 	"github.com/nef734/ggit/internal/avatar"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/tool"
+	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/image/draw"
 )
 
 // DashboardURLPath returns the URL path to the user or organization dashboard.
@@ -52,29 +50,28 @@ func CustomAvatarPath(userID int64) string {
 	return filepath.Join(conf.Picture.AvatarUploadPath, strconv.FormatInt(userID, 10))
 }
 
-
 // SaveAvatarToPath saves the given avatar to the specified path.
 func SaveAvatarToPath(path string, data []byte) error {
 	img, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
-		return errors.Wrap(err, "decode image")
+		return fmt.Errorf("decode image"+": %w", err)
 	}
 
 	err = os.MkdirAll(filepath.Dir(path), os.ModePerm)
 	if err != nil {
-		return errors.Wrap(err, "create avatar directory")
+		return fmt.Errorf("create avatar directory"+": %w", err)
 	}
 
 	f, err := os.Create(path)
 	if err != nil {
-		return errors.Wrap(err, "create avatar file")
+		return fmt.Errorf("create avatar file"+": %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	dst := image.NewRGBA(image.Rect(0, 0, avatar.DefaultSize, avatar.DefaultSize))
 	draw.NearestNeighbor.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
 	if err = png.Encode(f, dst); err != nil {
-		return errors.Wrap(err, "encode avatar image to file")
+		return fmt.Errorf("encode avatar image to file"+": %w", err)
 	}
 	return nil
 }

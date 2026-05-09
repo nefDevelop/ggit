@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -8,15 +9,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gopkg.in/ini.v1"
-
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/auth/ldap"
 	"github.com/nef734/ggit/internal/auth/oidc"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/osx"
+	"gopkg.in/ini.v1"
 )
 
 // loginSourceFilesStore is the in-memory interface for login source files stored on file system.
@@ -47,7 +46,8 @@ type ErrLoginSourceNotExist struct {
 }
 
 func IsErrLoginSourceNotExist(err error) bool {
-	return errors.As(err, &ErrLoginSourceNotExist{})
+	var target ErrLoginSourceNotExist
+	return errors.As(err, &target)
 }
 
 func (err ErrLoginSourceNotExist) Error() string {
@@ -126,7 +126,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 
 		authSource, err := ini.Load(path)
 		if err != nil {
-			return errors.Wrap(err, "load file")
+			return fmt.Errorf("load file"+": %w", err)
 		}
 		authSource.NameMapper = ini.TitleUnderscore
 
@@ -145,7 +145,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 
 		fi, err := os.Stat(path)
 		if err != nil {
-			return errors.Wrap(err, "stat file")
+			return fmt.Errorf("stat file"+": %w", err)
 		}
 		loginSource.Updated = fi.ModTime()
 
@@ -157,7 +157,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			var cfg ldap.Config
 			err = cfgSection.MapTo(&cfg)
 			if err != nil {
-				return errors.Wrap(err, `map "config" section`)
+				return fmt.Errorf(`map "config" section`+": %w", err)
 			}
 			loginSource.Type = auth.LDAP
 			loginSource.Provider = ldap.NewProvider(false, &cfg)
@@ -166,7 +166,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			var cfg ldap.Config
 			err = cfgSection.MapTo(&cfg)
 			if err != nil {
-				return errors.Wrap(err, `map "config" section`)
+				return fmt.Errorf(`map "config" section`+": %w", err)
 			}
 			loginSource.Type = auth.DLDAP
 			loginSource.Provider = ldap.NewProvider(true, &cfg)
@@ -175,13 +175,13 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			var cfg oidc.Config
 			err = cfgSection.MapTo(&cfg)
 			if err != nil {
-				return errors.Wrap(err, `map "config" section`)
+				return fmt.Errorf(`map "config" section`+": %w", err)
 			}
 			loginSource.Type = auth.OIDC
 			loginSource.Provider = oidc.NewProvider(&cfg)
 
 		default:
-			return errors.Newf("unknown type %q", authType)
+			return fmt.Errorf("unknown type %q", authType)
 		}
 
 		store.sources = append(store.sources, loginSource)

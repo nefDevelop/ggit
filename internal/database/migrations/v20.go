@@ -1,10 +1,10 @@
 package migrations
 
 import (
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
+	"fmt"
 
 	"github.com/nef734/ggit/internal/cryptox"
+	"gorm.io/gorm"
 )
 
 func migrateAccessTokenToSHA256(db *gorm.DB) error {
@@ -22,21 +22,21 @@ func migrateAccessTokenToSHA256(db *gorm.DB) error {
 		// "sha256" column.
 		err := tx.Migrator().AddColumn(&accessToken{}, "SHA256")
 		if err != nil {
-			return errors.Wrap(err, "add column")
+			return fmt.Errorf("add column"+": %w", err)
 		}
 
 		// 2. Generate SHA256 for existing rows from their values in the "sha1" column.
 		var accessTokens []*accessToken
 		err = tx.Where("sha256 IS NULL").Find(&accessTokens).Error
 		if err != nil {
-			return errors.Wrap(err, "list")
+			return fmt.Errorf("list"+": %w", err)
 		}
 
 		for _, t := range accessTokens {
 			sha256 := cryptox.SHA256(t.Sha1)
 			err = tx.Model(&accessToken{}).Where("id = ?", t.ID).Update("sha256", sha256).Error
 			if err != nil {
-				return errors.Wrap(err, "update")
+				return fmt.Errorf("update"+": %w", err)
 			}
 		}
 
@@ -46,7 +46,7 @@ func migrateAccessTokenToSHA256(db *gorm.DB) error {
 		}
 		err = tx.Table("access_token").AutoMigrate(&accessTokenWithConstraint{})
 		if err != nil {
-			return errors.Wrap(err, "auto migrate")
+			return fmt.Errorf("auto migrate"+": %w", err)
 		}
 
 		return nil

@@ -5,9 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLoginSessionsStore(t *testing.T) {
@@ -18,7 +17,7 @@ func TestLoginSessionsStore(t *testing.T) {
 	t.Run("Superación: Flujo completo de sesión", func(t *testing.T) {
 		sid := "secure-session-id-123"
 		userID := int64(42)
-		
+
 		// Create
 		sess, err := store.Create(ctx, userID, sid, "Mozilla/5.0", "127.0.0.1")
 		assert.NoError(t, err)
@@ -34,14 +33,14 @@ func TestLoginSessionsStore(t *testing.T) {
 		time.Sleep(1 * time.Second)
 		err = store.TouchBySID(ctx, sid)
 		assert.NoError(t, err)
-		
+
 		updated, _ := store.GetBySID(ctx, sid)
 		assert.True(t, updated.UpdatedUnix > oldUpdate, "UpdatedUnix debe incrementarse al hacer Touch")
 
 		// Delete
 		err = store.DeleteBySID(ctx, sid)
 		assert.NoError(t, err)
-		
+
 		_, err = store.GetBySID(ctx, sid)
 		assert.Error(t, err, "La sesión no debe existir tras ser borrada")
 	})
@@ -64,7 +63,7 @@ func TestLoginSessionsStore(t *testing.T) {
 		// DeleteByIDAndUserID protege este caso
 		err = store.DeleteByIDAndUserID(ctx, 1, 999) // ID 1, pero UserID equivocado
 		assert.NoError(t, err)
-		
+
 		// Verificar que la sesión SIGUE existiendo (no fue borrada por el impostor)
 		exists, _ := store.GetBySID(ctx, sid)
 		assert.NotNil(t, exists, "Un usuario no debe poder borrar las sesiones de otros mediante manipulación de ID")

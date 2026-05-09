@@ -5,9 +5,9 @@ import (
 	"strings"
 	"sync"
 
-	"gopkg.in/ini.v1"
-	"github.com/nef734/ggit/internal/context"
 	gogsconf "github.com/nef734/ggit/conf"
+	"github.com/nef734/ggit/internal/context"
+	"gopkg.in/ini.v1"
 )
 
 var (
@@ -43,7 +43,7 @@ func GetI18nStrings(c *context.APIContext) {
 			path = "locale/locale_" + baseLang + ".ini"
 			rawData, err = gogsconf.Files.ReadFile(path)
 		}
-		
+
 		if err != nil {
 			c.StatusError(http.StatusNotFound, "Locale not found", err)
 			return
@@ -62,7 +62,7 @@ func GetI18nStrings(c *context.APIContext) {
 		if name == ini.DefaultSection {
 			name = "common"
 		}
-		
+
 		secData := make(map[string]string)
 		for _, key := range section.Keys() {
 			secData[key.Name()] = key.Value()

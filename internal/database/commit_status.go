@@ -47,7 +47,7 @@ func (s *CommitStatuses) GetLatestBySHA(ctx context.Context, repoID int64, sha s
 	subQuery := s.db.Select("MAX(id)").Table("commit_status").
 		Where("repo_id = ? AND sha = ?", repoID, sha).
 		Group("context")
-	
+
 	err := s.db.WithContext(ctx).Where("id IN (?)", subQuery).Find(&statuses).Error
 	return statuses, err
 }

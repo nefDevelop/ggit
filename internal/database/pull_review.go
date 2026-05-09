@@ -2,9 +2,10 @@ package database
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"gorm.io/gorm"
 )
@@ -26,8 +27,8 @@ type PullReview struct {
 	Reviewer   *User          `json:"reviewer" gorm:"-"`
 	IssueID    int64          `gorm:"index"` // Linked to the pull request's issue ID
 	Content    string         `gorm:"type:TEXT"`
-	
-	Comments   []*PullReviewComment `json:"comments" gorm:"-"`
+
+	Comments []*PullReviewComment `json:"comments" gorm:"-"`
 
 	CreatedUnix int64 `gorm:"not null"`
 	UpdatedUnix int64 `gorm:"not null"`
@@ -79,7 +80,7 @@ func (s *PullReviewsStore) ListByIssueID(ctx context.Context, issueID int64) ([]
 	reviews := make([]*PullReview, 0, 5)
 	err := s.db.WithContext(ctx).Where("issue_id = ?", issueID).Order("created_unix ASC").Find(&reviews).Error
 	if err != nil {
-		return nil, errors.Wrap(err, "list reviews")
+		return nil, fmt.Errorf("list reviews"+": %w", err)
 	}
 	return reviews, nil
 }
@@ -118,7 +119,7 @@ func (s *PullReviewsStore) GetReviewStatsByIssueID(ctx context.Context, issueID 
 		Where("issue_id = ?", issueID).
 		Scan(&stats).Error
 	if err != nil {
-		return nil, errors.Wrap(err, "get review stats")
+		return nil, fmt.Errorf("get review stats"+": %w", err)
 	}
 	return &stats, nil
 }

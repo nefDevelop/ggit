@@ -2,12 +2,13 @@ package process
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"os/exec"
 	"sync"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	log "unknwon.dev/clog/v2"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 var ErrExecTimeout = errors.New("process execution timeout")
@@ -124,7 +125,7 @@ func Kill(pid int64) error {
 			if proc.Cmd != nil && proc.Cmd.Process != nil &&
 				proc.Cmd.ProcessState != nil && !proc.Cmd.ProcessState.Exited() {
 				if err := proc.Cmd.Process.Kill(); err != nil {
-					return errors.Newf("fail to kill process [pid: %d, desc: %s]: %v", proc.PID, proc.Description, err)
+					return fmt.Errorf("fail to kill process [pid: %d, desc: %s]: %v", proc.PID, proc.Description, err)
 				}
 			}
 			Remove(pid)

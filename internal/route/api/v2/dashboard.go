@@ -7,8 +7,8 @@ import (
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
+	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
-	log "unknwon.dev/clog/v2"
 )
 
 // DashboardData represents the consolidated data for the user dashboard.
@@ -68,7 +68,7 @@ func GetDashboardData(c *context.APIContext) {
 		drepos[i] = database.FromDomainRepository(r)
 	}
 	_ = database.RepositoryList(drepos).LoadAttributes()
-	
+
 	apiCollaborative := make([]*apiv2types.RepositoryResponse, 0, len(collaborative))
 	for i, r := range collaborative {
 		if r == nil {
@@ -165,16 +165,16 @@ func GetUnifiedInbox(c *context.APIContext) {
 	}
 
 	type InboxItem struct {
-		ID           int64          `json:"id"`
-		RepoName     string         `json:"repo_name"`
-		RepoOwner    string         `json:"repo_owner"`
-		Index        int64          `json:"index"`
-		Title        string         `json:"title"`
-		IsPull       bool           `json:"is_pull"`
-		Status       string         `json:"status"`
-		UpdatedUnix  int64          `json:"updated_at"`
-		PosterName   string         `json:"poster_name"`
-		PosterAvatar string         `json:"poster_avatar"`
+		ID           int64  `json:"id"`
+		RepoName     string `json:"repo_name"`
+		RepoOwner    string `json:"repo_owner"`
+		Index        int64  `json:"index"`
+		Title        string `json:"title"`
+		IsPull       bool   `json:"is_pull"`
+		Status       string `json:"status"`
+		UpdatedUnix  int64  `json:"updated_at"`
+		PosterName   string `json:"poster_name"`
+		PosterAvatar string `json:"poster_avatar"`
 	}
 
 	results := make([]InboxItem, 0, len(assigned))
@@ -184,7 +184,7 @@ func GetUnifiedInbox(c *context.APIContext) {
 		if repo != nil {
 			ownerName = repo.MustOwner().Name
 		}
-		
+
 		results = append(results, InboxItem{
 			ID:           is.ID,
 			RepoName:     repo.Name,

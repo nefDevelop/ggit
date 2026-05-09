@@ -1,11 +1,10 @@
 package conf
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/cockroachdb/errors"
 
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/process"
@@ -23,7 +22,7 @@ func openSSHVersion() (string, error) {
 	// NOTE: Somehow the version is printed to stderr.
 	_, stderr, err := process.Exec("conf.openSSHVersion", "ssh", "-V")
 	if err != nil {
-		return "", errors.Wrap(err, stderr)
+		return "", fmt.Errorf(stderr+": %w", err)
 	}
 
 	return cleanUpOpenSSHVersion(stderr), nil

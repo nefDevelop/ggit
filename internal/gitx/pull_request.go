@@ -1,12 +1,12 @@
 package gitx
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gogs/git-module"
-	log "unknwon.dev/clog/v2"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // PullRequestMeta contains metadata for a pull request.
@@ -27,7 +27,7 @@ func (module) PullRequestMeta(headPath, basePath, headBranch, baseBranch string)
 		tmpRemote := strconv.FormatInt(time.Now().UnixNano(), 10)
 		err := Module.RemoteAdd(headPath, tmpRemote, basePath, git.RemoteAddOptions{Fetch: true})
 		if err != nil {
-			return nil, errors.Newf("add remote: %v", err)
+			return nil, fmt.Errorf("add remote: %v", err)
 		}
 		defer func() {
 			err := Module.RemoteRemove(headPath, tmpRemote)
@@ -42,18 +42,18 @@ func (module) PullRequestMeta(headPath, basePath, headBranch, baseBranch string)
 
 	mergeBase, err := Module.MergeBase(headPath, tmpRemoteBranch, headBranch)
 	if err != nil {
-		return nil, errors.Wrap(err, "get merge base")
+		return nil, fmt.Errorf("get merge base"+": %w", err)
 	}
 
 	commits, err := Module.Log(headPath, mergeBase+"..."+headBranch)
 	if err != nil {
-		return nil, errors.Wrap(err, "get commits")
+		return nil, fmt.Errorf("get commits"+": %w", err)
 	}
 
 	// Count number of changed files
 	names, err := Module.DiffNameOnly(headPath, tmpRemoteBranch, headBranch, git.DiffNameOnlyOptions{NeedsMergeBase: true})
 	if err != nil {
-		return nil, errors.Wrap(err, "get changed files")
+		return nil, fmt.Errorf("get changed files"+": %w", err)
 	}
 
 	return &PullRequestMeta{

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/nef734/ggit/internal/authx"
 	"github.com/nef734/ggit/internal/conf"
 )

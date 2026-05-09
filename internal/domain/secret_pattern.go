@@ -1,6 +1,8 @@
 package domain
 
-import "context"
+import (
+	"context"
+)
 
 // SecretPattern represents a regex pattern to detect secrets in code.
 type SecretPattern struct {

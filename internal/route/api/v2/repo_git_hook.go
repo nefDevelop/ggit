@@ -45,7 +45,7 @@ func GetRepoGitHook(c *context.APIContext) {
 		return
 	}
 	hookPath := filepath.Join(c.Repo.Repository.RepoPath(), "custom_hooks", name)
-	
+
 	content := ""
 	isActive := false
 	if info, err := os.Stat(hookPath); err == nil && !info.IsDir() {
@@ -53,7 +53,7 @@ func GetRepoGitHook(c *context.APIContext) {
 		data, _ := os.ReadFile(hookPath)
 		content = string(data)
 	}
-	
+
 	c.JSON(http.StatusOK, &GitHook{
 		Name:     name,
 		IsActive: isActive,
@@ -75,13 +75,13 @@ func UpdateRepoGitHook(c *context.APIContext) {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
-	
+
 	customHooksDir := filepath.Join(c.Repo.Repository.RepoPath(), "custom_hooks")
 	if err := os.MkdirAll(customHooksDir, 0755); err != nil {
 		c.Error(err, "create custom hooks directory")
 		return
 	}
-	
+
 	hookPath := filepath.Join(customHooksDir, name)
 	if f.Content == "" {
 		_ = os.Remove(hookPath)
@@ -91,7 +91,7 @@ func UpdateRepoGitHook(c *context.APIContext) {
 			return
 		}
 	}
-	
+
 	c.NoContent()
 }
 

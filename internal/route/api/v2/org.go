@@ -54,7 +54,6 @@ func UpdateOrg(c *context.APIContext) {
 	}
 	org := database.FromDomainUser(du)
 
-
 	var f struct {
 		FullName    string `json:"full_name"`
 		Description string `json:"description"`
@@ -93,7 +92,6 @@ func DeleteOrg(c *context.APIContext) {
 	}
 	org := database.FromDomainUser(du)
 
-
 	if err := database.DeleteOrganization(org); err != nil {
 		c.Error(err, "delete organization")
 		return
@@ -111,7 +109,6 @@ func ListOrgMembers(c *context.APIContext) {
 		return
 	}
 	org := database.FromDomainUser(du)
-
 
 	members, err := database.GetOrgUsersByOrgID(org.ID, 0)
 	if err != nil {
@@ -133,7 +130,6 @@ func RemoveOrgMember(c *context.APIContext) {
 		return
 	}
 	org := database.FromDomainUser(du)
-
 
 	u, err := database.Handle.Users().GetByUsername(c.Req.Context(), userName)
 	if err != nil {
@@ -162,7 +158,6 @@ func ListOrgTeams(c *context.APIContext) {
 		return
 	}
 	org := database.FromDomainUser(du)
-
 
 	teams, err := database.GetTeamsByOrgID(org.ID)
 	if err != nil {
@@ -208,7 +203,6 @@ func CreateOrgTeam(c *context.APIContext) {
 		return
 	}
 	org := database.FromDomainUser(du)
-
 
 	var f struct {
 		Name        string `json:"name" binding:"required"`
@@ -398,7 +392,6 @@ func UpdateOrgAvatar(c *context.APIContext) {
 	}
 	org := database.FromDomainUser(du)
 
-
 	var f struct {
 		Avatar *multipart.FileHeader `form:"avatar"`
 	}
@@ -446,7 +439,6 @@ func DeleteOrgAvatar(c *context.APIContext) {
 		return
 	}
 	org := database.FromDomainUser(du)
-
 
 	if err := database.Handle.Users().DeleteCustomAvatar(c.Req.Context(), org.ID); err != nil {
 		c.Error(err, "delete avatar")

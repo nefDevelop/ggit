@@ -2,11 +2,11 @@ package database
 
 import (
 	"context"
+	"errors"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	log "unknwon.dev/clog/v2"
 	"github.com/nef734/ggit/internal/domain"
+	log "github.com/nef734/ggit/internal/log"
+	"gorm.io/gorm"
 )
 
 // Access represents the highest access level of a user has to a repository. The
@@ -99,4 +99,3 @@ func (s *PermissionsStore) SetRepoPerms(ctx context.Context, repoID int64, acces
 		return tx.Create(&records).Error
 	})
 }
-

@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/lazyregexp"
 )
 

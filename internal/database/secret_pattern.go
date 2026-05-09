@@ -4,9 +4,8 @@ import (
 	"context"
 	"regexp"
 
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/domain"
+	"gorm.io/gorm"
 )
 
 // MatchPattern is a helper to check if a string matches a regex pattern.
@@ -160,4 +159,3 @@ func (s *SecretPatternsStore) InitDefaultPatterns(ctx context.Context) error {
 func (db *DB) SecretPatterns() domain.SecretPatternsStore {
 	return newSecretPatternsStore(db.db)
 }
-

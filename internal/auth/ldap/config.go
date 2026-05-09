@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cockroachdb/errors"
 	"github.com/go-ldap/ldap/v3"
-	log "unknwon.dev/clog/v2"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // SecurityProtocol is the security protocol when the authenticate provider talks to LDAP directory.
@@ -163,13 +162,13 @@ func dial(ls *Config) (*ldap.Conn, error) {
 
 	conn, err := ldap.Dial("tcp", fmt.Sprintf("%s:%d", ls.Host, ls.Port))
 	if err != nil {
-		return nil, errors.Newf("dial: %v", err)
+		return nil, fmt.Errorf("dial: %v", err)
 	}
 
 	if ls.SecurityProtocol == SecurityProtocolStartTLS {
 		if err = conn.StartTLS(tlsCfg); err != nil {
 			conn.Close()
-			return nil, errors.Newf("StartTLS: %v", err)
+			return nil, fmt.Errorf("StartTLS: %v", err)
 		}
 	}
 

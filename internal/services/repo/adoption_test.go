@@ -1,12 +1,12 @@
 package repo
 
 import (
-	"testing"
 	"path/filepath"
 	"strings"
+	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAdoptionSecurity(t *testing.T) {

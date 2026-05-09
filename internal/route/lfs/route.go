@@ -5,8 +5,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/authx"
 	"github.com/nef734/ggit/internal/conf"
@@ -14,6 +12,7 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lfsx"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // RegisterRoutes registers LFS routes using given router, and inherits all

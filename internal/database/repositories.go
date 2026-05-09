@@ -3,18 +3,16 @@ package database
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/repox"
-
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"gorm.io/gorm"
 )
 
 // repoListFields are the columns used for listing repositories in the dashboard and explore pages.
@@ -46,35 +44,35 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 	_ = Handle.db.Model(&Release{}).Where("repo_id = ? AND is_draft = ?", r.ID, false).Count(&numReleases).Error
 
 	return &apiv2types.RepositoryResponse{
-		ID:            r.ID,
-		Owner:         owner.APIFormat(),
-		AvatarURL:     r.AvatarLink(),
-		Name:          r.Name,
-		ProjectFolder: r.ProjectFolder,
-		FullName:      owner.Name + "/" + r.Name,
-		Description:   r.Description,
-		NumStars:      r.NumStars,
-		NumForks:      r.NumForks,
-		NumWatches:    r.NumWatches,
-		OpenIssues:    r.NumOpenIssues,
-		OpenPulls:     r.NumOpenPulls,
-		NumCommits:    r.NumCommits,
-		NumBranches:   r.NumBranches,
-		NumReleases:   int(numReleases),
-		IsPrivate:     r.IsPrivate,
-		IsBare:        r.IsBare,
-		HTMLURL:       owner.HTMLURL() + "/" + r.Name,
-		CloneURL:      cloneLink.HTTPS,
-		SSHURL:        cloneLink.SSH,
-		DefaultBranch: r.DefaultBranch,
-		WikiFolderName: r.WikiFolderName,
-		ADRFolderName:  r.ADRFolderName,
-		LastCommitAt:   time.Unix(r.LastCommitUnix, 0),
-		LastIssueAt:    time.Unix(r.LastIssueUnix, 0),
-		LastPullAt:     time.Unix(r.LastPullUnix, 0),
-		LastBranchAt:   time.Unix(r.LastBranchUnix, 0),
-		LastHealthCheckAt: time.Unix(r.LastHealthCheckUnix, 0),
-		CreatedAt:      time.Unix(r.CreatedUnix, 0),
+		ID:                    r.ID,
+		Owner:                 owner.APIFormat(),
+		AvatarURL:             r.AvatarLink(),
+		Name:                  r.Name,
+		ProjectFolder:         r.ProjectFolder,
+		FullName:              owner.Name + "/" + r.Name,
+		Description:           r.Description,
+		NumStars:              r.NumStars,
+		NumForks:              r.NumForks,
+		NumWatches:            r.NumWatches,
+		OpenIssues:            r.NumOpenIssues,
+		OpenPulls:             r.NumOpenPulls,
+		NumCommits:            r.NumCommits,
+		NumBranches:           r.NumBranches,
+		NumReleases:           int(numReleases),
+		IsPrivate:             r.IsPrivate,
+		IsBare:                r.IsBare,
+		HTMLURL:               owner.HTMLURL() + "/" + r.Name,
+		CloneURL:              cloneLink.HTTPS,
+		SSHURL:                cloneLink.SSH,
+		DefaultBranch:         r.DefaultBranch,
+		WikiFolderName:        r.WikiFolderName,
+		ADRFolderName:         r.ADRFolderName,
+		LastCommitAt:          time.Unix(r.LastCommitUnix, 0),
+		LastIssueAt:           time.Unix(r.LastIssueUnix, 0),
+		LastPullAt:            time.Unix(r.LastPullUnix, 0),
+		LastBranchAt:          time.Unix(r.LastBranchUnix, 0),
+		LastHealthCheckAt:     time.Unix(r.LastHealthCheckUnix, 0),
+		CreatedAt:             time.Unix(r.CreatedUnix, 0),
 		EnableWiki:            r.EnableWiki,
 		EnableExternalWiki:    r.EnableExternalWiki,
 		ExternalWikiURL:       r.ExternalWikiURL,
@@ -86,10 +84,10 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		EnablePulls:           r.EnablePulls,
 		PullsIgnoreWhitespace: r.PullsIgnoreWhitespace,
 		PullsAllowRebase:      r.PullsAllowRebase,
-		UpdatedAt:     time.Unix(r.UpdatedUnix, 0),
-		Permissions:   opt.Permission,
-		Parent:        opt.Parent,
-		Topics:        r.Topics,
+		UpdatedAt:             time.Unix(r.UpdatedUnix, 0),
+		Permissions:           opt.Permission,
+		Parent:                opt.Parent,
+		Topics:                r.Topics,
 	}
 }
 
@@ -116,16 +114,16 @@ func (err ErrRepoAlreadyExist) Error() string {
 }
 
 type CreateRepoOptions struct {
-	Name          string
-	Description   string
-	Website       string
-	DefaultBranch string
-	Private       bool
-	IsUnlisted    bool
-	AutoInit      bool
-	Gitignores    string
-	License       string
-	Readme        string
+	Name           string
+	Description    string
+	Website        string
+	DefaultBranch  string
+	Private        bool
+	IsUnlisted     bool
+	AutoInit       bool
+	Gitignores     string
+	License        string
+	Readme         string
 	EnableWiki     bool
 	WikiFolderName string
 	EnableIssues   bool
@@ -166,15 +164,15 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 	}
 
 	repo := &Repository{
-		OwnerID:       ownerID,
-		LowerName:     strings.ToLower(options.Name),
-		Name:          options.Name,
-		Description:   options.Description,
-		Website:       options.Website,
-		DefaultBranch: options.DefaultBranch,
-		IsPrivate:     options.Private,
-		IsUnlisted:    options.IsUnlisted,
-		EnableWiki:    options.EnableWiki,
+		OwnerID:        ownerID,
+		LowerName:      strings.ToLower(options.Name),
+		Name:           options.Name,
+		Description:    options.Description,
+		Website:        options.Website,
+		DefaultBranch:  options.DefaultBranch,
+		IsPrivate:      options.Private,
+		IsUnlisted:     options.IsUnlisted,
+		EnableWiki:     options.EnableWiki,
 		WikiFolderName: options.WikiFolderName,
 		EnableIssues:   options.EnableIssues,
 		EnablePulls:    options.EnablePulls,
@@ -190,12 +188,12 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err = tx.Create(repo).Error
 		if err != nil {
-			return errors.Wrap(err, "create")
+			return fmt.Errorf("create"+": %w", err)
 		}
 
 		err = NewRepositoriesStore(tx).Watch(ctx, ownerID, repo.ID)
 		if err != nil {
-			return errors.Wrap(err, "watch")
+			return fmt.Errorf("watch"+": %w", err)
 		}
 		return nil
 	})
@@ -397,7 +395,7 @@ func (s *RepositoriesStore) recountStars(tx *gorm.DB, userID, repoID int64) erro
 		).
 		Error
 	if err != nil {
-		return errors.Wrap(err, `update "repository.num_stars"`)
+		return fmt.Errorf(`update "repository.num_stars"`+": %w", err)
 	}
 
 	/*
@@ -417,7 +415,7 @@ func (s *RepositoriesStore) recountStars(tx *gorm.DB, userID, repoID int64) erro
 		).
 		Error
 	if err != nil {
-		return errors.Wrap(err, `update "user.num_stars"`)
+		return fmt.Errorf(`update "user.num_stars"`+": %w", err)
 	}
 	return nil
 }
@@ -431,7 +429,7 @@ func (s *RepositoriesStore) Star(ctx context.Context, userID, repoID int64) erro
 		}
 		result := tx.FirstOrCreate(star, star)
 		if result.Error != nil {
-			return errors.Wrap(result.Error, "upsert")
+			return fmt.Errorf("upsert"+": %w", result.Error)
 		} else if result.RowsAffected <= 0 {
 			return nil // Relation already exists
 		}
@@ -501,7 +499,7 @@ func (s *RepositoriesStore) Watch(ctx context.Context, userID, repoID int64) err
 		}
 		result := tx.FirstOrCreate(w, w)
 		if result.Error != nil {
-			return errors.Wrap(result.Error, "upsert")
+			return fmt.Errorf("upsert"+": %w", result.Error)
 		} else if result.RowsAffected <= 0 {
 			return nil // Relation already exists
 		}

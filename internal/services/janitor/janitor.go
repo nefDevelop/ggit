@@ -11,14 +11,13 @@ import (
 	"time"
 
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/database"
 )
 
 // Issue represents a finding by the Janitor.
 type Issue struct {
-	Type        string `json:"type"`      // "system", "dependency", "build", "large_file", "security"
-	Severity    string `json:"severity"`  // "info", "warning", "critical"
+	Type        string `json:"type"`     // "system", "dependency", "build", "large_file", "security"
+	Severity    string `json:"severity"` // "info", "warning", "critical"
 	Path        string `json:"path"`
 	Description string `json:"description"`
 	Size        int64  `json:"size"`
@@ -71,12 +70,12 @@ var patterns = map[string]string{
 	".settings": "Eclipse settings folder",
 
 	// Logs & Coverage
-	"*.log":          "Log file",
-	"npm-debug.log*": "npm debug log",
+	"*.log":           "Log file",
+	"npm-debug.log*":  "npm debug log",
 	"yarn-error.log*": "yarn error log",
-	"coverage":       "Code coverage report",
-	".nyc_output":    "Istanbul/nyc coverage data",
-	"htmlcov":        "Python coverage report",
+	"coverage":        "Code coverage report",
+	".nyc_output":     "Istanbul/nyc coverage data",
+	"htmlcov":         "Python coverage report",
 
 	// Security (Files)
 	"*.pem": "Private key file (Sensitive)",

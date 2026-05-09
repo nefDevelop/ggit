@@ -2,28 +2,27 @@ package database
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
+	"gorm.io/gorm"
 )
 
 const ownerTeamName = "Owners"
 
 // Team represents a organization team.
 type Team struct {
-	ID          int64         `gorm:"primaryKey"`
-	OrgID       int64         `gorm:"index"`
-	LowerName   string        `gorm:"index;not null"`
-	Name        string        `gorm:"not null"`
-	Description string        `gorm:"type:VARCHAR(255)"`
-	Authorize   domain.AccessMode    `gorm:"not null"`
-	Repos       []*Repository `json:"-" gorm:"-"`
-	Members     []*User       `json:"-" gorm:"-"`
+	ID          int64             `gorm:"primaryKey"`
+	OrgID       int64             `gorm:"index"`
+	LowerName   string            `gorm:"index;not null"`
+	Name        string            `gorm:"not null"`
+	Description string            `gorm:"type:VARCHAR(255)"`
+	Authorize   domain.AccessMode `gorm:"not null"`
+	Repos       []*Repository     `json:"-" gorm:"-"`
+	Members     []*User           `json:"-" gorm:"-"`
 	NumRepos    int
 	NumMembers  int
 }
@@ -55,14 +54,14 @@ func (t *Team) IsMember(userID int64) bool {
 func (t *Team) getRepositories(tx *gorm.DB) (err error) {
 	teamRepos := make([]*TeamRepo, 0, t.NumRepos)
 	if err = tx.Where("team_id = ?", t.ID).Find(&teamRepos).Error; err != nil {
-		return errors.Newf("get team-repos: %v", err)
+		return fmt.Errorf("get team-repos: %v", err)
 	}
 
 	t.Repos = make([]*Repository, 0, len(teamRepos))
 	for i := range teamRepos {
 		repo, err := getRepositoryByID(tx, teamRepos[i].RepoID)
 		if err != nil {
-			return errors.Newf("getRepositoryById(%d): %v", teamRepos[i].RepoID, err)
+			return fmt.Errorf("getRepositoryById(%d): %v", teamRepos[i].RepoID, err)
 		}
 		t.Repos = append(t.Repos, repo)
 	}
@@ -111,19 +110,19 @@ func (t *Team) addRepository(tx *gorm.DB, repo *Repository) (err error) {
 
 	t.NumRepos++
 	if err = tx.Model(t).Updates(t).Error; err != nil {
-		return errors.Newf("update team: %v", err)
+		return fmt.Errorf("update team: %v", err)
 	}
 
 	if err = repo.recalculateTeamAccesses(tx, 0); err != nil {
-		return errors.Newf("recalculateAccesses: %v", err)
+		return fmt.Errorf("recalculateAccesses: %v", err)
 	}
 
 	if err = t.getMembers(tx); err != nil {
-		return errors.Newf("getMembers: %v", err)
+		return fmt.Errorf("getMembers: %v", err)
 	}
 	for _, u := range t.Members {
 		if err = watchRepo(tx, u.ID, repo.ID, true); err != nil {
-			return errors.Newf("watchRepo: %v", err)
+			return fmt.Errorf("watchRepo: %v", err)
 		}
 	}
 	return nil
@@ -160,7 +159,7 @@ func (t *Team) removeRepository(tx *gorm.DB, repo *Repository, recalculate bool)
 	}
 
 	if err = t.getMembers(tx); err != nil {
-		return errors.Newf("get team members: %v", err)
+		return fmt.Errorf("get team members: %v", err)
 	}
 
 	// TODO: Delete me when this method is migrated to use GORM.
@@ -365,18 +364,18 @@ func UpdateTeam(t *Team, authChanged bool) (err error) {
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(t).Updates(t).Error; err != nil {
-			return errors.Newf("update: %v", err)
+			return fmt.Errorf("update: %v", err)
 		}
 
 		// Update access for team members if needed.
 		if authChanged {
 			if err = t.getRepositories(tx); err != nil {
-				return errors.Newf("getRepositories: %v", err)
+				return fmt.Errorf("getRepositories: %v", err)
 			}
 
 			for _, repo := range t.Repos {
 				if err = repo.recalculateTeamAccesses(tx, 0); err != nil {
-					return errors.Newf("recalculateTeamAccesses: %v", err)
+					return fmt.Errorf("recalculateTeamAccesses: %v", err)
 				}
 			}
 		}
@@ -449,7 +448,7 @@ func IsTeamMember(orgID, teamID, uid int64) bool {
 func getTeamMembers(tx *gorm.DB, teamID int64) (_ []*User, err error) {
 	teamUsers := make([]*TeamUser, 0, 10)
 	if err = tx.Where("team_id = ?", teamID).Find(&teamUsers).Error; err != nil {
-		return nil, errors.Newf("get team-users: %v", err)
+		return nil, fmt.Errorf("get team-users: %v", err)
 	}
 
 	members := make([]*User, 0, len(teamUsers))
@@ -457,7 +456,7 @@ func getTeamMembers(tx *gorm.DB, teamID int64) (_ []*User, err error) {
 		member := new(User)
 		err := tx.Where("id = ?", teamUsers[i].UID).First(member).Error
 		if err != nil {
-			return nil, errors.Newf("get user '%d': %v", teamUsers[i].UID, err)
+			return nil, fmt.Errorf("get user '%d': %v", teamUsers[i].UID, err)
 		}
 		members = append(members, member)
 	}

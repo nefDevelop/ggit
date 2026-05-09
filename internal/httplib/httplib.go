@@ -9,7 +9,6 @@ import (
 	"context"
 	"crypto/tls"
 	"io"
-	"log"
 	"mime/multipart"
 	"net"
 	"net/http"
@@ -21,6 +20,8 @@ import (
 	"sync"
 	"syscall"
 	"time"
+
+	log "github.com/nef734/ggit/internal/log"
 )
 
 var (
@@ -269,17 +270,17 @@ func (r *Request) getResponse() (*http.Response, error) {
 				for formname, filename := range r.files {
 					fileWriter, err := bodyWriter.CreateFormFile(formname, filename)
 					if err != nil {
-						log.Fatal(err)
+						log.Fatal("%v", err)
 					}
 					fh, err := os.Open(filename)
 					if err != nil {
-						log.Fatal(err)
+						log.Fatal("%v", err)
 					}
 					// iocopy
 					_, err = io.Copy(fileWriter, fh)
 					_ = fh.Close()
 					if err != nil {
-						log.Fatal(err)
+						log.Fatal("%v", err)
 					}
 				}
 				for k, v := range r.params {

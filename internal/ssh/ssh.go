@@ -2,6 +2,8 @@ package ssh
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -11,14 +13,12 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/cockroachdb/errors"
-	"github.com/sourcegraph/run"
-	"golang.org/x/crypto/ssh"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
+	"github.com/sourcegraph/run"
+	"golang.org/x/crypto/ssh"
 )
 
 func cleanCommand(cmd string) string {
@@ -177,7 +177,7 @@ func setupHostKeys(appDataPath string, algorithms []string) ([]ssh.Signer, error
 	dir := filepath.Join(appDataPath, "ssh")
 	err := os.MkdirAll(dir, os.ModePerm)
 	if err != nil {
-		return nil, errors.Wrapf(err, "create host key directory")
+		return nil, fmt.Errorf("create host key directory: %w", err)
 	}
 
 	var hostKeys []ssh.Signer
@@ -192,18 +192,18 @@ func setupHostKeys(appDataPath string, algorithms []string) ([]ssh.Signer, error
 			}
 			err = run.Cmd(context.Background(), args...).Run().Wait()
 			if err != nil {
-				return nil, errors.Wrapf(err, "generate host key with args %v", args)
+				return nil, fmt.Errorf("generate host key with args %v: %w", args, err)
 			}
 			log.Trace("SSH: New private key is generated: %s", keyPath)
 		}
 
 		keyData, err := os.ReadFile(keyPath)
 		if err != nil {
-			return nil, errors.Wrapf(err, "read host key %q", keyPath)
+			return nil, fmt.Errorf("read host key %q: %w", keyPath, err)
 		}
 		signer, err := ssh.ParsePrivateKey(keyData)
 		if err != nil {
-			return nil, errors.Wrapf(err, "parse host key %q", keyPath)
+			return nil, fmt.Errorf("parse host key %q: %w", keyPath, err)
 		}
 
 		hostKeys = append(hostKeys, signer)

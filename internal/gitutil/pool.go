@@ -20,7 +20,7 @@ func calculateRAMLimit() int {
 		return runtime.NumCPU() * 2
 	}
 
-	// Blindaje Anti-OOM Heuristic: 
+	// Blindaje Anti-OOM Heuristic:
 	// Each git process can spike up to 256MB-512MB in heavy operations (like diff/pack).
 	// We use 50% of available RAM as a safe concurrency zone.
 	availableMB := available / 1024 / 1024

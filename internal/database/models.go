@@ -2,16 +2,15 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/database/migrations"
 	"github.com/nef734/ggit/internal/dbx"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -39,13 +38,13 @@ func SetEngine() (*gorm.DB, error) {
 			},
 		)
 		if err != nil {
-			return nil, errors.Wrap(err, "create gorm log writer")
+			return nil, fmt.Errorf("create gorm log writer"+": %w", err)
 		}
 		gormLogger = &dbx.Logger{Writer: w}
 	} else {
 		gormLogger, err = newLogWriter()
 		if err != nil {
-			return nil, errors.Wrap(err, "new log writer")
+			return nil, fmt.Errorf("new log writer"+": %w", err)
 		}
 	}
 	return NewConnection(gormLogger)
@@ -58,7 +57,7 @@ func NewEngine() error {
 	}
 
 	if err = migrations.Migrate(db); err != nil {
-		return errors.Newf("migrate: %v", err)
+		return fmt.Errorf("migrate: %v", err)
 	}
 
 	return nil

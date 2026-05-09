@@ -4,9 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/nef734/ggit/internal/database"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestScanPush(t *testing.T) {

@@ -9,15 +9,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cockroachdb/errors"
 	zip "github.com/nef734/ggit/internal/archiver"
-	"github.com/urfave/cli/v3"
-	"gopkg.in/ini.v1"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
+	"github.com/urfave/cli/v3"
+	"gopkg.in/ini.v1"
 )
 
 var backupCommand = cli.Command{
@@ -48,13 +46,13 @@ func runBackup(ctx context.Context, cmd *cli.Command) error {
 
 	err := conf.Init(configFromLineage(cmd))
 	if err != nil {
-		return errors.Wrap(err, "init configuration")
+		return fmt.Errorf("init configuration"+": %w", err)
 	}
 	conf.InitLogging(true)
 
 	conn, err := database.SetEngine()
 	if err != nil {
-		return errors.Wrap(err, "set engine")
+		return fmt.Errorf("set engine"+": %w", err)
 	}
 
 	tmpDir := cmd.String("tempdir")
@@ -145,7 +143,7 @@ func addCustomDirToBackup(z *zip.ZipArchive) error {
 	customDir := conf.CustomDir()
 	entries, err := os.ReadDir(customDir)
 	if err != nil {
-		return errors.Wrap(err, "list custom directory entries")
+		return fmt.Errorf("list custom directory entries"+": %w", err)
 	}
 
 	for _, e := range entries {
@@ -165,7 +163,7 @@ func addCustomDirToBackup(z *zip.ZipArchive) error {
 			filepath.Join(customDir, e.Name()),
 		)
 		if err != nil {
-			return errors.Wrapf(err, "add %q", e.Name())
+			return fmt.Errorf("add %q: %w", e.Name(), err)
 		}
 	}
 	return nil

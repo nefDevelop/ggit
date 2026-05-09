@@ -14,14 +14,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
 	gcontext "github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/lazyregexp"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/pathx"
 	"github.com/nef734/ggit/internal/tool"
 )

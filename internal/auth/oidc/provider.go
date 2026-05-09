@@ -7,9 +7,8 @@ import (
 	"net/http"
 
 	"github.com/coreos/go-oidc/v3/oidc"
-	"golang.org/x/oauth2"
-
 	"github.com/nef734/ggit/internal/auth"
+	"golang.org/x/oauth2"
 )
 
 func (p *Provider) withContext(ctx context.Context) context.Context {

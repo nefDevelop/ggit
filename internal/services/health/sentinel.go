@@ -4,11 +4,10 @@ import (
 	"context"
 	"time"
 
-	log "unknwon.dev/clog/v2"
 	"github.com/gogs/git-module"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
+	log "github.com/nef734/ggit/internal/log"
 )
 
 // Sentinel is the manager for repository integrity checks.
@@ -24,7 +23,7 @@ type sentinel struct{}
 func (s *sentinel) CheckRepository(ctx context.Context, repo *database.Repository) error {
 	now := time.Now().Unix()
 	timeSinceLast := now - repo.LastHealthCheckUnix
-	
+
 	shouldRun := false
 	reason := ""
 
@@ -65,18 +64,18 @@ func (s *sentinel) RunIntegrityCheck(ctx context.Context, repo *database.Reposit
 	if err != nil {
 		log.Warn("Sentinel: Integrity check failed for %s: %v", repo.FullName(), err)
 		// Create a system notice
-		_ = database.Handle.Notices().Create(ctx, database.NoticeTypeRepository, 
+		_ = database.Handle.Notices().Create(ctx, database.NoticeTypeRepository,
 			"Corrupción detectada en "+repo.FullName()+": "+err.Error())
 	}
 
 	// Update metadata even if it failed (we checked it)
 	repo.LastHealthCheckUnix = time.Now().Unix()
 	repo.CommitsSinceCheck = 0
-	
+
 	// Use GORM directly to update specific fields to avoid overwriting other changes
 	return database.Handle.DB().Model(repo).Updates(map[string]interface{}{
 		"last_health_check_unix": repo.LastHealthCheckUnix,
-		"commits_since_check":   0,
+		"commits_since_check":    0,
 	}).Error
 }
 

@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/auth"
 	"github.com/nef734/ggit/internal/conf"
@@ -22,6 +19,9 @@ import (
 	"github.com/nef734/ggit/internal/repox"
 	"github.com/nef734/ggit/internal/userx"
 	"github.com/nef734/ggit/public"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"gorm.io/gorm"
 )
 
 func TestUser_BeforeCreate(t *testing.T) {
@@ -946,7 +946,6 @@ func usersList(t *testing.T, ctx context.Context, s *UsersStore) {
 	assert.Equal(t, bob.ID, got[1].ID)
 }
 
-
 func usersSearchByName(t *testing.T, ctx context.Context, s *UsersStore) {
 	alice, err := s.Create(ctx, "alice", "alice@example.com", CreateUserOptions{FullName: "Alice Jordan"})
 	require.NoError(t, err)
@@ -1221,7 +1220,9 @@ func usersListEmails(t *testing.T, ctx context.Context, s *UsersStore) {
 		for _, email := range emails {
 			got = append(got, email.Email)
 		}
+		sort.Strings(got)
 		want := []string{"bob2@example.com", "bob@example.com"}
+		sort.Strings(want)
 		assert.Equal(t, want, got)
 	})
 }
@@ -1290,4 +1291,3 @@ func usersDeleteEmail(t *testing.T, ctx context.Context, s *UsersStore) {
 	want := ErrEmailNotExist{args: errx.Args{"email": "alice2@example.com"}}
 	require.Equal(t, want, got)
 }
-

@@ -13,12 +13,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/cockroachdb/errors"
+	log "github.com/nef734/ggit/internal/log"
+	"github.com/nef734/ggit/internal/osx"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	log "unknwon.dev/clog/v2"
-
-	"github.com/nef734/ggit/internal/osx"
 )
 
 // getTableType returns the type name of a table definition without package name,
@@ -52,14 +50,14 @@ func DumpDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bool
 			tableFile := filepath.Join(dirPath, tableName+".json")
 			f, err := os.Create(tableFile)
 			if err != nil {
-				return errors.Wrap(err, "create table file")
+				return fmt.Errorf("create table file"+": %w", err)
 			}
 			defer func() { _ = f.Close() }()
 
 			return dumpTable(ctx, db, table, f)
 		}()
 		if err != nil {
-			return errors.Wrapf(err, "dump table %q", tableName)
+			return fmt.Errorf("dump table %q: %w", tableName, err)
 		}
 	}
 
@@ -77,7 +75,7 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 
 	rows, err := query.Rows()
 	if err != nil {
-		return errors.Wrap(err, "select rows")
+		return fmt.Errorf("select rows"+": %w", err)
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -85,7 +83,7 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 		elem := reflect.New(reflect.TypeOf(table).Elem()).Interface()
 		err = db.ScanRows(rows, elem)
 		if err != nil {
-			return errors.Wrap(err, "scan rows")
+			return fmt.Errorf("scan rows"+": %w", err)
 		}
 
 		switch e := elem.(type) {
@@ -95,7 +93,7 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 
 		err = json.NewEncoder(w).Encode(elem)
 		if err != nil {
-			return errors.Wrap(err, "encode JSON")
+			return fmt.Errorf("encode JSON"+": %w", err)
 		}
 	}
 	return rows.Err()
@@ -126,14 +124,14 @@ func ImportDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bo
 
 			f, err := os.Open(tableFile)
 			if err != nil {
-				return errors.Wrap(err, "open table file")
+				return fmt.Errorf("open table file"+": %w", err)
 			}
 			defer func() { _ = f.Close() }()
 
 			return importTable(ctx, db, table, f)
 		}()
 		if err != nil {
-			return errors.Wrapf(err, "import table %q", tableName)
+			return fmt.Errorf("import table %q: %w", tableName, err)
 		}
 	}
 
@@ -143,17 +141,17 @@ func ImportDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bo
 func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error {
 	err := db.WithContext(ctx).Migrator().DropTable(table)
 	if err != nil {
-		return errors.Wrap(err, "drop table")
+		return fmt.Errorf("drop table"+": %w", err)
 	}
 
 	err = db.WithContext(ctx).Migrator().AutoMigrate(table)
 	if err != nil {
-		return errors.Wrap(err, "auto migrate")
+		return fmt.Errorf("auto migrate"+": %w", err)
 	}
 
 	_, err = schema.Parse(table, &sync.Map{}, db.NamingStrategy)
 	if err != nil {
-		return errors.Wrap(err, "parse schema")
+		return fmt.Errorf("parse schema"+": %w", err)
 	}
 
 	scanner := bufio.NewScanner(r)
@@ -164,12 +162,12 @@ func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error
 		elem := reflect.New(reflect.TypeOf(table).Elem()).Interface()
 		err = json.Unmarshal(cleaned, elem)
 		if err != nil {
-			return errors.Wrap(err, "unmarshal JSON to struct")
+			return fmt.Errorf("unmarshal JSON to struct"+": %w", err)
 		}
 
 		err = db.WithContext(ctx).Create(elem).Error
 		if err != nil {
-			return errors.Wrap(err, "create row")
+			return fmt.Errorf("create row"+": %w", err)
 		}
 	}
 

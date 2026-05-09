@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
-	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/gitx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	issueservice "github.com/nef734/ggit/internal/services/issue"
@@ -121,7 +121,7 @@ func GetPullRequestDiff(c *context.APIContext) {
 		c.NotFoundOrError(err, "get issue by index")
 		return
 	}
-	
+
 	pull, err := database.GetPullRequestByIssueID(issue.ID)
 	if err != nil {
 		c.NotFoundOrError(err, "get pull request by issue ID")
@@ -417,6 +417,11 @@ func GetPullRequestProtection(c *context.APIContext) {
 		"combined_status":    string(combinedStatus),
 		"is_protected":       pb != nil && pb.Protected,
 		"mergeable":          mergeable,
-		"merge_error":        func() string { if err != nil { return err.Error() }; return "" }(),
+		"merge_error": func() string {
+			if err != nil {
+				return err.Error()
+			}
+			return ""
+		}(),
 	})
 }

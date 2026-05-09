@@ -2,17 +2,17 @@ package database
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"strings"
-
-	"github.com/cockroachdb/errors"
-	"gorm.io/gorm"
 
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/repox"
-	"github.com/nef734/ggit/internal/userx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	"github.com/nef734/ggit/internal/userx"
+	"gorm.io/gorm"
 )
 
 var ErrOrgNotExist = errors.New("Organization does not exist")
@@ -140,7 +140,7 @@ func CreateOrganization(org, owner *User) (err error) {
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Create(org).Error; err != nil {
-			return errors.Newf("insert organization: %v", err)
+			return fmt.Errorf("insert organization: %v", err)
 		}
 
 		// Add initial creator to organization and owner team.
@@ -150,7 +150,7 @@ func CreateOrganization(org, owner *User) (err error) {
 			IsOwner:  true,
 			NumTeams: 1,
 		}).Error; err != nil {
-			return errors.Newf("insert org-user relation: %v", err)
+			return fmt.Errorf("insert org-user relation: %v", err)
 		}
 
 		// Create default owner team.
@@ -162,7 +162,7 @@ func CreateOrganization(org, owner *User) (err error) {
 			NumMembers: 1,
 		}
 		if err = tx.Create(t).Error; err != nil {
-			return errors.Newf("insert owner team: %v", err)
+			return fmt.Errorf("insert owner team: %v", err)
 		}
 
 		if err = tx.Create(&TeamUser{
@@ -170,11 +170,11 @@ func CreateOrganization(org, owner *User) (err error) {
 			OrgID:  org.ID,
 			TeamID: t.ID,
 		}).Error; err != nil {
-			return errors.Newf("insert team-user relation: %v", err)
+			return fmt.Errorf("insert team-user relation: %v", err)
 		}
 
 		if err = os.MkdirAll(repox.UserPath(org.Name), os.ModePerm); err != nil {
-			return errors.Newf("create directory: %v", err)
+			return fmt.Errorf("create directory: %v", err)
 		}
 
 		return nil
@@ -245,7 +245,7 @@ func DeleteOrganization(org *User) error {
 			&OrgUser{OrgID: org.ID},
 			&TeamUser{OrgID: org.ID},
 		); err != nil {
-			return errors.Newf("deleteBeans: %v", err)
+			return fmt.Errorf("deleteBeans: %v", err)
 		}
 		return nil
 	})
@@ -380,26 +380,25 @@ func RemoveOrgUser(orgID, userID int64) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil
 		}
-		return errors.Newf("get org-user: %v", err)
+		return fmt.Errorf("get org-user: %v", err)
 	}
 
 	u, err := Handle.Users().GetByID(context.TODO(), userID)
 	if err != nil {
-		return errors.Newf("GetByID [%d]: %v", userID, err)
+		return fmt.Errorf("GetByID [%d]: %v", userID, err)
 	}
 	user := FromDomainUser(u)
 
 	o, err := Handle.Users().GetByID(context.TODO(), orgID)
 	if err != nil {
-		return errors.Newf("GetByID [%d]: %v", orgID, err)
+		return fmt.Errorf("GetByID [%d]: %v", orgID, err)
 	}
 	org := FromDomainUser(o)
-
 
 	// FIXME: only need to get IDs here, not all fields of repository.
 	repos, _, err := org.GetUserRepositories(user.ID, 1, org.NumRepos)
 	if err != nil {
-		return errors.Newf("GetUserRepositories [%d]: %v", user.ID, err)
+		return fmt.Errorf("GetUserRepositories [%d]: %v", user.ID, err)
 	}
 
 	// Check if the user to delete is the last member in owner team.
@@ -475,7 +474,7 @@ func (org *User) getUserTeams(tx *gorm.DB, userID int64, cols ...string) ([]*Tea
 func (org *User) GetUserTeamIDs(userID int64) ([]int64, error) {
 	teams, err := org.getUserTeams(Handle.db, userID, "team.id")
 	if err != nil {
-		return nil, errors.Newf("getUserTeams [%d]: %v", userID, err)
+		return nil, fmt.Errorf("getUserTeams [%d]: %v", userID, err)
 	}
 
 	teamIDs := make([]int64, len(teams))
@@ -496,7 +495,7 @@ func (org *User) GetUserTeams(userID int64) ([]*Team, error) {
 func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repository, int64, error) {
 	teamIDs, err := org.GetUserTeamIDs(userID)
 	if err != nil {
-		return nil, 0, errors.Newf("GetUserTeamIDs: %v", err)
+		return nil, 0, fmt.Errorf("GetUserTeamIDs: %v", err)
 	}
 	if len(teamIDs) == 0 {
 		teamIDs = []int64{-1}
@@ -504,7 +503,7 @@ func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repos
 
 	var teamRepoIDs []int64
 	if err = Handle.db.Table("team_repo").Where("team_id IN (?)", teamIDs).Distinct("repo_id").Pluck("repo_id", &teamRepoIDs).Error; err != nil {
-		return nil, 0, errors.Newf("get team repository IDs: %v", err)
+		return nil, 0, fmt.Errorf("get team repository IDs: %v", err)
 	}
 	if len(teamRepoIDs) == 0 {
 		teamRepoIDs = []int64{-1}
@@ -520,14 +519,14 @@ func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repos
 		Limit(pageSize).Offset((page - 1) * pageSize)
 
 	if err = query.Find(&repos).Error; err != nil {
-		return nil, 0, errors.Newf("get user repositories: %v", err)
+		return nil, 0, fmt.Errorf("get user repositories: %v", err)
 	}
 
 	var repoCount int64
 	if err = Handle.db.Model(new(Repository)).Where("owner_id = ?", org.ID).
 		Where("is_private = ? OR id IN (?)", false, teamRepoIDs).
 		Count(&repoCount).Error; err != nil {
-		return nil, 0, errors.Newf("count user repositories: %v", err)
+		return nil, 0, fmt.Errorf("count user repositories: %v", err)
 	}
 
 	return repos, repoCount, nil

@@ -2,7 +2,9 @@
 
 package osutil
 
-import "syscall"
+import (
+	"syscall"
+)
 
 // DiskUsage returns total and free bytes for the given path.
 func DiskUsage(path string) (total, free uint64, err error) {

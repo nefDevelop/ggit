@@ -6,10 +6,9 @@ import (
 	"os"
 	"testing"
 
-	"gorm.io/gorm/logger"
-	log "unknwon.dev/clog/v2"
-
+	"github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/testx"
+	"gorm.io/gorm/logger"
 )
 
 func TestMain(m *testing.M) {

@@ -4,11 +4,10 @@ import (
 	gocontext "context"
 
 	"github.com/gin-contrib/sessions"
-	log "unknwon.dev/clog/v2"
-
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/email"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/strx"
 )
 

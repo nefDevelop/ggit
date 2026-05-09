@@ -19,9 +19,9 @@ func addOptimizedIndexes(db *gorm.DB) error {
 		Context string `gorm:"index:idx_commit_status_repo_sha_context"`
 	}
 
-	// We use Migrator().CreateIndex instead of AutoMigrate for composite indexes 
+	// We use Migrator().CreateIndex instead of AutoMigrate for composite indexes
 	// to have better control over names and existing indexes.
-	
+
 	// Action indexes
 	if !db.Migrator().HasIndex(&action{}, "idx_action_user_id_id") {
 		err := db.Exec("CREATE INDEX idx_action_user_id_id ON action(user_id, id DESC)").Error
