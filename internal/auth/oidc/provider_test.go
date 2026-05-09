@@ -2,7 +2,7 @@ package oidc
 
 import (
 	"context"
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"net/http"
 	"net/http/httptest"
 	"testing"

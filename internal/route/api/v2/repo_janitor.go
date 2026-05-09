@@ -1,7 +1,7 @@
 package v2
 
 import (
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"net/http"
 
 	"github.com/nef734/ggit/internal/context"

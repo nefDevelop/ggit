@@ -2,7 +2,7 @@ package lfs
 
 import (
 	"bytes"
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"io"
 	"net/http"
 	"net/http/httptest"

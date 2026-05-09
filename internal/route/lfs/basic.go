@@ -1,7 +1,7 @@
 package lfs
 
 import (
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"io"
 	"net/http"
 	"os"

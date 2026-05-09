@@ -4,7 +4,7 @@
 PKG_PATH := github.com/nef734/ggit/internal/conf
 BUILD_TIME := $(shell date -u '+%Y-%m-%d %I:%M:%S %Z')
 BUILD_COMMIT := $(shell git rev-parse HEAD 2>/dev/null || echo "unknown")
-TAGS := cert pam bindata
+TAGS := cert pam bindata go_json
 LDFLAGS := -s -w -X "$(PKG_PATH).BuildTime=$(BUILD_TIME)" -X "$(PKG_PATH).BuildCommit=$(BUILD_COMMIT)"
 
 # Default target

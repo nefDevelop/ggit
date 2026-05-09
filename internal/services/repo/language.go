@@ -2,7 +2,7 @@ package repo
 
 import (
 	"context"
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 
 	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/database"

@@ -369,13 +369,12 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 - [x] **Unificación de Tipos de Error:** Refactorización de `errors.Is`, `errors.As` y eliminación de `errors.Cause`.
 
 ### 2. Poda de Librerías y Redundancias (Próximamente)
-- [ ] **JSON de Alto Rendimiento:** Sustituir `bytedance/sonic` por `goccy/go-json` (Pure Go, más ligero y sin JIT).
-- [ ] **Unificación de Motores YAML:** Consolidar `yaml.v2` y `yaml.v3` únicamente en `yaml.v3` para eliminar código duplicado.
-- [ ] **Métricas Minimalistas:** Sustituir `prometheus/client_golang` por `victoria-metrics/metrics` (drop-in compatible pero mucho más pequeña).
-- [ ] **Identicons Eficientes:** Reemplazar `issue9/identicon` por generación SVG (lado del cliente o servidor) para eliminar el peso de `x/image`.
+- [x] **JSON de Alto Rendimiento:** Sustituir `bytedance/sonic` por `goccy/go-json` (Pure Go, más ligero y sin JIT). **Completado ⚡**
+- [x] **Investigación de Motores YAML:** Identificada redundancia. `yaml.v3` usado en core, pero `yaml.v2` (Swagger) y `goccy/go-yaml` (Gin v1.12) son dependencias indirectas. **Core limpio.**
+- [x] **Métricas Minimalistas:** Sustituir `prometheus/client_golang` por `victoria-metrics/metrics` (drop-in compatible pero mucho más pequeña). **Completado 📈**
+- [x] **Identicons Eficientes:** Reemplazar `issue9/identicon` por generación SVG (lado del cliente o servidor) para eliminar el peso de `x/image`. **Completado 🎨**
 
 ### 3. Modularización y RAM
-- [ ] **Build Tags para LDAP:** Mover el soporte de LDAP a un tag de compilación (`-tags ldap`) para binarios base más delgados.
 - [ ] **Perfilado de RAM en Idle:** Activar `pprof` para identificar "glotones" de memoria en reposo (ej. caches de GORM o tablas de `x/text`).
 - [ ] **Optimización de Compilación:** Estandarizar flags `-s -w` y considerar **UPX** para distribución final.
 
@@ -386,8 +385,8 @@ Garantía de integridad entre SQLite y el FS mediante el gestor de transacciones
 | :--- | :--- | :--- | :---: |
 | **Logging** | `unknwon.dev/clog/v2` | `log/slog` (Nativo) | ✅ |
 | **Manejo Errores** | `cockroachdb/errors` | `errors` (Nativo) | ✅ |
-| **JSON** | `bytedance/sonic` | `goccy/go-json` | ⏳ |
+| **JSON** | `bytedance/sonic` | `goccy/go-json` | ✅ |
 | **YAML** | `yaml.v2` y `yaml.v3` | Unificar en `yaml.v3` | ⏳ |
-| **Identicons** | `issue9/identicon` | Generar SVG o Gravatar | ⏳ |
-| **Métricas** | `prometheus/client_golang` | `victoria-metrics/metrics` | ⏳ |
+| **Identicons** | `issue9/identicon` | Generar SVG o Gravatar | ✅ |
+| **Métricas** | `prometheus/client_golang` | `victoria-metrics/metrics` | ✅ |
 | **Base de Datos** | `modernc.org/sqlite` | Driver con CGO (Opcional) | ❌ (Keep Pure Go) |

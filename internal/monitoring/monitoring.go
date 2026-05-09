@@ -2,17 +2,17 @@ package monitoring
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"runtime"
 	"time"
 
+	"github.com/VictoriaMetrics/metrics"
 	"github.com/gin-gonic/gin"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/osutil"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
@@ -23,33 +23,10 @@ import (
 
 var (
 	startTime = time.Now()
-
-	// Prometheus metrics
-	httpRequestsTotal = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "ggit_http_requests_total",
-			Help: "Total number of HTTP requests.",
-		},
-		[]string{"method", "path", "status"},
-	)
-	httpRequestDuration = prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
-			Name:    "ggit_http_request_duration_seconds",
-			Help:    "Duration of HTTP requests in seconds.",
-			Buckets: prometheus.DefBuckets,
-		},
-		[]string{"method", "path"},
-	)
 )
-
-func init() {
-	prometheus.MustRegister(httpRequestsTotal)
-	prometheus.MustRegister(httpRequestDuration)
-}
 
 // PrometheusHandler returns the prometheus metrics handler.
 func PrometheusHandler() gin.HandlerFunc {
-	h := promhttp.Handler()
 	return func(c *gin.Context) {
 		if conf.Prometheus.EnableBasicAuth {
 			user, pass, ok := c.Request.BasicAuth()
@@ -59,7 +36,7 @@ func PrometheusHandler() gin.HandlerFunc {
 				return
 			}
 		}
-		h.ServeHTTP(c.Writer, c.Request)
+		metrics.WritePrometheus(c.Writer, true)
 	}
 }
 
@@ -78,8 +55,8 @@ func PrometheusMiddleware() gin.HandlerFunc {
 		status := http.StatusText(c.Writer.Status())
 		method := c.Request.Method
 
-		httpRequestsTotal.WithLabelValues(method, path, status).Inc()
-		httpRequestDuration.WithLabelValues(method, path).Observe(duration)
+		metrics.GetOrCreateCounter(fmt.Sprintf(`ggit_http_requests_total{method=%q,path=%q,status=%q}`, method, path, status)).Inc()
+		metrics.GetOrCreateHistogram(fmt.Sprintf(`ggit_http_request_duration_seconds{method=%q,path=%q}`, method, path)).Update(duration)
 	}
 }
 

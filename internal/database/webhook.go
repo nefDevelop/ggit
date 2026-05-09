@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 	"crypto/tls"
 	"encoding/hex"
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"errors"
 	"fmt"
 	"io"

@@ -2,7 +2,7 @@ package janitor
 
 import (
 	"context"
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"fmt"
 	"os"
 	"path"

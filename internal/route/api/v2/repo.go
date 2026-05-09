@@ -2,7 +2,7 @@ package v2
 
 import (
 	stdcontext "context"
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"errors"
 	"net/http"
 	"path"

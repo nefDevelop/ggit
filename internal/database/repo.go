@@ -21,7 +21,6 @@ import (
 	"github.com/gogs/git-module"
 	embedConf "github.com/nef734/ggit/conf"
 	"github.com/nef734/ggit/internal/archiver"
-	"github.com/nef734/ggit/internal/avatar"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
@@ -634,7 +633,7 @@ func (r *Repository) UploadAvatar(data []byte) error {
 	}
 	defer fw.Close()
 
-	dst := image.NewRGBA(image.Rect(0, 0, avatar.DefaultSize, avatar.DefaultSize))
+	dst := image.NewRGBA(image.Rect(0, 0, conf.AvatarSize, conf.AvatarSize))
 	draw.NearestNeighbor.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
 	if err = png.Encode(fw, dst); err != nil {
 		return fmt.Errorf("encode image: %v", err)

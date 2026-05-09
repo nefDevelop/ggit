@@ -8,7 +8,6 @@ files = [
     "cmd/ggit/restore.go",
     "internal/auth/auth.go",
     "internal/auth/ldap/config.go",
-    "internal/avatar/avatar.go",
     "internal/conf/conf.go",
     "internal/conf/log.go",
     "internal/conf/utils.go",

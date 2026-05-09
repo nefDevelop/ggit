@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	json "github.com/nef734/ggit/internal/jsonx"
 	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"gorm.io/gorm"

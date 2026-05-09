@@ -1,7 +1,7 @@
 package types
 
 import (
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"time"
 )
 

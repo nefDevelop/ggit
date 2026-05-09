@@ -15,7 +15,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nef734/ggit/internal/avatar"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/strx"
 	"github.com/nef734/ggit/internal/tool"
@@ -68,7 +67,7 @@ func SaveAvatarToPath(path string, data []byte) error {
 	}
 	defer func() { _ = f.Close() }()
 
-	dst := image.NewRGBA(image.Rect(0, 0, avatar.DefaultSize, avatar.DefaultSize))
+	dst := image.NewRGBA(image.Rect(0, 0, conf.AvatarSize, conf.AvatarSize))
 	draw.NearestNeighbor.Scale(dst, dst.Bounds(), img, img.Bounds(), draw.Over, nil)
 	if err = png.Encode(f, dst); err != nil {
 		return fmt.Errorf("encode avatar image to file"+": %w", err)

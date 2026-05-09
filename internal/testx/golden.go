@@ -1,7 +1,7 @@
 package testx
 
 import (
-	"encoding/json"
+	json "github.com/nef734/ggit/internal/jsonx"
 	"flag"
 	"os"
 	"path/filepath"

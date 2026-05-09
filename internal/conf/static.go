@@ -498,7 +498,10 @@ var (
 )
 
 // UsersAvatarPathPrefix is the path prefix to user avatars.
-const UsersAvatarPathPrefix = "avatars"
+const (
+	UsersAvatarPathPrefix = "avatars"
+	AvatarSize            = 290
+)
 
 // UserDefaultAvatarURLPath returns the URL path of the default user avatar.
 func UserDefaultAvatarURLPath() string {
