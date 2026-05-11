@@ -21,6 +21,19 @@ func (module) ListTagsAfter(repoPath, after string, limit int) (*TagsPage, error
 	if err != nil {
 		return nil, fmt.Errorf("get tags"+": %w", err)
 	}
+
+	// Standardize to latest-first for consistent pagination logic.
+	// We assume git-module returns chronological order (oldest first).
+	// If it's already latest-first, we might need a better way to detect, 
+	// but usually it's oldest first from 'git tag'.
+	// To be safe and consistent with Gogs, we want latest first.
+	// Let's check if the first one is older than the last one (very rough heuristic).
+	if len(all) > 1 && all[0] < all[len(all)-1] {
+		for i, j := 0, len(all)-1; i < j; i, j = i+1, j-1 {
+			all[i], all[j] = all[j], all[i]
+		}
+	}
+
 	total := len(all)
 
 	if limit < 0 {

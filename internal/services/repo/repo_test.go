@@ -104,7 +104,9 @@ func TestRepositoryService_Create_Concurrency(t *testing.T) {
 	}
 	
 	// Contar cuántos hay en la DB
-	repos, _, _ := database.Handle.Repositories().List(ctx, ownerUser.ID, database.ListRepoOptions{})
+	repos, _, _ := database.Handle.Repositories().List(ctx, database.ListRepoOptions{
+		OwnerID: ownerUser.ID,
+	})
 	successCount = len(repos)
 
 	assert.Equal(t, 1, successCount, "SOLO uno debería haber tenido éxito en la creación concurrente")

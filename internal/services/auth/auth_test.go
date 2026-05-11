@@ -27,14 +27,14 @@ func TestAuthService_Register(t *testing.T) {
 		conf.Auth.RequireEmailConfirmation = true // Should be ignored for first user
 
 		user, err := Auth.Register(ctx, SignupOptions{
-			Username: "admin",
+			Username: "myadmin",
 			Email:    "admin@example.com",
 			Password: "password",
 		})
 		require.NoError(t, err)
 		assert.NotNil(t, user)
 		assert.True(t, user.IsAdmin)
-		assert.True(t, user.IsActivated)
+		assert.True(t, user.IsActive)
 	})
 
 	t.Run("second user is not admin and not activated if required", func(t *testing.T) {
@@ -47,7 +47,7 @@ func TestAuthService_Register(t *testing.T) {
 		})
 		require.NoError(t, err)
 		assert.False(t, user.IsAdmin)
-		assert.False(t, user.IsActivated)
+		assert.False(t, user.IsActive)
 	})
 
 	t.Run("third user is activated if not required", func(t *testing.T) {
@@ -60,6 +60,6 @@ func TestAuthService_Register(t *testing.T) {
 		})
 		require.NoError(t, err)
 		assert.False(t, user.IsAdmin)
-		assert.True(t, user.IsActivated)
+		assert.True(t, user.IsActive)
 	})
 }

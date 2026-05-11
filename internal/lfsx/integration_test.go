@@ -23,7 +23,7 @@ func TestLFS_Integration(t *testing.T) {
 	}
 
 	content := []byte("esto es un archivo grande simulado para LFS")
-	oid := OID("c034293f06b97779f643e1136c31a67924d57053e19894458f33808920155b9e") // SHA256 manual
+	oid := OID("9d51e4e7230efc556d63747b03dd1e288bd30c78396c4e0671b1dc20e3aefcf9") // SHA256 manual
 
 	t.Run("Upload and Verify Storage Path", func(t *testing.T) {
 		rc := io.NopCloser(bytes.NewReader(content))
@@ -32,8 +32,8 @@ func TestLFS_Integration(t *testing.T) {
 		assert.Equal(t, int64(len(content)), written)
 
 		// Verificar que el archivo está en la ruta esperada (sharding de 2 niveles)
-		// c0/34/c034293f...
-		expectedPath := filepath.Join(storage.Root, "c", "0", string(oid))
+		// 9/d/9d51e4e7...
+		expectedPath := filepath.Join(storage.Root, string(oid[0]), string(oid[1]), string(oid))
 		assert.FileExists(t, expectedPath)
 	})
 

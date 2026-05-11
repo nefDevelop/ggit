@@ -1,0 +1,2 @@
+#!/usr/bin/env 
+"/tmp/go-build3542486801/b001/issue.test" hook --config='' pre-receive

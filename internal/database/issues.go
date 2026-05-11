@@ -31,6 +31,14 @@ func (s *IssuesStore) GetByID(ctx context.Context, id int64) (*domain.Issue, err
 	return u.ToDomain(), nil
 }
 
+func (s *IssuesStore) GetByIndex(ctx context.Context, repoID, index int64) (*domain.Issue, error) {
+	u, err := GetIssueByIndex(repoID, index)
+	if err != nil {
+		return nil, err
+	}
+	return u.ToDomain(), nil
+}
+
 func (s *IssuesStore) ListByRepoID(ctx context.Context, repoID int64, page, pageSize int) ([]*domain.Issue, error) {
 	// TODO: Implement using pure GORM
 	return nil, nil

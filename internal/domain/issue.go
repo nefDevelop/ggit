@@ -57,5 +57,6 @@ type Milestone struct {
 type IssuesStore interface {
 	Create(ctx context.Context, repo *Repository, issue *Issue, labelIDs []int64, attachments []string) error
 	GetByID(ctx context.Context, id int64) (*Issue, error)
+	GetByIndex(ctx context.Context, repoID, index int64) (*Issue, error)
 	ListByRepoID(ctx context.Context, repoID int64, page, pageSize int) ([]*Issue, error)
 }

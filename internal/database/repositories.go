@@ -377,6 +377,69 @@ func (s *RepositoriesStore) GetByName(ctx context.Context, ownerID int64, name s
 	return repo.ToDomain(), nil
 }
 
+type ListRepoOptions struct {
+	Keyword  string
+	OwnerID  int64
+	UserID   int64 // When set results will contain all public/private repositories user has access to
+	OrderBy  string
+	Private  bool // Include private repositories in results
+	Page     int
+	PageSize int
+}
+
+func (s *RepositoriesStore) List(ctx context.Context, opts any) ([]*domain.Repository, int64, error) {
+	var options ListRepoOptions
+	if o, ok := opts.(ListRepoOptions); ok {
+		options = o
+	} else if o, ok := opts.(*ListRepoOptions); ok {
+		options = *o
+	} else {
+		// Fallback to SearchRepoOptions if provided for backward compatibility
+		if o, ok := opts.(SearchRepoOptions); ok {
+			options = ListRepoOptions{
+				Keyword:  o.Keyword,
+				OwnerID:  o.OwnerID,
+				UserID:   o.UserID,
+				OrderBy:  o.OrderBy,
+				Private:  o.Private,
+				Page:     o.Page,
+				PageSize: o.PageSize,
+			}
+		} else if o, ok := opts.(*SearchRepoOptions); ok {
+			options = ListRepoOptions{
+				Keyword:  o.Keyword,
+				OwnerID:  o.OwnerID,
+				UserID:   o.UserID,
+				OrderBy:  o.OrderBy,
+				Private:  o.Private,
+				Page:     o.Page,
+				PageSize: o.PageSize,
+			}
+		} else {
+			return nil, 0, errors.New("invalid options type")
+		}
+	}
+
+	repos, count, err := SearchRepositoryByName(&SearchRepoOptions{
+		Keyword:  options.Keyword,
+		OwnerID:  options.OwnerID,
+		UserID:   options.UserID,
+		OrderBy:  options.OrderBy,
+		Private:  options.Private,
+		Page:     options.Page,
+		PageSize: options.PageSize,
+	})
+	if err != nil {
+		return nil, 0, err
+	}
+
+	drepos := make([]*domain.Repository, len(repos))
+	for i := range repos {
+		drepos[i] = repos[i].ToDomain()
+	}
+	return drepos, count, nil
+}
+
 func (s *RepositoriesStore) recountStars(tx *gorm.DB, userID, repoID int64) error {
 	/*
 		Equivalent SQL for PostgreSQL:

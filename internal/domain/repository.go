@@ -96,6 +96,7 @@ type Topic struct {
 type RepositoriesStore interface {
 	GetByID(ctx context.Context, id int64) (*Repository, error)
 	GetByName(ctx context.Context, ownerID int64, name string) (*Repository, error)
+	List(ctx context.Context, opts any) ([]*Repository, int64, error)
 	Create(ctx context.Context, ownerID int64, opts any) (*Repository, error)
 	Update(ctx context.Context, repoID int64, opts any) error
 	Star(ctx context.Context, userID, repoID int64) error

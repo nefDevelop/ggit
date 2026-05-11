@@ -1009,7 +1009,9 @@ func (r *Repository) CanEnableEditor() bool {
 // FIXME: should have a mutex to prevent producing same index for two issues that are created
 // closely enough.
 func (r *Repository) NextIssueIndex() int64 {
-	return int64(r.NumIssues+r.NumPulls) + 1
+	var index int64
+	Handle.db.Model(&Issue{}).Where("repo_id = ?", r.ID).Select("MAX(\"index\")").Row().Scan(&index)
+	return index + 1
 }
 
 func (r *Repository) LocalCopyPath() string {
