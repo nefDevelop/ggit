@@ -29,14 +29,15 @@
   let searchQuery = $state('');
 
   const oneWeekAgo = $derived(Date.now() - (7 * 24 * 60 * 60 * 1000));
-  const allRepos = $derived([...data.repositories, ...data.collaborative]);
+  const allRepos = $derived([...(data?.repositories || []), ...(data?.collaborative || [])]);
   
   const filteredRepos = $derived.by(() => {
-    if (!searchQuery) return allRepos;
+    const repos = allRepos || [];
+    if (!searchQuery) return repos;
     const q = searchQuery.toLowerCase();
-    return allRepos.filter(r => 
-      r.name.toLowerCase().includes(q) || 
-      (r.description && r.description.toLowerCase().includes(q))
+    return repos.filter(r => 
+      r?.name?.toLowerCase()?.includes(q) || 
+      (r?.description && r.description.toLowerCase().includes(q))
     );
   });
 
@@ -85,10 +86,12 @@
     try {
       const res = await apiFetch('/api/v2/user/dashboard/inbox');
       if (res.ok) {
-        inboxItems = await res.json();
+        const json = await res.json();
+        inboxItems = Array.isArray(json) ? json : [];
       }
     } catch (e) {
       console.error("Failed to fetch inbox", e);
+      inboxItems = [];
     } finally {
       inboxLoading = false;
     }
@@ -99,15 +102,27 @@
     try {
       const res = await apiFetch('/api/v2/user/dashboard/data');
       if (res.ok) {
-        data = await res.json();
+        const json = await res.json();
+        data = {
+          repositories: json?.repositories || [],
+          collaborative: json?.collaborative || [],
+          organizations: json?.organizations || [],
+          gists: data.gists || []
+        };
       }
       // Silently prefetch inbox to show badge
       const inboxRes = await apiFetch('/api/v2/user/dashboard/inbox');
-      if (inboxRes.ok) inboxItems = await inboxRes.json();
+      if (inboxRes.ok) {
+        const json = await inboxRes.json();
+        inboxItems = Array.isArray(json) ? json : [];
+      }
 
       // Fetch gists for sidebar
       const gistsRes = await apiFetch(`/api/v2/users/${authState.user?.username}/gists`);
-      if (gistsRes.ok) data.gists = await gistsRes.json();
+      if (gistsRes.ok) {
+        const json = await gistsRes.json();
+        data.gists = Array.isArray(json) ? json : [];
+      }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
     } finally {
@@ -128,7 +143,7 @@
   });
 
   const hasSidebar = $derived(
-    data.organizations.length > 0 && userPrefs.current.showSidebarOrgs
+    (data?.organizations?.length ?? 0) > 0 && userPrefs.current.showSidebarOrgs
   );
 
 </script>
@@ -158,7 +173,7 @@
                 },
                 { id: 'list', label: 'Alphabetical', icon: List },
                 { id: 'folders', label: 'Folders', icon: FolderOpen },
-                { id: 'inbox', label: 'Inbox', icon: Inbox, hasBadge: inboxItems.length > 0 }
+                { id: 'inbox', label: 'Inbox', icon: Inbox, hasBadge: (inboxItems?.length ?? 0) > 0 }
             ]}
         />
 
@@ -257,7 +272,7 @@
 
     {#if hasSidebar}
     <aside class="dashboard-sidebar">
-        {#if data.gists.length > 0}
+        {#if (data?.gists?.length ?? 0) > 0}
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
                     <ScrollText size={18} />
@@ -274,7 +289,7 @@
             </div>
         {/if}
 
-        {#if data.organizations.length > 0 && userPrefs.current.showSidebarOrgs}
+        {#if (data?.organizations?.length ?? 0) > 0 && userPrefs.current.showSidebarOrgs}
             <div class="sidebar-card tonal">
                 <header class="sidebar-header">
                     <Building2 size={18} />

@@ -80,7 +80,7 @@
     {:else if repos.length > 0}
       <div class="repos-grid">
         {#each repos as repo}
-          <a href="/{repo.owner.username}/{repo.name}" class="card-link">
+          <a href="/{repo.owner?.username || 'unknown'}/{repo.name}" class="card-link">
             <Card hover variant="low" padding="md" class="repo-card">
               <div class="repo-header">
                 {#if repo.private}
@@ -91,7 +91,7 @@
                   <BookText size={18} class="repo-icon" />
                 {/if}
                 <div class="repo-names">
-                  <span class="owner">{repo.owner.username} /</span>
+                  <span class="owner">{repo.owner?.username || 'unknown'} /</span>
                   <strong class="name">{repo.name}</strong>
                 </div>
               </div>

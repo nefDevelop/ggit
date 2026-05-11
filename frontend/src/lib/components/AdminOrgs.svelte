@@ -21,7 +21,8 @@
     try {
       const res = await apiFetch(`/api/v2/admin/orgs?page=${page}`);
       if (res.ok) {
-        orgs = await res.json();
+        const json = await res.json();
+        orgs = Array.isArray(json) ? json : [];
       }
     } catch (e) {
       console.error(e);

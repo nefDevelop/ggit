@@ -24,7 +24,8 @@
     try {
       const res = await apiFetch(`/api/v2/admin/repos?page=${page}`);
       if (res.ok) {
-        repos = await res.json();
+        const json = await res.json();
+        repos = Array.isArray(json) ? json : [];
       }
     } catch (e) {
       console.error(e);
