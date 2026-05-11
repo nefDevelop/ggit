@@ -98,6 +98,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 	// Global attachment download
 	r.GET("/attachments/:uuid", context.APIContexter(), ginx.Handle(GetAttachment))
+	r.GET("/debug/repos", context.APIContexter(), ginx.Handle(GetDashboardData))
 
 	explore := r.Group("/explore", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{
