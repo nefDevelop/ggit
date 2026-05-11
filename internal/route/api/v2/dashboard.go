@@ -18,21 +18,29 @@ type DashboardData struct {
 
 // GetDashboardData returns the initial data needed for the dashboard.
 func GetDashboardData(c *context.APIContext) {
+	defer func() {
+		if err := recover(); err != nil {
+			log.Error("PANIC in GetDashboardData: %v", err)
+			c.StatusError(http.StatusInternalServerError, "Internal Server Error", nil)
+		}
+	}()
+
 	ctxUser := c.User
 	if ctxUser == nil {
+		log.Warn("GetDashboardData: No user found in context")
 		c.StatusError(http.StatusUnauthorized, "User must be logged in", nil)
 		return
 	}
 
-	log.Info("GetDashboardData: Request from user %d (%s)", ctxUser.ID, ctxUser.Name)
+	log.Info("GetDashboardData START: UserID=%d, Username=%s", ctxUser.ID, ctxUser.Name)
 
 	// 1. Get Personal, Collaborative and Watched Repositories
 	repos, err := database.GetUserAndCollaborativeRepositories(ctxUser.ID)
 	if err != nil {
-		log.Error("GetDashboardData: Error fetching repos: %v", err)
-		// Don't fail the whole request, just return empty list
+		log.Error("GetDashboardData: Error fetching involved repos: %v", err)
 		repos = []*database.Repository{}
 	}
+	log.Info("GetDashboardData: Found %d involved repos", len(repos))
 
 	// 2. Get Organizations
 	orgs, err := database.GetOrgsByUserID(ctxUser.ID, true)
@@ -40,8 +48,9 @@ func GetDashboardData(c *context.APIContext) {
 		log.Error("GetDashboardData: Error fetching orgs: %v", err)
 		orgs = []*database.User{}
 	}
+	log.Info("GetDashboardData: Found %d orgs", len(orgs))
 
-	// 3. Get Organization Repositories (explicitly)
+	// 3. Get Organization Repositories
 	var orgRepos []*database.Repository
 	for _, org := range orgs {
 		ores, _, err := database.SearchRepositoryByName(&database.SearchRepoOptions{
@@ -55,6 +64,7 @@ func GetDashboardData(c *context.APIContext) {
 		}
 		orgRepos = append(orgRepos, ores...)
 	}
+	log.Info("GetDashboardData: Found %d additional org repos", len(orgRepos))
 
 	// 4. Merge and De-duplicate
 	repoMap := make(map[int64]*database.Repository)
@@ -82,15 +92,21 @@ func GetDashboardData(c *context.APIContext) {
 
 	apiRepos := make([]any, 0, len(allRepos))
 	for _, r := range allRepos {
+		if r == nil {
+			continue
+		}
 		apiRepos = append(apiRepos, r.APIFormat(r.Owner))
 	}
 
 	apiOrgs := make([]any, 0, len(orgs))
 	for _, o := range orgs {
+		if o == nil {
+			continue
+		}
 		apiOrgs = append(apiOrgs, o.APIFormat())
 	}
 
-	log.Info("GetDashboardData SUCCESS: User=%d, Repos=%d, Orgs=%d", ctxUser.ID, len(apiRepos), len(apiOrgs))
+	log.Info("GetDashboardData SUCCESS: User=%d, ReposTotal=%d, Orgs=%d", ctxUser.ID, len(apiRepos), len(apiOrgs))
 
 	c.JSON(http.StatusOK, map[string]any{
 		"repositories":  apiRepos,

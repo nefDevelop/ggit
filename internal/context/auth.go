@@ -26,7 +26,16 @@ type ToggleOptions struct {
 
 func Toggle(options *ToggleOptions) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		gctx := c.MustGet("context").(*Context)
+		val, exists := c.Get("context")
+		if !exists {
+			log.Error("Toggle: context not found for path %s", c.Request.URL.Path)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+		gctx := val.(*Context)
+		
+		log.Trace("Toggle: Path=%s, SignInRequired=%v, IsLogged=%v", c.Request.URL.Path, options.SignInRequired, gctx.IsLogged)
+
 		// Cannot view any page before installation.
 		if !conf.Security.InstallLock {
 			gctx.RedirectSubpath("/install")
