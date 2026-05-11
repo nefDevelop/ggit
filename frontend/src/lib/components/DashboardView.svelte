@@ -35,17 +35,21 @@
     raw.forEach(r => {
       if (r && !unique.has(r.id)) unique.set(r.id, r);
     });
-    return Array.from(unique.values());
+    const result = Array.from(unique.values());
+    console.log("DASHBOARD DEBUG - Unique Repos Count:", result.length, "from raw:", raw.length);
+    return result;
   });
   
   const filteredRepos = $derived.by(() => {
     const repos = allRepos || [];
     if (!searchQuery) return repos;
     const q = searchQuery.toLowerCase();
-    return repos.filter(r => 
+    const result = repos.filter(r => 
       r?.name?.toLowerCase()?.includes(q) || 
       (r?.description && r.description.toLowerCase().includes(q))
     );
+    console.log("DASHBOARD DEBUG - Filtered Repos Count:", result.length, "Query:", searchQuery);
+    return result;
   });
 
   interface GroupedRepos {

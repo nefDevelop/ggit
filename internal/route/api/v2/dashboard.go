@@ -32,39 +32,46 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 
-	log.Info("GetDashboardData START: UserID=%d, Username=%s", ctxUser.ID, ctxUser.Name)
+	log.Info("GetDashboardData START: UserID=%d, Username=%s, IsAdmin=%v", ctxUser.ID, ctxUser.Name, ctxUser.IsAdmin)
 
 	// 1. Get Personal, Collaborative and Watched Repositories
 	repos, err := database.GetUserAndCollaborativeRepositories(ctxUser.ID)
 	if err != nil {
-		log.Error("GetDashboardData: Error fetching involved repos: %v", err)
+		log.Error("GetDashboardData: Error fetching involved repos for UserID=%d: %v", ctxUser.ID, err)
 		repos = []*database.Repository{}
 	}
-	log.Info("GetDashboardData: Found %d involved repos", len(repos))
+	log.Info("GetDashboardData: Found %d involved repos for UserID=%d", len(repos), ctxUser.ID)
 
 	// 2. Get Organizations
 	orgs, err := database.GetOrgsByUserID(ctxUser.ID, true)
 	if err != nil {
-		log.Error("GetDashboardData: Error fetching orgs: %v", err)
+		log.Error("GetDashboardData: Error fetching orgs for UserID=%d: %v", ctxUser.ID, err)
 		orgs = []*database.User{}
 	}
-	log.Info("GetDashboardData: Found %d orgs", len(orgs))
+	
+	orgIDs := make([]int64, len(orgs))
+	for i, org := range orgs {
+		orgIDs[i] = org.ID
+	}
+	log.Info("GetDashboardData: Found %d orgs for UserID=%d: %v", len(orgs), ctxUser.ID, orgIDs)
 
 	// 3. Get Organization Repositories
 	var orgRepos []*database.Repository
 	for _, org := range orgs {
+		log.Info("GetDashboardData: Fetching repos for OrgID=%d (%s)", org.ID, org.Name)
 		ores, _, err := database.SearchRepositoryByName(&database.SearchRepoOptions{
 			OwnerID:  org.ID,
 			UserID:   ctxUser.ID,
 			PageSize: 100,
 		})
 		if err != nil {
-			log.Error("GetDashboardData: Error fetching repos for org %s: %v", org.Name, err)
+			log.Error("GetDashboardData: Error fetching repos for org %s (ID=%d): %v", org.Name, org.ID, err)
 			continue
 		}
+		log.Info("GetDashboardData: Found %d repos for OrgID=%d", len(ores), org.ID)
 		orgRepos = append(orgRepos, ores...)
 	}
-	log.Info("GetDashboardData: Found %d additional org repos", len(orgRepos))
+	log.Info("GetDashboardData: Found total %d additional org repos", len(orgRepos))
 
 	// 4. Merge and De-duplicate
 	repoMap := make(map[int64]*database.Repository)
@@ -83,11 +90,12 @@ func GetDashboardData(c *context.APIContext) {
 	for _, r := range repoMap {
 		allRepos = append(allRepos, r)
 	}
+	log.Info("GetDashboardData: After de-duplication, total repos count: %d", len(allRepos))
 
 	// Sort and load attributes
 	database.RepositoryList(allRepos).SortByUpdatedDesc()
 	if err := database.RepositoryList(allRepos).LoadAttributes(); err != nil {
-		log.Error("GetDashboardData: Error loading attributes: %v", err)
+		log.Error("GetDashboardData: Error loading attributes for %d repos: %v", len(allRepos), err)
 	}
 
 	apiRepos := make([]any, 0, len(allRepos))
