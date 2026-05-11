@@ -18,30 +18,27 @@ type DashboardData struct {
 
 // GetDashboardData returns the initial data needed for the dashboard.
 func GetDashboardData(c *context.APIContext) {
-	defer func() {
-		if err := recover(); err != nil {
-			log.Error("Panic in GetDashboardData: %v", err)
-			c.StatusError(http.StatusInternalServerError, "Internal Server Error", nil)
-		}
-	}()
-
 	ctxUser := c.User
 	if ctxUser == nil {
 		c.StatusError(http.StatusUnauthorized, "User must be logged in", nil)
 		return
 	}
 
+	log.Info("GetDashboardData: Request from user %d (%s)", ctxUser.ID, ctxUser.Name)
+
 	// 1. Get Personal, Collaborative and Watched Repositories
 	repos, err := database.GetUserAndCollaborativeRepositories(ctxUser.ID)
 	if err != nil {
-		c.Error(err, "get user and collaborative repositories")
-		return
+		log.Error("GetDashboardData: Error fetching repos: %v", err)
+		// Don't fail the whole request, just return empty list
+		repos = []*database.Repository{}
 	}
 
 	// 2. Get Organizations
 	orgs, err := database.GetOrgsByUserID(ctxUser.ID, true)
 	if err != nil {
-		log.Error("GetDashboardData: Failed to get organizations: %v", err)
+		log.Error("GetDashboardData: Error fetching orgs: %v", err)
+		orgs = []*database.User{}
 	}
 
 	// 3. Get Organization Repositories (explicitly)
@@ -53,7 +50,7 @@ func GetDashboardData(c *context.APIContext) {
 			PageSize: 100,
 		})
 		if err != nil {
-			log.Error("GetDashboardData: Failed to get repos for org %s: %v", org.Name, err)
+			log.Error("GetDashboardData: Error fetching repos for org %s: %v", org.Name, err)
 			continue
 		}
 		orgRepos = append(orgRepos, ores...)
@@ -62,10 +59,14 @@ func GetDashboardData(c *context.APIContext) {
 	// 4. Merge and De-duplicate
 	repoMap := make(map[int64]*database.Repository)
 	for _, r := range repos {
-		repoMap[r.ID] = r
+		if r != nil {
+			repoMap[r.ID] = r
+		}
 	}
 	for _, r := range orgRepos {
-		repoMap[r.ID] = r
+		if r != nil {
+			repoMap[r.ID] = r
+		}
 	}
 
 	allRepos := make([]*database.Repository, 0, len(repoMap))
@@ -73,12 +74,10 @@ func GetDashboardData(c *context.APIContext) {
 		allRepos = append(allRepos, r)
 	}
 
-	// Sort by updated_unix DESC
+	// Sort and load attributes
 	database.RepositoryList(allRepos).SortByUpdatedDesc()
-
-	// Load attributes for all merged repos
 	if err := database.RepositoryList(allRepos).LoadAttributes(); err != nil {
-		log.Error("GetDashboardData: Failed to load attributes: %v", err)
+		log.Error("GetDashboardData: Error loading attributes: %v", err)
 	}
 
 	apiRepos := make([]any, 0, len(allRepos))
@@ -91,7 +90,7 @@ func GetDashboardData(c *context.APIContext) {
 		apiOrgs = append(apiOrgs, o.APIFormat())
 	}
 
-	log.Info("GetDashboardData SUCCESS: User=%d, TotalRepos=%d", ctxUser.ID, len(apiRepos))
+	log.Info("GetDashboardData SUCCESS: User=%d, Repos=%d, Orgs=%d", ctxUser.ID, len(apiRepos), len(apiOrgs))
 
 	c.JSON(http.StatusOK, map[string]any{
 		"repositories":  apiRepos,
