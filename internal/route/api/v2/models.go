@@ -47,16 +47,19 @@ func ToRepositoryResponse(r *database.Repository) *types.RepositoryResponse {
 		return nil
 	}
 	return &types.RepositoryResponse{
-		ID:          r.ID,
-		Name:        r.Name,
-		Description: r.Description,
-		Owner:       ToUserResponse(r.Owner),
-		NumStars:    r.NumStars,
-		NumForks:    r.NumForks,
-		NumWatches:  r.NumWatches,
-		IsPrivate:   r.IsPrivate,
-		CreatedAt:   time.Unix(r.CreatedUnix, 0),
-		Topics:      r.Topics,
+		ID:            r.ID,
+		Name:          r.Name,
+		FullName:      r.FullName(),
+		Description:   r.Description,
+		Owner:         ToUserResponse(r.Owner),
+		NumStars:      r.NumStars,
+		NumForks:      r.NumForks,
+		NumWatches:    r.NumWatches,
+		IsPrivate:     r.IsPrivate,
+		ProjectFolder: r.ProjectFolder,
+		CreatedAt:     time.Unix(r.CreatedUnix, 0),
+		UpdatedAt:     time.Unix(r.UpdatedUnix, 0),
+		Topics:        r.Topics,
 	}
 }
 

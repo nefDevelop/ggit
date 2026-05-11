@@ -3,10 +3,8 @@ package v2
 import (
 	"net/http"
 
-	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
-	"github.com/nef734/ggit/internal/domain"
 	log "github.com/nef734/ggit/internal/log"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 )
@@ -33,83 +31,56 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 
-	// 1. Get All Accessible Repositories (Personal + Org + Collab)
-	log.Trace("GetDashboardData: Fetching all accessible repositories for user %d", ctxUser.ID)
-	repos, _, err := database.SearchRepositoryByName(
-		&database.SearchRepoOptions{
-			UserID:   ctxUser.ID,
-			Page:     1,
-			PageSize: conf.UI.User.RepoPagingNum,
-			OrderBy:  "updated_unix DESC",
-		},
-	)
+	// 1. Get Personal and Collaborative Repositories
+	repos, err := database.GetUserAndCollaborativeRepositories(ctxUser.ID)
 	if err != nil {
-		c.Error(err, "search user repositories")
+		c.Error(err, "get user and collaborative repositories")
 		return
 	}
-	
-	// Load attributes for all found repos
-	if err := database.RepositoryList(repos).LoadAttributes(); err != nil {
+
+	// 2. Get Organizations
+	orgs, err := database.GetOrgsByUserID(ctxUser.ID, true)
+	if err != nil {
+		log.Error("GetDashboardData: Failed to get organizations: %v", err)
+	}
+
+	// 3. Get Organization Repositories
+	var orgRepos []*database.Repository
+	for _, org := range orgs {
+		repos, err := database.GetUserRepositories(&database.UserRepoOptions{UserID: org.ID})
+		if err != nil {
+			log.Error("GetDashboardData: Failed to get repos for org %s: %v", org.Name, err)
+			continue
+		}
+		orgRepos = append(orgRepos, repos...)
+	}
+
+	// 4. Merge and Format
+	allRepos := make([]*database.Repository, 0, len(repos)+len(orgRepos))
+	allRepos = append(allRepos, repos...)
+	allRepos = append(allRepos, orgRepos...)
+
+	// Load attributes for all merged repos
+	if err := database.RepositoryList(allRepos).LoadAttributes(); err != nil {
 		log.Error("GetDashboardData: Failed to load attributes: %v", err)
 	}
 
-	apiRepos := make([]*apiv2types.RepositoryResponse, 0, len(repos))
-	for _, r := range repos {
-		if r == nil {
-			continue
-		}
-		apiRepos = append(apiRepos, r.APIFormat(r.MustOwner()))
+	apiRepos := make([]*apiv2types.RepositoryResponse, 0, len(allRepos))
+	for _, r := range allRepos {
+		apiRepos = append(apiRepos, ToRepositoryResponse(r))
 	}
 
-	// 2. Get Collaborative Repositories
-	log.Trace("GetDashboardData: Fetching collaborative repositories for user %d", ctxUser.ID)
-	collaborative, err := database.Handle.Repositories().GetByCollaboratorID(c.Req.Context(), ctxUser.ID, conf.UI.User.RepoPagingNum, "updated_unix DESC")
-	if err != nil {
-		c.Error(err, "get collaborative repositories")
-		return
-	}
-	log.Trace("GetDashboardData: Loading attributes for %d collaborative repos", len(collaborative))
-	drepos := make([]*database.Repository, len(collaborative))
-	for i, r := range collaborative {
-		drepos[i] = database.FromDomainRepository(r)
-	}
-	_ = database.RepositoryList(drepos).LoadAttributes()
-
-	apiCollaborative := make([]*apiv2types.RepositoryResponse, 0, len(collaborative))
-	for i, r := range collaborative {
-		if r == nil {
-			continue
-		}
-		dr := drepos[i]
-		apiCollaborative = append(apiCollaborative, dr.APIFormat(dr.MustOwner()))
-	}
-
-	// 4. Get Organizations
-	log.Trace("GetDashboardData: Fetching organizations for user %d", ctxUser.ID)
-	orgs, err := database.Handle.Organizations().List(
-		c.Req.Context(),
-		domain.ListOrgsOptions{
-			MemberID:              ctxUser.ID,
-			IncludePrivateMembers: true,
-		},
-	)
-	if err != nil {
-		c.Error(err, "list organizations")
-		return
-	}
 	apiOrgs := make([]*apiv2types.UserResponse, 0, len(orgs))
 	for _, o := range orgs {
-		if o == nil {
-			continue
-		}
-		apiOrgs = append(apiOrgs, database.FromDomainUser(o).APIFormat())
+		apiOrgs = append(apiOrgs, ToUserResponse(o))
 	}
 
-	log.Trace("GetDashboardData: Returning consolidated data")
-	c.JSON(http.StatusOK, DashboardData{
-		Repositories:     apiRepos,
-		Collaborative:    apiCollaborative,
-		OrganizationList: apiOrgs,
+	log.Info("GetDashboardData SUCCESS: User=%d, TotalRepos=%d", ctxUser.ID, len(apiRepos))
+
+	c.JSON(http.StatusOK, map[string]any{
+		"repositories": apiRepos,
+		"organizations": apiOrgs,
+		"ok": true,
 	})
 }
 
