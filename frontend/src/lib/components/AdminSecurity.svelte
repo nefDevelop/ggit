@@ -83,7 +83,7 @@
             <div class="skeleton-list"></div>
           {:else}
             {#each patterns as pattern}
-              <div class="pattern-card tonal">
+              <div class="pattern-card">
                 <div class="pattern-header">
                   <span class="pattern-name">{pattern.Name}</span>
                   <Button variant="ghost" icon={Trash2} size="sm" class="danger-text" onclick={() => deletePattern(pattern.ID)} />
@@ -95,7 +95,7 @@
           {/if}
         </div>
 
-        <div class="add-global-pattern tonal">
+        <div class="add-global-pattern">
           <h4>{i18n.t("admin.add_global_pattern")}</h4>
           <div class="form-row">
             <Input label="Nombre" bind:value={newPattern.name} />

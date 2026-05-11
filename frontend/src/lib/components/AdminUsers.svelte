@@ -70,7 +70,7 @@
 
   <div class="admin-users-body">
   {#if editingUserId}
-    <div class="editor-overlay island tonal">
+    <div class="editor-overlay">
        <AdminUserEditor 
          userId={editingUserId === 'new' ? null : editingUserId} 
          onSave={fetchUsers} 
@@ -190,5 +190,5 @@
     color: var(--error);
   }
 
-  .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 2rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.03); }
+  .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-high); }
 </style>

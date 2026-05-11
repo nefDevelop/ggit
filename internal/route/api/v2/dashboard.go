@@ -33,26 +33,32 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 
-	// 1. Get Personal Repositories
-	log.Trace("GetDashboardData: Fetching personal repositories for user %d", ctxUser.ID)
-	repos, err := database.GetUserRepositories(
-		&database.UserRepoOptions{
+	// 1. Get All Accessible Repositories (Personal + Org + Collab)
+	log.Trace("GetDashboardData: Fetching all accessible repositories for user %d", ctxUser.ID)
+	repos, _, err := database.SearchRepositoryByName(
+		&database.SearchRepoOptions{
 			UserID:   ctxUser.ID,
-			Private:  true,
 			Page:     1,
 			PageSize: conf.UI.User.RepoPagingNum,
+			OrderBy:  "updated_unix DESC",
 		},
 	)
 	if err != nil {
-		c.Error(err, "get user repositories")
+		c.Error(err, "search user repositories")
 		return
 	}
+	
+	// Load attributes for all found repos
+	if err := database.RepositoryList(repos).LoadAttributes(); err != nil {
+		log.Error("GetDashboardData: Failed to load attributes: %v", err)
+	}
+
 	apiRepos := make([]*apiv2types.RepositoryResponse, 0, len(repos))
 	for _, r := range repos {
 		if r == nil {
 			continue
 		}
-		apiRepos = append(apiRepos, r.APIFormat(ctxUser))
+		apiRepos = append(apiRepos, r.APIFormat(r.MustOwner()))
 	}
 
 	// 2. Get Collaborative Repositories

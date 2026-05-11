@@ -29,7 +29,14 @@
   let searchQuery = $state('');
 
   const oneWeekAgo = $derived(Date.now() - (7 * 24 * 60 * 60 * 1000));
-  const allRepos = $derived([...(data?.repositories || []), ...(data?.collaborative || [])]);
+  const allRepos = $derived.by(() => {
+    const raw = [...(data?.repositories || []), ...(data?.collaborative || [])];
+    const unique = new Map();
+    raw.forEach(r => {
+      if (r && !unique.has(r.id)) unique.set(r.id, r);
+    });
+    return Array.from(unique.values());
+  });
   
   const filteredRepos = $derived.by(() => {
     const repos = allRepos || [];
@@ -103,12 +110,19 @@
       const res = await apiFetch('/api/v2/user/dashboard/data');
       if (res.ok) {
         const json = await res.json();
-        data = {
-          repositories: json?.repositories || [],
-          collaborative: json?.collaborative || [],
-          organizations: json?.organizations || [],
-          gists: data.gists || []
-        };
+        console.log("Dashboard Data DEBUG:", json);
+        
+        if (json) {
+          // Si el JSON es directamente un array (poco probable pero posible por cambios futuros)
+          if (Array.isArray(json)) {
+            data.repositories = json;
+          } else {
+            // Manejo robusto de campos
+            data.repositories = json.repositories || json.repos || [];
+            data.collaborative = json.collaborative || [];
+            data.organizations = json.organizations || json.orgs || [];
+          }
+        }
       }
       // Silently prefetch inbox to show badge
       const inboxRes = await apiFetch('/api/v2/user/dashboard/inbox');

@@ -341,8 +341,8 @@
     gap: 1rem;
     padding: 1rem;
     margin-bottom: 2rem;
-    background: var(--md-sys-color-secondary-container);
-    color: var(--md-sys-color-on-secondary-container);
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface);
     border-radius: 0.75rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     transition: all 0.3s ease;

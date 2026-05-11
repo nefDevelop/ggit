@@ -105,7 +105,7 @@
               </div>
               <div class="config-grid">
                 {#each Object.entries(config?.[section.key] || {}) as [label, value]}
-                  <div class="config-tile tonal">
+                  <div class="config-tile">
                     <span class="tile-key">{label}</span>
                     <span class="tile-val">{typeof value === 'object' ? JSON.stringify(value) : (value || '—')}</span>
                   </div>
