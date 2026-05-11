@@ -2157,14 +2157,14 @@ func GetRecentUpdatedRepositories(page, pageSize int) (repos []*Repository, err 
 
 // GetUserAndCollaborativeRepositories returns list of repositories the user owns and collaborates.
 func GetUserAndCollaborativeRepositories(userID int64) ([]*Repository, error) {
-	// Get IDs of collaborative repos first.
+	// Get IDs of repositories the user has access to.
 	var collabRepoIDs []int64
-	err := Handle.db.Model(&Collaboration{}).Where("user_id = ?", userID).Pluck("repo_id", &collabRepoIDs).Error
+	err := Handle.db.Model(&Access{}).Where("user_id = ?", userID).Pluck("repo_id", &collabRepoIDs).Error
 	if err != nil {
-		return nil, fmt.Errorf("get collaborative repository IDs"+": %w", err)
+		return nil, fmt.Errorf("get access repository IDs"+": %w", err)
 	}
 
-	// Build a single query for repositories the user owns OR collaborates on.
+	// Build a single query for repositories the user owns OR has access to.
 	query := Handle.db.Model(&Repository{}).Where("owner_id = ?", userID)
 	if len(collabRepoIDs) > 0 {
 		query = query.Or("id IN (?)", collabRepoIDs)
@@ -2711,6 +2711,12 @@ func (repos RepositoryList) loadAttributes(tx *gorm.DB) error {
 
 func (repos RepositoryList) LoadAttributes() error {
 	return repos.loadAttributes(Handle.db)
+}
+
+func (repos RepositoryList) SortByUpdatedDesc() {
+	sort.Slice(repos, func(i, j int) bool {
+		return repos[i].UpdatedUnix > repos[j].UpdatedUnix
+	})
 }
 
 //  __      __         __         .__

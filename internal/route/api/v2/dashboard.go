@@ -47,18 +47,35 @@ func GetDashboardData(c *context.APIContext) {
 	// 3. Get Organization Repositories
 	var orgRepos []*database.Repository
 	for _, org := range orgs {
-		repos, err := database.GetUserRepositories(&database.UserRepoOptions{UserID: org.ID})
+		// Use SearchRepositoryByName to correctly fetch all repositories the user can see in this org (including private ones)
+		ores, _, err := database.SearchRepositoryByName(&database.SearchRepoOptions{
+			OwnerID:  org.ID,
+			UserID:   ctxUser.ID,
+			PageSize: 100, // Reasonable limit for dashboard list
+		})
 		if err != nil {
 			log.Error("GetDashboardData: Failed to get repos for org %s: %v", org.Name, err)
 			continue
 		}
-		orgRepos = append(orgRepos, repos...)
+		orgRepos = append(orgRepos, ores...)
 	}
 
-	// 4. Merge and Format
-	allRepos := make([]*database.Repository, 0, len(repos)+len(orgRepos))
-	allRepos = append(allRepos, repos...)
-	allRepos = append(allRepos, orgRepos...)
+	// 4. Merge and De-duplicate
+	repoMap := make(map[int64]*database.Repository)
+	for _, r := range repos {
+		repoMap[r.ID] = r
+	}
+	for _, r := range orgRepos {
+		repoMap[r.ID] = r
+	}
+
+	allRepos := make([]*database.Repository, 0, len(repoMap))
+	for _, r := range repoMap {
+		allRepos = append(allRepos, r)
+	}
+
+	// Sort by updated_unix DESC (since map order is random)
+	database.RepositoryList(allRepos).SortByUpdatedDesc()
 
 	// Load attributes for all merged repos
 	if err := database.RepositoryList(allRepos).LoadAttributes(); err != nil {
