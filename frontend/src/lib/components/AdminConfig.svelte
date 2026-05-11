@@ -25,7 +25,7 @@
       if (res.ok) {
         config = await res.json();
         // Specific mapping for the shortcut card
-        if (config.auth) {
+        if (config?.auth) {
           regSecurity.enable = config.auth.ENABLE_REGISTRATION_QUESTION === 'true';
           regSecurity.question = config.auth.REGISTRATION_QUESTION;
           regSecurity.answer = config.auth.REGISTRATION_ANSWER;
@@ -104,7 +104,7 @@
                 </Button>
               </div>
               <div class="config-grid">
-                {#each Object.entries(config[section.key] || {}) as [label, value]}
+                {#each Object.entries(config?.[section.key] || {}) as [label, value]}
                   <div class="config-tile tonal">
                     <span class="tile-key">{label}</span>
                     <span class="tile-val">{typeof value === 'object' ? JSON.stringify(value) : (value || '—')}</span>
@@ -157,7 +157,7 @@
 {#if editingSection}
   <AdminConfigEditor 
     section={editingSection} 
-    data={config[editingSection]} 
+    data={config?.[editingSection]} 
     onSave={() => { editingSection = null; fetchConfig(); }} 
     onCancel={() => editingSection = null} 
   />

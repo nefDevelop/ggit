@@ -12,7 +12,9 @@ import (
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-		log.Trace("CORS Middleware: Origin=%s, Method=%s, Path=%s", origin, c.Request.Method, c.Request.URL.Path)
+		if c.Request.URL.Path != "/health" {
+			log.Trace("CORS Middleware: Origin=%s, Method=%s, Path=%s", origin, c.Request.Method, c.Request.URL.Path)
+		}
 		if origin != "" {
 			// In development or test, we are more permissive with localhost origins
 			if strings.HasPrefix(origin, "http://localhost:") || strings.HasPrefix(origin, "http://127.0.0.1:") {

@@ -22,7 +22,10 @@
     loading = true;
     try {
       const res = await apiFetch("/api/v2/admin/security/guardian/patterns");
-      if (res.ok) patterns = (await res.json()) || [];
+      if (res.ok) {
+        const data = await res.json();
+        patterns = Array.isArray(data) ? data : [];
+      }
     } catch (e) {
       console.error(e);
     } finally {
