@@ -110,18 +110,15 @@
       const res = await apiFetch('/api/v2/user/dashboard/data');
       if (res.ok) {
         const json = await res.json();
-        console.log("Dashboard Data DEBUG:", json);
+        console.log("DASHBOARD DEBUG - Raw JSON:", json);
         
         if (json) {
-          // Si el JSON es directamente un array (poco probable pero posible por cambios futuros)
-          if (Array.isArray(json)) {
-            data.repositories = json;
-          } else {
-            // Manejo robusto de campos
-            data.repositories = json.repositories || json.repos || [];
-            data.collaborative = json.collaborative || [];
-            data.organizations = json.organizations || json.orgs || [];
-          }
+          // Robust mapping of fields from API to local state
+          data.repositories = json.repositories || json.repos || json.data || (Array.isArray(json) ? json : []);
+          data.collaborative = json.collaborative || [];
+          data.organizations = json.organizations || json.orgs || [];
+          
+          console.log("DASHBOARD DEBUG - Mapped Repos:", data.repositories);
         }
       }
       // Silently prefetch inbox to show badge
