@@ -25,9 +25,11 @@
     try {
       const res = await apiFetch(`/api/v2/${username}/${reponame}/${type}`);
       if (res.ok) {
-        data = await res.json();
+        const json = await res.json();
+        data = Array.isArray(json) ? json : [];
       } else {
         error = `No se pudieron cargar los ${type}.`;
+        data = [];
       }
     } catch (e) {
       error = 'Error de conexión.';

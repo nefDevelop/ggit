@@ -96,8 +96,8 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
       headers: response.headers,
       url: response.url,
       data, // El JSON ya parseado
-      json: async () => data, 
-      text: async () => textBody || JSON.stringify(data),
+      json: async () => data || {}, 
+      text: async () => textBody || JSON.stringify(data || {}),
       // Añadimos el original por si alguien necesita acceder a propiedades específicas
       raw: response 
     };
