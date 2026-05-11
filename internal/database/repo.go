@@ -2155,24 +2155,26 @@ func GetRecentUpdatedRepositories(page, pageSize int) (repos []*Repository, err 
 	return repos, err
 }
 
-// GetUserAndCollaborativeRepositories returns list of repositories the user owns and collaborates.
+// GetUserAndCollaborativeRepositories returns list of repositories the user owns, collaborates on, or watches.
 func GetUserAndCollaborativeRepositories(userID int64) ([]*Repository, error) {
-	// Get IDs of repositories the user has access to.
-	var collabRepoIDs []int64
-	err := Handle.db.Model(&Access{}).Where("user_id = ?", userID).Pluck("repo_id", &collabRepoIDs).Error
+	var repoIDs []int64
+	// Use a single query to get all relevant repository IDs
+	err := Handle.db.Table("repository").
+		Select("repository.id").
+		Joins("LEFT JOIN access ON access.repo_id = repository.id").
+		Joins("LEFT JOIN watch ON watch.repo_id = repository.id").
+		Where("repository.owner_id = ? OR access.user_id = ? OR watch.user_id = ?", userID, userID, userID).
+		Distinct().
+		Pluck("id", &repoIDs).Error
 	if err != nil {
-		return nil, fmt.Errorf("get access repository IDs"+": %w", err)
-	}
-
-	// Build a single query for repositories the user owns OR has access to.
-	query := Handle.db.Model(&Repository{}).Where("owner_id = ?", userID)
-	if len(collabRepoIDs) > 0 {
-		query = query.Or("id IN (?)", collabRepoIDs)
+		return nil, fmt.Errorf("get involved repository IDs: %w", err)
 	}
 
 	repos := make([]*Repository, 0, 20)
-	if err := query.Order("updated_unix DESC").Find(&repos).Error; err != nil {
-		return nil, fmt.Errorf("get user and collaborative repositories"+": %w", err)
+	if len(repoIDs) > 0 {
+		if err := Handle.db.Where("id IN (?)", repoIDs).Order("updated_unix DESC").Find(&repos).Error; err != nil {
+			return nil, fmt.Errorf("find involved repositories: %w", err)
+		}
 	}
 
 	return repos, nil

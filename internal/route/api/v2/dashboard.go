@@ -31,7 +31,7 @@ func GetDashboardData(c *context.APIContext) {
 		return
 	}
 
-	// 1. Get Personal and Collaborative Repositories
+	// 1. Get Personal, Collaborative and Watched Repositories
 	repos, err := database.GetUserAndCollaborativeRepositories(ctxUser.ID)
 	if err != nil {
 		c.Error(err, "get user and collaborative repositories")
@@ -44,14 +44,13 @@ func GetDashboardData(c *context.APIContext) {
 		log.Error("GetDashboardData: Failed to get organizations: %v", err)
 	}
 
-	// 3. Get Organization Repositories
+	// 3. Get Organization Repositories (explicitly)
 	var orgRepos []*database.Repository
 	for _, org := range orgs {
-		// Use SearchRepositoryByName to correctly fetch all repositories the user can see in this org (including private ones)
 		ores, _, err := database.SearchRepositoryByName(&database.SearchRepoOptions{
 			OwnerID:  org.ID,
 			UserID:   ctxUser.ID,
-			PageSize: 100, // Reasonable limit for dashboard list
+			PageSize: 100,
 		})
 		if err != nil {
 			log.Error("GetDashboardData: Failed to get repos for org %s: %v", org.Name, err)
@@ -74,7 +73,7 @@ func GetDashboardData(c *context.APIContext) {
 		allRepos = append(allRepos, r)
 	}
 
-	// Sort by updated_unix DESC (since map order is random)
+	// Sort by updated_unix DESC
 	database.RepositoryList(allRepos).SortByUpdatedDesc()
 
 	// Load attributes for all merged repos
@@ -82,22 +81,22 @@ func GetDashboardData(c *context.APIContext) {
 		log.Error("GetDashboardData: Failed to load attributes: %v", err)
 	}
 
-	apiRepos := make([]*apiv2types.RepositoryResponse, 0, len(allRepos))
+	apiRepos := make([]any, 0, len(allRepos))
 	for _, r := range allRepos {
-		apiRepos = append(apiRepos, ToRepositoryResponse(r))
+		apiRepos = append(apiRepos, r.APIFormat(r.Owner))
 	}
 
-	apiOrgs := make([]*apiv2types.UserResponse, 0, len(orgs))
+	apiOrgs := make([]any, 0, len(orgs))
 	for _, o := range orgs {
-		apiOrgs = append(apiOrgs, ToUserResponse(o))
+		apiOrgs = append(apiOrgs, o.APIFormat())
 	}
 
 	log.Info("GetDashboardData SUCCESS: User=%d, TotalRepos=%d", ctxUser.ID, len(apiRepos))
 
 	c.JSON(http.StatusOK, map[string]any{
-		"repositories": apiRepos,
+		"repositories":  apiRepos,
 		"organizations": apiOrgs,
-		"ok": true,
+		"ok":            true,
 	})
 }
 
