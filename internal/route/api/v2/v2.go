@@ -86,13 +86,13 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		}
 
 		user.POST("/repos/migrate", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(MigrateRepo))
-	}
 
-	dashboard := r.Group("/dashboard", context.Toggle(&context.ToggleOptions{SignInRequired: true}))
-	{
-		dashboard.GET("/data", ginx.Handle(GetDashboardData))
-		dashboard.GET("/feeds", ginx.Handle(GetDashboardFeeds))
-		dashboard.GET("/inbox", ginx.Handle(GetUnifiedInbox))
+		dashboard := user.Group("/dashboard", context.Toggle(&context.ToggleOptions{SignInRequired: true}))
+		{
+			dashboard.GET("/data", ginx.Handle(GetDashboardData))
+			dashboard.GET("/feeds", ginx.Handle(GetDashboardFeeds))
+			dashboard.GET("/inbox", ginx.Handle(GetUnifiedInbox))
+		}
 	}
 
 	// Global attachment download
