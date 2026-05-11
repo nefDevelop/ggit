@@ -24,8 +24,8 @@
       const res = await apiFetch(`/api/v2/admin/notices?page=${page}`);
       if (res.ok) {
         const data = await res.json();
-        notices = data.notices || [];
-        total = data.total || 0;
+        notices = data?.notices || [];
+        total = data?.total || 0;
       }
     } catch (e) { console.error(e); } finally { loading = false; }
   }

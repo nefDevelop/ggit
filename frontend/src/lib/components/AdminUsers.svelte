@@ -22,7 +22,7 @@
     try {
       const res = await apiFetch(`/api/v2/admin/users?page=${page}`);
       if (res.ok) {
-        users = await res.json();
+        users = (await res.json()) || [];
       }
     } catch (e) {
       console.error(e);

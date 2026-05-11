@@ -55,6 +55,10 @@ export async function apiFetch(url: string, options: ApiOptions = {}) {
       }
     } catch (e) {
       console.error("Error reading or parsing response", e);
+      // Fail-safe: ensure data is at least an empty object if we expected JSON
+      if (response.headers.get("content-type")?.includes("application/json")) {
+        data = {};
+      }
     }
 
     if (!response.ok && !options.silent) {

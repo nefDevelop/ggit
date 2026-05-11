@@ -18,7 +18,7 @@
     try {
       const res = await apiFetch(`/api/v2/admin/audit-log?page=${pageNum}`);
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) || [];
         if (pageNum === 1) {
           auditLogs = data;
         } else {

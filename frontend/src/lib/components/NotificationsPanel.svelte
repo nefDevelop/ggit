@@ -25,7 +25,7 @@
       const res = await apiFetch("/api/v2/admin/notices?page=1");
       if (res.ok) {
         const data = await res.json();
-        systemNotices = data.notices || [];
+        systemNotices = data?.notices || [];
       }
     } catch (e) {
       console.error("Failed to fetch system notices", e);

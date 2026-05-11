@@ -21,7 +21,7 @@
     selectedSource = null;
     try {
       const res = await apiFetch("/api/v2/admin/auths");
-      if (res.ok) sources = await res.json();
+      if (res.ok) sources = (await res.json()) || [];
     } catch (e) { console.error(e); } finally { loading = false; }
   }
 
