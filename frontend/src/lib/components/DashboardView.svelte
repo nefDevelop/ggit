@@ -107,8 +107,7 @@
   async function loadDashboard() {
     loading = true;
     try {
-      // DEBUG: Using a direct route to bypass potential middleware/routing issues
-      const res = await apiFetch('/api/v2/debug/repos');
+      const res = await apiFetch('/api/v2/user/dashboard/data');
       if (res.ok) {
         const json = await res.json();
         console.log("DASHBOARD DEBUG - Raw JSON:", json);
