@@ -88,7 +88,7 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 				gctx.RedirectSubpath("/user/login")
 				c.Abort()
 				return
-			} else if !gctx.User.IsActive && conf.Auth.RequireEmailConfirmation {
+			} else if !gctx.User.IsActive && conf.Auth.RequireEmailConfirmation && !gctx.User.IsAdmin {
 				if isAPIPath(gctx.Request.URL.Path) {
 					gctx.JSON(http.StatusForbidden, map[string]any{
 						"message": "Your account is not activated.",
