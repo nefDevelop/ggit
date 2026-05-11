@@ -7,30 +7,27 @@ import (
 )
 
 func TestHighlight(t *testing.T) {
-	t.Run("Superación: Resaltar Go", func(t *testing.T) {
+	t.Run("Exito: Devolver código verbatim para el frontend", func(t *testing.T) {
 		code := `package main
 func main() { println("hello") }`
 		html, err := Highlight(code, ".go", "github")
 		assert.NoError(t, err)
-		assert.Contains(t, html, "color:")
-		assert.Contains(t, html, "package")
-		assert.NotContains(t, html, "<pre", "No debe incluir la etiqueta <pre> para permitir procesamiento en el frontend")
+		assert.Equal(t, code, html, "El backend debe devolver el código sin procesar para que el frontend realice el resaltado")
 	})
 
-	t.Run("Fallo/Fallback: Lenguaje desconocido", func(t *testing.T) {
+	t.Run("Fallback: Lenguaje desconocido", func(t *testing.T) {
 		code := `some random text`
 		html, err := Highlight(code, ".unknown_ext_999", "github")
 		assert.NoError(t, err)
-		assert.NotEmpty(t, html, "Debe devolver contenido incluso si no reconoce el lenguaje")
+		assert.Equal(t, code, html, "Debe devolver el contenido original incluso si no reconoce el lenguaje")
 	})
 
-	t.Run("Seguridad: Mitigación de XSS", func(t *testing.T) {
-		// Chroma HTML formatter debe escapar caracteres peligrosos
+	t.Run("Seguridad: Integridad del contenido", func(t *testing.T) {
+		// En esta arquitectura, el backend no escapa porque el frontend necesita el código puro
+		// La seguridad (XSS) es responsabilidad del componente de renderizado en el frontend
 		code := `<script>alert("xss")</script>`
 		html, err := Highlight(code, ".html", "github")
 		assert.NoError(t, err)
-		assert.NotContains(t, html, "<script>", "Debe escapar los tags HTML para evitar XSS")
-		// Verificar que el contenido está escapado (buscamos la entidad &lt; dentro de los spans)
-		assert.Contains(t, html, "&lt;", "El tag script debe estar escapado como entidad HTML")
+		assert.Equal(t, code, html, "El backend no debe alterar el contenido, permitiendo que el frontend lo maneje de forma segura")
 	})
 }

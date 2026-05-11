@@ -8,6 +8,7 @@ import (
 )
 
 // Highlight is now a no-op as highlighting is done on the frontend.
+// It returns the code verbatim for the frontend to process.
 func Highlight(code, language, styleName string) (string, error) {
 	return code, nil
 }
