@@ -36,6 +36,10 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 		
 		log.Trace("Toggle: Path=%s, SignInRequired=%v, IsLogged=%v", c.Request.URL.Path, options.SignInRequired, gctx.IsLogged)
 
+		if gctx.IsLogged {
+			log.Trace("Toggle: UserID=%d, IsActive=%v, ProhibitLogin=%v", gctx.User.ID, gctx.User.IsActive, gctx.User.ProhibitLogin)
+		}
+
 		// Cannot view any page before installation.
 		if !conf.Security.InstallLock {
 			gctx.RedirectSubpath("/install")
@@ -85,8 +89,14 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 				c.Abort()
 				return
 			} else if !gctx.User.IsActive && conf.Auth.RequireEmailConfirmation {
-				gctx.Title("auth.active_your_account")
-				gctx.Success("user/auth/activate")
+				if isAPIPath(gctx.Request.URL.Path) {
+					gctx.JSON(http.StatusForbidden, map[string]any{
+						"message": "Your account is not activated.",
+					})
+				} else {
+					gctx.Title("auth.active_your_account")
+					gctx.Success("user/auth/activate")
+				}
 				c.Abort()
 				return
 			}
