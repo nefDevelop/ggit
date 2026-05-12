@@ -31,13 +31,14 @@
   onMount(fetchStats);
 </script>
 
-<Card class="settings-premium-card" padding="none">
+<div class="admin-dashboard-container">
   <PageHeader 
     title="Panel de Estadísticas"
     subtitle="Resumen global de objetos y uso del sistema"
     icon={BarChart3}
   />
 
+  <div class="admin-dashboard-body">
   {#if loading}
     <div class="stats-grid">
       {#each Array(8) as _}
@@ -144,18 +145,24 @@
       </div>
     </div>
   {/if}
-</Card>
+  </div>
+</div>
 
 <style>
+  .admin-dashboard-body {
+    padding: 0 1.5rem 4rem;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-
-
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   .stats-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
     gap: 1.5rem; 
-    animation: fadeIn 0.4s ease-out;
   }
   
   .stat-premium-card { display: flex; align-items: center; gap: 1.5rem; padding: 2rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.01); }

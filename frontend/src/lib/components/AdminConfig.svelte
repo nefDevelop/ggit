@@ -78,12 +78,10 @@
 </script>
 
 <div class="admin-config-container">
-  <Card class="settings-premium-card" padding="none">
     <PageHeader 
       title="Configuración del Sistema"
       subtitle="Estado detallado y ajustes del motor Ggit"
       icon={Settings}
-      compact
     />
 
     <div class="admin-config-body">
@@ -151,7 +149,6 @@
         </div>
       {/if}
     </div>
-  </Card>
 </div>
 
 {#if editingSection}
