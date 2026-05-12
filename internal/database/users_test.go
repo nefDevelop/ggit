@@ -711,7 +711,7 @@ func usersGetByEmail(t *testing.T, ctx context.Context, s *UsersStore) {
 
 	t.Run("ignore organization", func(t *testing.T) {
 		// TODO: Use Orgs.Create to replace SQL hack when the method is available.
-		org, err := s.Create(ctx, "gogs", "gogs@example.com", CreateUserOptions{})
+		org, err := s.Create(ctx, "ggit", "ggit@example.com", CreateUserOptions{})
 		require.NoError(t, err)
 
 		err = s.db.Model(&User{}).Where("id", org.ID).UpdateColumn("type", UserTypeOrganization).Error

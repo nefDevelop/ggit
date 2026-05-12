@@ -37,7 +37,7 @@ RUN apk --no-cache add \
   rsync \
   "zlib>1.3.2"
 
-ENV GGIT_CUSTOM=/data/ggit
+ENV GGIT_CUSTOM=/data
 WORKDIR /app/ggit
 
 # Copiar configuraciones y scripts de inicio

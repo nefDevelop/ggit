@@ -68,7 +68,7 @@ test-e2e: clean-ports build
 	@mkdir -p data
 	@# Crear config temporal para tests
 	@cp conf/app.ini conf/app.test.ini
-	@sed -i -e 's|PATH           = data/gogs.db|PATH           = data/gogs.test.db|' \
+	@sed -i -e 's|PATH           = data/ggit.db|PATH           = data/ggit.test.db|' \
 	        -e 's|ROOT                        = ggit-repositories|ROOT                        = ggit-repositories-test|' conf/app.test.ini
 	@echo "[security]" >> conf/app.test.ini
 	@echo "INSTALL_LOCK = true" >> conf/app.test.ini

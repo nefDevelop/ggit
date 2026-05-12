@@ -68,7 +68,7 @@ func initLogConf(cfg *ini.File, hookMode bool) (_ *logConf, hasConsole bool, _ e
 			}
 
 		case log.DefaultFileName:
-			logPath := filepath.Join(lc.RootPath, "gogs.log")
+			logPath := filepath.Join(lc.RootPath, "ggit.log")
 			c = &loggerConf{
 				Level: level,
 				Path:  logPath,

@@ -196,11 +196,11 @@ func NewRepoContext() {
 
 	log.Trace("Git version: %s", conf.Git.Version)
 	if semverx.Compare(conf.Git.Version, "<", "1.8.3") {
-		log.Fatal("Gogs requires Git version greater or equal to 1.8.3")
+		log.Fatal("Ggit requires Git version greater or equal to 1.8.3")
 	}
 
 	// Git requires setting user.name and user.email in order to commit changes.
-	for configKey, defaultValue := range map[string]string{"user.name": "Gogs", "user.email": "gogs@fake.local"} {
+	for configKey, defaultValue := range map[string]string{"user.name": "Ggit", "user.email": "ggit@fake.local"} {
 		if stdout, stderr, err := process.Exec("NewRepoContext(get setting)", "git", "config", "--get", configKey); err != nil || strings.TrimSpace(stdout) == "" {
 			// ExitError indicates this config is not set
 			if _, ok := err.(*exec.ExitError); ok || strings.TrimSpace(stdout) == "" {

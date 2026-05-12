@@ -27,10 +27,10 @@ func TestNewDSN(t *testing.T) {
 			name: "sqlite3",
 			opts: conf.DatabaseOpts{
 				Type: "sqlite3",
-				Path: "/tmp/gogs.db",
-			},
-			wantDSN: "file:///tmp/gogs.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL",
-		},
+				args: args{
+					Path: "/tmp/ggit.db",
+				},
+				wantDSN: "file:///tmp/ggit.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL",
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {

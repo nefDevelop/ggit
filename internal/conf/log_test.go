@@ -84,7 +84,7 @@ MAX_DAYS = 3
 				Level: log.LevelTrace,
 			}, {
 				Level: log.LevelInfo,
-				Path:  filepath.Join(WorkDir(), "log", "gogs.log"),
+				Path:  filepath.Join(WorkDir(), "log", "ggit.log"),
 			},
 		},
 	}

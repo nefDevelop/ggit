@@ -6,17 +6,17 @@ if ! test -d ~git/.ssh; then
 fi
 
 if ! test -f ~git/.ssh/environment; then
-    gosu "$USER" echo "GOGS_CUSTOM=${GOGS_CUSTOM}" > ~git/.ssh/environment
+    echo "GGIT_CUSTOM=${GGIT_CUSTOM}" > ~git/.ssh/environment
     chmod 600 ~git/.ssh/environment
 fi
 
 cd /app/ggit || exit 1
 
 # Link volumed data with app data
-ln -sfn /data/ggit/log  ./log
-ln -sfn /data/ggit/data ./data
+ln -sfn /data/log  ./log
+ln -sfn /data/data ./data
 
 # Backward Compatibility with Ggit Container v0.6.15
-ln -sfn /data/git /home/git
+ln -sfn /data/repositories /home/git/ggit-repositories
 
-chmod 0755 /data /data/ggit ~git/
+chmod 0755 /data ~git/

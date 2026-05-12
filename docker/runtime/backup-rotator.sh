@@ -22,7 +22,7 @@ main() {
 	fi
 
 	# shellcheck disable=SC2086
-	find "${BACKUP_PATH}/" -type f -name "gogs-backup-*.zip" -${FIND_EXPRESSION} -print -exec rm "{}" +
+	find "${BACKUP_PATH}/" -type f -name "ggit-backup-*.zip" -${FIND_EXPRESSION} -print -exec rm "{}" +
 }
 
 main "$@"

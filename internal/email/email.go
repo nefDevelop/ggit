@@ -88,7 +88,7 @@ func render(tpl string, data map[string]any) (string, error) {
 }
 
 func SendTestMail(email string) error {
-	msg, err := newMessage([]string{email}, "Gogs Test Email", "Hello 👋, greeting from Gogs!")
+	msg, err := newMessage([]string{email}, "Ggit Test Email", "Hello 👋, greeting from Ggit!")
 	if err != nil {
 		return fmt.Errorf("new message"+": %w", err)
 	}
