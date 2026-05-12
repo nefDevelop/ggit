@@ -351,6 +351,17 @@
     width: 100%;
     animation: fadeIn 0.4s ease-out;
   }
+
+  @media (max-width: 600px) {
+    .repository-stream { padding: 1rem 0.75rem 5rem; }
+    .folder-repos { padding-left: 0.75rem; margin-left: 0.5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .repository-stream { padding: 0.5rem 0.25rem 5rem; }
+    .divider-text { padding: 1.5rem 0.5rem 0.25rem; }
+    .folder-group { margin-bottom: 1rem; }
+  }
   
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(4px); }

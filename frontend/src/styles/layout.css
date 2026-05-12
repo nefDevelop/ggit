@@ -83,6 +83,16 @@
     box-sizing: border-box;
   }
 
+  /* Extreme mobile (like 480px) - reduce margins further */
+  @media (max-width: 480px) {
+    #main-container-wrapper, #app-layout.has-right-sidebar #main-container-wrapper {
+      margin: 0.25rem 0.25rem 80px 0.25rem !important;
+      border-radius: 1rem !important;
+      max-width: calc(100vw - 0.5rem);
+      width: calc(100vw - 0.5rem);
+    }
+  }
+
   /* Space for sub-navigation (Admin/Settings) */
   #app-layout.has-sub-nav #main-container-wrapper {
     margin-bottom: 160px !important;

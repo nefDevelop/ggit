@@ -580,18 +580,18 @@
     }
     .navigation-bar {
       width: 100vw;
-      height: 70px;
+      height: 60px;
       flex-direction: row;
       position: fixed;
       bottom: 0;
       left: 0;
       z-index: 1000;
-      padding: 0 0.5rem;
+      padding: 0 0.25rem;
       background: var(--bg-color);
       border-top: none;
       align-items: center;
       padding-bottom: env(safe-area-inset-bottom);
-      height: calc(70px + env(safe-area-inset-bottom));
+      height: calc(60px + env(safe-area-inset-bottom));
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
       justify-content: space-around;
     }
@@ -611,7 +611,7 @@
       gap: 0;
     }
     .nav-item {
-      padding: 0.75rem;
+      padding: 0.5rem;
       gap: 0;
       justify-content: center;
       flex: 1;

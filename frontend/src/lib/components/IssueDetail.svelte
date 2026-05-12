@@ -415,9 +415,22 @@
   @media (max-width: 1000px) {
     .issue-layout {
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 1.5rem;
     }
     .sidebar { order: -1; }
+    .issue-title-row h1 { font-size: 1.5rem; }
+    .issue-detail-view { gap: 1rem; }
+  }
+
+  @media (max-width: 480px) {
+    .issue-title-row { gap: 0.75rem; }
+    .timeline { gap: 1rem; }
+    .timeline-item { gap: 0.75rem; }
+    .timeline::before { left: 1rem; }
+    :global(.item-avatar) { width: 2.25rem; height: 2.25rem; }
+    .side-item { padding-bottom: 1rem; }
+    .sidebar { gap: 1rem; }
+    .comment-actions { padding: 0.5rem 0.75rem; }
   }
 
   .timeline {

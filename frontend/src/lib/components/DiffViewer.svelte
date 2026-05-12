@@ -325,6 +325,20 @@
     padding-top: 2px;
   }
 
+  @media (max-width: 600px) {
+    .line-num { width: 35px; min-width: 35px; padding: 0 5px; font-size: 11px; }
+    .line-sign { width: 20px; min-width: 20px; }
+    .line-code { padding: 0 5px; }
+  }
+
+  @media (max-width: 480px) {
+    .line-num-left { display: none; }
+    .line-num-right { width: 30px; min-width: 30px; padding: 0 4px; }
+    .inline-comment-box { margin: 0.5rem 0.5rem 0.5rem 35px; padding: 0.75rem; }
+    .diff-stats { padding: 0.75rem; flex-wrap: wrap; gap: 0.5rem; }
+    .file-header { padding: 0.5rem 0.75rem; }
+  }
+
   .line-sign {
     width: 25px;
     min-width: 25px;

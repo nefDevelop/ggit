@@ -617,6 +617,20 @@
     flex: 1;
   }
 
+  @media (max-width: 600px) {
+    .wiki-body { padding: 1rem; }
+    .wiki-header { padding: 1rem; }
+    .wiki-editor { padding: 1rem; }
+  }
+
+  @media (max-width: 480px) {
+    .wiki-body { padding: 0.5rem; }
+    .wiki-header { padding: 0.5rem; }
+    .history-item { padding-bottom: 1.5rem; padding-left: 1rem; }
+    .history-list { padding-left: 0.5rem; }
+    .wiki-editor { padding: 0.75rem; border-radius: 10px; }
+  }
+
   .empty-wiki-state {
     display: flex;
     flex-direction: column;

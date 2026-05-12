@@ -731,6 +731,24 @@ git push -u origin main</code></pre>
   .readme-header.small { padding: 1rem 1.5rem; }
   .readme-content { padding: 2rem; line-height: 1.6; }
 
+  @media (max-width: 600px) {
+    .code-box { margin: 0.5rem; }
+    .file-header { padding: 0.6rem 0.75rem; }
+    .file-row td { padding: 0.6rem 0.75rem; }
+    .readme-content { padding: 1.25rem; }
+  }
+
+  @media (max-width: 480px) {
+    .code-box { margin: 0; border-radius: 0; border-left: none; border-right: none; }
+    .code-cell { padding: 0 0.5rem; }
+    .ln-cell { width: 45px; min-width: 45px; padding-right: 0.5rem; }
+    .file-row td { padding: 0.5rem; }
+    .name-cell { gap: 0.5rem; min-width: 150px; }
+    .technical-grid { gap: 1rem; }
+    .readme-content { padding: 1rem; }
+    .readme-section { margin-top: 1rem; border-radius: 0.75rem; }
+  }
+
   /* SIDEBAR */
   .side-column { display: flex; flex-direction: column; gap: 2.5rem; transition: opacity 0.3s; }
   .side-column.hidden-sidebar { opacity: 0; pointer-events: none; }
@@ -787,7 +805,8 @@ git push -u origin main</code></pre>
   .lang-toggle:hover { text-decoration: underline; }
 
   @media (max-width: 900px) {
-    .technical-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .technical-grid { grid-template-columns: 1fr; gap: 1.5rem; padding: 0; }
+    .last-commit-bar { display: none; }
     .mobile-only { display: flex; }
     .desktop-only { display: none; }
   }

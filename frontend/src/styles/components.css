@@ -48,6 +48,13 @@
   }
 }
 
+@media (max-width: 480px) {
+  .island { padding: 0.75rem; border-radius: 1rem; }
+  .island-body, .island-header-search {
+    padding: 1rem 0.5rem !important;
+  }
+}
+
 .island-header {
   display: flex;
   justify-content: space-between;

@@ -413,6 +413,20 @@
     .avatar-magic-text {
       display: none;
     }
+    .settings-form { gap: 1.5rem; }
+    .form-grid { gap: 1rem; }
+    .avatar-form-row { margin-bottom: 1.5rem; padding-bottom: 1.5rem; }
+    .magic-avatar-panel { padding: 1rem !important; gap: 1rem; }
+  }
+
+  @media (max-width: 480px) {
+    .profile-content-layout { padding: 0.75rem 0.5rem; }
+    .settings-form { gap: 1rem; }
+    .form-grid { gap: 0.75rem; }
+    .field input { padding: 0.6rem 0.85rem; font-size: 1rem; border-radius: 1rem; }
+    .select-wrapper select { padding: 0.6rem 0.85rem; font-size: 1rem; border-radius: 1rem; }
+    .avatar-form-row { flex-direction: column; text-align: center; gap: 1rem; }
+    .form-footer { padding-top: 1rem; }
   }
 
   .settings-form {
