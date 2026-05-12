@@ -426,18 +426,10 @@
   .master-body-skeleton { flex: 1; padding: 2rem; display: flex; flex-direction: column; background: var(--bg-color); }
   @media (max-width: 600px) {
     .master-body { padding: 0.75rem; }
-    .tonal-search-bar { padding: 1rem 1rem 0.5rem; }
-    .repo-identity-bar { padding: 0.5rem 1rem; }
-    .rich-tabs { padding: 0.5rem 0.5rem 0; }
-    .tab { padding: 0.75rem 0.85rem; }
   }
 
   @media (max-width: 480px) {
     .master-body { padding: 0.25rem; }
-    .tonal-search-bar { padding: 0.75rem 0.75rem 0.25rem; }
-    .repo-identity-bar { padding: 0.25rem 0.75rem; }
-    .rich-tabs { padding: 0.25rem 0.25rem 0; }
-    .tab { padding: 0.6rem 0.75rem; }
   }
   .skeleton-master { background: var(--md-sys-color-surface-container-low); height: 100vh; display: flex; flex-direction: column; }
   .skeleton-pulse { background: var(--md-sys-color-surface-container-high); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }
