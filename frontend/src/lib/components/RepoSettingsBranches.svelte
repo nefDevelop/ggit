@@ -298,8 +298,8 @@
     .subtitle { display: none; }
   }
 
-  .settings-content { padding: 2.5rem; }
-  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+  .settings-content { padding: 0; }
+  @media (max-width: 600px) { .settings-content { padding: 0; } }
 
   .branches-stack { display: flex; flex-direction: column; gap: 3rem; }
   .branch-group { display: flex; flex-direction: column; gap: 1.25rem; }

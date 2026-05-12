@@ -299,7 +299,7 @@
     flex-direction: column;
     gap: 3rem;
     min-height: 400px;
-    padding: 1rem;
+    padding: 0;
   }
 
   .editor-overlay {

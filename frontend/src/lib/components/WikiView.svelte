@@ -613,18 +613,18 @@
   }
 
   .wiki-body {
-    padding: 2rem;
+    padding: 0;
     flex: 1;
   }
 
   @media (max-width: 600px) {
-    .wiki-body { padding: 1rem; }
+    .wiki-body { padding: 0; }
     .wiki-header { padding: 1rem; }
     .wiki-editor { padding: 1rem; }
   }
 
   @media (max-width: 480px) {
-    .wiki-body { padding: 0.5rem; }
+    .wiki-body { padding: 0; }
     .wiki-header { padding: 0.5rem; }
     .history-item { padding-bottom: 1.5rem; padding-left: 1rem; }
     .history-list { padding-left: 0.5rem; }

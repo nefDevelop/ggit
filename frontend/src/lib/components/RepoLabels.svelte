@@ -152,8 +152,8 @@
 
 <style>
   .repo-labels { display: flex; flex-direction: column; gap: 0; }
-  .labels-content { padding: 2rem; display: flex; flex-direction: column; gap: 2rem; }
-  .section-actions { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .labels-content { padding: 0; display: flex; flex-direction: column; gap: 2rem; margin-top: 1.5rem; }
+  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   .editor-title { margin-top: 0; margin-bottom: 1.5rem; font-weight: 800; color: var(--primary-color); }
   .editor-grid { display: grid; grid-template-columns: 2fr 1.5fr 1fr; gap: 2rem; align-items: flex-end; margin-bottom: 2rem; }

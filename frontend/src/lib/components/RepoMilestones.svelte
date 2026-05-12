@@ -312,8 +312,8 @@
 
 <style>
   .repo-milestones { display: flex; flex-direction: column; gap: 0; }
-  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; }
-  .section-actions { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 0; margin-top: 1.5rem; }
+  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
 
   .editor-title { margin: 0; font-weight: 800; color: var(--primary-color); }
   .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 2rem; }

@@ -527,7 +527,7 @@ git push -u origin main</code></pre>
     grid-template-columns: 1fr 280px;
     gap: 2.5rem;
     transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
-    padding: 2rem;
+    padding: 0;
     animation: fadeIn 0.2s ease-out;
   }
 
@@ -706,7 +706,7 @@ git push -u origin main</code></pre>
   .file-tools.side-by-side { display: flex; align-items: center; gap: 0; }
   .file-tools.side-by-side .tool-btn { border-radius: 0; border-left-width: 0; }
   .file-tools.side-by-side .tool-btn:first-child { border-top-left-radius: 0.6rem; border-bottom-left-radius: 0.6rem; border-left-width: 1px; }
-  .file-tools.side-by-side .tool-btn:last-child { border-top-right-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }  .code-box { background: var(--md-sys-color-surface-container-lowest); overflow-x: auto; border: 1px solid var(--md-sys-color-outline-variant); margin: 1rem; border-radius: 0.75rem; }
+  .file-tools.side-by-side .tool-btn:last-child { border-top-right-radius: 0.6rem; border-bottom-right-radius: 0.6rem; }  .code-box { background: var(--md-sys-color-surface-container-lowest); overflow-x: auto; border: 1px solid var(--md-sys-color-outline-variant); margin: 0; border-radius: 0.75rem; }
   .code-container { display: flex; flex-direction: column; }
   .code-line-row { display: flex; align-items: stretch; min-height: 1.6rem; }
   .code-line-row:hover { background: rgba(var(--primary-rgb), 0.05); }

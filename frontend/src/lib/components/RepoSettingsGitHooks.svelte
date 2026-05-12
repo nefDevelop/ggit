@@ -183,8 +183,8 @@
     .subtitle { display: none; }
   }
 
-  .settings-content { padding: 2.5rem; }
-  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+  .settings-content { padding: 0; }
+  @media (max-width: 600px) { .settings-content { padding: 0; } }
 
   .hooks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
   @media (max-width: 800px) { .hooks-grid { grid-template-columns: 1fr; } }

@@ -121,7 +121,7 @@
 
 <style>
   .repo-branches { display: flex; flex-direction: column; gap: 0; }
-  .branches-content { padding: 2rem; }
+  .branches-content { padding: 0; }
   
   .branch-list-container {
     border: 1px solid var(--md-sys-color-outline-variant);

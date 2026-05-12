@@ -465,13 +465,9 @@
 </div>
 
 <style>
-  @media (max-width: 600px) {
-    .settings-content { padding: 1.5rem; }
-  }
-
-  .settings-content { padding: 2.5rem; }
-  @media (max-width: 1300px) { .settings-content { padding: 2rem; } }
-  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+  .settings-content { padding: 0; }
+  @media (max-width: 1300px) { .settings-content { padding: 0; } }
+  @media (max-width: 600px) { .settings-content { padding: 0; } }
 
   .settings-form { display: flex; flex-direction: column; gap: 3rem; }
 

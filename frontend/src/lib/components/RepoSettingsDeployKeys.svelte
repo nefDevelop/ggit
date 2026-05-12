@@ -224,8 +224,8 @@
     .subtitle { display: none; }
   }
 
-  .settings-content { padding: 2.5rem; }
-  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+  .settings-content { padding: 0; }
+  @media (max-width: 600px) { .settings-content { padding: 0; } }
 
   .keys-stack { display: flex; flex-direction: column; gap: 1rem; }
   

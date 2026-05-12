@@ -198,8 +198,8 @@
     .subtitle { display: none; }
   }
 
-  .settings-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
-  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
+  .settings-content { padding: 0; display: flex; flex-direction: column; gap: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 0; } }
 
   .add-collab-box { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .add-header-minimal { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; color: var(--primary-color); }

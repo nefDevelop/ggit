@@ -185,8 +185,8 @@
 
 <style>
   .remotes-settings { display: flex; flex-direction: column; gap: 2.5rem; }
-  .settings-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 3rem; }
-  @media (max-width: 1300px) { .settings-content { padding: 2rem; } }
+  .settings-content { padding: 0; display: flex; flex-direction: column; gap: 3rem; }
+  @media (max-width: 1300px) { .settings-content { padding: 0; } }
   
   .add-remote-section { padding: 2rem; border-radius: 2rem; display: flex; flex-direction: column; gap: 2rem; }
   .section-meta strong { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }

@@ -165,7 +165,7 @@
     flex-direction: column;
     gap: 0;
     animation: fadeIn 0.3s ease-out;
-    padding: 2rem;
+    padding: 0;
   }
 
   /* ... existing styles ... */
