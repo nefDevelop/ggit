@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"sync"
 	"time"
@@ -81,6 +82,7 @@ func ExecDir(timeout time.Duration, dir, desc, cmdName string, args ...string) (
 
 	cmd := exec.Command(cmdName, args...)
 	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "GIT_TERMINAL_PROMPT=0")
 	cmd.Stdout = bufOut
 	cmd.Stderr = bufErr
 	if err := cmd.Start(); err != nil {
