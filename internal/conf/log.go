@@ -27,7 +27,7 @@ var Log *logConf
 // initLogConf returns parsed logging configuration from given INI file. When the
 // argument "hookMode" is true, it only initializes the root path for log files.
 func initLogConf(cfg *ini.File, hookMode bool) (_ *logConf, hasConsole bool, _ error) {
-	rootPath := cfg.Section("log").Key("ROOT_PATH").MustString(filepath.Join(WorkDir(), "log"))
+	rootPath := cfg.Section("log").Key("ROOT_PATH").MustString(filepath.Join(CustomDir(), "log"))
 	if hookMode {
 		return &logConf{
 			RootPath: ensureAbs(rootPath),

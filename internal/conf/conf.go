@@ -112,18 +112,6 @@ func Init(customConf string) error {
 	if err = File.Section("server").MapTo(&SSH); err != nil {
 		return fmt.Errorf("mapping SSH settings from [server] section: %w", err)
 	}
-	// Determine log root path: Env Var > Docker Fallback > App.ini/Default
-	if envLogPath := os.Getenv("GGIT_LOG_ROOT"); envLogPath != "" {
-		Log.RootPath = envLogPath
-	} else if Log.RootPath == "" {
-		if osx.IsDir("/data") {
-			Log.RootPath = "/data/log"
-		} else {
-			Log.RootPath = "log"
-		}
-	}
-	Log.RootPath = ensureAbs(Log.RootPath)
-
 	SSH.RootPath = ensureAbs(SSH.RootPath)
 	SSH.KeyTestPath = ensureAbs(SSH.KeyTestPath)
 
