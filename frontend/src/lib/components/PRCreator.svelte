@@ -97,7 +97,7 @@
   }
 
   async function createPR() {
-    if (!title) return;
+    if (submitting || !title) return;
     submitting = true;
     try {
       const res = await apiFetch(`/api/v2/${username}/${reponame}/pulls`, {
@@ -244,19 +244,17 @@
           </div>
 
           <div class="form-actions">
-            <button
-              class="btn btn-primary lg"
+            <Button
+              variant="primary"
+              size="lg"
               onclick={createPR}
               disabled={!title || submitting}
+              loading={submitting}
+              icon={GitMerge}
+              class="w-full-mobile"
             >
-              {#if submitting}
-                <span class="spinner-sm"></span>
-                Creating...
-              {:else}
-                <GitMerge size={20} />
-                Create Pull Request
-              {/if}
-            </button>
+              Create Pull Request
+            </Button>
           </div>
         </section>
 

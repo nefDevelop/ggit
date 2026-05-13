@@ -62,8 +62,11 @@
     <div class="error-msg">{error}</div>
   {:else if results.length === 0 && query.length >= 2 && !loading}
     <div class="no-results">
-        <SearchX size={48} />
-        <p>No matches found for this keyword.</p>
+        <div class="empty-icon-ring">
+          <SearchX size={40} />
+        </div>
+        <h2>No matches found</h2>
+        <p>No matches found for this keyword in the current branch.</p>
     </div>
   {:else}
     <div class="results-list">
@@ -131,13 +134,40 @@
   }
 
   .loading-state, .no-results {
-    padding: 4rem 2rem;
+    padding: 6rem 2rem;
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 1.25rem;
     color: var(--text-muted);
+  }
+
+  .no-results h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .no-results p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
   }
 
   .spinner {

@@ -111,8 +111,10 @@
     </div>
   {:else}
     <div class="empty-state">
-      <AlertCircle size={48} />
-      <h3>No branches found</h3>
+      <div class="empty-icon-ring">
+        <GitFork size={40} />
+      </div>
+      <h2>No branches found</h2>
       <p>This repository has no branches yet.</p>
     </div>
   {/if}
@@ -175,8 +177,43 @@
   .skeleton-table { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
-  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; text-align: center; color: var(--text-muted); opacity: 0.6; }
-  .empty-state :global(svg) { font-size: 3rem; }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    text-align: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
 
   @media (max-width: 600px) {
     .branch-row-item {

@@ -115,6 +115,7 @@
   }
 
   async function handleSave() {
+    if (saving || !editTitle) return;
     saving = true;
     try {
       const finalTitle = parentPath ? `${parentPath}/${editTitle}` : editTitle;
@@ -298,19 +299,16 @@
             
             <div class="action-group">
                 {#if mode === 'view'}
-                    <button class="btn-icon-text" onclick={startEdit}>
-                        <Edit size={16} />
+                    <Button variant="tonal" onclick={startEdit} icon={Edit}>
                         Editar
-                    </button>
+                    </Button>
                 {:else if mode === 'edit'}
-                    <button class="btn-icon-text variant" onclick={() => { if (wikiPages.length === 0) { mode = 'view'; } else { mode = 'view'; } }}>
-                        <X size={16} />
+                    <Button variant="ghost" onclick={() => mode = 'view'} disabled={saving} icon={X}>
                         Cancelar
-                    </button>
-                    <button class="btn-primary" onclick={handleSave} disabled={saving || !editTitle}>
-                        <Save size={16} />
-                        {saving ? 'Guardando...' : 'Guardar'}
-                    </button>
+                    </Button>
+                    <Button variant="primary" onclick={handleSave} disabled={saving || !editTitle} loading={saving} icon={Save}>
+                        Guardar
+                    </Button>
                 {/if}
                 
                 {#if mode === 'view' && path !== 'Home' && wikiPages.length > 0}
@@ -332,10 +330,14 @@
                 />
               {:else}
                 <div class="empty-wiki-state">
-                  <BookText size={64} class="opacity-50" />
-                  <h2 style="margin: 0.5rem 0;">Wiki Vacía</h2>
-                  <p style="margin-bottom: 1.5rem;">Este repositorio aún no tiene documentación.</p>
-                  <Button variant="primary" onclick={startNew} icon={Plus}>Crear Primera Página</Button>
+                  <div class="empty-icon-ring">
+                    <BookText size={40} />
+                  </div>
+                  <h2>Wiki Vacía</h2>
+                  <p>Este repositorio aún no tiene documentación. Las wikis son geniales para guías de usuario y documentación técnica.</p>
+                  <div style="margin-top: 1rem;">
+                    <Button variant="primary" onclick={startNew} icon={Plus}>Crear Primera Página</Button>
+                  </div>
                 </div>
               {/if}
           {:else if mode === 'edit'}
@@ -640,6 +642,35 @@
     min-height: 400px;
     text-align: center;
     color: var(--text-muted);
+    padding: 6rem 2rem;
+    gap: 1.25rem;
+  }
+
+  .empty-wiki-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-wiki-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
   }
   .edit-area {
     display: flex;

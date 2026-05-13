@@ -64,6 +64,7 @@
   }
 
   async function save() {
+    if (submitting) return;
     submitting = true;
     error = "";
     const method = userId ? "PATCH" : "POST";
@@ -226,16 +227,11 @@
       {/if}
 
       <div class="form-actions">
-        <Button variant="ghost" onclick={onCancel}>
+        <Button variant="ghost" onclick={onCancel} disabled={submitting}>
           {i18n.t('cancel')}
         </Button>
-        <Button type="submit" variant="primary" size="lg" disabled={submitting}>
-          {#if submitting}
-            <RefreshCw size={20} class="spin" />
-          {:else}
-            <Save size={20} />
-          {/if}
-          {submitting ? i18n.t('settings.saving') : i18n.t('admin.save_user')}
+        <Button type="submit" variant="primary" size="lg" disabled={submitting} loading={submitting} icon={Save}>
+          {i18n.t('admin.save_user')}
         </Button>
       </div>
     </form>

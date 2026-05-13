@@ -96,7 +96,7 @@
   }
 
   async function save(publish = false) {
-    if (!tagName) return;
+    if (saving || !tagName) return;
     saving = true;
     const method = release ? "PATCH" : "POST";
     const url = release

@@ -80,8 +80,10 @@
       </div>
     {:else if error}
       <div class="empty-state">
-        <AlertCircle size={48} />
-        <h3>No documentation found</h3>
+        <div class="empty-icon-ring">
+          <AlertCircle size={40} />
+        </div>
+        <h2>No documentation found</h2>
         <p>{error}</p>
         <div class="hint">
             Tip: Create a <code>docs/</code> or <code>ADR/</code> folder in your root branch to see it here.
@@ -155,6 +157,44 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .hint { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    text-align: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
 
   .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
   :global(.doc-tile) { border: none !important; padding: 1.25rem !important; height: auto !important; display: flex !important; align-items: center !important; gap: 1.25rem !important; text-align: left !important; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; cursor: pointer !important; justify-content: flex-start !important; }

@@ -73,7 +73,7 @@
   }
 
   async function createTag() {
-    if (!newTagName.trim() || !newTagTarget.trim()) return;
+    if (creating || !newTagName.trim() || !newTagTarget.trim()) return;
     creating = true;
     createError = '';
     try {
@@ -109,11 +109,13 @@
 </svelte:head>
 
 <div class="tags-page">
-  <PageHeader title="" icon="" compact>
+  <PageHeader title="" icon="" compact noBorder>
     {#snippet actions()}
-      <Button variant="primary" onclick={() => { showNewTag = !showNewTag; createError = ''; }} icon={Plus}>
-        New tag
-      </Button>
+      {#if tags.length > 0}
+        <Button variant="primary" onclick={() => { showNewTag = !showNewTag; createError = ''; }} icon={Plus}>
+          New tag
+        </Button>
+      {/if}
     {/snippet}
   </PageHeader>
 
@@ -135,13 +137,8 @@
           <p class="form-error">{createError}</p>
         {/if}
         <div class="form-actions">
-          <Button variant="ghost" size="sm" onclick={() => showNewTag = false}>Cancel</Button>
-          <Button variant="primary" size="sm" onclick={createTag} disabled={creating || !newTagName || !newTagTarget}>
-            {#if creating}
-              <span class="material-symbols-rounded spin">sync</span>
-            {:else}
-              <Tag size={16} />
-            {/if}
+          <Button variant="ghost" size="sm" onclick={() => showNewTag = false} disabled={creating}>Cancel</Button>
+          <Button variant="primary" size="sm" onclick={createTag} disabled={creating || !newTagName || !newTagTarget} loading={creating} icon={Tag}>
             Create tag
           </Button>
         </div>
@@ -160,12 +157,16 @@
       </div>
     {:else if tags.length === 0}
       <div class="empty-state">
-        <AlertCircle size={48} />
-        <h3>No tags found</h3>
+        <div class="empty-icon-ring">
+          <Tag size={40} />
+        </div>
+        <h2>No tags found</h2>
         <p>There are no tags in this repository. Tags mark specific points in the history as important — use them for releases.</p>
-        <Button variant="primary" size="sm" onclick={() => showNewTag = true} icon={Plus}>
-          Create first tag
-        </Button>
+        <div style="margin-top: 1rem;">
+          <Button variant="primary" onclick={() => showNewTag = true} icon={Plus}>
+            Create first tag
+          </Button>
+        </div>
       </div>
     {:else}
       <div class="flat-list-container">
@@ -240,9 +241,43 @@
 
   .delete.confirm { color: #fb923c; background: rgba(251, 146, 60, 0.1); }
 
-  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; border-radius: 1rem; text-align: center; color: var(--text-muted); opacity: 0.6; }
-  .empty-state h3 { margin: 0; font-size: 1.1rem; }
-  .empty-state p { margin: 0; color: var(--text-muted); font-size: 0.9rem; max-width: 400px; }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    text-align: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
 
   .skeleton-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .skeleton-row { height: 60px; border-radius: 0.875rem; animation: pulse 1.5s infinite; }

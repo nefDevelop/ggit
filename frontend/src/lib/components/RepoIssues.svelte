@@ -44,7 +44,7 @@
 </script>
 
 <div class="issues-view">
-  <PageHeader title="" icon="" compact>
+  <PageHeader title="" icon="" compact noBorder>
     {#snippet actions()}
       <div class="pill-filter-group-inline">
         <Button
@@ -77,13 +77,15 @@
           onclick={() => view = 'board'}
         />
       </div>
-      <a
-        href="/{repo.data.owner.username}/{repo.data.name}/issues/new"
-        class="btn-action-primary"
-      >
-        <Plus size={18} />
-        New Issue
-      </a>
+      {#if issues.length > 0 || stateFilter === 'closed'}
+        <a
+          href="/{repo.data.owner.username}/{repo.data.name}/issues/new"
+          class="btn-action-primary"
+        >
+          <Plus size={18} />
+          New Issue
+        </a>
+      {/if}
     {/snippet}
   </PageHeader>
 
@@ -97,9 +99,17 @@
     <div class="error-msg">{error}</div>
   {:else if issues.length === 0}
     <div class="empty-state">
-      <AlertCircle size={48} />
-      <h3>No issues found</h3>
+      <div class="empty-icon-ring">
+        <AlertCircle size={40} />
+      </div>
+      <h2>No issues found</h2>
       <p>There are no {stateFilter} issues in this repository.</p>
+      {#if stateFilter === 'open'}
+        <a href="/{repo.data.owner.username}/{repo.data.name}/issues/new" class="btn-action-primary" style="margin-top: 1rem; text-decoration: none;">
+          <Plus size={18} />
+          Create your first issue
+        </a>
+      {/if}
     </div>
   {:else}
     {#if view === 'list'}
@@ -202,10 +212,37 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 4rem;
-    gap: 1rem;
+    padding: 6rem 2rem;
+    gap: 1.25rem;
     color: var(--text-muted);
     text-align: center;
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
   }
 
   .spinner {

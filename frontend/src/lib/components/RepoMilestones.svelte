@@ -17,6 +17,7 @@
 
   let showEditor = $state(false);
   let editingMilestone = $state<any>(null);
+  let saving = $state(false);
   let form = $state({
     title: '',
     description: '',
@@ -45,7 +46,8 @@
   }
 
   async function saveMilestone() {
-    if (!form.title.trim()) return;
+    if (saving || !form.title.trim()) return;
+    saving = true;
     
     const body: any = { ...form };
     if (form.due_on) {
@@ -73,6 +75,8 @@
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      saving = false;
     }
   }
 
@@ -110,11 +114,13 @@
 </script>
 
 <div class="repo-milestones">
+  {#if milestones.length > 0}
   <header class="section-actions">
     <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
       New Milestone
     </Button>
   </header>
+  {/if}
 
   {#if showEditor}
     <Card class="milestone-editor tonal" padding="lg">
@@ -222,8 +228,8 @@
       </div>
 
       <div class="editor-footer">
-        <Button variant="secondary" onclick={() => showEditor = false}>Cancel</Button>
-        <Button variant="primary" onclick={saveMilestone} disabled={!form.title.trim()}>
+        <Button variant="ghost" size="sm" onclick={() => showEditor = false} disabled={saving}>Cancel</Button>
+        <Button variant="primary" size="sm" onclick={saveMilestone} disabled={saving || !form.title.trim()} loading={saving}>
           {editingMilestone ? 'Update Milestone' : 'Create Milestone'}
         </Button>
       </div>
@@ -237,9 +243,16 @@
       </div>
     {:else if milestones.length === 0}
       <div class="empty-state">
-        <AlertCircle size={48} />
-        <h3>No milestones found</h3>
+        <div class="empty-icon-ring">
+          <Calendar size={40} />
+        </div>
+        <h2>No milestones found</h2>
         <p>There are no milestones in this repository.</p>
+        <div style="margin-top: 1rem;">
+          <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
+            Create your first milestone
+          </Button>
+        </div>
       </div>
     {:else}
       <div class="flat-list-container">
@@ -317,7 +330,7 @@
 <style>
   .repo-milestones { display: flex; flex-direction: column; gap: 0; }
   .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 0; margin-top: 1.5rem; }
-  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; }
 
   .editor-title { margin: 0; font-weight: 800; color: var(--primary-color); }
   .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 2rem; }
@@ -352,7 +365,42 @@
   .ms-actions { display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; }
   :global(.danger-btn:hover) { color: var(--error) !important; }
 
-  .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
+  .empty-state {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
 
   .hill-state-editor-box { padding: 1.5rem; border-radius: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .hill-editor-header { display: flex; justify-content: space-between; align-items: baseline; }

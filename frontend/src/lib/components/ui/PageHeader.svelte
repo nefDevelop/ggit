@@ -8,12 +8,13 @@
     actions?: Snippet;
     avatar?: Snippet;
     compact?: boolean; // For smaller cards
+    noBorder?: boolean;
   }
   
-  let { title, subtitle, icon, actions, avatar, compact = false }: Props = $props();
+  let { title, subtitle, icon, actions, avatar, compact = false, noBorder = false }: Props = $props();
 </script>
 
-<header class="page-header" class:compact>
+<header class="page-header" class:compact class:no-border={noBorder}>
   <div class="header-main">
     {#if avatar}
       <div class="avatar-slot">
@@ -58,6 +59,10 @@
 
   .page-header.compact {
     padding: 1.5rem 2rem;
+  }
+
+  .page-header.no-border {
+    border-bottom: none;
   }
 
   .header-main {

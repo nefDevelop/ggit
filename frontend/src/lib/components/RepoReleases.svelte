@@ -9,7 +9,7 @@
   import Badge from "./ui/Badge.svelte";
   import { 
     Tag, Rocket, Plus, Edit, Trash2, ChevronsLeft, 
-    ChevronRight, Calendar, GitMerge, Download, FileArchive 
+    ChevronRight, Calendar, GitMerge, Download, FileArchive
   } from "lucide-svelte";
 
   let { username, reponame } = $props();
@@ -109,6 +109,14 @@
     </div>
   {/if}
 
+  {#if releases.length > 0}
+  <header class="section-actions">
+    <Button variant="primary" onclick={handleAdd} icon={Plus}>
+      New Release
+    </Button>
+  </header>
+  {/if}
+
   <!-- Header actions removed, moved to timeline start -->
 
   {#if loading && releases.length === 0}
@@ -121,9 +129,12 @@
     <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
     <div class="empty-state">
-      <AlertCircle size={48} />
-      <h3>No releases yet</h3>
-      <p>Start tagging your milestones.</p>
+      <div class="empty-icon-ring">
+        <Rocket size={40} />
+      </div>
+      <h2>No releases yet</h2>
+      <p>Start tagging your milestones by creating the first release.</p>
+      <Button onclick={handleAdd} icon={Plus}>Create your first release</Button>
     </div>
   {:else}
     <div class="flat-list-container">
@@ -230,6 +241,12 @@
     padding: 0;
   }
 
+  .section-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5rem 0;
+  }
+
   .editor-overlay {
     position: fixed;
     inset: 0;
@@ -247,5 +264,42 @@
     .editor-overlay {
       padding: 1rem;
     }
+  }
+
+  .empty-state {
+    padding: 6rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
   }
 </style>

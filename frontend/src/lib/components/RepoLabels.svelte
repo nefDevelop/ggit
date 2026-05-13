@@ -15,6 +15,7 @@
 
   let showEditor = $state(false);
   let editingLabel = $state<any>(null);
+  let saving = $state(false);
   let newName = $state('');
   let newColor = $state('#444444');
 
@@ -33,7 +34,8 @@
   }
 
   async function saveLabel() {
-    if (!newName.trim()) return;
+    if (saving || !newName.trim()) return;
+    saving = true;
     const body = { name: newName, color: newColor };
     const method = editingLabel ? 'PATCH' : 'POST';
     const url = editingLabel 
@@ -55,6 +57,8 @@
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      saving = false;
     }
   }
 
@@ -81,11 +85,13 @@
 </script>
 
 <div class="repo-labels">
-  <PageHeader title="" icon="" compact>
+  <PageHeader title="" icon="" compact noBorder>
     {#snippet actions()}
-      <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon={Plus}>
-        New Label
-      </Button>
+      {#if labels.length > 0}
+        <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon={Plus}>
+          New Label
+        </Button>
+      {/if}
     {/snippet}
   </PageHeader>
 
@@ -117,8 +123,8 @@
         </div>
       </div>
       <div class="editor-footer">
-        <Button variant="ghost" size="sm" onclick={() => showEditor = false}>Cancel</Button>
-        <Button variant="primary" size="sm" onclick={saveLabel} disabled={!newName.trim()}>
+        <Button variant="ghost" size="sm" onclick={() => showEditor = false} disabled={saving}>Cancel</Button>
+        <Button variant="primary" size="sm" onclick={saveLabel} disabled={saving || !newName.trim()} loading={saving}>
           {editingLabel ? 'Update Label' : 'Create Label'}
         </Button>
       </div>
@@ -131,9 +137,16 @@
       </div>
     {:else if labels.length === 0}
       <div class="empty-state">
-        <Info size={48} />
-        <h3>No labels found</h3>
+        <div class="empty-icon-ring">
+          <Tag size={40} />
+        </div>
+        <h2>No labels found</h2>
         <p>There are no labels defined yet for this repository.</p>
+        <div style="margin-top: 1rem;">
+          <Button variant="primary" onclick={() => { editingLabel = null; form = { name: '', color: '#0061a4' }; showEditor = true; }} icon={Plus}>
+            Create your first label
+          </Button>
+        </div>
       </div>
     {:else}
       <div class="flat-list-container">
@@ -191,7 +204,42 @@
 
   .editor-footer { display: flex; justify-content: flex-end; gap: 1rem; }
 
-  .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
+  .empty-state {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
   
   .loading-state { display: flex; justify-content: center; padding: 3rem; }
   .spinner { width: 32px; height: 32px; border: 3px solid var(--md-sys-color-outline-variant); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s infinite linear; }
