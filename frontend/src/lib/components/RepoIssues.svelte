@@ -103,28 +103,27 @@
     </div>
   {:else}
     {#if view === 'list'}
-      <div class="issues-list-modern">
+      <div class="flat-list-container">
         {#each issues as issue}
-          <div class="issue-row">
-            <div class="issue-icon" style="color: {getStatusColor(issue)}">
+          <div class="list-item-row">
+            <div class="list-item-icon" style="color: {getStatusColor(issue)}">
               {#if issue.is_closed}
                 <CheckCircle2 size={18} />
               {:else}
                 <AlertCircle size={18} />
               {/if}
             </div>
-            <div class="issue-main">
-              <div class="issue-title-row">
+            <div class="item-main-content">
+              <div class="item-title-bar">
                 <a
-                  href="/{repo.data.owner.username}/{repo.data
-                    .name}/issues/{issue.number}"
-                  class="issue-title"
+                  href="/{repo.data.owner.username}/{repo.data.name}/issues/{issue.number}"
+                  class="item-title-link"
                 >
                   {issue.title}
                 </a>
                 {#each issue.labels || [] as label}
                   <span
-                    class="label-tag"
+                    class="badge-mini"
                     style="background: {label.color}"
                     class:scoped={label.name.includes("::")}
                   >
@@ -138,16 +137,18 @@
                   </span>
                 {/each}
               </div>
-              <div class="issue-meta">
+              <div class="item-meta-data">
                 #{issue.number} opened {new Date(
                   issue.created_at,
                 ).toLocaleDateString()} by <strong>{issue.user?.username}</strong>
               </div>
             </div>
             {#if issue.comments > 0}
-              <div class="issue-comments-count">
-                <MessageSquare size={16} />
-                {issue.comments}
+              <div class="item-actions-right">
+                <div class="issue-comments-count">
+                  <MessageSquare size={16} />
+                  {issue.comments}
+                </div>
               </div>
             {/if}
           </div>
@@ -168,7 +169,6 @@
     padding: 0;
   }
 
-  /* ... existing styles ... */
   .pill-filter-group-inline {
     display: flex;
     background: var(--surface-variant);
@@ -186,81 +186,6 @@
       opacity: 1;
       transform: translateY(0);
     }
-  }
-
-  .issue-row {
-    display: flex;
-    padding: 1.25rem 1.5rem;
-    gap: 1.25rem;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    transition: background 0.2s;
-  }
-  .issue-row:hover {
-    background: var(--surface-variant);
-  }
-
-  .issue-icon {
-    padding-top: 0.2rem;
-  }
-
-  .issue-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    min-width: 0;
-  }
-
-  .issue-title-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
-  .issue-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text-color);
-    text-decoration: none;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
-    max-width: 100%;
-  }
-  .issue-title:hover {
-    color: var(--primary-color);
-  }
-
-  .label-tag {
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .label-tag.scoped {
-    padding: 0;
-    overflow: hidden;
-    gap: 0;
-  }
-  .label-tag.scoped .key {
-    background: rgba(0, 0, 0, 0.25);
-    padding: 0.15rem 0.5rem;
-    opacity: 0.9;
-  }
-  .label-tag.scoped .val {
-    padding: 0.15rem 0.5rem;
-  }
-
-  .issue-meta {
-    font-size: 0.85rem;
-    color: var(--text-muted);
   }
 
   .issue-comments-count {

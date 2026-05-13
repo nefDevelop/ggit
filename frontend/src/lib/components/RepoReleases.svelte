@@ -120,153 +120,81 @@
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
-    <div class="empty-releases">
-      <Tag size={64} class="icon" />
+    <div class="empty-state">
+      <AlertCircle size={48} />
       <h3>No releases yet</h3>
       <p>Start tagging your milestones.</p>
-      <Button onclick={handleAdd} icon={Rocket}>Create Release</Button>
     </div>
   {:else}
-    <div class="releases-timeline">
-      <div class="timeline-start-action" title="Create draft release">
-        <Button
-          variant="ghost"
-          onclick={handleAdd}
-          icon={Plus}
-          size="sm"
-          class="add-release-btn"
-        />
-      </div>
+    <div class="flat-list-container">
       {#each releases as release}
-        <div class="release-item" class:is-draft={release.is_draft}>
-          <div class="release-marker"></div>
+        <div class="list-item-row" class:is-draft={release.is_draft}>
+          <div class="list-item-icon">
+            <Rocket size={18} style="color: var(--text-muted); opacity: 0.5;" />
+          </div>
 
-          <Card class="release-card" hover={true} padding="none">
-            <header class="release-card-header">
-              <div class="header-main-info">
-                <div class="title-row-flat">
-                  <h3>
-                    {release.title || release.tag_name}
-                    <a
-                      href={`/${username}/${reponame}/src/tag/${release.tag_name}`}
-                      class="tag-icon-link"
-                      title="View tag on Git"
-                    >
-                      <Tag size={18} />
-                    </a>
-                  </h3>
-                  <div class="badge-row">
-                    {#if release.is_draft}
-                      <Badge variant="neutral">Draft</Badge>
-                    {:else if release.is_prerelease}
-                      <Badge variant="warning">Pre-release</Badge>
-                    {/if}
-                    {#if release === releases.find((r) => !r.is_draft && !r.is_prerelease)}
-                      <Badge variant="success">Latest</Badge>
-                    {/if}
-                  </div>
-                </div>
-
-                <div class="meta-row">
-                  {#if release.title && release.title !== release.tag_name}
-                    <span class="tag-subtext">
-                      <Tag size={14} />
-                      {release.tag_name}
-                    </span>
-                  {/if}
-                  {#if release.target}
-                    <span class="target">
-                      <GitMerge size={14} />
-                      {release.target}
-                    </span>
-                  {/if}
-                  <span class="date">
-                    <Calendar size={14} />
-                    {new Date(release.created_at * 1000).toLocaleDateString(
-                      undefined,
-                      { dateStyle: "long" },
-                    )}
-                  </span>
-                </div>
-              </div>
-
-              {#if release.id}
-                <div class="header-actions">
-                  <button class="icon-btn" onclick={() => handleEdit(release)} title="Editar">
-                    <Edit size={18} />
-                  </button>
-                  <button class="icon-btn danger" onclick={() => handleDelete(release.id)} title="Eliminar">
-                    <Trash2 size={18} />
-                  </button>
-                </div>
+          <div class="item-main-content">
+            <div class="item-title-bar">
+              <span class="item-title-link">
+                {release.title || release.tag_name}
+              </span>
+              {#if release.is_draft}
+                <span class="badge-mini" style="background: var(--text-muted)">Draft</span>
+              {:else if release.is_prerelease}
+                <span class="badge-mini" style="background: #f59e0b">Pre-release</span>
               {/if}
-            </header>
-
-            <div class="release-body">
-              <div class="release-content markdown-body">
-                {#if release.note}
-                  {release.note}
-                {:else}
-                  <i class="empty-note"
-                    >No description available for this version.</i
-                  >
-                {/if}
-              </div>
-
-              <div class="release-side">
-                <Card padding="sm" class="assets-box">
-                  <h4>Assets</h4>
-                  <div class="asset-links">
-                    {#if release.attachments && release.attachments.length > 0}
-                      {#each release.attachments as asset}
-                        <a
-                          href={asset.download_url}
-                          class="asset-item"
-                          download
-                        >
-                          <Download size={16} />
-                          <span class="name">{asset.name}</span>
-                        </a>
-                      {/each}
-                    {/if}
-                    <a
-                      href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`}
-                      class="asset-item source"
-                      download
-                    >
-                      <FileArchive size={16} />
-                      <span class="name">Source code (zip)</span>
-                    </a>
-                    <a
-                      href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`}
-                      class="asset-item source"
-                      download
-                    >
-                      <FileArchive size={16} />
-                      <span class="name">Source code (tar.gz)</span>
-                    </a>
-                  </div>
-                </Card>
-
-                {#if release.publisher}
-                  <div class="publisher-info">
-                    <span>Published by</span>
-                    <a
-                      href={`/${release.publisher.username}`}
-                      class="user-chip"
-                    >
-                      <Avatar
-                        src={release.publisher.avatar_url}
-                        username={release.publisher.username}
-                        size={28}
-                      />
-                      {release.publisher.username}
-                    </a>
-                  </div>
-                {/if}
-              </div>
+              {#if release === releases.find((r) => !r.is_draft && !r.is_prerelease)}
+                <span class="badge-mini" style="background: var(--success)">Latest</span>
+              {/if}
             </div>
-          </Card>
+
+            <div class="item-meta-data">
+              {#if release.tag_name}
+                <span style="display: inline-flex; align-items: center; gap: 0.2rem; margin-right: 0.75rem;">
+                  <Tag size={12} />
+                  <a href={`/${username}/${reponame}/src/tag/${release.tag_name}`} style="color: inherit; text-decoration: none;">{release.tag_name}</a>
+                </span>
+              {/if}
+              {#if release.target}
+                <span style="display: inline-flex; align-items: center; gap: 0.2rem; margin-right: 0.75rem;">
+                  <GitMerge size={12} /> {release.target}
+                </span>
+              {/if}
+              <span style="display: inline-flex; align-items: center; gap: 0.2rem;">
+                <Calendar size={12} />
+                {new Date(release.created_at * 1000).toLocaleDateString(undefined, { dateStyle: "medium" })}
+              </span>
+            </div>
+
+            {#if release.note}
+              <div class="release-note-preview" style="font-size: 0.9rem; color: var(--text-color); margin-top: 0.5rem; opacity: 0.9; max-height: 4.5em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                {release.note}
+              </div>
+            {/if}
+
+            <div class="asset-links-inline" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem;">
+              {#if release.attachments && release.attachments.length > 0}
+                {#each release.attachments as asset}
+                  <a href={asset.download_url} class="btn-icon-minimal" title={asset.name} download>
+                    <Download size={16} />
+                  </a>
+                {/each}
+              {/if}
+              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="btn-icon-minimal" title="Source code (zip)" download>
+                <FileArchive size={16} />
+              </a>
+              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="btn-icon-minimal" title="Source code (tar.gz)" download>
+                <FileArchive size={16} />
+              </a>
+            </div>
+          </div>
+
+          {#if release.id}
+            <div class="item-actions-right">
+              <button class="btn-icon-minimal" onclick={() => handleEdit(release)} title="Edit"><Edit size={16} /></button>
+              <button class="btn-icon-minimal delete" onclick={() => handleDelete(release.id)} title="Delete"><Trash2 size={16} /></button>
+            </div>
+          {/if}
         </div>
       {/each}
     </div>
@@ -315,275 +243,7 @@
     overflow-y: auto;
   }
 
-  .empty-releases {
-    text-align: center;
-    padding: 6rem 2rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    color: var(--text-muted);
-  }
-  .empty-releases :global(.icon) {
-    color: var(--md-sys-color-surface-variant);
-    margin-bottom: 1rem;
-  }
-  .empty-releases h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    color: var(--md-sys-color-on-surface);
-  }
-
-  .releases-timeline {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    padding-left: 2.5rem;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-  .releases-timeline::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0rem;
-    bottom: 1rem;
-    width: 4px;
-    background: var(--md-sys-color-surface-variant);
-    border-radius: 2px;
-  }
-
-  .timeline-start-action {
-    position: absolute;
-    left: -1rem;
-    top: -1rem;
-    z-index: 10;
-  }
-  :global(.add-release-btn) {
-    background: var(--md-sys-color-background) !important;
-    border: 3px solid var(--md-sys-color-surface-variant) !important;
-    border-radius: 0.5rem !important;
-    width: 36px !important;
-    height: 36px !important;
-    padding: 0 !important;
-    color: var(--md-sys-color-primary) !important;
-  }
-  :global(.add-release-btn:hover) {
-    border-color: var(--md-sys-color-primary) !important;
-    transform: scale(1.1);
-  }
-
-  .release-item {
-    position: relative;
-    padding-bottom: 2rem;
-    transition: transform 0.2s;
-  }
-  .release-item.is-draft {
-    opacity: 0.8;
-  }
-  .release-marker {
-    position: absolute;
-    left: -2.86rem;
-    top: 2rem;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--md-sys-color-outline-variant);
-    border: 4px solid var(--md-sys-color-background);
-    z-index: 1;
-    transition: all 0.3s;
-  }
-  .release-item:hover .release-marker {
-    background: var(--md-sys-color-primary);
-    transform: scale(1.2);
-  }
-
-  .release-card-header {
-    padding: 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    background: var(--md-sys-color-background);
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .title-row-flat {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .title-row-flat h3 {
-    margin: 0;
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    color: var(--md-sys-color-on-surface);
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .tag-icon-link {
-    color: var(--md-sys-color-primary);
-    display: flex;
-    align-items: center;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-  }
-  .tag-icon-link:hover {
-    opacity: 1;
-  }
-
-  .badge-row {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .meta-row { display: flex; gap: 1.25rem; align-items: center; margin-top: 1rem; flex-wrap: nowrap; width: 100%; }
-  .meta-row span { white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
-
-  .header-actions {
-    display: flex;
-    gap: 0.25rem;
-  }
-  .icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-  }
-  .icon-btn:hover {
-    background: var(--md-sys-color-surface-variant);
-    color: var(--text-color);
-  }
-  .icon-btn.danger:hover {
-    background: rgba(var(--error-rgb), 0.1);
-    color: var(--error);
-  }
-
-  .release-body {
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: 1fr 300px;
-    gap: 3rem;
-  }
-
-  .release-content {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: var(--md-sys-color-on-surface);
-    white-space: pre-wrap;
-  }
-  .empty-note {
-    opacity: 0.5;
-  }
-
-  .release-side {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  :global(.assets-box) {
-    background: var(--md-sys-color-background) !important;
-  }
-  :global(.assets-box) h4 {
-    margin: 0 0 1rem 0;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-    font-weight: 800;
-  }
-  .asset-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-  }
-  .asset-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: var(--md-sys-color-primary);
-    font-weight: 700;
-    padding: 0.4rem 0.75rem;
-    border-radius: 0.5rem;
-    transition: all 0.2s;
-  }
-  .asset-item:hover {
-    background: var(--md-sys-color-primary-container);
-    transform: translateX(4px);
-  }
-  .asset-item .name {
-    font-size: 0.85rem;
-  }
-
-  .publisher-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    padding-left: 0.5rem;
-  }
-  .publisher-info span {
-    font-size: 0.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-  }
-  .user-chip {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-weight: 700;
-    color: var(--md-sys-color-on-surface);
-    text-decoration: none;
-  }
-  .user-chip :global(.avatar-container) {
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-  }
-
-  .error-msg {
-    text-align: center;
-    padding: 4rem;
-    color: var(--color-danger);
-  }
-
-  .skeleton-item {
-    height: 250px;
-    border-radius: 1.5rem;
-    background: var(--md-sys-color-surface-variant);
-    animation: pulse 1.5s infinite;
-    margin-bottom: 2rem;
-  }
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 0.7;
-    }
-  }
-
   @media (max-width: 1100px) {
-    .release-body {
-      grid-template-columns: 1fr;
-    }
     .editor-overlay {
       padding: 1rem;
     }

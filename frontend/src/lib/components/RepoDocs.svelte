@@ -113,25 +113,30 @@
         </Card>
       </div>
     {:else}
-      <div class="docs-grid">
+      <div class="flat-list-container">
         {#each entries.filter(e => e.type === 'dir' || e.name.endsWith('.md')) as entry}
-          <Button variant="tonal" class="doc-tile" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
-            <div class="tile-icon">
+          <div class="list-item-row" style="cursor: pointer;" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
+            <div class="list-item-icon">
               {#if entry.type === 'dir'}
-                <Folder size={24} />
+                <Folder size={20} style="color: var(--primary-color);" />
               {:else if isADR(entry.name)}
-                <Scale size={24} />
+                <Scale size={20} style="color: var(--text-muted); opacity: 0.7;" />
               {:else}
-                <FileText size={24} />
+                <FileText size={20} style="color: var(--text-muted); opacity: 0.7;" />
               {/if}
             </div>
-            <div class="tile-info">
-              <span class="tile-name">{entry.name}</span>
+            <div class="item-main-content">
+              <div class="item-title-bar">
+                <span class="item-title-link">{entry.name}</span>
+              </div>
               {#if entry.last_commit}
-                <span class="tile-meta">{entry.last_commit.summary}</span>
+                <div class="item-meta-data">{entry.last_commit.summary}</div>
               {/if}
             </div>
-          </Button>
+            <div class="item-actions-right">
+              <span class="material-symbols-rounded" style="color: var(--text-muted); opacity: 0.5; font-size: 1.2rem;">chevron_right</span>
+            </div>
+          </div>
         {/each}
       </div>
     {/if}

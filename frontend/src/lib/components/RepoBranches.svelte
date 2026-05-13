@@ -80,7 +80,7 @@
             </div>
             <div class="branch-meta-info">
                <span class="meta-label">{branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'Recently'}</span>
-               <button class="row-btn delete-btn" disabled={branch.is_protected} onclick={() => deleteBranch(branch.name)}>
+               <button class="btn-icon-minimal delete" disabled={branch.is_protected} onclick={() => deleteBranch(branch.name)}>
                  <Trash2 size={16} />
                </button>
             </div>
@@ -101,7 +101,7 @@
             </div>
             <div class="branch-meta-info">
                <span class="meta-label">Old: {branch.commit?.committer?.when ? new Date(branch.commit.committer.when).toLocaleDateString() : 'N/A'}</span>
-               <button class="row-btn delete-btn" onclick={() => deleteBranch(branch.name)}>
+               <button class="btn-icon-minimal delete" onclick={() => deleteBranch(branch.name)}>
                  <Trash2 size={16} />
                </button>
             </div>
@@ -172,23 +172,28 @@
   .branch-meta-info { display: flex; align-items: center; gap: 1.5rem; }
   .meta-label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
 
-  .row-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 6px;
-    border-radius: 8px;
-    display: flex;
-    transition: all 0.2s;
-  }
-  .row-btn:hover:not(:disabled) { background: var(--surface-variant); color: var(--primary-color); }
-  .delete-btn:hover:not(:disabled) { color: #ef4444; background: rgba(239,68,68,0.1); }
-  .row-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
   .skeleton-table { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
   .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; text-align: center; color: var(--text-muted); opacity: 0.6; }
   .empty-state :global(svg) { font-size: 3rem; }
+
+  @media (max-width: 600px) {
+    .branch-row-item {
+      padding: 0.75rem 1rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .branch-meta-info {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .branch-main-info {
+      gap: 0.75rem;
+    }
+    .list-divider {
+      padding: 0.5rem 1rem;
+    }
+  }
 </style>

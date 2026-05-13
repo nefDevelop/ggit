@@ -8,6 +8,7 @@
   import Badge from './ui/Badge.svelte';
   import Input from './ui/Input.svelte';
   import Select from './ui/Select.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   const repo: any = getContext('repo');
   let milestones = $state<any[]>([]);
@@ -229,11 +230,10 @@
     </Card>
   {/if}
 
-  <div class="milestones-list">
+  <div class="milestones-content">
     {#if loading}
       <div class="loading-state">
         <div class="spinner"></div>
-        <p>Loading milestones...</p>
       </div>
     {:else if milestones.length === 0}
       <div class="empty-state">
@@ -242,70 +242,74 @@
         <p>There are no milestones in this repository.</p>
       </div>
     {:else}
-      {#each milestones as ms}
-        <Card class="milestone-card" padding="lg">
-          <div class="ms-main">
-            <div class="ms-header">
-              <div class="ms-title-row">
-                <h4>{ms.title}</h4>
-                <Badge variant={ms.state === 'open' ? 'success' : 'neutral'}>{ms.state}</Badge>
-              </div>
-              <div class="ms-meta">
-                {#if ms.due_on}
-                  <span class="due-date">
-                    <Calendar size={14} />
-                    Due on {new Date(ms.due_on).toLocaleDateString()}
-                  </span>
-                {/if}
-                <span class="updated">Last updated {new Date().toLocaleDateString()}</span>
-              </div>
-            </div>
-            
-            <div class="ms-description">
-              {ms.description || 'No description provided.'}
-            </div>
-
-            <div class="hill-chart-display-box">
-              <svg viewBox="0 0 100 45" preserveAspectRatio="none" class="hill-chart-large">
-                <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
-                <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
-                <circle 
-                  cx={ms.hill_state} 
-                  cy={40 - 140 * (ms.hill_state / 100) + 140 * Math.pow(ms.hill_state / 100, 2)} 
-                  r="3" 
-                  fill="var(--primary-color)" 
-                  filter="drop-shadow(0 0 5px var(--primary-color))"
-                />
-              </svg>
-              <div class="hill-labels">
-                <div class="phase uphill" class:active={ms.hill_state < 50}>
-                    <TrendingUp size={16} />
-                    Figuring it out
+      <div class="flat-list-container">
+        {#each milestones as ms}
+          <div class="list-item-row">
+            <div class="item-main-content">
+              <div class="ms-header">
+                <div class="ms-title-row">
+                  <a href={`/${repo.data.owner.username}/${repo.data.name}/issues?milestone=${ms.id}`} class="item-title-link">
+                    {ms.title}
+                  </a>
+                  <span class="badge-mini" style="background: {ms.state === 'open' ? 'var(--success)' : 'var(--text-muted)'}">{ms.state}</span>
                 </div>
-                <div class="phase downhill" class:active={ms.hill_state >= 50}>
-                    <TrendingDown size={16} />
-                    Making it happen
+                <div class="ms-meta">
+                  {#if ms.due_on}
+                    <span class="due-date">
+                      <Calendar size={14} />
+                      Due on {new Date(ms.due_on).toLocaleDateString()}
+                    </span>
+                  {/if}
+                  <span class="updated">Last updated {new Date().toLocaleDateString()}</span>
                 </div>
               </div>
+              
+              <div class="ms-description">
+                {ms.description || 'No description provided.'}
+              </div>
+
+              <div class="hill-chart-display-box">
+                <svg viewBox="0 0 100 45" preserveAspectRatio="none" class="hill-chart-large">
+                  <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
+                  <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
+                  <circle 
+                    cx={ms.hill_state} 
+                    cy={40 - 140 * (ms.hill_state / 100) + 140 * Math.pow(ms.hill_state / 100, 2)} 
+                    r="3" 
+                    fill="var(--primary-color)" 
+                    filter="drop-shadow(0 0 5px var(--primary-color))"
+                  />
+                </svg>
+                <div class="hill-labels">
+                  <div class="phase uphill" class:active={ms.hill_state < 50}>
+                      <TrendingUp size={16} />
+                      Figuring it out
+                  </div>
+                  <div class="phase downhill" class:active={ms.hill_state >= 50}>
+                      <TrendingDown size={16} />
+                      Making it happen
+                  </div>
+                </div>
+              </div>
+
+              <div class="ms-progress-zone">
+                <div class="progress-info">
+                  <span>{getProgress(ms).toFixed(0)}% Complete</span>
+                  <span class="counts">{ms.closed_issues} closed · {ms.open_issues} open</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: {getProgress(ms)}%"></div>
+                </div>
+              </div>
             </div>
 
-            <div class="ms-progress-zone">
-              <div class="progress-info">
-                <span>{getProgress(ms).toFixed(0)}% Complete</span>
-                <span class="counts">{ms.closed_issues} closed · {ms.open_issues} open</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: {getProgress(ms)}%"></div>
-              </div>
+            <div class="item-actions-right">
+              <button class="btn-icon-minimal" onclick={() => handleEdit(ms)} title="Edit"><Edit size={16} /></button>
+              <button class="btn-icon-minimal delete" onclick={() => deleteMilestone(ms.id)} title="Delete"><Trash2 size={16} /></button>
             </div>
           </div>
-
-          <div class="ms-actions">
-            <Button variant="ghost" icon={Edit} onclick={() => handleEdit(ms)} />
-            <Button variant="ghost" icon={Trash2} class="danger-btn" onclick={() => deleteMilestone(ms.id)} />
-          </div>
-        </Card>
-      {/each}
+        {/each}
+      </div>
     {/if}
   </div>
 </div>
@@ -365,3 +369,4 @@
   .phase { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.4; transition: all 0.3s; }
   .phase.active { opacity: 1; color: var(--primary-color); }
 </style>
+le>

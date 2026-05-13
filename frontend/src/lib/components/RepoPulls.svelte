@@ -196,26 +196,4 @@
   }
   .attention-dot.reviewer { background: #0061a4; box-shadow: 0 0 5px rgba(0, 97, 164, 0.5); }
   .attention-dot.author { background: #ba1a1a; box-shadow: 0 0 5px rgba(186, 26, 26, 0.5); }
-
-  .badge-mini {
-    font-size: 0.65rem;
-    font-weight: 850;
-    padding: 0.1rem 0.5rem;
-    border-radius: 4px;
-    color: white;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-  }
-  .badge-mini.scoped {
-    padding: 0;
-    overflow: hidden;
-  }
-  .badge-mini.scoped .key {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 0.1rem 0.5rem;
-  }
-  .badge-mini.scoped .val {
-    padding: 0.1rem 0.5rem;
-  }
 </style>

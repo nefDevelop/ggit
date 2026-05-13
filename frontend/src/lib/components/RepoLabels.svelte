@@ -5,7 +5,8 @@
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import Input from './ui/Input.svelte';
-  import { PlusCircle, Info, Edit, Trash2 } from 'lucide-svelte';
+  import PageHeader from './ui/PageHeader.svelte';
+  import { Plus, Info, Edit, Trash2, Tag } from 'lucide-svelte';
 
   const repo: any = getContext('repo');
   let labels = $state<any[]>([]);
@@ -80,11 +81,13 @@
 </script>
 
 <div class="repo-labels">
-  <header class="section-actions">
-    <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon={PlusCircle}>
-      New Label
-    </Button>
-  </header>
+  <PageHeader title="" icon="" compact>
+    {#snippet actions()}
+      <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon={Plus}>
+        New Label
+      </Button>
+    {/snippet}
+  </PageHeader>
 
   <div class="labels-content">
 
@@ -114,17 +117,18 @@
         </div>
       </div>
       <div class="editor-footer">
-        <Button variant="secondary" onclick={() => showEditor = false}>Cancel</Button>
-        <Button variant="primary" onclick={saveLabel} disabled={!newName.trim()}>
+        <Button variant="ghost" size="sm" onclick={() => showEditor = false}>Cancel</Button>
+        <Button variant="primary" size="sm" onclick={saveLabel} disabled={!newName.trim()}>
           {editingLabel ? 'Update Label' : 'Create Label'}
         </Button>
       </div>
     </Card>
   {/if}
 
-  <div class="labels-list">
     {#if loading}
-      <div class="loading-state">Loading labels...</div>
+      <div class="loading-state">
+        <div class="spinner"></div>
+      </div>
     {:else if labels.length === 0}
       <div class="empty-state">
         <Info size={48} />
@@ -132,28 +136,33 @@
         <p>There are no labels defined yet for this repository.</p>
       </div>
     {:else}
-      {#each labels as label}
-        <Card class="label-row" tonal={true} padding="none">
-          <div class="label-info">
-            <span class="label-tag" style="background: {label.color}">
-              {label.name}
-            </span>
+      <div class="flat-list-container">
+        {#each labels as label}
+          <div class="list-item-row">
+            <div class="list-item-icon">
+              <Tag size={18} style="color: var(--text-muted); opacity: 0.5;" />
+            </div>
+            <div class="item-main-content" style="justify-content: center;">
+              <div>
+                <span class="badge-mini" style="background: {label.color}; font-size: 0.85rem; padding: 0.25rem 0.75rem;">
+                  {label.name}
+                </span>
+              </div>
+            </div>
+            <div class="item-actions-right">
+              <button class="btn-icon-minimal" onclick={() => handleEdit(label)} title="Edit"><Edit size={16} /></button>
+              <button class="btn-icon-minimal delete" onclick={() => deleteLabel(label.id)} title="Delete"><Trash2 size={16} /></button>
+            </div>
           </div>
-          <div class="label-actions">
-            <Button variant="ghost" icon={Edit} onclick={() => handleEdit(label)} />
-            <Button variant="ghost" icon={Trash2} class="danger-btn" onclick={() => deleteLabel(label.id)} />
-          </div>
-        </Card>
-      {/each}
+        {/each}
+      </div>
     {/if}
-    </div>
   </div>
 </div>
 
 <style>
   .repo-labels { display: flex; flex-direction: column; gap: 0; }
-  .labels-content { padding: 0; display: flex; flex-direction: column; gap: 2rem; margin-top: 1.5rem; }
-  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .labels-content { padding: 0; display: flex; flex-direction: column; gap: 1.25rem; }
 
   .editor-title { margin-top: 0; margin-bottom: 1.5rem; font-weight: 800; color: var(--primary-color); }
   .editor-grid { display: grid; grid-template-columns: 2fr 1.5fr 1fr; gap: 2rem; align-items: flex-end; margin-bottom: 2rem; }
@@ -182,29 +191,9 @@
 
   .editor-footer { display: flex; justify-content: flex-end; gap: 1rem; }
 
-  .labels-list { display: flex; flex-direction: column; gap: 0.75rem; }
-  
-  :global(.label-row) { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; 
-    padding: 1rem 1.5rem !important; 
-    border-radius: 0.75rem;
-  }
-
-  .label-tag { 
-    font-size: 0.75rem; 
-    font-weight: 800; 
-    padding: 0.25rem 0.75rem; 
-    border-radius: 4px; 
-    color: white; 
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .label-actions { display: flex; gap: 0.5rem; }
-  :global(.danger-btn:hover) { color: var(--error) !important; }
-
   .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
+  
+  .loading-state { display: flex; justify-content: center; padding: 3rem; }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--md-sys-color-outline-variant); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s infinite linear; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 </style>
