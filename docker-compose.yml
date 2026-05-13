@@ -1,23 +1,48 @@
+version: '3.8'
+
 services:
   ggit:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - BUILD_TARGET=build-swagger-cdn
+    build: .
+    container_name: ggit
     restart: always
     environment:
-      - PUID=1000
-      - PGID=1000
+      # --- CONFIGURATION PATHS ---
+      # Root directory of the application. Defaults to the directory of the binary.
+      - GGIT_WORK_DIR=/app/ggit
+      
+      # Path to custom configuration and data overrides. 
+      # Now automatically falls back to '/app/ggit/data' if '/app/ggit/custom' is missing.
+      - GGIT_CUSTOM=/app/ggit/data
+      
+      # --- SECURITY & PERMISSIONS ---
+      # Skip the check that ensures the application is running as the configured 'RUN_USER'.
+      # Useful if you are running as root or a different user inside the container.
+      - GGIT_SKIP_RUN_USER_CHECK=true
+      
+      # --- MONITORING & DEBUGGING ---
+      # Set to 'release' for production, 'dev' for development logs.
       - GIN_MODE=release
-    ports:
-      - "3005:3005"
-      - "10022:22"
-    volumes:
-      - ./data:/data
-    networks:
-      - ggit-network
+      
+      # Enable tracing output to stdout (OpenTelemetry).
+      - GGIT_TRACE_STDOUT=false
+      
+      # --- SYSTEM ---
+      # Force a specific home directory if needed.
+      - HOME=/app/ggit/data/home
 
-networks:
-  ggit-network:
-    driver: bridge
+    volumes:
+      # Map the host data directory to the container's data path.
+      - ./data:/app/ggit/data
+      
+    ports:
+      # Web Interface
+      - "5555:3005"
+      # SSH Service
+      - "2222:22"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

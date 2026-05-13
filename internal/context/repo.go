@@ -112,6 +112,7 @@ func RepoAssignment(pages ...bool) gin.HandlerFunc {
 
 		ownerName := c.Param("username")
 		repoName := strings.TrimSuffix(c.Param("reponame"), ".git")
+		repoName = strings.TrimSuffix(repoName, "/")
 
 		// Check if Ggit is installed/locked
 		if !database.HasEngine || database.Handle == nil {
