@@ -31,7 +31,7 @@ services:
 
     ports:
       # Web Interface
-      - "5555:3005"
+      - "3005:3005"
       # SSH Service
       - "2222:22"
 
