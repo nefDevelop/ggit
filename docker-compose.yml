@@ -4,21 +4,18 @@ services:
     container_name: ggit
     restart: always
     environment:
+      # --- PERMISSIONS ---
+      # Set these to your host User ID and Group ID to avoid permission issues.
+      # You can find them by running 'id' in your terminal.
+      - PUID=1000
+      - PGID=1000
+      
       # --- CONFIGURATION PATHS ---
-      # Root directory of the application. Defaults to the directory of the binary.
-      - GGIT_WORK_DIR=/app/ggit
-
-      # Path to custom configuration and data overrides. 
-      # Now automatically falls back to '/app/ggit/data' if '/app/ggit/custom' is missing.
-      - GGIT_CUSTOM=/app/ggit/data
-
-      # --- SECURITY & PERMISSIONS ---
-      # Skip the check that ensures the application is running as the configured 'RUN_USER'.
-      # Useful if you are running as root or a different user inside the container.
+      # This tells Ggit to look for everything in the /data volume.
+      - GGIT_CUSTOM=/data
+      
+      # --- SECURITY & LOGS ---
       - GGIT_SKIP_RUN_USER_CHECK=true
-
-      # --- MONITORING & DEBUGGING ---
-      # Set to 'release' for production, 'dev' for development logs.
       - GIN_MODE=release
 
       # Enable tracing output to stdout (OpenTelemetry).
@@ -26,12 +23,12 @@ services:
 
       # --- SYSTEM ---
       # Force a specific home directory if needed.
-      - HOME=/app/ggit/data/home
+      - HOME=/data/home
 
     volumes:
-      # Map the host data directory to the container's data path.
-      - ./data:/app/ggit/data
-      - ./log:/app/ggit/log
+      # We map everything to /data, which is what the Dockerfile expects.
+      - ./data:/data
+      - ./log:/data/log
 
     ports:
       # Web Interface

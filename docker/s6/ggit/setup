@@ -17,6 +17,7 @@ ln -sfn /data/log  ./log
 ln -sfn /data/data ./data
 
 # Backward Compatibility with Ggit Container v0.6.15
+mkdir -p /home/git
 ln -sfn /data/repositories /home/git/ggit-repositories
 
 chmod 0755 /data ~git/
