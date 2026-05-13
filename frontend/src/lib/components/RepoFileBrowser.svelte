@@ -2,7 +2,7 @@
   import { 
     AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, 
     Folder, FileText, File, Edit, Download, Binary, BookText,
-    Rocket, ChevronRight, Copy, Check
+    Rocket, ChevronRight, Copy, Check, FileCode
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
@@ -386,16 +386,21 @@ git push -u origin main</code></pre>
                              <div class="mini-spinner"></div>
                            {:else}
                              <History size={16} />
-                             Blame
+                             <span class="btn-text">Blame</span>
                            {/if}
                         </button>
-                        <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn">
+                        <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn" title="Edit">
                           <Edit size={16} />
+                          <span class="btn-text">Edit</span>
                         </a>
                       {/if}
-                      <a href={`/api/v2/${username}/${reponame}/raw/${repoData.branch}/${realPath()}`} target="_blank" class="tool-btn">Raw</a>
+                      <a href={`/api/v2/${username}/${reponame}/raw/${repoData.branch}/${realPath()}`} target="_blank" class="tool-btn" title="Raw">
+                        <FileCode size={16} />
+                        <span class="btn-text">Raw</span>
+                      </a>
                       <a href={`/api/v2/${username}/${reponame}/media/${repoData.branch}/${realPath()}`} class="tool-btn" download title="Download">
                         <Download size={16} />
+                        <span class="btn-text">Download</span>
                       </a>
                       <button class="tool-btn btn-sidebar-toggle-inline" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
                         {#if sidebarCollapsed}
@@ -711,7 +716,7 @@ git push -u origin main</code></pre>
   .code-line-row { display: flex; align-items: stretch; min-height: 1.6rem; }
   .code-line-row:hover { background: rgba(var(--primary-rgb), 0.05); }
   
-  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 2px; }
+  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: flex-start; justify-content: flex-end; }
   
   .code-cell { flex: 1; padding: 0 1rem; display: flex; align-items: flex-start; overflow-x: auto; }
   .code-cell pre { margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; background: transparent; }
@@ -736,6 +741,9 @@ git push -u origin main</code></pre>
     .file-header { padding: 0.6rem 0.75rem; }
     .file-row td { padding: 0.6rem 0.75rem; }
     .readme-content { padding: 1.25rem; }
+    .btn-sidebar-toggle-inline { display: none !important; }
+    .tool-btn .btn-text { display: none; }
+    .tool-btn { padding: 0 0.5rem; }
   }
 
   @media (max-width: 480px) {

@@ -197,8 +197,27 @@ func SendAdminTestEmail(c *context.APIContext) {
 
 // GetAdminMonitor returns system monitor data.
 func GetAdminMonitor(c *context.APIContext) {
+	tasks := cron.ListTasks()
+	type cronTask struct {
+		Description string
+		Spec        string
+		Next        time.Time
+		Prev        time.Time
+		ExecTimes   int64
+	}
+	cronTasks := make([]cronTask, len(tasks))
+	for i, t := range tasks {
+		cronTasks[i] = cronTask{
+			Description: t.Description,
+			Spec:        t.Spec,
+			Next:        t.Next,
+			Prev:        t.Prev,
+			ExecTimes:   int64(t.ExecTimes),
+		}
+	}
+
 	c.JSON(http.StatusOK, map[string]any{
-		"cron":      cron.ListTasks(),
+		"cron":      cronTasks,
 		"processes": process.Processes,
 	})
 }

@@ -322,7 +322,6 @@
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    padding-top: 2px;
   }
 
   @media (max-width: 600px) {

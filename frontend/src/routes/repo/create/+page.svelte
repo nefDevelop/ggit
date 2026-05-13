@@ -145,6 +145,7 @@
       } else {
         res = await apiFetch('/api/v2/user/repos/migrate', {
           method: 'POST',
+          silent: true,
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             clone_addr: cloneAddr,
@@ -162,11 +163,15 @@
         });
       }
       
-      const data = await res.json();
+      const data = res.data || await res.json();
       if (res.ok) {
         goto(`/${authState.user.username}/${name}`);
       } else {
-        errorMsg = data.message || 'Failed to create/migrate repository';
+        if (res.status === 401) {
+            errorMsg = 'El repositorio remoto requiere autenticación. Por favor, verifica el nombre de usuario y la contraseña.';
+        } else {
+            errorMsg = data.message || 'Failed to create/migrate repository';
+        }
       }
     } catch (e) {
       errorMsg = 'An error occurred. Please try again.';
