@@ -13,7 +13,6 @@ services:
       # --- CONFIGURATION PATHS ---
       # This tells Ggit to look for everything in the /data volume.
       - GGIT_CUSTOM=/data
-      - GGIT_LOG_ROOT=/data/log
       
       # --- SECURITY & LOGS ---
       - GGIT_SKIP_RUN_USER_CHECK=true
@@ -29,7 +28,6 @@ services:
     volumes:
       # We map everything to /data, which is what the Dockerfile expects.
       - ./data:/data
-      - ./log:/data/log
 
     ports:
       # Web Interface
