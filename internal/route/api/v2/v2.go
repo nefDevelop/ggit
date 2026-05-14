@@ -117,7 +117,9 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/config", ginx.Handle(GetAdminConfig))
 		admin.PUT("/config", ginx.Handle(UpdateAdminConfig))
 		admin.POST("/config/test_email", ginx.Handle(SendAdminTestEmail))
-		admin.GET("/monitor", ginx.Handle(GetAdminMonitor))
+		admin.GET("/health-snapshot", ginx.Handle(GetAdminMonitor))
+		admin.POST("/monitor/cron", ginx.Handle(RunAdminCronTask))
+		admin.POST("/monitor/processes/:pid", ginx.Handle(KillAdminProcess))
 
 		admin.GET("/users", ginx.Handle(GetAdminUsers))
 		admin.POST("/users", ginx.Handle(CreateAdminUser))

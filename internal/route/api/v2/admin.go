@@ -197,13 +197,14 @@ func SendAdminTestEmail(c *context.APIContext) {
 
 // GetAdminMonitor returns system monitor data.
 func GetAdminMonitor(c *context.APIContext) {
+	log.Trace("API: GetAdminMonitor called")
 	tasks := cron.ListTasks()
 	type cronTask struct {
-		Description string
-		Spec        string
-		Next        time.Time
-		Prev        time.Time
-		ExecTimes   int64
+		Description string    `json:"description"`
+		Spec        string    `json:"spec"`
+		Next        time.Time `json:"next"`
+		Prev        time.Time `json:"prev"`
+		ExecTimes   int64     `json:"exec_times"`
 	}
 	cronTasks := make([]cronTask, len(tasks))
 	for i, t := range tasks {
@@ -216,10 +217,61 @@ func GetAdminMonitor(c *context.APIContext) {
 		}
 	}
 
-	c.JSON(http.StatusOK, map[string]any{
-		"cron":      cronTasks,
-		"processes": process.Processes,
-	})
+	type procInfo struct {
+		PID         int64     `json:"pid"`
+		Description string    `json:"description"`
+		Start       time.Time `json:"start"`
+	}
+	procInfos := make([]procInfo, len(process.Processes))
+	for i, p := range process.Processes {
+		procInfos[i] = procInfo{
+			PID:         p.PID,
+			Description: p.Description,
+			Start:       p.Start,
+		}
+	}
+
+	log.Trace("API: Sending monitor response (Tasks: %d, Procs: %d)", len(cronTasks), len(procInfos))
+	
+	respData := map[string]any{
+		"ping":        "pong",
+		"cron_v2":     cronTasks,
+		"processes":   procInfos,
+		"debug_info": map[string]any{
+			"install_lock": conf.Security.InstallLock,
+			"custom_conf":  conf.CustomConf,
+			"cron_enabled": conf.Cron.RepoHealthCheck.Enabled,
+			"tasks_count":  len(tasks),
+			"v":           5,
+		},
+	}
+	
+	c.JSON(http.StatusOK, respData)
+	log.Trace("API: Monitor response sent (v5)")
+}
+
+// RunAdminCronTask runs a cron task manually.
+func RunAdminCronTask(c *context.APIContext) {
+	var f struct {
+		Description string `json:"description" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	cron.RunTask(f.Description)
+	c.NoContent()
+}
+
+// KillAdminProcess kills a running process.
+func KillAdminProcess(c *context.APIContext) {
+	pid := c.ParamsInt64(":pid")
+	if err := process.Kill(pid); err != nil {
+		c.Error(err, "kill process")
+		return
+	}
+	c.NoContent()
 }
 
 // GetAdminUsers returns a list of all users.
