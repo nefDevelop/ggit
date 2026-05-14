@@ -67,7 +67,11 @@
         try {
           html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
         } catch (e) {
-          html = hljs.highlightAuto(repoData.content).value;
+          try {
+            html = hljs.highlightAuto(repoData.content).value;
+          } catch (e2) {
+            html = repoData.content.replace(/[&<>"']/g, (m: string) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m] || m));
+          }
         }
       }
       lines = html.split('\n');

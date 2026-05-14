@@ -12,6 +12,7 @@
   } from 'lucide-svelte';
   
   import { fade } from 'svelte/transition';
+  import Avatar from '$lib/components/Avatar.svelte';
   
   let { children } = $props();
   
@@ -140,13 +141,23 @@
         </div>
 
         <header class="repo-identity-bar">
-          <div class="breadcrumb-nav">
-            <a href="/dashboard" class="bc-home"><LayoutGrid size={20} /></a>
-            <span class="bc-sep">/</span>
-            <a href={`/${username}`} class="bc-item">{username}</a>
-            <span class="bc-sep">/</span>
-            <h1 class="bc-item active">{reponame}</h1>
-            {#if repoData.private}<Lock size={16} class="lock-icon" />{/if}
+          <div class="repo-header-main">
+            <Avatar 
+              src={repoData.avatar_url} 
+              username={repoData.name} 
+              seed={repoData.id?.toString()} 
+              size={36} 
+              type="repo" 
+              class="header-repo-avatar"
+            />
+            <div class="breadcrumb-nav">
+              <a href="/dashboard" class="bc-home"><LayoutGrid size={20} /></a>
+              <span class="bc-sep">/</span>
+              <a href={`/${username}`} class="bc-item">{username}</a>
+              <span class="bc-sep">/</span>
+              <h1 class="bc-item active">{reponame}</h1>
+              {#if repoData.private}<Lock size={16} class="lock-icon" />{/if}
+            </div>
           </div>
 
           <div class="repo-meta-actions">
@@ -357,6 +368,8 @@
   .tonal-search-bar { padding: 1.5rem 1.5rem 0.75rem; background: rgba(255,255,255,0.01); }
 
   .repo-identity-bar { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 1.5rem; }
+  .repo-header-main { display: flex; align-items: center; gap: 1rem; }
+  :global(.header-repo-avatar) { flex-shrink: 0; }
   .breadcrumb-nav { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
   .bc-item { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 1.1rem; }
   h1.bc-item.active { color: var(--text-color); font-weight: 800; font-size: 1.25rem; margin: 0; word-break: break-all; }

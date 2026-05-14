@@ -200,34 +200,34 @@ func GetAdminMonitor(c *context.APIContext) {
 	log.Trace("API: GetAdminMonitor called")
 	tasks := cron.ListTasks()
 	type cronTask struct {
-		Description string    `json:"description"`
-		Spec        string    `json:"spec"`
-		Next        time.Time `json:"next"`
-		Prev        time.Time `json:"prev"`
-		ExecTimes   int64     `json:"exec_times"`
+		Description string `json:"Description"`
+		Spec        string `json:"Spec"`
+		Next        string `json:"Next"`
+		Prev        string `json:"Prev"`
+		ExecTimes   int64  `json:"ExecTimes"`
 	}
 	cronTasks := make([]cronTask, len(tasks))
 	for i, t := range tasks {
 		cronTasks[i] = cronTask{
 			Description: t.Description,
 			Spec:        t.Spec,
-			Next:        t.Next,
-			Prev:        t.Prev,
+			Next:        t.Next.Format(time.RFC3339),
+			Prev:        t.Prev.Format(time.RFC3339),
 			ExecTimes:   int64(t.ExecTimes),
 		}
 	}
 
 	type procInfo struct {
-		PID         int64     `json:"pid"`
-		Description string    `json:"description"`
-		Start       time.Time `json:"start"`
+		PID         int64  `json:"PID"`
+		Description string `json:"Description"`
+		Start       string `json:"Start"`
 	}
 	procInfos := make([]procInfo, len(process.Processes))
 	for i, p := range process.Processes {
 		procInfos[i] = procInfo{
 			PID:         p.PID,
 			Description: p.Description,
-			Start:       p.Start,
+			Start:       p.Start.Format(time.RFC3339),
 		}
 	}
 

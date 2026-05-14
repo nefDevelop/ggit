@@ -62,12 +62,16 @@
     if (!content) return "&nbsp;";
     const ext = fileName.split('.').pop() || '';
     try {
-      return hljs.highlight(content, { 
-        language: hljs.getLanguage(ext) ? ext : 'plaintext',
-        ignoreIllegals: true 
-      }).value;
+      if (hljs.getLanguage(ext)) {
+        return hljs.highlight(content, { language: ext, ignoreIllegals: true }).value;
+      }
+      return hljs.highlightAuto(content).value;
     } catch (e) {
-      return content;
+      try {
+        return hljs.highlightAuto(content).value;
+      } catch (e2) {
+        return content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
     }
   };
 </script>

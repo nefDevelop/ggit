@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
   import { RepositorySchema } from "$lib/schemas";
@@ -21,12 +22,13 @@
   let loading = $state(true);
   let saving = $state(false);
   let avatarUploading = $state(false);
+  let avatarCacheBuster = $state(Date.now());
   let deleteConfirm = $state("");
   let errors = $state<Record<string, string>>({});
 
   async function fetchBranches() {
     try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/branches`);
+      const res = await apiFetch(`/api/v2/${page.params.username}/${page.params.reponame}/branches`);
       if (res.ok) {
         const d = await res.json();
         const b = [];
@@ -44,7 +46,7 @@
     loading = true;
     try {
       const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
+        `/api/v2/${page.params.username}/${page.params.reponame}/settings`,
       );
       if (res.ok) settings = await res.json();
       await fetchBranches();
@@ -65,7 +67,7 @@
 
     try {
       const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`,
+        `/api/v2/${page.params.username}/${page.params.reponame}/settings/avatar`,
         {
           method: "POST",
           body: formData,
@@ -73,6 +75,7 @@
       );
       if (res.ok) {
         toast.success("Avatar updated successfully!");
+        avatarCacheBuster = Date.now();
         fetchSettings();
       }
     } catch (e) {
@@ -88,11 +91,12 @@
     avatarUploading = true;
     try {
       const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`,
+        `/api/v2/${page.params.username}/${page.params.reponame}/settings/avatar`,
         { method: "DELETE" },
       );
       if (res.ok) {
         toast.success("Avatar deleted.");
+        avatarCacheBuster = Date.now();
         fetchSettings();
       }
     } catch (e) {
@@ -119,7 +123,7 @@
     saving = true;
     try {
       const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
+        `/api/v2/${page.params.username}/${page.params.reponame}/settings`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
@@ -144,7 +148,7 @@
     if (deleteConfirm !== settings.name) return;
     try {
       const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
+        `/api/v2/${page.params.username}/${page.params.reponame}/settings`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -167,7 +171,7 @@
     saving = true;
     try {
       const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/transfer`,
+        `/api/v2/${page.params.username}/${page.params.reponame}/settings/transfer`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -203,10 +207,11 @@
         <div class="avatar-settings-section island">
           <div class="avatar-preview-wrap">
             <Avatar 
-              src={settings.avatar_url} 
+              src={settings.avatar_url ? `${settings.avatar_url}${settings.avatar_url.includes('?') ? '&' : '?'}t=${avatarCacheBuster}` : ''} 
               username={settings.name} 
               seed={settings.id?.toString()} 
               size={110} 
+              type="repo"
               class="repo-avatar-img"
             />
             {#if avatarUploading}

@@ -256,7 +256,7 @@
   .proc-desc { color: var(--text-color); font-weight: 700; max-width: 500px; }
 
   .actions-head { text-align: center; width: 120px; }
-  .actions-cell { display: flex; justify-content: center; }
+  .actions-cell { text-align: center; }
 
   .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 1.25rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
