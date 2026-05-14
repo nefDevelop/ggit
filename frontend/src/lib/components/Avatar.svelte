@@ -41,6 +41,10 @@
     aspect-ratio: 1/1;
   }
 
+  .avatar-container.repo-avatar {
+    border-radius: 12%; /* Square with rounded corners for repositories */
+  }
+
   .avatar-img {
     width: 100%;
     height: 100%;

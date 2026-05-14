@@ -273,7 +273,6 @@
 
   @media (max-width: 480px) {
     .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 40px; }
-    .repo-avatar-container { width: 40px; height: 40px; }
     .repo-name { font-size: 1rem; }
     .repo-desc { font-size: 0.8rem; }
     .actions-info .time { display: none; }

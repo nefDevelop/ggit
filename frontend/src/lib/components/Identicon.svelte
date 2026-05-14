@@ -136,6 +136,6 @@
   }
 
   .identicon.repo-type {
-    border-radius: 24%; /* Forma de 'Squircle' para repositorios */
+    border-radius: 12%; /* Square with rounded corners for repositories */
   }
 </style>

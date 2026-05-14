@@ -26,7 +26,7 @@
           <span class="material-symbols-rounded">{icon}</span>
         {:else if icon}
           {@const Icon = icon}
-          <Icon size={32} />
+          <Icon size={40} />
         {/if}
       </div>
     {/if}
@@ -54,11 +54,14 @@
     gap: 2rem;
     padding: 2.5rem;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    min-height: 160px;
+    box-sizing: border-box;
   }
 
 
   .page-header.compact {
     padding: 1.5rem 2rem;
+    min-height: auto;
   }
 
   .page-header.no-border {
@@ -73,11 +76,11 @@
   }
 
   .icon-slot {
-    font-size: 3rem;
+    width: 80px;
+    height: 80px;
     color: var(--primary-color);
     background: var(--md-sys-color-primary-container);
-    padding: 1.25rem;
-    border-radius: 1rem;
+    border-radius: 1.25rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -85,7 +88,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .icon-slot span { font-size: inherit; }
+  .icon-slot span { font-size: 3rem; }
 
   .avatar-slot {
     flex-shrink: 0;

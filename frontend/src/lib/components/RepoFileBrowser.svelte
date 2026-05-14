@@ -39,16 +39,18 @@
   let cloneUrl = $derived(repoData?.clone_url || repoData?.repository?.clone_url || '');
 
   // Initialize from context if at root to avoid flicker
-  if (!path && repoContext.full) {
-    repoData = repoContext.full;
-    loading = false;
-    // Set lastFetched to prevent immediate re-fetch
-    lastFetched = { 
-      user: page.params.username || '', 
-      repo: page.params.reponame || '', 
-      path: '' 
-    };
-  }
+  $effect(() => {
+    if (!path && repoContext.full) {
+      repoData = repoContext.full;
+      loading = false;
+      // Set lastFetched to prevent immediate re-fetch
+      lastFetched = { 
+        user: page.params.username || '', 
+        repo: page.params.reponame || '', 
+        path: '' 
+      };
+    }
+  });
 
   let codeRows = $derived(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];

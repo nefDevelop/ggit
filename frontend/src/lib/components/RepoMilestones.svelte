@@ -329,7 +329,6 @@
 
 <style>
   .repo-milestones { display: flex; flex-direction: column; gap: 0; }
-  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 0; margin-top: 1.5rem; }
   .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; }
 
   .editor-title { margin: 0; font-weight: 800; color: var(--primary-color); }
@@ -344,14 +343,10 @@
 
   .editor-footer { display: flex; justify-content: flex-end; gap: 1rem; }
 
-  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; }
-  
   :global(.milestone-card) { display: flex; gap: 2rem; border-radius: 1.5rem; }
-  .ms-main { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
   
   .ms-header { display: flex; flex-direction: column; gap: 0.25rem; }
   .ms-title-row { display: flex; align-items: center; gap: 1rem; }
-  .ms-title-row h4 { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
   
   .ms-meta { display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
 
@@ -362,7 +357,6 @@
   .progress-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--primary-color); border-radius: 10px; transition: width 0.4s ease; }
 
-  .ms-actions { display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; }
   :global(.danger-btn:hover) { color: var(--error) !important; }
 
   .empty-state {

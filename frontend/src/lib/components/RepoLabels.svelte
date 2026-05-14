@@ -143,7 +143,7 @@
         <h2>No labels found</h2>
         <p>There are no labels defined yet for this repository.</p>
         <div style="margin-top: 1rem;">
-          <Button variant="primary" onclick={() => { editingLabel = null; form = { name: '', color: '#0061a4' }; showEditor = true; }} icon={Plus}>
+          <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#0061a4'; showEditor = true; }} icon={Plus}>
             Create your first label
           </Button>
         </div>

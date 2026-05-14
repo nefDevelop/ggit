@@ -111,112 +111,114 @@
   onMount(fetchOrg);
 </script>
 
-<Card padding="none" class="settings-premium-card">
-  <header class="section-header-premium">
-    <div class="title-with-icon">
-      <Building2 size={48} class="hero-icon" />
-      <div>
-        <h2>Ajustes de la Organización</h2>
-        <p class="subtitle">Gestiona la identidad y visibilidad de tu organización</p>
-      </div>
-    </div>
-  </header>
-
-  {#if loading}
-    <div class="skeleton-form" style="padding: 2.5rem;"></div>
-  {:else}
-    <form class="settings-form" onsubmit={(e) => { e.preventDefault(); saveOrg(); }}>
-      
-      <div class="avatar-settings-section">
-        <div class="avatar-preview-wrap">
-          <Avatar 
-            src={org.avatar_url} 
-            username={org.username} 
-            seed={org.id?.toString()} 
-            size={120} 
-          />
-          {#if avatarUploading}
-            <div class="avatar-overlay">
-              <RefreshCw size={24} class="spin" />
-            </div>
-          {/if}
+<div class="org-settings-wrapper">
+  <Card padding="none" class="settings-premium-card">
+    <header class="section-header-premium">
+      <div class="title-with-icon">
+        <Building2 size={48} class="hero-icon" />
+        <div>
+          <h2>Ajustes de la Organización</h2>
+          <p class="subtitle">Gestiona la identidad y visibilidad de tu organización</p>
         </div>
-        <div class="avatar-actions">
-          <header>
-            <h4>Avatar de la Organización</h4>
-            <p>Sube una imagen personalizada para tu organización.</p>
-          </header>
-          <div class="action-buttons">
-            <Button variant="outline" icon={Upload} onclick={() => document.getElementById('org-avatar-input')?.click()}>
-              Subir Imagen
-            </Button>
-            {#if org.use_custom_avatar}
-              <Button variant="ghost" icon={Trash2} class="danger-text" onclick={deleteAvatar}>
-                Eliminar
-              </Button>
+      </div>
+    </header>
+
+    {#if loading}
+      <div class="skeleton-form" style="padding: 2.5rem;"></div>
+    {:else}
+      <form class="settings-form" onsubmit={(e) => { e.preventDefault(); saveOrg(); }}>
+        
+        <div class="avatar-settings-section">
+          <div class="avatar-preview-wrap">
+            <Avatar 
+              src={org.avatar_url} 
+              username={org.username} 
+              seed={org.id?.toString()} 
+              size={120} 
+            />
+            {#if avatarUploading}
+              <div class="avatar-overlay">
+                <RefreshCw size={24} class="spin" />
+              </div>
             {/if}
-            <input 
-              type="file" 
-              id="org-avatar-input" 
-              accept="image/*" 
-              hidden 
-              onchange={updateAvatar} 
+          </div>
+          <div class="avatar-actions">
+            <header>
+              <h4>Avatar de la Organización</h4>
+              <p>Sube una imagen personalizada para tu organización.</p>
+            </header>
+            <div class="action-buttons">
+              <Button variant="outline" icon={Upload} onclick={() => document.getElementById('org-avatar-input')?.click()}>
+                Subir Imagen
+              </Button>
+              {#if org.use_custom_avatar}
+                <Button variant="ghost" icon={Trash2} class="danger-text" onclick={deleteAvatar}>
+                  Eliminar
+                </Button>
+              {/if}
+              <input 
+                type="file" 
+                id="org-avatar-input" 
+                accept="image/*" 
+                hidden 
+                onchange={updateAvatar} 
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <Input label="Nombre Público" bind:value={org.full_name} placeholder="Ggit Core Team" />
+          <div class="field">
+            <label for="desc">Descripción</label>
+            <textarea id="desc" bind:value={org.description} placeholder="Una breve descripción..."></textarea>
+          </div>
+          <Input label="Sitio Web" type="url" bind:value={org.website} placeholder="https://ggit.io" />
+          <Input label="Ubicación" bind:value={org.location} placeholder="Madrid, España" />
+          
+          <div class="field full-width">
+            <Checkbox 
+              label="Organización Privada" 
+              description="Las organizaciones privadas solo son visibles para sus miembros." 
+              bind:checked={org.private} 
             />
           </div>
         </div>
-      </div>
 
-      <div class="form-grid">
-        <Input label="Nombre Público" bind:value={org.full_name} placeholder="Ggit Core Team" />
-        <div class="field">
-          <label for="desc">Descripción</label>
-          <textarea id="desc" bind:value={org.description} placeholder="Una breve descripción..."></textarea>
+        <div class="form-footer">
+          <Button type="submit" variant="primary" disabled={saving}>
+            {saving ? 'Guardando...' : 'Actualizar Ajustes'}
+          </Button>
         </div>
-        <Input label="Sitio Web" type="url" bind:value={org.website} placeholder="https://ggit.io" />
-        <Input label="Ubicación" bind:value={org.location} placeholder="Madrid, España" />
-        
-        <div class="field full-width">
-          <Checkbox 
-            label="Organización Privada" 
-            description="Las organizaciones privadas solo son visibles para sus miembros." 
-            bind:checked={org.private} 
-          />
+      </form>
+    {/if}
+  </Card>
+
+  <div style="margin-top: 3rem;">
+  <Card padding="none" class="settings-premium-card danger-card">
+    <header class="section-header-premium danger">
+      <div class="title-with-icon">
+        <HeartCrack size={48} class="hero-icon danger" />
+        <div>
+          <h2 class="danger-text">Zona de Peligro</h2>
+          <p class="subtitle">Acciones irreversibles sobre la organización</p>
         </div>
       </div>
-
-      <div class="form-footer">
-        <Button type="submit" variant="primary" disabled={saving}>
-          {saving ? 'Guardando...' : 'Actualizar Ajustes'}
+    </header>
+    
+    <div class="danger-zone-content">
+      <div class="danger-item">
+        <div class="danger-info">
+          <strong>Eliminar esta organización</strong>
+          <p>Esta acción eliminará permanentemente la organización, todos sus repositorios y equipos asociados. No se puede deshacer.</p>
+        </div>
+        <Button variant="primary" class="danger-btn" onclick={deleteOrg} disabled={saving}>
+          {saving ? 'Eliminando...' : 'Eliminar Organización'}
         </Button>
       </div>
-    </form>
-  {/if}
-</Card>
-
-<div style="margin-top: 3rem;">
-<Card padding="none" class="settings-premium-card danger-card">
-  <header class="section-header-premium danger">
-    <div class="title-with-icon">
-      <HeartCrack size={48} class="hero-icon danger" />
-      <div>
-        <h2 class="danger-text">Zona de Peligro</h2>
-        <p class="subtitle">Acciones irreversibles sobre la organización</p>
-      </div>
     </div>
-  </header>
-  
-  <div class="danger-zone-content">
-    <div class="danger-item">
-      <div class="danger-info">
-        <strong>Eliminar esta organización</strong>
-        <p>Esta acción eliminará permanentemente la organización, todos sus repositorios y equipos asociados. No se puede deshacer.</p>
-      </div>
-      <Button variant="primary" class="danger-btn" onclick={deleteOrg} disabled={saving}>
-        {saving ? 'Eliminando...' : 'Eliminar Organización'}
-      </Button>
-    </div>
+  </Card>
   </div>
-</Card>
 </div>
 
 <style>

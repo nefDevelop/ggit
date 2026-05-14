@@ -4,6 +4,7 @@
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { Folder, ArrowLeft, Info, CheckCircle2, AlertCircle, GitMerge, Diff, History, GitFork } from "lucide-svelte";
+  import Button from "$lib/components/ui/Button.svelte";
   import DiffViewer from "$lib/components/DiffViewer.svelte";
   import CommitRow from "$lib/components/CommitRow.svelte";
   import BranchSelector from "$lib/components/BranchSelector.svelte";
@@ -520,15 +521,6 @@
   .form-actions {
     margin-top: 1rem;
   }
-  .btn.lg {
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    font-size: 1.1rem;
-    font-weight: 800;
-  }
 
   .review-panel {
     display: flex;
@@ -614,14 +606,6 @@
   .skeleton-pulse {
     opacity: 0.5;
     pointer-events: none;
-  }
-  .spinner-sm {
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
   }
   @keyframes spin {
     to {

@@ -435,6 +435,4 @@
   .loading-spinner { width: 64px; height: 64px; border: 5px solid var(--md-sys-color-primary-container); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
   
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .spin { animation: spin 1s linear infinite; }
 </style>

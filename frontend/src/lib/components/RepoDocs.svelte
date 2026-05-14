@@ -117,7 +117,7 @@
     {:else}
       <div class="flat-list-container">
         {#each entries.filter(e => e.type === 'dir' || e.name.endsWith('.md')) as entry}
-          <div class="list-item-row" style="cursor: pointer;" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
+          <button class="list-item-row list-item-clickable" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
             <div class="list-item-icon">
               {#if entry.type === 'dir'}
                 <Folder size={20} style="color: var(--primary-color);" />
@@ -138,7 +138,7 @@
             <div class="item-actions-right">
               <span class="material-symbols-rounded" style="color: var(--text-muted); opacity: 0.5; font-size: 1.2rem;">chevron_right</span>
             </div>
-          </div>
+          </button>
         {/each}
       </div>
     {/if}
@@ -196,14 +196,15 @@
     background: rgba(var(--primary-rgb), 0.05);
   }
 
-  .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  :global(.doc-tile) { border: none !important; padding: 1.25rem !important; height: auto !important; display: flex !important; align-items: center !important; gap: 1.25rem !important; text-align: left !important; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; cursor: pointer !important; justify-content: flex-start !important; }
-  :global(.doc-tile:hover) { transform: translateY(-2px) !important; background: var(--md-sys-color-surface-container-high) !important; box-shadow: var(--shadow-md) !important; }
-  
-  .tile-icon { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.75rem; border-radius: 1rem; display: flex; }
-  .tile-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-  .tile-name { font-weight: 800; color: var(--text-color); font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tile-meta { font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .list-item-clickable {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+  }
 
   .file-view { display: flex; flex-direction: column; gap: 1.5rem; animation: fadeIn 0.3s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

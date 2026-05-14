@@ -170,7 +170,7 @@
                     <td class="proc-desc" data-label="Descripción del Proceso">{proc.Description}</td>
                     <td data-label="Iniciado el"><span class="time-stamp">{formatTime(proc.Start)}</span></td>
                     <td class="actions-cell">
-                      <Button variant="ghost" size="sm" icon={Trash2} color="error" onclick={() => killProcess(proc.PID)}>
+                      <Button variant="danger" size="sm" icon={Trash2} onclick={() => killProcess(proc.PID)}>
                         Detener
                       </Button>
                     </td>
