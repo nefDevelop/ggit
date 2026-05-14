@@ -745,15 +745,13 @@ func GetAdminJanitorStats(c *context.APIContext) {
 
 	stats := make([]JanitorStat, 0)
 	for _, r := range repos {
-		if r.JanitorReport == "" {
-			continue
-		}
-
 		var report struct {
 			TotalWaste int64 `json:"total_waste"`
 			Issues     []any `json:"issues"`
 		}
-		_ = json.Unmarshal([]byte(r.JanitorReport), &report)
+		if r.JanitorReport != "" {
+			_ = json.Unmarshal([]byte(r.JanitorReport), &report)
+		}
 
 		stats = append(stats, JanitorStat{
 			ID:          r.ID,
