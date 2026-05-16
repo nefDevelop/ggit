@@ -103,7 +103,7 @@ func Toggle(options *ToggleOptions) gin.HandlerFunc {
 		}
 
 		// Redirect to log in page if auto-signin info is provided and has not signed in.
-		if !options.SignOutRequired && !gctx.IsLogged && !isAPIPath(gctx.Request.URL.Path) {
+		if !options.SignOutRequired && !gctx.IsLogged && !isAPIPath(gctx.Request.URL.Path) && !isExemptPath(gctx.Request.URL.Path) {
 			u, _ := gctx.Cookie(conf.Security.CookieUsername)
 			if len(u) > 0 {
 				gctx.SetCookie("redirect_to", url.QueryEscape(conf.Server.Subpath+gctx.Request.RequestURI), 0, conf.Server.Subpath, "", false, false)
