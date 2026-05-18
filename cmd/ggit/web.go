@@ -50,6 +50,9 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	r.GET("/health", monitoring.HealthCheckHandler)
 	r.Use(monitoring.SurvivalModeMiddleware())
 
+	// pprof
+	monitoring.RegisterPprof(r.Engine)
+
 	// OpenTelemetry Tracing
 	shutdown, err := monitoring.InitTracing()
 	if err != nil {
