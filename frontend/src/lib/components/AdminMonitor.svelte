@@ -193,6 +193,7 @@
           </div>
         {/if}
       </section>
+    </div>
   {/if}
   </div>
 </div>
@@ -203,17 +204,7 @@
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .debug-panel {
-    margin-top: 4rem;
-    padding: 1.5rem;
-    background: rgba(0,0,0,0.2);
-    border-radius: 1rem;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    font-family: monospace;
-  }
-  .debug-panel h3 { margin-top: 0; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; }
-  .debug-panel pre { margin: 0; font-size: 0.8rem; color: var(--primary-color); }
-  .raw-box { margin-top: 1rem !important; color: #fff !important; background: #000; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(4px); }
