@@ -149,7 +149,7 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr 80px 130px 90px;
+    grid-template-columns: 56px 450px 80px 130px 1fr;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -160,9 +160,6 @@
     cursor: pointer;
     min-width: 0;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    max-width: 850px;
-    margin: 0 auto;
-    width: 100%;
     box-sizing: border-box;
   }
 
