@@ -36,8 +36,10 @@
       setTimeout(() => copied = false, 2000);
     }
   }
+  // commit.user is the matched Ggit account (has real AvatarURL).
+  // commit.author.avatar_url is set for last_commit bars.
   const authorAvatarUrl = $derived(
-    commit.author?.email ? `/api/v2/avatars/email/${encodeURIComponent(commit.author.email)}` : ''
+    commit.user?.avatar_url || commit.author?.avatar_url || ''
   );
 </script>
 

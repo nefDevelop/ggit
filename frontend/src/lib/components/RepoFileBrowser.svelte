@@ -318,7 +318,7 @@ git push -u origin main</code></pre>
           {#if repoData.last_commit && repoData.type !== 'file'}
             <div class="last-commit-bar">
                 <Avatar
-                  src={`/api/v2/avatars/email/${encodeURIComponent(repoData.last_commit.author?.email || '')}`}
+                  src={repoData.last_commit.author?.avatar_url || ''}
                   username={repoData.last_commit.author?.name || 'U'}
                   seed={repoData.last_commit.author?.email || repoData.last_commit.author?.name || 'unknown'}
                   size={32}

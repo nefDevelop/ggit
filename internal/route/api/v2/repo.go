@@ -325,15 +325,24 @@ func getRepoDirectory(c *context.APIContext) {
 		log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
 		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 		if err == nil && len(lastCommit) > 0 {
+			lastCommitUser, _ := database.Handle.Users().GetByEmail(c.Req.Context(), lastCommit[0].Author.Email)
+			authorAvatarURL := ""
+			if lastCommitUser != nil {
+				u := database.FromDomainUser(lastCommitUser)
+				if u != nil {
+					authorAvatarURL = u.AvatarURL()
+				}
+			}
 			sha := lastCommit[0].ID.String()
 			res["last_commit"] = map[string]any{
 				"id":      sha,
 				"summary": lastCommit[0].Summary(),
 				"status":  string(database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)),
 				"author": map[string]any{
-					"name":  lastCommit[0].Author.Name,
-					"email": lastCommit[0].Author.Email,
-					"when":  lastCommit[0].Author.When,
+					"name":       lastCommit[0].Author.Name,
+					"email":      lastCommit[0].Author.Email,
+					"when":       lastCommit[0].Author.When,
+					"avatar_url": authorAvatarURL,
 				},
 			}
 		}
@@ -412,14 +421,23 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	lastCommit, _ := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 	if len(lastCommit) > 0 {
 		sha := lastCommit[0].ID.String()
+		fileCommitUser, _ := database.Handle.Users().GetByEmail(c.Req.Context(), lastCommit[0].Author.Email)
+		fileAuthorAvatarURL := ""
+		if fileCommitUser != nil {
+			fu := database.FromDomainUser(fileCommitUser)
+			if fu != nil {
+				fileAuthorAvatarURL = fu.AvatarURL()
+			}
+		}
 		res["last_commit"] = map[string]any{
 			"id":      sha,
 			"summary": lastCommit[0].Summary(),
 			"status":  string(database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)),
 			"author": map[string]any{
-				"name":  lastCommit[0].Author.Name,
-				"email": lastCommit[0].Author.Email,
-				"when":  lastCommit[0].Author.When,
+				"name":       lastCommit[0].Author.Name,
+				"email":      lastCommit[0].Author.Email,
+				"when":       lastCommit[0].Author.When,
+				"avatar_url": fileAuthorAvatarURL,
 			},
 		}
 	}
