@@ -5,6 +5,7 @@
   import Badge from '$lib/components/ui/Badge.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
+  import { getLanguageColor } from '$lib/utils/languages';
   import { Lock, GitFork, BookText, Star, SearchX, Tag } from "lucide-svelte";
   
   let { q = '' } = $props();
@@ -118,7 +119,7 @@
                 </div>
                 {#if repo.language}
                   <div class="stat">
-                    <span class="lang-dot"></span>
+                    <span class="lang-dot" style="background: {getLanguageColor(repo.language)}"></span>
                     {repo.language}
                   </div>
                 {/if}
@@ -155,7 +156,7 @@
                     class:active={selectedLang === lang.value}
                     onclick={() => selectedLang = lang.value}
                 >
-                    <span class="lang-dot" style="opacity: {selectedLang === lang.value ? 1 : 0.4}"></span>
+                    <span class="lang-dot" style="background: {lang.value ? getLanguageColor(lang.value) : 'var(--md-sys-color-outline)'}; opacity: {selectedLang === lang.value ? 1 : 0.5}"></span>
                     {lang.name}
                 </button>
             {/each}

@@ -123,10 +123,17 @@
                     <td data-label="Intervalo"><code class="spec-code">{task.Spec}</code></td>
                     <td data-label="Próxima Ejecución"><span class="time-stamp">{formatTime(task.Next)}</span></td>
                     <td data-label="Estado">
-                      <div class="exec-pill">
-                        <span class="val">{task.ExecTimes}</span>
-                        <span class="lab">Ejecs.</span>
-                      </div>
+                      {#if task.IsRunning}
+                        <div class="status-pill running">
+                          <span class="pulse-dot"></span>
+                          Ejecutando
+                        </div>
+                      {:else}
+                        <div class="exec-pill">
+                          <span class="val">{task.ExecTimes}</span>
+                          <span class="lab">Ejecs.</span>
+                        </div>
+                      {/if}
                     </td>
                     <td class="actions-cell">
                       <Button variant="ghost" size="sm" icon={Play} onclick={() => runTask(task.Description)}>
@@ -186,26 +193,13 @@
           </div>
         {/if}
       </section>
-    </div>
-
-    <div class="debug-panel">
-      <h3>Debug Info</h3>
-      {#if debugInfo}
-        <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-      {:else}
-        <p class="debug-warn">⚠️ No se recibió información de diagnóstico del API. Es posible que el backend no esté actualizado.</p>
-        <pre>{JSON.stringify(monitorData, null, 2)}</pre>
-      {/if}
-      <h3>Raw Response</h3>
-      <pre class="raw-box">{rawResponse || '(Vacio)'}</pre>
-    </div>
   {/if}
   </div>
 </div>
 
 <style>
   .admin-monitor-body {
-    padding: 0 1.5rem 4rem;
+    padding: 2rem 1.5rem 4rem;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -263,4 +257,31 @@
 
   .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: rgba(0,0,0,0.1); border-radius: 1.25rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
   .empty-monitor-state p { margin: 0; font-size: 1.1rem; font-weight: 600; }
+
+  /* Running status pill */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+  .status-pill.running {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  .pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse-green 1.5s infinite;
+  }
+  @keyframes pulse-green {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+  }
 </style>

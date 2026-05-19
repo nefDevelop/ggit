@@ -12,6 +12,7 @@
   import RepoSearchResults from './RepoSearchResults.svelte';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   import CommitStatusIcon from './CommitStatusIcon.svelte';
+  import Avatar from './Avatar.svelte';
   import hljs from 'highlight.js';
   
   let { path = '' } = $props();
@@ -316,7 +317,13 @@ git push -u origin main</code></pre>
           <!-- Last Commit Bar -->
           {#if repoData.last_commit && repoData.type !== 'file'}
             <div class="last-commit-bar">
-                <div class="commit-avatar tonal">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
+                <Avatar
+                  src={`/api/v2/avatars/email/${encodeURIComponent(repoData.last_commit.author?.email || '')}`}
+                  username={repoData.last_commit.author?.name || 'U'}
+                  seed={repoData.last_commit.author?.email || repoData.last_commit.author?.name || 'unknown'}
+                  size={32}
+                  type="user"
+                />
                 <div class="commit-info">
                   <div class="commit-summary-row">
                     <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="commit-msg-link">
@@ -563,21 +570,8 @@ git push -u origin main</code></pre>
     border: 1px solid var(--md-sys-color-outline-variant);
     min-width: 0;
   }
-  .commit-avatar {
-    width: 32px;
-    height: 32px;
-    background: var(--md-sys-color-secondary);
-    color: var(--md-sys-color-on-secondary);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
   
+
   .commit-info {
     display: flex;
     flex-direction: column;
