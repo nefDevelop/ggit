@@ -80,8 +80,10 @@
       </div>
     {:else if error}
       <div class="empty-state">
-        <AlertCircle size={48} />
-        <h3>No documentation found</h3>
+        <div class="empty-icon-ring">
+          <AlertCircle size={40} />
+        </div>
+        <h2>No documentation found</h2>
         <p>{error}</p>
         <div class="hint">
             Tip: Create a <code>docs/</code> or <code>ADR/</code> folder in your root branch to see it here.
@@ -113,25 +115,30 @@
         </Card>
       </div>
     {:else}
-      <div class="docs-grid">
+      <div class="flat-list-container">
         {#each entries.filter(e => e.type === 'dir' || e.name.endsWith('.md')) as entry}
-          <Button variant="tonal" class="doc-tile" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
-            <div class="tile-icon">
+          <button class="list-item-row list-item-clickable" onclick={() => loadPath(`${currentPath}/${entry.name}`)}>
+            <div class="list-item-icon">
               {#if entry.type === 'dir'}
-                <Folder size={24} />
+                <Folder size={20} style="color: var(--primary-color);" />
               {:else if isADR(entry.name)}
-                <Scale size={24} />
+                <Scale size={20} style="color: var(--text-muted); opacity: 0.7;" />
               {:else}
-                <FileText size={24} />
+                <FileText size={20} style="color: var(--text-muted); opacity: 0.7;" />
               {/if}
             </div>
-            <div class="tile-info">
-              <span class="tile-name">{entry.name}</span>
+            <div class="item-main-content">
+              <div class="item-title-bar">
+                <span class="item-title-link">{entry.name}</span>
+              </div>
               {#if entry.last_commit}
-                <span class="tile-meta">{entry.last_commit.summary}</span>
+                <div class="item-meta-data">{entry.last_commit.summary}</div>
               {/if}
             </div>
-          </Button>
+            <div class="item-actions-right">
+              <span class="material-symbols-rounded" style="color: var(--text-muted); opacity: 0.5; font-size: 1.2rem;">chevron_right</span>
+            </div>
+          </button>
         {/each}
       </div>
     {/if}
@@ -151,14 +158,53 @@
 
   .hint { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
 
-  .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-  :global(.doc-tile) { border: none !important; padding: 1.25rem !important; height: auto !important; display: flex !important; align-items: center !important; gap: 1.25rem !important; text-align: left !important; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; cursor: pointer !important; justify-content: flex-start !important; }
-  :global(.doc-tile:hover) { transform: translateY(-2px) !important; background: var(--md-sys-color-surface-container-high) !important; box-shadow: var(--shadow-md) !important; }
-  
-  .tile-icon { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); padding: 0.75rem; border-radius: 1rem; display: flex; }
-  .tile-info { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-  .tile-name { font-weight: 800; color: var(--text-color); font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .tile-meta { font-size: 0.75rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    text-align: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
+
+  .list-item-clickable {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+  }
 
   .file-view { display: flex; flex-direction: column; gap: 1.5rem; animation: fadeIn 0.3s ease-out; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

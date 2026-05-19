@@ -74,7 +74,11 @@
             </div>
             <div class="detail-item">
               <span class="label">{i18n.t("admin.last_scan")}</span>
-              <span class="value">{new Date(repo.last_check * 1000).toLocaleDateString()}</span>
+              <span class="value">
+                {repo.last_check > 0 
+                  ? new Date(repo.last_check * 1000).toLocaleDateString() 
+                  : (i18n.t("admin.never") || "Never")}
+              </span>
             </div>
           </div>
 

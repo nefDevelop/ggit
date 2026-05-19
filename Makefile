@@ -81,12 +81,15 @@ test-e2e: clean-ports build
 	@echo "[server]" >> conf/app.test.ini
 	@echo "HTTP_PORT = 3006" >> conf/app.test.ini
 	@rm -rf data/gogs.test.db
+	@rm -rf data/ggit.test.db
 	@rm -rf ggit-repositories-test
 	@mkdir -p ggit-repositories-test
 	@rm -rf frontend/tests/.auth/*
 	@rm -rf .bin/data # Limpiar rastro de ejecuciones fallidas
 	@echo "Asegurando usuario admin para tests..."
 	@GGIT_WORK_DIR=$$(pwd) GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit admin create-user --name ggit-admin --password admin1234 --email admin@example.com --admin -c conf/app.test.ini
+	@echo "Asegurando usuario regular para tests..."
+	@GGIT_WORK_DIR=$$(pwd) GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit admin create-user --name regular-user --password password123 --email regular@example.com -c conf/app.test.ini
 	@echo "Verificando dependencias de Playwright..."
 	@cd frontend && npx playwright install
 	@echo "Construyendo frontend para producción (test)..."

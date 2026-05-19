@@ -197,29 +197,81 @@ func SendAdminTestEmail(c *context.APIContext) {
 
 // GetAdminMonitor returns system monitor data.
 func GetAdminMonitor(c *context.APIContext) {
+	log.Trace("API: GetAdminMonitor called")
 	tasks := cron.ListTasks()
 	type cronTask struct {
-		Description string
-		Spec        string
-		Next        time.Time
-		Prev        time.Time
-		ExecTimes   int64
+		Description string `json:"Description"`
+		Spec        string `json:"Spec"`
+		Next        string `json:"Next"`
+		Prev        string `json:"Prev"`
+		ExecTimes   int64  `json:"ExecTimes"`
 	}
 	cronTasks := make([]cronTask, len(tasks))
 	for i, t := range tasks {
 		cronTasks[i] = cronTask{
 			Description: t.Description,
 			Spec:        t.Spec,
-			Next:        t.Next,
-			Prev:        t.Prev,
+			Next:        t.Next.Format(time.RFC3339),
+			Prev:        t.Prev.Format(time.RFC3339),
 			ExecTimes:   int64(t.ExecTimes),
 		}
 	}
 
-	c.JSON(http.StatusOK, map[string]any{
-		"cron":      cronTasks,
-		"processes": process.Processes,
-	})
+	type procInfo struct {
+		PID         int64  `json:"PID"`
+		Description string `json:"Description"`
+		Start       string `json:"Start"`
+	}
+	procInfos := make([]procInfo, len(process.Processes))
+	for i, p := range process.Processes {
+		procInfos[i] = procInfo{
+			PID:         p.PID,
+			Description: p.Description,
+			Start:       p.Start.Format(time.RFC3339),
+		}
+	}
+
+	log.Trace("API: Sending monitor response (Tasks: %d, Procs: %d)", len(cronTasks), len(procInfos))
+	
+	respData := map[string]any{
+		"ping":        "pong",
+		"cron_v2":     cronTasks,
+		"processes":   procInfos,
+		"debug_info": map[string]any{
+			"install_lock": conf.Security.InstallLock,
+			"custom_conf":  conf.CustomConf,
+			"cron_enabled": conf.Cron.RepoHealthCheck.Enabled,
+			"tasks_count":  len(tasks),
+			"v":           5,
+		},
+	}
+	
+	c.JSON(http.StatusOK, respData)
+	log.Trace("API: Monitor response sent (v5)")
+}
+
+// RunAdminCronTask runs a cron task manually.
+func RunAdminCronTask(c *context.APIContext) {
+	var f struct {
+		Description string `json:"description" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&f); err != nil {
+		c.ErrorStatus(http.StatusBadRequest, err)
+		return
+	}
+
+	cron.RunTask(f.Description)
+	c.NoContent()
+}
+
+// KillAdminProcess kills a running process.
+func KillAdminProcess(c *context.APIContext) {
+	pid := c.ParamsInt64(":pid")
+	if err := process.Kill(pid); err != nil {
+		c.Error(err, "kill process")
+		return
+	}
+	c.NoContent()
 }
 
 // GetAdminUsers returns a list of all users.
@@ -693,15 +745,13 @@ func GetAdminJanitorStats(c *context.APIContext) {
 
 	stats := make([]JanitorStat, 0)
 	for _, r := range repos {
-		if r.JanitorReport == "" {
-			continue
-		}
-
 		var report struct {
 			TotalWaste int64 `json:"total_waste"`
 			Issues     []any `json:"issues"`
 		}
-		_ = json.Unmarshal([]byte(r.JanitorReport), &report)
+		if r.JanitorReport != "" {
+			_ = json.Unmarshal([]byte(r.JanitorReport), &report)
+		}
 
 		stats = append(stats, JanitorStat{
 			ID:          r.ID,

@@ -5,6 +5,8 @@
   import Button from "./ui/Button.svelte";
   import Badge from "./ui/Badge.svelte";
   import Card from "./ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
+  import { Sparkles, Search, Trash2 } from "lucide-svelte";
   import { tool } from "$lib/tool";
   import { i18n } from "$lib/i18n.svelte";
 
@@ -82,27 +84,22 @@
 </script>
 
 <Card padding="none" class="settings-premium-card">
-  <header class="section-header-premium">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">mop</span>
-        <div>
-          <h2>Ggit Janitor</h2>
-          <p class="subtitle">{i18n.t("settings.janitor_desc")}</p>
-        </div>
-      </div>
-      <div class="header-actions">
-        <Button variant="outline" icon="search" onclick={runScan} loading={scanning} disabled={cleaning}>
-          {report ? i18n.t("settings.re_scan") : i18n.t("settings.scan_now")}
+  <PageHeader 
+    title="Ggit Janitor" 
+    subtitle={i18n.t("settings.janitor_desc")} 
+    icon={Sparkles}
+  >
+    {#snippet actions()}
+      <Button variant="outline" icon={Search} onclick={runScan} loading={scanning} disabled={cleaning}>
+        {report ? i18n.t("settings.re_scan") : i18n.t("settings.scan_now")}
+      </Button>
+      {#if report && report.issues?.length > 0}
+        <Button variant="primary" icon={Trash2} onclick={runCleanup} loading={cleaning} disabled={scanning || selectedPaths.length === 0}>
+          {i18n.t("settings.clean_selected")} ({selectedPaths.length})
         </Button>
-        {#if report && report.issues?.length > 0}
-          <Button variant="primary" icon="cleaning_services" onclick={runCleanup} loading={cleaning} disabled={scanning || selectedPaths.length === 0}>
-            {i18n.t("settings.clean_selected")} ({selectedPaths.length})
-          </Button>
-        {/if}
-      </div>
-    </div>
-  </header>
+      {/if}
+    {/snippet}
+  </PageHeader>
 
   <div class="settings-content">
     {#if loading}
@@ -182,25 +179,8 @@
 </Card>
 
 <style>
-  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-  
-  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header-premium { padding: 1.5rem; }
-    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
-  }
-
-  .settings-content { padding: 0; }
-  @media (max-width: 600px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .janitor-stack { display: flex; flex-direction: column; gap: 2.5rem; }
 

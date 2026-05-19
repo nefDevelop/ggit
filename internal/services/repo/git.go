@@ -37,26 +37,26 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 		return fmt.Errorf("clone"+": %w", err)
 	}
 
+	var data []byte
 	// README
-	readmeName := opts.Readme
-	if readmeName == "" {
-		readmeName = "Default"
-	}
-	data, err := getRepoInitFile("readme", readmeName)
-	if err != nil {
-		return fmt.Errorf("getRepoInitFile[%s]: %v", readmeName, err)
-	}
+	if len(opts.Readme) > 0 {
+		var err error
+		data, err = getRepoInitFile("readme", opts.Readme)
+		if err != nil {
+			return fmt.Errorf("getRepoInitFile[%s]: %v", opts.Readme, err)
+		}
 
-	cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name)
-	match := map[string]string{
-		"Name":           repo.Name,
-		"Description":    repo.Description,
-		"CloneURL.SSH":   cloneLink.SSH,
-		"CloneURL.HTTPS": cloneLink.HTTPS,
-	}
-	if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
-		[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
-		return fmt.Errorf("write README.md: %v", err)
+		cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name)
+		match := map[string]string{
+			"Name":           repo.Name,
+			"Description":    repo.Description,
+			"CloneURL.SSH":   cloneLink.SSH,
+			"CloneURL.HTTPS": cloneLink.HTTPS,
+		}
+		if err = os.WriteFile(filepath.Join(tmpDir, "README.md"),
+			[]byte(strx.Expand(string(data), match)), 0o644); err != nil {
+			return fmt.Errorf("write README.md: %v", err)
+		}
 	}
 
 	// .gitignore

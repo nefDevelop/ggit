@@ -46,10 +46,9 @@
   const isRecentPull = $derived(() => repo.last_pull_at && (Date.now() - new Date(repo.last_pull_at).getTime()) < recentThresh);
   const isRecentBranch = $derived(() => repo.last_branch_at && (Date.now() - new Date(repo.last_branch_at).getTime()) < recentThresh);
 
-  let avatarError = $state(false);
-
   import { toast } from '$lib/toast.svelte';
   import Button from './ui/Button.svelte';
+  import Avatar from './Avatar.svelte';
 
   let copied = $state(false);
   function copyToClipboard(text: string) {
@@ -62,13 +61,14 @@
 
 <div class="repo-row {isOlder ? 'older-row' : ''} {isNew() ? 'new-update' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
   
-  <div class="repo-avatar-container">
-    {#if repo.avatar_url && !avatarError}
-      <img src={repo.avatar_url} alt={repo.name} class="repo-avatar" loading="lazy" onerror={() => avatarError = true} />
-    {/if}
-    <div class="repo-icon-placeholder" style="background-color: {getLanguageColor(repo.language || 'Plain Text')}20; color: {getLanguageColor(repo.language || 'Plain Text')}">
-      <Package size={24} />
-    </div>
+  <div class="repo-avatar-wrap">
+    <Avatar 
+      src={repo.avatar_url} 
+      username={repo.name} 
+      seed={repo.id?.toString()} 
+      size={48} 
+      type="repo" 
+    />
   </div>
 
   <div class="main-info">
@@ -170,37 +170,13 @@
     box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.1);
   }
 
-  .repo-avatar-container {
+  .repo-avatar-wrap {
     width: 48px;
     height: 48px;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--md-sys-color-surface-variant);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .repo-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-  }
-
-  .repo-icon-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    z-index: 1;
+    flex-shrink: 0;
   }
 
   .new-update {
@@ -297,7 +273,6 @@
 
   @media (max-width: 480px) {
     .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 40px; }
-    .repo-avatar-container { width: 40px; height: 40px; }
     .repo-name { font-size: 1rem; }
     .repo-desc { font-size: 0.8rem; }
     .actions-info .time { display: none; }

@@ -8,6 +8,7 @@
   import Badge from './ui/Badge.svelte';
   import Input from './ui/Input.svelte';
   import Select from './ui/Select.svelte';
+  import PageHeader from './ui/PageHeader.svelte';
 
   const repo: any = getContext('repo');
   let milestones = $state<any[]>([]);
@@ -16,6 +17,7 @@
 
   let showEditor = $state(false);
   let editingMilestone = $state<any>(null);
+  let saving = $state(false);
   let form = $state({
     title: '',
     description: '',
@@ -44,7 +46,8 @@
   }
 
   async function saveMilestone() {
-    if (!form.title.trim()) return;
+    if (saving || !form.title.trim()) return;
+    saving = true;
     
     const body: any = { ...form };
     if (form.due_on) {
@@ -72,6 +75,8 @@
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      saving = false;
     }
   }
 
@@ -109,11 +114,13 @@
 </script>
 
 <div class="repo-milestones">
+  {#if milestones.length > 0}
   <header class="section-actions">
     <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
       New Milestone
     </Button>
   </header>
+  {/if}
 
   {#if showEditor}
     <Card class="milestone-editor tonal" padding="lg">
@@ -221,99 +228,108 @@
       </div>
 
       <div class="editor-footer">
-        <Button variant="secondary" onclick={() => showEditor = false}>Cancel</Button>
-        <Button variant="primary" onclick={saveMilestone} disabled={!form.title.trim()}>
+        <Button variant="ghost" size="sm" onclick={() => showEditor = false} disabled={saving}>Cancel</Button>
+        <Button variant="primary" size="sm" onclick={saveMilestone} disabled={saving || !form.title.trim()} loading={saving}>
           {editingMilestone ? 'Update Milestone' : 'Create Milestone'}
         </Button>
       </div>
     </Card>
   {/if}
 
-  <div class="milestones-list">
+  <div class="milestones-content">
     {#if loading}
       <div class="loading-state">
         <div class="spinner"></div>
-        <p>Loading milestones...</p>
       </div>
     {:else if milestones.length === 0}
       <div class="empty-state">
-        <AlertCircle size={48} />
-        <h3>No milestones found</h3>
+        <div class="empty-icon-ring">
+          <Calendar size={40} />
+        </div>
+        <h2>No milestones found</h2>
         <p>There are no milestones in this repository.</p>
+        <div style="margin-top: 1rem;">
+          <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
+            Create your first milestone
+          </Button>
+        </div>
       </div>
     {:else}
-      {#each milestones as ms}
-        <Card class="milestone-card" padding="lg">
-          <div class="ms-main">
-            <div class="ms-header">
-              <div class="ms-title-row">
-                <h4>{ms.title}</h4>
-                <Badge variant={ms.state === 'open' ? 'success' : 'neutral'}>{ms.state}</Badge>
-              </div>
-              <div class="ms-meta">
-                {#if ms.due_on}
-                  <span class="due-date">
-                    <Calendar size={14} />
-                    Due on {new Date(ms.due_on).toLocaleDateString()}
-                  </span>
-                {/if}
-                <span class="updated">Last updated {new Date().toLocaleDateString()}</span>
-              </div>
-            </div>
-            
-            <div class="ms-description">
-              {ms.description || 'No description provided.'}
-            </div>
-
-            <div class="hill-chart-display-box">
-              <svg viewBox="0 0 100 45" preserveAspectRatio="none" class="hill-chart-large">
-                <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
-                <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
-                <circle 
-                  cx={ms.hill_state} 
-                  cy={40 - 140 * (ms.hill_state / 100) + 140 * Math.pow(ms.hill_state / 100, 2)} 
-                  r="3" 
-                  fill="var(--primary-color)" 
-                  filter="drop-shadow(0 0 5px var(--primary-color))"
-                />
-              </svg>
-              <div class="hill-labels">
-                <div class="phase uphill" class:active={ms.hill_state < 50}>
-                    <TrendingUp size={16} />
-                    Figuring it out
+      <div class="flat-list-container">
+        {#each milestones as ms}
+          <div class="list-item-row">
+            <div class="item-main-content">
+              <div class="ms-header">
+                <div class="ms-title-row">
+                  <a href={`/${repo.data.owner.username}/${repo.data.name}/issues?milestone=${ms.id}`} class="item-title-link">
+                    {ms.title}
+                  </a>
+                  <span class="badge-mini" style="background: {ms.state === 'open' ? 'var(--success)' : 'var(--text-muted)'}">{ms.state}</span>
                 </div>
-                <div class="phase downhill" class:active={ms.hill_state >= 50}>
-                    <TrendingDown size={16} />
-                    Making it happen
+                <div class="ms-meta">
+                  {#if ms.due_on}
+                    <span class="due-date">
+                      <Calendar size={14} />
+                      Due on {new Date(ms.due_on).toLocaleDateString()}
+                    </span>
+                  {/if}
+                  <span class="updated">Last updated {new Date().toLocaleDateString()}</span>
                 </div>
               </div>
+              
+              <div class="ms-description">
+                {ms.description || 'No description provided.'}
+              </div>
+
+              <div class="hill-chart-display-box">
+                <svg viewBox="0 0 100 45" preserveAspectRatio="none" class="hill-chart-large">
+                  <path d="M 0 40 Q 50 -30 100 40" fill="none" stroke="var(--md-sys-color-outline-variant)" stroke-width="1.5" />
+                  <line x1="50" y1="5" x2="50" y2="40" stroke="var(--md-sys-color-outline-variant)" stroke-dasharray="2" stroke-width="0.4" />
+                  <circle 
+                    cx={ms.hill_state} 
+                    cy={40 - 140 * (ms.hill_state / 100) + 140 * Math.pow(ms.hill_state / 100, 2)} 
+                    r="3" 
+                    fill="var(--primary-color)" 
+                    filter="drop-shadow(0 0 5px var(--primary-color))"
+                  />
+                </svg>
+                <div class="hill-labels">
+                  <div class="phase uphill" class:active={ms.hill_state < 50}>
+                      <TrendingUp size={16} />
+                      Figuring it out
+                  </div>
+                  <div class="phase downhill" class:active={ms.hill_state >= 50}>
+                      <TrendingDown size={16} />
+                      Making it happen
+                  </div>
+                </div>
+              </div>
+
+              <div class="ms-progress-zone">
+                <div class="progress-info">
+                  <span>{getProgress(ms).toFixed(0)}% Complete</span>
+                  <span class="counts">{ms.closed_issues} closed · {ms.open_issues} open</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: {getProgress(ms)}%"></div>
+                </div>
+              </div>
             </div>
 
-            <div class="ms-progress-zone">
-              <div class="progress-info">
-                <span>{getProgress(ms).toFixed(0)}% Complete</span>
-                <span class="counts">{ms.closed_issues} closed · {ms.open_issues} open</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: {getProgress(ms)}%"></div>
-              </div>
+            <div class="item-actions-right">
+              <button class="btn-icon-minimal" onclick={() => handleEdit(ms)} title="Edit"><Edit size={16} /></button>
+              <button class="btn-icon-minimal delete" onclick={() => deleteMilestone(ms.id)} title="Delete"><Trash2 size={16} /></button>
             </div>
           </div>
-
-          <div class="ms-actions">
-            <Button variant="ghost" icon={Edit} onclick={() => handleEdit(ms)} />
-            <Button variant="ghost" icon={Trash2} class="danger-btn" onclick={() => deleteMilestone(ms.id)} />
-          </div>
-        </Card>
-      {/each}
+        {/each}
+      </div>
     {/if}
   </div>
 </div>
 
 <style>
   .repo-milestones { display: flex; flex-direction: column; gap: 0; }
-  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; padding: 0; margin-top: 1.5rem; }
-  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .section-actions { display: flex; justify-content: flex-end; padding: 0.5rem 0; }
 
   .editor-title { margin: 0; font-weight: 800; color: var(--primary-color); }
   .editor-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; gap: 2rem; }
@@ -327,14 +343,10 @@
 
   .editor-footer { display: flex; justify-content: flex-end; gap: 1rem; }
 
-  .milestones-list { display: flex; flex-direction: column; gap: 1.5rem; }
-  
   :global(.milestone-card) { display: flex; gap: 2rem; border-radius: 1.5rem; }
-  .ms-main { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
   
   .ms-header { display: flex; flex-direction: column; gap: 0.25rem; }
   .ms-title-row { display: flex; align-items: center; gap: 1rem; }
-  .ms-title-row h4 { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
   
   .ms-meta { display: flex; gap: 1.5rem; font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
 
@@ -345,10 +357,44 @@
   .progress-bar { height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--primary-color); border-radius: 10px; transition: width 0.4s ease; }
 
-  .ms-actions { display: flex; flex-direction: column; gap: 0.5rem; justify-content: center; }
   :global(.danger-btn:hover) { color: var(--error) !important; }
 
-  .empty-state { text-align: center; padding: 4rem; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
+  .empty-state {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
 
   .hill-state-editor-box { padding: 1.5rem; border-radius: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .hill-editor-header { display: flex; justify-content: space-between; align-items: baseline; }
@@ -365,3 +411,4 @@
   .phase { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.4; transition: all 0.3s; }
   .phase.active { opacity: 1; color: var(--primary-color); }
 </style>
+le>

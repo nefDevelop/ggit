@@ -39,16 +39,18 @@
   let cloneUrl = $derived(repoData?.clone_url || repoData?.repository?.clone_url || '');
 
   // Initialize from context if at root to avoid flicker
-  if (!path && repoContext.full) {
-    repoData = repoContext.full;
-    loading = false;
-    // Set lastFetched to prevent immediate re-fetch
-    lastFetched = { 
-      user: page.params.username || '', 
-      repo: page.params.reponame || '', 
-      path: '' 
-    };
-  }
+  $effect(() => {
+    if (!path && repoContext.full) {
+      repoData = repoContext.full;
+      loading = false;
+      // Set lastFetched to prevent immediate re-fetch
+      lastFetched = { 
+        user: page.params.username || '', 
+        repo: page.params.reponame || '', 
+        path: '' 
+      };
+    }
+  });
 
   let codeRows = $derived(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];
@@ -67,7 +69,11 @@
         try {
           html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
         } catch (e) {
-          html = hljs.highlightAuto(repoData.content).value;
+          try {
+            html = hljs.highlightAuto(repoData.content).value;
+          } catch (e2) {
+            html = repoData.content.replace(/[&<>"']/g, (m: string) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m] || m));
+          }
         }
       }
       lines = html.split('\n');
@@ -234,8 +240,10 @@
     </div>
   {:else if error}
     <div class="empty-state">
-      <AlertCircle size={48} />
-      <h3>No content found</h3>
+      <div class="empty-icon-ring">
+        <AlertCircle size={40} />
+      </div>
+      <h2>No content found</h2>
       <p>{error || 'This repository is empty or the path does not exist.'}</p>
     </div>
   {:else if repoData}
@@ -835,9 +843,50 @@ git push -u origin main</code></pre>
 
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
-  .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
+  .empty-state {
+    padding: 6rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
+
+  .empty-state-push .empty-icon-ring {
+    border-color: var(--tertiary);
+    color: var(--tertiary);
+    margin-bottom: 2rem;
+  }
+
   .empty-state-push { padding: 5rem 2rem; text-align: center; }
-  .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--tertiary); }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; text-transform: uppercase; }
   

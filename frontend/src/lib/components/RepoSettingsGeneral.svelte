@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
   import { RepositorySchema } from "$lib/schemas";
@@ -10,44 +11,26 @@
   import Avatar from "./Avatar.svelte";
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import { Settings, RefreshCw, Upload, Trash2, FileText, Bug, GitPullRequest, AlertTriangle } from "lucide-svelte";
 
-  import PageHeader from "./ui/PageHeader.svelte";
-
   const repo: any = getContext("repo");
-  let settings = $state<any>({});
-  let branches = $state<any[]>([]);
+  let settings = $state<any>(null);
   let loading = $state(true);
   let saving = $state(false);
-  let avatarUploading = $state(false);
   let deleteConfirm = $state("");
-  let errors = $state<Record<string, string>>({});
-
-  async function fetchBranches() {
-    try {
-      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/branches`);
-      if (res.ok) {
-        const d = await res.json();
-        const b = [];
-        if (d.default) b.push(d.default);
-        if (d.active) b.push(...d.active);
-        if (d.stale) b.push(...d.stale);
-        branches = b;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
+  let avatarInput = $state<HTMLInputElement>();
+  let avatarUploading = $state(false);
+  let avatarCacheBuster = $state(Date.now());
 
   async function fetchSettings() {
     loading = true;
     try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
-      );
-      if (res.ok) settings = await res.json();
-      await fetchBranches();
+      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`);
+      if (res.ok) {
+        settings = await res.json();
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -55,25 +38,42 @@
     }
   }
 
-  async function updateAvatar(e: Event) {
-    const target = e.target as HTMLInputElement;
-    if (!target.files?.length) return;
-
-    avatarUploading = true;
-    const formData = new FormData();
-    formData.append("avatar", target.files[0]);
-
+  async function saveSettings() {
+    saving = true;
     try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`, {
+        method: "PATCH",
+        body: JSON.stringify(settings),
+      });
       if (res.ok) {
-        toast.success("Avatar updated successfully!");
+        toast.success(i18n.t("settings.saved_success") || "Ajustes guardados correctamente");
+        if (settings.name !== repo.data.name) {
+          goto(`/${repo.data.owner.username}/${settings.name}/settings`);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(i18n.t("settings.saved_error") || "Error al guardar los ajustes");
+    } finally {
+      saving = false;
+    }
+  }
+
+  async function uploadAvatar(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    avatarUploading = true;
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}/avatar`, {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        avatarCacheBuster = Date.now();
         fetchSettings();
+        toast.success("Avatar actualizado");
       }
     } catch (e) {
       console.error(e);
@@ -83,17 +83,15 @@
   }
 
   async function deleteAvatar() {
-    if (!await dialog.confirm("¿Seguro que quieres eliminar el avatar del repositorio?")) return;
-    
+    if (!await dialog.confirm("¿Estás seguro de eliminar el logo del repositorio?")) return;
     avatarUploading = true;
     try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`,
-        { method: "DELETE" },
-      );
+      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}/avatar`, {
+        method: "DELETE",
+      });
       if (res.ok) {
-        toast.success("Avatar deleted.");
         fetchSettings();
+        toast.success("Avatar eliminado");
       }
     } catch (e) {
       console.error(e);
@@ -102,80 +100,35 @@
     }
   }
 
-  async function saveSettings() {
-    errors = {};
-    const result = RepositorySchema.safeParse(settings);
-    if (!result.success) {
-      result.error.issues.forEach(err => {
-        const key = err.path[0];
-        if (typeof key === 'string') {
-          errors[key] = err.message;
-        }
-      });
-      toast.error("Por favor, corrige los errores en el formulario.");
-      return;
-    }
-
-    saving = true;
-    try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...result.data,
-            project_folder: settings.project_folder,
-            branch: settings.default_branch,
-            default_branch: settings.default_branch
-          }),
-        },
-      );
-      if (res.ok) {
-        toast.success("Repository updated successfully!");
-        fetchSettings();
-      }
-    } catch (e) { } finally {
-      saving = false;
-    }
-  }
-
   async function deleteRepo() {
     if (deleteConfirm !== settings.name) return;
+    if (!await dialog.confirm(`¿ESTÁS SEGURO? Esta acción es IRREVERSIBLE. Se eliminará el repositorio "${settings.name}" permanentemente.`)) return;
+    saving = true;
     try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: deleteConfirm }),
-        },
-      );
+      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`, {
+        method: "DELETE",
+      });
       if (res.ok) {
-        toast.success("Repository deleted.");
         goto("/dashboard");
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      saving = false;
     }
   }
 
   async function transferRepo() {
-    const newOwner = await dialog.prompt("Introduce el nombre de usuario o organización del nuevo propietario:");
+    const newOwner = await dialog.prompt("Introduce el nombre del nuevo propietario (usuario u organización):");
     if (!newOwner) return;
-    
     saving = true;
     try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/transfer`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ new_owner: newOwner }),
-        },
-      );
+      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}/transfer`, {
+        method: "POST",
+        body: JSON.stringify({ new_owner: newOwner }),
+      });
       if (res.ok) {
-        toast.success("Repository transfer initiated!");
+        toast.success("Transferencia iniciada.");
         goto("/dashboard");
       }
     } catch (e) {
@@ -188,291 +141,174 @@
   onMount(fetchSettings);
 </script>
 
-<Card padding="none" class="settings-premium-card">
-  <PageHeader 
-    title="Ajustes del Repositorio"
-    subtitle="Configuración general, visibilidad y metadatos básicos de tu proyecto."
-    icon={Settings}
-  />
+<div class="general-settings-wrapper">
+  <Card padding="none" class="settings-premium-card">
+    <PageHeader 
+      title="Ajustes del Repositorio"
+      subtitle="Configuración general, visibilidad y metadatos básicos de tu proyecto."
+      icon={Settings}
+    />
 
-  <div class="settings-content">
-    {#if loading}
-      <div class="skeleton-form"></div>
-    {:else}
-      <form class="settings-form" onsubmit={(e) => { e.preventDefault(); saveSettings(); }}>
-        <div class="avatar-settings-section island">
-          <div class="avatar-preview-wrap">
-            <Avatar 
-              src={settings.avatar_url} 
-              username={settings.name} 
-              seed={settings.id?.toString()} 
-              size={110} 
-              class="repo-avatar-img"
+    <div class="settings-content">
+      {#if loading}
+        <div class="skeleton-form"></div>
+      {:else}
+        <form class="settings-form" onsubmit={(e) => { e.preventDefault(); saveSettings(); }}>
+          <div class="avatar-settings-section island">
+            <div class="avatar-preview-wrap">
+              <Avatar 
+                src={settings.avatar_url ? `${settings.avatar_url}${settings.avatar_url.includes('?') ? '&' : '?'}t=${avatarCacheBuster}` : ''} 
+                username={settings.name} 
+                size={110} 
+                type="repo"
+                class="repo-avatar-img"
+              />
+              {#if avatarUploading}
+                <div class="avatar-overlay">
+                  <RefreshCw class="spin" />
+                </div>
+              {/if}
+            </div>
+            <div class="avatar-actions">
+              <strong>Logo del Repositorio</strong>
+              <p>Personaliza la identidad visual de tu proyecto con una imagen cuadrada.</p>
+              <div class="action-buttons">
+                <Button variant="tonal" size="sm" icon={Upload} onclick={() => avatarInput?.click()} loading={avatarUploading}>Subir Nueva</Button>
+                {#if settings.avatar_url}
+                  <Button variant="ghost" size="sm" icon={Trash2} class="danger-text" onclick={deleteAvatar} loading={avatarUploading}>Eliminar</Button>
+                {/if}
+              </div>
+              <input type="file" bind:this={avatarInput} accept="image/*" style="display: none;" onchange={uploadAvatar} />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <Input label="Nombre del Repositorio" bind:value={settings.name} placeholder="mi-gran-proyecto" required />
+            <Input label="Propietario" value={settings.owner.username} disabled />
+            <Input label="Descripción" bind:value={settings.description} placeholder="Una breve descripción sobre qué hace este proyecto..." class="full-width" />
+            <Input label="Página Web" bind:value={settings.website} placeholder="https://mi-proyecto.com" class="full-width" />
+          </div>
+
+          <div class="options-grid">
+            <Checkbox 
+              label="Hacer Repositorio Privado" 
+              description="Solo tú y las personas que autorices explícitamente podrán ver el contenido de este repositorio."
+              bind:checked={settings.private} 
             />
-            {#if avatarUploading}
-              <div class="avatar-overlay">
-                <RefreshCw size={24} class="spin" />
+            
+            <div class="select-field">
+              <label for="visibility">Visibilidad por defecto</label>
+              <div class="select-wrapper">
+                <select id="visibility">
+                  <option value="public">Público</option>
+                  <option value="private">Privado</option>
+                </select>
+              </div>
+              <p class="select-helper-text">Define cómo aparecerá el repositorio en el buscador.</p>
+            </div>
+          </div>
+
+          <div class="advanced-stack island">
+            <header class="adv-header">
+              <Settings size={20} />
+              <strong>Módulos Activos</strong>
+            </header>
+            
+            <div class="options-grid">
+              <Checkbox label="Wiki" description="Documentación colaborativa." bind:checked={settings.enable_wiki} />
+              <Checkbox label="Pull Requests" description="Aceptar contribuciones externas." bind:checked={settings.enable_pull_requests} />
+              <Checkbox label="Issues" description="Seguimiento de tareas y errores." bind:checked={settings.enable_issues} />
+              <Checkbox label="External Wiki" description="Usar una wiki alojada en otro lugar." bind:checked={settings.enable_external_wiki} />
+            </div>
+
+            {#if settings.enable_external_wiki}
+              <div class="nested-box tonal">
+                <Input label="URL de Wiki Externa" bind:value={settings.external_wiki_url} placeholder="https://docs.mi-proyecto.com" />
               </div>
             {/if}
           </div>
-          <div class="avatar-actions">
-            <header>
-              <strong>Imagen del Repositorio</strong>
-              <p>Cambia el icono que identifica a este proyecto en la plataforma.</p>
-            </header>
-            <div class="action-buttons">
-              <Button variant="outline" size="sm" icon={Upload} onclick={() => document.getElementById('repo-avatar-input')?.click()}>
-                Subir Imagen
-              </Button>
-              {#if settings.use_custom_avatar}
-                <Button variant="ghost" size="sm" icon={Trash2} class="danger-text" onclick={deleteAvatar}>
-                  Eliminar
-                </Button>
-              {/if}
-              <input 
-                type="file" 
-                id="repo-avatar-input" 
-                accept="image/*" 
-                hidden 
-                onchange={updateAvatar} 
-              />
-            </div>
-          </div>
-        </div>
 
-        <div class="form-grid">
-          <Input 
-            label="Nombre del Repositorio" 
-            bind:value={settings.name} 
-            error={errors.name}
-          />
-          <Input 
-            label="Sitio Web" 
-            bind:value={settings.website} 
-            error={errors.website}
-            placeholder="https://example.com" 
-          />
-          <Input 
-            label="Carpeta de Proyecto" 
-            bind:value={settings.project_folder} 
-            error={errors.project_folder}
-            placeholder="p.ej. Backend, Frontend, Personal" 
-          />
-
-          <div class="select-field full-width">
-            <label for="default_branch">Rama por Defecto</label>
-            <div class="select-wrapper">
-              <select id="default_branch" bind:value={settings.default_branch}>
-                {#each branches as branch}
-                  <option value={branch.name}>{branch.name}</option>
-                {/each}
-              </select>
-            </div>
-            <span class="select-helper-text">La rama por defecto es la que se muestra predeterminadamente al ver el código del proyecto.</span>
-          </div>
-          
-          <Input 
-            label="Descripción" 
-            bind:value={settings.description} 
-            error={errors.description}
-            placeholder="Una breve descripción de tu proyecto..."
-            multiline
-            class="full-width"
-          />
-        </div>
-
-        <div class="options-grid">
-          <Checkbox 
-            label="Hacer Privado" 
-            description="Solo visible para los colaboradores autorizados." 
-            bind:checked={settings.private} 
-          />
-          <Checkbox 
-            label="No Listado" 
-            description="El repositorio no aparecerá en los resultados de búsqueda pública." 
-            bind:checked={settings.unlisted} 
-          />
-          <Checkbox 
-            label="Archivar Repositorio" 
-            description="Convertir en solo lectura. Bloquea commits, issues y pull requests." 
-            bind:checked={settings.archived}
-            class="archived-item"
-          />
-        </div>
-
-        <div class="advanced-stack">
-          <div class="advanced-section tonal">
+          <div class="advanced-stack island" class:archived-item={settings.archived}>
             <header class="adv-header">
-              <FileText size={24} />
-              <strong>Documentación y Wiki</strong>
+              <FileText size={20} />
+              <strong>Estado del Repositorio</strong>
             </header>
-            <div class="adv-content">
-              <Checkbox 
-                label="Habilitar Wiki" 
-                description="Habilitar sistema de documentación integrado." 
-                bind:checked={settings.enable_wiki} 
-              />
-              {#if settings.enable_wiki}
-                <div class="nested-box">
-                  <Input 
-                    label="Nombre de Carpeta Wiki" 
-                    bind:value={settings.wiki_folder_name} 
-                    placeholder="docs" 
-                  />
-                  <Input 
-                    label="Nombre de Carpeta ADR" 
-                    bind:value={settings.adr_folder_name} 
-                    placeholder="ADR" 
-                  />
-                  <Checkbox 
-                    label="Acceso Público" 
-                    description="Permitir que cualquiera vea la wiki incluso en repositorios privados." 
-                    bind:checked={settings.allow_public_wiki} 
-                  />
-                  <Checkbox 
-                    label="Wiki Externa" 
-                    description="Redirigir la pestaña Wiki a una URL externa." 
-                    bind:checked={settings.enable_external_wiki} 
-                  />
-                  {#if settings.enable_external_wiki}
-                    <Input 
-                      label="URL de Wiki Externa" 
-                      bind:value={settings.external_wiki_url} 
-                      placeholder="https://docs.example.com" 
-                    />
-                  {/if}
-                </div>
-              {/if}
-            </div>
+            <Checkbox 
+              label="Archivar Repositorio" 
+              description="El repositorio pasará a modo solo lectura. Útil para proyectos terminados."
+              bind:checked={settings.archived} 
+            />
           </div>
 
-          <div class="advanced-section tonal">
-            <header class="adv-header">
-              <Bug size={24} />
-              <strong>Issues y Seguimiento</strong>
-            </header>
-            <div class="adv-content">
-              <Checkbox 
-                label="Habilitar Issues" 
-                description="Seguimiento de errores y tareas integrado." 
-                bind:checked={settings.enable_issues} 
-              />
-              {#if settings.enable_issues}
-                <div class="nested-box">
-                  <Checkbox 
-                    label="Issues Públicos" 
-                    description="Permitir visualización pública de issues en repositorios privados." 
-                    bind:checked={settings.allow_public_issues} 
-                  />
-                  <Checkbox 
-                    label="Tracker Externo" 
-                    description="Vincular a un sistema de gestión externo." 
-                    bind:checked={settings.enable_external_tracker} 
-                  />
-                  {#if settings.enable_external_tracker}
-                    <Input 
-                      label="URL de Tracker Externo" 
-                      bind:value={settings.external_tracker_url} 
-                      placeholder="https://jira.com/issues" 
-                    />
-                  {/if}
-                </div>
-              {/if}
-            </div>
+          <div class="form-actions-premium">
+            <Button type="submit" variant="primary" loading={saving} disabled={saving}>
+              Guardar Cambios Generales
+            </Button>
           </div>
-
-          <div class="advanced-section tonal">
-            <header class="adv-header">
-              <GitPullRequest size={24} />
-              <strong>Pull Requests</strong>
-            </header>
-            <div class="adv-content">
-              <Checkbox 
-                label="Habilitar Pull Requests" 
-                description="Revisiones de código y flujo de trabajo colaborativo." 
-                bind:checked={settings.enable_pulls} 
-              />
-              {#if settings.enable_pulls}
-                <div class="nested-box">
-                  <Checkbox 
-                    label="Ignorar Espacios" 
-                    description="No mostrar cambios de espacios en los diffs de PR." 
-                    bind:checked={settings.pulls_ignore_whitespace} 
-                  />
-                  <Checkbox 
-                    label="Permitir Rebase" 
-                    description="Habilitar la opción de rebase al fusionar." 
-                    bind:checked={settings.pulls_allow_rebase} 
-                  />
-                  <Checkbox 
-                    label="Fusión Manual" 
-                    description="Permitir marcar PRs como fusionados manualmente." 
-                    bind:checked={settings.pulls_allow_manual_merge} 
-                  />
-                </div>
-              {/if}
-            </div>
-          </div>
-        </div>
-
-        <div class="form-actions-premium">
-          <Button type="submit" variant="primary" loading={saving} disabled={saving}>
-            Guardar Cambios Generales
-          </Button>
-        </div>
-      </form>
-    {/if}
-  </div>
-</Card>
-
-<div class="danger-zone-container">
-  <Card class="tonal" padding="none">
-    <header class="danger-header">
-      <AlertTriangle size={32} />
-      <h3>Zona de Peligro</h3>
-    </header>
-    
-    <div class="danger-content">
-      <div class="danger-item">
-        <div class="danger-info">
-          <strong>Eliminar este repositorio</strong>
-          <p>Una vez eliminado, no hay vuelta atrás. Por favor, asegúrate de lo que haces.</p>
-        </div>
-        <div class="danger-action-row">
-          <Input bind:value={deleteConfirm} placeholder="Escribe el nombre del repositorio para confirmar" />
-          <Button
-            variant="primary"
-            class="delete-btn"
-            disabled={deleteConfirm !== settings.name}
-            onclick={deleteRepo}
-          >
-            Eliminar Repositorio
-          </Button>
-        </div>
-      </div>
-
-      <div class="danger-item">
-        <div class="danger-info">
-          <strong>Transferir Propiedad</strong>
-          <p>Mueve este repositorio a otro usuario o a una organización de la que seas miembro.</p>
-        </div>
-        <Button variant="outline" class="danger-outline" onclick={transferRepo} disabled={saving}>
-          Transferir repositorio
-        </Button>
-      </div>
+        </form>
+      {/if}
     </div>
   </Card>
+
+  <div class="danger-zone-container">
+    <Card class="tonal" padding="none">
+      <header class="danger-header">
+        <AlertTriangle size={32} />
+        <h3>Zona de Peligro</h3>
+      </header>
+      
+      <div class="danger-content">
+        <div class="danger-item">
+          <div class="danger-info">
+            <strong>Eliminar este repositorio</strong>
+            <p>Una vez eliminado, no hay vuelta atrás. Por favor, asegúrate de lo que haces.</p>
+          </div>
+          <div class="danger-action-row">
+            <Input bind:value={deleteConfirm} placeholder="Escribe el nombre del repositorio para confirmar" />
+            <Button
+              variant="primary"
+              class="delete-btn"
+              disabled={deleteConfirm !== settings.name}
+              onclick={deleteRepo}
+            >
+              Eliminar Repositorio
+            </Button>
+          </div>
+        </div>
+
+        <div class="danger-item">
+          <div class="danger-info">
+            <strong>Transferir Propiedad</strong>
+            <p>Mueve este repositorio a otro usuario o a una organización de la que seas miembro.</p>
+          </div>
+          <Button variant="outline" class="danger-outline" onclick={transferRepo} disabled={saving}>
+            Transferir repositorio
+          </Button>
+        </div>
+      </div>
+    </Card>
+  </div>
 </div>
 
 <style>
-  .settings-content { padding: 0; }
-  @media (max-width: 1300px) { .settings-content { padding: 0; } }
-  @media (max-width: 600px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 1300px) { .settings-content { padding: 1.5rem; } }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .settings-form { display: flex; flex-direction: column; gap: 3rem; }
 
   .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding: 2rem; border-radius: 2rem; }
-  .avatar-preview-wrap { position: relative; border-radius: 2.5rem; overflow: hidden; background: var(--md-sys-color-surface-container-highest); border: 2px solid var(--md-sys-color-outline-variant); flex-shrink: 0; box-shadow: var(--shadow-md); }
+  .avatar-preview-wrap { 
+    position: relative; 
+    border-radius: 1rem; 
+    overflow: hidden; 
+    background: var(--md-sys-color-surface-container-highest); 
+    border: 2px solid var(--md-sys-color-outline-variant); 
+    flex-shrink: 0; 
+    box-shadow: var(--shadow-md);
+    width: 110px;
+    height: 110px;
+  }
   .avatar-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; color: white; }
   :global(.spin) { animation: spin 1s linear infinite; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -484,8 +320,8 @@
 
   @media (max-width: 1300px) {
     .avatar-settings-section { gap: 1.5rem; padding: 1.5rem; border-radius: 1.5rem; }
-    .avatar-preview-wrap { border-radius: 1.75rem; }
-    :global(.repo-avatar-img) { width: 90px !important; height: 90px !important; }
+    .avatar-preview-wrap { border-radius: 0.75rem; width: 90px; height: 90px; }
+    :global(.repo-avatar-img) { width: 100% !important; height: 100% !important; }
   }
 
   @media (max-width: 650px) {
@@ -564,7 +400,7 @@
   .form-actions-premium { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   /* DANGER ZONE */
-  .danger-zone-container { margin-top: 4rem; }
+  .danger-zone-container { }
   .danger-zone-container :global(.card) { border: 2px solid var(--md-sys-color-error) !important; }
   .danger-header { padding: 2rem 2.5rem; border-bottom: 1px solid rgba(var(--error-rgb), 0.1); display: flex; align-items: center; gap: 1rem; color: var(--error); }
   .danger-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }

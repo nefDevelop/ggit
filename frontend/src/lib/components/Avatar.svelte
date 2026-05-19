@@ -11,6 +11,7 @@
     username = '?', 
     seed = '', 
     size = 40, 
+    type = 'user',
     class: className = '' 
   } = $props();
 
@@ -21,9 +22,9 @@
   const useIdenticon = $derived(!src || src === '');
 </script>
 
-<div class="avatar-container {className}" style="width: 100%; height: auto; max-width: {size}px; max-height: {size}px;">
+<div class="avatar-container {className}" class:repo-avatar={type === 'repo'} style="width: 100%; height: auto; max-width: {size}px; max-height: {size}px;">
   {#if useIdenticon}
-    <Identicon seed={finalSeed} size={Number(size)} />
+    <Identicon seed={finalSeed} size={Number(size)} {type} />
   {:else}
     <img src={src} alt={username} class="avatar-img" />
   {/if}
@@ -38,6 +39,10 @@
     overflow: hidden;
     flex-shrink: 0;
     aspect-ratio: 1/1;
+  }
+
+  .avatar-container.repo-avatar {
+    border-radius: 12%; /* Square with rounded corners for repositories */
   }
 
   .avatar-img {

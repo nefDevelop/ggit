@@ -2,11 +2,14 @@
   import { apiFetch } from '$lib/api';
   import { page } from '$app/state';
   import { fade } from 'svelte/transition';
+  import PageHeader from "$lib/components/ui/PageHeader.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
+  import { Plus, Tag, FolderDown, Archive, Trash2, Rocket, AlertCircle } from "lucide-svelte";
 
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
 
-  interface Tag {
+  interface RepoTag {
     name: string;
     sha: string;
     message: string;
@@ -16,7 +19,7 @@
     tar_url: string;
   }
 
-  let tags = $state<Tag[]>([]);
+  let tags = $state<RepoTag[]>([]);
   let loading = $state(true);
   let error = $state('');
   let deleteConfirm = $state('');
@@ -70,7 +73,7 @@
   }
 
   async function createTag() {
-    if (!newTagName.trim() || !newTagTarget.trim()) return;
+    if (creating || !newTagName.trim() || !newTagTarget.trim()) return;
     creating = true;
     createError = '';
     try {
@@ -106,12 +109,15 @@
 </svelte:head>
 
 <div class="tags-page">
-  <div class="header-actions-right">
-    <button class="btn btn-primary btn-sm" onclick={() => { showNewTag = !showNewTag; createError = ''; }}>
-      <span class="material-symbols-rounded">add_circle</span>
-      New tag
-    </button>
-  </div>
+  <PageHeader title="" icon="" compact noBorder>
+    {#snippet actions()}
+      {#if tags.length > 0}
+        <Button variant="primary" onclick={() => { showNewTag = !showNewTag; createError = ''; }} icon={Plus}>
+          New tag
+        </Button>
+      {/if}
+    {/snippet}
+  </PageHeader>
 
   <div class="tags-content">
     {#if showNewTag}
@@ -131,15 +137,10 @@
           <p class="form-error">{createError}</p>
         {/if}
         <div class="form-actions">
-          <button class="btn btn-ghost btn-sm" onclick={() => showNewTag = false}>Cancel</button>
-          <button class="btn btn-primary btn-sm" onclick={createTag} disabled={creating || !newTagName || !newTagTarget}>
-            {#if creating}
-              <span class="material-symbols-rounded spin">sync</span>
-            {:else}
-              <span class="material-symbols-rounded">sell</span>
-            {/if}
+          <Button variant="ghost" size="sm" onclick={() => showNewTag = false} disabled={creating}>Cancel</Button>
+          <Button variant="primary" size="sm" onclick={createTag} disabled={creating || !newTagName || !newTagTarget} loading={creating} icon={Tag}>
             Create tag
-          </button>
+          </Button>
         </div>
       </div>
     {/if}
@@ -156,42 +157,50 @@
       </div>
     {:else if tags.length === 0}
       <div class="empty-state">
-        <span class="material-symbols-rounded empty-icon">error_outline</span>
-        <h3>No tags found</h3>
+        <div class="empty-icon-ring">
+          <Tag size={40} />
+        </div>
+        <h2>No tags found</h2>
         <p>There are no tags in this repository. Tags mark specific points in the history as important — use them for releases.</p>
-        <button class="btn btn-primary btn-sm" onclick={() => showNewTag = true}>
-          <span class="material-symbols-rounded">add</span>
-          Create first tag
-        </button>
+        <div style="margin-top: 1rem;">
+          <Button variant="primary" onclick={() => showNewTag = true} icon={Plus}>
+            Create first tag
+          </Button>
+        </div>
       </div>
     {:else}
-      <div class="tag-list">
+      <div class="flat-list-container">
         {#each tags as tag (tag.name)}
-          <div class="tag-row tonal" transition:fade={{ duration: 120 }}>
-            <div class="tag-info">
-              <a href={`/${username}/${reponame}/releases`} class="tag-name">
-                {tag.name}
-              </a>
-              {#if tag.sha}
-                <code class="tag-sha">{tag.sha.slice(0, 8)}</code>
-              {/if}
+          <div class="list-item-row" transition:fade={{ duration: 120 }}>
+            <div class="list-item-icon">
+              <Tag size={18} style="color: var(--text-muted); opacity: 0.5;" />
+            </div>
+            
+            <div class="item-main-content">
+              <div class="item-title-bar">
+                <a href={`/${username}/${reponame}/releases`} class="item-title-link">
+                  {tag.name}
+                </a>
+              </div>
+              <div class="item-meta-data">
+                {#if tag.sha}
+                  <code class="tag-sha">{tag.sha.slice(0, 8)}</code>
+                {/if}
+              </div>
             </div>
 
-            <div class="tag-actions">
-              <a href={tag.zip_url} class="btn btn-ghost btn-xs" title="Download ZIP">
-                <span class="material-symbols-rounded">folder_zip</span>
-                zip
+            <div class="item-actions-right">
+              <a href={tag.zip_url} class="btn-icon-minimal" title="Download ZIP">
+                <FolderDown size={16} />
               </a>
-              <a href={tag.tar_url} class="btn btn-ghost btn-xs" title="Download TAR.GZ">
-                <span class="material-symbols-rounded">inventory_2</span>
-                tar.gz
+              <a href={tag.tar_url} class="btn-icon-minimal" title="Download TAR.GZ">
+                <Archive size={16} />
               </a>
-              <a href={`/${username}/${reponame}/releases`} class="btn btn-ghost btn-xs">
-                <span class="material-symbols-rounded">rocket_launch</span>
-                Release
+              <a href={`/${username}/${reponame}/releases`} class="btn-icon-minimal" title="Release">
+                <Rocket size={16} />
               </a>
               <button
-                class="btn btn-ghost btn-xs danger"
+                class="btn-icon-minimal delete"
                 class:confirm={deleteConfirm === tag.name}
                 onclick={() => deleteTag(tag.name)}
                 disabled={deleting === tag.name}
@@ -200,10 +209,9 @@
                 {#if deleting === tag.name}
                   <span class="material-symbols-rounded spin">sync</span>
                 {:else if deleteConfirm === tag.name}
-                  <span class="material-symbols-rounded">warning</span>
-                  Confirm?
+                  <span style="color: #fb923c; font-weight: bold; font-size: 0.8rem;">Sure?</span>
                 {:else}
-                  <span class="material-symbols-rounded">delete</span>
+                  <Trash2 size={16} />
                 {/if}
               </button>
             </div>
@@ -215,9 +223,8 @@
 </div>
 
 <style>
-  .tags-page { display: flex; flex-direction: column; gap: 0; margin: -2rem; }
-  .tags-content { padding: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
-  .header-actions-right { display: flex; justify-content: flex-end; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1.25rem; }
+  .tags-page { display: flex; flex-direction: column; gap: 0; }
+  .tags-content { padding: 0; display: flex; flex-direction: column; gap: 1.25rem; }
 
   /* New tag form */
   .new-tag-form { padding: 1.5rem; border-radius: 1rem; border: 1px solid var(--primary-color); display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.25rem; }
@@ -230,26 +237,47 @@
   .form-error { color: #f87171; font-size: 0.85rem; margin: 0; }
   .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
-
-  /* Tag list */
-  .tag-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .tag-row { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-radius: 0.875rem; border: 1px solid var(--border-color); transition: border-color 0.2s; gap: 1rem; }
-  .tag-row:hover { border-color: var(--primary-color); }
-  .tag-info { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
-  .tag-name { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.95rem; text-decoration: none; color: var(--primary-color); }
   .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.15); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
-  .tag-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
-  .btn-xs { padding: 0.3rem 0.7rem; font-size: 0.78rem; border-radius: 8px; display: flex; align-items: center; gap: 0.3rem; }
-  .btn-xs span { font-size: 1rem; }
-  .danger { color: #f87171; }
-  .danger:hover { background: rgba(248, 113, 113, 0.1); }
-  .danger.confirm { color: #fb923c; border-color: #fb923c; }
+  .delete.confirm { color: #fb923c; background: rgba(251, 146, 60, 0.1); }
 
-  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; padding: 4rem 2rem; border-radius: 1rem; border: 1px dashed var(--border-color); text-align: center; }
-  .empty-icon { font-size: 3rem; color: var(--primary-color); opacity: 0.4; }
-  .empty-state h3 { margin: 0; font-size: 1.1rem; }
-  .empty-state p { margin: 0; color: var(--text-muted); font-size: 0.9rem; max-width: 400px; }
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 6rem 2rem;
+    text-align: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
 
   .skeleton-list { display: flex; flex-direction: column; gap: 0.5rem; }
   .skeleton-row { height: 60px; border-radius: 0.875rem; animation: pulse 1.5s infinite; }
@@ -262,7 +290,5 @@
 
   @media (max-width: 600px) {
     .form-row { grid-template-columns: 1fr; }
-    .tag-row { flex-direction: column; align-items: flex-start; }
-    .tag-actions { width: 100%; flex-wrap: wrap; }
   }
 </style>

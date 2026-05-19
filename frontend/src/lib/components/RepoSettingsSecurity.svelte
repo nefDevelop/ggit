@@ -7,6 +7,7 @@
   import Button from "./ui/Button.svelte";
   import Input from "./ui/Input.svelte";
   import Card from "./ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
   import { Shield, Trash2, ShieldPlus, ShieldCheck, Plus } from "lucide-svelte";
   import { i18n } from "$lib/i18n.svelte";
 
@@ -97,24 +98,19 @@
 </script>
 
 <Card padding="none" class="settings-premium-card">
-  <header class="section-header-premium">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <Shield size={48} class="hero-icon {data.enabled ? 'active' : ''}" />
-        <div>
-          <h2>Secret Guardian</h2>
-          <p class="subtitle">Protección proactiva contra la subida de secretos, API keys y archivos sensibles en tus commits.</p>
-        </div>
-      </div>
-      <div class="header-action">
-        <Checkbox 
-          label="Habilitar Guardián" 
-          bind:checked={data.enabled} 
-          onchange={() => saveSettings()}
-        />
-      </div>
-    </div>
-  </header>
+  <PageHeader 
+    title="Secret Guardian" 
+    subtitle="Protección proactiva contra la subida de secretos, API keys y archivos sensibles en tus commits." 
+    icon={Shield}
+  >
+    {#snippet actions()}
+      <Checkbox 
+        label="Habilitar Guardián" 
+        bind:checked={data.enabled} 
+        onchange={() => saveSettings()}
+      />
+    {/snippet}
+  </PageHeader>
 
   <div class="settings-content">
     {#if loading}
@@ -189,26 +185,8 @@
 </Card>
 
 <style>
-  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  :global(.hero-icon) { background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; transition: all 0.3s; }
-  :global(.hero-icon.active) { background: var(--primary-color); color: var(--on-primary); }
-  
-  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header-premium { padding: 1.5rem; }
-    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    :global(.hero-icon) { padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
-  }
-
-  .settings-content { padding: 0; }
-  @media (max-width: 600px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .security-stack { display: flex; flex-direction: column; gap: 2.5rem; }
   

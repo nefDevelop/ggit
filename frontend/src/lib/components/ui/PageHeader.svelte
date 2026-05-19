@@ -9,12 +9,13 @@
     avatar?: Snippet;
     compact?: boolean; // For smaller cards
     largeIcon?: boolean;
+    noBorder?: boolean;
   }
   
-  let { title, subtitle, icon, actions, avatar, compact = false, largeIcon = false }: Props = $props();
+  let { title, subtitle, icon, actions, avatar, compact = false, largeIcon = false, noBorder = false }: Props = $props();
 </script>
 
-<header class="page-header" class:compact>
+<header class="page-header" class:compact class:no-border={noBorder}>
   <div class="header-main">
     {#if avatar}
       <div class="avatar-slot">
@@ -54,11 +55,18 @@
     gap: 2rem;
     padding: 2.5rem;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    min-height: 160px;
+    box-sizing: border-box;
   }
 
 
   .page-header.compact {
     padding: 1.5rem 2rem;
+    min-height: auto;
+  }
+
+  .page-header.no-border {
+    border-bottom: none;
   }
 
   .header-main {
@@ -70,11 +78,11 @@
 
   .icon-slot {
     --header-icon-size: 32px;
-    font-size: 3rem;
+    width: var(--header-icon-container-size, 80px);
+    height: var(--header-icon-container-size, 80px);
     color: var(--primary-color);
     background: var(--md-sys-color-primary-container);
-    padding: 1.25rem;
-    border-radius: 1rem;
+    border-radius: 1.25rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -84,12 +92,11 @@
 
   .icon-slot.large {
     --header-icon-size: 40px;
-    font-size: 3.5rem;
-    padding: 1.4rem;
-    border-radius: 1.25rem;
+    --header-icon-container-size: 96px;
+    border-radius: 1.5rem;
   }
 
-  .icon-slot span { font-size: inherit; }
+  .icon-slot span { font-size: var(--header-icon-size, 32px); }
 
   .icon-slot :global(svg) {
     width: var(--header-icon-size, 32px) !important;

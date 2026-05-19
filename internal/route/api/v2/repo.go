@@ -133,6 +133,8 @@ func CreateRepo(c *context.APIContext) {
 		return
 	}
 
+	log.Trace("CreateRepo API called with payload: Name=%q AutoInit=%v Readme=%q Gitignores=%q", f.Name, f.AutoInit, f.Readme, f.Gitignores)
+
 	owner := c.User
 	if f.UID != 0 && f.UID != c.User.ID {
 		var err error

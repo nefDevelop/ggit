@@ -47,8 +47,18 @@
 
   function updateHighlight() {
     const code = value + (value.endsWith('\n') ? ' ' : '');
-    const result = hljs.highlight(code, { language: language || 'text' });
-    highlightedCode = result.value;
+    try {
+      const result = hljs.highlight(code, { language: language || 'text' });
+      highlightedCode = result.value;
+    } catch (e) {
+      // Fallback to auto-detect or plain text if language is unknown/fails
+      try {
+        const result = hljs.highlightAuto(code);
+        highlightedCode = result.value;
+      } catch (e2) {
+        highlightedCode = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+    }
   }
 
   $effect(() => {
