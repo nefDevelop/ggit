@@ -184,14 +184,27 @@
     background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.08), transparent) !important;
   }
 
+  .stat-item :global(svg) {
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 0px transparent);
+  }
+
   /* SMOOTHER BLINK ANIMATIONS FOR COUNTERS */
   @keyframes activity-blink {
-    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0px var(--tertiary)); }
-    50% { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 0 4px var(--tertiary)); color: var(--tertiary); }
+    0%, 100% { 
+      transform: scale(1); 
+      filter: drop-shadow(0 0 0px transparent); 
+    }
+    50% { 
+      transform: scale(1.12); 
+      filter: drop-shadow(0 0 8px var(--tertiary)); 
+      color: var(--tertiary); 
+    }
   }
 
   :global(.blink-active) {
-    animation: activity-blink 3.5s infinite ease-in-out;
+    animation: activity-blink 3s infinite ease-in-out;
+    will-change: transform, filter;
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }
