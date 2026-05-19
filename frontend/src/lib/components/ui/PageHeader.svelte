@@ -161,12 +161,6 @@
     font-size: 1.1rem;
     line-height: 1.4;
     white-space: pre-line;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   .header-actions {

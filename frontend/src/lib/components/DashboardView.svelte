@@ -167,9 +167,8 @@
     <div class="dashboard-main-content">
         <PageHeader 
             title="Dashboard" 
-            subtitle={"Gestiona tus proyectos y actividad reciente.\nColabora con tu equipo y organiza tus tareas de forma eficiente."}
+            subtitle="Gestiona tus proyectos, repositorios y actividad reciente."
             icon={LayoutDashboard}
-            largeIcon={true}
         >
             {#snippet actions()}
                 <Button href="/repo/create" icon={Plus}>

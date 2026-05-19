@@ -208,8 +208,8 @@
   }
   .lang-segment { height: 100%; }
 
-  .desc-line { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
-  :global(.status-icon) { color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
+  .desc-line { display: flex; align-items: flex-start; gap: 0.5rem; min-width: 0; }
+  :global(.status-icon) { color: var(--text-muted); opacity: 0.6; flex-shrink: 0; margin-top: 2px; }
   .repo-name { 
     font-weight: 700; 
     color: var(--primary-color); 
@@ -223,7 +223,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .repo-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .repo-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .badge-empty { font-size: 0.65rem; background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; font-weight: 800; letter-spacing: 0.05em; }
   .lang { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
