@@ -149,7 +149,7 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr 140px 220px 120px;
+    grid-template-columns: 56px 1fr 100px 160px 110px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -264,14 +264,14 @@
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 140px 180px 100px; 
+      grid-template-columns: 56px 1fr 90px 140px 100px; 
     }
     .stats-info { gap: 0.75rem; }
   }
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 140px 100px; 
+      grid-template-columns: 56px 1fr 90px 100px; 
     }
     .stats-info { display: none; }
   }
