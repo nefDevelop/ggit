@@ -149,7 +149,7 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr 90px 140px 100px;
+    grid-template-columns: 56px 1fr 80px 130px 90px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -160,7 +160,7 @@
     cursor: pointer;
     min-width: 0;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    max-width: 1100px;
+    max-width: 850px;
     margin: 0 auto;
     width: 100%;
     box-sizing: border-box;
@@ -268,14 +268,14 @@
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 90px 140px 100px; 
+      grid-template-columns: 56px 1fr 80px 130px 90px; 
     }
     .stats-info { gap: 0.75rem; }
   }
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 90px 100px; 
+      grid-template-columns: 56px 1fr 80px 90px; 
     }
     .stats-info { display: none; }
   }
