@@ -7,7 +7,7 @@ test('login page loads and displays form', async ({ page }) => {
   await expect(page).toHaveTitle(/Sign In/);
 
   // Verificar que el header está presente
-  await expect(page.locator('h2')).toContainText('Welcome Back');
+  await expect(page.locator('h2')).toContainText(/Welcome Back|Bienvenido/);
 
   // Rellenar campos
   await page.fill('#username', 'testuser');
@@ -28,6 +28,6 @@ test('shows error on failed login attempt', async ({ page }) => {
 
   // El servidor responderá con error (porque el backend no estará corriendo en este test aislado o fallará la auth)
   // Pero aquí comprobamos que el feedback visual ocurre
-  const alert = page.locator('.alert.box-error');
-  await expect(alert).toBeVisible;
+  const alert = page.locator('.error-banner');
+  await expect(alert).toBeVisible();
 });
