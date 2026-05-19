@@ -22,6 +22,13 @@
     onResolveComment?: (id: number, resolved: boolean) => void
   }>();
 
+  const totalAdditions = $derived(
+    (diff?.TotalAddition ?? (diff?.Files || []).reduce((s: number, f: any) => s + (f.Addition ?? 0), 0))
+  );
+  const totalDeletions = $derived(
+    (diff?.TotalDeletion ?? (diff?.Files || []).reduce((s: number, f: any) => s + (f.Deletion ?? 0), 0))
+  );
+
   let collapsedFiles = $state<Record<string, boolean>>({});
   let activeComposer = $state<{ file: string, line: number } | null>(null);
 
@@ -84,11 +91,11 @@
     </div>
     <div class="stat-item success">
       <Plus size={16} />
-      <b>{diff?.TotalAddition || 0}</b> adiciones
+      <b>{totalAdditions}</b> adiciones
     </div>
     <div class="stat-item error">
       <Minus size={16} />
-      <b>{diff?.TotalDeletion || 0}</b> eliminaciones
+      <b>{totalDeletions}</b> eliminaciones
     </div>
   </div>
 

@@ -74,7 +74,13 @@
       {/if}
       <div class="commit-meta">
         <div class="author-info">
-          <div class="avatar-ph">{commitData.author?.name?.[0] || 'U'}</div>
+          <Avatar
+            src={commitData.author?.avatar_url || ''}
+            username={commitData.author?.name || 'U'}
+            seed={commitData.author?.email || commitData.author?.name || 'unknown'}
+            size={32}
+            type="user"
+          />
           <span><strong>{commitData.author?.name}</strong> committed {timeAgo(commitData.author?.when)}</span>
         </div>
         
@@ -237,17 +243,7 @@
   }
   .status-link:hover { text-decoration: underline; }
 
-  .avatar-ph {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: var(--primary-color);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-  }
+
 
   .error-msg {
     padding: 2rem;

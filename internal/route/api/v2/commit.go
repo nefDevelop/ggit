@@ -45,15 +45,19 @@ func GetSingleCommit(c *context.APIContext) {
 	statuses, _ := database.Handle.CommitStatuses().GetLatestBySHA(c.Req.Context(), c.Repo.Repository.ID, commit.ID.String())
 	combined := database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, commit.ID.String())
 
+	commitUser, _ := database.Handle.Users().GetByEmail(c.Req.Context(), commit.Author.Email)
+	authorAvatarURL := resolveUserAvatarURL(database.FromDomainUser(commitUser))
+
 	c.JSON(http.StatusOK, map[string]any{
 		"commit": map[string]any{
 			"id":      commit.ID.String(),
 			"summary": commit.Summary(),
 			"message": commit.Message,
 			"author": map[string]any{
-				"name":  commit.Author.Name,
-				"email": commit.Author.Email,
-				"when":  commit.Author.When,
+				"name":       commit.Author.Name,
+				"email":      commit.Author.Email,
+				"when":       commit.Author.When,
+				"avatar_url": authorAvatarURL,
 			},
 			"committer": map[string]any{
 				"name":  commit.Committer.Name,
