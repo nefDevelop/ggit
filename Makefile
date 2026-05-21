@@ -69,7 +69,7 @@ test-e2e: clean-ports build
 	@# Crear config temporal para tests
 	@cp conf/app.ini conf/app.test.ini
 	@sed -i -e 's|/data/data|data/data|g' \
-	        -e 's|/data/repositories|ggit-repositories-test|g' \
+	        -e 's|data/repositories|ggit-repositories-test|g' \
 	        -e 's|data/data/ggit.db|data/ggit.test.db|g' conf/app.test.ini
 	@echo "[security]" >> conf/app.test.ini
 	@echo "INSTALL_LOCK = true" >> conf/app.test.ini
@@ -100,7 +100,7 @@ test-e2e: clean-ports build
 	@echo "Esperando a que el backend responda (http://localhost:3006)..."
 	@timeout 60s bash -c 'until curl -s http://localhost:3006 > /dev/null; do sleep 1; done' || (echo "Error: El backend no arrancó" && make kill-e2e && exit 1)
 	@echo "Ejecutando Playwright..."
-	@cd frontend && npx playwright test --reporter=list || (echo "--- LOGS DE ERROR BACKEND ---" && cat ../.backend.log && cd .. && make kill-e2e && exit 1)
+	@cd frontend && npx playwright test --reporter=list || (echo "--- PLAYWRIGHT FAILED ---" && cd .. && make kill-e2e && exit 1)
 	@rm -f conf/app.test.ini
 	@cd .. && make kill-e2e
 
