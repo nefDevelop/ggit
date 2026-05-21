@@ -37,7 +37,10 @@
     if (!authState.isAuthenticated) return;
     try {
       const res = await apiFetch("/api/v2/user/settings/orgs");
-      if (res.ok) userOrgs = await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        userOrgs = (Array.isArray(data) ? data : []).filter(org => org && org.username);
+      }
     } catch (e) {
       console.error("Failed to load sidebar orgs", e);
     }
