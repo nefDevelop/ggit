@@ -115,6 +115,7 @@
   }
 
   async function handleSave() {
+    if (saving || !editTitle) return;
     saving = true;
     try {
       const finalTitle = parentPath ? `${parentPath}/${editTitle}` : editTitle;
@@ -298,19 +299,16 @@
             
             <div class="action-group">
                 {#if mode === 'view'}
-                    <button class="btn-icon-text" onclick={startEdit}>
-                        <Edit size={16} />
+                    <Button variant="tonal" onclick={startEdit} icon={Edit}>
                         Editar
-                    </button>
+                    </Button>
                 {:else if mode === 'edit'}
-                    <button class="btn-icon-text variant" onclick={() => { if (wikiPages.length === 0) { mode = 'view'; } else { mode = 'view'; } }}>
-                        <X size={16} />
+                    <Button variant="ghost" onclick={() => mode = 'view'} disabled={saving} icon={X}>
                         Cancelar
-                    </button>
-                    <button class="btn-primary" onclick={handleSave} disabled={saving || !editTitle}>
-                        <Save size={16} />
-                        {saving ? 'Guardando...' : 'Guardar'}
-                    </button>
+                    </Button>
+                    <Button variant="primary" onclick={handleSave} disabled={saving || !editTitle} loading={saving} icon={Save}>
+                        Guardar
+                    </Button>
                 {/if}
                 
                 {#if mode === 'view' && path !== 'Home' && wikiPages.length > 0}
@@ -332,10 +330,14 @@
                 />
               {:else}
                 <div class="empty-wiki-state">
-                  <BookText size={64} class="opacity-50" />
-                  <h2 style="margin: 0.5rem 0;">Wiki Vacía</h2>
-                  <p style="margin-bottom: 1.5rem;">Este repositorio aún no tiene documentación.</p>
-                  <Button variant="primary" onclick={startNew} icon={Plus}>Crear Primera Página</Button>
+                  <div class="empty-icon-ring">
+                    <BookText size={40} />
+                  </div>
+                  <h2>Wiki Vacía</h2>
+                  <p>Este repositorio aún no tiene documentación. Las wikis son geniales para guías de usuario y documentación técnica.</p>
+                  <div style="margin-top: 1rem;">
+                    <Button variant="primary" onclick={startNew} icon={Plus}>Crear Primera Página</Button>
+                  </div>
                 </div>
               {/if}
           {:else if mode === 'edit'}
@@ -560,58 +562,6 @@
     align-items: center;
   }
 
-  .btn-icon-text {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--md-sys-color-surface-variant);
-    color: var(--md-sys-color-on-surface);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-icon-text.variant {
-    background: transparent;
-    color: var(--md-sys-color-on-surface-variant);
-  }
-
-  .btn-primary {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--md-sys-color-primary);
-    color: white;
-    border: none;
-    padding: 0.5rem 1.25rem;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-  }
-
-  .btn-danger-icon {
-    color: var(--md-sys-color-error);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-    border-radius: 10px;
-    transition: background 0.2s;
-  }
-
-  .btn-danger-icon:hover {
-    background: color-mix(in srgb, var(--md-sys-color-error) 10%, transparent);
-  }
-
   .wiki-body {
     padding: 0;
     flex: 1;
@@ -619,16 +569,12 @@
 
   @media (max-width: 600px) {
     .wiki-body { padding: 0; }
-    .wiki-header { padding: 1rem; }
-    .wiki-editor { padding: 1rem; }
   }
 
   @media (max-width: 480px) {
     .wiki-body { padding: 0; }
-    .wiki-header { padding: 0.5rem; }
     .history-item { padding-bottom: 1.5rem; padding-left: 1rem; }
     .history-list { padding-left: 0.5rem; }
-    .wiki-editor { padding: 0.75rem; border-radius: 10px; }
   }
 
   .empty-wiki-state {
@@ -640,6 +586,35 @@
     min-height: 400px;
     text-align: center;
     color: var(--text-muted);
+    padding: 6rem 2rem;
+    gap: 1.25rem;
+  }
+
+  .empty-wiki-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-wiki-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
   }
   .edit-area {
     display: flex;

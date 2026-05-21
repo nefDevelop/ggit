@@ -7,8 +7,8 @@ test.describe('Repository Management', () => {
     await page.goto('/repo/create');
 
     // Rellenar formulario de creación
-    await page.fill('input[name="name"]', repoName);
-    await page.fill('textarea[name="description"]', 'Este es un repo de prueba automatizada');
+    await page.fill('#repo-name', repoName);
+    await page.fill('#repo-desc', 'Este es un repo de prueba automatizada');
     
     // Hacer clic en crear
     await page.click('button[type="submit"]');
@@ -26,10 +26,13 @@ test.describe('Repository Management', () => {
     const cloneButton = page.locator('button:has-text("Clone")').or(page.locator('button:has-text("Clonar")'));
     await expect(cloneButton).toBeVisible();
 
-    // Verificar que la URL de clonado HTTP es correcta
-    const cloneInput = page.locator('input[readonly]');
-    const url = await cloneInput.inputValue();
-    expect(url).toContain('.git');
-    expect(url).toContain(repoName);
+    // Abrir dropdown y verificar que la URL de clonado HTTP es correcta
+    await cloneButton.click();
+    const urlDisplay = page.locator('.url-display');
+    await expect(urlDisplay).toBeVisible();
+    const url = await urlDisplay.textContent();
+    expect(url).not.toBeNull();
+    expect(url!).toContain('.git');
+    expect(url!).toContain(repoName);
   });
 });

@@ -46,10 +46,9 @@
   const isRecentPull = $derived(() => repo.last_pull_at && (Date.now() - new Date(repo.last_pull_at).getTime()) < recentThresh);
   const isRecentBranch = $derived(() => repo.last_branch_at && (Date.now() - new Date(repo.last_branch_at).getTime()) < recentThresh);
 
-  let avatarError = $state(false);
-
   import { toast } from '$lib/toast.svelte';
   import Button from './ui/Button.svelte';
+  import Avatar from './Avatar.svelte';
 
   let copied = $state(false);
   function copyToClipboard(text: string) {
@@ -62,13 +61,14 @@
 
 <div class="repo-row {isOlder ? 'older-row' : ''} {isNew() ? 'new-update' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
   
-  <div class="repo-avatar-container">
-    {#if repo.avatar_url && !avatarError}
-      <img src={repo.avatar_url} alt={repo.name} class="repo-avatar" loading="lazy" onerror={() => avatarError = true} />
-    {/if}
-    <div class="repo-icon-placeholder" style="background-color: {getLanguageColor(repo.language || 'Plain Text')}20; color: {getLanguageColor(repo.language || 'Plain Text')}">
-      <Package size={24} />
-    </div>
+  <div class="repo-avatar-wrap">
+    <Avatar 
+      src={repo.avatar_url} 
+      username={repo.name} 
+      seed={repo.id?.toString()} 
+      size={48} 
+      type="repo" 
+    />
   </div>
 
   <div class="main-info">
@@ -149,7 +149,7 @@
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr 140px 220px 120px;
+    grid-template-columns: 56px 1fr 80px 220px 100px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -160,6 +160,7 @@
     cursor: pointer;
     min-width: 0;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    box-sizing: border-box;
   }
 
   .repo-row:last-child { border-bottom: none; }
@@ -170,51 +171,40 @@
     box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.1);
   }
 
-  .repo-avatar-container {
+  .repo-avatar-wrap {
     width: 48px;
     height: 48px;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--md-sys-color-surface-variant);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .repo-avatar {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-  }
-
-  .repo-icon-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    z-index: 1;
+    flex-shrink: 0;
   }
 
   .new-update {
     background: linear-gradient(90deg, rgba(var(--primary-rgb), 0.08), transparent) !important;
   }
 
+  .stat-item :global(svg) {
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 0 0px transparent);
+  }
+
   /* SMOOTHER BLINK ANIMATIONS FOR COUNTERS */
   @keyframes activity-blink {
-    0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 0px var(--tertiary)); }
-    50% { opacity: 0.8; transform: scale(1.05); filter: drop-shadow(0 0 4px var(--tertiary)); color: var(--tertiary); }
+    0%, 100% { 
+      transform: scale(1); 
+      filter: drop-shadow(0 0 0px transparent); 
+    }
+    50% { 
+      transform: scale(1.12); 
+      filter: drop-shadow(0 0 8px var(--tertiary)); 
+      color: var(--tertiary); 
+    }
   }
 
   :global(.blink-active) {
-    animation: activity-blink 3.5s infinite ease-in-out;
+    animation: activity-blink 3s infinite ease-in-out;
+    will-change: transform, filter;
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }
@@ -232,8 +222,8 @@
   }
   .lang-segment { height: 100%; }
 
-  .desc-line { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
-  :global(.status-icon) { color: var(--text-muted); opacity: 0.6; flex-shrink: 0; }
+  .desc-line { display: flex; align-items: flex-start; gap: 0.5rem; min-width: 0; }
+  :global(.status-icon) { color: var(--text-muted); opacity: 0.6; flex-shrink: 0; margin-top: 2px; }
   .repo-name { 
     font-weight: 700; 
     color: var(--primary-color); 
@@ -247,7 +237,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .repo-desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .repo-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
   .badge-empty { font-size: 0.65rem; background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; font-weight: 800; letter-spacing: 0.05em; }
   .lang { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
@@ -256,7 +256,7 @@
   .stats-info { 
     display: flex; 
     align-items: center;
-    gap: 1.25rem; 
+    gap: 0.75rem; 
     flex-wrap: nowrap;
   }
   
@@ -266,6 +266,7 @@
     gap: 0.35rem; 
     font-size: 0.85rem; 
     white-space: nowrap;
+    width: 46px;
   }
   
 
@@ -278,14 +279,15 @@
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 140px 180px 100px; 
+      grid-template-columns: 56px 1fr 80px 180px 90px; 
     }
-    .stats-info { gap: 0.75rem; }
+    .stats-info { gap: 0.5rem; }
+    .stat-item { width: 38px; }
   }
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 140px 100px; 
+      grid-template-columns: 56px 1fr 80px 90px; 
     }
     .stats-info { display: none; }
   }
@@ -297,7 +299,6 @@
 
   @media (max-width: 480px) {
     .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 40px; }
-    .repo-avatar-container { width: 40px; height: 40px; }
     .repo-name { font-size: 1rem; }
     .repo-desc { font-size: 0.8rem; }
     .actions-info .time { display: none; }

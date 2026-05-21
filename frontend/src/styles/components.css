@@ -198,7 +198,90 @@
   letter-spacing: 0.05em;
 }
 
-/* Specific UI */
+/* Flat List Container for Issues, Pulls, Tags, etc. */
+.flat-list-container {
+  border: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--bg-color);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.list-item-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  gap: 1.25rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  transition: background 0.2s;
+}
+
+.list-item-row:last-child {
+  border-bottom: none;
+}
+
+.list-item-row:hover {
+  background: rgba(var(--primary-rgb), 0.04);
+}
+
+.list-item-icon {
+  padding-top: 0.2rem;
+}
+
+.item-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.item-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.item-title-link {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
+}
+
+.item-title-link:hover {
+  color: var(--primary-color);
+}
+
+.item-meta-data {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.item-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .list-item-row {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .item-actions-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
 .settings-premium-card {
   border-radius: 1.5rem !important;
   background: rgba(var(--surface-rgb), 0.5) !important;

@@ -173,6 +173,19 @@ func (err ErrInvalidCloneAddr) Error() string {
 		err.IsURLError, err.IsInvalidPath, err.IsPermissionDenied, err.IsBlockedLocalAddress)
 }
 
+type ErrRepoAuthenticationFailed struct {
+	Stderr string
+}
+
+func IsErrRepoAuthenticationFailed(err error) bool {
+	_, ok := err.(ErrRepoAuthenticationFailed)
+	return ok
+}
+
+func (err ErrRepoAuthenticationFailed) Error() string {
+	return "repository authentication failed"
+}
+
 type ErrUpdateTaskNotExist struct {
 	UUID string
 }

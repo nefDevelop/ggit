@@ -177,4 +177,22 @@ func Test_MigrateRepository(t *testing.T) {
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "clone")
 	})
+
+	t.Run("Authentication failed detection", func(t *testing.T) {
+		// We can't easily trigger a real auth failure without a network,
+		// but we can test the error type if we were to mock it or if git returns it for a non-existent private-like URL.
+		owner, _, _ := setup("auth-failed")
+		opts := MigrateRepoOptions{
+			Name:       "auth-failed",
+			RemoteAddr: "https://github.com/this-repo-should-not-exist-and-trigger-auth-prompt.git",
+		}
+
+		_, err := MigrateRepository(owner, owner, opts)
+		require.Error(t, err)
+		// Depending on git version and environment, this might return ErrRepoAuthenticationFailed 
+		// if git tried to prompt for credentials and failed.
+		if IsErrRepoAuthenticationFailed(err) {
+			assert.Contains(t, err.(ErrRepoAuthenticationFailed).Stderr, "Authentication failed")
+		}
+	})
 }

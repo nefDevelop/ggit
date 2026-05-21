@@ -3,6 +3,7 @@
   import { onMount, getContext } from "svelte";
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
   import Input from "./ui/Input.svelte";
   import Checkbox from "./ui/Checkbox.svelte";
   import { dialog } from "$lib/dialog.svelte";
@@ -89,217 +90,191 @@
   onMount(fetchBranches);
 </script>
 
-<div class="branches-manager-view">
-  {#if !selectedBranch}
-    <Card padding="none" class="settings-premium-card">
-      <header class="section-header-premium">
-        <div class="title-with-icon">
-          <span class="material-symbols-rounded hero-icon">call_split</span>
-          <div>
-            <h2>Ramas del Repositorio</h2>
-            <p class="subtitle">Gestiona la rama principal y configura reglas de protección para evitar cambios no deseados.</p>
-          </div>
-        </div>
-      </header>
+{#if !selectedBranch}
+  <Card padding="none" class="settings-premium-card">
+    <PageHeader 
+      title="Ramas del Repositorio"
+      subtitle="Gestiona la rama principal y configura reglas de protección para evitar cambios no deseados."
+      icon={GitBranch}
+    />
 
-      <div class="settings-content">
-        {#if loading}
-          <div class="skeleton-stack">
-            {#each Array(4) as _}
-              <div class="skeleton-item tonal"></div>
-            {/each}
-          </div>
-        {:else}
-          <div class="branches-stack">
-            <!-- Rama por defecto -->
-            {#if branches.default}
-              <div class="branch-group">
-                <span class="group-tag">Rama por Defecto</span>
-                <div class="branch-tile default-branch tonal">
-                  <div class="branch-core">
-                    <div class="branch-icon-wrap primary">
-                      <GitBranch size={22} />
+    <div class="settings-content">
+      {#if loading}
+        <div class="skeleton-stack">
+          {#each Array(4) as _}
+            <div class="skeleton-item tonal"></div>
+          {/each}
+        </div>
+      {:else}
+        <div class="branches-stack">
+          <!-- Rama por defecto -->
+          {#if branches.default}
+            <div class="branch-group">
+              <span class="group-tag">Rama por Defecto</span>
+              <div class="branch-tile default-branch tonal">
+                <div class="branch-core">
+                  <div class="branch-icon-wrap primary">
+                    <GitBranch size={22} />
+                  </div>
+                  <div class="branch-info">
+                    <strong class="name">{branches.default.name}</strong>
+                    <div class="status-row">
+                      {#if branches.default.is_protected}
+                        <span class="protected-pill">
+                          <ShieldCheck size={12} /> Protegida
+                        </span>
+{:else}
+                        <span class="unprotected-pill">Sin protección activa</span>
+                      {/if}
                     </div>
-                    <div class="branch-info">
-                      <strong class="name">{branches.default.name}</strong>
-                      <div class="status-row">
-                        {#if branches.default.is_protected}
-                          <span class="protected-pill">
-                            <ShieldCheck size={12} /> Protegida
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" icon="settings" onclick={() => editProtection(branches.default.name)}>
+                  Configurar Reglas
+                </Button>
+              </div>
+            </div>
+          {/if}
+
+          <!-- Ramas activas -->
+          {#if branches.active.length > 0}
+            <div class="branch-group">
+              <span class="group-tag">Otras Ramas Activas</span>
+              <div class="tiles-grid">
+                {#each branches.active as branch}
+                  <div class="branch-tile tonal hover-lift">
+                    <div class="branch-core">
+                      <div class="branch-icon-wrap">
+                        <GitBranch size={18} />
+                      </div>
+                      <div class="branch-info">
+                        <strong class="name">{branch.name}</strong>
+                        {#if branch.is_protected}
+                          <span class="protected-pill mini">
+                            <ShieldCheck size={10} /> Protegida
                           </span>
-                        {:else}
-                          <span class="unprotected-pill">Sin protección activa</span>
                         {/if}
                       </div>
                     </div>
+                    <Button variant="ghost" size="sm" icon="settings" onclick={() => editProtection(branch.name)} />
                   </div>
-                  <Button variant="outline" size="sm" icon="settings" onclick={() => editProtection(branches.default.name)}>
-                    Configurar Reglas
-                  </Button>
+                {/each}
+              </div>
+            </div>
+          {/if}
+        </div>
+      {/if}
+    </div>
+  </Card>
+{:else}
+  <div class="protection-view">
+    <Button variant="ghost" icon="arrow_back" onclick={() => selectedBranch = null} class="back-link">
+      Volver a la lista de ramas
+    </Button>
+
+    <Card padding="none" class="settings-premium-card protection-card">
+      <PageHeader 
+        title={`Reglas de Protección: ${selectedBranch}`}
+        subtitle="Asegura la integridad de tu código restringiendo quién puede realizar cambios directos."
+        icon={Shield}
+      />
+
+      <div class="settings-content">
+        {#if loadingProtection}
+          <div class="skeleton-form"></div>
+        {:else if protection}
+          <form class="protection-form" onsubmit={(e) => { e.preventDefault(); saveProtection(); }}>
+            <div class="main-switch island">
+              <Checkbox 
+                label="Habilitar Protección de Rama" 
+                description="Activa todas las restricciones configuradas abajo para esta rama específica." 
+                bind:checked={protection.protected} 
+              />
+            </div>
+
+            {#if protection.protected}
+              <div class="protection-options-grid">
+                <div class="option-tile tonal">
+                  <Checkbox 
+                    label="Requerir Pull Request" 
+                    description="Nadie podrá hacer push directamente. Los cambios deben venir de una rama diferente." 
+                    bind:checked={protection.require_pull_request} 
+                  />
+                </div>
+
+                <div class="option-tile tonal">
+                  <div class="option-header">
+                    <Checkbox 
+                      label="Requerir Aprobaciones" 
+                      description="Define cuántas aprobaciones externas son necesarias antes de fusionar." 
+                      bind:checked={protection.required_approvals_enabled} 
+                    />
+                  </div>
+                  {#if protection.required_approvals_enabled}
+                    <div class="option-nested">
+                      <Input 
+                        type="number" 
+                        label="Número de aprobaciones" 
+                        bind:value={protection.required_approvals} 
+                        min="1"
+                      />
+                    </div>
+                  {/if}
+                </div>
+
+                <div class="option-tile tonal">
+                  <Checkbox 
+                    label="Estado de Rama Actualizado" 
+                    description="Impide el merge si la rama no tiene los últimos cambios de su base." 
+                    bind:checked={protection.block_on_outdated_branch} 
+                  />
+                </div>
+
+                <div class="option-tile tonal">
+                  <Checkbox 
+                    label="Restringir Fusión (Merge Whitelist)" 
+                    description="Solo usuarios o equipos específicos podrán completar PRs en esta rama." 
+                    bind:checked={protection.enable_merge_whitelist} 
+                  />
+                  {#if protection.enable_merge_whitelist}
+                    <div class="option-nested">
+                       <Input label="IDs de Usuarios" bind:value={protection.merge_whitelist_user_ids} placeholder="12, 45, 89..." />
+                       <Input label="IDs de Equipos" bind:value={protection.merge_whitelist_team_ids} placeholder="1, 5..." />
+                    </div>
+                  {/if}
+                </div>
+
+                <div class="option-tile tonal">
+                  <Checkbox 
+                    label="Restringir Escritura (Push Whitelist)" 
+                    description="Solo usuarios seleccionados podrán hacer push si el PR no es obligatorio." 
+                    bind:checked={protection.enable_whitelist} 
+                  />
+                   {#if protection.enable_whitelist}
+                    <div class="option-nested">
+                       <Input label="IDs de Usuarios" bind:value={protection.whitelist_user_ids} />
+                       <Input label="IDs de Equipos" bind:value={protection.whitelist_team_ids} />
+                    </div>
+                  {/if}
                 </div>
               </div>
             {/if}
 
-            <!-- Ramas activas -->
-            {#if branches.active.length > 0}
-              <div class="branch-group">
-                <span class="group-tag">Otras Ramas Activas</span>
-                <div class="tiles-grid">
-                  {#each branches.active as branch}
-                    <div class="branch-tile tonal hover-lift">
-                      <div class="branch-core">
-                        <div class="branch-icon-wrap">
-                          <GitBranch size={18} />
-                        </div>
-                        <div class="branch-info">
-                          <strong class="name">{branch.name}</strong>
-                          {#if branch.is_protected}
-                            <span class="protected-pill mini">
-                              <ShieldCheck size={10} /> Protegida
-                            </span>
-                          {/if}
-                        </div>
-                      </div>
-                      <Button variant="ghost" size="sm" icon="settings" onclick={() => editProtection(branch.name)} />
-                    </div>
-                  {/each}
-                </div>
-              </div>
-            {/if}
-          </div>
+            <div class="form-actions-premium">
+              <Button variant="primary" type="submit" loading={saving} disabled={saving}>
+                Guardar Reglas de Protección
+              </Button>
+            </div>
+          </form>
         {/if}
       </div>
     </Card>
-  {:else}
-    <div class="protection-view">
-      <Button variant="ghost" icon="arrow_back" onclick={() => selectedBranch = null} class="back-link">
-        Volver a la lista de ramas
-      </Button>
-
-      <Card padding="none" class="settings-premium-card protection-card">
-        <header class="section-header-premium">
-          <div class="title-with-icon">
-            <span class="material-symbols-rounded hero-icon" class:active={protection?.protected}>shield</span>
-            <div>
-              <h2>Reglas de Protección: {selectedBranch}</h2>
-              <p class="subtitle">Asegura la integridad de tu código restringiendo quién puede realizar cambios directos.</p>
-            </div>
-          </div>
-        </header>
-
-        <div class="settings-content">
-          {#if loadingProtection}
-            <div class="skeleton-form"></div>
-          {:else if protection}
-            <form class="protection-form" onsubmit={(e) => { e.preventDefault(); saveProtection(); }}>
-              <div class="main-switch island">
-                <Checkbox 
-                  label="Habilitar Protección de Rama" 
-                  description="Activa todas las restricciones configuradas abajo para esta rama específica." 
-                  bind:checked={protection.protected} 
-                />
-              </div>
-
-              {#if protection.protected}
-                <div class="protection-options-grid">
-                  <div class="option-tile tonal">
-                    <Checkbox 
-                      label="Requerir Pull Request" 
-                      description="Nadie podrá hacer push directamente. Los cambios deben venir de una rama diferente." 
-                      bind:checked={protection.require_pull_request} 
-                    />
-                  </div>
-
-                  <div class="option-tile tonal">
-                    <div class="option-header">
-                      <Checkbox 
-                        label="Requerir Aprobaciones" 
-                        description="Define cuántas aprobaciones externas son necesarias antes de fusionar." 
-                        bind:checked={protection.required_approvals_enabled} 
-                      />
-                    </div>
-                    {#if protection.required_approvals_enabled}
-                      <div class="option-nested">
-                        <Input 
-                          type="number" 
-                          label="Número de aprobaciones" 
-                          bind:value={protection.required_approvals} 
-                          min="1"
-                        />
-                      </div>
-                    {/if}
-                  </div>
-
-                  <div class="option-tile tonal">
-                    <Checkbox 
-                      label="Estado de Rama Actualizado" 
-                      description="Impide el merge si la rama no tiene los últimos cambios de su base." 
-                      bind:checked={protection.block_on_outdated_branch} 
-                    />
-                  </div>
-
-                  <div class="option-tile tonal">
-                    <Checkbox 
-                      label="Restringir Fusión (Merge Whitelist)" 
-                      description="Solo usuarios o equipos específicos podrán completar PRs en esta rama." 
-                      bind:checked={protection.enable_merge_whitelist} 
-                    />
-                    {#if protection.enable_merge_whitelist}
-                      <div class="option-nested">
-                         <Input label="IDs de Usuarios" bind:value={protection.merge_whitelist_user_ids} placeholder="12, 45, 89..." />
-                         <Input label="IDs de Equipos" bind:value={protection.merge_whitelist_team_ids} placeholder="1, 5..." />
-                      </div>
-                    {/if}
-                  </div>
-
-                  <div class="option-tile tonal">
-                    <Checkbox 
-                      label="Restringir Escritura (Push Whitelist)" 
-                      description="Solo usuarios seleccionados podrán hacer push si el PR no es obligatorio." 
-                      bind:checked={protection.enable_whitelist} 
-                    />
-                     {#if protection.enable_whitelist}
-                      <div class="option-nested">
-                         <Input label="IDs de Usuarios" bind:value={protection.whitelist_user_ids} />
-                         <Input label="IDs de Equipos" bind:value={protection.whitelist_team_ids} />
-                      </div>
-                    {/if}
-                  </div>
-                </div>
-              {/if}
-
-              <div class="form-actions-premium">
-                <Button variant="primary" type="submit" loading={saving} disabled={saving}>
-                  Guardar Reglas de Protección
-                </Button>
-              </div>
-            </form>
-          {/if}
-        </div>
-      </Card>
-    </div>
-  {/if}
-</div>
+  </div>
+{/if}
 
 <style>
-  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; transition: all 0.3s; }
-  .hero-icon.active { background: var(--primary-color); color: var(--on-primary); }
-  
-  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header-premium { padding: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
-  }
-
-  .settings-content { padding: 0; }
-  @media (max-width: 600px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .branches-stack { display: flex; flex-direction: column; gap: 3rem; }
   .branch-group { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -326,7 +301,7 @@
   @media (max-width: 800px) { .tiles-grid { grid-template-columns: 1fr; } }
 
   /* PROTECTION EDITOR */
-  .protection-view { display: flex; flex-direction: column; gap: 1.5rem; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .protection-view { display: flex; flex-direction: column; gap: 2rem; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
   :global(.back-link) { align-self: flex-start; color: var(--primary-color); font-weight: 800; }

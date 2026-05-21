@@ -10,8 +10,28 @@
 
   // Custom code highlighting
   renderer.code = ({ text, lang }: { text: string; lang?: string }) => {
-    const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
-    const highlighted = hljs.highlight(text, { language }).value;
+    let highlighted = text;
+    let language = "plaintext";
+
+    if (lang && hljs.getLanguage(lang)) {
+      language = lang;
+      try {
+        highlighted = hljs.highlight(text, { language }).value;
+      } catch (e) {
+        try {
+          highlighted = hljs.highlightAuto(text).value;
+        } catch (e2) {
+          highlighted = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+      }
+    } else {
+      try {
+        highlighted = hljs.highlightAuto(text).value;
+      } catch (e) {
+        highlighted = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+    }
+
     return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
   };
 

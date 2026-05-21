@@ -106,6 +106,7 @@
 
           <form onsubmit={handleLogin} class="auth-form">
             <Input 
+              id="username"
               label="Usuario o Email" 
               bind:value={username} 
               icon={User} 
@@ -114,6 +115,7 @@
             />
             
             <Input 
+              id="password"
               label="Contraseña" 
               type="password" 
               bind:value={password} 

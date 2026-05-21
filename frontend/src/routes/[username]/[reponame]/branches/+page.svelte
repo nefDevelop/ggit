@@ -10,14 +10,4 @@
   <title>Branches · {username}/{reponame}</title>
 </svelte:head>
 
-<div class="page-container">
-  <RepoBranches {username} {reponame} />
-</div>
-
-<style>
-  .page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-</style>
+<RepoBranches {username} {reponame} />

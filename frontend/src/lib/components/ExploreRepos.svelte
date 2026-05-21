@@ -4,6 +4,8 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import Avatar from '$lib/components/Avatar.svelte';
+  import { getLanguageColor } from '$lib/utils/languages';
   import { Lock, GitFork, BookText, Star, SearchX, Tag } from "lucide-svelte";
   
   let { q = '' } = $props();
@@ -83,16 +85,23 @@
           <a href="/{repo.owner?.username || 'unknown'}/{repo.name}" class="card-link">
             <Card hover variant="low" padding="md" class="repo-card">
               <div class="repo-header">
-                {#if repo.private}
-                  <Lock size={18} class="repo-icon" />
-                {:else if repo.fork}
-                  <GitFork size={18} class="repo-icon" />
-                {:else}
-                  <BookText size={18} class="repo-icon" />
-                {/if}
+                <Avatar 
+                  src={repo.avatar_url} 
+                  username={repo.name} 
+                  seed={repo.id?.toString()} 
+                  size={32} 
+                  type="repo" 
+                />
                 <div class="repo-names">
                   <span class="owner">{repo.owner?.username || 'unknown'} /</span>
                   <strong class="name">{repo.name}</strong>
+                </div>
+                <div class="repo-type-icon">
+                  {#if repo.private}
+                    <Lock size={14} />
+                  {:else if repo.fork}
+                    <GitFork size={14} />
+                  {/if}
                 </div>
               </div>
               <p class="repo-desc line-clamp-2">
@@ -110,7 +119,7 @@
                 </div>
                 {#if repo.language}
                   <div class="stat">
-                    <span class="lang-dot"></span>
+                    <span class="lang-dot" style="background: {getLanguageColor(repo.language)}"></span>
                     {repo.language}
                   </div>
                 {/if}
@@ -147,7 +156,7 @@
                     class:active={selectedLang === lang.value}
                     onclick={() => selectedLang = lang.value}
                 >
-                    <span class="lang-dot" style="opacity: {selectedLang === lang.value ? 1 : 0.4}"></span>
+                    <span class="lang-dot" style="background: {lang.value ? getLanguageColor(lang.value) : 'var(--md-sys-color-outline)'}; opacity: {selectedLang === lang.value ? 1 : 0.5}"></span>
                     {lang.name}
                 </button>
             {/each}
@@ -191,7 +200,7 @@
   :global(.repo-card) { display: flex !important; flex-direction: column !important; gap: 1rem !important; }
 
   .repo-header { display: flex; align-items: center; gap: 0.75rem; }
-  :global(.repo-icon) { color: var(--md-sys-color-primary); opacity: 0.8; }
+  .repo-type-icon { margin-left: auto; color: var(--md-sys-color-primary); opacity: 0.6; display: flex; }
   .repo-names { font-size: 1.1rem; }
   .owner { opacity: 0.6; font-weight: 400; font-size: 0.9em; }
   .name { font-weight: 700; color: var(--md-sys-color-on-surface); }

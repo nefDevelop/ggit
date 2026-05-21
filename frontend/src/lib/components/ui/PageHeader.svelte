@@ -8,24 +8,26 @@
     actions?: Snippet;
     avatar?: Snippet;
     compact?: boolean; // For smaller cards
+    largeIcon?: boolean;
+    noBorder?: boolean;
   }
   
-  let { title, subtitle, icon, actions, avatar, compact = false }: Props = $props();
+  let { title, subtitle, icon, actions, avatar, compact = false, largeIcon = false, noBorder = false }: Props = $props();
 </script>
 
-<header class="page-header" class:compact>
+<header class="page-header" class:compact class:no-border={noBorder}>
   <div class="header-main">
     {#if avatar}
       <div class="avatar-slot">
         {@render avatar()}
       </div>
     {:else if icon}
-      <div class="icon-slot">
+      <div class="icon-slot" class:large={largeIcon}>
         {#if typeof icon === 'string'}
           <span class="material-symbols-rounded">{icon}</span>
         {:else if icon}
           {@const Icon = icon}
-          <Icon size={32} />
+          <Icon size={largeIcon ? 40 : 32} />
         {/if}
       </div>
     {/if}
@@ -53,11 +55,18 @@
     gap: 2rem;
     padding: 2.5rem;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    min-height: 160px;
+    box-sizing: border-box;
   }
 
 
   .page-header.compact {
     padding: 1.5rem 2rem;
+    min-height: auto;
+  }
+
+  .page-header.no-border {
+    border-bottom: none;
   }
 
   .header-main {
@@ -68,11 +77,12 @@
   }
 
   .icon-slot {
-    font-size: 3rem;
+    --header-icon-size: 32px;
+    width: var(--header-icon-container-size, 80px);
+    height: var(--header-icon-container-size, 80px);
     color: var(--primary-color);
     background: var(--md-sys-color-primary-container);
-    padding: 1.25rem;
-    border-radius: 1rem;
+    border-radius: 1.25rem;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -80,7 +90,19 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .icon-slot span { font-size: inherit; }
+  .icon-slot.large {
+    --header-icon-size: 40px;
+    --header-icon-container-size: 96px;
+    border-radius: 1.5rem;
+  }
+
+  .icon-slot span { font-size: var(--header-icon-size, 32px); }
+
+  .icon-slot :global(svg) {
+    width: var(--header-icon-size, 32px) !important;
+    height: var(--header-icon-size, 32px) !important;
+    transition: all 0.3s ease;
+  }
 
   .avatar-slot {
     flex-shrink: 0;
@@ -108,6 +130,12 @@
   @media (max-width: 1400px) {
     h2 { font-size: 1.85rem; }
     .icon-slot { font-size: 2.25rem; padding: 1rem; border-radius: 1rem; }
+    .icon-slot.large {
+      --header-icon-size: 34px;
+      font-size: 2.75rem;
+      padding: 1.15rem;
+      border-radius: 1.15rem;
+    }
     .page-header { padding: 2rem; gap: 1.5rem; }
   }
 
@@ -115,6 +143,12 @@
     h2 { font-size: 1.5rem; }
     .subtitle { font-size: 1rem; }
     .icon-slot { font-size: 1.75rem; padding: 0.8rem; border-radius: 0.75rem; }
+    .icon-slot.large {
+      --header-icon-size: 28px;
+      font-size: 2.25rem;
+      padding: 0.95rem;
+      border-radius: 0.95rem;
+    }
   }
 
   .page-header.compact h2 {
@@ -126,6 +160,7 @@
     color: var(--text-muted);
     font-size: 1.1rem;
     line-height: 1.4;
+    white-space: pre-line;
   }
 
   .header-actions {
@@ -152,6 +187,13 @@
 
     .icon-slot {
       font-size: 1.5rem;
+      padding: 0.6rem;
+      border-radius: 0.75rem;
+    }
+
+    .icon-slot.large {
+      --header-icon-size: 24px;
+      font-size: 1.75rem;
       padding: 0.6rem;
       border-radius: 0.75rem;
     }

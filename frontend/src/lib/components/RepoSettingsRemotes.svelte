@@ -84,7 +84,7 @@
   onMount(fetchRemotes);
 </script>
 
-<div class="remotes-settings">
+<div class="remotes-settings-wrapper">
   <Card padding="none" class="settings-premium-card">
     <PageHeader 
       title="Gestionar Remotos"
@@ -184,9 +184,8 @@
 </div>
 
 <style>
-  .remotes-settings { display: flex; flex-direction: column; gap: 2.5rem; }
-  .settings-content { padding: 0; display: flex; flex-direction: column; gap: 3rem; }
-  @media (max-width: 1300px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 3rem; }
+  @media (max-width: 1300px) { .settings-content { padding: 1.5rem; } }
   
   .add-remote-section { padding: 2rem; border-radius: 2rem; display: flex; flex-direction: column; gap: 2rem; }
   .section-meta strong { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
@@ -222,7 +221,7 @@
   .error-text { color: var(--error); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
   .success-text { color: var(--success); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
 
-  .info-zone { margin-top: 1rem; }
+  .info-zone { }
   .info-content { display: flex; gap: 1.5rem; align-items: flex-start; }
   :global(.warning-icon) { color: var(--primary-color); opacity: 0.8; }
   .info-text strong { display: block; margin-bottom: 0.25rem; font-size: 1.1rem; font-weight: 800; }

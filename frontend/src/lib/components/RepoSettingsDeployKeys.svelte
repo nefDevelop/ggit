@@ -6,9 +6,11 @@
   import Checkbox from "$lib/components/ui/Checkbox.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import Card from "$lib/components/ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
   import { i18n } from "$lib/i18n.svelte";
+  import { Key, Plus } from "lucide-svelte";
 
   const repo: any = getContext("repo");
 
@@ -97,18 +99,15 @@
 </script>
 
 <Card padding="none" class="settings-premium-card">
-  <header class="section-header-premium">
-    <div class="header-flex">
-      <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">vpn_key</span>
-        <div>
-          <h2>Claves de Despliegue</h2>
-          <p class="subtitle">Permite que servidores externos clonen este repositorio vía SSH sin una cuenta de usuario.</p>
-        </div>
-      </div>
-      <Button variant="primary" icon="add" onclick={() => (showModal = true)}>Añadir Clave</Button>
-    </div>
-  </header>
+  <PageHeader 
+    title="Claves de Despliegue"
+    subtitle="Permite que servidores externos clonen este repositorio vía SSH sin una cuenta de usuario."
+    icon={Key}
+  >
+    {#snippet actions()}
+      <Button variant="primary" icon={Plus} onclick={() => (showModal = true)}>Añadir Clave</Button>
+    {/snippet}
+  </PageHeader>
 
   <div class="settings-content">
     {#if loading}
@@ -207,25 +206,8 @@
 </Modal>
 
 <style>
-  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .header-flex { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-  
-  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header-premium { padding: 1.5rem; }
-    .header-flex { flex-direction: column; align-items: stretch; gap: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    .hero-icon { font-size: 1.25rem; padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
-  }
-
-  .settings-content { padding: 0; }
-  @media (max-width: 600px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .keys-stack { display: flex; flex-direction: column; gap: 1rem; }
   

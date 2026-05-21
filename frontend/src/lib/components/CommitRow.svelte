@@ -1,8 +1,8 @@
 <script lang="ts">
   import { toast } from "$lib/toast.svelte";
   import { page } from '$app/state';
-
   import { Check, Copy } from "lucide-svelte";
+  import Avatar from './Avatar.svelte';
 
   let { commit, minimalist = false } = $props();
 
@@ -36,12 +36,21 @@
       setTimeout(() => copied = false, 2000);
     }
   }
+  // commit.user is the matched Ggit account (has real AvatarURL).
+  // commit.author.avatar_url is set for last_commit bars.
+  const authorAvatarUrl = $derived(
+    commit.user?.avatar_url || commit.author?.avatar_url || ''
+  );
 </script>
 
 <a href={`/${username}/${reponame}/commit/${commit.id}`} class="commit-row tonal hover-lift" class:minimalist>
-  <div class="commit-avatar">
-    {commit.author?.name?.[0] || "U"}
-  </div>
+  <Avatar
+    src={authorAvatarUrl}
+    username={commit.author?.name || 'U'}
+    seed={commit.author?.email || commit.author?.name || 'unknown'}
+    size={32}
+    type="user"
+  />
   <div class="commit-content">
     <div class="commit-summary">{commit.summary}</div>
     <div class="commit-meta">
@@ -92,25 +101,6 @@
     background: rgba(255, 255, 255, 0.02);
   }
 
-  .commit-avatar {
-    width: 32px;
-    height: 32px;
-    background: var(--md-sys-color-secondary);
-    color: var(--md-sys-color-on-secondary);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.9rem;
-  }
-
-  .minimalist .commit-avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-  }
 
   .commit-content {
     flex: 1;

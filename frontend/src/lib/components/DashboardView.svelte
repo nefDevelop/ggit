@@ -167,7 +167,7 @@
     <div class="dashboard-main-content">
         <PageHeader 
             title="Dashboard" 
-            subtitle="Gestiona tus proyectos y actividad reciente"
+            subtitle="Gestiona tus proyectos, repositorios y actividad reciente."
             icon={LayoutDashboard}
         >
             {#snippet actions()}

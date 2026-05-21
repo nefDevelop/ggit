@@ -2,7 +2,7 @@
   import { 
     AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, 
     Folder, FileText, File, Edit, Download, Binary, BookText,
-    Rocket, ChevronRight, Copy, Check
+    Rocket, ChevronRight, Copy, Check, FileCode
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
@@ -12,6 +12,7 @@
   import RepoSearchResults from './RepoSearchResults.svelte';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   import CommitStatusIcon from './CommitStatusIcon.svelte';
+  import Avatar from './Avatar.svelte';
   import hljs from 'highlight.js';
   
   let { path = '' } = $props();
@@ -39,16 +40,18 @@
   let cloneUrl = $derived(repoData?.clone_url || repoData?.repository?.clone_url || '');
 
   // Initialize from context if at root to avoid flicker
-  if (!path && repoContext.full) {
-    repoData = repoContext.full;
-    loading = false;
-    // Set lastFetched to prevent immediate re-fetch
-    lastFetched = { 
-      user: page.params.username || '', 
-      repo: page.params.reponame || '', 
-      path: '' 
-    };
-  }
+  $effect(() => {
+    if (!path && repoContext.full) {
+      repoData = repoContext.full;
+      loading = false;
+      // Set lastFetched to prevent immediate re-fetch
+      lastFetched = { 
+        user: page.params.username || '', 
+        repo: page.params.reponame || '', 
+        path: '' 
+      };
+    }
+  });
 
   let codeRows = $derived(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];
@@ -67,7 +70,11 @@
         try {
           html = hljs.highlight(repoData.content, { language: hljs.getLanguage(language) ? language : 'plaintext' }).value;
         } catch (e) {
-          html = hljs.highlightAuto(repoData.content).value;
+          try {
+            html = hljs.highlightAuto(repoData.content).value;
+          } catch (e2) {
+            html = repoData.content.replace(/[&<>"']/g, (m: string) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[m] || m));
+          }
         }
       }
       lines = html.split('\n');
@@ -234,8 +241,10 @@
     </div>
   {:else if error}
     <div class="empty-state">
-      <AlertCircle size={48} />
-      <h3>No content found</h3>
+      <div class="empty-icon-ring">
+        <AlertCircle size={40} />
+      </div>
+      <h2>No content found</h2>
       <p>{error || 'This repository is empty or the path does not exist.'}</p>
     </div>
   {:else if repoData}
@@ -308,7 +317,13 @@ git push -u origin main</code></pre>
           <!-- Last Commit Bar -->
           {#if repoData.last_commit && repoData.type !== 'file'}
             <div class="last-commit-bar">
-                <div class="commit-avatar tonal">{repoData.last_commit.author?.name?.[0] || 'U'}</div>
+                <Avatar
+                  src={repoData.last_commit.author?.avatar_url || ''}
+                  username={repoData.last_commit.author?.name || 'U'}
+                  seed={repoData.last_commit.author?.email || repoData.last_commit.author?.name || 'unknown'}
+                  size={32}
+                  type="user"
+                />
                 <div class="commit-info">
                   <div class="commit-summary-row">
                     <a href={`/${username}/${reponame}/commit/${repoData.last_commit.id}`} class="commit-msg-link">
@@ -386,16 +401,21 @@ git push -u origin main</code></pre>
                              <div class="mini-spinner"></div>
                            {:else}
                              <History size={16} />
-                             Blame
+                             <span class="btn-text">Blame</span>
                            {/if}
                         </button>
-                        <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn">
+                        <a href={`/${username}/${reponame}/_edit/${repoData.branch}/${realPath()}`} class="tool-btn" title="Edit">
                           <Edit size={16} />
+                          <span class="btn-text">Edit</span>
                         </a>
                       {/if}
-                      <a href={`/api/v2/${username}/${reponame}/raw/${repoData.branch}/${realPath()}`} target="_blank" class="tool-btn">Raw</a>
+                      <a href={`/api/v2/${username}/${reponame}/raw/${repoData.branch}/${realPath()}`} target="_blank" class="tool-btn" title="Raw">
+                        <FileCode size={16} />
+                        <span class="btn-text">Raw</span>
+                      </a>
                       <a href={`/api/v2/${username}/${reponame}/media/${repoData.branch}/${realPath()}`} class="tool-btn" download title="Download">
                         <Download size={16} />
+                        <span class="btn-text">Download</span>
                       </a>
                       <button class="tool-btn btn-sidebar-toggle-inline" onclick={toggleSidebar} title={sidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}>
                         {#if sidebarCollapsed}
@@ -553,21 +573,8 @@ git push -u origin main</code></pre>
     border: 1px solid var(--md-sys-color-outline-variant);
     min-width: 0;
   }
-  .commit-avatar {
-    width: 32px;
-    height: 32px;
-    background: var(--md-sys-color-secondary);
-    color: var(--md-sys-color-on-secondary);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
   
+
   .commit-info {
     display: flex;
     flex-direction: column;
@@ -714,7 +721,7 @@ git push -u origin main</code></pre>
   .code-line-row { display: flex; align-items: stretch; min-height: 1.6rem; }
   .code-line-row:hover { background: rgba(var(--primary-rgb), 0.05); }
   
-  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: flex-start; justify-content: flex-end; padding-top: 2px; }
+  .ln-cell { width: 60px; min-width: 60px; text-align: right; padding-right: 1.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; color: var(--text-muted); opacity: 0.4; user-select: none; border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-low); display: flex; align-items: flex-start; justify-content: flex-end; }
   
   .code-cell { flex: 1; padding: 0 1rem; display: flex; align-items: flex-start; overflow-x: auto; }
   .code-cell pre { margin: 0; padding: 0; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; background: transparent; }
@@ -741,6 +748,9 @@ git push -u origin main</code></pre>
     .code-box { margin: 0.5rem; }
     .file-header { padding: 0.6rem 0.75rem; }
     .readme-content { padding: 1.25rem; }
+    .btn-sidebar-toggle-inline { display: none !important; }
+    .tool-btn .btn-text { display: none; }
+    .tool-btn { padding: 0 0.5rem; }
   }
 
   @media (max-width: 480px) {
@@ -832,9 +842,50 @@ git push -u origin main</code></pre>
 
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
 
-  .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--text-muted); }
+  .empty-state {
+    padding: 6rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--text-muted);
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
+  }
+
+  .empty-state-push .empty-icon-ring {
+    border-color: var(--tertiary);
+    color: var(--tertiary);
+    margin-bottom: 2rem;
+  }
+
   .empty-state-push { padding: 5rem 2rem; text-align: center; }
-  .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; color: var(--tertiary); }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; text-transform: uppercase; }
   

@@ -2,6 +2,8 @@ package v2
 
 import (
 	stdcontext "context"
+	"crypto/md5"
+	fmt "fmt"
 	json "github.com/nef734/ggit/internal/jsonx"
 	"errors"
 	"net/http"
@@ -20,6 +22,28 @@ import (
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
 )
+
+// resolveUserAvatarURL returns the best available avatar URL for a user:
+// their custom uploaded avatar if present, or a Gravatar URL derived from
+// their AvatarEmail, or empty string if neither is available.
+func resolveUserAvatarURL(u *database.User) string {
+	if u == nil {
+		return ""
+	}
+	if customURL := u.AvatarURL(); customURL != "" {
+		return customURL
+	}
+	// Fall back to Gravatar using the avatar email
+	avatarEmail := strings.ToLower(strings.TrimSpace(u.AvatarEmail))
+	if avatarEmail == "" {
+		avatarEmail = strings.ToLower(strings.TrimSpace(u.Email))
+	}
+	if avatarEmail == "" {
+		return ""
+	}
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(avatarEmail)))
+	return fmt.Sprintf("https://www.gravatar.com/avatar/%s?d=identicon&s=200", hash)
+}
 
 // SearchRepoContents searches for a keyword in the repository using git grep.
 func SearchRepoContents(c *context.APIContext) {
@@ -132,6 +156,8 @@ func CreateRepo(c *context.APIContext) {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
 	}
+
+	log.Trace("CreateRepo API called with payload: Name=%q AutoInit=%v Readme=%q Gitignores=%q", f.Name, f.AutoInit, f.Readme, f.Gitignores)
 
 	owner := c.User
 	if f.UID != 0 && f.UID != c.User.ID {
@@ -323,15 +349,18 @@ func getRepoDirectory(c *context.APIContext) {
 		log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
 		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 		if err == nil && len(lastCommit) > 0 {
+			lastCommitUser, _ := database.Handle.Users().GetByEmail(c.Req.Context(), lastCommit[0].Author.Email)
+			authorAvatarURL := resolveUserAvatarURL(database.FromDomainUser(lastCommitUser))
 			sha := lastCommit[0].ID.String()
 			res["last_commit"] = map[string]any{
 				"id":      sha,
 				"summary": lastCommit[0].Summary(),
 				"status":  string(database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)),
 				"author": map[string]any{
-					"name":  lastCommit[0].Author.Name,
-					"email": lastCommit[0].Author.Email,
-					"when":  lastCommit[0].Author.When,
+					"name":       lastCommit[0].Author.Name,
+					"email":      lastCommit[0].Author.Email,
+					"when":       lastCommit[0].Author.When,
+					"avatar_url": authorAvatarURL,
 				},
 			}
 		}
@@ -410,14 +439,17 @@ func getRepoFile(c *context.APIContext, entry *git.TreeEntry) {
 	lastCommit, _ := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
 	if len(lastCommit) > 0 {
 		sha := lastCommit[0].ID.String()
+		fileCommitUser, _ := database.Handle.Users().GetByEmail(c.Req.Context(), lastCommit[0].Author.Email)
+		fileAuthorAvatarURL := resolveUserAvatarURL(database.FromDomainUser(fileCommitUser))
 		res["last_commit"] = map[string]any{
 			"id":      sha,
 			"summary": lastCommit[0].Summary(),
 			"status":  string(database.Handle.CommitStatuses().GetCombinedStatusBySHA(c.Req.Context(), c.Repo.Repository.ID, sha)),
 			"author": map[string]any{
-				"name":  lastCommit[0].Author.Name,
-				"email": lastCommit[0].Author.Email,
-				"when":  lastCommit[0].Author.When,
+				"name":       lastCommit[0].Author.Name,
+				"email":      lastCommit[0].Author.Email,
+				"when":       lastCommit[0].Author.When,
+				"avatar_url": fileAuthorAvatarURL,
 			},
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/database"
 	log "github.com/nef734/ggit/internal/log"
@@ -109,6 +110,33 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 			return fmt.Errorf("create delegate hooks"+": %w", err)
 		}
 
+		// Detect git info
+		gitRepo, err := git.Open(repoPath)
+		if err != nil {
+			return fmt.Errorf("open git repo: %w", err)
+		}
+
+		branches, _ := gitRepo.Branches()
+		if len(branches) > 0 {
+			repo.IsBare = false
+			refspec, err := gitRepo.SymbolicRef()
+			if err == nil {
+				repo.DefaultBranch = git.RefShortName(refspec)
+			} else {
+				repo.DefaultBranch = branches[0]
+			}
+		} else {
+			repo.IsBare = true
+		}
+
+		// Save these initial fields
+		if err := tx.Model(repo).Updates(map[string]any{
+			"is_bare":        repo.IsBare,
+			"default_branch": repo.DefaultBranch,
+		}).Error; err != nil {
+			return fmt.Errorf("update repo info: %w", err)
+		}
+
 		return nil
 	})
 
@@ -117,9 +145,18 @@ func (s *RepositoryService) AdoptRepository(ctx context.Context, ownerName, repo
 	}
 
 	// Update stats (commits, branches, etc.)
-	if err := UpdateRepositoryLanguages(repo); err != nil {
-		log.Error("UpdateRepositoryLanguages: %v", err)
+	if !repo.IsBare {
+		if err := repo.UpdateSize(); err != nil {
+			log.Error("UpdateSize: %v", err)
+		}
+		if err := repo.UpdateCounters(); err != nil {
+			log.Error("UpdateCounters: %v", err)
+		}
+		if err := UpdateRepositoryLanguages(repo); err != nil {
+			log.Error("UpdateRepositoryLanguages: %v", err)
+		}
 	}
 
 	return repo, nil
 }
+

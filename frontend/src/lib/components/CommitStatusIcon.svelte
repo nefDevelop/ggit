@@ -27,12 +27,13 @@
 </script>
 
 {#if info}
-  <div 
-    class="commit-status-icon {className}" 
-    style="--status-color: {info.color}; display: inline-flex;" 
+  {@const Icon = info.icon}
+  <div
+    class="commit-status-icon {className}"
+    style="--status-color: {info.color}; display: inline-flex;"
     title={info.label}
   >
-    <info.icon size={size} />
+    <Icon size={size} />
   </div>
 {/if}
 

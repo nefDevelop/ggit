@@ -54,7 +54,7 @@
         >
           {#if typeof item.icon === 'string'}
             <span class="material-symbols-rounded">{item.icon}</span>
-          {:else}
+          {:else if item.icon}
             {@const Icon = item.icon}
             <Icon size={18} />
           {/if}
@@ -69,7 +69,7 @@
         >
           {#if typeof item.icon === 'string'}
             <span class="material-symbols-rounded">{item.icon}</span>
-          {:else}
+          {:else if item.icon}
             {@const Icon = item.icon}
             <Icon size={18} />
           {/if}

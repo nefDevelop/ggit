@@ -84,6 +84,8 @@ func MigrateRepo(c *context.APIContext) {
 
 		if database.IsErrRepoAlreadyExist(err) {
 			c.StatusError(http.StatusConflict, err.Error(), err)
+		} else if database.IsErrRepoAuthenticationFailed(err) {
+			c.StatusError(http.StatusUnauthorized, "Authentication failed, please check your credentials.", err)
 		} else {
 			c.Error(err, "migrate repository")
 		}

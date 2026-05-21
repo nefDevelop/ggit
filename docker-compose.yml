@@ -1,23 +1,43 @@
 services:
   ggit:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - BUILD_TARGET=build-swagger-cdn
+    build: .
+    container_name: ggit
     restart: always
     environment:
+      # --- PERMISSIONS ---
+      # Set these to your host User ID and Group ID to avoid permission issues.
+      # You can find them by running 'id' in your terminal.
       - PUID=1000
       - PGID=1000
+      
+      # --- CONFIGURATION PATHS ---
+      # This tells Ggit to look for everything in the /data volume.
+      - GGIT_CUSTOM=/data
+      
+      # --- SECURITY & LOGS ---
+      - GGIT_SKIP_RUN_USER_CHECK=true
       - GIN_MODE=release
-    ports:
-      - "3005:3005"
-      - "10022:22"
-    volumes:
-      - ./data:/data
-    networks:
-      - ggit-network
 
-networks:
-  ggit-network:
-    driver: bridge
+      # Enable tracing output to stdout (OpenTelemetry).
+      - GGIT_TRACE_STDOUT=false
+
+      # --- SYSTEM ---
+      # Force a specific home directory if needed.
+      - HOME=/data/home
+
+    volumes:
+      # We map everything to /data, which is what the Dockerfile expects.
+      - ./data:/data
+
+    ports:
+      # Web Interface
+      - "3005:3005"
+      # SSH Service
+      - "2222:22"
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3005/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -3,7 +3,7 @@
   import { onMount, getContext } from 'svelte';
   import PageHeader from "./ui/PageHeader.svelte";
   import Button from "./ui/Button.svelte";
-  import { Plus } from "lucide-svelte";
+  import { Plus, GitPullRequest } from "lucide-svelte";
   
   const repo: any = getContext('repo');
   let pulls = $state<any[]>([]);
@@ -41,7 +41,7 @@
 </script>
 
 <div class="pulls-view">
-  <PageHeader title="" icon="" compact>
+  <PageHeader title="" icon="" compact noBorder>
     {#snippet actions()}
       <div class="pill-filter-group-inline">
         <Button 
@@ -60,9 +60,12 @@
         </Button>
       </div>
 
-      <Button variant="primary" href="./pulls/new" icon={Plus}>
-        New Pull Request
-      </Button>    {/snippet}
+      {#if pulls.length > 0 || stateFilter === 'closed'}
+        <Button variant="primary" href="./pulls/new" icon={Plus}>
+          New Pull Request
+        </Button>
+      {/if}
+    {/snippet}
   </PageHeader>
 
 
@@ -72,9 +75,18 @@
     <div class="error-msg">{error}</div>
   {:else if pulls.length === 0}
     <div class="empty-state">
-      <span class="material-symbols-rounded">error_outline</span>
-      <h3>No pull requests found</h3>
+      <div class="empty-icon-ring">
+        <GitPullRequest size={40} />
+      </div>
+      <h2>No pull requests found</h2>
       <p>There are no {stateFilter} pull requests in this repository.</p>
+      {#if stateFilter === 'open'}
+        <div style="margin-top: 1rem;">
+          <Button variant="primary" href="./pulls/new" icon={Plus}>
+            Create your first pull request
+          </Button>
+        </div>
+      {/if}
     </div>
   {:else}
     <div class="flat-list-container">
@@ -172,9 +184,37 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 4rem;
-    gap: 1rem;
+    padding: 6rem 2rem;
+    gap: 1.25rem;
     color: var(--text-muted);
+    text-align: center;
+  }
+
+  .empty-state h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 950;
+    color: var(--text-color);
+  }
+
+  .empty-state p {
+    max-width: 400px;
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5;
+  }
+
+  .empty-icon-ring {
+    width: 80px;
+    height: 80px;
+    border: 2px dashed var(--md-sys-color-outline-variant);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    background: rgba(var(--primary-rgb), 0.05);
   }
 
   @keyframes spin {
@@ -196,26 +236,4 @@
   }
   .attention-dot.reviewer { background: #0061a4; box-shadow: 0 0 5px rgba(0, 97, 164, 0.5); }
   .attention-dot.author { background: #ba1a1a; box-shadow: 0 0 5px rgba(186, 26, 26, 0.5); }
-
-  .badge-mini {
-    font-size: 0.65rem;
-    font-weight: 850;
-    padding: 0.1rem 0.5rem;
-    border-radius: 4px;
-    color: white;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-  }
-  .badge-mini.scoped {
-    padding: 0;
-    overflow: hidden;
-  }
-  .badge-mini.scoped .key {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 0.1rem 0.5rem;
-  }
-  .badge-mini.scoped .val {
-    padding: 0.1rem 0.5rem;
-  }
 </style>

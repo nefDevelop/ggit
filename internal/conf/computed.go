@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/nef734/ggit/internal/osx"
 )
 
 // ℹ️ README: This file contains configuration values that require computation to be useful.
@@ -72,7 +74,8 @@ var (
 
 // CustomDir returns the absolute path of the custom directory that contains local overrides.
 // It reads the value of environment variable GGIT_CUSTOM. When not set, it uses the work
-// directory returned by WorkDir function.
+// directory returned by WorkDir function. It also attempts to fallback to a 'data' directory
+// if 'custom' does not exist, which is a common pattern in Docker environments.
 func CustomDir() string {
 	customDirOnce.Do(func() {
 		customDir = os.Getenv("GGIT_CUSTOM")
@@ -80,7 +83,17 @@ func CustomDir() string {
 			return
 		}
 
+		// Try the standard 'custom' directory first
 		customDir = filepath.Join(WorkDir(), "custom")
+		if osx.IsDir(customDir) {
+			return
+		}
+
+		// Fallback to 'data' directory if 'custom' is missing
+		dataDir := filepath.Join(WorkDir(), "data")
+		if osx.IsDir(dataDir) {
+			customDir = dataDir
+		}
 	})
 
 	return customDir

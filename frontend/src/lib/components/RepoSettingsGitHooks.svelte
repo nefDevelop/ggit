@@ -4,6 +4,7 @@
   import Modal from "$lib/components/Modal.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import Card from "$lib/components/ui/Card.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
   import { toast } from "$lib/toast.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import { Terminal, AlertCircle, Code, Edit, Info } from "lucide-svelte";
@@ -73,15 +74,11 @@
 </script>
 
 <Card padding="none" class="settings-premium-card">
-  <header class="section-header-premium">
-    <div class="title-with-icon">
-      <Terminal size={48} class="hero-icon" />
-      <div>
-        <h2>Git Hooks</h2>
-        <p class="subtitle">Gestiona scripts personalizados que se ejecutan en el servidor ante eventos de Git.</p>
-      </div>
-    </div>
-  </header>
+  <PageHeader 
+    title="Git Hooks" 
+    subtitle="Gestiona scripts personalizados que se ejecutan en el servidor ante eventos de Git." 
+    icon={Terminal}
+  />
 
   <div class="settings-content">
     {#if loading}
@@ -168,23 +165,8 @@
 </Modal>
 
 <style>
-  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  :global(.hero-icon) { color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-  
-  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
-  @media (max-width: 600px) {
-    .section-header-premium { padding: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    :global(.hero-icon) { padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
-  }
-
-  .settings-content { padding: 0; }
-  @media (max-width: 600px) { .settings-content { padding: 0; } }
+  .settings-content { padding: 2.5rem; }
+  @media (max-width: 600px) { .settings-content { padding: 1.5rem; } }
 
   .hooks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; }
   @media (max-width: 800px) { .hooks-grid { grid-template-columns: 1fr; } }

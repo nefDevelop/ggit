@@ -1169,6 +1169,9 @@ func MigrateRepository(doer, owner *User, opts MigrateRepoOptions) (*Repository,
 	if _, stderr, err = process.ExecTimeout(migrateTimeout,
 		fmt.Sprintf("MigrateRepository (git clone): %s", repoPath),
 		"git", "-c", "credential.helper=", "clone", "--mirror", opts.RemoteAddr, repoPath); err != nil {
+		if strings.Contains(stderr, "Authentication failed") || strings.Contains(stderr, "could not read Username") {
+			return repo, ErrRepoAuthenticationFailed{Stderr: stderr}
+		}
 		return repo, fmt.Errorf("clone: %v - %s", err, stderr)
 	}
 

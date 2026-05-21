@@ -12,23 +12,27 @@
   import ChipNavigation from '$lib/components/ui/ChipNavigation.svelte';
   import { authState } from '$lib/auth.svelte';
 
+  import { 
+    Settings, Users, GitBranch, RefreshCw, Webhook, Key, Terminal, Shield, Sparkles 
+  } from 'lucide-svelte';
+
   const repo: any = getContext('repo');
   let activeTab = $state('general');
 
   const tabs = [
-    { id: 'general', label: 'General', icon: 'settings' },
-    { id: 'collaboration', label: 'Collaboration', icon: 'group' },
-    { id: 'branches', label: 'Branches', icon: 'call_split' },
-    { id: 'remotes', label: 'Remotes', icon: 'sync' },
-    { id: 'webhooks', label: 'Webhooks', icon: 'webhook' },
-    { id: 'keys', label: 'Deploy Keys', icon: 'vpn_key' },
-    { id: 'security', label: 'Seguridad', icon: 'shield' },
-    { id: 'janitor', label: 'Janitor', icon: 'mop' }
+    { id: 'general', label: 'General', icon: Settings },
+    { id: 'collaboration', label: 'Collaboration', icon: Users },
+    { id: 'branches', label: 'Branches', icon: GitBranch },
+    { id: 'remotes', label: 'Remotes', icon: RefreshCw },
+    { id: 'webhooks', label: 'Webhooks', icon: Webhook },
+    { id: 'keys', label: 'Deploy Keys', icon: Key },
+    { id: 'security', label: 'Seguridad', icon: Shield },
+    { id: 'janitor', label: 'Janitor', icon: Sparkles }
   ];
 
   const visibleTabs = $derived(
     (authState.user?.is_admin || authState.user?.allow_git_hook)
-      ? [...tabs, { id: 'git_hooks', label: 'Git Hooks', icon: 'terminal' }]
+      ? [...tabs, { id: 'git_hooks', label: 'Git Hooks', icon: Terminal }]
       : tabs
   );
 </script>
@@ -47,7 +51,12 @@
           class:active={activeTab === tab.id}
           onclick={() => activeTab = tab.id}
         >
-          <span class="material-symbols-rounded">{tab.icon}</span>
+          {#if typeof tab.icon === 'string'}
+            <span class="material-symbols-rounded">{tab.icon}</span>
+          {:else if tab.icon}
+            {@const Icon = tab.icon}
+            <Icon size={18} />
+          {/if}
           {tab.label}
         </button>
       {/each}
@@ -81,7 +90,7 @@
       items={visibleTabs} 
       activeId={activeTab} 
       title="Repository Settings"
-      titleIcon="settings"
+      titleIcon={Settings}
       onSelect={(id) => activeTab = id} 
     />
   </div>
@@ -160,6 +169,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    margin-top: 1rem;
   }
 
   .mobile-nav-wrapper {

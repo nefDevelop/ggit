@@ -22,6 +22,13 @@
     onResolveComment?: (id: number, resolved: boolean) => void
   }>();
 
+  const totalAdditions = $derived(
+    (diff?.TotalAddition ?? (diff?.Files || []).reduce((s: number, f: any) => s + (f.Addition ?? 0), 0))
+  );
+  const totalDeletions = $derived(
+    (diff?.TotalDeletion ?? (diff?.Files || []).reduce((s: number, f: any) => s + (f.Deletion ?? 0), 0))
+  );
+
   let collapsedFiles = $state<Record<string, boolean>>({});
   let activeComposer = $state<{ file: string, line: number } | null>(null);
 
@@ -62,12 +69,16 @@
     if (!content) return "&nbsp;";
     const ext = fileName.split('.').pop() || '';
     try {
-      return hljs.highlight(content, { 
-        language: hljs.getLanguage(ext) ? ext : 'plaintext',
-        ignoreIllegals: true 
-      }).value;
+      if (hljs.getLanguage(ext)) {
+        return hljs.highlight(content, { language: ext, ignoreIllegals: true }).value;
+      }
+      return hljs.highlightAuto(content).value;
     } catch (e) {
-      return content;
+      try {
+        return hljs.highlightAuto(content).value;
+      } catch (e2) {
+        return content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
     }
   };
 </script>
@@ -80,11 +91,11 @@
     </div>
     <div class="stat-item success">
       <Plus size={16} />
-      <b>{diff?.TotalAddition || 0}</b> adiciones
+      <b>{totalAdditions}</b> adiciones
     </div>
     <div class="stat-item error">
       <Minus size={16} />
-      <b>{diff?.TotalDeletion || 0}</b> eliminaciones
+      <b>{totalDeletions}</b> eliminaciones
     </div>
   </div>
 
@@ -322,7 +333,6 @@
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
-    padding-top: 2px;
   }
 
   @media (max-width: 600px) {

@@ -14,10 +14,7 @@
   let error = $state("");
 
   async function createIssue() {
-    if (!title.trim()) {
-      error = "Title is required.";
-      return;
-    }
+    if (submitting || !title.trim()) return;
     submitting = true;
     error = "";
     try {
@@ -79,8 +76,8 @@
       </div>
 
       <div class="form-actions">
-        <Button variant="primary" onclick={createIssue} disabled={submitting || !title.trim()}>
-          {submitting ? "Creating..." : "Submit Issue"}
+        <Button variant="primary" onclick={createIssue} disabled={submitting || !title.trim()} loading={submitting}>
+          Submit Issue
         </Button>
       </div>
     </div>

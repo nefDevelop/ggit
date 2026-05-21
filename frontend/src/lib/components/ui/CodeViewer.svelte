@@ -21,7 +21,12 @@
       const result = hljs.highlight(code, { language: language || 'text' });
       highlightedCode = result.value;
     } catch (e) {
-      highlightedCode = code;
+      try {
+        const result = hljs.highlightAuto(code);
+        highlightedCode = result.value;
+      } catch (e2) {
+        highlightedCode = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
     }
   }
 
