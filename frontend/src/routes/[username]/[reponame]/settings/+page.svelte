@@ -17,6 +17,9 @@
   } from 'lucide-svelte';
 
   const repo: any = getContext('repo');
+  console.log("DEBUG - Settings Page Context:", repo);
+  console.log("DEBUG - Settings Page Repo Data:", repo?.data);
+  
   let activeTab = $state('general');
 
   const tabs = [
