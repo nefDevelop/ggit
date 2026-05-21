@@ -72,17 +72,17 @@
   });
 
   let activeTab = $derived(
-    currentPath.includes('/commits') || currentPath.includes('/commit/') ? 'commits' :
-    currentPath.includes('/issues') ? 'issues' :
-    currentPath.includes('/pulls') ? 'pulls' :
-    currentPath.includes('/wiki') ? 'wiki' :
-    currentPath.includes('/adr') ? 'adr' :
-    currentPath.includes('/branches') ? 'branches' :
-    currentPath.includes('/releases') ? 'releases' :
-    currentPath.includes('/tags') ? 'tags' :
-    currentPath.includes('/labels') ? 'labels' :
-    currentPath.includes('/milestones') ? 'milestones' : 
-    currentPath.includes('/settings') ? 'settings' : 'code'
+    currentPath.endsWith('/commits') || currentPath.includes('/commit/') ? 'commits' :
+    currentPath.endsWith('/issues') || currentPath.includes('/issues/') ? 'issues' :
+    currentPath.endsWith('/pulls') || currentPath.includes('/pulls/') ? 'pulls' :
+    currentPath.endsWith('/wiki') || currentPath.includes('/wiki/') ? 'wiki' :
+    currentPath.endsWith('/adr') || currentPath.includes('/adr/') ? 'adr' :
+    currentPath.endsWith('/branches') ? 'branches' :
+    currentPath.endsWith('/releases') ? 'releases' :
+    currentPath.endsWith('/tags') ? 'tags' :
+    currentPath.endsWith('/labels') ? 'labels' :
+    currentPath.endsWith('/milestones') ? 'milestones' : 
+    currentPath.endsWith('/settings') ? 'settings' : 'code'
   );
 
   let showCloneDropdown = $state(false);
@@ -400,6 +400,13 @@
   .archive-tile:hover { background: rgba(var(--primary-rgb), 0.1); border-color: var(--primary-color); }
 
   .repo-header-region { background-color: var(--surface-variant); border-bottom: none; }
+  
+  @media (max-width: 800px) {
+    .repo-header-region {
+      padding-bottom: 0.25rem;
+    }
+  }
+
   .rich-tabs { display: flex; gap: 0.25rem; padding: 0.5rem 1rem 0; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
   .rich-tabs::-webkit-scrollbar { display: none; }
   .tab { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; border-radius: 0.75rem 0.75rem 0 0; }

@@ -182,15 +182,13 @@
     .mobile-nav-wrapper {
       display: block;
       position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
+      bottom: calc(60px + env(safe-area-inset-bottom));
       left: 0;
       right: 0;
       width: 100vw;
       box-sizing: border-box;
       z-index: 999;
-      background: rgba(var(--surface-rgb), 0.7);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: var(--md-sys-color-surface-container);
       padding: 0.75rem 1rem;
       border-top: 1px solid var(--md-sys-color-outline-variant);
       box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);

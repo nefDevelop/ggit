@@ -163,7 +163,7 @@
     .mobile-nav-wrapper {
       display: block;
       position: fixed;
-      bottom: calc(70px + env(safe-area-inset-bottom));
+      bottom: calc(60px + env(safe-area-inset-bottom));
       left: 0;
       right: 0;
       width: 100vw;

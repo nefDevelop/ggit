@@ -95,8 +95,8 @@
 
   /* Space for sub-navigation (Admin/Settings) */
   #app-layout.has-sub-nav #main-container-wrapper {
-    margin-bottom: 160px !important;
-    height: calc(100vh - 170px);
+    margin-bottom: calc(145px + env(safe-area-inset-bottom)) !important;
+    height: calc(100vh - 160px - env(safe-area-inset-bottom)) !important;
   }
 
   #main-container-wrapper::after {

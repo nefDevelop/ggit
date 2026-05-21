@@ -529,10 +529,13 @@ git push -u origin main</code></pre>
     transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
     padding: 0;
     animation: fadeIn 0.2s ease-out;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .technical-grid.sidebar-collapsed {
-    grid-template-columns: 1fr 0px;
+    grid-template-columns: 100%;
     gap: 0;
   }
 
@@ -732,9 +735,11 @@ git push -u origin main</code></pre>
   .readme-content { padding: 2rem; line-height: 1.6; }
 
   @media (max-width: 600px) {
+    .msg-cell, .date-cell { display: none; }
+    .name-cell { width: 100%; min-width: 0; }
+    .file-row td { padding: 0.85rem 1rem; }
     .code-box { margin: 0.5rem; }
     .file-header { padding: 0.6rem 0.75rem; }
-    .file-row td { padding: 0.6rem 0.75rem; }
     .readme-content { padding: 1.25rem; }
   }
 
