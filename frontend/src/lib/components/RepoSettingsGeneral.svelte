@@ -25,6 +25,7 @@
   let avatarCacheBuster = $state(Date.now());
 
   async function fetchSettings() {
+    if (!repo?.data?.owner?.username || !repo?.data?.name) return;
     loading = true;
     try {
       const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`);
@@ -39,6 +40,7 @@
   }
 
   async function saveSettings() {
+    if (!settings) return;
     saving = true;
     try {
       const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`, {
@@ -61,7 +63,7 @@
 
   async function uploadAvatar(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+    if (!file || !settings) return;
     avatarUploading = true;
     try {
       const formData = new FormData();
@@ -83,6 +85,7 @@
   }
 
   async function deleteAvatar() {
+    if (!settings) return;
     if (!await dialog.confirm("¿Estás seguro de eliminar el logo del repositorio?")) return;
     avatarUploading = true;
     try {
@@ -101,6 +104,7 @@
   }
 
   async function deleteRepo() {
+    if (!settings) return;
     if (deleteConfirm !== settings.name) return;
     if (!await dialog.confirm(`¿ESTÁS SEGURO? Esta acción es IRREVERSIBLE. Se eliminará el repositorio "${settings.name}" permanentemente.`)) return;
     saving = true;
@@ -119,6 +123,7 @@
   }
 
   async function transferRepo() {
+    if (!settings) return;
     const newOwner = await dialog.prompt("Introduce el nombre del nuevo propietario (usuario u organización):");
     if (!newOwner) return;
     saving = true;
@@ -138,7 +143,13 @@
     }
   }
 
-  onMount(fetchSettings);
+  // Use an effect to watch for repo changes so it fetches settings
+  $effect(() => {
+    if (repo?.data) {
+        fetchSettings();
+    }
+  });
+
 </script>
 
 <div class="general-settings-wrapper">
@@ -150,7 +161,7 @@
     />
 
     <div class="settings-content">
-      {#if loading}
+      {#if loading || !settings}
         <div class="skeleton-form"></div>
       {:else}
         <form class="settings-form" onsubmit={(e) => { e.preventDefault(); saveSettings(); }}>
@@ -184,7 +195,7 @@
 
           <div class="form-grid">
             <Input label="Nombre del Repositorio" bind:value={settings.name} placeholder="mi-gran-proyecto" required />
-            <Input label="Propietario" value={settings.owner.username} disabled />
+            <Input label="Propietario" value={settings.owner?.username || repo.data?.owner?.username || ''} disabled />
             <Input label="Descripción" bind:value={settings.description} placeholder="Una breve descripción sobre qué hace este proyecto..." class="full-width" />
             <Input label="Página Web" bind:value={settings.website} placeholder="https://mi-proyecto.com" class="full-width" />
           </div>
@@ -250,6 +261,7 @@
     </div>
   </Card>
 
+  {#if settings}
   <div class="danger-zone-container">
     <Card class="tonal" padding="none">
       <header class="danger-header">
@@ -288,6 +300,7 @@
       </div>
     </Card>
   </div>
+  {/if}
 </div>
 
 <style>
