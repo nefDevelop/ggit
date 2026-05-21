@@ -14,7 +14,8 @@
     try {
       const res = await apiFetch(`/api/v2/explore/topics?q=${q}`);
       if (res.ok) {
-        topics = await res.json();
+        const data = await res.json();
+        topics = data.topics || [];
       }
     } catch (e) {
       error = 'Failed to load topics.';

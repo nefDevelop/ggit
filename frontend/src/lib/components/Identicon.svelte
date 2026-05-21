@@ -12,6 +12,7 @@
 
   // Función de hash simple para obtener un número basado en el string
   function getHash(str: string) {
+    if (!str) return 0;
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);

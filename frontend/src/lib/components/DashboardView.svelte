@@ -62,20 +62,21 @@
 
   const groupedRepos = $derived.by((): GroupedRepos => {
     const repos = filteredRepos;
-    const all = [...repos].sort((a, b) => a.name.localeCompare(b.name));
+    // Robust sorting with null guards
+    const all = [...repos].filter(r => r && r.name).sort((a, b) => a.name.localeCompare(b.name));
     
     if (viewMode === 'folders') {
       const folders: Record<string, any[]> = {};
       const ungrouped: any[] = [];
       repos.forEach(r => {
-        if (r.project_folder) {
+        if (r && r.project_folder) {
           if (!folders[r.project_folder]) folders[r.project_folder] = [];
           folders[r.project_folder].push(r);
-        } else {
+        } else if (r) {
           ungrouped.push(r);
         }
       });
-      return { folders, ungrouped: ungrouped.sort((a, b) => a.name.localeCompare(b.name)) };
+      return { folders, ungrouped: ungrouped.sort((a, b) => (a.name || '').localeCompare(b.name || '')) };
     }
 
     if (viewMode !== 'temporal') {
@@ -84,8 +85,8 @@
 
     return {
       all,
-      recent: repos.filter(r => new Date(r.updated_at).getTime() > oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
-      older: repos.filter(r => new Date(r.updated_at).getTime() <= oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
+      recent: repos.filter(r => r && r.updated_at && new Date(r.updated_at).getTime() > oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()),
+      older: repos.filter(r => r && r.updated_at && new Date(r.updated_at).getTime() <= oneWeekAgo).sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
     };
   });
 

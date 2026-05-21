@@ -16,7 +16,7 @@
   } = $props();
 
   // El seed por defecto es el username si no se pasa nada más
-  const finalSeed = $derived(seed || username);
+  const finalSeed = $derived(seed || username || '');
   
   // Determinamos si es un avatar real o debemos generar uno
   const useIdenticon = $derived(!src || src === '');
