@@ -511,7 +511,7 @@ git push -u origin main</code></pre>
               {#if repoContext.data?.size !== undefined}
               <div class="side-item-row" style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
                 <Database size={16} />
-                <span>{formatSize(repoContext.data.size * 1024)}</span>
+                <span>{formatSize(repoContext.data.size)}</span>
               </div>
               {/if}
             </div>
