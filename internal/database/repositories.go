@@ -59,6 +59,7 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		NumCommits:            r.NumCommits,
 		NumBranches:           r.NumBranches,
 		NumReleases:           int(numReleases),
+		Size:                  r.Size,
 		IsPrivate:             r.IsPrivate,
 		IsBare:                r.IsBare,
 		HTMLURL:               owner.HTMLURL() + "/" + r.Name,

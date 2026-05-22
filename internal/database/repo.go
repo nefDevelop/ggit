@@ -683,6 +683,7 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 		Permissions: permission,
 		CloneURL:    cloneLink.HTTPS,
 		SSHURL:      cloneLink.SSH,
+		Size:        r.Size,
 	}
 	if permission == nil {
 		p := &apiv2types.RepositoryPermission{Pull: true}

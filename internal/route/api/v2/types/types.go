@@ -69,6 +69,7 @@ type RepositoryResponse struct {
 	NumCommits            int64                 `json:"num_commits"`
 	NumBranches           int                   `json:"num_branches"`
 	NumReleases           int                   `json:"num_releases_count"`
+	Size                  int64                 `json:"size"`
 	IsPrivate             bool                  `json:"is_private"`
 	IsBare                bool                  `json:"is_bare"`
 	HTMLURL               string                `json:"html_url"`
