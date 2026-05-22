@@ -2,7 +2,7 @@
   import { 
     AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, 
     Folder, FileText, File, Edit, Download, Binary, BookText,
-    Rocket, ChevronRight, Copy, Check, FileCode
+    Rocket, ChevronRight, Copy, Check, FileCode, Scale, Database
   } from "lucide-svelte";
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
@@ -492,6 +492,29 @@ git push -u origin main</code></pre>
           <div class="side-section">
             <h4 class="side-title">About</h4>
             <p class="about-text">{repoContext.data?.description || 'No description provided.'}</p>
+
+            <div class="side-items-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+              {#if repoContext.full?.readme || repoData?.readme}
+              <a href="#readme" class="side-item-row" style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">
+                <BookText size={16} />
+                <span>Readme</span>
+              </a>
+              {/if}
+
+              {#if repoContext.data?.license}
+              <div class="side-item-row" style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                <Scale size={16} />
+                <span>{repoContext.data.license} License</span>
+              </div>
+              {/if}
+
+              {#if repoContext.data?.size !== undefined}
+              <div class="side-item-row" style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); font-size: 0.9rem;">
+                <Database size={16} />
+                <span>{formatSize(repoContext.data.size * 1024)}</span>
+              </div>
+              {/if}
+            </div>
           </div>
 
           <div class="side-section">
