@@ -1,5 +1,386 @@
 basePath: /api/v2
 definitions:
+  database.AccessToken:
+    properties:
+      createdUnix:
+        format: int64
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      sha1:
+        type: string
+      sha256:
+        type: string
+      updatedUnix:
+        format: int64
+        type: integer
+      userID:
+        type: integer
+    type: object
+  types.AuditLogResponse:
+    properties:
+      actor_id:
+        type: integer
+      actor_name:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      op_name:
+        type: string
+      op_type:
+        type: integer
+      repo_id:
+        type: integer
+      repo_path:
+        type: string
+    type: object
+  types.OrganizationResponse:
+    properties:
+      description:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      num_members:
+        type: integer
+      num_teams:
+        type: integer
+      owner:
+        $ref: '#/definitions/types.UserResponse'
+      username:
+        type: string
+    type: object
+  types.RepositoryPermission:
+    properties:
+      admin:
+        type: boolean
+      pull:
+        type: boolean
+      push:
+        type: boolean
+    type: object
+  types.RepositoryResponse:
+    properties:
+      adr_folder_name:
+        type: string
+      avatar_url:
+        type: string
+      clone_url:
+        type: string
+      context_user:
+        type: string
+      created_at:
+        type: string
+      default_branch:
+        type: string
+      description:
+        type: string
+      enable_external_tracker:
+        type: boolean
+      enable_external_wiki:
+        type: boolean
+      enable_issues:
+        type: boolean
+      enable_pulls:
+        type: boolean
+      enable_wiki:
+        type: boolean
+      external_tracker_format:
+        type: string
+      external_tracker_style:
+        type: string
+      external_tracker_url:
+        type: string
+      external_wiki_url:
+        type: string
+      full_name:
+        type: string
+      html_url:
+        type: string
+      id:
+        type: integer
+      is_bare:
+        type: boolean
+      is_private:
+        type: boolean
+      last_branch_at:
+        type: string
+      last_commit_at:
+        description: Activity Timestamps
+        type: string
+      last_health_check_at:
+        description: Sentinel Info
+        type: string
+      last_issue_at:
+        type: string
+      last_pull_at:
+        type: string
+      name:
+        type: string
+      num_branches:
+        type: integer
+      num_commits:
+        type: integer
+      num_forks:
+        type: integer
+      num_releases_count:
+        type: integer
+      num_stars:
+        type: integer
+      num_watches:
+        type: integer
+      open_issues_count:
+        type: integer
+      open_pulls_count:
+        type: integer
+      owner:
+        $ref: '#/definitions/types.UserResponse'
+      parent:
+        $ref: '#/definitions/types.RepositoryResponse'
+      permissions:
+        $ref: '#/definitions/types.RepositoryPermission'
+      project_folder:
+        type: string
+      pulls_allow_rebase:
+        type: boolean
+      pulls_ignore_whitespace:
+        type: boolean
+      size:
+        type: integer
+      ssh_url:
+        type: string
+      topics:
+        items:
+          type: string
+        type: array
+      updated_at:
+        type: string
+      wiki_folder_name:
+        type: string
+    type: object
+  types.UserEmailResponse:
+    properties:
+      email:
+        type: string
+      primary:
+        type: boolean
+      verified:
+        type: boolean
+    type: object
+  types.UserResponse:
+    properties:
+      allow_git_hook:
+        type: boolean
+      allow_import_local:
+        type: boolean
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      disable_news_feed:
+        type: boolean
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: integer
+      is_admin:
+        type: boolean
+      max_repo_creation:
+        type: integer
+      prohibit_login:
+        type: boolean
+      username:
+        type: string
+    type: object
+  v2.AddEmail:
+    properties:
+      email:
+        maxLength: 254
+        type: string
+    required:
+    - email
+    type: object
+  v2.EditPassword:
+    properties:
+      old_password:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 255
+        type: string
+      retype:
+        type: string
+    required:
+    - old_password
+    - password
+    type: object
+  v2.EditProfile:
+    properties:
+      avatar_email:
+        maxLength: 254
+        type: string
+      disable_news_feed:
+        type: boolean
+      email:
+        maxLength: 254
+        type: string
+      full_name:
+        maxLength: 100
+        type: string
+      location:
+        maxLength: 50
+        type: string
+      name:
+        maxLength: 35
+        type: string
+      website:
+        maxLength: 100
+        type: string
+    type: object
+  v2.NewAccessToken:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  v2.adminAdoptRepoPayload:
+    properties:
+      owner_name:
+        type: string
+      repo_name:
+        type: string
+    required:
+    - owner_name
+    - repo_name
+    type: object
+  v2.adminCreateOrgPayload:
+    properties:
+      full_name:
+        type: string
+      owner_id:
+        type: integer
+      username:
+        type: string
+    required:
+    - owner_id
+    - username
+    type: object
+  v2.adminCreateUserPayload:
+    properties:
+      activated:
+        type: boolean
+      admin:
+        type: boolean
+      allow_git_hook:
+        type: boolean
+      allow_import_local:
+        type: boolean
+      email:
+        maxLength: 254
+        type: string
+      full_name:
+        type: string
+      location:
+        type: string
+      password:
+        maxLength: 255
+        type: string
+      prohibit_login:
+        type: boolean
+      username:
+        type: string
+      website:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  v2.adminOperationPayload:
+    properties:
+      op:
+        type: integer
+    required:
+    - op
+    type: object
+  v2.adminUpdateConfigPayload:
+    properties:
+      data:
+        additionalProperties:
+          type: string
+        type: object
+      section:
+        type: string
+    required:
+    - data
+    - section
+    type: object
+  v2.adminUpdateUserPayload:
+    properties:
+      activated:
+        type: boolean
+      admin:
+        type: boolean
+      allow_git_hook:
+        type: boolean
+      allow_import_local:
+        type: boolean
+      full_name:
+        type: string
+      location:
+        type: string
+      max_repo_creation:
+        type: integer
+      prohibit_login:
+        type: boolean
+      website:
+        type: string
+    type: object
+  v2.createRepoPayload:
+    properties:
+      auto_init:
+        type: boolean
+      created_at:
+        type: string
+      default_branch:
+        maxLength: 100
+        type: string
+      description:
+        maxLength: 255
+        type: string
+      gitignores:
+        type: string
+      is_archived:
+        type: boolean
+      license:
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      private:
+        type: boolean
+      readme:
+        type: string
+      uid:
+        type: integer
+      unlisted:
+        type: boolean
+      website:
+        maxLength: 100
+        type: string
+    required:
+    - name
+    type: object
   v2.loginPayload:
     properties:
       login_source:
@@ -16,7 +397,13 @@ definitions:
     type: object
   v2.registerPayload:
     properties:
+      captcha_answer:
+        description: Question answer
+        type: string
       email:
+        type: string
+      middle_name:
+        description: Honeypot
         type: string
       password:
         type: string
@@ -34,6 +421,392 @@ info:
   title: Ggit API v2
   version: "2.0"
 paths:
+  /:username/:reponame/search:
+    get:
+      description: Searches for a keyword in the repository using git grep.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      - description: Search keyword
+        in: query
+        name: q
+        required: true
+        type: string
+      - description: Branch or commit reference
+        in: query
+        name: ref
+        type: string
+      - description: Case sensitive search
+        in: query
+        name: case_sensitive
+        type: boolean
+      - description: Use regex search
+        in: query
+        name: regex
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Search Repository Contents
+      tags:
+      - repository
+  /:username/:reponame/view/{path}:
+    get:
+      description: Returns the content of a file or directory in the repository.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      - description: Path to file or directory
+        in: path
+        name: path
+        type: string
+      - description: Branch or commit reference
+        in: query
+        name: ref
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Repository View
+      tags:
+      - repository
+  /admin/audit-log:
+    get:
+      description: Returns all actions from the system (for admins).
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.AuditLogResponse'
+            type: array
+      summary: Get Admin Audit Log
+      tags:
+      - admin
+  /admin/config:
+    get:
+      description: Returns the current application configuration.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              additionalProperties:
+                type: string
+              type: object
+            type: object
+      summary: Get Admin Configuration
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      description: Updates server configurations for a specific section.
+      parameters:
+      - description: Configuration details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.adminUpdateConfigPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update Admin Configuration
+      tags:
+      - admin
+  /admin/health-snapshot:
+    get:
+      description: Returns system monitor data.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Admin Monitor
+      tags:
+      - admin
+  /admin/operations:
+    post:
+      consumes:
+      - application/json
+      description: Executes an administrative maintenance operation.
+      parameters:
+      - description: Operation details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.adminOperationPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Run Admin Operation
+      tags:
+      - admin
+  /admin/orgs:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new organization administratively.
+      parameters:
+      - description: Organization details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.adminCreateOrgPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.OrganizationResponse'
+      summary: Create Organization (Admin)
+      tags:
+      - admin
+  /admin/repos:
+    get:
+      description: Returns a list of all repositories.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.RepositoryResponse'
+            type: array
+      summary: Get Admin Repositories
+      tags:
+      - admin
+  /admin/repos/{id}:
+    delete:
+      description: Deletes a repository administratively.
+      parameters:
+      - description: Repository ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete Repository (Admin)
+      tags:
+      - admin
+  /admin/repos/adopt:
+    post:
+      consumes:
+      - application/json
+      description: Adopts an unmanaged repository folder into the database.
+      parameters:
+      - description: Adoption details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.adminAdoptRepoPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.RepositoryResponse'
+      summary: Adopt Repository (Admin)
+      tags:
+      - admin
+  /admin/stats:
+    get:
+      description: Returns global statistics and system status.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Admin Statistics
+      tags:
+      - admin
+  /admin/users:
+    get:
+      description: Returns a list of all users.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.UserResponse'
+            type: array
+      summary: Get Admin Users
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account administratively.
+      parameters:
+      - description: User details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.adminCreateUserPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/types.UserResponse'
+      summary: Create User (Admin)
+      tags:
+      - admin
+  /admin/users/{id}:
+    delete:
+      description: Deletes a user account administratively.
+      parameters:
+      - description: User ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete User (Admin)
+      tags:
+      - admin
+    get:
+      description: Returns a user's information.
+      parameters:
+      - description: User ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.UserResponse'
+      summary: Get User (Admin)
+      tags:
+      - admin
+    patch:
+      consumes:
+      - application/json
+      description: Updates a user's information administratively.
+      parameters:
+      - description: User ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.adminUpdateUserPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update User (Admin)
+      tags:
+      - admin
   /user/login:
     post:
       consumes:
@@ -101,6 +874,221 @@ paths:
           schema:
             type: string
       summary: User Registration
+      tags:
+      - user
+  /user/repos:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new repository for the authenticated user.
+      parameters:
+      - description: Repository details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.createRepoPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created repository object
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create Repository
+      tags:
+      - repository
+  /user/settings/emails:
+    delete:
+      description: Deletes an email address for the current user.
+      parameters:
+      - description: Email address to delete
+        in: query
+        name: email
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete User Email
+      tags:
+      - user
+    get:
+      description: Returns all email addresses for the current user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.UserEmailResponse'
+            type: array
+      summary: List User Emails
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Adds a new email address for the current user.
+      parameters:
+      - description: Email details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.AddEmail'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add User Email
+      tags:
+      - user
+  /user/settings/password:
+    put:
+      consumes:
+      - application/json
+      description: Updates the current user's password.
+      parameters:
+      - description: Password details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.EditPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update User Password
+      tags:
+      - user
+  /user/settings/profile:
+    get:
+      description: Returns the current user's profile settings.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get User Profile
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Updates the current user's profile settings.
+      parameters:
+      - description: Profile details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.EditProfile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update User Profile
+      tags:
+      - user
+  /user/settings/tokens:
+    get:
+      description: Returns all access tokens for the current user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.AccessToken'
+            type: array
+      summary: List User Access Tokens
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Adds a new access token for the current user.
+      parameters:
+      - description: Token details
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/v2.NewAccessToken'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add User Access Token
+      tags:
+      - user
+  /user/settings/tokens/{id}:
+    delete:
+      description: Deletes an access token for the current user.
+      parameters:
+      - description: Token ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete User Access Token
       tags:
       - user
 swagger: "2.0"

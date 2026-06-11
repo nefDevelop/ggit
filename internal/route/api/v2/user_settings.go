@@ -62,6 +62,12 @@ type AddSSHKey struct {
 	Content string `json:"content" binding:"required"`
 }
 
+// @Summary Get User Profile
+// @Description Returns the current user's profile settings.
+// @Tags user
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Router /user/settings/profile [get]
 // GetUserProfileSettings returns the current user's profile settings.
 func GetUserProfileSettings(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{
@@ -79,6 +85,14 @@ func GetUserProfileSettings(c *context.APIContext) {
 	})
 }
 
+// @Summary Update User Profile
+// @Description Updates the current user's profile settings.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param payload body EditProfile true "Profile details"
+// @Success 200 {object} map[string]string
+// @Router /user/settings/profile [put]
 // UpdateUserProfileSettings updates the current user's profile settings.
 func UpdateUserProfileSettings(c *context.APIContext) {
 	var f EditProfile
@@ -129,6 +143,14 @@ func UpdateUserProfileSettings(c *context.APIContext) {
 	})
 }
 
+// @Summary Update User Password
+// @Description Updates the current user's password.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param payload body EditPassword true "Password details"
+// @Success 200 {object} map[string]string
+// @Router /user/settings/password [put]
 // UpdateUserPassword updates the current user's password.
 func UpdateUserPassword(c *context.APIContext) {
 	var f EditPassword
@@ -164,6 +186,12 @@ func UpdateUserPassword(c *context.APIContext) {
 	})
 }
 
+// @Summary List User Emails
+// @Description Returns all email addresses for the current user.
+// @Tags user
+// @Produce json
+// @Success 200 {array} apiv2types.UserEmailResponse
+// @Router /user/settings/emails [get]
 // GetUserEmails returns all email addresses for the current user.
 func GetUserEmails(c *context.APIContext) {
 	emails, err := database.Handle.Users().ListEmails(c.Req.Context(), c.User.ID)
@@ -179,6 +207,14 @@ func GetUserEmails(c *context.APIContext) {
 	c.JSON(http.StatusOK, res)
 }
 
+// @Summary Add User Email
+// @Description Adds a new email address for the current user.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param payload body AddEmail true "Email details"
+// @Success 200 {object} map[string]string
+// @Router /user/settings/emails [post]
 // AddUserEmail adds a new email address for the current user.
 func AddUserEmail(c *context.APIContext) {
 	var f AddEmail
@@ -217,6 +253,12 @@ func AddUserEmail(c *context.APIContext) {
 	}
 }
 
+// @Summary Delete User Email
+// @Description Deletes an email address for the current user.
+// @Tags user
+// @Param email query string true "Email address to delete"
+// @Success 200 {object} map[string]string
+// @Router /user/settings/emails [delete]
 // DeleteUserEmail deletes an email address for the current user.
 func DeleteUserEmail(c *context.APIContext) {
 	emailStr := c.Query("email")
@@ -305,6 +347,12 @@ func DeleteUserSSHKey(c *context.APIContext) {
 	})
 }
 
+// @Summary List User Access Tokens
+// @Description Returns all access tokens for the current user.
+// @Tags user
+// @Produce json
+// @Success 200 {array} database.AccessToken
+// @Router /user/settings/tokens [get]
 // GetUserAccessTokens returns all access tokens for the current user.
 func GetUserAccessTokens(c *context.APIContext) {
 	tokens, err := database.Handle.AccessTokens().List(c.Req.Context(), c.User.ID)
@@ -315,6 +363,14 @@ func GetUserAccessTokens(c *context.APIContext) {
 	c.JSON(http.StatusOK, tokens)
 }
 
+// @Summary Add User Access Token
+// @Description Adds a new access token for the current user.
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param payload body NewAccessToken true "Token details"
+// @Success 200 {object} map[string]any
+// @Router /user/settings/tokens [post]
 // AddUserAccessToken adds a new access token for the current user.
 func AddUserAccessToken(c *context.APIContext) {
 	var f NewAccessToken
@@ -340,6 +396,12 @@ func AddUserAccessToken(c *context.APIContext) {
 	})
 }
 
+// @Summary Delete User Access Token
+// @Description Deletes an access token for the current user.
+// @Tags user
+// @Param id path int64 true "Token ID"
+// @Success 200 {object} map[string]string
+// @Router /user/settings/tokens/{id} [delete]
 // DeleteUserAccessToken deletes an access token for the current user.
 func DeleteUserAccessToken(c *context.APIContext) {
 	err := database.Handle.AccessTokens().DeleteByID(c.Req.Context(), c.User.ID, c.ParamsInt64("id"))

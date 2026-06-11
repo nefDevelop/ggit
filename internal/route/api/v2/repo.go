@@ -45,6 +45,18 @@ func resolveUserAvatarURL(u *database.User) string {
 	return fmt.Sprintf("https://www.gravatar.com/avatar/%s?d=identicon&s=200", hash)
 }
 
+// @Summary Search Repository Contents
+// @Description Searches for a keyword in the repository using git grep.
+// @Tags repository
+// @Produce json
+// @Param username path string true "Username"
+// @Param reponame path string true "Repository name"
+// @Param q query string true "Search keyword"
+// @Param ref query string false "Branch or commit reference"
+// @Param case_sensitive query boolean false "Case sensitive search"
+// @Param regex query boolean false "Use regex search"
+// @Success 200 {array} map[string]any
+// @Router /:username/:reponame/search [get]
 // SearchRepoContents searches for a keyword in the repository using git grep.
 func SearchRepoContents(c *context.APIContext) {
 	q := c.Query("q")
@@ -135,23 +147,36 @@ func SearchRepoContents(c *context.APIContext) {
 	c.JSON(http.StatusOK, results)
 }
 
+type createRepoPayload struct {
+	UID           int64     `json:"uid"`
+	Name          string    `json:"name" binding:"required,max=100"`
+	Description   string    `json:"description" binding:"max=255"`
+	Website       string    `json:"website" binding:"max=100"`
+	DefaultBranch string    `json:"default_branch" binding:"max=100"`
+	Private       bool      `json:"private"`
+	Unlisted      bool      `json:"unlisted"`
+	AutoInit      bool      `json:"auto_init"`
+	Gitignores    string    `json:"gitignores"`
+	License       string    `json:"license"`
+	Readme        string    `json:"readme"`
+	IsArchived    bool      `json:"is_archived"`
+	CreatedAt     time.Time `json:"created_at"`
+}
+
+// @Summary Create Repository
+// @Description Creates a new repository for the authenticated user.
+// @Tags repository
+// @Accept json
+// @Produce json
+// @Param payload body createRepoPayload true "Repository details"
+// @Success 201 {object} map[string]any "Created repository object"
+// @Failure 400 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /user/repos [post]
 // CreateRepo creates a new repository for the authenticated user.
 func CreateRepo(c *context.APIContext) {
-	var f struct {
-		UID           int64     `json:"uid"`
-		Name          string    `json:"name" binding:"required,max=100"`
-		Description   string    `json:"description" binding:"max=255"`
-		Website       string    `json:"website" binding:"max=100"`
-		DefaultBranch string    `json:"default_branch" binding:"max=100"`
-		Private       bool      `json:"private"`
-		Unlisted      bool      `json:"unlisted"`
-		AutoInit      bool      `json:"auto_init"`
-		Gitignores    string    `json:"gitignores"`
-		License       string    `json:"license"`
-		Readme        string    `json:"readme"`
-		IsArchived    bool      `json:"is_archived"`
-		CreatedAt     time.Time `json:"created_at"`
-	}
+	var f createRepoPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -204,6 +229,17 @@ func CreateRepo(c *context.APIContext) {
 	c.JSON(http.StatusCreated, repo.APIFormat(c.User))
 }
 
+// @Summary Get Repository View
+// @Description Returns the content of a file or directory in the repository.
+// @Tags repository
+// @Produce json
+// @Param username path string true "Username"
+// @Param reponame path string true "Repository name"
+// @Param path path string false "Path to file or directory"
+// @Param ref query string false "Branch or commit reference"
+// @Success 200 {object} map[string]any
+// @Failure 404 {object} map[string]string
+// @Router /:username/:reponame/view/{path} [get]
 // GetRepoView returns the content of a file or directory in the repository.
 func GetRepoView(c *context.APIContext) {
 	log.Trace("GetRepoView: repo=%v, path=%q", c.Repo.Repository != nil, c.Repo.TreePath)

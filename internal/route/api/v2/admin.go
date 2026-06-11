@@ -23,6 +23,13 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+// @Summary Get Admin Audit Log
+// @Description Returns all actions from the system (for admins).
+// @Tags admin
+// @Produce json
+// @Param page query int false "Page number"
+// @Success 200 {array} apiv2types.AuditLogResponse
+// @Router /admin/audit-log [get]
 // GetAdminAuditLog returns all actions from the system (for admins).
 func GetAdminAuditLog(c *context.APIContext) {
 	page := c.QueryInt("page")
@@ -45,6 +52,12 @@ func GetAdminAuditLog(c *context.APIContext) {
 
 var initTime = time.Now()
 
+// @Summary Get Admin Statistics
+// @Description Returns global statistics and system status.
+// @Tags admin
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Router /admin/stats [get]
 // GetAdminStats returns global statistics and system status.
 func GetAdminStats(c *context.APIContext) {
 	stats := database.GetStatistic(c.Req.Context())
@@ -107,11 +120,21 @@ const (
 	SyncGitFsck
 )
 
+type adminOperationPayload struct {
+	Op int `json:"op" binding:"required"`
+}
+
+// @Summary Run Admin Operation
+// @Description Executes an administrative maintenance operation.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param payload body adminOperationPayload true "Operation details"
+// @Success 200 {object} map[string]any
+// @Router /admin/operations [post]
 // RunAdminOperation executes an administrative maintenance operation.
 func RunAdminOperation(c *context.APIContext) {
-	var f struct {
-		Op int `json:"op" binding:"required"`
-	}
+	var f adminOperationPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -163,6 +186,12 @@ func RunAdminOperation(c *context.APIContext) {
 	})
 }
 
+// @Summary Get Admin Configuration
+// @Description Returns the current application configuration.
+// @Tags admin
+// @Produce json
+// @Success 200 {object} map[string]map[string]string
+// @Router /admin/config [get]
 // GetAdminConfig returns the current application configuration.
 func GetAdminConfig(c *context.APIContext) {
 	sections := conf.File.Sections()
@@ -195,6 +224,12 @@ func SendAdminTestEmail(c *context.APIContext) {
 	c.NoContent()
 }
 
+// @Summary Get Admin Monitor
+// @Description Returns system monitor data.
+// @Tags admin
+// @Produce json
+// @Success 200 {object} map[string]any
+// @Router /admin/health-snapshot [get]
 // GetAdminMonitor returns system monitor data.
 func GetAdminMonitor(c *context.APIContext) {
 	log.Trace("API: GetAdminMonitor called")
@@ -274,6 +309,13 @@ func KillAdminProcess(c *context.APIContext) {
 	c.NoContent()
 }
 
+// @Summary Get Admin Users
+// @Description Returns a list of all users.
+// @Tags admin
+// @Produce json
+// @Param page query int false "Page number"
+// @Success 200 {array} apiv2types.UserResponse
+// @Router /admin/users [get]
 // GetAdminUsers returns a list of all users.
 func GetAdminUsers(c *context.APIContext) {
 	page := c.QueryInt("page")
@@ -294,21 +336,31 @@ func GetAdminUsers(c *context.APIContext) {
 	c.JSON(http.StatusOK, resp)
 }
 
+type adminCreateUserPayload struct {
+	Username         string `json:"username" binding:"required"`
+	Email            string `json:"email" binding:"required,email,max=254"`
+	Password         string `json:"password" binding:"required,max=255"`
+	FullName         string `json:"full_name"`
+	Website          string `json:"website"`
+	Location         string `json:"location"`
+	Activated        bool   `json:"activated"`
+	Admin            bool   `json:"admin"`
+	ProhibitLogin    bool   `json:"prohibit_login"`
+	AllowGitHook     bool   `json:"allow_git_hook"`
+	AllowImportLocal bool   `json:"allow_import_local"`
+}
+
+// @Summary Create User (Admin)
+// @Description Creates a new user account administratively.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param payload body adminCreateUserPayload true "User details"
+// @Success 201 {object} apiv2types.UserResponse
+// @Router /admin/users [post]
 // CreateAdminUser creates a new user account.
 func CreateAdminUser(c *context.APIContext) {
-	var f struct {
-		Username         string `json:"username" binding:"required"`
-		Email            string `json:"email" binding:"required,email,max=254"`
-		Password         string `json:"password" binding:"required,max=255"`
-		FullName         string `json:"full_name"`
-		Website          string `json:"website"`
-		Location         string `json:"location"`
-		Activated        bool   `json:"activated"`
-		Admin            bool   `json:"admin"`
-		ProhibitLogin    bool   `json:"prohibit_login"`
-		AllowGitHook     bool   `json:"allow_git_hook"`
-		AllowImportLocal bool   `json:"allow_import_local"`
-	}
+	var f adminCreateUserPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -333,6 +385,13 @@ func CreateAdminUser(c *context.APIContext) {
 	c.JSON(http.StatusCreated, ToUserResponse(database.FromDomainUser(user)))
 }
 
+// @Summary Get User (Admin)
+// @Description Returns a user's information.
+// @Tags admin
+// @Produce json
+// @Param id path int64 true "User ID"
+// @Success 200 {object} apiv2types.UserResponse
+// @Router /admin/users/{id} [get]
 // GetAdminUser returns a user's information.
 func GetAdminUser(c *context.APIContext) {
 	userID := c.ParamsInt64("id")
@@ -344,6 +403,13 @@ func GetAdminUser(c *context.APIContext) {
 	c.JSON(http.StatusOK, ToUserResponse(database.FromDomainUser(u)))
 }
 
+// @Summary Get Admin Repositories
+// @Description Returns a list of all repositories.
+// @Tags admin
+// @Produce json
+// @Param page query int false "Page number"
+// @Success 200 {array} apiv2types.RepositoryResponse
+// @Router /admin/repos [get]
 // GetAdminRepos returns a list of all repositories.
 func GetAdminRepos(c *context.APIContext) {
 	page := c.QueryInt("page")
@@ -385,13 +451,23 @@ func GetAdminOrgs(c *context.APIContext) {
 	c.JSON(http.StatusOK, resp)
 }
 
+type adminCreateOrgPayload struct {
+	Username string `json:"username" binding:"required"`
+	FullName string `json:"full_name"`
+	OwnerID  int64  `json:"owner_id" binding:"required"`
+}
+
+// @Summary Create Organization (Admin)
+// @Description Creates a new organization administratively.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param payload body adminCreateOrgPayload true "Organization details"
+// @Success 201 {object} apiv2types.OrganizationResponse
+// @Router /admin/orgs [post]
 // CreateAdminOrg creates a new organization administratively.
 func CreateAdminOrg(c *context.APIContext) {
-	var f struct {
-		Username string `json:"username" binding:"required"`
-		FullName string `json:"full_name"`
-		OwnerID  int64  `json:"owner_id" binding:"required"`
-	}
+	var f adminCreateOrgPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -418,6 +494,12 @@ func CreateAdminOrg(c *context.APIContext) {
 	c.JSON(http.StatusCreated, ToOrganizationResponse(org, owner))
 }
 
+// @Summary Delete Repository (Admin)
+// @Description Deletes a repository administratively.
+// @Tags admin
+// @Param id path int64 true "Repository ID"
+// @Success 200 {object} map[string]string
+// @Router /admin/repos/{id} [delete]
 // DeleteAdminRepo deletes a repository administratively.
 func DeleteAdminRepo(c *context.APIContext) {
 	repoID := c.ParamsInt64("id")
@@ -438,20 +520,31 @@ func DeleteAdminRepo(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 
+type adminUpdateUserPayload struct {
+	FullName         *string `json:"full_name"`
+	Website          *string `json:"website"`
+	Location         *string `json:"location"`
+	MaxRepoCreation  *int    `json:"max_repo_creation"`
+	IsActivated      *bool   `json:"activated"`
+	IsAdmin          *bool   `json:"admin"`
+	ProhibitLogin    *bool   `json:"prohibit_login"`
+	AllowGitHook     *bool   `json:"allow_git_hook"`
+	AllowImportLocal *bool   `json:"allow_import_local"`
+}
+
+// @Summary Update User (Admin)
+// @Description Updates a user's information administratively.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param id path int64 true "User ID"
+// @Param payload body adminUpdateUserPayload true "User details"
+// @Success 200 {object} map[string]string
+// @Router /admin/users/{id} [patch]
 // UpdateAdminUser updates a user's information administratively.
 func UpdateAdminUser(c *context.APIContext) {
 	userID := c.ParamsInt64("id")
-	var f struct {
-		FullName         *string `json:"full_name"`
-		Website          *string `json:"website"`
-		Location         *string `json:"location"`
-		MaxRepoCreation  *int    `json:"max_repo_creation"`
-		IsActivated      *bool   `json:"activated"`
-		IsAdmin          *bool   `json:"admin"`
-		ProhibitLogin    *bool   `json:"prohibit_login"`
-		AllowGitHook     *bool   `json:"allow_git_hook"`
-		AllowImportLocal *bool   `json:"allow_import_local"`
-	}
+	var f adminUpdateUserPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -477,6 +570,12 @@ func UpdateAdminUser(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }
 
+// @Summary Delete User (Admin)
+// @Description Deletes a user account administratively.
+// @Tags admin
+// @Param id path int64 true "User ID"
+// @Success 200 {object} map[string]string
+// @Router /admin/users/{id} [delete]
 // DeleteAdminUser deletes a user account.
 func DeleteAdminUser(c *context.APIContext) {
 	userID := c.ParamsInt64("id")
@@ -535,12 +634,22 @@ func CreateAdminAuth(c *context.APIContext) {
 	})
 }
 
+type adminUpdateConfigPayload struct {
+	Section string            `json:"section" binding:"required"`
+	Data    map[string]string `json:"data" binding:"required"`
+}
+
+// @Summary Update Admin Configuration
+// @Description Updates server configurations for a specific section.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param payload body adminUpdateConfigPayload true "Configuration details"
+// @Success 200 {object} map[string]any
+// @Router /admin/config [put]
 // UpdateAdminConfig updates server configurations for a specific section.
 func UpdateAdminConfig(c *context.APIContext) {
-	var f struct {
-		Section string            `json:"section" binding:"required"`
-		Data    map[string]string `json:"data" binding:"required"`
-	}
+	var f adminUpdateConfigPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
@@ -673,12 +782,22 @@ func GetAdminUnmanagedRepos(c *context.APIContext) {
 	c.JSONSuccess(unmanaged)
 }
 
+type adminAdoptRepoPayload struct {
+	OwnerName string `json:"owner_name" binding:"required"`
+	RepoName  string `json:"repo_name" binding:"required"`
+}
+
+// @Summary Adopt Repository (Admin)
+// @Description Adopts an unmanaged repository folder into the database.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Param payload body adminAdoptRepoPayload true "Adoption details"
+// @Success 200 {object} apiv2types.RepositoryResponse
+// @Router /admin/repos/adopt [post]
 // AdoptAdminRepo adopts an unmanaged repository folder into the database.
 func AdoptAdminRepo(c *context.APIContext) {
-	var f struct {
-		OwnerName string `json:"owner_name" binding:"required"`
-		RepoName  string `json:"repo_name" binding:"required"`
-	}
+	var f adminAdoptRepoPayload
 	if err := c.ShouldBindJSON(&f); err != nil {
 		c.ErrorStatus(http.StatusBadRequest, err)
 		return
