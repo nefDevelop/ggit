@@ -1,24 +1,5 @@
 basePath: /api/v2
 definitions:
-  database.AccessToken:
-    properties:
-      createdUnix:
-        format: int64
-        type: integer
-      id:
-        type: integer
-      name:
-        type: string
-      sha1:
-        type: string
-      sha256:
-        type: string
-      updatedUnix:
-        format: int64
-        type: integer
-      userID:
-        type: integer
-    type: object
   types.AuditLogResponse:
     properties:
       actor_id:
@@ -163,6 +144,17 @@ definitions:
       updated_at:
         type: string
       wiki_folder_name:
+        type: string
+    type: object
+  types.UserAccessTokenResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      sha1:
         type: string
     type: object
   types.UserEmailResponse:
@@ -1044,7 +1036,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/database.AccessToken'
+              $ref: '#/definitions/types.UserAccessTokenResponse'
             type: array
       summary: List User Access Tokens
       tags:
@@ -1066,8 +1058,7 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/types.UserAccessTokenResponse'
       summary: Add User Access Token
       tags:
       - user

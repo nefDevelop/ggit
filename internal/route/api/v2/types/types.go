@@ -32,9 +32,10 @@ type UserEmailResponse struct {
 
 // UserAccessTokenResponse represents an access token of a user.
 type UserAccessTokenResponse struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-	Sha1 string `json:"sha1"`
+	ID        int64     `json:"id"`
+	Name      string    `json:"name"`
+	Sha1      string    `json:"sha1,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // LoginSessionResponse represents a login session of a user.

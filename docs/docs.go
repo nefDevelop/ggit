@@ -957,7 +957,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/database.AccessToken"
+                                "$ref": "#/definitions/types.UserAccessTokenResponse"
                             }
                         }
                     }
@@ -990,8 +990,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/types.UserAccessTokenResponse"
                         }
                     }
                 }
@@ -1029,34 +1028,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "database.AccessToken": {
-            "type": "object",
-            "properties": {
-                "createdUnix": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "sha1": {
-                    "type": "string"
-                },
-                "sha256": {
-                    "type": "string"
-                },
-                "updatedUnix": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "userID": {
-                    "type": "integer"
-                }
-            }
-        },
         "types.AuditLogResponse": {
             "type": "object",
             "properties": {
@@ -1273,6 +1244,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "wiki_folder_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.UserAccessTokenResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "sha1": {
                     "type": "string"
                 }
             }

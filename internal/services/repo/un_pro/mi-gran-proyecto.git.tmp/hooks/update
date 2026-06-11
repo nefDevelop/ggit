@@ -1,2 +1,2 @@
 #!/usr/bin/env 
-"/tmp/go-build2003311008/b773/repo.test" hook --config='' update $1 $2 $3
+"/tmp/go-build2972682375/b752/repo.test" hook --config='' update $1 $2 $3

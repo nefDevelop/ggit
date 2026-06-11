@@ -57,6 +57,17 @@
     } catch (e) { console.error(e); }
   }
 
+  function formatDate(dateStr: string) {
+    if (!dateStr) return 'N/A';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return 'N/A';
+    return d.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
   onMount(fetchTokens);
 </script>
 
@@ -106,7 +117,7 @@
                 </div>
                 <div class="token-info">
                    <span class="token-name">{token.name}</span>
-                   <span class="token-date">Creado el {new Date(token.created_at).toLocaleDateString()}</span>
+                   <span class="token-date">Creado el {formatDate(token.created_at)}</span>
                 </div>
               </div>
               <div class="token-actions">
@@ -126,14 +137,16 @@
       </div>
       <div class="form-box">
         <form onsubmit={(e) => { e.preventDefault(); createToken(); }} class="premium-token-form">
-          <div class="inline-input-layout w-full">
-             <div class="field w-full">
+          <div class="inline-input-layout">
+             <div class="field">
                 <label for="newTokenName">Nombre del Propósito</label>
-                <input id="newTokenName" type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required class="w-full" />
+                <input id="newTokenName" type="text" bind:value={newTokenName} placeholder="Ej: CI/CD Pipeline o App Móvil" required />
              </div>
-             <Button type="submit" variant="primary" icon={Key} disabled={submitting || !newTokenName} class="w-full sm:w-auto">
-                {submitting ? 'Generando...' : 'Generar Token'}
-             </Button>
+             <div class="button-wrap">
+               <Button type="submit" variant="primary" icon={Key} disabled={submitting || !newTokenName} class="w-full">
+                  {submitting ? 'Generando...' : 'Generar Token'}
+               </Button>
+             </div>
           </div>
           {#if error}
              <p class="error-msg">{error}</p>
@@ -189,18 +202,25 @@
 
   /* FORM */
   .form-box { padding: 3rem; background: rgba(255,255,255,0.01); border-radius: 1.25rem; }
-  .inline-input-layout { display: flex; align-items: flex-end; gap: 1.5rem; }
+  .inline-input-layout { display: flex; align-items: flex-end; gap: 1.5rem; width: 100%; }
   
-  @media (max-width: 600px) {
+  .field { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+  .button-wrap { flex-shrink: 0; }
+
+  @media (max-width: 768px) {
     .form-box { padding: 1.5rem; }
     .inline-input-layout { flex-direction: column; align-items: stretch; }
+    .button-wrap { width: 100%; }
   }
-  .field { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; }
+  
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
-  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 0.85rem 1.5rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; height: 3.5rem; }
+  .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 0.85rem 1.5rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; height: 3.5rem; box-sizing: border-box; }
   .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .skeleton-tokens { height: 160px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 
   .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 2rem; border-radius: 1.25rem; font-size: 0.9rem; font-weight: 700; margin: 1.5rem 0 0; border: 1px solid rgba(var(--error-rgb), 0.2); }
+
+  .empty-state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; gap: 1.5rem; color: var(--text-muted); text-align: center; }
+  .empty-state-box p { font-size: 1.1rem; font-weight: 600; opacity: 0.7; }
 </style>

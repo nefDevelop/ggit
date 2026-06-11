@@ -351,7 +351,7 @@ func DeleteUserSSHKey(c *context.APIContext) {
 // @Description Returns all access tokens for the current user.
 // @Tags user
 // @Produce json
-// @Success 200 {array} database.AccessToken
+// @Success 200 {array} apiv2types.UserAccessTokenResponse
 // @Router /user/settings/tokens [get]
 // GetUserAccessTokens returns all access tokens for the current user.
 func GetUserAccessTokens(c *context.APIContext) {
@@ -360,7 +360,16 @@ func GetUserAccessTokens(c *context.APIContext) {
 		c.Error(err, "list access tokens")
 		return
 	}
-	c.JSON(http.StatusOK, tokens)
+
+	res := make([]*apiv2types.UserAccessTokenResponse, len(tokens))
+	for i, t := range tokens {
+		res[i] = &apiv2types.UserAccessTokenResponse{
+			ID:        t.ID,
+			Name:      t.Name,
+			CreatedAt: t.Created,
+		}
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 // @Summary Add User Access Token
@@ -369,7 +378,7 @@ func GetUserAccessTokens(c *context.APIContext) {
 // @Accept json
 // @Produce json
 // @Param payload body NewAccessToken true "Token details"
-// @Success 200 {object} map[string]any
+// @Success 200 {object} apiv2types.UserAccessTokenResponse
 // @Router /user/settings/tokens [post]
 // AddUserAccessToken adds a new access token for the current user.
 func AddUserAccessToken(c *context.APIContext) {
@@ -389,10 +398,11 @@ func AddUserAccessToken(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]any{
-		"id":   t.ID,
-		"name": t.Name,
-		"sha1": token,
+	c.JSON(http.StatusOK, &apiv2types.UserAccessTokenResponse{
+		ID:        t.ID,
+		Name:      t.Name,
+		Sha1:      token,
+		CreatedAt: t.Created,
 	})
 }
 
