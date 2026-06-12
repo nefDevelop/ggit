@@ -16,6 +16,14 @@ type Branch struct {
 }
 
 // ListRepoBranches returns a list of branches for the repository.
+// @Summary List Repository Branches
+// @Description Returns a list of all branches in the repository, categorized as default, active, and stale.
+// @Tags repository
+// @Produce json
+// @Param username path string true "Username"
+// @Param reponame path string true "Repository name"
+// @Success 200 {object} map[string]any
+// @Router /:username/:reponame/branches [get]
 func ListRepoBranches(c *context.APIContext) {
 	if c.Repo.Repository.IsBare {
 		c.JSON(http.StatusOK, map[string]any{

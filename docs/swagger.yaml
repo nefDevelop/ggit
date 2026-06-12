@@ -413,6 +413,139 @@ info:
   title: Ggit API v2
   version: "2.0"
 paths:
+  /:username/:reponame/branches:
+    get:
+      description: Returns a list of all branches in the repository, categorized as
+        default, active, and stale.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List Repository Branches
+      tags:
+      - repository
+  /:username/:reponame/commit/{sha}:
+    get:
+      description: Returns the details and full diff of a specific commit by its SHA.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      - description: Commit SHA
+        in: path
+        name: sha
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get Single Commit
+      tags:
+      - repository
+  /:username/:reponame/commits/{path}:
+    get:
+      description: Returns a list of commits for the repository, with optional path
+        filtering and pagination.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      - description: Path to filter commits
+        in: path
+        name: path
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List Repository Commits
+      tags:
+      - repository
+  /:username/:reponame/contents/{path}:
+    get:
+      description: Returns the content of a file or directory in the repository.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      - description: Path to file or directory
+        in: path
+        name: path
+        type: string
+      - description: Branch or commit reference
+        in: query
+        name: ref
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Repository View
+      tags:
+      - repository
   /:username/:reponame/search:
     get:
       description: Searches for a keyword in the repository using git grep.
@@ -799,6 +932,196 @@ paths:
       summary: Update User (Admin)
       tags:
       - admin
+  /explore/repos:
+    get:
+      description: Returns a list of public repositories with pagination and filtering.
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Search keyword
+        in: query
+        name: q
+        type: string
+      - description: Language filter
+        in: query
+        name: lang
+        type: string
+      - collectionFormat: csv
+        description: Topic filter
+        in: query
+        items:
+          type: string
+        name: topic
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Explore Repositories
+      tags:
+      - explore
+  /explore/repos/search:
+    get:
+      description: Searches for repositories globally based on various criteria.
+      parameters:
+      - description: Search keyword
+        in: query
+        name: q
+        type: string
+      - description: Owner user ID
+        format: int64
+        in: query
+        name: uid
+        type: integer
+      - collectionFormat: csv
+        description: Topic filter
+        in: query
+        items:
+          type: string
+        name: topic
+        type: array
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Search Repositories
+      tags:
+      - explore
+  /explore/search:
+    get:
+      description: Searches for repositories globally based on various criteria.
+      parameters:
+      - description: Search keyword
+        in: query
+        name: q
+        type: string
+      - description: Owner user ID
+        format: int64
+        in: query
+        name: uid
+        type: integer
+      - collectionFormat: csv
+        description: Topic filter
+        in: query
+        items:
+          type: string
+        name: topic
+        type: array
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Search Repositories
+      tags:
+      - explore
+  /repos/{username}/{reponame}/contents/{path}:
+    get:
+      description: Returns the content of a file or directory in the repository.
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      - description: Repository name
+        in: path
+        name: reponame
+        required: true
+        type: string
+      - description: Path to file or directory
+        in: path
+        name: path
+        type: string
+      - description: Branch or commit reference
+        in: query
+        name: ref
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Repository View
+      tags:
+      - repository
+  /repos/search:
+    get:
+      description: Searches for repositories globally based on various criteria.
+      parameters:
+      - description: Search keyword
+        in: query
+        name: q
+        type: string
+      - description: Owner user ID
+        format: int64
+        in: query
+        name: uid
+        type: integer
+      - collectionFormat: csv
+        description: Topic filter
+        in: query
+        items:
+          type: string
+        name: topic
+        type: array
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Search Repositories
+      tags:
+      - explore
   /user/login:
     post:
       consumes:
@@ -869,6 +1192,27 @@ paths:
       tags:
       - user
   /user/repos:
+    get:
+      description: Returns all repositories for the authenticated user, including
+        collaborative ones.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.RepositoryResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List User Repositories
+      tags:
+      - user
     post:
       consumes:
       - application/json
@@ -1024,6 +1368,28 @@ paths:
               type: string
             type: object
       summary: Update User Profile
+      tags:
+      - user
+  /user/settings/repos:
+    get:
+      description: Returns all repositories for the authenticated user, including
+        collaborative ones.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/types.RepositoryResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List User Repositories
       tags:
       - user
   /user/settings/tokens:

@@ -10,6 +10,16 @@ import (
 )
 
 // ExploreRepos returns a list of repositories for the explore page.
+// @Summary Explore Repositories
+// @Description Returns a list of public repositories with pagination and filtering.
+// @Tags explore
+// @Produce json
+// @Param page query int false "Page number"
+// @Param q query string false "Search keyword"
+// @Param lang query string false "Language filter"
+// @Param topic query []string false "Topic filter"
+// @Success 200 {object} map[string]any
+// @Router /explore/repos [get]
 func ExploreRepos(c *context.APIContext) {
 	page := c.QueryInt("page")
 	if page <= 0 {
@@ -56,6 +66,19 @@ func ExploreRepos(c *context.APIContext) {
 }
 
 // SearchRepos returns a list of repositories based on search criteria.
+// @Summary Search Repositories
+// @Description Searches for repositories globally based on various criteria.
+// @Tags explore
+// @Produce json
+// @Param q query string false "Search keyword"
+// @Param uid query int64 false "Owner user ID"
+// @Param topic query []string false "Topic filter"
+// @Param page query int false "Page number"
+// @Param limit query int false "Limit per page"
+// @Success 200 {object} map[string]any
+// @Router /explore/repos/search [get]
+// @Router /explore/search [get]
+// @Router /repos/search [get]
 func SearchRepos(c *context.APIContext) {
 	opts := &database.SearchRepoOptions{
 		Keyword:  c.Query("q"),

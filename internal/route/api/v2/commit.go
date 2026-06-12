@@ -10,6 +10,15 @@ import (
 )
 
 // GetSingleCommit returns the details and diff of a single commit.
+// @Summary Get Single Commit
+// @Description Returns the details and full diff of a specific commit by its SHA.
+// @Tags repository
+// @Produce json
+// @Param username path string true "Username"
+// @Param reponame path string true "Repository name"
+// @Param sha path string true "Commit SHA"
+// @Success 200 {object} map[string]any
+// @Router /:username/:reponame/commit/{sha} [get]
 func GetSingleCommit(c *context.APIContext) {
 	sha := c.Params("sha")
 	if len(sha) == 0 {

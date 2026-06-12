@@ -240,6 +240,8 @@ func CreateRepo(c *context.APIContext) {
 // @Success 200 {object} map[string]any
 // @Failure 404 {object} map[string]string
 // @Router /:username/:reponame/view/{path} [get]
+// @Router /:username/:reponame/contents/{path} [get]
+// @Router /repos/{username}/{reponame}/contents/{path} [get]
 // GetRepoView returns the content of a file or directory in the repository.
 func GetRepoView(c *context.APIContext) {
 	log.Trace("GetRepoView: repo=%v, path=%q", c.Repo.Repository != nil, c.Repo.TreePath)
@@ -624,6 +626,17 @@ func matchUsersWithCommitEmails(ctx stdcontext.Context, repoID int64, oldCommits
 }
 
 // GetRepoCommits returns a list of commits for the repository.
+// @Summary List Repository Commits
+// @Description Returns a list of commits for the repository, with optional path filtering and pagination.
+// @Tags repository
+// @Produce json
+// @Param username path string true "Username"
+// @Param reponame path string true "Repository name"
+// @Param path path string false "Path to filter commits"
+// @Param page query int false "Page number"
+// @Param pageSize query int false "Number of items per page"
+// @Success 200 {object} map[string]any
+// @Router /:username/:reponame/commits/{path} [get]
 func GetRepoCommits(c *context.APIContext) {
 	page := c.QueryInt("page")
 	if page <= 0 {

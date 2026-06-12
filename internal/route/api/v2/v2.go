@@ -85,6 +85,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settings.DELETE("/account", ginx.Handle(DeleteUserAccount))
 		}
 
+		user.GET("/repos", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(GetUserRepositories))
 		user.POST("/repos", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRepo))
 		user.POST("/repos/migrate", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(MigrateRepo))
 
@@ -158,6 +159,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/search", context.RepoRef(), ginx.Handle(SearchRepoContents))
 		repo.GET("/view", context.RepoRef(), ginx.Handle(GetRepoView))
 		repo.GET("/view/*path", context.RepoRef(), ginx.Handle(GetRepoView))
+		repo.GET("/contents", context.RepoRef(), ginx.Handle(GetRepoView))
+		repo.GET("/contents/*path", context.RepoRef(), ginx.Handle(GetRepoView))
 		repo.GET("/blame/*path", context.RepoRef(), ginx.Handle(GetRepoBlame))
 		repo.GET("/commit/:sha", ginx.Handle(GetSingleCommit))
 		repo.GET("/commits/*path", context.RepoRef(), ginx.Handle(GetRepoCommits))

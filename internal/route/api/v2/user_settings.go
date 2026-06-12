@@ -483,6 +483,14 @@ func DeleteUserAvatar(c *context.APIContext) {
 }
 
 // GetUserRepositories returns all repositories for the current user.
+// @Summary List User Repositories
+// @Description Returns all repositories for the authenticated user, including collaborative ones.
+// @Tags user
+// @Produce json
+// @Success 200 {array} apiv2types.RepositoryResponse
+// @Failure 401 {object} map[string]string
+// @Router /user/repos [get]
+// @Router /user/settings/repos [get]
 func GetUserRepositories(c *context.APIContext) {
 	repos, err := database.GetUserAndCollaborativeRepositories(c.User.ID)
 	if err != nil {
