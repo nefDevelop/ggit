@@ -1,7 +1,12 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	
-import { ArrowLeft, Home, RefreshCw, Terminal } from "lucide-svelte";
+
+import ArrowLeft from "lucide-svelte/icons/arrow-left";
+import Home from "lucide-svelte/icons/home";
+import RefreshCw from "lucide-svelte/icons/refresh-cw";
+import Terminal from "lucide-svelte/icons/terminal";
+
 
 
 	let status = $derived($page.status);

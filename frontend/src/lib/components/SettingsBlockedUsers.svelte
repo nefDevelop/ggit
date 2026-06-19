@@ -8,7 +8,11 @@
   import Card from "./ui/Card.svelte";
   import Input from "./ui/Input.svelte";
   
-import { UserMinus, UserPlus, ShieldAlert } from "lucide-svelte";
+
+import UserMinus from "lucide-svelte/icons/user-minus";
+import UserPlus from "lucide-svelte/icons/user-plus";
+import ShieldAlert from "lucide-svelte/icons/shield-alert";
+
 
 
   let blockedUsers = $state<any[]>([]);

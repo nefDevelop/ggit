@@ -9,7 +9,13 @@
   import Card from "./ui/Card.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   
-import { Shield, Trash2, ShieldPlus, ShieldCheck, Plus } from "lucide-svelte";
+
+import Shield from "lucide-svelte/icons/shield";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import ShieldPlus from "lucide-svelte/icons/shield-plus";
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import Plus from "lucide-svelte/icons/plus";
+
 
   import { i18n } from "$lib/i18n.svelte";
 

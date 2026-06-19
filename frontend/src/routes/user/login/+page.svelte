@@ -8,7 +8,12 @@
   import Checkbox from '$lib/components/ui/Checkbox.svelte';
   import { i18n } from '$lib/i18n.svelte';
   
-import { Terminal, AlertCircle, User, Lock } from "lucide-svelte";
+
+import Terminal from "lucide-svelte/icons/terminal";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import User from "lucide-svelte/icons/user";
+import Lock from "lucide-svelte/icons/lock";
+
 
 
   let username = $state('');

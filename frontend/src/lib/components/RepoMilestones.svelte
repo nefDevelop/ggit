@@ -1,6 +1,14 @@
 <script lang="ts">
   
-import { PlusCircle, Calendar, TrendingUp, TrendingDown, Edit, Trash2, AlertCircle } from "lucide-svelte";
+
+import PlusCircle from "lucide-svelte/icons/plus-circle";
+import Calendar from "lucide-svelte/icons/calendar";
+import TrendingUp from "lucide-svelte/icons/trending-up";
+import TrendingDown from "lucide-svelte/icons/trending-down";
+import Edit from "lucide-svelte/icons/edit";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+
 
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';

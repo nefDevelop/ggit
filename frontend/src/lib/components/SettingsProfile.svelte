@@ -10,7 +10,13 @@
   import { getAvailableLanguages } from '$lib/locales';
   import PageHeader from "./ui/PageHeader.svelte";
   
-import { Upload, Trash2, Wand2, ChevronDown, Dices } from "lucide-svelte";
+
+import Upload from "lucide-svelte/icons/upload";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import Wand2 from "lucide-svelte/icons/wand-2";
+import ChevronDown from "lucide-svelte/icons/chevron-down";
+import Dices from "lucide-svelte/icons/dices";
+
 
 
   const availableLanguages = getAvailableLanguages();

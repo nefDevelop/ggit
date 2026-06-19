@@ -4,7 +4,13 @@
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
   
-import { Building2, RefreshCw, Upload, Trash2, HeartCrack } from "lucide-svelte";
+
+import Building2 from "lucide-svelte/icons/building-2";
+import RefreshCw from "lucide-svelte/icons/refresh-cw";
+import Upload from "lucide-svelte/icons/upload";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import HeartCrack from "lucide-svelte/icons/heart-crack";
+
 
   import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";

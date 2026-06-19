@@ -5,7 +5,12 @@
   import Avatar from "$lib/components/Avatar.svelte";
   import Button from "./ui/Button.svelte";
   
-import { UserPlus, UserMinus, AlertCircle, UserX } from "lucide-svelte";
+
+import UserPlus from "lucide-svelte/icons/user-plus";
+import UserMinus from "lucide-svelte/icons/user-minus";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import UserX from "lucide-svelte/icons/user-x";
+
 
 
   let { orgName } = $props();

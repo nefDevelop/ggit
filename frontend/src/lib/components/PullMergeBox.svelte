@@ -5,7 +5,14 @@
   import Card from "./ui/Card.svelte";
   import { toast } from "$lib/toast.svelte";
   
-import { ShieldCheck, ShieldAlert, GitMerge, CheckCircle2, XCircle, AlertCircle } from "lucide-svelte";
+
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import ShieldAlert from "lucide-svelte/icons/shield-alert";
+import GitMerge from "lucide-svelte/icons/git-merge";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import XCircle from "lucide-svelte/icons/x-circle";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+
 
 
   let { index, onMerged } = $props<{ index: number, onMerged: () => void }>();

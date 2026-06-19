@@ -7,7 +7,21 @@
   import Button from './ui/Button.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   
-import { Wrench, MemoryStick, GitBranch, Clock, UserMinus, Archive, FolderX, Trash2, Key, Link, BarChart3, ShieldCheck, CloudDownload } from "lucide-svelte";
+
+import Wrench from "lucide-svelte/icons/wrench";
+import MemoryStick from "lucide-svelte/icons/memory-stick";
+import GitBranch from "lucide-svelte/icons/git-branch";
+import Clock from "lucide-svelte/icons/clock";
+import UserMinus from "lucide-svelte/icons/user-minus";
+import Archive from "lucide-svelte/icons/archive";
+import FolderX from "lucide-svelte/icons/folder-x";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import Key from "lucide-svelte/icons/key";
+import Link from "lucide-svelte/icons/link";
+import BarChart3 from "lucide-svelte/icons/bar-chart-3";
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import CloudDownload from "lucide-svelte/icons/cloud-download";
+
 
 
   let stats = $state<any>(null);

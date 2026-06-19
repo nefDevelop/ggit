@@ -7,7 +7,14 @@
   import Button from "./ui/Button.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   
-import { Sparkles, Book, Trash2, Settings, CheckCircle2, Trash } from "lucide-svelte";
+
+import Sparkles from "lucide-svelte/icons/sparkles";
+import Book from "lucide-svelte/icons/book";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import Settings from "lucide-svelte/icons/settings";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import Trash from "lucide-svelte/icons/trash";
+
 
 
   let loading = $state(true);

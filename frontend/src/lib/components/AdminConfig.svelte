@@ -7,7 +7,18 @@
   import AdminConfigEditor from './AdminConfigEditor.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   
-import { Settings, AppWindow, Server, Database, ShieldCheck, Book, Terminal, Mail, Edit2, ShieldAlert } from "lucide-svelte";
+
+import Settings from "lucide-svelte/icons/settings";
+import AppWindow from "lucide-svelte/icons/app-window";
+import Server from "lucide-svelte/icons/server";
+import Database from "lucide-svelte/icons/database";
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import Book from "lucide-svelte/icons/book";
+import Terminal from "lucide-svelte/icons/terminal";
+import Mail from "lucide-svelte/icons/mail";
+import Edit2 from "lucide-svelte/icons/edit-2";
+import ShieldAlert from "lucide-svelte/icons/shield-alert";
+
 
 
   let config = $state<any>(null);

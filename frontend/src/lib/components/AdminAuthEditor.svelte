@@ -6,7 +6,10 @@
   import Checkbox from './ui/Checkbox.svelte';
   import Card from './ui/Card.svelte';
   
-import { ArrowLeft, TriangleAlert } from "lucide-svelte";
+
+import ArrowLeft from "lucide-svelte/icons/arrow-left";
+import TriangleAlert from "lucide-svelte/icons/triangle-alert";
+
 
   
   let { 

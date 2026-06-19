@@ -10,7 +10,12 @@
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   
-import { Building2, Eye, Edit2, Trash2 } from "lucide-svelte";
+
+import Building2 from "lucide-svelte/icons/building-2";
+import Eye from "lucide-svelte/icons/eye";
+import Edit2 from "lucide-svelte/icons/edit-2";
+import Trash2 from "lucide-svelte/icons/trash-2";
+
 
   
   let orgs = $state<any[]>([]);

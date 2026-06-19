@@ -11,7 +11,10 @@
   import { toast } from "$lib/toast.svelte";
   import { i18n } from "$lib/i18n.svelte";
   
-import { Key, Plus } from "lucide-svelte";
+
+import Key from "lucide-svelte/icons/key";
+import Plus from "lucide-svelte/icons/plus";
+
 
 
   const repo: any = getContext("repo");

@@ -3,7 +3,12 @@
   import { generateMd3Palette } from '$lib/utils/color';
   import Button from './ui/Button.svelte';
   
-import { Palette, X, Sun, Moon } from "lucide-svelte";
+
+import Palette from "lucide-svelte/icons/palette";
+import X from "lucide-svelte/icons/x";
+import Sun from "lucide-svelte/icons/sun";
+import Moon from "lucide-svelte/icons/moon";
+
 
 
   let { show = $bindable(false) } = $props();

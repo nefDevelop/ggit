@@ -1,6 +1,11 @@
 <script lang="ts">
   
-import { GitBranch, ChevronDown, Search, Check } from "lucide-svelte";
+
+import GitBranch from "lucide-svelte/icons/git-branch";
+import ChevronDown from "lucide-svelte/icons/chevron-down";
+import Search from "lucide-svelte/icons/search";
+import Check from "lucide-svelte/icons/check";
+
 
 
   let {

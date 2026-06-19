@@ -4,7 +4,17 @@
   import { i18n } from "$lib/i18n.svelte";
   import { dialog } from "$lib/dialog.svelte";
   
-import { KeyRound, CheckCircle2, AlertCircle, SmartphoneNfc, ShieldCheck, ShieldAlert, ShieldPlus, Key, ShieldOff } from "lucide-svelte";
+
+import KeyRound from "lucide-svelte/icons/key-round";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import SmartphoneNfc from "lucide-svelte/icons/smartphone-nfc";
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import ShieldAlert from "lucide-svelte/icons/shield-alert";
+import ShieldPlus from "lucide-svelte/icons/shield-plus";
+import Key from "lucide-svelte/icons/key";
+import ShieldOff from "lucide-svelte/icons/shield-off";
+
 
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";

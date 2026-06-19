@@ -7,7 +7,12 @@
   import ViewHeader from "$lib/components/ui/ViewHeader.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   
-import { ScrollText, Plus, User, Search } from "lucide-svelte";
+
+import ScrollText from "lucide-svelte/icons/scroll-text";
+import Plus from "lucide-svelte/icons/plus";
+import User from "lucide-svelte/icons/user";
+import Search from "lucide-svelte/icons/search";
+
 
 
   let myGists = $state<any[]>([]);

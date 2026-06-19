@@ -1,6 +1,9 @@
 <script lang="ts">
   
-import { Code, ChevronRight } from "lucide-svelte";
+
+import Code from "lucide-svelte/icons/code";
+import ChevronRight from "lucide-svelte/icons/chevron-right";
+
 
   import Badge from "./ui/Badge.svelte";
 
