@@ -270,17 +270,17 @@ func (r *Request) getResponse() (*http.Response, error) {
 				for formname, filename := range r.files {
 					fileWriter, err := bodyWriter.CreateFormFile(formname, filename)
 					if err != nil {
-						log.Fatal("%v", err)
+						log.Fatal("failed to create: %v", err)
 					}
 					fh, err := os.Open(filename)
 					if err != nil {
-						log.Fatal("%v", err)
+						log.Fatal("failed to create: %v", err)
 					}
 					// iocopy
 					_, err = io.Copy(fileWriter, fh)
 					_ = fh.Close()
 					if err != nil {
-						log.Fatal("%v", err)
+						log.Fatal("failed to operation: %v", err)
 					}
 				}
 				for k, v := range r.params {

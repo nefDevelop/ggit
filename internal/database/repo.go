@@ -192,7 +192,7 @@ func NewRepoContext() {
 	var err error
 	conf.Git.Version, err = git.BinVersion()
 	if err != nil {
-		log.Fatal("%v", err)
+		log.Fatal("failed to git: %v", err)
 	}
 
 	log.Trace("Git version: %s", conf.Git.Version)
@@ -1623,7 +1623,7 @@ func countRepositories(userID int64, private bool) int64 {
 	var count int64
 	err := query.Count(&count).Error
 	if err != nil {
-		log.Error("%v", err)
+		log.Error("failed to operation: %v", err)
 	}
 	return count
 }
@@ -2095,7 +2095,7 @@ func DeleteRepository(ownerID, repoID int64) error {
 
 	if repo.NumForks > 0 {
 		if err = Handle.db.Exec("UPDATE repository SET fork_id=0,is_fork=? WHERE fork_id=?", false, repo.ID).Error; err != nil {
-			log.Error("%v", err)
+			log.Error("failed to update: %v", err)
 		}
 	}
 
@@ -2330,14 +2330,14 @@ func DeleteOldRepositoryArchives() {
 						NoticeTypeRepository,
 						fmt.Sprintf(fmtStr, archivePath, err),
 					); err != nil {
-						log.Error("%v", err)
+						log.Error("failed to archive: %v", err)
 					}
 				}
 			}
 		}
 		return nil
 	}); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to operation: %v", err)
 	}
 }
 
@@ -2448,7 +2448,7 @@ func SyncRepoHooks() {
 
 	log.Trace("Doing: SyncRepoHooks")
 	if err := SyncRepositoryHooks(); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to sync: %v", err)
 	}
 }
 
@@ -2517,11 +2517,11 @@ func GitFsck() {
 		}
 
 		if err := Handle.db.Model(repo).Updates(updates).Error; err != nil {
-			log.Error("%v", err)
+			log.Error("failed to update: %v", err)
 		}
 		return nil
 	}); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to update: %v", err)
 	}
 }
 
@@ -2630,7 +2630,7 @@ func CheckRepoStats() {
 	var forkIDs []int64
 	err = Handle.db.Raw("SELECT repo.id FROM `repository` repo WHERE repo.num_forks!=(SELECT COUNT(*) FROM `repository` WHERE fork_id=repo.id)").Scan(&forkIDs).Error
 	if err != nil {
-		log.Error("%v", err)
+		log.Error("failed to repository: %v", err)
 	} else {
 		for _, id := range forkIDs {
 			log.Trace("Updating repository count 'num_forks': %d", id)

@@ -175,7 +175,7 @@ func responseJSON(w http.ResponseWriter, status int, v any) {
 
 	err := json.NewEncoder(w).Encode(v)
 	if err != nil {
-		log.Error("%v", err)
+		log.Error("failed to operation: %v", err)
 		return
 	}
 }

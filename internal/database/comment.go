@@ -251,7 +251,7 @@ func (c *Comment) mailParticipants(tx *gorm.DB, opType ActionType, issue *Issue)
 		issue.Content = fmt.Sprintf("Reopened #%d", issue.Index)
 	}
 	if err = mailIssueCommentToParticipants(issue, c.Poster, mentions); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to issue: %v", err)
 	}
 
 	return nil
@@ -355,10 +355,10 @@ func createComment(tx *gorm.DB, opts *CreateCommentOptions) (_ *Comment, err err
 	// Notify watchers for whatever action comes in, ignore if no action type.
 	if act.OpType > 0 {
 		if err = notifyWatchers(tx, act); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to issue: %v", err)
 		}
 		if err = comment.mailParticipants(tx, act.OpType, opts.Issue); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to issue: %v", err)
 		}
 	}
 

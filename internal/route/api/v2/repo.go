@@ -298,7 +298,7 @@ func getRepoDirectory(c *context.APIContext) {
 
 	tree, err := c.Repo.Commit.Subtree(c.Repo.TreePath)
 	if err != nil {
-		log.Trace("%v", err)
+		log.Trace("failed to git: %v", err)
 		c.NotFoundOrError(gitx.NewError(err), "get subtree")
 		return
 	}
@@ -307,7 +307,7 @@ func getRepoDirectory(c *context.APIContext) {
 	startEntries := time.Now()
 	entries, err := tree.Entries()
 	if err != nil {
-		log.Trace("%v", err)
+		log.Trace("failed to tree: %v", err)
 		c.Error(err, "list entries")
 		return
 	}
@@ -422,7 +422,7 @@ func getRepoDirectory(c *context.APIContext) {
 		var err error
 		readmeFile, err = tree.Blob(entry.Name())
 		if err != nil {
-			log.Error("%v", err)
+			log.Error("failed to blob: %v", err)
 		}
 		break
 	}

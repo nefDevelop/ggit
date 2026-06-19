@@ -187,7 +187,7 @@ func (r *Release) preparePublishWebhooks() {
 		Repository: r.Repo.APIFormatLegacy(nil),
 		Sender:     r.Publisher.APIFormat(),
 	}); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to send: %v", err)
 	}
 }
 

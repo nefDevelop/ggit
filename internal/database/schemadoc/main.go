@@ -24,13 +24,13 @@ import (
 func main() {
 	w, err := os.Create(os.Args[1])
 	if err != nil {
-		log.Fatal("%v", err)
+		log.Fatal("failed to create: %v", err)
 	}
 	defer func() { _ = w.Close() }()
 
 	conn, _, err := sqlmock.New()
 	if err != nil {
-		log.Fatal("%v", err)
+		log.Fatal("failed to operation: %v", err)
 	}
 	defer func() { _ = conn.Close() }()
 

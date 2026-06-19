@@ -183,7 +183,7 @@ func (issue *Issue) MailParticipants() (err error) {
 	}
 
 	if err = mailIssueCommentToParticipants(issue, issue.Poster, mentions); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to issue: %v", err)
 	}
 
 	return nil

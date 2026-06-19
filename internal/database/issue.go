@@ -303,7 +303,7 @@ func (issue *Issue) sendLabelUpdatedWebhook(doer *User) {
 	if issue.IsPull {
 		err = issue.PullRequest.LoadIssue()
 		if err != nil {
-			log.Error("%v", err)
+			log.Error("failed to load: %v", err)
 			return
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -409,7 +409,7 @@ func (issue *Issue) ClearLabels(doer *User) (err error) {
 	if issue.IsPull {
 		err = issue.PullRequest.LoadIssue()
 		if err != nil {
-			log.Error("%v", err)
+			log.Error("failed to load: %v", err)
 			return err
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -657,7 +657,7 @@ func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID i
 
 	u, err := Handle.Users().GetByID(context.Background(), issue.AssigneeID)
 	if err != nil && !IsErrUserNotExist(err) {
-		log.Error("%v", err)
+		log.Error("failed to user: %v", err)
 		return nil
 	}
 	if err == nil {

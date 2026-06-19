@@ -576,7 +576,7 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 		if len(w.Secret) > 0 {
 			data, err := payloader.JSONPayload()
 			if err != nil {
-				log.Error("%v", err)
+				log.Error("failed to load: %v", err)
 			}
 			sig := hmac.New(sha256.New, []byte(w.Secret))
 			_, _ = sig.Write(data)
@@ -715,7 +715,7 @@ func (t *HookTask) deliver() {
 		// Update webhook last delivery status.
 		w, err := GetWebhookByID(t.HookID)
 		if err != nil {
-			log.Error("%v", err)
+			log.Error("failed to webhook: %v", err)
 			return
 		}
 		if t.IsSucceed {
@@ -724,7 +724,7 @@ func (t *HookTask) deliver() {
 			w.LastStatus = HookStatusFailed
 		}
 		if err = UpdateWebhook(w); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to update: %v", err)
 			return
 		}
 	}()
@@ -757,7 +757,7 @@ func DeliverHooks() {
 	var tasks []*HookTask
 	err := Handle.db.Where("is_delivered = ?", false).Find(&tasks).Error
 	if err != nil {
-		log.Error("%v", err)
+		log.Error("failed to hook: %v", err)
 	} else {
 		for _, t := range tasks {
 			t.deliver()

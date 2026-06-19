@@ -503,7 +503,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 	// Only update issues via commits when internal issue tracker is enabled
 	if optionsValue.Repo.EnableIssues && !optionsValue.Repo.EnableExternalTracker {
 		if err = updateCommitReferencesToIssues(pusher, optionsValue.Repo, optionsValue.Commits.Commits); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to update: %v", err)
 		}
 	}
 

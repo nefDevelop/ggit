@@ -51,7 +51,7 @@ func GlobalInit(customConf string) error {
 	if conf.Security.InstallLock {
 		err := database.NewEngine()
 		if err != nil {
-			log.Fatal("%v", err)
+			log.Fatal("failed to operation: %v", err)
 		}
 		database.HasEngine = true
 
@@ -87,7 +87,7 @@ func GlobalInit(customConf string) error {
 
 	if conf.SSH.RewriteAuthorizedKeysAtStart {
 		if err := database.RewriteAuthorizedKeys(); err != nil {
-			log.Warn("%v", err)
+			log.Warn("failed to key: %v", err)
 		}
 	}
 

@@ -141,7 +141,7 @@ func HTTPContexter(store Store) gin.HandlerFunc {
 			authUser, err = gcontext.AuthenticateByToken(store, c.Request.Context(), authUsername)
 			if err != nil && !database.IsErrAccessTokenNotExist(err) {
 				c.Status(http.StatusInternalServerError)
-				log.Error("%v", err)
+				log.Error("failed to access: %v", err)
 				c.Abort()
 				return
 			} else if database.IsErrAccessTokenNotExist(err) {
@@ -152,7 +152,7 @@ func HTTPContexter(store Store) gin.HandlerFunc {
 						askCredentials(c, http.StatusUnauthorized, "")
 					} else {
 						c.Status(http.StatusInternalServerError)
-						log.Error("%v", err)
+						log.Error("failed to access: %v", err)
 					}
 					c.Abort()
 					return
@@ -252,7 +252,7 @@ func serviceRPC(h serviceHandler, service string) {
 	if h.r.Header.Get("Content-Encoding") == "gzip" {
 		reqBody, err = gzip.NewReader(reqBody)
 		if err != nil {
-			log.Error("%v", err)
+			log.Error("failed to operation: %v", err)
 			h.w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -431,7 +431,7 @@ func HTTP(c *gin.Context) {
 		file := strings.TrimPrefix(reqPath, cleaned)
 		dir, err := getGitRepoPath(cleaned)
 		if err != nil {
-			log.Warn("%v", err)
+			log.Warn("failed to clean: %v", err)
 			c.Status(http.StatusNotFound)
 			return
 		}

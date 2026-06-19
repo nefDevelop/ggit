@@ -57,7 +57,7 @@ func ListWikiPages(c *context.APIContext) {
 		if wikiFolder == "docs" {
 			tree, err = commit.Subtree(".docs")
 			if err != nil {
-				log.Trace("%v", err)
+				log.Trace("failed to commit: %v", err)
 			}
 		}
 	}

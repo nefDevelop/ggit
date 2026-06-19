@@ -20,7 +20,7 @@ type DashboardData struct {
 func GetDashboardData(c *context.APIContext) {
 	defer func() {
 		if err := recover(); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to user: %v", err)
 			c.StatusError(http.StatusInternalServerError, "Internal Server Error", nil)
 		}
 	}()

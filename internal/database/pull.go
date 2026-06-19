@@ -601,7 +601,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 
 	// Reload pull request information.
 	if err = pr.LoadAttributes(); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to merge: %v", err)
 		postMergeErr = err
 	}
 	if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -611,7 +611,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 		Repository:  pr.Issue.Repo.APIFormatLegacy(nil),
 		Sender:      doer.APIFormat(),
 	}); err != nil {
-		log.Error("%v", err)
+		log.Error("failed to merge: %v", err)
 		if postMergeErr == nil {
 			postMergeErr = err
 		}
@@ -642,7 +642,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 
 			pcs, err := CommitsToPushCommits(commits).APIFormat(ctx, Handle.Users(), pr.BaseRepo.RepoPath(), pr.BaseRepo.HTMLURL())
 			if err != nil {
-				log.Error("%v", err)
+				log.Error("failed to merge: %v", err)
 				if postMergeErr == nil {
 					postMergeErr = err
 				}
@@ -658,7 +658,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 					Sender:     doer.APIFormat(),
 				}
 				if err = PrepareWebhooks(pr.BaseRepo, HookEventTypePush, p); err != nil {
-					log.Error("%v", err)
+					log.Error("failed to merge: %v", err)
 					if postMergeErr == nil {
 						postMergeErr = err
 					}
@@ -1012,10 +1012,10 @@ func addHeadRepoTasks(prs []*PullRequest) {
 
 		log.Trace("addHeadRepoTasks[%d]: composing new test task", pr.ID)
 		if err := pr.UpdatePatch(); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to push: %v", err)
 			continue
 		} else if err := pr.PushToBaseRepo(); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to push: %v", err)
 			continue
 		}
 
@@ -1036,14 +1036,14 @@ func AddTestPullRequestTask(doer *User, repoID int64, branch string, isSync bool
 
 	if isSync {
 		if err = PullRequestList(prs).LoadAttributes(); err != nil {
-			log.Error("%v", err)
+			log.Error("failed to load: %v", err)
 		}
 
 		if err == nil {
 			for _, pr := range prs {
 				pr.Issue.PullRequest = pr
 				if err = pr.Issue.LoadAttributes(); err != nil {
-					log.Error("%v", err)
+					log.Error("failed to load: %v", err)
 					continue
 				}
 				if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -1095,7 +1095,7 @@ func TestPullRequests() {
 	var prs []*PullRequest
 	err := Handle.db.Where("status = ?", PullRequestStatusChecking).Find(&prs).Error
 	if err != nil {
-		log.Error("%v", err)
+		log.Error("failed to check: %v", err)
 		return
 	}
 

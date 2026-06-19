@@ -77,7 +77,7 @@ func authenticate(store Store) gin.HandlerFunc {
 			user, err = context.AuthenticateByToken(store, c.Request.Context(), username)
 			if err != nil && !database.IsErrAccessTokenNotExist(err) {
 				internalServerError(c.Writer)
-				log.Error("%v", err)
+				log.Error("failed to access: %v", err)
 				c.Abort()
 				return
 			} else if database.IsErrAccessTokenNotExist(err) {
@@ -88,7 +88,7 @@ func authenticate(store Store) gin.HandlerFunc {
 						askCredentials(c.Writer)
 					} else {
 						c.Status(http.StatusInternalServerError)
-						log.Error("%v", err)
+						log.Error("failed to access: %v", err)
 					}
 					c.Abort()
 					return
