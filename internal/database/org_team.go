@@ -451,14 +451,16 @@ func getTeamMembers(tx *gorm.DB, teamID int64) (_ []*User, err error) {
 		return nil, fmt.Errorf("get team-users: %v", err)
 	}
 
-	members := make([]*User, 0, len(teamUsers))
+	uids := make([]int64, len(teamUsers))
 	for i := range teamUsers {
-		member := new(User)
-		err := tx.Where("id = ?", teamUsers[i].UID).First(member).Error
-		if err != nil {
-			return nil, fmt.Errorf("get user '%d': %v", teamUsers[i].UID, err)
+		uids[i] = teamUsers[i].UID
+	}
+
+	members := make([]*User, 0, len(teamUsers))
+	if len(uids) > 0 {
+		if err = tx.Where("id IN ?", uids).Find(&members).Error; err != nil {
+			return nil, fmt.Errorf("get users: %v", err)
 		}
-		members = append(members, member)
 	}
 	return members, nil
 }

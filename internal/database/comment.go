@@ -493,9 +493,94 @@ func GetCommentByID(id int64) (*Comment, error) {
 
 // FIXME: use CommentList to improve performance.
 func loadCommentsAttributes(tx *gorm.DB, comments []*Comment) (err error) {
-	for i := range comments {
-		if err = comments[i].loadAttributes(tx); err != nil {
-			return fmt.Errorf("loadAttributes [%d]: %v", comments[i].ID, err)
+	if len(comments) == 0 {
+		return nil
+	}
+
+	posterIDs := make([]int64, 0, len(comments))
+	issueIDs := make([]int64, 0, len(comments))
+	commentIDs := make([]int64, len(comments))
+	needIssues := false
+
+	for i, c := range comments {
+		commentIDs[i] = c.ID
+		if c.Poster == nil {
+			posterIDs = append(posterIDs, c.PosterID)
+		}
+		if c.Issue == nil {
+			needIssues = true
+			issueIDs = append(issueIDs, c.IssueID)
+		}
+	}
+
+	// Batch load posters
+	if len(posterIDs) > 0 {
+		posters := make([]User, 0, len(posterIDs))
+		if err = tx.Where("id IN ?", posterIDs).Find(&posters).Error; err != nil {
+			return fmt.Errorf("batch load posters: %v", err)
+		}
+		posterMap := make(map[int64]*User, len(posters))
+		for i := range posters {
+			posterMap[posters[i].ID] = &posters[i]
+		}
+		for _, c := range comments {
+			if c.Poster == nil {
+				if p, ok := posterMap[c.PosterID]; ok {
+					c.Poster = p
+				} else {
+					c.PosterID = -1
+					c.Poster = NewGhostUser()
+				}
+			}
+		}
+	}
+
+	// Batch load issues + repos
+	if needIssues && len(issueIDs) > 0 {
+		issues := make([]Issue, 0, len(issueIDs))
+		if err = tx.Where("id IN ?", issueIDs).Find(&issues).Error; err != nil {
+			return fmt.Errorf("batch load issues: %v", err)
+		}
+		issueMap := make(map[int64]*Issue, len(issues))
+		repoIDs := make([]int64, 0, len(issues))
+		for i := range issues {
+			issueMap[issues[i].ID] = &issues[i]
+			repoIDs = append(repoIDs, issues[i].RepoID)
+		}
+
+		// Batch load repos
+		repos := make([]Repository, 0, len(repoIDs))
+		if err = tx.Where("id IN ?", repoIDs).Find(&repos).Error; err != nil {
+			return fmt.Errorf("batch load repos: %v", err)
+		}
+		repoMap := make(map[int64]*Repository, len(repos))
+		for i := range repos {
+			repoMap[repos[i].ID] = &repos[i]
+		}
+
+		for _, c := range comments {
+			if c.Issue == nil {
+				if issue, ok := issueMap[c.IssueID]; ok {
+					issue.Repo = repoMap[issue.RepoID]
+					c.Issue = issue
+				}
+			}
+		}
+	}
+
+	// Batch load attachments
+	allAttachments := make([]Attachment, 0, len(comments))
+	if err = tx.Where("comment_id IN ?", commentIDs).Find(&allAttachments).Error; err != nil {
+		return fmt.Errorf("batch load attachments: %v", err)
+	}
+	attachmentsByComment := make(map[int64][]*Attachment, len(comments))
+	for i := range allAttachments {
+		cid := allAttachments[i].CommentID
+		attachmentsByComment[cid] = append(attachmentsByComment[cid], &allAttachments[i])
+	}
+	for _, c := range comments {
+		if c.Attachments == nil {
+			c.Attachments = attachmentsByComment[c.ID]
 		}
 	}
 

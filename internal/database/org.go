@@ -62,16 +62,19 @@ func (org *User) TeamsHaveAccessToRepo(repoID int64, mode domain.AccessMode) ([]
 
 // GetOrgOwner returns the first owner of the organization.
 func (org *User) GetOrgOwner() (*User, error) {
-	ou := new(OrgUser)
-	err := Handle.db.Where("org_id = ? AND is_owner = ?", org.ID, true).Order("id ASC").First(ou).Error
+	owner := new(User)
+	err := Handle.db.Table("user").
+		Joins("JOIN org_user ON org_user.uid = user.id").
+		Where("org_user.org_id = ? AND org_user.is_owner = ?", org.ID, true).
+		Order("org_user.id ASC").
+		First(owner).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("organization has no owner")
 		}
 		return nil, err
 	}
-	u, err := Handle.Users().GetByID(context.TODO(), ou.UID)
-	return FromDomainUser(u), err
+	return owner, nil
 }
 
 // GetMembers returns all members of organization.
@@ -81,13 +84,26 @@ func (org *User) GetMembers(limit int) error {
 		return err
 	}
 
+	uids := make([]int64, len(ous))
+	for i, ou := range ous {
+		uids[i] = ou.UID
+	}
+
+	dbUsers := make([]*User, 0, len(uids))
+	if err = Handle.db.Where("id IN ?", uids).Find(&dbUsers).Error; err != nil {
+		return err
+	}
+
+	userByID := make(map[int64]*User, len(dbUsers))
+	for _, u := range dbUsers {
+		userByID[u.ID] = u
+	}
+
 	org.Members = make([]*User, len(ous))
 	for i, ou := range ous {
-		u, err := Handle.Users().GetByID(context.TODO(), ou.UID)
-		if err != nil {
-			return err
+		if u, ok := userByID[ou.UID]; ok {
+			org.Members[i] = u
 		}
-		org.Members[i] = FromDomainUser(u)
 	}
 
 	return nil
