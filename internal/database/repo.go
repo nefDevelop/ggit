@@ -815,20 +815,36 @@ func (r *Repository) UpdateCounters() error {
 	return Handle.db.Model(r).Updates(updates).Error
 }
 
-// UpdateAllRepositoryCounters updates NumCommits and NumBranches for all repositories.
-func UpdateAllRepositoryCounters() error {
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		return err
-	}
+const batchSize = 100
 
-	for _, repo := range repos {
-		if err := repo.UpdateCounters(); err != nil {
-			log.Error("UpdateCounters [repo_id: %d]: %v", repo.ID, err)
-			continue
+func forEachRepo(fn func(repo *Repository) error) error {
+	offset := 0
+	for {
+		var repos []*Repository
+		if err := Handle.db.Limit(batchSize).Offset(offset).Find(&repos).Error; err != nil {
+			return err
 		}
+		if len(repos) == 0 {
+			break
+		}
+		for _, repo := range repos {
+			if err := fn(repo); err != nil {
+				return err
+			}
+		}
+		offset += batchSize
 	}
 	return nil
+}
+
+// UpdateAllRepositoryCounters updates NumCommits and NumBranches for all repositories.
+func UpdateAllRepositoryCounters() error {
+	return forEachRepo(func(repo *Repository) error {
+		if err := repo.UpdateCounters(); err != nil {
+			log.Error("UpdateCounters [repo_id: %d]: %v", repo.ID, err)
+		}
+		return nil
+	})
 }
 
 // ComposeMetas composes a map of metas for rendering SHA1 URL and external issue tracker URL.
@@ -2279,13 +2295,7 @@ func DeleteOldRepositoryArchives() {
 	formats := []string{"zip", "targz"}
 	oldestTime := time.Now().Add(-conf.Cron.RepoArchiveCleanup.OlderThan)
 
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		log.Error("DeleteOldRepositoryArchives: %v", err)
-		return
-	}
-
-	for _, repo := range repos {
+	if err := forEachRepo(func(repo *Repository) error {
 		basePath := filepath.Join(repo.RepoPath(), "archives")
 		for _, format := range formats {
 			dirPath := filepath.Join(basePath, format)
@@ -2325,6 +2335,9 @@ func DeleteOldRepositoryArchives() {
 				}
 			}
 		}
+		return nil
+	}); err != nil {
+		log.Error("DeleteOldRepositoryArchives: %v", err)
 	}
 }
 
@@ -2336,33 +2349,24 @@ func DeleteRepositoryArchives() error {
 	taskStatusTable.Start(taskNameCleanOldArchives)
 	defer taskStatusTable.Stop(taskNameCleanOldArchives)
 
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		return err
-	}
-
-	for _, repo := range repos {
-		if err := os.RemoveAll(filepath.Join(repo.RepoPath(), "archives")); err != nil {
-			log.Error("Failed to remove archives for %s: %v", repo.RepoPath(), err)
-		}
-	}
-	return nil
+	return forEachRepo(func(repo *Repository) error {
+		return os.RemoveAll(filepath.Join(repo.RepoPath(), "archives"))
+	})
 }
 
 func gatherMissingRepoRecords() ([]*Repository, error) {
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
+	missing := make([]*Repository, 0, 10)
+	err := forEachRepo(func(repo *Repository) error {
+		if !osx.IsDir(repo.RepoPath()) {
+			missing = append(missing, repo)
+		}
+		return nil
+	})
+	if err != nil {
 		if err2 := Handle.Notices().Create(context.Background(), NoticeTypeRepository, fmt.Sprintf("gatherMissingRepoRecords: %v", err)); err2 != nil {
 			return nil, fmt.Errorf("CreateRepositoryNotice: %v", err)
 		}
 		return nil, err
-	}
-
-	missing := make([]*Repository, 0, 10)
-	for _, repo := range repos {
-		if !osx.IsDir(repo.RepoPath()) {
-			missing = append(missing, repo)
-		}
 	}
 	return missing, nil
 }
@@ -2414,19 +2418,14 @@ func ReinitMissingRepositories() error {
 // SyncRepositoryHooks rewrites all repositories' pre-receive, update and post-receive hooks
 // to make sure the binary and custom conf path are up-to-date.
 func SyncRepositoryHooks() error {
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		return err
-	}
-
-	for _, repo := range repos {
+	return forEachRepo(func(repo *Repository) error {
 		if !repo.IsBare {
 			if err := repox.CreateDelegateHooks(repo.RepoPath()); err != nil {
 				return err
 			}
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 // Prevent duplicate running tasks.
@@ -2463,13 +2462,7 @@ func GitFsck() {
 
 	log.Trace("Doing: GitFsck")
 
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		log.Error("GitFsck: %v", err)
-		return
-	}
-
-	for _, repo := range repos {
+	if err := forEachRepo(func(repo *Repository) error {
 		now := time.Now().Unix()
 		needsCheck := false
 
@@ -2497,7 +2490,7 @@ func GitFsck() {
 		}
 
 		if !needsCheck {
-			continue
+			return nil
 		}
 
 		repoPath := repo.RepoPath()
@@ -2526,17 +2519,15 @@ func GitFsck() {
 		if err := Handle.db.Model(repo).Updates(updates).Error; err != nil {
 			log.Error("GitFsck (update sentinel): %v", err)
 		}
+		return nil
+	}); err != nil {
+		log.Error("GitFsck: %v", err)
 	}
 }
 
 func GitGcRepos() error {
 	args := append([]string{"gc"}, conf.Git.GCArgs...)
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		return err
-	}
-
-	for _, repo := range repos {
+	return forEachRepo(func(repo *Repository) error {
 		if err := repo.getOwner(Handle.db); err != nil {
 			return err
 		}
@@ -2547,8 +2538,8 @@ func GitGcRepos() error {
 		if err != nil {
 			return fmt.Errorf("%v: %v", err, stderr)
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 type repoChecker struct {
@@ -3166,18 +3157,13 @@ func CleanupDanglingRepositories() error {
 		return fmt.Errorf("repository root %s is unreachable (possible mount failure)", conf.Repository.Root)
 	}
 
-	var repos []*Repository
-	if err := Handle.db.Find(&repos).Error; err != nil {
-		return err
-	}
-
-	for _, repo := range repos {
+	return forEachRepo(func(repo *Repository) error {
 		if !osx.IsDir(repo.RepoPath()) {
 			log.Warn("Repository %s (ID: %d) has no directory on disk, deleting record", repo.FullName(), repo.ID)
 			if err := DeleteRepository(repo.OwnerID, repo.ID); err != nil {
 				log.Error("Failed to delete dangling repository [%d]: %v", repo.ID, err)
 			}
 		}
-	}
-	return nil
+		return nil
+	})
 }
