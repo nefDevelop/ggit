@@ -51,11 +51,11 @@ func FromDomainTwoFactor(t *domain.TwoFactor) *TwoFactor {
 func (t *TwoFactor) ValidateTOTP(passcode string) (bool, error) {
 	secret, err := base64.StdEncoding.DecodeString(t.Secret)
 	if err != nil {
-		return false, fmt.Errorf("DecodeString: %v", err)
+		return false, fmt.Errorf("DecodeString: %w", err)
 	}
 	decryptSecret, err := cryptox.AESGCMDecrypt(cryptox.MD5Bytes(conf.Security.SecretKey), secret)
 	if err != nil {
-		return false, fmt.Errorf("AESGCMDecrypt: %v", err)
+		return false, fmt.Errorf("AESGCMDecrypt: %w", err)
 	}
 	return totp.Validate(passcode, string(decryptSecret)), nil
 }

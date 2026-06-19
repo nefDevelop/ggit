@@ -54,7 +54,7 @@ func (t *Team) IsMember(userID int64) bool {
 func (t *Team) getRepositories(tx *gorm.DB) (err error) {
 	teamRepos := make([]*TeamRepo, 0, t.NumRepos)
 	if err = tx.Where("team_id = ?", t.ID).Find(&teamRepos).Error; err != nil {
-		return fmt.Errorf("get team-repos: %v", err)
+		return fmt.Errorf("get team-repos: %w", err)
 	}
 
 	t.Repos = make([]*Repository, 0, len(teamRepos))
@@ -110,19 +110,19 @@ func (t *Team) addRepository(tx *gorm.DB, repo *Repository) (err error) {
 
 	t.NumRepos++
 	if err = tx.Model(t).Updates(t).Error; err != nil {
-		return fmt.Errorf("update team: %v", err)
+		return fmt.Errorf("update team: %w", err)
 	}
 
 	if err = repo.recalculateTeamAccesses(tx, 0); err != nil {
-		return fmt.Errorf("recalculateAccesses: %v", err)
+		return fmt.Errorf("recalculateAccesses: %w", err)
 	}
 
 	if err = t.getMembers(tx); err != nil {
-		return fmt.Errorf("getMembers: %v", err)
+		return fmt.Errorf("getMembers: %w", err)
 	}
 	for _, u := range t.Members {
 		if err = watchRepo(tx, u.ID, repo.ID, true); err != nil {
-			return fmt.Errorf("watchRepo: %v", err)
+			return fmt.Errorf("watchRepo: %w", err)
 		}
 	}
 	return nil
@@ -159,7 +159,7 @@ func (t *Team) removeRepository(tx *gorm.DB, repo *Repository, recalculate bool)
 	}
 
 	if err = t.getMembers(tx); err != nil {
-		return fmt.Errorf("get team members: %v", err)
+		return fmt.Errorf("get team members: %w", err)
 	}
 
 	// TODO: Delete me when this method is migrated to use GORM.
@@ -364,18 +364,18 @@ func UpdateTeam(t *Team, authChanged bool) (err error) {
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(t).Updates(t).Error; err != nil {
-			return fmt.Errorf("update: %v", err)
+			return fmt.Errorf("update: %w", err)
 		}
 
 		// Update access for team members if needed.
 		if authChanged {
 			if err = t.getRepositories(tx); err != nil {
-				return fmt.Errorf("getRepositories: %v", err)
+				return fmt.Errorf("getRepositories: %w", err)
 			}
 
 			for _, repo := range t.Repos {
 				if err = repo.recalculateTeamAccesses(tx, 0); err != nil {
-					return fmt.Errorf("recalculateTeamAccesses: %v", err)
+					return fmt.Errorf("recalculateTeamAccesses: %w", err)
 				}
 			}
 		}
@@ -448,7 +448,7 @@ func IsTeamMember(orgID, teamID, uid int64) bool {
 func getTeamMembers(tx *gorm.DB, teamID int64) (_ []*User, err error) {
 	teamUsers := make([]*TeamUser, 0, 10)
 	if err = tx.Where("team_id = ?", teamID).Find(&teamUsers).Error; err != nil {
-		return nil, fmt.Errorf("get team-users: %v", err)
+		return nil, fmt.Errorf("get team-users: %w", err)
 	}
 
 	uids := make([]int64, len(teamUsers))
@@ -459,7 +459,7 @@ func getTeamMembers(tx *gorm.DB, teamID int64) (_ []*User, err error) {
 	members := make([]*User, 0, len(teamUsers))
 	if len(uids) > 0 {
 		if err = tx.Where("id IN ?", uids).Find(&members).Error; err != nil {
-			return nil, fmt.Errorf("get users: %v", err)
+			return nil, fmt.Errorf("get users: %w", err)
 		}
 	}
 	return members, nil

@@ -358,7 +358,7 @@ func ChangeMilestoneAssign(doer *User, issue *Issue, oldMilestoneID int64) (err 
 	if issue.IsPull {
 		err = issue.PullRequest.LoadIssue()
 		if err != nil {
-			log.Error("LoadIssue: %v", err)
+			log.Error("%v", err)
 			return err
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{

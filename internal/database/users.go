@@ -83,7 +83,7 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 	u := new(User)
 	err := query.First(u).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, fmt.Errorf("get User"+": %w", err)
+		return nil, fmt.Errorf("get User"+": %v", err)
 	}
 
 	var authSourceID int64 // The login source ID will be used to authenticate the User
@@ -121,7 +121,7 @@ func (s *UsersStore) Authenticate(ctx context.Context, login, password string, l
 	source, err := newLoginSourcesStore(s.db, loadedLoginSourceFilesStore).getByID(ctx, authSourceID)
 
 	if err != nil {
-		return nil, fmt.Errorf("get login source"+": %w", err)
+		return nil, fmt.Errorf("get login source"+": %v", err)
 	}
 
 	if !source.IsActived {
@@ -178,7 +178,7 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, UserID int64, newUserna
 
 	u, err := s.getByID(ctx, UserID)
 	if err != nil {
-		return fmt.Errorf("get User"+": %w", err)
+		return fmt.Errorf("get User"+": %v", err)
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -190,7 +190,7 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, UserID int64, newUserna
 				"updated_unix": tx.NowFunc().Unix(),
 			}).Error
 		if err != nil {
-			return fmt.Errorf("update User name"+": %w", err)
+			return fmt.Errorf("update User name"+": %v", err)
 		}
 
 		// Stop here if it's just a case-change of the Username
@@ -204,13 +204,13 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, UserID int64, newUserna
 			Update("head_User_name", strings.ToLower(newUsername)).
 			Error
 		if err != nil {
-			return fmt.Errorf(`update "pull_request.head_User_name"`+": %w", err)
+			return fmt.Errorf(`update "pull_request.head_User_name"`+": %v", err)
 		}
 
 		// Delete local copies of repositories and their wikis that are owned by the User
 		rows, err := tx.Model(&Repository{}).Where("owner_id = ?", u.ID).Rows()
 		if err != nil {
-			return fmt.Errorf("iterate repositories"+": %w", err)
+			return fmt.Errorf("iterate repositories"+": %v", err)
 		}
 		defer func() { _ = rows.Close() }()
 
@@ -220,13 +220,13 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, UserID int64, newUserna
 			}
 			err = tx.ScanRows(rows, &repo)
 			if err != nil {
-				return fmt.Errorf("scan rows"+": %w", err)
+				return fmt.Errorf("scan rows"+": %v", err)
 			}
 
 			deleteRepoLocalCopy(repo.ID)
 		}
 		if err = rows.Err(); err != nil {
-			return fmt.Errorf("check rows.Err"+": %w", err)
+			return fmt.Errorf("check rows.Err"+": %v", err)
 		}
 
 		// Rename User directory if exists
@@ -235,7 +235,7 @@ func (s *UsersStore) ChangeUsername(ctx context.Context, UserID int64, newUserna
 			newUserPath := repox.UserPath(newUsername)
 			err = os.Rename(UserPath, newUserPath)
 			if err != nil {
-				return fmt.Errorf("rename User directory"+": %w", err)
+				return fmt.Errorf("rename User directory"+": %v", err)
 			}
 		}
 		return nil
@@ -432,7 +432,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 		if IsErrUserNotExist(err) {
 			return nil
 		}
-		return fmt.Errorf("get User"+": %w", err)
+		return fmt.Errorf("get User"+": %v", err)
 	}
 
 	// Double-check the User is not a direct owner of any repository and not a
@@ -440,14 +440,14 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 	var count int64
 	err = s.db.WithContext(ctx).Model(&Repository{}).Where("owner_id = ?", UserID).Count(&count).Error
 	if err != nil {
-		return fmt.Errorf("count repositories"+": %w", err)
+		return fmt.Errorf("count repositories"+": %v", err)
 	} else if count > 0 {
 		return ErrUserOwnRepos{args: errx.Args{"userID": UserID}}
 	}
 
 	err = s.db.WithContext(ctx).Model(&OrgUser{}).Where("uid = ?", UserID).Count(&count).Error
 	if err != nil {
-		return fmt.Errorf("count organization membership"+": %w", err)
+		return fmt.Errorf("count organization membership"+": %v", err)
 	} else if count > 0 {
 		return ErrUserHasOrgs{args: errx.Args{"userID": UserID}}
 	}
@@ -472,7 +472,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 			UpdateColumn("num_watches", gorm.Expr("num_watches - 1")).
 			Error
 		if err != nil {
-			return fmt.Errorf(`decrease "repository.num_watches"`+": %w", err)
+			return fmt.Errorf(`decrease "repository.num_watches"`+": %v", err)
 		}
 
 		/*
@@ -493,7 +493,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 			UpdateColumn("num_stars", gorm.Expr("num_stars - 1")).
 			Error
 		if err != nil {
-			return fmt.Errorf(`decrease "repository.num_stars"`+": %w", err)
+			return fmt.Errorf(`decrease "repository.num_stars"`+": %v", err)
 		}
 
 		if !skipRewriteAuthorizedKeys {
@@ -503,7 +503,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 
 		err = tx.Model(&Issue{}).Where("assignee_id = ?", UserID).Update("assignee_id", 0).Error
 		if err != nil {
-			return fmt.Errorf("clear assignees"+": %w", err)
+			return fmt.Errorf("clear assignees"+": %v", err)
 		}
 
 		for _, t := range []struct {
@@ -524,7 +524,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 		} {
 			err = tx.Where(t.where, sql.Named("UserID", UserID)).Delete(t.table).Error
 			if err != nil {
-				return fmt.Errorf("clean up table %T: %w", t.table, err)
+				return fmt.Errorf("clean up table %T: %v", t.table, err)
 			}
 		}
 		return nil
@@ -539,7 +539,7 @@ func (s *UsersStore) DeleteByID(ctx context.Context, UserID int64, skipRewriteAu
 	if needsRewriteAuthorizedKeys {
 		err = newPublicKeysStore(s.db).RewriteAuthorizedKeys()
 		if err != nil {
-			return fmt.Errorf(`rewrite "authorized_keys" file`+": %w", err)
+			return fmt.Errorf(`rewrite "authorized_keys" file`+": %v", err)
 		}
 	}
 	return nil
@@ -553,7 +553,7 @@ func (s *UsersStore) DeleteInactivated(ctx context.Context) error {
 	var UserIDs []int64
 	err := s.db.Model(&User{}).Where("is_active = ?", false).Pluck("id", &UserIDs).Error
 	if err != nil {
-		return fmt.Errorf("get inactivated User IDs"+": %w", err)
+		return fmt.Errorf("get inactivated User IDs"+": %v", err)
 	}
 
 	for _, UserID := range UserIDs {
@@ -563,12 +563,12 @@ func (s *UsersStore) DeleteInactivated(ctx context.Context) error {
 			if IsErrUserOwnRepos(err) || IsErrUserHasOrgs(err) {
 				continue
 			}
-			return fmt.Errorf("delete User with ID %d: %w", UserID, err)
+			return fmt.Errorf("delete User with ID %d: %v", UserID, err)
 		}
 	}
 	err = newPublicKeysStore(s.db).RewriteAuthorizedKeys()
 	if err != nil {
-		return fmt.Errorf(`rewrite "authorized_keys" file`+": %w", err)
+		return fmt.Errorf(`rewrite "authorized_keys" file`+": %v", err)
 	}
 	return nil
 }
@@ -606,7 +606,7 @@ func (s *UsersStore) getByEmail(ctx context.Context, email string) (*User, error
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotExist{args: errx.Args{"email": email}}
 		}
-		return nil, fmt.Errorf("get user by email"+": %w", err)
+		return nil, fmt.Errorf("get user by email"+": %v", err)
 	}
 	return &u, nil
 }
@@ -619,7 +619,7 @@ func (s *UsersStore) GetByLoginSource(ctx context.Context, loginSourceID int64, 
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotExist{args: errx.Args{"login_source": loginSourceID, "login_name": loginName}}
 		}
-		return nil, fmt.Errorf("get user by login source"+": %w", err)
+		return nil, fmt.Errorf("get user by login source"+": %v", err)
 	}
 	return u.ToDomain(), nil
 }
@@ -779,7 +779,7 @@ func searchUserByName(ctx context.Context, db *gorm.DB, UserType UserType, keywo
 	var count int64
 	err := tx.Model(&User{}).Count(&count).Error
 	if err != nil {
-		return nil, 0, fmt.Errorf("count"+": %w", err)
+		return nil, 0, fmt.Errorf("count"+": %v", err)
 	}
 
 	Users := make([]*User, 0, pageSize)
@@ -866,7 +866,7 @@ func (s *UsersStore) Update(ctx context.Context, UserID int64, opts any) error {
 	if options.Password != nil {
 		salt, err := userx.RandomSalt()
 		if err != nil {
-			return fmt.Errorf("generate salt"+": %w", err)
+			return fmt.Errorf("generate salt"+": %v", err)
 		}
 		updates["salt"] = salt
 		updates["passwd"] = userx.EncodePassword(*options.Password, salt)
@@ -875,7 +875,7 @@ func (s *UsersStore) Update(ctx context.Context, UserID int64, opts any) error {
 	if options.GenerateNewRands {
 		rands, err := userx.RandomSalt()
 		if err != nil {
-			return fmt.Errorf("generate rands"+": %w", err)
+			return fmt.Errorf("generate rands"+": %v", err)
 		}
 		updates["rands"] = rands
 	}
@@ -948,7 +948,7 @@ func (s *UsersStore) UseCustomAvatar(ctx context.Context, UserID int64, avatar [
 	defer fsTx.Rollback()
 
 	if err := userx.SaveAvatarToPath(tempPath, avatar); err != nil {
-		return fmt.Errorf("save avatar to temp"+": %w", err)
+		return fmt.Errorf("save avatar to temp"+": %v", err)
 	}
 	fsTx.StageCreate(tempPath, avatarPath)
 
@@ -980,7 +980,7 @@ func (s *UsersStore) AddEmail(ctx context.Context, UserID int64, email string, i
 			},
 		}
 	} else if !IsErrUserNotExist(err) {
-		return fmt.Errorf("check User by email"+": %w", err)
+		return fmt.Errorf("check User by email"+": %v", err)
 	}
 
 	return s.db.WithContext(ctx).Create(
@@ -1043,13 +1043,13 @@ func (s *UsersStore) GetEmail(ctx context.Context, UserID int64, email string, n
 func (s *UsersStore) ListEmails(ctx context.Context, UserID int64) ([]*domain.EmailAddress, error) {
 	u, err := s.getByID(ctx, UserID)
 	if err != nil {
-		return nil, fmt.Errorf("get User"+": %w", err)
+		return nil, fmt.Errorf("get User"+": %v", err)
 	}
 
 	var emails []*EmailAddress
 	err = s.db.WithContext(ctx).Where("uid = ?", UserID).Order("id ASC").Find(&emails).Error
 	if err != nil {
-		return nil, fmt.Errorf("list emails"+": %w", err)
+		return nil, fmt.Errorf("list emails"+": %v", err)
 	}
 
 	isPrimaryFound := false
@@ -1086,7 +1086,7 @@ func (s *UsersStore) MarkEmailActivated(ctx context.Context, UserID int64, email
 			Update("is_activated", true).
 			Error
 		if err != nil {
-			return fmt.Errorf("mark email activated"+": %w", err)
+			return fmt.Errorf("mark email activated"+": %v", err)
 		}
 
 		return NewUsersStore(tx).Update(ctx, UserID, UpdateUserOptions{GenerateNewRands: true})
@@ -1118,7 +1118,7 @@ func (s *UsersStore) MarkEmailPrimary(ctx context.Context, UserID int64, email s
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrEmailNotExist{args: errx.Args{"email": email}}
 		}
-		return fmt.Errorf("get email address"+": %w", err)
+		return fmt.Errorf("get email address"+": %v", err)
 	}
 
 	if !emailAddress.IsActivated {
@@ -1127,7 +1127,7 @@ func (s *UsersStore) MarkEmailPrimary(ctx context.Context, UserID int64, email s
 
 	u, err := s.getByID(ctx, UserID)
 	if err != nil {
-		return fmt.Errorf("get User"+": %w", err)
+		return fmt.Errorf("get User"+": %v", err)
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -1144,7 +1144,7 @@ func (s *UsersStore) MarkEmailPrimary(ctx context.Context, UserID int64, email s
 			},
 		).Error
 		if err != nil {
-			return fmt.Errorf("upsert former primary email address"+": %w", err)
+			return fmt.Errorf("upsert former primary email address"+": %v", err)
 		}
 
 		return tx.Model(&User{}).

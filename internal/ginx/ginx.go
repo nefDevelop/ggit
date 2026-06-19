@@ -30,6 +30,7 @@ func New() *Engine {
 		gin.SetMode(gin.DebugMode)
 	}
 	r := &Engine{Engine: gin.New()}
+	r.Engine.MaxMultipartMemory = DefaultMaxBodySize
 
 	if !conf.Server.DisableRouterLog {
 		r.Use(gin.Logger())

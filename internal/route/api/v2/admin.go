@@ -673,7 +673,7 @@ func UpdateAdminConfig(c *context.APIContext) {
 	// Record action in Audit Log
 	content, _ := json.Marshal(f.Data)
 	if err := database.Handle.Actions().UpdateConfig(c.Req.Context(), c.User.ToDomain(), f.Section, string(content)); err != nil {
-		log.Error("Failed to record config update action: %v", err)
+		log.Error("%v", err)
 	}
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})

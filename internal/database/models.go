@@ -38,13 +38,13 @@ func SetEngine() (*gorm.DB, error) {
 			},
 		)
 		if err != nil {
-			return nil, fmt.Errorf("create gorm log writer"+": %w", err)
+			return nil, fmt.Errorf("create gorm log writer"+": %v", err)
 		}
 		gormLogger = &dbx.Logger{Writer: w}
 	} else {
 		gormLogger, err = newLogWriter()
 		if err != nil {
-			return nil, fmt.Errorf("new log writer"+": %w", err)
+			return nil, fmt.Errorf("new log writer"+": %v", err)
 		}
 	}
 	return NewConnection(gormLogger)
@@ -57,7 +57,7 @@ func NewEngine() error {
 	}
 
 	if err = migrations.Migrate(db); err != nil {
-		return fmt.Errorf("migrate: %v", err)
+		return fmt.Errorf("migrate: %w", err)
 	}
 
 	return nil

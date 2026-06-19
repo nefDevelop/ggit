@@ -34,13 +34,13 @@ func (s *PublicKeysStore) RewriteAuthorizedKeys() error {
 
 	err := os.MkdirAll(conf.SSH.RootPath, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("create SSH root path"+": %w", err)
+		return fmt.Errorf("create SSH root path"+": %v", err)
 	}
 	fpath := authorizedKeysPath()
 	tempPath := fpath + ".tmp"
 	f, err := os.OpenFile(tempPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o600)
 	if err != nil {
-		return fmt.Errorf("create temporary file"+": %w", err)
+		return fmt.Errorf("create temporary file"+": %v", err)
 	}
 	defer func() {
 		_ = f.Close()
@@ -51,7 +51,7 @@ func (s *PublicKeysStore) RewriteAuthorizedKeys() error {
 	// putting them in the earlier lines could speed up the key lookup by SSHD.
 	rows, err := s.db.Model(&PublicKey{}).Order("updated_unix DESC").Rows()
 	if err != nil {
-		return fmt.Errorf("iterate public keys"+": %w", err)
+		return fmt.Errorf("iterate public keys"+": %v", err)
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -59,31 +59,31 @@ func (s *PublicKeysStore) RewriteAuthorizedKeys() error {
 		var key PublicKey
 		err = s.db.ScanRows(rows, &key)
 		if err != nil {
-			return fmt.Errorf("scan rows"+": %w", err)
+			return fmt.Errorf("scan rows"+": %v", err)
 		}
 
 		_, err = f.WriteString(key.AuthorizedString())
 		if err != nil {
-			return fmt.Errorf("write key %d: %w", key.ID, err)
+			return fmt.Errorf("write key %d: %v", key.ID, err)
 		}
 	}
 	if err = rows.Err(); err != nil {
-		return fmt.Errorf("check rows.Err"+": %w", err)
+		return fmt.Errorf("check rows.Err"+": %v", err)
 	}
 
 	err = f.Close()
 	if err != nil {
-		return fmt.Errorf("close temporary file"+": %w", err)
+		return fmt.Errorf("close temporary file"+": %v", err)
 	}
 	if osx.Exist(fpath) {
 		err = os.Remove(fpath)
 		if err != nil {
-			return fmt.Errorf("remove"+": %w", err)
+			return fmt.Errorf("remove"+": %v", err)
 		}
 	}
 	err = os.Rename(tempPath, fpath)
 	if err != nil {
-		return fmt.Errorf("rename"+": %w", err)
+		return fmt.Errorf("rename"+": %v", err)
 	}
 	return nil
 }
@@ -176,7 +176,7 @@ func (s *PublicKeysStore) DeletePublicKey(ctx context.Context, doer *domain.User
 		if IsErrKeyNotExist(err) {
 			return nil
 		}
-		return fmt.Errorf("GetPublicKeyByID: %v", err)
+		return fmt.Errorf("GetPublicKeyByID: %w", err)
 	}
 
 	// Check if user has access to delete this key.
@@ -216,13 +216,13 @@ func (s *PublicKeysStore) AddDeployKey(ctx context.Context, repoID int64, name, 
 		// First time use this deploy key.
 		if !has {
 			if err = addKey(tx, pkey); err != nil {
-				return fmt.Errorf("addKey: %v", err)
+				return fmt.Errorf("addKey: %w", err)
 			}
 		}
 
 		dk, err = addDeployKey(tx, pkey.ID, repoID, name, pkey.Fingerprint, mode)
 		if err != nil {
-			return fmt.Errorf("addDeployKey: %v", err)
+			return fmt.Errorf("addDeployKey: %w", err)
 		}
 		return nil
 	})
@@ -272,14 +272,14 @@ func (s *PublicKeysStore) DeleteDeployKey(ctx context.Context, doer *domain.User
 		if IsErrDeployKeyNotExist(err) {
 			return nil
 		}
-		return fmt.Errorf("GetDeployKeyByID: %v", err)
+		return fmt.Errorf("GetDeployKeyByID: %w", err)
 	}
 
 	// Check if user has access to delete this key.
 	if !doer.IsAdmin {
 		repo, err := Handle.Repositories().GetByID(ctx, key.RepoID)
 		if err != nil {
-			return fmt.Errorf("GetRepositoryByID: %v", err)
+			return fmt.Errorf("GetRepositoryByID: %w", err)
 		}
 		if !Handle.Permissions().Authorize(ctx, doer.ID, repo.ID, domain.AccessModeAdmin,
 			domain.AccessModeOptions{

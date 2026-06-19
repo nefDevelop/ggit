@@ -76,7 +76,7 @@ func (s *gistsStore) Create(gist *domain.Gist) error {
 
 		dir := s.gistDir(g.UUID)
 		if err := os.MkdirAll(dir, 0755); err != nil {
-			return fmt.Errorf("create gist directory"+": %w", err)
+			return fmt.Errorf("create gist directory"+": %v", err)
 		}
 
 		for _, file := range gist.Files {
@@ -93,7 +93,7 @@ func (s *gistsStore) Create(gist *domain.Gist) error {
 			// Write content to v1.md
 			filePath := filepath.Join(dir, fmt.Sprintf("%s.v1", gf.Filename))
 			if err := os.WriteFile(filePath, []byte(file.Content), 0644); err != nil {
-				return fmt.Errorf("write gist file content"+": %w", err)
+				return fmt.Errorf("write gist file content"+": %v", err)
 			}
 		}
 		return nil

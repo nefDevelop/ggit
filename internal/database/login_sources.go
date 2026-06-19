@@ -237,7 +237,7 @@ func (s *LoginSourcesStore) Update(ctx context.Context, id int64, opts domain.Up
 	if opts.Config != nil {
 		data, err := json.Marshal(opts.Config)
 		if err != nil {
-			return fmt.Errorf("marshal config"+": %w", err)
+			return fmt.Errorf("marshal config"+": %v", err)
 		}
 		updates["cfg"] = string(data)
 	}
@@ -346,7 +346,7 @@ func (s *LoginSourcesStore) ResetNonDefault(ctx context.Context, dflt *domain.Lo
 		if source.File != nil && source.ID != dflt.ID {
 			source.File.SetGeneral("is_default", "false")
 			if err = source.File.Save(); err != nil {
-				return fmt.Errorf("save file"+": %w", err)
+				return fmt.Errorf("save file"+": %v", err)
 			}
 		}
 	}
@@ -374,11 +374,11 @@ func (s *LoginSourcesStore) Save(ctx context.Context, source *domain.LoginSource
 		// and Provider should be set.
 		if m.Provider != nil {
 			if err := m.File.SetConfig(m.Provider.Config()); err != nil {
-				return fmt.Errorf("set config"+": %w", err)
+				return fmt.Errorf("set config"+": %v", err)
 			}
 		}
 		if err := m.File.Save(); err != nil {
-			return fmt.Errorf("save file"+": %w", err)
+			return fmt.Errorf("save file"+": %v", err)
 		}
 		return nil
 	} else if err != nil && !IsErrLoginSourceNotExist(err) {

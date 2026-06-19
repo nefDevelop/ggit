@@ -21,7 +21,7 @@ type CreateGistForm struct {
 func CreateGist(c *context.APIContext) {
 	var form CreateGistForm
 	if err := c.BindJSON(&form); err != nil {
-		c.StatusErrorf(http.StatusBadRequest, "BindJSON: %v", err)
+		c.StatusErrorf(http.StatusBadRequest, "BindJSON: %w", err)
 		return
 	}
 
@@ -142,7 +142,7 @@ func UpdateGist(c *context.APIContext) {
 
 	var form CreateGistForm
 	if err := c.BindJSON(&form); err != nil {
-		c.StatusErrorf(http.StatusBadRequest, "BindJSON: %v", err)
+		c.StatusErrorf(http.StatusBadRequest, "BindJSON: %w", err)
 		return
 	}
 

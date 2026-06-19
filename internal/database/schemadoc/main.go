@@ -24,13 +24,13 @@ import (
 func main() {
 	w, err := os.Create(os.Args[1])
 	if err != nil {
-		log.Fatal("Failed to create file: %v", err)
+		log.Fatal("%v", err)
 	}
 	defer func() { _ = w.Close() }()
 
 	conn, _, err := sqlmock.New()
 	if err != nil {
-		log.Fatal("Failed to get mock connection: %v", err)
+		log.Fatal("%v", err)
 	}
 	defer func() { _ = conn.Close() }()
 
@@ -132,7 +132,7 @@ func generate(dialector gorm.Dialector) ([]*tableInfo, error) {
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("open database"+": %w", err)
+		return nil, fmt.Errorf("open database"+": %v", err)
 	}
 
 	m := conn.Migrator().(interface {
@@ -187,7 +187,7 @@ func generate(dialector gorm.Dialector) ([]*tableInfo, error) {
 			return nil
 		})
 		if err != nil {
-			return nil, fmt.Errorf("gather table information"+": %w", err)
+			return nil, fmt.Errorf("gather table information"+": %v", err)
 		}
 	}
 

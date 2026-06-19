@@ -189,12 +189,12 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 	err = s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		err = tx.Create(repo).Error
 		if err != nil {
-			return fmt.Errorf("create"+": %w", err)
+			return fmt.Errorf("create"+": %v", err)
 		}
 
 		err = NewRepositoriesStore(tx).Watch(ctx, ownerID, repo.ID)
 		if err != nil {
-			return fmt.Errorf("watch"+": %w", err)
+			return fmt.Errorf("watch"+": %v", err)
 		}
 		return nil
 	})
@@ -459,7 +459,7 @@ func (s *RepositoriesStore) recountStars(tx *gorm.DB, userID, repoID int64) erro
 		).
 		Error
 	if err != nil {
-		return fmt.Errorf(`update "repository.num_stars"`+": %w", err)
+		return fmt.Errorf(`update "repository.num_stars"`+": %v", err)
 	}
 
 	/*
@@ -479,7 +479,7 @@ func (s *RepositoriesStore) recountStars(tx *gorm.DB, userID, repoID int64) erro
 		).
 		Error
 	if err != nil {
-		return fmt.Errorf(`update "user.num_stars"`+": %w", err)
+		return fmt.Errorf(`update "user.num_stars"`+": %v", err)
 	}
 	return nil
 }
@@ -493,7 +493,7 @@ func (s *RepositoriesStore) Star(ctx context.Context, userID, repoID int64) erro
 		}
 		result := tx.FirstOrCreate(star, star)
 		if result.Error != nil {
-			return fmt.Errorf("upsert"+": %w", result.Error)
+			return fmt.Errorf("upsert"+": %v", result.Error)
 		} else if result.RowsAffected <= 0 {
 			return nil // Relation already exists
 		}
@@ -563,7 +563,7 @@ func (s *RepositoriesStore) Watch(ctx context.Context, userID, repoID int64) err
 		}
 		result := tx.FirstOrCreate(w, w)
 		if result.Error != nil {
-			return fmt.Errorf("upsert"+": %w", result.Error)
+			return fmt.Errorf("upsert"+": %v", result.Error)
 		} else if result.RowsAffected <= 0 {
 			return nil // Relation already exists
 		}

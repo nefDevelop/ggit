@@ -131,7 +131,7 @@ func (k *PublicKey) IsDeployKey() bool {
 func extractTypeFromBase64Key(key string) (string, error) {
 	b, err := base64.StdEncoding.DecodeString(key)
 	if err != nil || len(b) < 4 {
-		return "", fmt.Errorf("invalid key format: %v", err)
+		return "", fmt.Errorf("invalid key format: %w", err)
 	}
 
 	keyLength := int(binary.BigEndian.Uint32(b))
@@ -180,7 +180,7 @@ func parseKeyString(content string) (string, error) {
 		// If keyType is not given, extract it from content. If given, validate it.
 		t, err := extractTypeFromBase64Key(keyContent)
 		if err != nil {
-			return "", fmt.Errorf("extractTypeFromBase64Key: %v", err)
+			return "", fmt.Errorf("extractTypeFromBase64Key: %w", err)
 		}
 		if keyType == "" {
 			keyType = t
@@ -205,7 +205,7 @@ func parseKeyString(content string) (string, error) {
 
 		t, err := extractTypeFromBase64Key(keyContent)
 		if err != nil {
-			return "", fmt.Errorf("extractTypeFromBase64Key: %v", err)
+			return "", fmt.Errorf("extractTypeFromBase64Key: %w", err)
 		}
 		keyType = t
 	}
@@ -217,12 +217,12 @@ func parseKeyString(content string) (string, error) {
 func writeTmpKeyFile(content, keyTestPath string) (string, error) {
 	tmpFile, err := os.CreateTemp(keyTestPath, "ggit_keytest")
 	if err != nil {
-		return "", fmt.Errorf("TempFile: %v", err)
+		return "", fmt.Errorf("TempFile: %w", err)
 	}
 	defer tmpFile.Close()
 
 	if _, err = tmpFile.WriteString(content); err != nil {
-		return "", fmt.Errorf("WriteString: %v", err)
+		return "", fmt.Errorf("WriteString: %w", err)
 	}
 	return tmpFile.Name(), nil
 }
@@ -231,7 +231,7 @@ func writeTmpKeyFile(content, keyTestPath string) (string, error) {
 func SSHKeygenParsePublicKey(key, keyTestPath, keygenPath string) (string, int, error) {
 	tmpName, err := writeTmpKeyFile(key, keyTestPath)
 	if err != nil {
-		return "", 0, fmt.Errorf("writeTmpKeyFile: %v", err)
+		return "", 0, fmt.Errorf("writeTmpKeyFile: %w", err)
 	}
 	defer os.Remove(tmpName)
 
@@ -270,7 +270,7 @@ func SSHNativeParsePublicKey(keyLine string) (string, int, error) {
 		if strings.Contains(err.Error(), "ssh: unknown key algorithm") {
 			return "", 0, ErrKeyUnableVerify{err.Error()}
 		}
-		return "", 0, fmt.Errorf("ParsePublicKey: %v", err)
+		return "", 0, fmt.Errorf("ParsePublicKey: %w", err)
 	}
 
 	// The ssh library can parse the key, so next we find out what key exactly we have.

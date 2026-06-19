@@ -22,21 +22,21 @@ func migrateAccessTokenToSHA256(db *gorm.DB) error {
 		// "sha256" column.
 		err := tx.Migrator().AddColumn(&accessToken{}, "SHA256")
 		if err != nil {
-			return fmt.Errorf("add column"+": %w", err)
+			return fmt.Errorf("add column"+": %v", err)
 		}
 
 		// 2. Generate SHA256 for existing rows from their values in the "sha1" column.
 		var accessTokens []*accessToken
 		err = tx.Where("sha256 IS NULL").Find(&accessTokens).Error
 		if err != nil {
-			return fmt.Errorf("list"+": %w", err)
+			return fmt.Errorf("list"+": %v", err)
 		}
 
 		for _, t := range accessTokens {
 			sha256 := cryptox.SHA256(t.Sha1)
 			err = tx.Model(&accessToken{}).Where("id = ?", t.ID).Update("sha256", sha256).Error
 			if err != nil {
-				return fmt.Errorf("update"+": %w", err)
+				return fmt.Errorf("update"+": %v", err)
 			}
 		}
 
@@ -46,7 +46,7 @@ func migrateAccessTokenToSHA256(db *gorm.DB) error {
 		}
 		err = tx.Table("access_token").AutoMigrate(&accessTokenWithConstraint{})
 		if err != nil {
-			return fmt.Errorf("auto migrate"+": %w", err)
+			return fmt.Errorf("auto migrate"+": %v", err)
 		}
 
 		return nil

@@ -156,7 +156,7 @@ func CreateOrganization(org, owner *User) (err error) {
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Create(org).Error; err != nil {
-			return fmt.Errorf("insert organization: %v", err)
+			return fmt.Errorf("insert organization: %w", err)
 		}
 
 		// Add initial creator to organization and owner team.
@@ -166,7 +166,7 @@ func CreateOrganization(org, owner *User) (err error) {
 			IsOwner:  true,
 			NumTeams: 1,
 		}).Error; err != nil {
-			return fmt.Errorf("insert org-user relation: %v", err)
+			return fmt.Errorf("insert org-user relation: %w", err)
 		}
 
 		// Create default owner team.
@@ -178,7 +178,7 @@ func CreateOrganization(org, owner *User) (err error) {
 			NumMembers: 1,
 		}
 		if err = tx.Create(t).Error; err != nil {
-			return fmt.Errorf("insert owner team: %v", err)
+			return fmt.Errorf("insert owner team: %w", err)
 		}
 
 		if err = tx.Create(&TeamUser{
@@ -186,11 +186,11 @@ func CreateOrganization(org, owner *User) (err error) {
 			OrgID:  org.ID,
 			TeamID: t.ID,
 		}).Error; err != nil {
-			return fmt.Errorf("insert team-user relation: %v", err)
+			return fmt.Errorf("insert team-user relation: %w", err)
 		}
 
 		if err = os.MkdirAll(repox.UserPath(org.Name), os.ModePerm); err != nil {
-			return fmt.Errorf("create directory: %v", err)
+			return fmt.Errorf("create directory: %w", err)
 		}
 
 		return nil
@@ -261,7 +261,7 @@ func DeleteOrganization(org *User) error {
 			&OrgUser{OrgID: org.ID},
 			&TeamUser{OrgID: org.ID},
 		); err != nil {
-			return fmt.Errorf("deleteBeans: %v", err)
+			return fmt.Errorf("deleteBeans: %w", err)
 		}
 		return nil
 	})
@@ -396,7 +396,7 @@ func RemoveOrgUser(orgID, userID int64) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil
 		}
-		return fmt.Errorf("get org-user: %v", err)
+		return fmt.Errorf("get org-user: %w", err)
 	}
 
 	u, err := Handle.Users().GetByID(context.Background(), userID)
@@ -511,7 +511,7 @@ func (org *User) GetUserTeams(userID int64) ([]*Team, error) {
 func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repository, int64, error) {
 	teamIDs, err := org.GetUserTeamIDs(userID)
 	if err != nil {
-		return nil, 0, fmt.Errorf("GetUserTeamIDs: %v", err)
+		return nil, 0, fmt.Errorf("GetUserTeamIDs: %w", err)
 	}
 	if len(teamIDs) == 0 {
 		teamIDs = []int64{-1}
@@ -519,7 +519,7 @@ func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repos
 
 	var teamRepoIDs []int64
 	if err = Handle.db.Table("team_repo").Where("team_id IN (?)", teamIDs).Distinct("repo_id").Pluck("repo_id", &teamRepoIDs).Error; err != nil {
-		return nil, 0, fmt.Errorf("get team repository IDs: %v", err)
+		return nil, 0, fmt.Errorf("get team repository IDs: %w", err)
 	}
 	if len(teamRepoIDs) == 0 {
 		teamRepoIDs = []int64{-1}
@@ -535,14 +535,14 @@ func (org *User) GetUserRepositories(userID int64, page, pageSize int) ([]*Repos
 		Limit(pageSize).Offset((page - 1) * pageSize)
 
 	if err = query.Find(&repos).Error; err != nil {
-		return nil, 0, fmt.Errorf("get user repositories: %v", err)
+		return nil, 0, fmt.Errorf("get user repositories: %w", err)
 	}
 
 	var repoCount int64
 	if err = Handle.db.Model(new(Repository)).Where("owner_id = ?", org.ID).
 		Where("is_private = ? OR id IN (?)", false, teamRepoIDs).
 		Count(&repoCount).Error; err != nil {
-		return nil, 0, fmt.Errorf("count user repositories: %v", err)
+		return nil, 0, fmt.Errorf("count user repositories: %w", err)
 	}
 
 	return repos, repoCount, nil

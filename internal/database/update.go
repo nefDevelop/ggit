@@ -60,31 +60,31 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 	gitUpdate := exec.Command("git", "update-server-info")
 	gitUpdate.Dir = repoPath
 	if err = gitUpdate.Run(); err != nil {
-		return fmt.Errorf("run 'git update-server-info': %v", err)
+		return fmt.Errorf("run 'git update-server-info': %w", err)
 	}
 
 	gitRepo, err := git.Open(repoPath)
 	if err != nil {
-		return fmt.Errorf("open repository: %v", err)
+		return fmt.Errorf("open repository: %w", err)
 	}
 
 	u, err := Handle.Users().GetByUsername(ctx, opts.RepoUserName)
 	if err != nil {
-		return fmt.Errorf("GetUserByName: %v", err)
+		return fmt.Errorf("GetUserByName: %w", err)
 	}
 	owner := FromDomainUser(u)
 
 	repo, err := GetRepositoryByName(owner.ID, opts.RepoName)
 	if err != nil {
-		return fmt.Errorf("GetRepositoryByName: %v", err)
+		return fmt.Errorf("GetRepositoryByName: %w", err)
 	}
 
 	if err = repo.UpdateSize(); err != nil {
-		return fmt.Errorf("UpdateSize: %v", err)
+		return fmt.Errorf("UpdateSize: %w", err)
 	}
 
 	if err = repo.UpdateCounters(); err != nil {
-		return fmt.Errorf("UpdateCounters: %v", err)
+		return fmt.Errorf("UpdateCounters: %w", err)
 	}
 
 	// Push tags
@@ -99,7 +99,7 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 			},
 		)
 		if err != nil {
-			return fmt.Errorf("create action for push tag"+": %w", err)
+			return fmt.Errorf("create action for push tag"+": %v", err)
 		}
 		return nil
 	}
@@ -139,7 +139,7 @@ func PushUpdate(opts PushUpdateOptions) (err error) {
 		},
 	)
 	if err != nil {
-		return fmt.Errorf("create action for commit push"+": %w", err)
+		return fmt.Errorf("create action for commit push"+": %v", err)
 	}
 	return nil
 }

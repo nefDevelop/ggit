@@ -17,7 +17,7 @@ type Tag struct {
 func (ta *Tag) GetCommit() (*git.Commit, error) {
 	gitRepo, err := git.Open(ta.RepoPath)
 	if err != nil {
-		return nil, fmt.Errorf("open repository: %v", err)
+		return nil, fmt.Errorf("open repository: %w", err)
 	}
 	return gitRepo.TagCommit(ta.Name)
 }
@@ -25,12 +25,12 @@ func (ta *Tag) GetCommit() (*git.Commit, error) {
 func GetTagsByPath(path string) ([]*Tag, error) {
 	gitRepo, err := git.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("open repository: %v", err)
+		return nil, fmt.Errorf("open repository: %w", err)
 	}
 
 	names, err := gitRepo.Tags()
 	if err != nil {
-		return nil, fmt.Errorf("list tags: %v", err)
+		return nil, fmt.Errorf("list tags: %w", err)
 	}
 
 	tags := make([]*Tag, len(names))

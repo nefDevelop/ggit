@@ -41,6 +41,7 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	}
 
 	r := ginx.New()
+	r.Use(ginx.MaxBodySize(ginx.DefaultMaxBodySize))
 
 	// Monitoring & Tracing
 	if conf.Prometheus.Enabled {

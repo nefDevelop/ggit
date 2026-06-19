@@ -351,7 +351,7 @@ func LoginTwoFactor(c *context.APIContext) {
 		return
 	}
 	if err := c.Cache.Put(userx.TwoFactorCacheKey(u.ID, payload.Passcode), 1, 60); err != nil {
-		log.Error("Failed to put cache 'two factor passcode': %v", err)
+		log.Error("%v", err)
 	}
 
 	remember, _ := c.Session.Get("twoFactorRemember").(bool)
@@ -370,7 +370,7 @@ func LoginTwoFactor(c *context.APIContext) {
 	c.Session.Set("sid", sid)
 	_, err = database.Handle.LoginSessions().Create(c.Req.Context(), u.ID, sid, c.Request.UserAgent(), c.ClientIP())
 	if err != nil {
-		log.Error("Failed to create login session: %v", err)
+		log.Error("%v", err)
 	}
 
 	c.Session.Delete("twoFactorRemember")
@@ -437,10 +437,10 @@ func ForgotPassword(c *context.APIContext) {
 	}
 
 	if err = email.SendResetPasswordMail(database.NewMailerUser(database.FromDomainUser(u)), c.Tr("mail.reset_password")); err != nil {
-		log.Error("Failed to send reset password mail: %v", err)
+		log.Error("%v", err)
 	}
 	if err = c.Cache.Put(userx.MailResendCacheKey(u.ID), 1, 180); err != nil {
-		log.Error("Failed to put cache key 'mail resend': %v", err)
+		log.Error("%v", err)
 	}
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok", "message": "Password reset email sent."})

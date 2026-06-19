@@ -51,7 +51,7 @@ func GlobalInit(customConf string) error {
 	if conf.Security.InstallLock {
 		err := database.NewEngine()
 		if err != nil {
-			log.Fatal("Failed to initialize ORM engine: %v", err)
+			log.Fatal("%v", err)
 		}
 		database.HasEngine = true
 
@@ -87,7 +87,7 @@ func GlobalInit(customConf string) error {
 
 	if conf.SSH.RewriteAuthorizedKeysAtStart {
 		if err := database.RewriteAuthorizedKeys(); err != nil {
-			log.Warn("Failed to rewrite authorized_keys file: %v", err)
+			log.Warn("%v", err)
 		}
 	}
 

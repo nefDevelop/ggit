@@ -80,7 +80,7 @@ func (s *PullReviewsStore) ListByIssueID(ctx context.Context, issueID int64) ([]
 	reviews := make([]*PullReview, 0, 5)
 	err := s.db.WithContext(ctx).Where("issue_id = ?", issueID).Order("created_unix ASC").Find(&reviews).Error
 	if err != nil {
-		return nil, fmt.Errorf("list reviews"+": %w", err)
+		return nil, fmt.Errorf("list reviews"+": %v", err)
 	}
 	return reviews, nil
 }
@@ -119,7 +119,7 @@ func (s *PullReviewsStore) GetReviewStatsByIssueID(ctx context.Context, issueID 
 		Where("issue_id = ?", issueID).
 		Scan(&stats).Error
 	if err != nil {
-		return nil, fmt.Errorf("get review stats"+": %w", err)
+		return nil, fmt.Errorf("get review stats"+": %v", err)
 	}
 	return &stats, nil
 }

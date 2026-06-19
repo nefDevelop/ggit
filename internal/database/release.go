@@ -153,7 +153,7 @@ func createTag(gitRepo *git.Repository, r *Release) error {
 		if !gitRepo.HasTag(r.TagName) {
 			commit, err := gitRepo.BranchCommit(r.Target)
 			if err != nil {
-				return fmt.Errorf("get branch commit: %v", err)
+				return fmt.Errorf("get branch commit: %w", err)
 			}
 
 			// 🚨 SECURITY: Trim any leading '-' to prevent command line argument injection.
@@ -167,13 +167,13 @@ func createTag(gitRepo *git.Repository, r *Release) error {
 		} else {
 			commit, err := gitRepo.TagCommit(r.TagName)
 			if err != nil {
-				return fmt.Errorf("get tag commit: %v", err)
+				return fmt.Errorf("get tag commit: %w", err)
 			}
 
 			r.Sha1 = commit.ID.String()
 			r.NumCommits, err = commit.CommitsCount()
 			if err != nil {
-				return fmt.Errorf("count commits: %v", err)
+				return fmt.Errorf("count commits: %w", err)
 			}
 		}
 	}
@@ -187,7 +187,7 @@ func (r *Release) preparePublishWebhooks() {
 		Repository: r.Repo.APIFormatLegacy(nil),
 		Sender:     r.Publisher.APIFormat(),
 	}); err != nil {
-		log.Error("PrepareWebhooks: %v", err)
+		log.Error("%v", err)
 	}
 }
 
@@ -235,7 +235,7 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Create(r).Error; err != nil {
-			return fmt.Errorf("insert: %v", err)
+			return fmt.Errorf("insert: %w", err)
 		}
 
 		if len(uuids) > 0 {
@@ -257,7 +257,7 @@ func NewRelease(gitRepo *git.Repository, r *Release, uuids []string) error {
 	}
 	r, err = GetReleaseByID(r.ID)
 	if err != nil {
-		return fmt.Errorf("GetReleaseByID: %v", err)
+		return fmt.Errorf("GetReleaseByID: %w", err)
 	}
 	r.preparePublishWebhooks()
 	return nil
@@ -290,7 +290,7 @@ func GetRelease(repoID int64, tagName string) (*Release, error) {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrReleaseNotExist{args: map[string]any{"tag": tagName}}
 		}
-		return nil, fmt.Errorf("get: %v", err)
+		return nil, fmt.Errorf("get: %w", err)
 	}
 
 	return r, r.LoadAttributes()
@@ -366,19 +366,19 @@ func SortReleases(rels []*Release) {
 // UpdateRelease updates information of a release.
 func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bool, uuids []string) (err error) {
 	if err = createTag(gitRepo, r); err != nil {
-		return fmt.Errorf("createTag: %v", err)
+		return fmt.Errorf("createTag: %w", err)
 	}
 
 	r.PublisherID = doer.ID
 
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(r).Updates(r).Error; err != nil {
-			return fmt.Errorf("Update: %v", err)
+			return fmt.Errorf("Update: %w", err)
 		}
 
 		// Unlink all current attachments and link back later if still valid
 		if err = tx.Model(new(Attachment)).Where("release_id = ?", r.ID).Update("release_id", 0).Error; err != nil {
-			return fmt.Errorf("unlink current attachments: %v", err)
+			return fmt.Errorf("unlink current attachments: %w", err)
 		}
 
 		if len(uuids) > 0 {
@@ -406,7 +406,7 @@ func UpdateRelease(doer *User, gitRepo *git.Repository, r *Release, isPublish bo
 func DeleteReleaseOfRepoByID(repoID, id int64) error {
 	rel, err := GetReleaseByID(id)
 	if err != nil {
-		return fmt.Errorf("GetReleaseByID: %v", err)
+		return fmt.Errorf("GetReleaseByID: %w", err)
 	}
 
 	// Mark sure the delete operation against same repository.
@@ -416,20 +416,20 @@ func DeleteReleaseOfRepoByID(repoID, id int64) error {
 
 	repo, err := GetRepositoryByID(rel.RepoID)
 	if err != nil {
-		return fmt.Errorf("GetRepositoryByID: %v", err)
+		return fmt.Errorf("GetRepositoryByID: %w", err)
 	}
 
 	gitRepo, err := git.Open(repo.RepoPath())
 	if err != nil {
-		return fmt.Errorf("open repository: %v", err)
+		return fmt.Errorf("open repository: %w", err)
 	}
 	err = gitRepo.DeleteTag(rel.TagName)
 	if err != nil && !strings.Contains(err.Error(), "not found") {
-		return fmt.Errorf("delete tag: %v", err)
+		return fmt.Errorf("delete tag: %w", err)
 	}
 
 	if err = Handle.db.Where("id = ?", rel.ID).Delete(new(Release)).Error; err != nil {
-		return fmt.Errorf("delete: %v", err)
+		return fmt.Errorf("delete: %w", err)
 	}
 
 	return nil

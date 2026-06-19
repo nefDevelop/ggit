@@ -30,7 +30,7 @@ func newLogWriter() (logger.Writer, error) {
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf(`create "gorm.log"`+": %w", err)
+		return nil, fmt.Errorf(`create "gorm.log"`+": %v", err)
 	}
 	return &dbx.Logger{Writer: w}, nil
 }
@@ -80,7 +80,7 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 		absPath, _ := filepath.Abs(conf.Database.Path)
 		log.Trace("Opening SQLite3 database at: %s", absPath)
 		if err := os.MkdirAll(filepath.Dir(conf.Database.Path), 0755); err != nil {
-			return nil, fmt.Errorf("create database directory"+": %w", err)
+			return nil, fmt.Errorf("create database directory"+": %v", err)
 		}
 	}
 
@@ -97,12 +97,12 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("open database"+": %w", err)
+		return nil, fmt.Errorf("open database"+": %v", err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		return nil, fmt.Errorf("get underlying *sql.DB"+": %w", err)
+		return nil, fmt.Errorf("get underlying *sql.DB"+": %v", err)
 	}
 
 	maxOpenConns := conf.Database.MaxOpenConns
@@ -134,14 +134,14 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 
 		err = db.Migrator().AutoMigrate(table)
 		if err != nil {
-			return nil, fmt.Errorf("auto migrate %q: %w", name, err)
+			return nil, fmt.Errorf("auto migrate %q: %v", name, err)
 		}
 		log.Trace("Auto migrated %q", name)
 	}
 
 	loadedLoginSourceFilesStore, err = loadLoginSourceFiles(filepath.Join(conf.CustomDir(), "conf", "auth.d"), db.NowFunc)
 	if err != nil {
-		return nil, fmt.Errorf("load login source files"+": %w", err)
+		return nil, fmt.Errorf("load login source files"+": %v", err)
 	}
 
 	// Initialize the database handle.
@@ -149,7 +149,7 @@ func NewConnection(w logger.Writer) (*gorm.DB, error) {
 
 	// Initialize default secret patterns
 	if err := Handle.SecretPatterns().InitDefaultPatterns(context.Background()); err != nil {
-		return nil, fmt.Errorf("initialize default secret patterns"+": %w", err)
+		return nil, fmt.Errorf("initialize default secret patterns"+": %v", err)
 	}
 
 	if conf.Database.Type == "sqlite3" {

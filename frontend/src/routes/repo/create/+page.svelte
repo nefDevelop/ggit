@@ -4,6 +4,7 @@
   import { authState } from '$lib/auth.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import GitignoreSelector from '$lib/components/GitignoreSelector.svelte';
 
   let name = $state('');
   let description = $state('');
@@ -41,37 +42,6 @@
   let errorMsg = $state('');
   let loading = $state(false);
   let gitignoreSearch = $state('');
-
-  const OS_NAMES = ['macos', 'windows', 'linux'];
-  const EDITOR_NAMES = ['visualstudiocode', 'jetbrains', 'vim', 'emacs', 'sublimetext', 'eclipse', 'netbeans', 'notepadpp', 'kate', 'cursor', 'zed', 'textmate', 'atom', 'sublime', 'code', 'clion', 'pycharm', 'webstorm', 'intellij'];
-  
-  let groupedGlobals = $derived.by(() => {
-    const search = gitignoreSearch.toLowerCase();
-    const filtered = global_ignores.filter(g => g.toLowerCase().includes(search));
-    
-    const security = filtered.filter(g => g.toLowerCase().includes('ggit'));
-    const oss = filtered.filter(g => {
-        const name = g.toLowerCase().replace('global/', '').replace('.gitignore', '');
-        return OS_NAMES.some(os => name.includes(os)) && !g.toLowerCase().includes('ggit');
-    });
-    const editors = filtered.filter(g => {
-        const name = g.toLowerCase().replace('global/', '').replace('.gitignore', '');
-        return EDITOR_NAMES.some(ed => name.includes(ed)) && !g.toLowerCase().includes('ggit');
-    });
-    const others = filtered.filter(g => {
-        const name = g.toLowerCase().replace('global/', '').replace('.gitignore', '');
-        return !g.toLowerCase().includes('ggit') && 
-               !OS_NAMES.some(os => name.includes(os)) && 
-               !EDITOR_NAMES.some(ed => name.includes(ed));
-    });
-
-    return [
-        { name: 'Seguridad y Estándar', icon: 'security', items: security, type: 'recommended', iconType: 'verified' },
-        { name: 'Sistemas Operativos', icon: 'desktop_windows', items: oss, iconType: 'public' },
-        { name: 'Editores e IDEs', icon: 'edit_square', items: editors, iconType: 'edit' },
-        { name: 'Otros Globales', icon: 'extension', items: others, iconType: 'public' }
-    ].filter(g => g.items.length > 0);
-  });
 
   async function loadTemplates() {
     try {
@@ -437,88 +407,7 @@
             </div>
 
             <!-- MULTI-GITIGNORE OPTION -->
-            <div class="init-item full">
-              <div class="init-header-row">
-                <div class="section-label">
-                  <span class="material-symbols-rounded">public</span>
-                  <strong>Templates Globales</strong>
-                </div>
-                <div class="search-box-mini">
-                  <span class="material-symbols-rounded">search</span>
-                  <input type="text" bind:value={gitignoreSearch} placeholder="Buscar templates..." />
-                </div>
-              </div>
-
-              {#each groupedGlobals as group}
-                <div class="gitignore-group">
-                  <div class="group-label">
-                    <span class="material-symbols-rounded">{group.icon}</span>
-                    {group.name}
-                  </div>
-                  <div class="gitignore-chips">
-                    {#each group.items as g}
-                      <button 
-                        type="button"
-                        class="chip" 
-                        title={g}
-                        class:active={selectedGitignores.includes(g)}
-                        class:recommended={group.type === 'recommended'}
-                        onclick={() => {
-                          if (selectedGitignores.includes(g)) {
-                            selectedGitignores = selectedGitignores.filter(i => i !== g);
-                          } else {
-                            selectedGitignores = [...selectedGitignores, g];
-                          }
-                        }}
-                      >
-                        <span class="material-symbols-rounded">{group.iconType || 'public'}</span>
-                        {g.replace('global/', '').replace('.gitignore', '').replace(/_/g, ' ').trim()}
-                        {#if selectedGitignores.includes(g)}
-                          <span class="material-symbols-rounded">close</span>
-                        {/if}
-                      </button>
-                    {/each}
-                  </div>
-                </div>
-              {/each}
-
-              <div class="gitignore-group" style="margin-top: 1.5rem;">
-                <div class="group-label">
-                  <span class="material-symbols-rounded">terminal</span>
-                  <strong>Por Lenguaje</strong>
-                </div>
-                <div class="gitignore-chips">
-                  {#each gitignores.filter(g => g.toLowerCase().includes(gitignoreSearch.toLowerCase())) as g}
-                    <button 
-                      type="button"
-                      class="chip" 
-                      title={g}
-                      class:active={selectedGitignores.includes(g)}
-                      onclick={() => {
-                        if (selectedGitignores.includes(g)) {
-                          selectedGitignores = selectedGitignores.filter(i => i !== g);
-                        } else {
-                          selectedGitignores = [...selectedGitignores, g];
-                        }
-                      }}
-                    >
-                      <span class="material-symbols-rounded">code</span>
-                      {g.replace('languages/', '').replace('.gitignore', '')}
-                      {#if selectedGitignores.includes(g)}
-                        <span class="material-symbols-rounded">close</span>
-                      {/if}
-                    </button>
-                  {/each}
-                </div>
-              </div>
-
-              {#if selectedGitignores.length > 0}
-                <div class="selection-summary">
-                  <span class="material-symbols-rounded">check</span>
-                  <strong>Mix seleccionado:</strong> {selectedGitignores.map(g => (g.split('/').pop() || '').replace('.gitignore', '')).join(' + ')}
-                </div>
-              {/if}
-            </div>
+            <GitignoreSelector {gitignores} {global_ignores} bind:selectedGitignores bind:gitignoreSearch />
           </div>
         {/if}
       </section>

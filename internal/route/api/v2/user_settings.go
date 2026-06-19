@@ -236,11 +236,11 @@ func AddUserEmail(c *context.APIContext) {
 	// Send confirmation email
 	if conf.Auth.RequireEmailConfirmation {
 		if err := email.SendActivateEmailMail(database.NewMailerUser(c.User), f.Email, c.Tr("mail.activate_email")); err != nil {
-			log.Error("Failed to send activate email mail: %v", err)
+			log.Error("%v", err)
 		}
 
 		if err := c.Cache.Put("MailResendLimit_"+c.User.LowerName, c.User.LowerName, 180); err != nil {
-			log.Error("Set cache 'MailResendLimit' failed: %v", err)
+			log.Error("%v", err)
 		}
 		c.JSON(http.StatusOK, map[string]any{
 			"status": "ok",
@@ -434,7 +434,7 @@ func UpdateUserAvatar(c *context.APIContext) {
 	header, err := c.FormFile("avatar")
 	if err != nil {
 		if !errors.Is(err, http.ErrMissingFile) {
-			log.Error("Failed to get avatar from form: %v", err)
+			log.Error("%v", err)
 		}
 	} else {
 		f.Avatar = header

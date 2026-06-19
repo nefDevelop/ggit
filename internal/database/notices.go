@@ -98,7 +98,7 @@ func RemoveAllWithNotice(title, path string) {
 	if err := os.RemoveAll(path); err != nil {
 		desc := fmt.Sprintf("%s [%s]: %v", title, path, err)
 		if err = Handle.Notices().Create(context.Background(), NoticeTypeRepository, desc); err != nil {
-			log.Error("Failed to create repository notice: %v", err)
+			log.Error("%v", err)
 		}
 	}
 }

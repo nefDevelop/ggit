@@ -576,7 +576,7 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 		if len(w.Secret) > 0 {
 			data, err := payloader.JSONPayload()
 			if err != nil {
-				log.Error("prepareWebhooks.JSONPayload: %v", err)
+				log.Error("%v", err)
 			}
 			sig := hmac.New(sha256.New, []byte(w.Secret))
 			_, _ = sig.Write(data)
@@ -594,7 +594,7 @@ func prepareHookTasks(tx *gorm.DB, repo *Repository, event HookEventType, p apiv
 			EventType:        event,
 			IsSSL:            w.IsSSL,
 		}); err != nil {
-			return fmt.Errorf("createHookTask: %v", err)
+			return fmt.Errorf("createHookTask: %w", err)
 		}
 	}
 
@@ -715,7 +715,7 @@ func (t *HookTask) deliver() {
 		// Update webhook last delivery status.
 		w, err := GetWebhookByID(t.HookID)
 		if err != nil {
-			log.Error("GetWebhookByID: %v", err)
+			log.Error("%v", err)
 			return
 		}
 		if t.IsSucceed {
@@ -724,14 +724,14 @@ func (t *HookTask) deliver() {
 			w.LastStatus = HookStatusFailed
 		}
 		if err = UpdateWebhook(w); err != nil {
-			log.Error("UpdateWebhook: %v", err)
+			log.Error("%v", err)
 			return
 		}
 	}()
 
 	resp, err := req.Response()
 	if err != nil {
-		t.ResponseInfo.Body = fmt.Sprintf("Delivery: %v", err)
+		t.ResponseInfo.Body = fmt.Sprintf("error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -757,7 +757,7 @@ func DeliverHooks() {
 	var tasks []*HookTask
 	err := Handle.db.Where("is_delivered = ?", false).Find(&tasks).Error
 	if err != nil {
-		log.Error("DeliverHooks: %v", err)
+		log.Error("%v", err)
 	} else {
 		for _, t := range tasks {
 			t.deliver()

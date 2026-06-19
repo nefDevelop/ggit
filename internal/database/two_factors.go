@@ -46,7 +46,7 @@ func newTwoFactorsStore(db *gorm.DB) *TwoFactorsStore {
 func (s *TwoFactorsStore) Create(ctx context.Context, userID int64, key, secret string) error {
 	encrypted, err := cryptox.AESGCMEncrypt(cryptox.MD5Bytes(key), []byte(secret))
 	if err != nil {
-		return fmt.Errorf("encrypt secret"+": %w", err)
+		return fmt.Errorf("encrypt secret"+": %v", err)
 	}
 	tf := &TwoFactor{
 		UserID: userID,
@@ -55,7 +55,7 @@ func (s *TwoFactorsStore) Create(ctx context.Context, userID int64, key, secret 
 
 	recoveryCodes, err := generateRecoveryCodes(userID, 10)
 	if err != nil {
-		return fmt.Errorf("generate recovery codes"+": %w", err)
+		return fmt.Errorf("generate recovery codes"+": %v", err)
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -122,12 +122,12 @@ func (s *TwoFactorsStore) UseRecoveryCode(ctx context.Context, userID int64, cod
 			if err == gorm.ErrRecordNotFound {
 				return ErrTwoFactorRecoveryCodeNotFound{Code: code}
 			}
-			return fmt.Errorf("get unused recovery code"+": %w", err)
+			return fmt.Errorf("get unused recovery code"+": %v", err)
 		}
 
 		err = tx.Model(&recoveryCode).Update("is_used", true).Error
 		if err != nil {
-			return fmt.Errorf("mark recovery code as used"+": %w", err)
+			return fmt.Errorf("mark recovery code as used"+": %v", err)
 		}
 		return nil
 	})
@@ -152,14 +152,14 @@ func (s *TwoFactorsStore) GetRecoveryCodesByUserID(ctx context.Context, userID i
 func (s *TwoFactorsStore) RegenerateRecoveryCodes(ctx context.Context, userID int64) error {
 	recoveryCodes, err := generateRecoveryCodes(userID, 10)
 	if err != nil {
-		return fmt.Errorf("generate recovery codes"+": %w", err)
+		return fmt.Errorf("generate recovery codes"+": %v", err)
 	}
 
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
-			return fmt.Errorf("delete recovery codes"+": %w", err)
+			return fmt.Errorf("delete recovery codes"+": %v", err)
 		} else if err = tx.Create(recoveryCodes).Error; err != nil {
-			return fmt.Errorf("insert new recovery codes"+": %w", err)
+			return fmt.Errorf("insert new recovery codes"+": %v", err)
 		}
 		return nil
 	})
@@ -169,9 +169,9 @@ func (s *TwoFactorsStore) RegenerateRecoveryCodes(ctx context.Context, userID in
 func (s *TwoFactorsStore) Delete(ctx context.Context, userID int64) (err error) {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err = tx.Where("user_id = ?", userID).Delete(new(TwoFactor)).Error; err != nil {
-			return fmt.Errorf("delete two-factor"+": %w", err)
+			return fmt.Errorf("delete two-factor"+": %v", err)
 		} else if err = deleteRecoveryCodesByUserID(tx, userID); err != nil {
-			return fmt.Errorf("delete recovery codes"+": %w", err)
+			return fmt.Errorf("delete recovery codes"+": %v", err)
 		}
 		return nil
 	})
@@ -183,7 +183,7 @@ func generateRecoveryCodes(userID int64, n int) ([]*TwoFactorRecoveryCode, error
 	for i := range n {
 		code, err := strx.RandomChars(10)
 		if err != nil {
-			return nil, fmt.Errorf("generate random characters"+": %w", err)
+			return nil, fmt.Errorf("generate random characters"+": %v", err)
 		}
 		recoveryCodes[i] = &TwoFactorRecoveryCode{
 			UserID: userID,

@@ -96,7 +96,7 @@ func MigrateRepo(c *context.APIContext) {
 
 	// Analyze languages after migration
 	if err := reposervice.UpdateRepositoryLanguages(repo); err != nil {
-		log.Error("UpdateRepositoryLanguages after migration: %v", err)
+		log.Error("%v", err)
 	}
 
 	c.JSON(http.StatusCreated, repo.APIFormat(database.FromDomainUser(ctxUser)))

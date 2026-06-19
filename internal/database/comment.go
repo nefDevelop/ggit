@@ -251,7 +251,7 @@ func (c *Comment) mailParticipants(tx *gorm.DB, opType ActionType, issue *Issue)
 		issue.Content = fmt.Sprintf("Reopened #%d", issue.Index)
 	}
 	if err = mailIssueCommentToParticipants(issue, c.Poster, mentions); err != nil {
-		log.Error("mailIssueCommentToParticipants: %v", err)
+		log.Error("%v", err)
 	}
 
 	return nil
@@ -349,16 +349,16 @@ func createComment(tx *gorm.DB, opts *CreateCommentOptions) (_ *Comment, err err
 	}
 
 	if err = tx.Model(new(Issue)).Where("id = ?", opts.Issue.ID).Update("updated_unix", time.Now().Unix()).Error; err != nil {
-		return nil, fmt.Errorf("update issue 'updated_unix': %v", err)
+		return nil, fmt.Errorf("update issue 'updated_unix': %w", err)
 	}
 
 	// Notify watchers for whatever action comes in, ignore if no action type.
 	if act.OpType > 0 {
 		if err = notifyWatchers(tx, act); err != nil {
-			log.Error("notifyWatchers: %v", err)
+			log.Error("%v", err)
 		}
 		if err = comment.mailParticipants(tx, act.OpType, opts.Issue); err != nil {
-			log.Error("MailParticipants: %v", err)
+			log.Error("%v", err)
 		}
 	}
 
@@ -411,7 +411,7 @@ func CreateIssueComment(doer *User, repo *Repository, issue *Issue, content stri
 		Attachments: attachments,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("CreateComment: %v", err)
+		return nil, fmt.Errorf("CreateComment: %w", err)
 	}
 
 	comment.Issue = issue
@@ -438,7 +438,7 @@ func CreateRefComment(doer *User, repo *Repository, issue *Issue, content, commi
 	err := Handle.db.Where("type = ? AND issue_id = ? AND commit_sha = ?", CommentTypeCommitRef, issue.ID, commitSHA).First(new(Comment)).Error
 	if err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("check reference comment: %v", err)
+			return fmt.Errorf("check reference comment: %w", err)
 		}
 	} else {
 		return nil
@@ -517,7 +517,7 @@ func loadCommentsAttributes(tx *gorm.DB, comments []*Comment) (err error) {
 	if len(posterIDs) > 0 {
 		posters := make([]User, 0, len(posterIDs))
 		if err = tx.Where("id IN ?", posterIDs).Find(&posters).Error; err != nil {
-			return fmt.Errorf("batch load posters: %v", err)
+			return fmt.Errorf("batch load posters: %w", err)
 		}
 		posterMap := make(map[int64]*User, len(posters))
 		for i := range posters {
@@ -539,7 +539,7 @@ func loadCommentsAttributes(tx *gorm.DB, comments []*Comment) (err error) {
 	if needIssues && len(issueIDs) > 0 {
 		issues := make([]Issue, 0, len(issueIDs))
 		if err = tx.Where("id IN ?", issueIDs).Find(&issues).Error; err != nil {
-			return fmt.Errorf("batch load issues: %v", err)
+			return fmt.Errorf("batch load issues: %w", err)
 		}
 		issueMap := make(map[int64]*Issue, len(issues))
 		repoIDs := make([]int64, 0, len(issues))
@@ -551,7 +551,7 @@ func loadCommentsAttributes(tx *gorm.DB, comments []*Comment) (err error) {
 		// Batch load repos
 		repos := make([]Repository, 0, len(repoIDs))
 		if err = tx.Where("id IN ?", repoIDs).Find(&repos).Error; err != nil {
-			return fmt.Errorf("batch load repos: %v", err)
+			return fmt.Errorf("batch load repos: %w", err)
 		}
 		repoMap := make(map[int64]*Repository, len(repos))
 		for i := range repos {
@@ -571,7 +571,7 @@ func loadCommentsAttributes(tx *gorm.DB, comments []*Comment) (err error) {
 	// Batch load attachments
 	allAttachments := make([]Attachment, 0, len(comments))
 	if err = tx.Where("comment_id IN ?", commentIDs).Find(&allAttachments).Error; err != nil {
-		return fmt.Errorf("batch load attachments: %v", err)
+		return fmt.Errorf("batch load attachments: %w", err)
 	}
 	attachmentsByComment := make(map[int64][]*Attachment, len(comments))
 	for i := range allAttachments {
@@ -683,7 +683,7 @@ func DeleteCommentByID(doer *User, id int64) error {
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("delete comment: %v", err)
+		return fmt.Errorf("delete comment: %w", err)
 	}
 
 	_, err = DeleteAttachmentsByComment(comment.ID, true)

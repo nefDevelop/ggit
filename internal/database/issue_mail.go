@@ -150,7 +150,7 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 		}
 	}
 	if err = email.SendIssueCommentMail(NewMailerIssue(issue), NewMailerRepo(issue.Repo), NewMailerUser(doer), tos); err != nil {
-		return fmt.Errorf("send issue comment mail"+": %w", err)
+		return fmt.Errorf("send issue comment mail"+": %v", err)
 	}
 
 	// Mail mentioned people and exclude watchers.
@@ -166,10 +166,10 @@ func mailIssueCommentToParticipants(issue *Issue, doer *User, mentions []string)
 
 	tos, err = Handle.Users().GetMailableEmailsByUsernames(ctx, toUsernames)
 	if err != nil {
-		return fmt.Errorf("get mailable emails by usernames"+": %w", err)
+		return fmt.Errorf("get mailable emails by usernames"+": %v", err)
 	}
 	if err = email.SendIssueMentionMail(NewMailerIssue(issue), NewMailerRepo(issue.Repo), NewMailerUser(doer), tos); err != nil {
-		return fmt.Errorf("send issue mention mail"+": %w", err)
+		return fmt.Errorf("send issue mention mail"+": %v", err)
 	}
 	return nil
 }
@@ -183,7 +183,7 @@ func (issue *Issue) MailParticipants() (err error) {
 	}
 
 	if err = mailIssueCommentToParticipants(issue, issue.Poster, mentions); err != nil {
-		log.Error("mailIssueCommentToParticipants: %v", err)
+		log.Error("%v", err)
 	}
 
 	return nil

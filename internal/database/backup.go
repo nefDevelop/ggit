@@ -50,14 +50,14 @@ func DumpDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bool
 			tableFile := filepath.Join(dirPath, tableName+".json")
 			f, err := os.Create(tableFile)
 			if err != nil {
-				return fmt.Errorf("create table file"+": %w", err)
+				return fmt.Errorf("create table file"+": %v", err)
 			}
 			defer func() { _ = f.Close() }()
 
 			return dumpTable(ctx, db, table, f)
 		}()
 		if err != nil {
-			return fmt.Errorf("dump table %q: %w", tableName, err)
+			return fmt.Errorf("dump table %q: %v", tableName, err)
 		}
 	}
 
@@ -75,7 +75,7 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 
 	rows, err := query.Rows()
 	if err != nil {
-		return fmt.Errorf("select rows"+": %w", err)
+		return fmt.Errorf("select rows"+": %v", err)
 	}
 	defer func() { _ = rows.Close() }()
 
@@ -83,7 +83,7 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 		elem := reflect.New(reflect.TypeOf(table).Elem()).Interface()
 		err = db.ScanRows(rows, elem)
 		if err != nil {
-			return fmt.Errorf("scan rows"+": %w", err)
+			return fmt.Errorf("scan rows"+": %v", err)
 		}
 
 		switch e := elem.(type) {
@@ -93,7 +93,7 @@ func dumpTable(ctx context.Context, db *gorm.DB, table any, w io.Writer) error {
 
 		err = json.NewEncoder(w).Encode(elem)
 		if err != nil {
-			return fmt.Errorf("encode JSON"+": %w", err)
+			return fmt.Errorf("encode JSON"+": %v", err)
 		}
 	}
 	return rows.Err()
@@ -124,14 +124,14 @@ func ImportDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bo
 
 			f, err := os.Open(tableFile)
 			if err != nil {
-				return fmt.Errorf("open table file"+": %w", err)
+				return fmt.Errorf("open table file"+": %v", err)
 			}
 			defer func() { _ = f.Close() }()
 
 			return importTable(ctx, db, table, f)
 		}()
 		if err != nil {
-			return fmt.Errorf("import table %q: %w", tableName, err)
+			return fmt.Errorf("import table %q: %v", tableName, err)
 		}
 	}
 
@@ -141,17 +141,17 @@ func ImportDatabase(ctx context.Context, db *gorm.DB, dirPath string, verbose bo
 func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error {
 	err := db.WithContext(ctx).Migrator().DropTable(table)
 	if err != nil {
-		return fmt.Errorf("drop table"+": %w", err)
+		return fmt.Errorf("drop table"+": %v", err)
 	}
 
 	err = db.WithContext(ctx).Migrator().AutoMigrate(table)
 	if err != nil {
-		return fmt.Errorf("auto migrate"+": %w", err)
+		return fmt.Errorf("auto migrate"+": %v", err)
 	}
 
 	_, err = schema.Parse(table, &sync.Map{}, db.NamingStrategy)
 	if err != nil {
-		return fmt.Errorf("parse schema"+": %w", err)
+		return fmt.Errorf("parse schema"+": %v", err)
 	}
 
 	scanner := bufio.NewScanner(r)
@@ -162,12 +162,12 @@ func importTable(ctx context.Context, db *gorm.DB, table any, r io.Reader) error
 		elem := reflect.New(reflect.TypeOf(table).Elem()).Interface()
 		err = json.Unmarshal(cleaned, elem)
 		if err != nil {
-			return fmt.Errorf("unmarshal JSON to struct"+": %w", err)
+			return fmt.Errorf("unmarshal JSON to struct"+": %v", err)
 		}
 
 		err = db.WithContext(ctx).Create(elem).Error
 		if err != nil {
-			return fmt.Errorf("create row"+": %w", err)
+			return fmt.Errorf("create row"+": %v", err)
 		}
 	}
 

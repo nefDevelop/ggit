@@ -66,7 +66,7 @@ func (s *PullReviewCommentsStore) ListByIssueID(ctx context.Context, issueID int
 	comments := make([]*PullReviewComment, 0, 10)
 	err := s.db.WithContext(ctx).Where("issue_id = ?", issueID).Order("created_unix ASC").Find(&comments).Error
 	if err != nil {
-		return nil, fmt.Errorf("list review comments"+": %w", err)
+		return nil, fmt.Errorf("list review comments"+": %v", err)
 	}
 	return comments, nil
 }
@@ -76,7 +76,7 @@ func (s *PullReviewCommentsStore) ListByReviewID(ctx context.Context, reviewID i
 	comments := make([]*PullReviewComment, 0, 5)
 	err := s.db.WithContext(ctx).Where("review_id = ?", reviewID).Order("created_unix ASC").Find(&comments).Error
 	if err != nil {
-		return nil, fmt.Errorf("list review comments by review ID"+": %w", err)
+		return nil, fmt.Errorf("list review comments by review ID"+": %v", err)
 	}
 	return comments, nil
 }

@@ -25,7 +25,7 @@ type Branch struct {
 func GetBranchesByPath(path string) ([]*Branch, error) {
 	gitRepo, err := git.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("open repository: %v", err)
+		return nil, fmt.Errorf("open repository: %w", err)
 	}
 
 	names, err := gitRepo.Branches()
@@ -79,7 +79,7 @@ func (r *Repository) GetBranches() ([]*Branch, error) {
 func (br *Branch) GetCommit() (*git.Commit, error) {
 	gitRepo, err := git.Open(br.RepoPath)
 	if err != nil {
-		return nil, fmt.Errorf("open repository: %v", err)
+		return nil, fmt.Errorf("open repository: %w", err)
 	}
 	return gitRepo.BranchCommit(br.Name)
 }
@@ -152,7 +152,7 @@ func UpdateProtectBranch(protectBranch *ProtectBranch) (err error) {
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if protectBranch.ID == 0 {
 			if err = tx.Create(protectBranch).Error; err != nil {
-				return fmt.Errorf("insert: %v", err)
+				return fmt.Errorf("insert: %w", err)
 			}
 		}
 
@@ -166,7 +166,7 @@ func UpdateProtectBranch(protectBranch *ProtectBranch) (err error) {
 // to avoid unnecessary whitelist delete and regenerate.
 func UpdateOrgProtectBranch(repo *Repository, protectBranch *ProtectBranch, whitelistUserIDs, whitelistTeamIDs string) (err error) {
 	if err = repo.GetOwner(); err != nil {
-		return fmt.Errorf("GetOwner: %v", err)
+		return fmt.Errorf("GetOwner: %w", err)
 	} else if !repo.Owner.IsOrganization() {
 		return fmt.Errorf("expect repository owner to be an organization")
 	}
@@ -215,7 +215,7 @@ func UpdateOrgProtectBranch(repo *Repository, protectBranch *ProtectBranch, whit
 	// Make sure protectBranch.ID is not 0 for whitelists
 	if protectBranch.ID == 0 {
 		if err = Handle.db.Create(protectBranch).Error; err != nil {
-			return fmt.Errorf("insert: %v", err)
+			return fmt.Errorf("insert: %w", err)
 		}
 	}
 
@@ -254,16 +254,16 @@ func UpdateOrgProtectBranch(repo *Repository, protectBranch *ProtectBranch, whit
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(protectBranch).Updates(protectBranch).Error; err != nil {
-			return fmt.Errorf("Update: %v", err)
+			return fmt.Errorf("Update: %w", err)
 		}
 
 		// Refresh whitelists
 		if hasUsersChanged || hasTeamsChanged {
 			if err = tx.Where("protect_branch_id = ?", protectBranch.ID).Delete(new(ProtectBranchWhitelist)).Error; err != nil {
-				return fmt.Errorf("delete old protect branch whitelists: %v", err)
+				return fmt.Errorf("delete old protect branch whitelists: %w", err)
 			} else if len(whitelists) > 0 {
 				if err = tx.Create(whitelists).Error; err != nil {
-					return fmt.Errorf("insert new protect branch whitelists: %v", err)
+					return fmt.Errorf("insert new protect branch whitelists: %w", err)
 				}
 			}
 		}

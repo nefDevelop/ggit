@@ -21,7 +21,7 @@ var labelColorPattern = lazyregexp.New("#([a-fA-F0-9]{6})")
 func GetLabelTemplateFile(name string) ([][2]string, error) {
 	data, err := getRepoInitFile("label", name)
 	if err != nil {
-		return nil, fmt.Errorf("getRepoInitFile: %v", err)
+		return nil, fmt.Errorf("getRepoInitFile: %w", err)
 	}
 
 	lines := strings.Split(string(data), "\n")
@@ -245,7 +245,7 @@ func GetLabelsByRepoID(repoID int64) ([]*Label, error) {
 func getLabelsByIssueID(tx *gorm.DB, issueID int64) ([]*Label, error) {
 	issueLabels, err := getIssueLabels(tx, issueID)
 	if err != nil {
-		return nil, fmt.Errorf("getIssueLabels: %v", err)
+		return nil, fmt.Errorf("getIssueLabels: %w", err)
 	} else if len(issueLabels) == 0 {
 		return []*Label{}, nil
 	}
@@ -328,7 +328,7 @@ func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 			Where("issue_label.issue_id = ? AND label.name LIKE ?", issue.ID, key+"%").
 			Find(&existingLabels).Error
 		if err != nil {
-			return fmt.Errorf("find existing scoped labels: %v", err)
+			return fmt.Errorf("find existing scoped labels: %w", err)
 		}
 
 		for _, el := range existingLabels {
@@ -336,7 +336,7 @@ func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 				continue
 			}
 			if err = deleteIssueLabel(tx, issue, el); err != nil {
-				return fmt.Errorf("deleteIssueLabel: %v", err)
+				return fmt.Errorf("deleteIssueLabel: %w", err)
 			}
 		}
 	}
@@ -354,7 +354,7 @@ func newIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 	}
 
 	if err = updateLabel(tx, label); err != nil {
-		return fmt.Errorf("updateLabel: %v", err)
+		return fmt.Errorf("updateLabel: %w", err)
 	}
 
 	issue.Labels = append(issue.Labels, label)
@@ -379,7 +379,7 @@ func newIssueLabels(tx *gorm.DB, issue *Issue, labels []*Label) (err error) {
 		}
 
 		if err = newIssueLabel(tx, issue, labels[i]); err != nil {
-			return fmt.Errorf("newIssueLabel: %v", err)
+			return fmt.Errorf("newIssueLabel: %w", err)
 		}
 	}
 
@@ -414,7 +414,7 @@ func deleteIssueLabel(tx *gorm.DB, issue *Issue, label *Label) (err error) {
 		label.NumClosedIssues--
 	}
 	if err = updateLabel(tx, label); err != nil {
-		return fmt.Errorf("updateLabel: %v", err)
+		return fmt.Errorf("updateLabel: %w", err)
 	}
 
 	for i := range issue.Labels {

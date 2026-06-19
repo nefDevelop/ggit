@@ -126,7 +126,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 
 		authSource, err := ini.Load(path)
 		if err != nil {
-			return fmt.Errorf("load file"+": %w", err)
+			return fmt.Errorf("load file"+": %v", err)
 		}
 		authSource.NameMapper = ini.TitleUnderscore
 
@@ -145,7 +145,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 
 		fi, err := os.Stat(path)
 		if err != nil {
-			return fmt.Errorf("stat file"+": %w", err)
+			return fmt.Errorf("stat file"+": %v", err)
 		}
 		loginSource.Updated = fi.ModTime()
 
@@ -157,7 +157,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			var cfg ldap.Config
 			err = cfgSection.MapTo(&cfg)
 			if err != nil {
-				return fmt.Errorf(`map "config" section`+": %w", err)
+				return fmt.Errorf(`map "config" section`+": %v", err)
 			}
 			loginSource.Type = auth.LDAP
 			loginSource.Provider = ldap.NewProvider(false, &cfg)
@@ -166,7 +166,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			var cfg ldap.Config
 			err = cfgSection.MapTo(&cfg)
 			if err != nil {
-				return fmt.Errorf(`map "config" section`+": %w", err)
+				return fmt.Errorf(`map "config" section`+": %v", err)
 			}
 			loginSource.Type = auth.DLDAP
 			loginSource.Provider = ldap.NewProvider(true, &cfg)
@@ -175,7 +175,7 @@ func loadLoginSourceFiles(authdPath string, clock func() time.Time) (loginSource
 			var cfg oidc.Config
 			err = cfgSection.MapTo(&cfg)
 			if err != nil {
-				return fmt.Errorf(`map "config" section`+": %w", err)
+				return fmt.Errorf(`map "config" section`+": %v", err)
 			}
 			loginSource.Type = auth.OIDC
 			loginSource.Provider = oidc.NewProvider(&cfg)

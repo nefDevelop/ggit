@@ -180,14 +180,14 @@ func (pr *PullRequest) loadAttributes(tx *gorm.DB) (err error) {
 	if pr.HeadRepo == nil {
 		pr.HeadRepo, err = getRepositoryByID(tx, pr.HeadRepoID)
 		if err != nil && !IsErrRepoNotExist(err) {
-			return fmt.Errorf("get head repository by ID: %v", err)
+			return fmt.Errorf("get head repository by ID: %w", err)
 		}
 	}
 
 	if pr.BaseRepo == nil {
 		pr.BaseRepo, err = getRepositoryByID(tx, pr.BaseRepoID)
 		if err != nil {
-			return fmt.Errorf("get base repository by ID: %v", err)
+			return fmt.Errorf("get base repository by ID: %w", err)
 		}
 	}
 
@@ -197,7 +197,7 @@ func (pr *PullRequest) loadAttributes(tx *gorm.DB) (err error) {
 			pr.MergerID = -1
 			pr.Merger = NewGhostUser()
 		} else if err != nil {
-			return fmt.Errorf("get merger by ID: %v", err)
+			return fmt.Errorf("get merger by ID: %w", err)
 		}
 	}
 
@@ -466,13 +466,13 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 	var headGitRepo *git.Repository
 	err = Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = pr.Issue.changeStatus(tx, doer, pr.Issue.Repo, true); err != nil {
-			return fmt.Errorf("Issue.changeStatus: %v", err)
+			return fmt.Errorf("Issue.changeStatus: %w", err)
 		}
 
 		headRepoPath := RepoPath(pr.HeadUserName, pr.HeadRepo.Name)
 		headGitRepo, err = git.Open(headRepoPath)
 		if err != nil {
-			return fmt.Errorf("open repository: %v", err)
+			return fmt.Errorf("open repository: %w", err)
 		}
 
 		// Create temporary directory to store temporary copy of the base repository,
@@ -585,7 +585,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 		pr.Merged = time.Now()
 		pr.MergerID = doer.ID
 		if err = tx.Model(pr).Updates(pr).Error; err != nil {
-			return fmt.Errorf("update pull request: %v", err)
+			return fmt.Errorf("update pull request: %w", err)
 		}
 
 		return nil
@@ -601,7 +601,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 
 	// Reload pull request information.
 	if err = pr.LoadAttributes(); err != nil {
-		log.Error("LoadAttributes: %v", err)
+		log.Error("%v", err)
 		postMergeErr = err
 	}
 	if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -611,7 +611,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 		Repository:  pr.Issue.Repo.APIFormatLegacy(nil),
 		Sender:      doer.APIFormat(),
 	}); err != nil {
-		log.Error("PrepareWebhooks: %v", err)
+		log.Error("%v", err)
 		if postMergeErr == nil {
 			postMergeErr = err
 		}
@@ -642,7 +642,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 
 			pcs, err := CommitsToPushCommits(commits).APIFormat(ctx, Handle.Users(), pr.BaseRepo.RepoPath(), pr.BaseRepo.HTMLURL())
 			if err != nil {
-				log.Error("Failed to convert to API payload commits: %v", err)
+				log.Error("%v", err)
 				if postMergeErr == nil {
 					postMergeErr = err
 				}
@@ -658,7 +658,7 @@ func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.R
 					Sender:     doer.APIFormat(),
 				}
 				if err = PrepareWebhooks(pr.BaseRepo, HookEventTypePush, p); err != nil {
-					log.Error("Failed to prepare webhooks: %v", err)
+					log.Error("%v", err)
 					if postMergeErr == nil {
 						postMergeErr = err
 					}
@@ -676,13 +676,13 @@ func (pr *PullRequest) testPatch() (err error) {
 	if pr.BaseRepo == nil {
 		pr.BaseRepo, err = GetRepositoryByID(pr.BaseRepoID)
 		if err != nil {
-			return fmt.Errorf("GetRepositoryByID: %v", err)
+			return fmt.Errorf("GetRepositoryByID: %w", err)
 		}
 	}
 
 	patchPath, err := pr.BaseRepo.PatchPath(pr.Index)
 	if err != nil {
-		return fmt.Errorf("BaseRepo.PatchPath: %v", err)
+		return fmt.Errorf("BaseRepo.PatchPath: %w", err)
 	}
 
 	// Fast fail if patch does not exist, this assumes data is corrupted.
@@ -728,17 +728,17 @@ func NewPullRequest(repo *Repository, pull *Issue, labelIDs []int64, uuids []str
 			Attachments: uuids,
 			IsPull:      true,
 		}); err != nil {
-			return fmt.Errorf("newIssue: %v", err)
+			return fmt.Errorf("newIssue: %w", err)
 		}
 
 		pr.Index = pull.Index
 		if err = repo.SavePatch(pr.Index, patch); err != nil {
-			return fmt.Errorf("SavePatch: %v", err)
+			return fmt.Errorf("SavePatch: %w", err)
 		}
 
 		pr.BaseRepo = repo
 		if err = pr.testPatch(); err != nil {
-			return fmt.Errorf("testPatch: %v", err)
+			return fmt.Errorf("testPatch: %w", err)
 		}
 		// No conflict appears after test means mergeable.
 		if pr.Status == PullRequestStatusChecking {
@@ -869,7 +869,7 @@ func (pr *PullRequest) UpdateCols(cols ...string) error {
 func (pr *PullRequest) UpdatePatch() (err error) {
 	headGitRepo, err := git.Open(pr.HeadRepo.RepoPath())
 	if err != nil {
-		return fmt.Errorf("open repository: %v", err)
+		return fmt.Errorf("open repository: %w", err)
 	}
 
 	// Add a temporary remote.
@@ -888,23 +888,23 @@ func (pr *PullRequest) UpdatePatch() (err error) {
 	remoteBranch := "remotes/" + tmpRemote + "/" + pr.BaseBranch
 	pr.MergeBase, err = headGitRepo.MergeBase(remoteBranch, pr.HeadBranch)
 	if err != nil {
-		return fmt.Errorf("get merge base: %v", err)
+		return fmt.Errorf("get merge base: %w", err)
 	}
 	pr.HeadCommitID, err = headGitRepo.BranchCommitID(pr.HeadBranch)
 	if err != nil {
-		return fmt.Errorf("get head commit ID: %v", err)
+		return fmt.Errorf("get head commit ID: %w", err)
 	}
 	if err = pr.Update(); err != nil {
-		return fmt.Errorf("update: %v", err)
+		return fmt.Errorf("update: %w", err)
 	}
 
 	patch, err := headGitRepo.DiffBinary(pr.MergeBase, pr.HeadBranch)
 	if err != nil {
-		return fmt.Errorf("get binary patch: %v", err)
+		return fmt.Errorf("get binary patch: %w", err)
 	}
 
 	if err = pr.BaseRepo.SavePatch(pr.Index, patch); err != nil {
-		return fmt.Errorf("save patch: %v", err)
+		return fmt.Errorf("save patch: %w", err)
 	}
 
 	log.Trace("PullRequest[%d].UpdatePatch: patch saved", pr.ID)
@@ -920,7 +920,7 @@ func (pr *PullRequest) PushToBaseRepo() (err error) {
 	headRepoPath := pr.HeadRepo.RepoPath()
 	headGitRepo, err := git.Open(headRepoPath)
 	if err != nil {
-		return fmt.Errorf("open repository: %v", err)
+		return fmt.Errorf("open repository: %w", err)
 	}
 
 	tmpRemote := fmt.Sprintf("tmp-pull-%d", pr.ID)
@@ -946,7 +946,7 @@ func (pr *PullRequest) PushToBaseRepo() (err error) {
 
 	err = headGitRepo.Push(tmpRemote, fmt.Sprintf("%s:%s", pr.HeadBranch, headRefspec))
 	if err != nil {
-		return fmt.Errorf("push: %v", err)
+		return fmt.Errorf("push: %w", err)
 	}
 
 	return nil
@@ -980,7 +980,7 @@ func (prs PullRequestList) loadAttributes(tx *gorm.DB) (err error) {
 	}
 	issues := make([]*Issue, 0, len(issueIDs))
 	if err = tx.Where("id IN (?)", issueIDs).Find(&issues).Error; err != nil {
-		return fmt.Errorf("find issues: %v", err)
+		return fmt.Errorf("find issues: %w", err)
 	}
 	for i := range issues {
 		set[issues[i].ID] = issues[i]
@@ -1012,10 +1012,10 @@ func addHeadRepoTasks(prs []*PullRequest) {
 
 		log.Trace("addHeadRepoTasks[%d]: composing new test task", pr.ID)
 		if err := pr.UpdatePatch(); err != nil {
-			log.Error("UpdatePatch: %v", err)
+			log.Error("%v", err)
 			continue
 		} else if err := pr.PushToBaseRepo(); err != nil {
-			log.Error("PushToBaseRepo: %v", err)
+			log.Error("%v", err)
 			continue
 		}
 
@@ -1036,14 +1036,14 @@ func AddTestPullRequestTask(doer *User, repoID int64, branch string, isSync bool
 
 	if isSync {
 		if err = PullRequestList(prs).LoadAttributes(); err != nil {
-			log.Error("PullRequestList.LoadAttributes: %v", err)
+			log.Error("%v", err)
 		}
 
 		if err == nil {
 			for _, pr := range prs {
 				pr.Issue.PullRequest = pr
 				if err = pr.Issue.LoadAttributes(); err != nil {
-					log.Error("LoadAttributes: %v", err)
+					log.Error("%v", err)
 					continue
 				}
 				if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -1095,7 +1095,7 @@ func TestPullRequests() {
 	var prs []*PullRequest
 	err := Handle.db.Where("status = ?", PullRequestStatusChecking).Find(&prs).Error
 	if err != nil {
-		log.Error("Find checking pull requests: %v", err)
+		log.Error("%v", err)
 		return
 	}
 

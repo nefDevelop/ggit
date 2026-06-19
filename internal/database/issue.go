@@ -303,7 +303,7 @@ func (issue *Issue) sendLabelUpdatedWebhook(doer *User) {
 	if issue.IsPull {
 		err = issue.PullRequest.LoadIssue()
 		if err != nil {
-			log.Error("LoadIssue: %v", err)
+			log.Error("%v", err)
 			return
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -362,7 +362,7 @@ func (issue *Issue) getLabels(tx *gorm.DB) (err error) {
 
 	issue.Labels, err = getLabelsByIssueID(tx, issue.ID)
 	if err != nil {
-		return fmt.Errorf("getLabelsByIssueID: %v", err)
+		return fmt.Errorf("getLabelsByIssueID: %w", err)
 	}
 	return nil
 }
@@ -383,7 +383,7 @@ func (issue *Issue) RemoveLabel(ctx context.Context, doer *User, label *Label) e
 
 func (issue *Issue) clearLabels(tx *gorm.DB) (err error) {
 	if err = issue.getLabels(tx); err != nil {
-		return fmt.Errorf("getLabels: %v", err)
+		return fmt.Errorf("getLabels: %w", err)
 	}
 
 	// NOTE: issue.removeLabel slices issue.Labels, so we need to create another slice to be unaffected.
@@ -391,7 +391,7 @@ func (issue *Issue) clearLabels(tx *gorm.DB) (err error) {
 	copy(labels, issue.Labels)
 	for i := range labels {
 		if err = issue.removeLabel(tx, labels[i]); err != nil {
-			return fmt.Errorf("removeLabel: %v", err)
+			return fmt.Errorf("removeLabel: %w", err)
 		}
 	}
 
@@ -409,7 +409,7 @@ func (issue *Issue) ClearLabels(doer *User) (err error) {
 	if issue.IsPull {
 		err = issue.PullRequest.LoadIssue()
 		if err != nil {
-			log.Error("LoadIssue: %v", err)
+			log.Error("%v", err)
 			return err
 		}
 		err = PrepareWebhooks(issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
@@ -439,9 +439,9 @@ func (issue *Issue) ClearLabels(doer *User) (err error) {
 func (issue *Issue) ReplaceLabels(ctx context.Context, labels []*Label) (err error) {
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = issue.clearLabels(tx); err != nil {
-			return fmt.Errorf("clearLabels: %v", err)
+			return fmt.Errorf("clearLabels: %w", err)
 		} else if err = issue.addLabels(tx, labels); err != nil {
-			return fmt.Errorf("addLabels: %v", err)
+			return fmt.Errorf("addLabels: %w", err)
 		}
 		return nil
 	})
@@ -569,7 +569,7 @@ func (issue *Issue) ChangeTitle(ctx context.Context, doer *User, title string) (
 	oldTitle := issue.Title
 	issue.Title = title
 	if err = UpdateIssueCols(issue, "name"); err != nil {
-		return fmt.Errorf("UpdateIssueCols: %v", err)
+		return fmt.Errorf("UpdateIssueCols: %w", err)
 	}
 
 	if issue.IsPull {
@@ -611,7 +611,7 @@ func (issue *Issue) ChangeContent(ctx context.Context, doer *User, content strin
 	oldContent := issue.Content
 	issue.Content = content
 	if err = UpdateIssueCols(issue, "content"); err != nil {
-		return fmt.Errorf("UpdateIssueCols: %v", err)
+		return fmt.Errorf("UpdateIssueCols: %w", err)
 	}
 
 	if issue.IsPull {
@@ -652,12 +652,12 @@ func (issue *Issue) ChangeContent(ctx context.Context, doer *User, content strin
 func (issue *Issue) ChangeAssignee(ctx context.Context, doer *User, assigneeID int64) (err error) {
 	issue.AssigneeID = assigneeID
 	if err = UpdateIssueUserByAssignee(issue); err != nil {
-		return fmt.Errorf("UpdateIssueUserByAssignee: %v", err)
+		return fmt.Errorf("UpdateIssueUserByAssignee: %w", err)
 	}
 
 	u, err := Handle.Users().GetByID(context.Background(), issue.AssigneeID)
 	if err != nil && !IsErrUserNotExist(err) {
-		log.Error("Failed to get user by ID: %v", err)
+		log.Error("%v", err)
 		return nil
 	}
 	if err == nil {
@@ -713,7 +713,7 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 	if opts.Issue.MilestoneID > 0 {
 		milestone, err := getMilestoneByRepoID(tx, opts.Issue.RepoID, opts.Issue.MilestoneID)
 		if err != nil && !IsErrMilestoneNotExist(err) {
-			return fmt.Errorf("getMilestoneByID: %v", err)
+			return fmt.Errorf("getMilestoneByID: %w", err)
 		}
 
 		// Assume milestone is invalid and drop silently.
@@ -730,7 +730,7 @@ func newIssue(tx *gorm.DB, opts NewIssueOptions) (err error) {
 	if opts.Issue.AssigneeID > 0 {
 		assignee, err := getUserByID(tx, opts.Issue.AssigneeID)
 		if err != nil && !IsErrUserNotExist(err) {
-			return fmt.Errorf("get user by ID: %v", err)
+			return fmt.Errorf("get user by ID: %w", err)
 		}
 
 		if assignee != nil {
@@ -1010,7 +1010,7 @@ func Issues(opts *IssuesOptions) ([]*Issue, error) {
 
 	issues := make([]*Issue, 0, conf.UI.IssuePagingNum)
 	if err := query.Find(&issues).Error; err != nil {
-		return nil, fmt.Errorf("find: %v", err)
+		return nil, fmt.Errorf("find: %w", err)
 	}
 
 	// FIXME: use IssueList to improve performance.
@@ -1030,7 +1030,7 @@ func GetParticipantsByIssueID(issueID int64) ([]*User, error) {
 		Where("issue_id = ?", issueID).
 		Distinct("poster_id").
 		Pluck("poster_id", &userIDs).Error; err != nil {
-		return nil, fmt.Errorf("get poster IDs: %v", err)
+		return nil, fmt.Errorf("get poster IDs: %w", err)
 	}
 	if len(userIDs) == 0 {
 		return nil, nil
@@ -1064,7 +1064,7 @@ type IssueUser struct {
 func newIssueUsers(tx *gorm.DB, repo *Repository, issue *Issue) error {
 	assignees, err := repo.getAssignees(tx)
 	if err != nil {
-		return fmt.Errorf("getAssignees: %v", err)
+		return fmt.Errorf("getAssignees: %w", err)
 	}
 
 	// Poster can be anyone, append later if not one of assignees.
@@ -1167,7 +1167,7 @@ func updateIssueMentions(tx *gorm.DB, issueID int64, mentions []string) error {
 	users := make([]*User, 0, len(mentions))
 
 	if err := tx.Where("lower_name IN (?)", mentions).Order("lower_name ASC").Find(&users).Error; err != nil {
-		return fmt.Errorf("find mentioned users: %v", err)
+		return fmt.Errorf("find mentioned users: %w", err)
 	}
 
 	ids := make([]int64, 0, len(mentions))
@@ -1191,7 +1191,7 @@ func updateIssueMentions(tx *gorm.DB, issueID int64, mentions []string) error {
 	}
 
 	if err := updateIssueUsersByMentions(tx, issueID, ids); err != nil {
-		return fmt.Errorf("UpdateIssueUsersByMentions: %v", err)
+		return fmt.Errorf("UpdateIssueUsersByMentions: %w", err)
 	}
 
 	return nil

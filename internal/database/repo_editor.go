@@ -211,21 +211,21 @@ func (r *Repository) UpdateRepoFile(doer *User, opts UpdateRepoFileOptions) (err
 	}
 
 	if err := os.MkdirAll(path.Dir(newFilePath), os.ModePerm); err != nil {
-		return fmt.Errorf("create parent directories of %q: %w", newFilePath, err)
+		return fmt.Errorf("create parent directories of %q: %v", newFilePath, err)
 	}
 
 	if osx.IsFile(oldFilePath) && opts.OldTreeName != opts.NewTreeName {
 		if err := git.Move(localPath, opts.OldTreeName, opts.NewTreeName); err != nil {
-			return fmt.Errorf("git mv %q %q: %w", opts.OldTreeName, opts.NewTreeName, err)
+			return fmt.Errorf("git mv %q %q: %v", opts.OldTreeName, opts.NewTreeName, err)
 		}
 	}
 
 	if err := os.WriteFile(newFilePath, []byte(opts.Content), 0o600); err != nil {
-		return fmt.Errorf("write file: %v", err)
+		return fmt.Errorf("write file: %w", err)
 	}
 
 	if err := git.Add(localPath, git.AddOptions{All: true}); err != nil {
-		return fmt.Errorf("git add --all: %v", err)
+		return fmt.Errorf("git add --all: %w", err)
 	}
 	err = git.CreateCommit(
 		localPath,
@@ -291,9 +291,9 @@ func (r *Repository) GetDiffPreview(branch, treePath, content string) (*gitx.Dif
 	}
 
 	if err := os.MkdirAll(path.Dir(filePath), os.ModePerm); err != nil {
-		return nil, fmt.Errorf("create parent directories"+": %w", err)
+		return nil, fmt.Errorf("create parent directories"+": %v", err)
 	} else if err = os.WriteFile(filePath, []byte(content), 0o600); err != nil {
-		return nil, fmt.Errorf("write file: %v", err)
+		return nil, fmt.Errorf("write file: %w", err)
 	}
 
 	// 🚨 SECURITY: Prevent including unintended options in the path to the Git command.
@@ -303,11 +303,11 @@ func (r *Repository) GetDiffPreview(branch, treePath, content string) (*gitx.Dif
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("get stdout pipe: %v", err)
+		return nil, fmt.Errorf("get stdout pipe: %w", err)
 	}
 
 	if err = cmd.Start(); err != nil {
-		return nil, fmt.Errorf("start: %v", err)
+		return nil, fmt.Errorf("start: %w", err)
 	}
 
 	pid := process.Add(fmt.Sprintf("GetDiffPreview [repo_path: %s]", r.RepoPath()), cmd)
@@ -315,10 +315,10 @@ func (r *Repository) GetDiffPreview(branch, treePath, content string) (*gitx.Dif
 
 	diff, err := gitx.ParseDiff(stdout, conf.Git.MaxDiffFiles, conf.Git.MaxDiffLines, conf.Git.MaxDiffLineChars)
 	if err != nil {
-		return nil, fmt.Errorf("parse diff: %v", err)
+		return nil, fmt.Errorf("parse diff: %w", err)
 	}
 	if err = cmd.Wait(); err != nil {
-		return nil, fmt.Errorf("wait: %v", err)
+		return nil, fmt.Errorf("wait: %w", err)
 	}
 	return diff, nil
 }
@@ -389,7 +389,7 @@ func (r *Repository) DeleteRepoFile(doer *User, opts DeleteRepoFileOptions) (err
 	}
 
 	if err = git.Add(localPath, git.AddOptions{All: true}); err != nil {
-		return fmt.Errorf("git add --all: %v", err)
+		return fmt.Errorf("git add --all: %w", err)
 	}
 
 	err = git.CreateCommit(
@@ -466,7 +466,7 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 	localPath := upload.LocalPath()
 	tempPath := localPath + ".tmp"
 	if err = os.MkdirAll(path.Dir(tempPath), os.ModePerm); err != nil {
-		return nil, fmt.Errorf("mkdir all: %v", err)
+		return nil, fmt.Errorf("mkdir all: %w", err)
 	}
 
 	fsTx := fsx.NewTransaction()
@@ -474,14 +474,14 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 
 	fw, err := os.Create(tempPath)
 	if err != nil {
-		return nil, fmt.Errorf("create: %v", err)
+		return nil, fmt.Errorf("create: %w", err)
 	}
 	defer func() { _ = fw.Close() }()
 
 	if _, err = fw.Write(buf); err != nil {
-		return nil, fmt.Errorf("write: %v", err)
+		return nil, fmt.Errorf("write: %w", err)
 	} else if _, err = io.Copy(fw, file); err != nil {
-		return nil, fmt.Errorf("copy: %v", err)
+		return nil, fmt.Errorf("copy: %w", err)
 	}
 	_ = fw.Close()
 
@@ -492,7 +492,7 @@ func NewUpload(name string, buf []byte, file multipart.File) (_ *Upload, err err
 	}
 
 	if err = fsTx.Commit(); err != nil {
-		return nil, fmt.Errorf("commit fs transaction"+": %w", err)
+		return nil, fmt.Errorf("commit fs transaction"+": %v", err)
 	}
 
 	return upload, nil
@@ -535,7 +535,7 @@ func DeleteUploads(uploads ...*Upload) (err error) {
 			ids[i] = uploads[i].ID
 		}
 		if err = tx.Where("id IN (?)", ids).Delete(new(Upload)).Error; err != nil {
-			return fmt.Errorf("delete uploads: %v", err)
+			return fmt.Errorf("delete uploads: %w", err)
 		}
 
 		for _, upload := range uploads {
@@ -545,7 +545,7 @@ func DeleteUploads(uploads ...*Upload) (err error) {
 			}
 
 			if err := fsTx.StageDelete(localPath, localPath+".trash"); err != nil {
-				return fmt.Errorf("stage delete"+": %w", err)
+				return fmt.Errorf("stage delete"+": %v", err)
 			}
 		}
 		return nil
@@ -571,7 +571,7 @@ func DeleteUploadByUUID(uuid string) error {
 	}
 
 	if err := DeleteUpload(upload); err != nil {
-		return fmt.Errorf("delete upload: %v", err)
+		return fmt.Errorf("delete upload: %w", err)
 	}
 
 	return nil
@@ -669,17 +669,17 @@ func (r *Repository) UploadRepoFiles(doer *User, opts UploadRepoFileOptions) err
 		}
 
 		if err = iox.CopyFile(tmpPath, targetPath); err != nil {
-			return fmt.Errorf("copy: %v", err)
+			return fmt.Errorf("copy: %w", err)
 		}
 
 		// Stage deletion of temporary upload file
 		if err = fsTx.StageDelete(tmpPath, tmpPath+".trash"); err != nil {
-			return fmt.Errorf("stage upload cleanup"+": %w", err)
+			return fmt.Errorf("stage upload cleanup"+": %v", err)
 		}
 	}
 
 	if err = git.Add(localPath, git.AddOptions{All: true}); err != nil {
-		return fmt.Errorf("git add --all: %v", err)
+		return fmt.Errorf("git add --all: %w", err)
 	}
 
 	err = git.CreateCommit(

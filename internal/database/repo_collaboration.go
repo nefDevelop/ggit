@@ -99,7 +99,7 @@ func (c *Collaborator) APIFormat() *apiv2types.RepositoryCollaboratorResponse {
 func (r *Repository) getCollaborators(tx *gorm.DB) ([]*Collaborator, error) {
 	collaborations, err := r.getCollaborations(tx)
 	if err != nil {
-		return nil, fmt.Errorf("getCollaborations: %v", err)
+		return nil, fmt.Errorf("getCollaborations: %w", err)
 	}
 
 	collaborators := make([]*Collaborator, len(collaborations))
@@ -134,7 +134,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil
 		}
-		return fmt.Errorf("get collaboration: %v", err)
+		return fmt.Errorf("get collaboration: %w", err)
 	}
 
 	if collaboration.Mode == mode {
@@ -157,7 +157,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 
 	return Handle.db.Transaction(func(tx *gorm.DB) error {
 		if err = tx.Model(collaboration).Updates(collaboration).Error; err != nil {
-			return fmt.Errorf("update collaboration: %v", err)
+			return fmt.Errorf("update collaboration: %w", err)
 		}
 
 		access := &Access{
@@ -166,7 +166,7 @@ func (r *Repository) ChangeCollaborationAccessMode(userID int64, mode domain.Acc
 		}
 		err = tx.Where("user_id = ? AND repo_id = ?", userID, r.ID).First(access).Error
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-			return fmt.Errorf("get access record: %v", err)
+			return fmt.Errorf("get access record: %w", err)
 		}
 
 		if err == nil {

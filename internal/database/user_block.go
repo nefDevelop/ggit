@@ -43,7 +43,7 @@ func (s *UserBlocksStore) ListByUserID(ctx context.Context, userID int64) ([]*do
 		Where("user_block.user_id = ?", userID).
 		Find(&users).Error
 	if err != nil {
-		return nil, fmt.Errorf("list blocked users"+": %w", err)
+		return nil, fmt.Errorf("list blocked users"+": %v", err)
 	}
 
 	res := make([]*domain.User, len(users))

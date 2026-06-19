@@ -163,7 +163,7 @@ func (s *ActionsStore) ListAuditLog(ctx context.Context, page int) ([]*domain.Ac
 func (s *ActionsStore) notifyWatchers(ctx context.Context, act *Action) error {
 	watches, err := NewRepositoriesStore(s.db).ListWatches(ctx, act.RepoID)
 	if err != nil {
-		return fmt.Errorf("list watches"+": %w", err)
+		return fmt.Errorf("list watches"+": %v", err)
 	}
 
 	// Clone returns a deep copy of the action with UserID assigned
@@ -444,12 +444,12 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 
 	err := NewRepositoriesStore(s.db).Touch(ctx, optionsValue.Repo.ID)
 	if err != nil {
-		return fmt.Errorf("touch repository"+": %w", err)
+		return fmt.Errorf("touch repository"+": %v", err)
 	}
 
 	pusher, err := NewUsersStore(s.db).getByUsername(ctx, optionsValue.PusherName)
 	if err != nil {
-		return fmt.Errorf("get pusher [name: %s]: %w", optionsValue.PusherName, err)
+		return fmt.Errorf("get pusher [name: %s]: %v", optionsValue.PusherName, err)
 	}
 
 	isNewRef := optionsValue.OldCommitID == git.EmptyID
@@ -487,13 +487,13 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 			},
 		)
 		if err != nil {
-			return fmt.Errorf("prepare webhooks for delete branch"+": %w", err)
+			return fmt.Errorf("prepare webhooks for delete branch"+": %v", err)
 		}
 
 		action.OpType = ActionDeleteBranch
 		err = s.notifyWatchers(ctx, action)
 		if err != nil {
-			return fmt.Errorf("notify watchers"+": %w", err)
+			return fmt.Errorf("notify watchers"+": %v", err)
 		}
 
 		// Delete branch doesn't have anything to push or compare
@@ -503,7 +503,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 	// Only update issues via commits when internal issue tracker is enabled
 	if optionsValue.Repo.EnableIssues && !optionsValue.Repo.EnableExternalTracker {
 		if err = updateCommitReferencesToIssues(pusher, optionsValue.Repo, optionsValue.Commits.Commits); err != nil {
-			log.Error("update commit references to issues: %v", err)
+			log.Error("%v", err)
 		}
 	}
 
@@ -513,7 +513,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 
 	data, err := json.Marshal(optionsValue.Commits)
 	if err != nil {
-		return fmt.Errorf("marshal JSON"+": %w", err)
+		return fmt.Errorf("marshal JSON"+": %v", err)
 	}
 	action.Content = string(data)
 
@@ -532,13 +532,13 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 			},
 		)
 		if err != nil {
-			return fmt.Errorf("prepare webhooks for new branch"+": %w", err)
+			return fmt.Errorf("prepare webhooks for new branch"+": %v", err)
 		}
 
 		action.OpType = ActionCreateBranch
 		err = s.notifyWatchers(ctx, action)
 		if err != nil {
-			return fmt.Errorf("notify watchers"+": %w", err)
+			return fmt.Errorf("notify watchers"+": %v", err)
 		}
 	} else {
 		compareURL = conf.Server.ExternalURL + optionsValue.Commits.CompareURL
@@ -550,7 +550,7 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 		repox.HTMLURL(optionsValue.Owner.Name, optionsValue.Repo.Name),
 	)
 	if err != nil {
-		return fmt.Errorf("convert commits to API format"+": %w", err)
+		return fmt.Errorf("convert commits to API format"+": %v", err)
 	}
 
 	err = PrepareWebhooks(
@@ -568,13 +568,13 @@ func (s *ActionsStore) CommitRepo(ctx context.Context, opts any) error {
 		},
 	)
 	if err != nil {
-		return fmt.Errorf("prepare webhooks for new commit"+": %w", err)
+		return fmt.Errorf("prepare webhooks for new commit"+": %v", err)
 	}
 
 	action.OpType = ActionCommitRepo
 	err = s.notifyWatchers(ctx, action)
 	if err != nil {
-		return fmt.Errorf("notify watchers"+": %w", err)
+		return fmt.Errorf("notify watchers"+": %v", err)
 	}
 	return nil
 }
@@ -600,12 +600,12 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
 
 	err := NewRepositoriesStore(s.db).Touch(ctx, options.Repo.ID)
 	if err != nil {
-		return fmt.Errorf("touch repository"+": %w", err)
+		return fmt.Errorf("touch repository"+": %v", err)
 	}
 
 	pusher, err := NewUsersStore(s.db).getByUsername(ctx, options.PusherName)
 	if err != nil {
-		return fmt.Errorf("get pusher [name: %s]: %w", options.PusherName, err)
+		return fmt.Errorf("get pusher [name: %s]: %v", options.PusherName, err)
 	}
 
 	refName := git.RefShortName(options.RefFullName)
@@ -634,13 +634,13 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
 			},
 		)
 		if err != nil {
-			return fmt.Errorf("prepare webhooks for delete tag"+": %w", err)
+			return fmt.Errorf("prepare webhooks for delete tag"+": %v", err)
 		}
 
 		action.OpType = ActionDeleteTag
 		err = s.notifyWatchers(ctx, action)
 		if err != nil {
-			return fmt.Errorf("notify watchers"+": %w", err)
+			return fmt.Errorf("notify watchers"+": %v", err)
 		}
 		return nil
 	}
@@ -665,7 +665,7 @@ func (s *ActionsStore) PushTag(ctx context.Context, opts any) error {
 	action.OpType = ActionPushTag
 	err = s.notifyWatchers(ctx, action)
 	if err != nil {
-		return fmt.Errorf("notify watchers"+": %w", err)
+		return fmt.Errorf("notify watchers"+": %v", err)
 	}
 	return nil
 }
