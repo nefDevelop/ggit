@@ -178,7 +178,7 @@ func UpdateOrgProtectBranch(repo *Repository, protectBranch *ProtectBranch, whit
 		userIDs := tool.StringsToInt64s(strings.Split(whitelistUserIDs, ","))
 		validUserIDs = make([]int64, 0, len(userIDs))
 		for _, userID := range userIDs {
-			if !Handle.Permissions().Authorize(context.TODO(), userID, repo.ID, domain.AccessModeWrite,
+			if !Handle.Permissions().Authorize(context.Background(), userID, repo.ID, domain.AccessModeWrite,
 				domain.AccessModeOptions{
 					OwnerID: repo.OwnerID,
 					Private: repo.IsPrivate,

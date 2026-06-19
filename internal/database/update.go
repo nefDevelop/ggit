@@ -47,7 +47,7 @@ type PushUpdateOptions struct {
 // PushUpdate must be called for any push actions in order to generate necessary
 // push action history feeds.
 func PushUpdate(opts PushUpdateOptions) (err error) {
-	ctx := context.TODO()
+	ctx := context.Background()
 
 	isNewRef := strings.HasPrefix(opts.OldCommitID, git.EmptyID)
 	isDelRef := strings.HasPrefix(opts.NewCommitID, git.EmptyID)

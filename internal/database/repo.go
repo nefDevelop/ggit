@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	stdSync "sync"
 	"time"
 
 	"github.com/gogs/git-module"
@@ -690,7 +691,7 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 		if len(user) != 0 {
 			p.Admin = user[0].IsAdmin
 			accessMode := Handle.Permissions().AccessMode(
-				context.TODO(),
+				context.Background(),
 				user[0].ID,
 				r.ID,
 				domain.AccessModeOptions{
@@ -706,7 +707,7 @@ func (r *Repository) APIFormatLegacy(permission *apiv2types.RepositoryPermission
 		p := &apiv2types.RepositoryPermission{Pull: true}
 		if len(user) != 0 {
 			accessMode := Handle.Permissions().AccessMode(
-				context.TODO(),
+				context.Background(),
 				user[0].ID,
 				r.ID,
 				domain.AccessModeOptions{
@@ -908,7 +909,7 @@ func (r *Repository) GetAssignees() (_ []*User, err error) {
 
 // GetAssigneeByID returns the user that has write access of repository by given ID.
 func (r *Repository) GetAssigneeByID(userID int64) (*User, error) {
-	ctx := context.TODO()
+	ctx := context.Background()
 	if !Handle.Permissions().Authorize(
 		ctx,
 		userID,
@@ -971,7 +972,7 @@ func (r *Repository) ComposeCompareURL(oldCommitID, newCommitID string) string {
 }
 
 func (r *Repository) HasAccess(userID int64) bool {
-	return Handle.Permissions().Authorize(context.TODO(), userID, r.ID, domain.AccessModeRead,
+	return Handle.Permissions().Authorize(context.Background(), userID, r.ID, domain.AccessModeRead,
 		domain.AccessModeOptions{
 			OwnerID: r.OwnerID,
 			Private: r.IsPrivate,
@@ -1007,9 +1008,12 @@ func (r *Repository) CanEnableEditor() bool {
 	return true
 }
 
-// FIXME: should have a mutex to prevent producing same index for two issues that are created
-// closely enough.
+var issueIndexMu stdSync.Mutex
+
 func (r *Repository) NextIssueIndex() int64 {
+	issueIndexMu.Lock()
+	defer issueIndexMu.Unlock()
+
 	var index int64
 	Handle.db.Model(&Issue{}).Where("repo_id = ?", r.ID).Select("MAX(\"index\")").Row().Scan(&index)
 	return index + 1
@@ -1582,7 +1586,7 @@ func CreateRepository(doer, owner *User, opts CreateRepoOptionsLegacy) (_ *Repos
 	}
 
 	// Remember visibility preference
-	err = Handle.Users().Update(context.TODO(), owner.ID, UpdateUserOptions{LastRepoVisibility: &repo.IsPrivate})
+	err = Handle.Users().Update(context.Background(), owner.ID, UpdateUserOptions{LastRepoVisibility: &repo.IsPrivate})
 	if err != nil {
 		return nil, fmt.Errorf("update user"+": %w", err)
 	}
@@ -1676,7 +1680,7 @@ func RepoPath(userName, repoName string) string {
 
 // TransferOwnership transfers all corresponding setting from old user to new one.
 func TransferOwnership(doer *User, newOwnerName string, repo *Repository) error {
-	u, err := Handle.Users().GetByUsername(context.TODO(), newOwnerName)
+	u, err := Handle.Users().GetByUsername(context.Background(), newOwnerName)
 	if err != nil {
 		return fmt.Errorf("get new owner '%s': %v", newOwnerName, err)
 	}
@@ -1938,7 +1942,7 @@ func DeleteRepository(ownerID, repoID int64) error {
 	}
 
 	// In case is a organization.
-	u, err := Handle.Users().GetByID(context.TODO(), ownerID)
+	u, err := Handle.Users().GetByID(context.Background(), ownerID)
 	if err != nil {
 		return err
 	}
@@ -2091,7 +2095,7 @@ func GetRepositoryByRef(ref string) (*Repository, error) {
 	}
 
 	userName, repoName := ref[:n], ref[n+1:]
-	user, err := Handle.Users().GetByUsername(context.TODO(), userName)
+	user, err := Handle.Users().GetByUsername(context.Background(), userName)
 	if err != nil {
 		return nil, err
 	}
@@ -2312,7 +2316,7 @@ func DeleteOldRepositoryArchives() {
 					const fmtStr = "Failed to health delete archive %q: %v"
 					log.Warn(fmtStr, archivePath, err)
 					if err = Handle.Notices().Create(
-						context.TODO(),
+						context.Background(),
 						NoticeTypeRepository,
 						fmt.Sprintf(fmtStr, archivePath, err),
 					); err != nil {
@@ -2348,7 +2352,7 @@ func DeleteRepositoryArchives() error {
 func gatherMissingRepoRecords() ([]*Repository, error) {
 	var repos []*Repository
 	if err := Handle.db.Find(&repos).Error; err != nil {
-		if err2 := Handle.Notices().Create(context.TODO(), NoticeTypeRepository, fmt.Sprintf("gatherMissingRepoRecords: %v", err)); err2 != nil {
+		if err2 := Handle.Notices().Create(context.Background(), NoticeTypeRepository, fmt.Sprintf("gatherMissingRepoRecords: %v", err)); err2 != nil {
 			return nil, fmt.Errorf("CreateRepositoryNotice: %v", err)
 		}
 		return nil, err
@@ -2377,7 +2381,7 @@ func DeleteMissingRepositories() error {
 	for _, repo := range repos {
 		log.Trace("Deleting %d/%d...", repo.OwnerID, repo.ID)
 		if err := DeleteRepository(repo.OwnerID, repo.ID); err != nil {
-			if err2 := Handle.Notices().Create(context.TODO(), NoticeTypeRepository, fmt.Sprintf("DeleteRepository [%d]: %v", repo.ID, err)); err2 != nil {
+			if err2 := Handle.Notices().Create(context.Background(), NoticeTypeRepository, fmt.Sprintf("DeleteRepository [%d]: %v", repo.ID, err)); err2 != nil {
 				return fmt.Errorf("CreateRepositoryNotice: %v", err)
 			}
 		}
@@ -2399,7 +2403,7 @@ func ReinitMissingRepositories() error {
 	for _, repo := range repos {
 		log.Trace("Initializing %d/%d...", repo.OwnerID, repo.ID)
 		if err := git.Init(repo.RepoPath(), git.InitOptions{Bare: true}); err != nil {
-			if err2 := Handle.Notices().Create(context.TODO(), NoticeTypeRepository, fmt.Sprintf("init repository [repo_id: %d]: %v", repo.ID, err)); err2 != nil {
+			if err2 := Handle.Notices().Create(context.Background(), NoticeTypeRepository, fmt.Sprintf("init repository [repo_id: %d]: %v", repo.ID, err)); err2 != nil {
 				return fmt.Errorf("create repository notice: %v", err)
 			}
 		}
@@ -2513,7 +2517,7 @@ func GitFsck() {
 			const fmtStr = "Failed to perform health check on repository %q: %v"
 			log.Warn(fmtStr, repoPath, err)
 			_ = Handle.Notices().Create(
-				context.TODO(),
+				context.Background(),
 				NoticeTypeRepository,
 				fmt.Sprintf(fmtStr, repoPath, err),
 			)
@@ -2987,7 +2991,7 @@ func ForkRepository(doer, owner *User, baseRepo *Repository, name, desc string) 
 	}
 
 	// Remember visibility preference
-	err = Handle.Users().Update(context.TODO(), owner.ID, UpdateUserOptions{LastRepoVisibility: &repo.IsPrivate})
+	err = Handle.Users().Update(context.Background(), owner.ID, UpdateUserOptions{LastRepoVisibility: &repo.IsPrivate})
 	if err != nil {
 		return nil, fmt.Errorf("update user"+": %w", err)
 	}

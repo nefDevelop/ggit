@@ -134,7 +134,7 @@ func CreateOrganization(org, owner *User) (err error) {
 		return err
 	}
 
-	if Handle.Users().IsUsernameUsed(context.TODO(), org.Name, 0) {
+	if Handle.Users().IsUsernameUsed(context.Background(), org.Name, 0) {
 		return ErrUserAlreadyExist{
 			args: errx.Args{
 				"name": org.Name,
@@ -250,7 +250,7 @@ func deleteBeans(tx *gorm.DB, beans ...any) (err error) {
 
 // DeleteOrganization completely and permanently deletes everything of organization.
 func DeleteOrganization(org *User) error {
-	err := Handle.Users().DeleteByID(context.TODO(), org.ID, false)
+	err := Handle.Users().DeleteByID(context.Background(), org.ID, false)
 	if err != nil {
 		return err
 	}
@@ -399,13 +399,13 @@ func RemoveOrgUser(orgID, userID int64) error {
 		return fmt.Errorf("get org-user: %v", err)
 	}
 
-	u, err := Handle.Users().GetByID(context.TODO(), userID)
+	u, err := Handle.Users().GetByID(context.Background(), userID)
 	if err != nil {
 		return fmt.Errorf("GetByID [%d]: %v", userID, err)
 	}
 	user := FromDomainUser(u)
 
-	o, err := Handle.Users().GetByID(context.TODO(), orgID)
+	o, err := Handle.Users().GetByID(context.Background(), orgID)
 	if err != nil {
 		return fmt.Errorf("GetByID [%d]: %v", orgID, err)
 	}

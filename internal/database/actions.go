@@ -368,7 +368,7 @@ func updateCommitReferencesToIssues(doer *User, repo *Repository, commits []*Pus
 				continue
 			}
 
-			if err = issue.ChangeStatus(context.TODO(), doer, repo, true); err != nil {
+			if err = issue.ChangeStatus(context.Background(), doer, repo, true); err != nil {
 				return err
 			}
 		}
@@ -408,7 +408,7 @@ func updateCommitReferencesToIssues(doer *User, repo *Repository, commits []*Pus
 				continue
 			}
 
-			if err = issue.ChangeStatus(context.TODO(), doer, repo, false); err != nil {
+			if err = issue.ChangeStatus(context.Background(), doer, repo, false); err != nil {
 				return err
 			}
 		}

@@ -457,7 +457,7 @@ func parseUserFromCode(code string) *database.User {
 	}
 	hexStr := code[tool.TimeLimitCodeLength:]
 	if b, err := hex.DecodeString(hexStr); err == nil {
-		if user, err := database.Handle.Users().GetByUsername(gocontext.TODO(), string(b)); user != nil {
+		if user, err := database.Handle.Users().GetByUsername(gocontext.Background(), string(b)); user != nil {
 			return database.FromDomainUser(user)
 		} else if !database.IsErrUserNotExist(err) {
 			log.Error("Failed to get user by name %q: %v", string(b), err)
@@ -524,7 +524,7 @@ func verifyActiveEmailCode(code, email string) *domain.EmailAddress {
 		data := strconv.FormatInt(user.ID, 10) + email + user.LowerName + user.Password + user.Rands
 
 		if tool.VerifyTimeLimitCode(data, minutes, prefix) {
-			emailAddress, err := database.Handle.Users().GetEmail(gocontext.TODO(), user.ID, email, false)
+			emailAddress, err := database.Handle.Users().GetEmail(gocontext.Background(), user.ID, email, false)
 			if err == nil {
 				return emailAddress
 			}

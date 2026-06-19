@@ -163,7 +163,7 @@ func (c *Comment) AfterFind(_ *gorm.DB) error {
 
 func (c *Comment) loadAttributes(tx *gorm.DB) (err error) {
 	if c.Poster == nil {
-		u, err := Handle.Users().GetByID(context.TODO(), c.PosterID)
+		u, err := Handle.Users().GetByID(context.Background(), c.PosterID)
 		if err != nil {
 			if IsErrUserNotExist(err) {
 				c.PosterID = -1

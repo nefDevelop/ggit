@@ -254,7 +254,7 @@ func (pr *PullRequest) APIFormat() *apiv2types.PullRequestResponse {
 		CreatedAt:      pr.Issue.Created,
 		UpdatedAt:      pr.Issue.Updated,
 		AttentionState: int(pr.AttentionState),
-		CombinedStatus: string(Handle.CommitStatuses().GetCombinedStatusBySHA(context.TODO(), pr.BaseRepoID, pr.HeadCommitID)),
+		CombinedStatus: string(Handle.CommitStatuses().GetCombinedStatusBySHA(context.Background(), pr.BaseRepoID, pr.HeadCommitID)),
 	}
 
 	if pr.Status != PullRequestStatusChecking {
@@ -1020,7 +1020,7 @@ func addHeadRepoTasks(prs []*PullRequest) {
 		}
 
 		pr.AddToTaskQueue()
-		_ = pr.RefreshAttentionState(context.TODO(), Handle.db)
+		_ = pr.RefreshAttentionState(context.Background(), Handle.db)
 	}
 }
 

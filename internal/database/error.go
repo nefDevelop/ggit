@@ -274,7 +274,7 @@ type ErrUploadNotExist struct {
 }
 
 func IsErrUploadNotExist(err error) bool {
-	_, ok := err.(ErrAttachmentNotExist)
+	_, ok := err.(ErrUploadNotExist)
 	return ok
 }
 
