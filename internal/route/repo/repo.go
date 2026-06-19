@@ -5,6 +5,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/context"
@@ -12,6 +13,8 @@ import (
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/tool"
 )
+
+var archiveLocks sync.Map
 
 func Download(c *context.Context) {
 	var (
@@ -75,12 +78,19 @@ func Download(c *context.Context) {
 	}
 
 	archivePath = path.Join(archivePath, tool.ShortSHA1(commit.ID.String())+ext)
+
+	// Prevent concurrent writes to the same archive path (TOCTOU race)
+	v, _ := archiveLocks.LoadOrStore(archivePath, &sync.Mutex{})
+	mu := v.(*sync.Mutex)
+	mu.Lock()
 	if !osx.IsFile(archivePath) {
 		if err := commit.CreateArchive(archiveFormat, archivePath); err != nil {
+			mu.Unlock()
 			c.Error(err, "creates archive")
 			return
 		}
 	}
+	mu.Unlock()
 
 	c.ServeFile(archivePath, c.Repo.Repository.Name+"-"+refName+ext)
 }

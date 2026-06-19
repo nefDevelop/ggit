@@ -76,6 +76,7 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 
 	// Git HTTP
 	repoHTTP := r.Group("/:username/:reponame", repo.HTTPContexter(repo.NewStore()))
+	repoHTTP.Use(ginx.GitRateLimit(100, 20))
 	{
 		// LFS
 		lfs.RegisterRoutes(repoHTTP.Group("/info/lfs"))

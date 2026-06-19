@@ -390,6 +390,9 @@ func getRepoDirectory(c *context.APIContext) {
 	if c.Repo.Commit != nil {
 		log.Trace("GetRepoView: Fetching last commit for current path: %q", c.Repo.TreePath)
 		lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{Path: c.Repo.TreePath, MaxCount: 1})
+		if err != nil {
+			log.Warn("GetRepoView: git log failed for path %q: %v", c.Repo.TreePath, err)
+		}
 		if err == nil && len(lastCommit) > 0 {
 			lastCommitUser, _ := database.Handle.Users().GetByEmail(c.Req.Context(), lastCommit[0].Author.Email)
 			authorAvatarURL := resolveUserAvatarURL(database.FromDomainUser(lastCommitUser))

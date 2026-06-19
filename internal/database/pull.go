@@ -453,8 +453,7 @@ const (
 )
 
 // Merge merges pull request to base repository.
-func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle MergeStyle, commitDescription string) (err error) {
-	ctx := context.TODO()
+func (pr *PullRequest) Merge(ctx context.Context, doer *User, baseGitRepo *git.Repository, mergeStyle MergeStyle, commitDescription string) (err error) {
 
 	repoWorkingPool.CheckIn(strconv.FormatInt(pr.BaseRepoID, 10))
 	defer repoWorkingPool.CheckOut(strconv.FormatInt(pr.BaseRepoID, 10))
@@ -598,10 +597,12 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 		log.Error("Failed to create action for merge pull request, pull_request_id: %d, error: %v", pr.ID, err)
 	}
 
+	var postMergeErr error
+
 	// Reload pull request information.
 	if err = pr.LoadAttributes(); err != nil {
 		log.Error("LoadAttributes: %v", err)
-		return nil
+		postMergeErr = err
 	}
 	if err = PrepareWebhooks(pr.Issue.Repo, HookEventTypePullRequest, &apiv2types.WebhookPullRequestPayload{
 		Action:      apiv2types.WebhookIssueClosed,
@@ -611,48 +612,62 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 		Sender:      doer.APIFormat(),
 	}); err != nil {
 		log.Error("PrepareWebhooks: %v", err)
-		return nil
+		if postMergeErr == nil {
+			postMergeErr = err
+		}
 	}
 
 	commits, err := headGitRepo.RevList([]string{pr.MergeBase + "..." + pr.MergedCommitID})
 	if err != nil {
 		log.Error("Failed to list commits [merge_base: %s, merged_commit_id: %s]: %v", pr.MergeBase, pr.MergedCommitID, err)
-		return nil
+		if postMergeErr == nil {
+			postMergeErr = err
+		}
 	}
 
-	// NOTE: It is possible that head branch is not fully sync with base branch
-	// for merge commits, so we need to get latest head commit and append merge
-	// commit manually to avoid strange diff commits produced.
-	mergeCommit, err := baseGitRepo.BranchCommit(pr.BaseBranch)
-	if err != nil {
-		log.Error("Failed to get base branch %q commit: %v", pr.BaseBranch, err)
-		return nil
-	}
-	if mergeStyle == MergeStyleRegular {
-		commits = append([]*git.Commit{mergeCommit}, commits...)
+	if err == nil {
+		// NOTE: It is possible that head branch is not fully sync with base branch
+		// for merge commits, so we need to get latest head commit and append merge
+		// commit manually to avoid strange diff commits produced.
+		mergeCommit, err := baseGitRepo.BranchCommit(pr.BaseBranch)
+		if err != nil {
+			log.Error("Failed to get base branch %q commit: %v", pr.BaseBranch, err)
+			if postMergeErr == nil {
+				postMergeErr = err
+			}
+		} else {
+			if mergeStyle == MergeStyleRegular {
+				commits = append([]*git.Commit{mergeCommit}, commits...)
+			}
+
+			pcs, err := CommitsToPushCommits(commits).APIFormat(ctx, Handle.Users(), pr.BaseRepo.RepoPath(), pr.BaseRepo.HTMLURL())
+			if err != nil {
+				log.Error("Failed to convert to API payload commits: %v", err)
+				if postMergeErr == nil {
+					postMergeErr = err
+				}
+			} else {
+				p := &apiv2types.WebhookPushPayload{
+					Ref:        git.RefsHeads + pr.BaseBranch,
+					Before:     pr.MergeBase,
+					After:      mergeCommit.ID.String(),
+					CompareURL: conf.Server.ExternalURL + pr.BaseRepo.ComposeCompareURL(pr.MergeBase, pr.MergedCommitID),
+					Commits:    pcs,
+					Repo:       pr.BaseRepo.APIFormatLegacy(nil),
+					Pusher:     pr.HeadRepo.MustOwner().APIFormat(),
+					Sender:     doer.APIFormat(),
+				}
+				if err = PrepareWebhooks(pr.BaseRepo, HookEventTypePush, p); err != nil {
+					log.Error("Failed to prepare webhooks: %v", err)
+					if postMergeErr == nil {
+						postMergeErr = err
+					}
+				}
+			}
+		}
 	}
 
-	pcs, err := CommitsToPushCommits(commits).APIFormat(ctx, Handle.Users(), pr.BaseRepo.RepoPath(), pr.BaseRepo.HTMLURL())
-	if err != nil {
-		log.Error("Failed to convert to API payload commits: %v", err)
-		return nil
-	}
-
-	p := &apiv2types.WebhookPushPayload{
-		Ref:        git.RefsHeads + pr.BaseBranch,
-		Before:     pr.MergeBase,
-		After:      mergeCommit.ID.String(),
-		CompareURL: conf.Server.ExternalURL + pr.BaseRepo.ComposeCompareURL(pr.MergeBase, pr.MergedCommitID),
-		Commits:    pcs,
-		Repo:       pr.BaseRepo.APIFormatLegacy(nil),
-		Pusher:     pr.HeadRepo.MustOwner().APIFormat(),
-		Sender:     doer.APIFormat(),
-	}
-	if err = PrepareWebhooks(pr.BaseRepo, HookEventTypePush, p); err != nil {
-		log.Error("Failed to prepare webhooks: %v", err)
-		return nil
-	}
-	return nil
+	return postMergeErr
 }
 
 // testPatch checks if patch can be merged to base repository without conflict.

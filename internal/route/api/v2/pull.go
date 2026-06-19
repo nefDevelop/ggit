@@ -102,7 +102,7 @@ func MergePullRequest(c *context.APIContext) {
 		return
 	}
 
-	if err = issue.PullRequest.Merge(c.User, c.Repo.GitRepo, database.MergeStyleRegular, ""); err != nil {
+	if err = issue.PullRequest.Merge(c.Req.Context(), c.User, c.Repo.GitRepo, database.MergeStyleRegular, ""); err != nil {
 		c.Error(err, "merge pull request")
 		return
 	}

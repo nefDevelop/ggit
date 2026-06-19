@@ -30,6 +30,9 @@ func (module) PullRequestMeta(headPath, basePath, headBranch, baseBranch string)
 			return nil, fmt.Errorf("add remote: %v", err)
 		}
 		defer func() {
+			if r := recover(); r != nil {
+				log.Error("panic in PullRequestMeta: %v", r)
+			}
 			err := Module.RemoteRemove(headPath, tmpRemote)
 			if err != nil {
 				log.Error("Failed to remove remote %q [path: %s]: %v", tmpRemote, headPath, err)
