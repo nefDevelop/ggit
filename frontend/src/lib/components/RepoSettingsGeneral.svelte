@@ -28,7 +28,7 @@
     if (!repo?.data?.owner?.username || !repo?.data?.name) return;
     loading = true;
     try {
-      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`);
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`);
       if (res.ok) {
         settings = await res.json();
       }
@@ -43,7 +43,7 @@
     if (!settings) return;
     saving = true;
     try {
-      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
         method: "PATCH",
         body: JSON.stringify(settings),
       });
@@ -68,7 +68,7 @@
     try {
       const formData = new FormData();
       formData.append("avatar", file);
-      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}/avatar`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`, {
         method: "POST",
         body: formData,
       });
@@ -89,7 +89,7 @@
     if (!await dialog.confirm("¿Estás seguro de eliminar el logo del repositorio?")) return;
     avatarUploading = true;
     try {
-      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}/avatar`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/avatar`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -109,7 +109,7 @@
     if (!await dialog.confirm(`¿ESTÁS SEGURO? Esta acción es IRREVERSIBLE. Se eliminará el repositorio "${settings.name}" permanentemente.`)) return;
     saving = true;
     try {
-      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -128,7 +128,7 @@
     if (!newOwner) return;
     saving = true;
     try {
-      const res = await apiFetch(`/api/v2/repos/${repo.data.owner.username}/${repo.data.name}/transfer`, {
+      const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/transfer`, {
         method: "POST",
         body: JSON.stringify({ new_owner: newOwner }),
       });

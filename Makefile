@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend build build-swagger build-swagger-cdn rebuild clean help install sync test lint test-e2e kill-e2e clean-ports
+.PHONY: dev backend frontend build build-swagger build-swagger-cdn rebuild clean help install sync test test-frontend test-all lint test-e2e kill-e2e clean-ports
 
 # Variables de compilación
 PKG_PATH := github.com/nef734/ggit/internal/conf
@@ -59,8 +59,14 @@ build-swagger-cdn: build
 
 # Tests
 test:
-	@echo "Ejecutando tests..."
+	@echo "Ejecutando tests de Go..."
 	@GGIT_SKIP_RUN_USER_CHECK=true go test -v ./...
+
+test-frontend:
+	@echo "Ejecutando tests unitarios del frontend..."
+	@cd frontend && npx vitest run
+
+test-all: test test-frontend
 
 # Tests de Playwright (E2E)
 test-e2e: clean-ports build

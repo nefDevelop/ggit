@@ -10,7 +10,9 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"test:e2e": "playwright test"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.59.1",
@@ -18,12 +20,17 @@
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.57.0",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"@testing-library/jest-dom": "^6.9.1",
+		"@testing-library/svelte": "^5.3.1",
 		"@types/node": "^25.6.0",
+		"jsdom": "^26.1.0",
 		"lucide-svelte": "^1.0.1",
+		"msw": "^2.14.6",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
 		"typescript": "^6.0.2",
-		"vite": "^8.0.7"
+		"vite": "^8.0.7",
+		"vitest": "^3.2.6"
 	},
 	"dependencies": {
 		"@types/dompurify": "^3.0.5",
