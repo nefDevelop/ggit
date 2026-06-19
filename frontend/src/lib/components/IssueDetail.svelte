@@ -8,11 +8,10 @@
   import Select from "$lib/components/ui/Select.svelte";
   
 
-import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import Settings from "lucide-svelte/icons/settings";
-import X from "lucide-svelte/icons/x";
-import Calendar from "lucide-svelte/icons/calendar";
+  import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+  import AlertCircle from "lucide-svelte/icons/alert-circle";
+  import IssueTimeline from "./IssueTimeline.svelte";
+  import IssueSidebar from "./IssueSidebar.svelte";
 
 
 
@@ -25,20 +24,7 @@ import Calendar from "lucide-svelte/icons/calendar";
   let allMilestones = $state<any[]>([]);
   let loading = $state(true);
   let error = $state("");
-
-  let showLabelEditor = $state(false);
-  let showMilestoneEditor = $state(false);
-  let showAssigneeEditor = $state(false);
   let allCollaborators = $state<any[]>([]);
-
-  let labelOptions = $derived(allLabels.map((l: any) => ({ value: l.id, label: l.name })));
-  let milestoneOptions = $derived([
-    { value: 0, label: 'No Milestone' },
-    ...allMilestones.map(m => ({ value: m.id, label: m.title }))
-  ]);
-
-  let newCommentBody = $state("");
-  let submitting = $state(false);
 
   async function fetchIssueDetail() {
     loading = true;
@@ -164,204 +150,9 @@ import Calendar from "lucide-svelte/icons/calendar";
     </header>
 
     <div class="issue-layout">
-      <div class="timeline">
-        <!-- Original post -->
-        <div class="timeline-item main-post">
-          <Avatar
-            src={issue.user?.avatar_url}
-            username={issue.user?.username}
-            size={48}
-            class="item-avatar"
-          />
-          <div class="item-card-flat">
-            <div class="item-header">
-              <a href="/{issue.user?.username}" class="user-link">{issue.user?.username}</a> commented {timeAgo(
-                issue.created_at,
-              )}
-            </div>
-            <div class="item-body">
-              <MarkdownRenderer 
-                content={issue.body} 
-                repoContext={{owner: repo.data.owner.username, name: repo.data.name}}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="timeline-divider"></div>
-
-        <!-- Comments -->
-        {#each comments as comment}
-          <div class="timeline-item">
-            <Avatar
-              src={comment.user?.avatar_url}
-              username={comment.user?.username}
-              size={48}
-              class="item-avatar"
-            />
-            <div class="item-card-flat">
-              <div class="item-header">
-                <a href="/{comment.user?.username}" class="user-link">{comment.user?.username}</a> commented {timeAgo(
-                  comment.created_at,
-                )}
-              </div>
-              <div class="item-body">
-                <MarkdownRenderer 
-                  content={comment.body} 
-                  repoContext={{owner: repo.data.owner.username, name: repo.data.name}}
-                />
-              </div>
-            </div>
-          </div>
-        {/each}
-
-        <!-- Add Comment -->
-        <div class="timeline-item new-comment-item">
-          <Avatar
-            username={issue.user?.username}
-            size={48}
-            class="item-avatar pulse"
-          />
-          <div class="item-card-flat">
-            <textarea
-              placeholder="Leave a comment..."
-              bind:value={newCommentBody}
-              disabled={submitting}
-            ></textarea>
-            <div class="comment-actions">
-              <button
-                class="btn-action-primary"
-                onclick={postComment}
-                disabled={submitting || !newCommentBody.trim()}
-              >
-                {submitting ? "Posting..." : "Post Comment"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="sidebar">
-        <div class="side-item">
-          <div class="side-header">
-            <h4 class="side-title">Assignee</h4>
-            <Button 
-              variant="ghost" 
-              icon={showAssigneeEditor ? X : Settings} 
-              size="sm" 
-              onclick={() => showAssigneeEditor = !showAssigneeEditor}
-            />
-          </div>
-          <div class="side-val">
-            {#if showAssigneeEditor}
-              <div class="editor-popover">
-                <Select 
-                  options={[{value: 0, label: 'Unassigned'}, ...allCollaborators.map(c => ({ value: c.id, label: c.username }))]} 
-                  value={issue.assignee?.id || 0}
-                  onchange={(id) => {
-                    updateIssue({ assignee_id: id === 0 ? -1 : id });
-                    showAssigneeEditor = false;
-                  }}
-                />
-              </div>
-            {/if}
-            {#if issue.assignee}
-              <div class="user-pill">
-                <Avatar
-                  src={issue.assignee.avatar_url}
-                  username={issue.assignee.username}
-                  size={24}
-                />
-                {issue.assignee.username}
-              </div>
-            {:else}
-              <span class="muted">No one assigned</span>
-            {/if}
-          </div>
-        </div>
-
-        <div class="side-item">
-          <div class="side-header">
-            <h4 class="side-title">Labels</h4>
-            <Button 
-              variant="ghost" 
-              icon={showLabelEditor ? X : Settings} 
-              size="sm" 
-              onclick={() => showLabelEditor = !showLabelEditor} 
-            />
-          </div>
-          <div class="side-val">
-            {#if showLabelEditor}
-              <div class="editor-popover">
-                <Select 
-                  options={[{value: 0, label: 'Add Label...'}, ...labelOptions.filter(opt => !issue.labels?.some((l: any) => l.id === opt.value))]} 
-                  value={0}
-                  onchange={(id) => {
-                    if (id === 0) return;
-                    const newLabels = [...(issue.labels || []).map((l: any) => l.id), id];
-                    updateIssue({ label_ids: newLabels });
-                  }}
-                />
-              </div>
-            {/if}
-            <div class="labels-grid">
-              {#each issue.labels || [] as label}
-                <span class="label-tag" style="background: {label.color}" class:scoped={label.name.includes('::')}>
-                  {#if label.name.includes('::')}
-                    {@const [key, val] = label.name.split('::')}
-                    <span class="key">{key}</span>
-                    <span class="val">{val}</span>
-                  {:else}
-                    {label.name}
-                  {/if}
-                  {#if showLabelEditor}
-                    <button class="remove-label" onclick={() => {
-                      const newLabels = issue.labels.filter((l: any) => l.id !== label.id).map((l: any) => l.id);
-                      updateIssue({ label_ids: newLabels });
-                    }}>×</button>
-                  {/if}
-                </span>
-              {/each}
-              {#if !issue.labels?.length && !showLabelEditor}
-                <span class="muted">None yet</span>
-              {/if}
-            </div>
-          </div>
-        </div>
-
-        <div class="side-item">
-          <div class="side-header">
-            <h4 class="side-title">Milestone</h4>
-            <Button 
-              variant="ghost" 
-              icon={showMilestoneEditor ? X : Settings} 
-              size="sm" 
-              onclick={() => showMilestoneEditor = !showMilestoneEditor} 
-            />
-          </div>
-          <div class="side-val">
-            {#if showMilestoneEditor}
-              <div class="editor-popover">
-                <Select 
-                  options={milestoneOptions} 
-                  value={issue.milestone?.id || 0}
-                  onchange={(id) => {
-                    updateIssue({ milestone_id: id === 0 ? -1 : id }); // -1 usually means remove in some APIs, or 0. Check Gogs API.
-                    showMilestoneEditor = false;
-                  }}
-                />
-              </div>
-            {:else if issue.milestone}
-              <div class="milestone-pill">
-                <Calendar size={16} />
-                {issue.milestone.title}
-              </div>
-            {:else}
-              <span class="muted">No milestone</span>
-            {/if}
-          </div>
-        </div>
-      </aside>
+      <IssueTimeline {issue} {comments} repoOwner={repo.data.owner.username} repoName={repo.data.name}
+        onCommentPosted={(c) => { comments = [...comments, c]; }} />
+      <IssueSidebar {issue} {allLabels} {allMilestones} {allCollaborators} onUpdate={updateIssue} />
     </div>
   {/if}
 </div>

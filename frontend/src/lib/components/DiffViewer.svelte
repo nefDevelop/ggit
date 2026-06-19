@@ -15,6 +15,8 @@ import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
   import ReviewCommentComposer from "./ReviewCommentComposer.svelte";
   import MarkdownRenderer from "./ui/MarkdownRenderer.svelte";
   import hljs from "$lib/hljs";
+  import DiffStats from "./DiffStats.svelte";
+  import DiffInlineComment from "./DiffInlineComment.svelte";
 
   let { diff, allowComments = false, comments = [], onAddComment, onResolveComment } = $props<{ 
     diff: any, 
@@ -86,20 +88,7 @@ import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
 </script>
 
 <div class="diff-viewer">
-  <div class="diff-stats">
-    <div class="stat-item">
-      <Layers size={18} />
-      <b>{diff?.Files?.length || 0}</b> archivos cambiados
-    </div>
-    <div class="stat-item success">
-      <Plus size={16} />
-      <b>{totalAdditions}</b> adiciones
-    </div>
-    <div class="stat-item error">
-      <Minus size={16} />
-      <b>{totalDeletions}</b> eliminaciones
-    </div>
-  </div>
+  <DiffStats files={diff?.Files?.length || 0} {totalAdditions} {totalDeletions} />
 
   <div class="diff-files">
     {#each diff?.Files || [] as file}
@@ -160,29 +149,7 @@ import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
                     <!-- Existing Comments -->
                     {#if line.RightLine}
                       {#each getLineComments(file.Name, line.RightLine) as comment}
-                        <div class="inline-comment-box tonal" class:resolved={comment.is_resolved}>
-                          <header class="comment-header">
-                             <div class="header-left">
-                                <strong>{comment.reviewer?.username || 'Usuario'}</strong>
-                                {#if comment.is_resolved}
-                                  <span class="resolved-tag">
-                                    Resolved
-                                  </span>
-                                {/if}
-                             </div>
-                             <div class="header-right">
-                               {#if allowComments}
-                                 <button class="resolve-btn" onclick={() => onResolveComment?.(comment.id, !comment.is_resolved)}>
-                                   {comment.is_resolved ? 'Unresolve' : 'Resolve'}
-                                 </button>
-                               {/if}
-                               <span class="time">{new Date(comment.created_at || Date.now()).toLocaleTimeString()}</span>
-                             </div>
-                          </header>
-                          <div class="comment-body">
-                             <MarkdownRenderer content={comment.content} />
-                          </div>
-                        </div>
+                        <DiffInlineComment {comment} {allowComments} onResolve={onResolveComment} />
                       {/each}
                     {/if}
 
