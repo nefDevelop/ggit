@@ -25,6 +25,8 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   import ViewHeader from './ui/ViewHeader.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   import Button from './ui/Button.svelte';
+  import DashboardInbox from './DashboardInbox.svelte';
+  import DashboardSidebar from './DashboardSidebar.svelte';
 
   let data = $state<{
     repositories: any[],
@@ -255,44 +257,7 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
                         {/each}
                     {/if}
                 {:else if viewMode === 'inbox'}
-                    <div class="inbox-stream">
-                        {#if inboxLoading && inboxItems.length === 0}
-                            <div class="skeleton-list">
-                                {#each Array(3) as _}<div class="skeleton-row"></div>{/each}
-                            </div>
-                        {:else if inboxItems.length === 0}
-                            <div class="empty-dashboard">
-                                <CheckCircle2 size={48} />
-                                <h3>You're all caught up!</h3>
-                                <p>No issues or pull requests assigned to you.</p>
-                            </div>
-                        {:else}
-                            {#each inboxItems as item}
-                                <a href={`/${item.repo_owner}/${item.repo_name}/${item.is_pull ? 'pulls' : 'issues'}/${item.index}`} class="inbox-card tonal">
-                                    <div class="inbox-icon {item.is_pull ? 'pull' : 'issue'}">
-                                        {#if item.is_pull}
-                                            <GitPullRequest size={20} />
-                                        {:else}
-                                            <AlertCircle size={20} />
-                                        {/if}
-                                    </div>
-                                    <div class="inbox-content">
-                                        <div class="inbox-repo-line">
-                                            {item.repo_owner} / {item.repo_name}
-                                        </div>
-                                        <div class="inbox-title-line">
-                                            <span class="index">#{item.index}</span>
-                                            <span class="title">{item.title}</span>
-                                        </div>
-                                        <div class="inbox-meta-line">
-                                            <img src={item.poster_avatar} alt={item.poster_name} class="mini-avatar" />
-                                            <span>Opened by {item.poster_name} • {new Date(item.updated_at * 1000).toLocaleDateString()}</span>
-                                        </div>
-                                    </div>
-                                </a>
-                            {/each}
-                        {/if}
-                    </div>
+                    <DashboardInbox {inboxItems} {inboxLoading} />
                 {/if}
                 </div>
             {/if}
@@ -300,41 +265,7 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     </div>
 
     {#if hasSidebar}
-    <aside class="dashboard-sidebar">
-        {#if (data?.gists?.length ?? 0) > 0}
-            <div class="sidebar-card tonal">
-                <header class="sidebar-header">
-                    <ScrollText size={18} />
-                    <h4>Recent Gists</h4>
-                    <a href="/gists/new" class="mini-add-link" title="New Gist"><Plus size={16} /></a>
-                </header>
-                <div class="gist-mini-list">
-                    {#each data.gists.slice(0, 5) as gist}
-                        <a href="/gists/{gist.uuid}" class="gist-mini-item">
-                            <span class="gist-mini-title">{gist.description || 'Untitled'}</span>
-                        </a>
-                    {/each}
-                </div>
-            </div>
-        {/if}
-
-        {#if (data?.organizations?.length ?? 0) > 0 && userPrefs.current.showSidebarOrgs}
-            <div class="sidebar-card tonal">
-                <header class="sidebar-header">
-                    <Building2 size={18} />
-                    <h4>Organizations</h4>
-                    <a href="/org/create" class="mini-add-link" title="New Org"><Plus size={16} /></a>
-                </header>
-                <div class="org-grid">
-                    {#each data.organizations as org}
-                        <a href="/org/{org.username}" class="org-chip" title={org.full_name || org.username}>
-                            <img src={org.avatar_url} alt={org.username} loading="lazy" />
-                        </a>
-                    {/each}
-                </div>
-            </div>
-        {/if}
-    </aside>
+        <DashboardSidebar gists={data.gists || []} organizations={data.organizations || []} />
     {/if}
 </div>
 
