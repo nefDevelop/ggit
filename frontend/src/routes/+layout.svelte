@@ -34,6 +34,18 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 	}
 
 	onMount(() => {
+		// Global error handler to prevent full page reload on JS errors
+		const handleGlobalError = (event: ErrorEvent) => {
+			event.preventDefault();
+			console.error('🔴 GLOBAL ERROR:', event.error || event.message);
+		};
+		const handleRejection = (event: PromiseRejectionEvent) => {
+			event.preventDefault();
+			console.error('🔴 UNHANDLED REJECTION:', event.reason);
+		};
+		window.addEventListener('error', handleGlobalError);
+		window.addEventListener('unhandledrejection', handleRejection);
+
 		const init = async () => {
 			// Run auth and installation checks in parallel to save time
 			const [authResult, installResult] = await Promise.all([
