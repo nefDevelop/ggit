@@ -3,11 +3,9 @@ import type { HandleClientError } from '@sveltejs/kit';
 export const handleError: HandleClientError = ({ error }) => {
 	const message = (error as any)?.message ?? '';
 	
-	// If a chunk fails to load (e.g. after a deployment), reload the page to get the latest manifest
-	if (message.includes('error loading dynamically imported module') || 
-        message.includes('Failed to fetch dynamically imported module')) {
-		window.location.reload();
-	}
+	// Si falla la carga de un chunk (ej: después de un deploy), recargar SOLO si es un 404 real
+	// de lo contrario, intentar de nuevo no ayuda. Dejamos que SvelteKit maneje el error.
+	console.warn('Client error:', message);
 
 	return {
 		message: 'An unexpected error occurred.',
