@@ -234,3 +234,78 @@ git push -u origin main</code></pre>
     </div>
   {/if}
 </div>
+
+<style>
+  .workspace-area { height: 100%; display: flex; flex-direction: column; }
+  .technical-grid {
+    display: flex; gap: 2rem; align-items: flex-start; flex: 1;
+    padding: 1rem 1.5rem; min-height: 0;
+  }
+  .technical-grid.sidebar-collapsed { gap: 0; }
+  .main-column { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+  .skeleton-mode { opacity: 0.5; pointer-events: none; }
+  .skeleton-pulse { background: var(--md-sys-color-surface-container-high); border-radius: 0.75rem; animation: pulse 1.5s infinite; }
+  .last-commit-skeleton { height: 60px; }
+  .skeleton-table-view { display: flex; flex-direction: column; gap: 0.5rem; }
+  .skeleton-row { height: 40px; background: var(--md-sys-color-surface-container-high); border-radius: 0.5rem; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 4rem 2rem; gap: 1rem;
+    opacity: 0.7; text-align: center; height: 100%;
+  }
+  .empty-state h3 { margin: 0; font-size: 1.5rem; }
+  .empty-state p { margin: 0; color: var(--text-muted); max-width: 400px; }
+  .error-tonal { background: rgba(var(--error-rgb),0.05); border-radius: 1rem; }
+  .push-guide {
+    background: var(--md-sys-color-surface-container-high);
+    padding: 1.5rem; border-radius: 1rem; text-align: left;
+    max-width: 500px; margin-top: 1rem;
+  }
+  .guide-copy-row { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .guide-copy-row code { flex: 1; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem; font-family: "JetBrains Mono", monospace; }
+  .copy-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.5rem; border-radius: 0.5rem; }
+  .copy-btn:hover { background: var(--md-sys-color-surface-container); color: var(--text-color); }
+  .push-guide pre { margin: 0; }
+  .push-guide pre code { font-family: "JetBrains Mono", monospace; font-size: 0.85rem; line-height: 1.5; }
+  .last-commit-bar {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--md-sys-color-surface-container);
+    border-radius: 0.75rem;
+    border: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .commit-info { flex: 1; min-width: 0; }
+  .commit-summary-row { margin-bottom: 0.25rem; }
+  .commit-msg-link { text-decoration: none; color: inherit; }
+  .commit-msg-link:hover .commit-msg { color: var(--primary-color); }
+  .commit-msg { font-weight: 700; font-size: 0.9rem; }
+  .commit-meta-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted); }
+  .commit-meta-row .author { font-weight: 600; }
+  .commit-meta-row .separator { opacity: 0.6; }
+  .commit-actions-right { display: flex; align-items: center; gap: 0.5rem; }
+  .sha-link { text-decoration: none; }
+  .sha {
+    font-family: "JetBrains Mono", monospace; font-size: 0.85rem;
+    color: var(--primary-color); font-weight: 700;
+  }
+  .btn-sidebar-toggle {
+    background: transparent; border: none; color: var(--text-muted);
+    cursor: pointer; padding: 0.5rem; border-radius: 0.5rem; display: flex;
+  }
+  .btn-sidebar-toggle:hover { background: var(--md-sys-color-surface-container-high); color: var(--text-color); }
+  .content-view { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 0.75rem; overflow: hidden; }
+  .readme-section { border: 1px solid var(--md-sys-color-outline-variant); border-radius: 0.75rem; overflow: hidden; }
+  .readme-header {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1rem; font-weight: 800; font-size: 0.85rem;
+    text-transform: uppercase; color: var(--text-muted);
+    background: var(--md-sys-color-surface-container);
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+  .readme-content { padding: 1rem; }
+  @media (max-width: 900px) {
+    .technical-grid { flex-direction: column; }
+    .last-commit-bar { flex-wrap: wrap; }
+  }
+</style>
