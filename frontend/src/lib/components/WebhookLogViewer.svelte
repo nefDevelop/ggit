@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   
@@ -14,7 +15,7 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
   import Button from './ui/Button.svelte';
 
   let { hook, onclose } = $props();
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
 
   let logs = $state<any[]>([]);
   let loading = $state(true);

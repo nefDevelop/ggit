@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { page } from "$app/state";
@@ -21,7 +22,7 @@ import GitFork from "lucide-svelte/icons/git-fork";
   import CommitRow from "$lib/components/CommitRow.svelte";
   import BranchSelector from "$lib/components/BranchSelector.svelte";
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   const defaultBranch = $derived(repo?.data?.default_branch || "main");
 
   const username = $derived(page.params.username);

@@ -26,6 +26,7 @@ import Database from "lucide-svelte/icons/database";
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { onMount, getContext } from 'svelte';
+  import type { RepoContext } from "$lib/types";
   import { getLanguageColor } from '$lib/utils/languages';
   import RepoSearchResults from './RepoSearchResults.svelte';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
@@ -36,7 +37,7 @@ import Database from "lucide-svelte/icons/database";
   let { path = '' } = $props();
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);
-  const repoContext = getContext<any>('repo');
+  const repoContext = getContext<RepoContext>('repo');
   
   let repoData = $state<any>(null);
   let loading = $state(true);
@@ -105,13 +106,18 @@ import Database from "lucide-svelte/icons/database";
     }));
   });
 
+  let abortController = new AbortController();
+
   function handleSearch(e: any) {
     searchQuery = e.detail;
   }
 
   onMount(() => {
     window.addEventListener('ggit:search', handleSearch);
-    return () => window.removeEventListener('ggit:search', handleSearch);
+    return () => {
+      abortController.abort();
+      window.removeEventListener('ggit:search', handleSearch);
+    };
   });
 
   let realPath = $derived(() => {
@@ -129,10 +135,12 @@ import Database from "lucide-svelte/icons/database";
     if (lastFetched.user === username && lastFetched.repo === reponame && lastFetched.path === currentPath) return;
     lastFetched = { user: username || '', repo: reponame || '', path: currentPath || '' };
     
+    abortController.abort();
+    abortController = new AbortController();
     loading = true;
     error = '';
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${currentPath}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/view/${currentPath}`, { signal: abortController.signal });
       if (res.ok) {
         repoData = await res.json();
       } else {
@@ -218,7 +226,7 @@ import Database from "lucide-svelte/icons/database";
     
     blameLoading = true;
     try {
-      const res = await apiFetch(`/api/v2/${username}/${reponame}/blame/${realPath()}?ref=${repoData.branch}`);
+      const res = await apiFetch(`/api/v2/${username}/${reponame}/blame/${realPath()}?ref=${repoData.branch}`, { signal: abortController.signal });
       if (res.ok) {
         blameData = await res.json();
         showBlame = true;

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import WebhookEditor from './WebhookEditor.svelte';
@@ -17,7 +18,7 @@ import Plus from "lucide-svelte/icons/plus";
 
 
 
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   
   let webhooks = $state<any[]>([]);
   let loading = $state(true);

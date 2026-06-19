@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import PageHeader from "./ui/PageHeader.svelte";
@@ -15,7 +16,7 @@ import MessageSquare from "lucide-svelte/icons/message-square";
 
 
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   let issues = $state<any[]>([]);
   let loading = $state(true);
   let error = $state("");

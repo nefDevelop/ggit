@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { onMount, getContext } from 'svelte';
   import { apiFetch } from '$lib/api';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
@@ -15,7 +16,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
 
 
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   let adrFolder = $derived(repo.data.adr_folder_name || 'ADR');
   let currentPath = $state(repo.data.adr_folder_name || 'ADR');
   let entries = $state<any[]>([]);

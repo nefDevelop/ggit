@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { goto } from "$app/navigation";
@@ -26,7 +27,7 @@ import AlertTriangle from "lucide-svelte/icons/alert-triangle";
 
 
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   let settings = $state<any>(null);
   let loading = $state(true);
   let saving = $state(false);

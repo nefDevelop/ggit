@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { toast } from "$lib/toast.svelte";
@@ -8,7 +9,7 @@
   import MarkdownRenderer from '$lib/components/ui/MarkdownRenderer.svelte';
   
   let { index } = $props();
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   
   let pull = $state<any>(null);
   let diff = $state<any>(null);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
@@ -16,7 +17,7 @@ import Tag from "lucide-svelte/icons/tag";
 
 
 
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   let labels = $state<any[]>([]);
   let loading = $state(true);
   let error = $state('');

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import Avatar from "$lib/components/Avatar.svelte";
@@ -16,7 +17,7 @@ import Calendar from "lucide-svelte/icons/calendar";
 
 
   let { index } = $props();
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
 
   let issue = $state<any>(null);
   let comments = $state<any[]>([]);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import Button from "./ui/Button.svelte";
@@ -16,7 +17,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
 
   let { index, onMerged } = $props<{ index: number, onMerged: () => void }>();
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
 
   let protection = $state<any>(null);
   let loading = $state(true);

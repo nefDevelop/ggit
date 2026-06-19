@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { getContext } from 'svelte';
   import RepoSettingsGeneral from '$lib/components/RepoSettingsGeneral.svelte';
   import RepoSettingsCollaboration from '$lib/components/RepoSettingsCollaboration.svelte';
@@ -26,7 +27,7 @@ import Sparkles from "lucide-svelte/icons/sparkles";
 
 
 
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   console.log("DEBUG - Settings Page Context:", repo);
   console.log("DEBUG - Settings Page Repo Data:", repo?.data);
   

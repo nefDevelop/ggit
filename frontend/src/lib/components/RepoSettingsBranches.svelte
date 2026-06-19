@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import Button from "./ui/Button.svelte";
@@ -20,7 +21,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
 
 
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   
   let branches = $state<any>({ default: null, active: [], stale: [] });
   let loading = $state(true);

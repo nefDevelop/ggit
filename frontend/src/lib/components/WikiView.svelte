@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { goto } from '$app/navigation';
@@ -24,7 +25,7 @@ import BookText from "lucide-svelte/icons/book-text";
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   
   let { path = 'Home' } = $props();
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   
   let wikiPages = $state<any[]>([]);
   let currentPage = $state<any>(null);

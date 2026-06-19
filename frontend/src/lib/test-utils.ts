@@ -2,6 +2,7 @@ import { render as testingRender } from '@testing-library/svelte';
 import type { RenderOptions, RenderResult } from '@testing-library/svelte';
 import type { Component } from 'svelte';
 import { setContext, getContext } from 'svelte';
+import type { RepoContext, RepoData } from '$lib/types';
 
 type ComponentType = Component<any>;
 
@@ -55,7 +56,7 @@ export function mockApiFetch(overrides: Record<string, any> = {}) {
   }));
 }
 
-export const mockRepoContext = {
+export const mockRepoContext: RepoContext = {
   data: {
     owner: { username: 'testuser' },
     name: 'test-repo',

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
@@ -13,7 +14,7 @@
 import Users from "lucide-svelte/icons/users";
 
   
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   let collaborators = $state<any[]>([]);
   let loading = $state(true);
   let newCollaborator = $state('');

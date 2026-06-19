@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { toast } from "$lib/toast.svelte";
@@ -16,7 +17,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   import { tool } from "$lib/tool";
   import { i18n } from "$lib/i18n.svelte";
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   let loading = $state(true);
   let scanning = $state(false);
   let cleaning = $state(false);

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { getContext } from 'svelte';
   import Input from "$lib/components/ui/Input.svelte";
@@ -12,7 +13,7 @@
     hook?: any;
     onclose?: (success?: boolean) => void;
   }>();
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
 
   let url = $state("");
   let contentType = $state("json");

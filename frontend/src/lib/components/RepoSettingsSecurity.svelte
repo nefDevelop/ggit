@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { toast } from "$lib/toast.svelte";
@@ -19,7 +20,7 @@ import Plus from "lucide-svelte/icons/plus";
 
   import { i18n } from "$lib/i18n.svelte";
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   let loading = $state(true);
   let saving = $state(false);
   let data = $state<any>({

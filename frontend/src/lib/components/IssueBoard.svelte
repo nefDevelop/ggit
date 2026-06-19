@@ -1,9 +1,10 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { getContext } from 'svelte';
   import Avatar from './Avatar.svelte';
 
   let { issues = [] } = $props();
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
 
   // Logic to group issues by columns
   let columns = $derived.by(() => {

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import Button from "./ui/Button.svelte";
@@ -19,7 +20,7 @@ import Info from "lucide-svelte/icons/info";
   import PageHeader from "./ui/PageHeader.svelte";
   import Input from "./ui/Input.svelte";
 
-  const repo: any = getContext("repo");
+  const repo = getContext<RepoContext>('repo');
   let remotes = $state<string[]>([]);
   let loading = $state(true);
   let adding = $state(false);

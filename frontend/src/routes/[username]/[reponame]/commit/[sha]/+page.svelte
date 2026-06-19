@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { page } from '$app/state';
@@ -14,7 +15,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
 
 
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   let sha = $derived(page.params.sha);
 
   let commitData = $state<any>(null);

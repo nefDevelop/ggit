@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount, setContext } from 'svelte';
+  import type { RepoContext } from '$lib/types';
   import GlobalSearch from '$lib/components/GlobalSearch.svelte';
   import { userPrefs } from '$lib/settings.svelte';
   
@@ -87,7 +88,7 @@ import Calendar from "lucide-svelte/icons/calendar";
     fetchRepoInfo();
   });
 
-  setContext('repo', {
+  setContext<RepoContext>('repo', {
     get data() { return repoData; },
     get full() { return fullRepoRes; }, // New full response
     get entries() { return rootEntries; },

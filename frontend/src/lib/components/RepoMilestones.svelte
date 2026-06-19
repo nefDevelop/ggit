@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { RepoContext } from "$lib/types";
   
 
 import PlusCircle from "lucide-svelte/icons/plus-circle";
@@ -20,7 +21,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   import Select from './ui/Select.svelte';
   import PageHeader from './ui/PageHeader.svelte';
 
-  const repo: any = getContext('repo');
+  const repo = getContext<RepoContext>('repo');
   let milestones = $state<any[]>([]);
   let loading = $state(true);
   let error = $state('');
