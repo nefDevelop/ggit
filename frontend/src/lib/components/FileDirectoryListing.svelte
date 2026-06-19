@@ -40,14 +40,15 @@
 <style>
   .file-table { width: 100%; border-collapse: collapse; }
   .file-row { cursor: pointer; transition: background 0.15s; }
+  .file-row:not(:last-child) { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .file-row:hover { background: var(--md-sys-color-surface-container-high); }
-  .name-cell { padding: 0.6rem 1rem; display: flex; align-items: center; gap: 0.75rem; }
-  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 600; }
+  .name-cell { padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
+  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; }
   .name-cell a:hover { color: var(--primary-color); }
-  .icon-tree { color: #42a5f5; }
-  .icon-blob { color: var(--text-muted); }
+  .icon-tree { color: #42a5f5; flex-shrink: 0; }
+  .icon-blob { color: var(--md-sys-color-on-surface-variant); flex-shrink: 0; }
   .msg-cell { padding: 0.6rem 0.5rem; max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .msg-text { color: var(--text-muted); font-size: 0.85rem; }
-  .date-cell { padding: 0.6rem 1rem; text-align: right; white-space: nowrap; color: var(--text-muted); font-size: 0.85rem; }
+  .msg-text { color: var(--md-sys-color-on-surface-variant); font-size: 0.85rem; }
+  .date-cell { padding: 0.6rem 1rem; text-align: right; white-space: nowrap; color: var(--md-sys-color-on-surface-variant); font-size: 0.85rem; }
   @media (max-width: 700px) { .msg-cell, .date-cell { display: none; } }
 </style>
