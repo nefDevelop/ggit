@@ -49,7 +49,7 @@ func New() *Engine {
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	})
-	r.Use(sessions.Sessions("gogs_session", store))
+	r.Use(sessions.Sessions("ggit_session", store))
 	r.Use(context.Contexter(context.NewStore()))
 	r.Use(CSRF())
 

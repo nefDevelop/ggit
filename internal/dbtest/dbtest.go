@@ -43,7 +43,7 @@ func NewDB(t testing.TB, suite string, tables ...any) *gorm.DB {
 		require.NoError(t, err)
 
 		// Set up test database
-		dbName = fmt.Sprintf("gogs-%s-%d", suite, time.Now().Unix())
+		dbName = fmt.Sprintf("ggit-%s-%d", suite, time.Now().Unix())
 		_, err = sqlDB.Exec(fmt.Sprintf("DROP DATABASE IF EXISTS %q", dbName))
 		require.NoError(t, err)
 
@@ -62,7 +62,7 @@ func NewDB(t testing.TB, suite string, tables ...any) *gorm.DB {
 			_ = sqlDB.Close()
 		}
 	default:
-		dbName = filepath.Join(os.TempDir(), fmt.Sprintf("gogs-%s-%d.db", suite, time.Now().Unix()))
+		dbName = filepath.Join(os.TempDir(), fmt.Sprintf("ggit-%s-%d.db", suite, time.Now().Unix()))
 		dbOpts = conf.DatabaseOpts{
 			Type: "sqlite3",
 			Path: dbName,

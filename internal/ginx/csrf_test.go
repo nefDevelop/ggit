@@ -23,7 +23,7 @@ func TestCSRF(t *testing.T) {
 
 	r := gin.New()
 	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("gogs_session", store))
+	r.Use(sessions.Sessions("ggit_session", store))
 	r.Use(context.Contexter(context.NewStore()))
 	r.Use(CSRF())
 

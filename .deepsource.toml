@@ -15,7 +15,7 @@ name = "go"
 enabled = true
 
   [analyzers.meta]
-  import_root = "github.com/gogs/gogs"
+  import_root = "github.com/nef734/ggit"
 
 [[transformers]]
 name = "gofumpt"

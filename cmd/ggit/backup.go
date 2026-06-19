@@ -30,7 +30,7 @@ portable among all supported database engines.`,
 		boolFlag("verbose, v", "Show process details"),
 		stringFlag("tempdir, t", os.TempDir(), "Temporary directory path"),
 		stringFlag("target", "./", "Target directory path to save backup archive"),
-		stringFlag("archive-name", fmt.Sprintf("gogs-backup-%s.zip", time.Now().Format("20060102150405")), "Name of backup archive"),
+		stringFlag("archive-name", fmt.Sprintf("ggit-backup-%s.zip", time.Now().Format("20060102150405")), "Name of backup archive"),
 		boolFlag("database-only", "Only dump database"),
 		boolFlag("exclude-repos", "Exclude repositories"),
 	},
@@ -38,7 +38,7 @@ portable among all supported database engines.`,
 
 const (
 	currentBackupFormatVersion = 1
-	archiveRootDir             = "gogs-backup"
+	archiveRootDir             = "ggit-backup"
 )
 
 func runBackup(ctx context.Context, cmd *cli.Command) error {
@@ -59,7 +59,7 @@ func runBackup(ctx context.Context, cmd *cli.Command) error {
 	if !osx.Exist(tmpDir) {
 		log.Fatal("'--tempdir' does not exist: %s", tmpDir)
 	}
-	rootDir, err := os.MkdirTemp(tmpDir, "gogs-backup-")
+	rootDir, err := os.MkdirTemp(tmpDir, "ggit-backup-")
 	if err != nil {
 		log.Fatal("Failed to create backup root directory '%s': %v", rootDir, err)
 	}
@@ -70,7 +70,7 @@ func runBackup(ctx context.Context, cmd *cli.Command) error {
 	metadata := ini.Empty()
 	metadata.Section("").Key("VERSION").SetValue(strconv.Itoa(currentBackupFormatVersion))
 	metadata.Section("").Key("DATE_TIME").SetValue(time.Now().String())
-	metadata.Section("").Key("GOGS_VERSION").SetValue(conf.App.Version)
+	metadata.Section("").Key("GGIT_VERSION").SetValue(conf.App.Version)
 	if err = metadata.SaveTo(metaFile); err != nil {
 		log.Fatal("Failed to save metadata '%s': %v", metaFile, err)
 	}

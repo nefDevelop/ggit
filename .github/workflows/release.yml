@@ -65,9 +65,9 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: "0"
         run: |
-          BINARY_NAME="gogs"
+          BINARY_NAME="ggit"
           if [ "${{ matrix.goos }}" = "windows" ]; then
-            BINARY_NAME="gogs.exe"
+            BINARY_NAME="ggit.exe"
           fi
 
           TAGS_FLAG=""
@@ -77,28 +77,28 @@ jobs:
 
           go build -v \
             -ldflags "
-              -X \"gogs.io/gogs/internal/conf.BuildTime=$(date -u '+%Y-%m-%d %I:%M:%S %Z')\"
-              -X \"gogs.io/gogs/internal/conf.BuildCommit=$(git rev-parse HEAD)\"
+              -X \"github.com/nef734/ggit/internal/conf.BuildTime=$(date -u '+%Y-%m-%d %I:%M:%S %Z')\"
+              -X \"github.com/nef734/ggit/internal/conf.BuildCommit=$(git rev-parse HEAD)\"
             " \
             $TAGS_FLAG \
-            -trimpath -o "$BINARY_NAME" ./cmd/gogs
+            -trimpath -o "$BINARY_NAME" ./cmd/ggit
       - name: Prepare archive contents
         run: |
-          mkdir -p dist/gogs
-          BINARY_NAME="gogs"
+          mkdir -p dist/ggit
+          BINARY_NAME="ggit"
           if [ "${{ matrix.goos }}" = "windows" ]; then
-            BINARY_NAME="gogs.exe"
+            BINARY_NAME="ggit.exe"
           fi
-          cp "$BINARY_NAME" dist/gogs/
-          cp LICENSE README.md dist/gogs/
-          cp -r scripts dist/gogs/
+          cp "$BINARY_NAME" dist/ggit/
+          cp LICENSE README.md dist/ggit/
+          cp -r scripts dist/ggit/
       - name: Create archives
         working-directory: dist
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          ARCHIVE_BASE="gogs_${VERSION}_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.suffix }}"
+          ARCHIVE_BASE="ggit_${VERSION}_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.suffix }}"
 
-          zip -r "${ARCHIVE_BASE}.zip" gogs
+          zip -r "${ARCHIVE_BASE}.zip" ggit
 
           if [ "${{ matrix.goos }}" = "linux" ]; then
             tar -czvf "${ARCHIVE_BASE}.tar.gz" gogs
@@ -128,9 +128,9 @@ jobs:
             gh release delete-asset "$RELEASE_TAG" "$asset" --yes || true
           done
 
-          gh release upload "$RELEASE_TAG" dist/gogs_*.zip --clobber
+          gh release upload "$RELEASE_TAG" dist/ggit_*.zip --clobber
           if [ "${{ matrix.goos }}" = "linux" ]; then
-            gh release upload "$RELEASE_TAG" dist/gogs_*.tar.gz --clobber
+            gh release upload "$RELEASE_TAG" dist/ggit_*.tar.gz --clobber
           fi
 
   notify-failure:

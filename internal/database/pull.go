@@ -26,7 +26,7 @@ var PullRequestQueue = sync.NewUniqueQueue(1000)
 type PullRequestType int
 
 const (
-	PullRequestTypeGogs PullRequestType = iota
+	PullRequestTypeGgit PullRequestType = iota
 	PullRequestTypeGit
 )
 

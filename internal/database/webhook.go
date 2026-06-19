@@ -356,6 +356,7 @@ const (
 
 var hookTaskTypes = map[string]HookTaskType{
 	"gogs": GOGS,
+	"ggit": GOGS,
 }
 
 // ToHookTaskType returns HookTaskType by given name.
@@ -677,9 +678,9 @@ func (t *HookTask) deliver() {
 		SetDialerControl(netx.NewSafeControl(payloadURL.Hostname(), conf.Security.LocalNetworkAllowlist)).
 		Header("X-Github-Delivery", t.UUID).
 		Header("X-Github-Event", string(t.EventType)).
-		Header("X-Gogs-Delivery", t.UUID).
-		Header("X-Gogs-Signature", t.Signature).
-		Header("X-Gogs-Event", string(t.EventType)).
+		Header("X-Ggit-Delivery", t.UUID).
+		Header("X-Ggit-Signature", t.Signature).
+		Header("X-Ggit-Event", string(t.EventType)).
 		Header("X-Hub-Signature-256", "sha256="+t.Signature).
 		Header("X-Ggit-Signature", t.Signature).
 		SetTLSClientConfig(&tls.Config{InsecureSkipVerify: conf.Webhook.SkipTLSVerify})

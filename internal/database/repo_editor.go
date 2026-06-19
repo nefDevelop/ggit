@@ -43,14 +43,14 @@ func (err BranchAlreadyExists) Error() string {
 }
 
 const (
-	EnvAuthUserID          = "GOGS_AUTH_USER_ID"
-	EnvAuthUserName        = "GOGS_AUTH_USER_NAME"
-	EnvAuthUserEmail       = "GOGS_AUTH_USER_EMAIL"
-	EnvRepoOwnerName       = "GOGS_REPO_OWNER_NAME"
-	EnvRepoOwnerSaltMd5    = "GOGS_REPO_OWNER_SALT_MD5"
-	EnvRepoID              = "GOGS_REPO_ID"
-	EnvRepoName            = "GOGS_REPO_NAME"
-	EnvRepoCustomHooksPath = "GOGS_REPO_CUSTOM_HOOKS_PATH"
+	EnvAuthUserID          = "GGIT_AUTH_USER_ID"
+	EnvAuthUserName        = "GGIT_AUTH_USER_NAME"
+	EnvAuthUserEmail       = "GGIT_AUTH_USER_EMAIL"
+	EnvRepoOwnerName       = "GGIT_REPO_OWNER_NAME"
+	EnvRepoOwnerSaltMd5    = "GGIT_REPO_OWNER_SALT_MD5"
+	EnvRepoID              = "GGIT_REPO_ID"
+	EnvRepoName            = "GGIT_REPO_NAME"
+	EnvRepoCustomHooksPath = "GGIT_REPO_CUSTOM_HOOKS_PATH"
 )
 
 type ComposeHookEnvsOptions struct {

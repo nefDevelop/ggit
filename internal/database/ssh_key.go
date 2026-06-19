@@ -215,7 +215,7 @@ func parseKeyString(content string) (string, error) {
 // writeTmpKeyFile writes key content to a temporary file
 // and returns the name of that file, along with any possible errors.
 func writeTmpKeyFile(content, keyTestPath string) (string, error) {
-	tmpFile, err := os.CreateTemp(keyTestPath, "gogs_keytest")
+	tmpFile, err := os.CreateTemp(keyTestPath, "ggit_keytest")
 	if err != nil {
 		return "", fmt.Errorf("TempFile: %v", err)
 	}

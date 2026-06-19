@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	gogsconf "github.com/nef734/ggit/conf"
+	appconf "github.com/nef734/ggit/conf"
 	"github.com/nef734/ggit/internal/context"
 	"gopkg.in/ini.v1"
 )
@@ -35,13 +35,13 @@ func GetI18nStrings(c *context.APIContext) {
 
 	// Load from embedded assets
 	path := "locale/locale_" + lang + ".ini"
-	rawData, err := gogsconf.Files.ReadFile(path)
+	rawData, err := 	appconf.Files.ReadFile(path)
 	if err != nil {
 		// Try fallback to just lang part if it was like en-US -> en
 		if strings.Contains(lang, "-") {
 			baseLang := strings.Split(lang, "-")[0]
 			path = "locale/locale_" + baseLang + ".ini"
-			rawData, err = gogsconf.Files.ReadFile(path)
+			rawData, err = 	appconf.Files.ReadFile(path)
 		}
 
 		if err != nil {

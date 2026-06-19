@@ -182,7 +182,7 @@ func setupHostKeys(appDataPath string, algorithms []string) ([]ssh.Signer, error
 
 	var hostKeys []ssh.Signer
 	for _, algo := range algorithms {
-		keyPath := filepath.Join(dir, "gogs."+algo)
+		keyPath := filepath.Join(dir, "ggit."+algo)
 		if !osx.Exist(keyPath) {
 			args := []string{
 				conf.SSH.KeygenPath,

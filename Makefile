@@ -86,7 +86,6 @@ test-e2e: clean-ports build
 	@echo "REQUIRE_SIGNIN_VIEW = false" >> conf/app.test.ini
 	@echo "[server]" >> conf/app.test.ini
 	@echo "HTTP_PORT = 3006" >> conf/app.test.ini
-	@rm -rf data/gogs.test.db
 	@rm -rf data/ggit.test.db
 	@rm -rf ggit-repositories-test
 	@mkdir -p ggit-repositories-test

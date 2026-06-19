@@ -30,6 +30,6 @@ targets:
 before:
   - mv .packager/Procfile .
 after:
-  - mv bin/gogs gogs
+  - mv bin/ggit ggit
 after_install: ./.packager/hooks/postinst
 buildpack: https://github.com/heroku/heroku-buildpack-go.git#main

@@ -30,7 +30,7 @@ func serveBatch(store Store) gin.HandlerFunc {
 
 		// NOTE: We only support basic transfer as of now.
 		transfer := transferBasic
-		// Example: https://try.github.com/nef734/ggit/gogs.git/info/lfs/object/basic
+		// Example: https://try.github.com/nef734/ggit/ggit.git/info/lfs/object/basic
 		baseHref := fmt.Sprintf("%s%s/%s.git/info/lfs/objects/basic", conf.Server.ExternalURL, owner.Name, repo.Name)
 
 		objects := make([]batchObject, 0, len(request.Objects))

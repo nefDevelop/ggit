@@ -140,7 +140,7 @@ func initRepository(repoPath string, doer *database.User, repo *database.Reposit
 	}
 
 	if opts.AutoInit {
-		tmpDir := filepath.Join(os.TempDir(), "gogs-"+repo.Name+"-"+strconv.Itoa(time.Now().Nanosecond()))
+		tmpDir := filepath.Join(os.TempDir(), "ggit-"+repo.Name+"-"+strconv.Itoa(time.Now().Nanosecond()))
 		if err = os.MkdirAll(tmpDir, os.ModePerm); err != nil {
 			return err
 		}

@@ -1392,7 +1392,7 @@ func initRepository(e Engine, repoPath string, doer *User, repo *Repository, opt
 		return fmt.Errorf("set default branch"+": %w", err)
 	}
 
-	tmpDir := filepath.Join(os.TempDir(), "gogs-"+repo.Name+"-"+strconv.Itoa(time.Now().Nanosecond()))
+	tmpDir := filepath.Join(os.TempDir(), "ggit-"+repo.Name+"-"+strconv.Itoa(time.Now().Nanosecond()))
 
 	// Initialize repository according to user's choice.
 	if opts.AutoInit {

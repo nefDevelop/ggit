@@ -72,7 +72,7 @@ func runRestore(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		log.Fatal("Failed to load metadata '%s': %v", metaFile, err)
 	}
-	backupVersion := metadata.Section("").Key("GOGS_VERSION").MustString("999.0")
+	backupVersion := metadata.Section("").Key("GGIT_VERSION").MustString("999.0")
 	if semverx.Compare(conf.App.Version, "<", backupVersion) {
 		log.Fatal("Current Ggit version is lower than backup version: %s < %s", conf.App.Version, backupVersion)
 	}

@@ -35,7 +35,7 @@ var servCommand = cli.Command{
 // logs error message on the server side. When not in "prod" mode,
 // error message is also printed to the client for easier debugging.
 func fail(userMessage, errMessage string, args ...any) {
-	_, _ = fmt.Fprintln(os.Stderr, "Gogs:", userMessage)
+	_, _ = fmt.Fprintln(os.Stderr, "Ggit:", userMessage)
 
 	if len(errMessage) > 0 {
 		if !conf.IsProdMode() {
@@ -119,7 +119,7 @@ func runServ(ctx context.Context, cmd *cli.Command) error {
 	setup(cmd, "serv.log", true)
 
 	if conf.SSH.Disabled {
-		println("Gogs: SSH has been disabled")
+		println("Ggit: SSH has been disabled")
 		return nil
 	}
 

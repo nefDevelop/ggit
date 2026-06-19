@@ -214,7 +214,7 @@ func CreatePullRequest(c *context.APIContext) {
 		HeadRepo:     repo,
 		BaseRepo:     repo,
 		MergeBase:    meta.MergeBase,
-		Type:         database.PullRequestTypeGogs,
+		Type:         database.PullRequestTypeGgit,
 	}
 
 	if err := issueservice.Issues.CreatePullRequest(c.Req.Context(), repo, pullIssue, pullRequest, issueservice.CreatePullRequestOptions{

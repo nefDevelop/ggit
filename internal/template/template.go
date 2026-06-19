@@ -3,6 +3,7 @@ package template
 import (
 	json "github.com/nef734/ggit/internal/jsonx"
 	"fmt"
+	"html"
 	"html/template"
 	"mime"
 	"path/filepath"
@@ -64,10 +65,7 @@ func FuncMap() []template.FuncMap {
 			},
 			"AvatarLink":       tool.AvatarLink,
 			"AppendAvatarSize": tool.AppendAvatarSize,
-			"Safe":             Safe,
-			"Sanitize": func(s string) string {
-				return s
-			},
+			"Sanitize": html.EscapeString,
 			"Str2HTML":     Str2HTML,
 			"NewLine2br":   NewLine2br,
 			"TimeSince":    tool.TimeSince,
@@ -128,12 +126,8 @@ func FuncMap() []template.FuncMap {
 	return funcMap
 }
 
-func Safe(raw string) template.HTML {
-	return template.HTML(raw)
-}
-
 func Str2HTML(raw string) template.HTML {
-	return template.HTML(raw)
+	return template.HTML(html.EscapeString(raw))
 }
 
 // NewLine2br simply replaces "\n" to "<br>".
