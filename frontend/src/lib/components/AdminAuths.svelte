@@ -8,7 +8,14 @@
   import AdminAuthEditor from './AdminAuthEditor.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import PageHeader from './ui/PageHeader.svelte';
-  import { ShieldHalf, Plus, Database, ShieldCheck, Settings, Trash2 } from 'lucide-svelte';
+  
+import ShieldHalf from "lucide-svelte/icons/shield-half";
+import Plus from "lucide-svelte/icons/plus";
+import Database from "lucide-svelte/icons/database";
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import Settings from "lucide-svelte/icons/settings";
+import Trash2 from "lucide-svelte/icons/trash-2";
+
 
   let sources = $state<any[]>([]);
   let loading = $state(true);

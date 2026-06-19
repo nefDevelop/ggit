@@ -4,7 +4,15 @@
   import { fade } from 'svelte/transition';
   import PageHeader from "$lib/components/ui/PageHeader.svelte";
   import Button from "$lib/components/ui/Button.svelte";
-  import { Plus, Tag, FolderDown, Archive, Trash2, Rocket, AlertCircle } from "lucide-svelte";
+  
+import Plus from "lucide-svelte/icons/plus";
+import Tag from "lucide-svelte/icons/tag";
+import FolderDown from "lucide-svelte/icons/folder-down";
+import Archive from "lucide-svelte/icons/archive";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import Rocket from "lucide-svelte/icons/rocket";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+
 
   let username = $derived(page.params.username);
   let reponame = $derived(page.params.reponame);

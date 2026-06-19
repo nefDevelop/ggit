@@ -9,7 +9,14 @@
   import { dialog } from "$lib/dialog.svelte";
   import { toast } from "$lib/toast.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { GitBranch, Shield, ShieldAlert, ShieldCheck, Settings2, ArrowLeft } from "lucide-svelte";
+  
+import GitBranch from "lucide-svelte/icons/git-branch";
+import Shield from "lucide-svelte/icons/shield";
+import ShieldAlert from "lucide-svelte/icons/shield-alert";
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import Settings2 from "lucide-svelte/icons/settings-2";
+import ArrowLeft from "lucide-svelte/icons/arrow-left";
+
 
   const repo: any = getContext("repo");
   

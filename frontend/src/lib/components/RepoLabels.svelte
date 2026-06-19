@@ -6,7 +6,13 @@
   import Card from './ui/Card.svelte';
   import Input from './ui/Input.svelte';
   import PageHeader from './ui/PageHeader.svelte';
-  import { Plus, Info, Edit, Trash2, Tag } from 'lucide-svelte';
+  
+import Plus from "lucide-svelte/icons/plus";
+import Info from "lucide-svelte/icons/info";
+import Edit from "lucide-svelte/icons/edit";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import Tag from "lucide-svelte/icons/tag";
+
 
   const repo: any = getContext('repo');
   let labels = $state<any[]>([]);

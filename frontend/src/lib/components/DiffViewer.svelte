@@ -1,18 +1,18 @@
 <script lang="ts">
-  import {
-    ChevronDown,
-    ChevronRight,
-    FileCode,
-    Plus,
-    Minus,
-    Layers,
-    FileText,
-    Settings,
-    MessageSquarePlus
-  } from "lucide-svelte";
+  
+import ChevronDown from "lucide-svelte/icons/chevron-down";
+import ChevronRight from "lucide-svelte/icons/chevron-right";
+import FileCode from "lucide-svelte/icons/file-code";
+import Plus from "lucide-svelte/icons/plus";
+import Minus from "lucide-svelte/icons/minus";
+import Layers from "lucide-svelte/icons/layers";
+import FileText from "lucide-svelte/icons/file-text";
+import Settings from "lucide-svelte/icons/settings";
+import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
+
   import ReviewCommentComposer from "./ReviewCommentComposer.svelte";
   import MarkdownRenderer from "./ui/MarkdownRenderer.svelte";
-  import hljs from "highlight.js";
+  import hljs from "$lib/hljs";
 
   let { diff, allowComments = false, comments = [], onAddComment, onResolveComment } = $props<{ 
     diff: any, 

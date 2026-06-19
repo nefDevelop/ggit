@@ -4,10 +4,20 @@
   import { goto } from '$app/navigation';
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
-  import { 
-    FileText, Edit, History, Plus, Save, X, Trash2, 
-    ArrowLeft, MoreVertical, Folder, ChevronRight, BookText 
-  } from 'lucide-svelte';
+  
+import FileText from "lucide-svelte/icons/file-text";
+import Edit from "lucide-svelte/icons/edit";
+import History from "lucide-svelte/icons/history";
+import Plus from "lucide-svelte/icons/plus";
+import Save from "lucide-svelte/icons/save";
+import X from "lucide-svelte/icons/x";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import ArrowLeft from "lucide-svelte/icons/arrow-left";
+import MoreVertical from "lucide-svelte/icons/more-vertical";
+import Folder from "lucide-svelte/icons/folder";
+import ChevronRight from "lucide-svelte/icons/chevron-right";
+import BookText from "lucide-svelte/icons/book-text";
+
   import { slide } from 'svelte/transition';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   

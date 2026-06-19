@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { CheckCircle2, XCircle, AlertCircle, HelpCircle } from "lucide-svelte";
+  
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import XCircle from "lucide-svelte/icons/x-circle";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import HelpCircle from "lucide-svelte/icons/help-circle";
+
 
   let { status, size = 16, class: className = "" } = $props<{ 
     status: string | null | undefined, 

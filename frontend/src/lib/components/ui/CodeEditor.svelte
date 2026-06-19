@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
-  import hljs from 'highlight.js';
+  import hljs from '$lib/hljs';
   import 'highlight.js/styles/github-dark.css';
 
   let { 

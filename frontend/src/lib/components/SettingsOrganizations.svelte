@@ -2,7 +2,11 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
-  import { Users, Building2, LogOut } from "lucide-svelte";
+  
+import Users from "lucide-svelte/icons/users";
+import Building2 from "lucide-svelte/icons/building-2";
+import LogOut from "lucide-svelte/icons/log-out";
+
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';

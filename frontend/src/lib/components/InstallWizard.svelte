@@ -1,7 +1,9 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
-  import { ShieldCheck } from 'lucide-svelte';
+  
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+
   
   let settings = $state<any>(null);
   let loading = $state(true);

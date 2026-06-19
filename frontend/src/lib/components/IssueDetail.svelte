@@ -5,7 +5,13 @@
   import MarkdownRenderer from "$lib/components/ui/MarkdownRenderer.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import Select from "$lib/components/ui/Select.svelte";
-  import { CheckCircle2, AlertCircle, Settings, X, Calendar } from "lucide-svelte";
+  
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import Settings from "lucide-svelte/icons/settings";
+import X from "lucide-svelte/icons/x";
+import Calendar from "lucide-svelte/icons/calendar";
+
 
   let { index } = $props();
   const repo: any = getContext("repo");

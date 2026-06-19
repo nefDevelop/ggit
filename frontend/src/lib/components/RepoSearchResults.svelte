@@ -2,7 +2,11 @@
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount } from 'svelte';
-  import { Search, SearchX, FileText } from 'lucide-svelte';
+  
+import Search from "lucide-svelte/icons/search";
+import SearchX from "lucide-svelte/icons/search-x";
+import FileText from "lucide-svelte/icons/file-text";
+
 
   interface Props {
     query?: string;

@@ -9,7 +9,9 @@
   import Card from './ui/Card.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   import { i18n } from '$lib/i18n.svelte';
-  import { Users } from 'lucide-svelte';
+  
+import Users from "lucide-svelte/icons/users";
+
   
   const repo: any = getContext('repo');
   let collaborators = $state<any[]>([]);

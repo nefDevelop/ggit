@@ -5,7 +5,16 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import Button from "./ui/Button.svelte";
-  import { X, Eraser, BellOff, CheckCircle2, AlertCircle, AlertTriangle, Info, RefreshCw } from "lucide-svelte";
+  
+import X from "lucide-svelte/icons/x";
+import Eraser from "lucide-svelte/icons/eraser";
+import BellOff from "lucide-svelte/icons/bell-off";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import AlertTriangle from "lucide-svelte/icons/alert-triangle";
+import Info from "lucide-svelte/icons/info";
+import RefreshCw from "lucide-svelte/icons/refresh-cw";
+
 
   interface Props {
     show: boolean;

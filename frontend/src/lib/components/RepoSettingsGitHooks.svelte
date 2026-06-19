@@ -7,7 +7,13 @@
   import PageHeader from "./ui/PageHeader.svelte";
   import { toast } from "$lib/toast.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { Terminal, AlertCircle, Code, Edit, Info } from "lucide-svelte";
+  
+import Terminal from "lucide-svelte/icons/terminal";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import Code from "lucide-svelte/icons/code";
+import Edit from "lucide-svelte/icons/edit";
+import Info from "lucide-svelte/icons/info";
+
 
   const repo: any = getContext("repo");
 

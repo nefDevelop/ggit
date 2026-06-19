@@ -1,7 +1,10 @@
 <script lang="ts">
   import { toast } from "$lib/toast.svelte";
   import { page } from '$app/state';
-  import { Check, Copy } from "lucide-svelte";
+  
+import Check from "lucide-svelte/icons/check";
+import Copy from "lucide-svelte/icons/copy";
+
   import Avatar from './Avatar.svelte';
 
   let { commit, minimalist = false } = $props();

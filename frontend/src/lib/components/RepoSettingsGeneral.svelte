@@ -13,7 +13,16 @@
   import Card from "./ui/Card.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   import { i18n } from "$lib/i18n.svelte";
-  import { Settings, RefreshCw, Upload, Trash2, FileText, Bug, GitPullRequest, AlertTriangle } from "lucide-svelte";
+  
+import Settings from "lucide-svelte/icons/settings";
+import RefreshCw from "lucide-svelte/icons/refresh-cw";
+import Upload from "lucide-svelte/icons/upload";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import FileText from "lucide-svelte/icons/file-text";
+import Bug from "lucide-svelte/icons/bug";
+import GitPullRequest from "lucide-svelte/icons/git-pull-request";
+import AlertTriangle from "lucide-svelte/icons/alert-triangle";
+
 
   const repo: any = getContext("repo");
   let settings = $state<any>(null);

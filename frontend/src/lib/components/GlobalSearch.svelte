@@ -2,7 +2,10 @@
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { Database, Search } from 'lucide-svelte';
+  
+import Database from "lucide-svelte/icons/database";
+import Search from "lucide-svelte/icons/search";
+
 
   const reponame = $derived(page.params.reponame);
   const isRepoContext = $derived(!!reponame);

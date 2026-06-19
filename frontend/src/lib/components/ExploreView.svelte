@@ -7,7 +7,13 @@
   import GlobalSearch from './GlobalSearch.svelte';
   import ViewHeader from './ui/ViewHeader.svelte';
   import PageHeader from './ui/PageHeader.svelte';
-  import { Compass, GitBranch, Users, Building2, Hash } from "lucide-svelte";
+  
+import Compass from "lucide-svelte/icons/compass";
+import GitBranch from "lucide-svelte/icons/git-branch";
+import Users from "lucide-svelte/icons/users";
+import Building2 from "lucide-svelte/icons/building-2";
+import Hash from "lucide-svelte/icons/hash";
+
 
   let { defaultTab = 'repos' } = $props();
   let activeTab = $state('repos');

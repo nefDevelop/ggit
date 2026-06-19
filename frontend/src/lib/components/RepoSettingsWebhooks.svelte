@@ -10,7 +10,10 @@
   import TableSkeleton from '$lib/components/ui/TableSkeleton.svelte';
   import { dialog } from '$lib/dialog.svelte';
   import { i18n } from '$lib/i18n.svelte';
-  import { Webhook, Plus } from 'lucide-svelte';
+  
+import Webhook from "lucide-svelte/icons/webhook";
+import Plus from "lucide-svelte/icons/plus";
+
 
   const repo: any = getContext('repo');
   

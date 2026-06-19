@@ -5,7 +5,12 @@
   import DiffViewer from '$lib/components/DiffViewer.svelte';
   import Avatar from '$lib/components/Avatar.svelte';
   import CommitStatusIcon from '$lib/components/CommitStatusIcon.svelte';
-  import { ExternalLink, CheckCircle2, XCircle, AlertCircle } from 'lucide-svelte';
+  
+import ExternalLink from "lucide-svelte/icons/external-link";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import XCircle from "lucide-svelte/icons/x-circle";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+
 
   const repo: any = getContext('repo');
   let sha = $derived(page.params.sha);

@@ -7,10 +7,19 @@
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
   import Badge from "./ui/Badge.svelte";
-  import { 
-    Tag, Rocket, Plus, Edit, Trash2, ChevronsLeft, 
-    ChevronRight, Calendar, GitMerge, Download, FileArchive
-  } from "lucide-svelte";
+  
+import Tag from "lucide-svelte/icons/tag";
+import Rocket from "lucide-svelte/icons/rocket";
+import Plus from "lucide-svelte/icons/plus";
+import Edit from "lucide-svelte/icons/edit";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import ChevronsLeft from "lucide-svelte/icons/chevrons-left";
+import ChevronRight from "lucide-svelte/icons/chevron-right";
+import Calendar from "lucide-svelte/icons/calendar";
+import GitMerge from "lucide-svelte/icons/git-merge";
+import Download from "lucide-svelte/icons/download";
+import FileArchive from "lucide-svelte/icons/file-archive";
+
 
   let { username, reponame } = $props();
 

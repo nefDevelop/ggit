@@ -12,9 +12,17 @@
   import ChipNavigation from '$lib/components/ui/ChipNavigation.svelte';
   import { authState } from '$lib/auth.svelte';
 
-  import { 
-    Settings, Users, GitBranch, RefreshCw, Webhook, Key, Terminal, Shield, Sparkles 
-  } from 'lucide-svelte';
+  
+import Settings from "lucide-svelte/icons/settings";
+import Users from "lucide-svelte/icons/users";
+import GitBranch from "lucide-svelte/icons/git-branch";
+import RefreshCw from "lucide-svelte/icons/refresh-cw";
+import Webhook from "lucide-svelte/icons/webhook";
+import Key from "lucide-svelte/icons/key";
+import Terminal from "lucide-svelte/icons/terminal";
+import Shield from "lucide-svelte/icons/shield";
+import Sparkles from "lucide-svelte/icons/sparkles";
+
 
   const repo: any = getContext('repo');
   console.log("DEBUG - Settings Page Context:", repo);

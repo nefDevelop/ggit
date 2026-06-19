@@ -4,7 +4,14 @@
   import PageHeader from "./ui/PageHeader.svelte";
   import IssueBoard from "./IssueBoard.svelte";
   import Button from "./ui/Button.svelte";
-  import { List, LayoutDashboard, Plus, AlertCircle, CheckCircle2, MessageSquare } from "lucide-svelte";
+  
+import List from "lucide-svelte/icons/list";
+import LayoutDashboard from "lucide-svelte/icons/layout-dashboard";
+import Plus from "lucide-svelte/icons/plus";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import MessageSquare from "lucide-svelte/icons/message-square";
+
 
   const repo: any = getContext("repo");
   let issues = $state<any[]>([]);

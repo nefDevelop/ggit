@@ -3,11 +3,18 @@
   import { authState } from '$lib/auth.svelte';
   import { onMount } from 'svelte';
   import Avatar from '$lib/components/Avatar.svelte';
-  import { 
-    PlusSquare, History, GitBranch, AlertCircle, 
-    GitMerge, MessageSquare, CheckCircle2, XCircle, 
-    Activity, GitCommit
-  } from "lucide-svelte";
+  
+import PlusSquare from "lucide-svelte/icons/plus-square";
+import History from "lucide-svelte/icons/history";
+import GitBranch from "lucide-svelte/icons/git-branch";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import GitMerge from "lucide-svelte/icons/git-merge";
+import MessageSquare from "lucide-svelte/icons/message-square";
+import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import XCircle from "lucide-svelte/icons/x-circle";
+import Activity from "lucide-svelte/icons/activity";
+import GitCommit from "lucide-svelte/icons/git-commit";
+
 
   let feeds = $state<any[]>([]);
   let loading = $state(true);

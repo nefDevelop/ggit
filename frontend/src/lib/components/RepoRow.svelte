@@ -1,8 +1,15 @@
 <script lang="ts">
-  import { 
-    Package, Lock, GitFork, History, GitBranch, AlertCircle, 
-    GitPullRequest, Check, Copy 
-  } from "lucide-svelte";
+  
+import Package from "lucide-svelte/icons/package";
+import Lock from "lucide-svelte/icons/lock";
+import GitFork from "lucide-svelte/icons/git-fork";
+import History from "lucide-svelte/icons/history";
+import GitBranch from "lucide-svelte/icons/git-branch";
+import AlertCircle from "lucide-svelte/icons/alert-circle";
+import GitPullRequest from "lucide-svelte/icons/git-pull-request";
+import Check from "lucide-svelte/icons/check";
+import Copy from "lucide-svelte/icons/copy";
+
   import { getLanguageColor } from '$lib/utils/languages';
   import { goto } from '$app/navigation';
 

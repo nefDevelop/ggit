@@ -3,7 +3,10 @@
   import { onMount, getContext } from 'svelte';
   import PageHeader from "./ui/PageHeader.svelte";
   import Button from "./ui/Button.svelte";
-  import { Plus, GitPullRequest } from "lucide-svelte";
+  
+import Plus from "lucide-svelte/icons/plus";
+import GitPullRequest from "lucide-svelte/icons/git-pull-request";
+
   
   const repo: any = getContext('repo');
   let pulls = $state<any[]>([]);

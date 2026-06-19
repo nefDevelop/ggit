@@ -8,7 +8,11 @@
   import Input from "./ui/Input.svelte";
   import Card from "./ui/Card.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
-  import { ShieldCheck, Trash2, Plus } from "lucide-svelte";
+  
+import ShieldCheck from "lucide-svelte/icons/shield-check";
+import Trash2 from "lucide-svelte/icons/trash-2";
+import Plus from "lucide-svelte/icons/plus";
+
 
   let loading = $state(true);
   let patterns = $state<any[]>([]);

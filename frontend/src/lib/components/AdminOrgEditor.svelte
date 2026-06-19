@@ -1,7 +1,9 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import Button from './ui/Button.svelte';
-  import { X } from 'lucide-svelte';
+  
+import X from "lucide-svelte/icons/x";
+
   
   let { org, onSave, onCancel } = $props();
   

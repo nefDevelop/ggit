@@ -13,7 +13,9 @@
 	import NotificationsPanel from "$lib/components/NotificationsPanel.svelte";
 	import { toast } from "$lib/toast.svelte";
 	import { page } from "$app/stores";
-	import { TriangleAlert } from "lucide-svelte";
+	
+import TriangleAlert from "lucide-svelte/icons/triangle-alert";
+
 
 	let { children } = $props();
 

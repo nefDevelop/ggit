@@ -4,7 +4,15 @@
   import Card from './ui/Card.svelte';
   import { i18n } from '$lib/i18n.svelte';
   import PageHeader from './ui/PageHeader.svelte';
-  import { Activity, Clock, CalendarOff, Network, Hourglass, Play, Trash2 } from 'lucide-svelte';
+  
+import Activity from "lucide-svelte/icons/activity";
+import Clock from "lucide-svelte/icons/clock";
+import CalendarOff from "lucide-svelte/icons/calendar-off";
+import Network from "lucide-svelte/icons/network";
+import Hourglass from "lucide-svelte/icons/hourglass";
+import Play from "lucide-svelte/icons/play";
+import Trash2 from "lucide-svelte/icons/trash-2";
+
   import { toast } from "$lib/toast.svelte";
   import Button from './ui/Button.svelte';
   

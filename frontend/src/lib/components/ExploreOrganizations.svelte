@@ -5,7 +5,11 @@
   import Card from '$lib/components/ui/Card.svelte';
   import Badge from '$lib/components/ui/Badge.svelte';
   
-  import { MapPin, Link, Building2 } from 'lucide-svelte';
+  
+import MapPin from "lucide-svelte/icons/map-pin";
+import Link from "lucide-svelte/icons/link";
+import Building2 from "lucide-svelte/icons/building-2";
+
   
   let { q = '' } = $props();
   

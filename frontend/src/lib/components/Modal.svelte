@@ -1,6 +1,8 @@
 <script lang="ts">
   import { fade, fly } from "svelte/transition";
-  import { X } from "lucide-svelte";
+  
+import X from "lucide-svelte/icons/x";
+
 
   interface Props {
     show: boolean;
