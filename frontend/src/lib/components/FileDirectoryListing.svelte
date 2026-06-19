@@ -1,6 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/state';
   import Folder from "lucide-svelte/icons/folder";
   import FileText from "lucide-svelte/icons/file-text";
 
@@ -39,16 +38,18 @@
 
 <style>
   .file-table { width: 100%; border-collapse: collapse; }
-  .file-row { cursor: pointer; transition: background 0.15s; }
-  .file-row:not(:last-child) { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .file-row:hover { background: var(--md-sys-color-surface-container-high); }
-  .name-cell { padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; white-space: nowrap; }
-  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 600; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; }
+  .file-row { border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+  .file-row:last-child { border-bottom: none; }
+  .file-row td { padding: 0.85rem 1.25rem; vertical-align: middle; }
+  .file-row.clickable { cursor: pointer; }
+  .file-row:hover { background: rgba(var(--primary-rgb), 0.04); }
+  .name-cell { display: flex; align-items: center; gap: 1rem; min-width: 200px; }
+  .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .name-cell a:hover { color: var(--primary-color); }
-  .icon-tree { color: #42a5f5; flex-shrink: 0; }
-  .icon-blob { color: var(--md-sys-color-on-surface-variant); flex-shrink: 0; }
-  .msg-cell { padding: 0.6rem 0.5rem; max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .msg-text { color: var(--md-sys-color-on-surface-variant); font-size: 0.85rem; }
-  .date-cell { padding: 0.6rem 1rem; text-align: right; white-space: nowrap; color: var(--md-sys-color-on-surface-variant); font-size: 0.85rem; }
-  @media (max-width: 700px) { .msg-cell, .date-cell { display: none; } }
+  :global(.icon-tree) { color: #facc15; }
+  :global(.icon-blob) { color: var(--text-muted); opacity: 0.7; }
+  .msg-cell { font-size: 0.85rem; color: var(--text-muted); max-width: 0; width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .msg-text { opacity: 0.7; }
+  .date-cell { text-align: right; font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; white-space: nowrap; }
+  @media (max-width: 600px) { .msg-cell, .date-cell { display: none; } .name-cell { width: 100%; min-width: 0; } .file-row td { padding: 0.85rem 1rem; } }
 </style>
