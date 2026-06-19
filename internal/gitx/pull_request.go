@@ -2,7 +2,7 @@ package gitx
 
 import (
 	"fmt"
-	"strconv"
+	"math/rand"
 	"time"
 
 	"github.com/gogs/git-module"
@@ -24,7 +24,7 @@ func (module) PullRequestMeta(headPath, basePath, headBranch, baseBranch string)
 
 	// We need to create a temporary remote when the pull request is sent from a forked repository.
 	if headPath != basePath {
-		tmpRemote := strconv.FormatInt(time.Now().UnixNano(), 10)
+		tmpRemote := fmt.Sprintf("%d-%d", time.Now().UnixNano(), rand.Int63())
 		err := Module.RemoteAdd(headPath, tmpRemote, basePath, git.RemoteAddOptions{Fetch: true})
 		if err != nil {
 			return nil, fmt.Errorf("add remote: %v", err)

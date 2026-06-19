@@ -334,8 +334,6 @@ func getRepoDirectory(c *context.APIContext) {
 	log.Trace("Entries in %s: %v", c.Repo.TreePath, entryNames)
 
 	if len(apiEntries) > 0 && c.Repo.Commit != nil {
-		// Fetching last commit for each entry can be slow, but it's essential for a good UI.
-		// We use a simple goroutine-based approach for small counts to improve speed.
 		log.Trace("GetRepoView: Fetching last commits for %d entries in parallel", len(apiEntries))
 
 		type commitResult struct {
@@ -344,8 +342,11 @@ func getRepoDirectory(c *context.APIContext) {
 		}
 		results := make(chan commitResult, len(apiEntries))
 
+		sem := make(chan struct{}, 20)
 		for i := range apiEntries {
+			sem <- struct{}{}
 			go func(idx int, entryName string) {
+				defer func() { <-sem }()
 				lastCommit, err := c.Repo.GitRepo.Log(c.Repo.Commit.ID.String(), git.LogOptions{
 					Path:     path.Join(c.Repo.TreePath, entryName),
 					MaxCount: 1,
@@ -353,6 +354,9 @@ func getRepoDirectory(c *context.APIContext) {
 				if err == nil && len(lastCommit) > 0 {
 					results <- commitResult{index: idx, commit: lastCommit[0]}
 				} else {
+					if err != nil {
+						log.Warn("GetRepoView: git log failed for %q: %v", entryName, err)
+					}
 					results <- commitResult{index: idx, commit: nil}
 				}
 			}(i, apiEntries[i].Name)

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -452,9 +453,11 @@ const (
 )
 
 // Merge merges pull request to base repository.
-// FIXME: add repoWorkingPull make sure two merges does not happen at same time.
 func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle MergeStyle, commitDescription string) (err error) {
 	ctx := context.TODO()
+
+	repoWorkingPool.CheckIn(strconv.FormatInt(pr.BaseRepoID, 10))
+	defer repoWorkingPool.CheckOut(strconv.FormatInt(pr.BaseRepoID, 10))
 
 	defer func() {
 		go HookQueue.Add(pr.BaseRepo.ID)
@@ -475,7 +478,7 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 
 		// Create temporary directory to store temporary copy of the base repository,
 		// and clean it up when operation finished regardless of succeed or not.
-		tmpBasePath := filepath.Join(conf.Server.AppDataPath, "tmp", "repos", strconv.Itoa(time.Now().Nanosecond())+".git")
+		tmpBasePath := filepath.Join(conf.Server.AppDataPath, "tmp", "repos", fmt.Sprintf("%d-%d.git", time.Now().Nanosecond(), rand.Int63()))
 		if err = os.MkdirAll(filepath.Dir(tmpBasePath), os.ModePerm); err != nil {
 			return err
 		}
@@ -542,7 +545,7 @@ func (pr *PullRequest) Merge(doer *User, baseGitRepo *git.Repository, mergeStyle
 			}
 
 			// Name non-branch commit state to a new temporary branch in order to save changes.
-			tmpBranch := strconv.FormatInt(time.Now().UnixNano(), 10)
+			tmpBranch := fmt.Sprintf("%d-%d", time.Now().UnixNano(), rand.Int63())
 			if _, stderr, err = process.ExecDir(-1, tmpBasePath,
 				fmt.Sprintf("PullRequest.Merge (git checkout): %s", tmpBasePath),
 				"git", "checkout", "-b", tmpBranch); err != nil {
@@ -855,7 +858,7 @@ func (pr *PullRequest) UpdatePatch() (err error) {
 	}
 
 	// Add a temporary remote.
-	tmpRemote := strconv.FormatInt(time.Now().UnixNano(), 10)
+	tmpRemote := fmt.Sprintf("%d-%d", time.Now().UnixNano(), rand.Int63())
 	baseRepoPath := RepoPath(pr.BaseRepo.MustOwner().Name, pr.BaseRepo.Name)
 	err = headGitRepo.RemoteAdd(tmpRemote, baseRepoPath, git.RemoteAddOptions{Fetch: true})
 	if err != nil {
