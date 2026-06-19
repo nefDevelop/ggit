@@ -29,7 +29,7 @@ import Database from "lucide-svelte/icons/database";
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   import CommitStatusIcon from './CommitStatusIcon.svelte';
   import Avatar from './Avatar.svelte';
-  import hljs from "$lib/hljs";
+  import hljs from 'highlight.js';
   
   let { path = '' } = $props();
   let username = $derived(page.params.username);

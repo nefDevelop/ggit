@@ -1,7 +1,7 @@
 <script lang="ts">
   import { marked } from "marked";
   import DOMPurify from "dompurify";
-  import hljs from "$lib/hljs";
+  import hljs from "highlight.js";
 
   let { content = "", repoContext = null } = $props();
 
