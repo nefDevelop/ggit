@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, loadEnv } from 'vite';
+import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig(({ mode }) => {
 	const env = loadEnv(mode, process.cwd(), '');
@@ -7,7 +8,14 @@ export default defineConfig(({ mode }) => {
 	const target = `http://localhost:${backendPort}`;
 
 	return {
-		plugins: [sveltekit()],
+		plugins: [
+			sveltekit(),
+			viteCompression({
+				algorithm: 'brotliCompress',
+				ext: '.br',
+				threshold: 1024,
+			}),
+		],
 		build: {
 			target: 'esnext',
 			cssMinify: true,
@@ -16,12 +24,13 @@ export default defineConfig(({ mode }) => {
 					manualChunks: (id) => {
 						if (id.includes('lucide-svelte')) return 'icons';
 						if (id.includes('highlight.js')) return 'hljs';
-						if (id.includes('marked') || id.includes('dompurify')) return 'utils';
+						if (id.includes('marked')) return 'marked';
+						if (id.includes('dompurify')) return 'dompurify';
 						if (id.includes('node_modules')) return 'vendor';
 					}
 				}
 			},
-			chunkSizeWarningLimit: 1000
+			chunkSizeWarningLimit: 500
 		},
 		server: {
 			proxy: {

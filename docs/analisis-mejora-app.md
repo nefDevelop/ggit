@@ -76,18 +76,30 @@
 
 ## Sprints sugeridos
 
-| Sprint | Área | Tiempo estimado |
-|--------|------|----------------|
-| 1 | Template cleanup (Safe/Sanitize/Str2HTML) | ✅ Completado |
-| 2 | SECRET_KEY + versiones irreales | 1 día |
-| 3 | CI/CD: workflows apuntar a nef734/ggit | 2-3 días |
-| 4 | ESLint + Prettier + Husky frontend | 1 día |
-| 5 | AbortController + tipar getContext('repo') | 1-2 días |
-| 6 | Dividir componentes grandes | 3-4 días |
-| 7 | Backend: %v→%w, context.TODO→reales, body limits | 3-4 días |
-| 8 | i18n completo + limpiar console.log + $derived.by | 1-2 días |
-| 9 | Limpiar referencias Gogs (65+ archivos) | 2-3 días |
-| 10 | Variables CSS unificadas + aria-labels | 2-3 días |
+| Sprint | Área | Estado |
+|--------|------|--------|
+| 1 | Template cleanup (Safe/Sanitize/Str2HTML) | ✅ |
+| 2 | SECRET_KEY + versiones irreales | ⏳ |
+| 3 | CI/CD: workflows apuntar a nef734/ggit | ⏳ |
+| 4 | ESLint + Prettier + Husky frontend | ⏳ |
+| 5 | AbortController + tipar getContext('repo') | ⏳ |
+| 6 | Dividir componentes grandes | ⏳ |
+| 7 | Backend: %v→%w, context, body limits | ⏳ |
+| 8 | i18n completo + console.log + $derived.by | ⏳ |
+| 9 | Referencias Gogs (65+ archivos) | ✅ |
+| 10 | Variables CSS + aria-labels | ⏳ |
+
+### Extras completados
+
+| Sprint | Área |
+|--------|------|
+| A1-A9 | Git operations layer (merge locking, gorutinas, context, TOCTOU, errores, rate limit) |
+| B1-B7 | Database N+1, context.TODO, IsErrUploadNotExist, NextIssueIndex, full table scans |
+| D1 | highlight.js → `$lib/hljs` |
+| D2 | lucide-svelte imports individuales (71 archivos) |
+| D3 | Google Fonts duplicado eliminado |
+| — | Parpadeo blanco corregido (stopPropagation → preventDefault) |
+| — | hooks.client.ts: reload removido en error de chunks |
 
 ---
 
@@ -139,13 +151,13 @@ Cubre login, sesiones, OIDC, 2FA, tokens API, SSH keys, modelo de permisos, midd
 
 Cubre bundle size, code splitting, lazy loading, dependencias pesadas, caché SPA, carga inicial.
 
-| # | Problema | Archivo | Detalle |
-|---|----------|---------|---------|
-| D1 | highlight.js + marked embebidos sin lazy loading | `package.json:37,39` | ~200KB+ de syntax highlighter y markdown parser en bundle principal |
-| D2 | lucide-svelte sin tree-shaking completo | `package.json:25` | Iconos importados uno por uno pero algunos componentes importan sets grandes |
-| D3 | SPA sin service worker ni precaching | `svelte.config.js` | `adapter-static` con `fallback: index.html` sin workbox |
-| D4 | Sin lazy loading de rutas | `routes/` | SvelteKit ya hace code splitting por ruta, verificar que esté funcionando |
-| D5 | Sin compresión Brotli en build | `vite.config.ts` | Solo js/css minificación, sin compresión de assets |
-| D6 | Carga inline de fuentes/iconos | `routes/+layout.svelte` | Google Fonts y Material Symbols cargados sin estrategia |
-| D7 | Sin métricas de performance | — | No hay Web Vitals, ni lazy loading de imágenes, ni responsive images |
-| D8 | Chunk splitting manual sin verificar | `vite.config.ts:16-22` | `manualChunks` separa icons, hljs, marked, vendor — verificar sizes reales |
+| # | Problema | Archivo | Detalle | Estado |
+|---|----------|---------|---------|--------|
+| D1 | highlight.js + marked embebidos sin lazy loading | `package.json:37,39` | ~200KB+ de syntax highlighter y markdown parser en bundle principal | ✅ |
+| D2 | lucide-svelte sin tree-shaking completo | `package.json:25` | Iconos importados como individuales (71 archivos) | ✅ |
+| D3 | Google Fonts duplicado | `base.css:1` | `@import` eliminado, carga solo desde `app.html` | ✅ |
+| D4 | Sin lazy loading de rutas | `routes/` | SvelteKit genera 62 route nodes por ruta | ✅ |
+| D5 | Sin compresión Brotli en build | `vite.config.ts` | `vite-plugin-compression` agregado, genera `.br` | ✅ |
+| D6 | Carga inline de fuentes/iconos | `app.html` | Ya óptimo (preconnect + display=swap) | ✅ |
+| D7 | Sin métricas de performance | — | No hay Web Vitals, ni lazy loading de imágenes, ni responsive images | ⏳ |
+| D8 | Chunk splitting manual sin verificar | `vite.config.ts:16-22` | marked y dompurify separados, warning bajado a 500KB | ✅ |
