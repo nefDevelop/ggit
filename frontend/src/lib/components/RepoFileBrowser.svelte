@@ -372,7 +372,7 @@ git push -u origin main</code></pre>
                         {:else}
                           <FileText size={18} class="icon-blob" />
                         {/if}
-                        <a href={`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`} data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
+                        <a href={`/${username}/${reponame}/src/${repoData.branch}/${realPath() ? realPath() + '/' : ''}${entry.name}`} onclick={(e) => e.preventDefault()}>
                           {entry.name}
                         </a>
                       </td>
