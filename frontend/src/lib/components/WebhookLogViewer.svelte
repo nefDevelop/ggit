@@ -2,12 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   
-import RefreshCw from "lucide-svelte/icons/refresh-cw";
-import Info from "lucide-svelte/icons/info";
-import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import RotateCcw from "lucide-svelte/icons/rotate-ccw";
-import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
+import { RefreshCw, Info, CheckCircle2, AlertCircle, RotateCcw, MousePointerClick } from "lucide-svelte";
 
   import Button from './ui/Button.svelte';
 

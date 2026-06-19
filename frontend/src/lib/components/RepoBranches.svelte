@@ -3,11 +3,7 @@
   import { onMount } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
   
-import Star from "lucide-svelte/icons/star";
-import GitFork from "lucide-svelte/icons/git-fork";
-import History from "lucide-svelte/icons/history";
-import Trash2 from "lucide-svelte/icons/trash-2";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
+import { Star, GitFork, History, Trash2, AlertCircle } from "lucide-svelte";
 
   
   let { username, reponame } = $props();

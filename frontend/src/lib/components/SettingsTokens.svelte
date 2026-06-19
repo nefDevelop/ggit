@@ -6,14 +6,7 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   
-import ShieldCheck from "lucide-svelte/icons/shield-check";
-import Copy from "lucide-svelte/icons/copy";
-import List from "lucide-svelte/icons/list";
-import LockOpen from "lucide-svelte/icons/lock-open";
-import Cpu from "lucide-svelte/icons/cpu";
-import Trash2 from "lucide-svelte/icons/trash-2";
-import PlusCircle from "lucide-svelte/icons/plus-circle";
-import Key from "lucide-svelte/icons/key";
+import { ShieldCheck, Copy, List, LockOpen, Cpu, Trash2, PlusCircle, Key } from "lucide-svelte";
 
 
   let tokens = $state<any[]>([]);

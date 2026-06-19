@@ -4,11 +4,7 @@
   import { i18n } from '$lib/i18n.svelte';
   import Button from "./ui/Button.svelte";
   
-import UserCog from "lucide-svelte/icons/user-cog";
-import UserPlus from "lucide-svelte/icons/user-plus";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import RefreshCw from "lucide-svelte/icons/refresh-cw";
-import Save from "lucide-svelte/icons/save";
+import { UserCog, UserPlus, AlertCircle, RefreshCw, Save } from "lucide-svelte";
 
 
   let {

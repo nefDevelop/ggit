@@ -1,24 +1,6 @@
 <script lang="ts">
   
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import Terminal from "lucide-svelte/icons/terminal";
-import History from "lucide-svelte/icons/history";
-import PanelLeftOpen from "lucide-svelte/icons/panel-left-open";
-import PanelRightClose from "lucide-svelte/icons/panel-right-close";
-import Folder from "lucide-svelte/icons/folder";
-import FileText from "lucide-svelte/icons/file-text";
-import File from "lucide-svelte/icons/file";
-import Edit from "lucide-svelte/icons/edit";
-import Download from "lucide-svelte/icons/download";
-import Binary from "lucide-svelte/icons/binary";
-import BookText from "lucide-svelte/icons/book-text";
-import Rocket from "lucide-svelte/icons/rocket";
-import ChevronRight from "lucide-svelte/icons/chevron-right";
-import Copy from "lucide-svelte/icons/copy";
-import Check from "lucide-svelte/icons/check";
-import FileCode from "lucide-svelte/icons/file-code";
-import Scale from "lucide-svelte/icons/scale";
-import Database from "lucide-svelte/icons/database";
+import { AlertCircle, Terminal, History, PanelLeftOpen, PanelRightClose, Folder, FileText, File, Edit, Download, Binary, BookText, Rocket, ChevronRight, Copy, Check, FileCode, Scale, Database } from "lucide-svelte";
 
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';

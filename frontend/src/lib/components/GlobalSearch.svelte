@@ -3,8 +3,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   
-import Database from "lucide-svelte/icons/database";
-import Search from "lucide-svelte/icons/search";
+import { Database, Search } from "lucide-svelte";
 
 
   const reponame = $derived(page.params.reponame);

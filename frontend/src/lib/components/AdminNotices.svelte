@@ -8,11 +8,7 @@
   import PageHeader from './ui/PageHeader.svelte';
   import Modal from "./Modal.svelte";
   
-import Bell from "lucide-svelte/icons/bell";
-import RefreshCw from "lucide-svelte/icons/refresh-cw";
-import Trash2 from "lucide-svelte/icons/trash-2";
-import ChevronLeft from "lucide-svelte/icons/chevron-left";
-import ChevronRight from "lucide-svelte/icons/chevron-right";
+import { Bell, RefreshCw, Trash2, ChevronLeft, ChevronRight } from "lucide-svelte";
 
 
   let notices = $state<any[]>([]);

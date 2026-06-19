@@ -2,8 +2,7 @@
   import { toast } from "$lib/toast.svelte";
   import { page } from '$app/state';
   
-import Check from "lucide-svelte/icons/check";
-import Copy from "lucide-svelte/icons/copy";
+import { Check, Copy } from "lucide-svelte";
 
   import Avatar from './Avatar.svelte';
 

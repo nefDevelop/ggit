@@ -11,8 +11,7 @@
   import { dialog } from '$lib/dialog.svelte';
   import { i18n } from '$lib/i18n.svelte';
   
-import Webhook from "lucide-svelte/icons/webhook";
-import Plus from "lucide-svelte/icons/plus";
+import { Webhook, Plus } from "lucide-svelte";
 
 
   const repo: any = getContext('repo');

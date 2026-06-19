@@ -1,9 +1,7 @@
 <script lang="ts">
   import Button from "./ui/Button.svelte";
   
-import ShieldCheck from "lucide-svelte/icons/shield-check";
-import MessageSquare from "lucide-svelte/icons/message-square";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
+import { ShieldCheck, MessageSquare, AlertCircle } from "lucide-svelte";
 
   
   let { onSubmitReview } = $props<{

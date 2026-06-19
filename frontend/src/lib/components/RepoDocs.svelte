@@ -6,11 +6,7 @@
   import Button from './ui/Button.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   
-import ArrowLeft from "lucide-svelte/icons/arrow-left";
-import Scale from "lucide-svelte/icons/scale";
-import FileText from "lucide-svelte/icons/file-text";
-import Folder from "lucide-svelte/icons/folder";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
+import { ArrowLeft, Scale, FileText, Folder, AlertCircle } from "lucide-svelte";
 
 
   const repo: any = getContext('repo');

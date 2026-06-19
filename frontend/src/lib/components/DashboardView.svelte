@@ -1,18 +1,6 @@
 <script lang="ts">
   
-import LayoutDashboard from "lucide-svelte/icons/layout-dashboard";
-import Plus from "lucide-svelte/icons/plus";
-import History from "lucide-svelte/icons/history";
-import List from "lucide-svelte/icons/list";
-import FolderOpen from "lucide-svelte/icons/folder-open";
-import Inbox from "lucide-svelte/icons/inbox";
-import Rocket from "lucide-svelte/icons/rocket";
-import Folder from "lucide-svelte/icons/folder";
-import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
-import GitPullRequest from "lucide-svelte/icons/git-pull-request";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import Building2 from "lucide-svelte/icons/building-2";
-import ScrollText from "lucide-svelte/icons/scroll-text";
+import { LayoutDashboard, Plus, History, List, FolderOpen, Inbox, Rocket, Folder, CheckCircle2, GitPullRequest, AlertCircle, Building2, ScrollText } from "lucide-svelte";
 
   import { apiFetch } from "$lib/api";
   import { authState } from '$lib/auth.svelte';

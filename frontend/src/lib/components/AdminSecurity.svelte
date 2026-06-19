@@ -9,9 +9,7 @@
   import Card from "./ui/Card.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   
-import ShieldCheck from "lucide-svelte/icons/shield-check";
-import Trash2 from "lucide-svelte/icons/trash-2";
-import Plus from "lucide-svelte/icons/plus";
+import { ShieldCheck, Trash2, Plus } from "lucide-svelte";
 
 
   let loading = $state(true);

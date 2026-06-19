@@ -7,12 +7,7 @@
   import Avatar from '$lib/components/Avatar.svelte';
   import { getLanguageColor } from '$lib/utils/languages';
   
-import Lock from "lucide-svelte/icons/lock";
-import GitFork from "lucide-svelte/icons/git-fork";
-import BookText from "lucide-svelte/icons/book-text";
-import Star from "lucide-svelte/icons/star";
-import SearchX from "lucide-svelte/icons/search-x";
-import Tag from "lucide-svelte/icons/tag";
+import { Lock, GitFork, BookText, Star, SearchX, Tag } from "lucide-svelte";
 
   
   let { q = '' } = $props();

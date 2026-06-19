@@ -4,8 +4,7 @@
   import PageHeader from "./ui/PageHeader.svelte";
   import Button from "./ui/Button.svelte";
   
-import Plus from "lucide-svelte/icons/plus";
-import GitPullRequest from "lucide-svelte/icons/git-pull-request";
+import { Plus, GitPullRequest } from "lucide-svelte";
 
   
   const repo: any = getContext('repo');

@@ -4,15 +4,7 @@
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
   
-import Folder from "lucide-svelte/icons/folder";
-import ArrowLeft from "lucide-svelte/icons/arrow-left";
-import Info from "lucide-svelte/icons/info";
-import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import GitMerge from "lucide-svelte/icons/git-merge";
-import Diff from "lucide-svelte/icons/diff";
-import History from "lucide-svelte/icons/history";
-import GitFork from "lucide-svelte/icons/git-fork";
+import { Folder, ArrowLeft, Info, CheckCircle2, AlertCircle, GitMerge, Diff, History, GitFork } from "lucide-svelte";
 
   import Button from "$lib/components/ui/Button.svelte";
   import DiffViewer from "$lib/components/DiffViewer.svelte";

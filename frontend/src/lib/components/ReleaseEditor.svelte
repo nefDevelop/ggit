@@ -4,10 +4,7 @@
   import BranchSelector from "./BranchSelector.svelte";
   import Button from "./ui/Button.svelte";
   
-import X from "lucide-svelte/icons/x";
-import CloudUpload from "lucide-svelte/icons/cloud-upload";
-import FileText from "lucide-svelte/icons/file-text";
-import Trash2 from "lucide-svelte/icons/trash-2";
+import { X, CloudUpload, FileText, Trash2 } from "lucide-svelte";
 
 
   let { 

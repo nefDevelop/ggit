@@ -16,17 +16,7 @@
   import PageHeader from "./ui/PageHeader.svelte";
   import ViewHeader from "./ui/ViewHeader.svelte";
   import ChipNavigation from "./ui/ChipNavigation.svelte";
-  import User from "lucide-svelte/icons/user";
-  import LayoutDashboard from "lucide-svelte/icons/layout-dashboard";
-  import Palette from "lucide-svelte/icons/palette";
-  import Mail from "lucide-svelte/icons/mail";
-  import ShieldCheck from "lucide-svelte/icons/shield-check";
-  import MonitorSmartphone from "lucide-svelte/icons/monitor-smartphone";
-  import UserMinus from "lucide-svelte/icons/user-minus";
-  import Key from "lucide-svelte/icons/key";
-  import Lock from "lucide-svelte/icons/lock";
-  import Book from "lucide-svelte/icons/book";
-  import Building2 from "lucide-svelte/icons/building-2";
+  import { User, LayoutDashboard, Palette, Mail, ShieldCheck, MonitorSmartphone, UserMinus, Key, Lock, Book, Building2 } from "lucide-svelte";
 
   let activeTab = $state(page.url.searchParams.get("tab") || "profile");
 

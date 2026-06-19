@@ -6,11 +6,7 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   
-import Key from "lucide-svelte/icons/key";
-import ShieldOff from "lucide-svelte/icons/shield-off";
-import Fingerprint from "lucide-svelte/icons/fingerprint";
-import Link2 from "lucide-svelte/icons/link-2";
-import Trash2 from "lucide-svelte/icons/trash-2";
+import { Key, ShieldOff, Fingerprint, Link2, Trash2 } from "lucide-svelte";
 
 
   let keys = $state<any[]>([]);

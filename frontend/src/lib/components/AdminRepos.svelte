@@ -1,14 +1,6 @@
 <script lang="ts">
   
-import Database from "lucide-svelte/icons/database";
-import PlusSquare from "lucide-svelte/icons/plus-square";
-import Lock from "lucide-svelte/icons/lock";
-import BookText from "lucide-svelte/icons/book-text";
-import Star from "lucide-svelte/icons/star";
-import GitFork from "lucide-svelte/icons/git-fork";
-import Eye from "lucide-svelte/icons/eye";
-import ShieldCheck from "lucide-svelte/icons/shield-check";
-import Trash2 from "lucide-svelte/icons/trash-2";
+import { Database, PlusSquare, Lock, BookText, Star, GitFork, Eye, ShieldCheck, Trash2 } from "lucide-svelte";
 
   import { apiFetch } from "$lib/api";
   import { toast } from "$lib/toast.svelte";

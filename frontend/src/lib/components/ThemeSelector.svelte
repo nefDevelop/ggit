@@ -4,12 +4,7 @@
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   
-import Contrast from "lucide-svelte/icons/contrast";
-import SunMoon from "lucide-svelte/icons/sun-moon";
-import Sun from "lucide-svelte/icons/sun";
-import Moon from "lucide-svelte/icons/moon";
-import Palette from "lucide-svelte/icons/palette";
-import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
+import { Contrast, SunMoon, Sun, Moon, Palette, CheckCircle2 } from "lucide-svelte";
 
   import { generateMd3Palette } from '$lib/utils/color';
 

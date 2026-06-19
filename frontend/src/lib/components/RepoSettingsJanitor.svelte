@@ -7,9 +7,7 @@
   import Card from "./ui/Card.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
   
-import Sparkles from "lucide-svelte/icons/sparkles";
-import Search from "lucide-svelte/icons/search";
-import Trash2 from "lucide-svelte/icons/trash-2";
+import { Sparkles, Search, Trash2 } from "lucide-svelte";
 
   import { tool } from "$lib/tool";
   import { i18n } from "$lib/i18n.svelte";

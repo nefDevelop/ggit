@@ -7,10 +7,7 @@
   import TableSkeleton from './ui/TableSkeleton.svelte';
   import PageHeader from './ui/PageHeader.svelte';
   
-import ScrollText from "lucide-svelte/icons/scroll-text";
-import RefreshCw from "lucide-svelte/icons/refresh-cw";
-import User from "lucide-svelte/icons/user";
-import ChevronDown from "lucide-svelte/icons/chevron-down";
+import { ScrollText, RefreshCw, User, ChevronDown } from "lucide-svelte";
 
 
   let auditLogs = $state<any[]>([]);

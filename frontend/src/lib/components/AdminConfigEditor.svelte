@@ -2,9 +2,7 @@
   import { apiFetch } from "$lib/api";
   import Button from './ui/Button.svelte';
   
-import Settings from "lucide-svelte/icons/settings";
-import X from "lucide-svelte/icons/x";
-import TriangleAlert from "lucide-svelte/icons/triangle-alert";
+import { Settings, X, TriangleAlert } from "lucide-svelte";
 
   
   let { section, data, onSave, onCancel } = $props();

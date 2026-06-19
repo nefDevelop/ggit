@@ -1,9 +1,6 @@
 <script lang="ts">
   
-import User from "lucide-svelte/icons/user";
-import UserPlus from "lucide-svelte/icons/user-plus";
-import Edit from "lucide-svelte/icons/edit";
-import Trash2 from "lucide-svelte/icons/trash-2";
+import { User, UserPlus, Edit, Trash2 } from "lucide-svelte";
 
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';

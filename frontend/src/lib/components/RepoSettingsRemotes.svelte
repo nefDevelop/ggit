@@ -5,14 +5,7 @@
   import Card from "./ui/Card.svelte";
   import { dialog } from "$lib/dialog.svelte";
   
-import Trash2 from "lucide-svelte/icons/trash-2";
-import Plus from "lucide-svelte/icons/plus";
-import Globe from "lucide-svelte/icons/globe";
-import Shield from "lucide-svelte/icons/shield";
-import RefreshCw from "lucide-svelte/icons/refresh-cw";
-import List from "lucide-svelte/icons/list";
-import Cloud from "lucide-svelte/icons/cloud";
-import Info from "lucide-svelte/icons/info";
+import { Trash2, Plus, Globe, Shield, RefreshCw, List, Cloud, Info } from "lucide-svelte";
 
   import PageHeader from "./ui/PageHeader.svelte";
   import Input from "./ui/Input.svelte";

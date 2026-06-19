@@ -5,27 +5,7 @@
   import GlobalSearch from '$lib/components/GlobalSearch.svelte';
   import { userPrefs } from '$lib/settings.svelte';
   
-import LayoutGrid from "lucide-svelte/icons/layout-grid";
-import Lock from "lucide-svelte/icons/lock";
-import Scale from "lucide-svelte/icons/scale";
-import Download from "lucide-svelte/icons/download";
-import ChevronDown from "lucide-svelte/icons/chevron-down";
-import Copy from "lucide-svelte/icons/copy";
-import Database from "lucide-svelte/icons/database";
-import GitBranch from "lucide-svelte/icons/git-branch";
-import FileArchive from "lucide-svelte/icons/file-archive";
-import Archive from "lucide-svelte/icons/archive";
-import Code from "lucide-svelte/icons/code";
-import Terminal from "lucide-svelte/icons/terminal";
-import Settings from "lucide-svelte/icons/settings";
-import History from "lucide-svelte/icons/history";
-import Tag from "lucide-svelte/icons/tag";
-import Rocket from "lucide-svelte/icons/rocket";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
-import GitMerge from "lucide-svelte/icons/git-merge";
-import Book from "lucide-svelte/icons/book";
-import Gavel from "lucide-svelte/icons/gavel";
-import Calendar from "lucide-svelte/icons/calendar";
+import { LayoutGrid, Lock, Scale, Download, ChevronDown, Copy, Database, GitBranch, FileArchive, Archive, Code, Terminal, Settings, History, Tag, Rocket, AlertCircle, GitMerge, Book, Gavel, Calendar } from "lucide-svelte";
 
   
   import { fade } from 'svelte/transition';
