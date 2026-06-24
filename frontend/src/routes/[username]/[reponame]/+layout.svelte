@@ -170,7 +170,6 @@ import Calendar from "lucide-svelte/icons/calendar";
             <Avatar 
               src={repoData.avatar_url} 
               username={repoData.name} 
-              seed={repoData.id?.toString()} 
               size={36} 
               type="repo" 
               class="header-repo-avatar"

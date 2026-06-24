@@ -97,7 +97,6 @@ import Tag from "lucide-svelte/icons/tag";
                 <Avatar 
                   src={repo.avatar_url} 
                   username={repo.name} 
-                  seed={repo.id?.toString()} 
                   size={32} 
                   type="repo" 
                 />

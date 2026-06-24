@@ -74,7 +74,6 @@ import Copy from "lucide-svelte/icons/copy";
     <Avatar 
       src={repo.avatar_url} 
       username={repo.name} 
-      seed={repo.id?.toString()} 
       size={48} 
       type="repo" 
     />
