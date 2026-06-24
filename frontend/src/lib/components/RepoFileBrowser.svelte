@@ -298,5 +298,5 @@ git push -u origin main</code></pre>
   .copy-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
   .copy-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary-color); color: var(--primary-color); }
   .copy-btn .success-icon { color: #4ade80; }
-  @media (max-width: 900px) { .technical-grid { grid-template-columns: 1fr; gap: 1.5rem; padding: 0; } .last-commit-bar { display: none; } .mobile-only { display: flex; } :global(.desktop-only) { display: none; } }
+  @media (max-width: 900px) { .technical-grid { grid-template-columns: 1fr; gap: 1.5rem; padding: 0; } .last-commit-bar { display: none; } .mobile-only { display: flex; } :global(.desktop-only) { display: none; } :global(.side-column) { padding-top: 1.5rem; } }
 </style>
