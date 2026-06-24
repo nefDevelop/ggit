@@ -62,7 +62,7 @@
     }
   });
 
-  let codeRows = $derived(() => {
+  let codeRows = $derived.by(() => {
     if (!repoData?.content || !repoData?.is_text_file) return [];
     let lines: string[];
     if (repoData.highlighted_content) { lines = repoData.highlighted_content.split('\n'); }
@@ -235,7 +235,7 @@ git push -u origin main</code></pre>
             {#if repoData.type === 'directory'}
               <FileDirectoryListing entries={repoData.entries} {username} {reponame} branch={repoData.branch} realPath={realPath()} {timeAgo} />
             {:else if repoData.type === 'file'}
-              <FileContentViewer {repoData} {username} {reponame} realPath={realPath()} {showBlame} {blameLoading} {sidebarCollapsed} {formatSize} {timeAgo} onToggleBlame={toggleBlame} onToggleSidebar={toggleSidebar} />
+              <FileContentViewer {repoData} {username} {reponame} realPath={realPath()} {showBlame} {blameLoading} {sidebarCollapsed} {formatSize} {timeAgo} {codeRows} onToggleBlame={toggleBlame} onToggleSidebar={toggleSidebar} />
             {/if}
           </div>
           {#if repoData.readme}

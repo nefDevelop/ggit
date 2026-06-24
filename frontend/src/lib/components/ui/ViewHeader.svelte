@@ -100,6 +100,8 @@
   .view-mode-selector-row {
     display: flex;
     align-items: center;
+    min-width: 0;
+    overflow-x: auto;
   }
 
   .view-mode-selector { 

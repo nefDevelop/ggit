@@ -11,7 +11,7 @@
   import BookText from "lucide-svelte/icons/book-text";
   import MarkdownRenderer from "./ui/MarkdownRenderer.svelte";
 
-  let { repoData = null, username = "", reponame = "", realPath = "", showBlame = false, blameLoading = false, sidebarCollapsed = false, formatSize, timeAgo, onToggleBlame, onToggleSidebar }: {
+  let { repoData = null, username = "", reponame = "", realPath = "", showBlame = false, blameLoading = false, sidebarCollapsed = false, codeRows = [], formatSize, timeAgo, onToggleBlame, onToggleSidebar }: {
     repoData: any;
     username: string;
     reponame: string;
@@ -19,6 +19,7 @@
     showBlame: boolean;
     blameLoading: boolean;
     sidebarCollapsed: boolean;
+    codeRows: any[];
     formatSize: (n: number) => string;
     timeAgo: (d: any) => string;
     onToggleBlame: () => void;
@@ -56,7 +57,7 @@
   <div class="code-box">
     {#if repoData?.is_text_file}
       <div class="code-container" class:with-blame={showBlame}>
-        {#each (repoData?.codeRows || []) as row}
+        {#each (codeRows) as row}
           <div class="code-line-row">
             {#if showBlame && row.blame}
               <div class="blame-cell" title={`${row.blame.author} - ${new Date(row.blame.time * 1000).toLocaleString()}`}>
