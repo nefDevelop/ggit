@@ -158,7 +158,7 @@
     position: relative;
   }
 
-  @media (max-width: 800px) {
+  @media (max-width: 1024px) {
     .view-header-abstract { padding: 0 1rem 1.5rem; }
     .search-and-action-row {
       display: grid;

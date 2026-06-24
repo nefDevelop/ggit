@@ -1,7 +1,7 @@
 <script lang="ts">
   import Palette from "lucide-svelte/icons/palette";
 
-  let { showThemePanel = false, pageLoadTime = 0, templateTime = 0 }: {
+  let { showThemePanel = $bindable(false), pageLoadTime = 0, templateTime = 0 }: {
     showThemePanel: boolean;
     pageLoadTime: number;
     templateTime: number;
