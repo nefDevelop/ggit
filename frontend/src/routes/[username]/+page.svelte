@@ -54,9 +54,7 @@
   }
 
   onMount(async () => {
-    await fetchProfile();
-    if (user) {
-      await fetchTabData("repos");
+    if (username && username !== 'undefined') {
       try {
         const res = await apiFetch(`/api/v2/users/${username}/orgs`);
         if (res.ok) orgs = await res.json();
@@ -68,7 +66,13 @@
 
   $effect(() => {
     if (username && username !== 'undefined') {
-        fetchProfile().then(() => fetchTabData(activeTab));
+      fetchProfile();
+    }
+  });
+
+  $effect(() => {
+    if (username && username !== 'undefined') {
+      fetchTabData(activeTab);
     }
   });
 </script>
@@ -95,7 +99,7 @@
       <div class="hero-content">
         <header class="profile-header">
           <div class="avatar-container">
-            <img src={user.avatar_url} alt={user.username} class="main-avatar" />
+            <img src={user.avatar_url} alt={user.username} class="main-avatar" loading="lazy" decoding="async" />
           </div>
           <div class="user-main-info">
             <div class="title-row">

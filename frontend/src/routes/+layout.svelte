@@ -72,9 +72,18 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 		};
 
 		init();
-		
-		const healthInterval = setInterval(checkSystemHealth, 30000);
-		return () => clearInterval(healthInterval);
+	});
+
+	let healthInterval: ReturnType<typeof setInterval> | undefined;
+
+	$effect(() => {
+		if (authState.isAuthenticated) {
+			checkSystemHealth();
+			healthInterval = setInterval(checkSystemHealth, 30000);
+			return () => { clearInterval(healthInterval); healthInterval = undefined; };
+		} else {
+			if (healthInterval) { clearInterval(healthInterval); healthInterval = undefined; }
+		}
 	});
 
 	const isDashboard = $derived(

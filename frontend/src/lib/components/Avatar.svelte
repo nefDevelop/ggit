@@ -26,7 +26,7 @@
   {#if useIdenticon}
     <Identicon seed={finalSeed} size={Number(size)} {type} />
   {:else}
-    <img src={src} alt={username} class="avatar-img" />
+    <img src={src} alt={username} class="avatar-img" loading="lazy" decoding="async" />
   {/if}
 </div>
 

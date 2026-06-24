@@ -51,7 +51,6 @@ import Calendar from "lucide-svelte/icons/calendar";
   let lastFetched = { user: '', repo: '' };
 
   async function fetchRepoInfo() {
-    console.log("DEBUG - Layout Fetch:", { username, reponame });
     if (lastFetched.user === username && lastFetched.repo === reponame) return;
     lastFetched = { user: username || '', repo: reponame || '' };
 
@@ -59,10 +58,8 @@ import Calendar from "lucide-svelte/icons/calendar";
     error = '';
     try {
       const repoRes = await apiFetch(`/api/v2/${username}/${reponame}/view/`);
-      console.log("DEBUG - API Response Status:", repoRes.status);
       if (repoRes.ok) {
         const res = await repoRes.json();
-        console.log("DEBUG - API Data Received:", res);
         repoData = res.repository;
         fullRepoRes = res; // Store the full response
         rootEntries = res.entries || [];
@@ -72,12 +69,10 @@ import Calendar from "lucide-svelte/icons/calendar";
         if (res.languages) {
             languages = res.languages;
         }
-        console.log("DEBUG - Final repoData:", repoData);
       } else {
         error = 'Repository not found or access denied.';
       }
     } catch (e) {
-      console.error("DEBUG - Fetch Error:", e);
       error = 'Failed to load repository information.';
     } finally {
       loading = false;

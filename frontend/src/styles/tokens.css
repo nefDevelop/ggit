@@ -414,57 +414,6 @@
 }
 
 /* GLOBAL UI COMPONENTS */
-.btn-action-primary {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--primary-color);
-  color: var(--on-primary);
-  padding: 0.5rem 1.25rem;
-  border-radius: 2rem;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-action-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
-  filter: brightness(1.1);
-}
-
-.tab-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1.25rem;
-  border-radius: 100px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tab-pill.active {
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  box-shadow: var(--shadow-sm);
-}
-
-.pill-filter-group {
-  display: flex;
-  background: var(--md-sys-color-surface-variant);
-  padding: 0.25rem;
-  border-radius: 100px;
-  width: fit-content;
-}
-
 .btn-ghost {
   display: flex;
   align-items: center;

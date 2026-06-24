@@ -7,7 +7,6 @@
   import Badge from "$lib/components/ui/Badge.svelte";
   import { marked } from "marked";
   import hljs from "$lib/hljs";
-  import "highlight.js/styles/github-dark.css";
   import Avatar from "./Avatar.svelte";
   import CodeViewer from "./ui/CodeViewer.svelte";
   import { toast } from "$lib/toast.svelte";
