@@ -175,8 +175,6 @@ import Building2 from "lucide-svelte/icons/building-2";
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       padding: 0.75rem 1rem;
-      border-top: 1px solid var(--md-sys-color-outline-variant);
-      box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
       margin-top: 0;
     }
     .settings-content {
