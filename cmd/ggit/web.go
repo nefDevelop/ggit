@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nef734/ggit/internal/conf"
@@ -103,7 +104,15 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 
 	// SPA Routing
 	r.GET("/", context.Toggle(&context.ToggleOptions{SignInRequired: false}), ginx.ServeSPA)
-	r.NoRoute(context.Toggle(&context.ToggleOptions{SignInRequired: false}), ginx.ServeSPA)
+	r.NoRoute(func(c *gin.Context) {
+		if strings.HasPrefix(c.Request.URL.Path, "/api/") {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Not found"})
+			c.Abort()
+			return
+		}
+		context.Toggle(&context.ToggleOptions{SignInRequired: false})(c)
+		ginx.ServeSPA(c)
+	})
 
 	// Utils
 
