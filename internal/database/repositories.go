@@ -15,9 +15,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// repoListFields are the columns used for listing repositories in the dashboard and explore pages.
-// We avoid 'languages' and other heavy columns here to save RAM.
-const repoListFields = "repository.id, repository.owner_id, repository.name, repository.project_folder, repository.lower_name, repository.description, repository.website, repository.default_branch, repository.size, repository.num_watches, repository.num_stars, repository.num_forks, repository.num_issues, repository.num_closed_issues, repository.num_pulls, repository.num_closed_pulls, repository.num_commits, repository.num_branches, repository.is_private, repository.is_fork, repository.is_unlisted, repository.is_bare, repository.enable_wiki, repository.wiki_folder_name, repository.adr_folder_name, repository.enable_issues, repository.enable_pulls, repository.last_commit_unix, repository.last_issue_unix, repository.last_pull_unix, repository.last_branch_unix, repository.last_health_check_unix, repository.commits_since_check, repository.created_unix, repository.updated_unix"
+const repoListFields = "repository.id, repository.owner_id, repository.name, repository.project_folder, repository.lower_name, repository.description, repository.website, repository.default_branch, repository.size, repository.num_watches, repository.num_stars, repository.num_forks, repository.num_issues, repository.num_closed_issues, repository.num_pulls, repository.num_closed_pulls, repository.num_commits, repository.num_branches, repository.is_private, repository.is_fork, repository.is_unlisted, repository.is_bare, repository.enable_wiki, repository.wiki_folder_name, repository.adr_folder_name, repository.enable_issues, repository.enable_pulls, repository.last_commit_unix, repository.last_issue_unix, repository.last_pull_unix, repository.last_branch_unix, repository.last_health_check_unix, repository.commits_since_check, repository.created_unix, repository.updated_unix, repository.primary_language, repository.languages"
 
 type RepositoryAPIFormatOptions struct {
 	Permission *apiv2types.RepositoryPermission
@@ -89,6 +87,8 @@ func (r *Repository) APIFormat(owner *User, opts ...RepositoryAPIFormatOptions) 
 		Permissions:           opt.Permission,
 		Parent:                opt.Parent,
 		Topics:                r.Topics,
+		Language:              r.PrimaryLanguage,
+		Languages:             langs,
 	}
 }
 

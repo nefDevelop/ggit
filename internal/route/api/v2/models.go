@@ -46,6 +46,11 @@ func ToRepositoryResponse(r *database.Repository) *types.RepositoryResponse {
 	if r == nil {
 		return nil
 	}
+	var langs map[string]int64
+	if r.Languages != "" {
+		_ = json.Unmarshal([]byte(r.Languages), &langs)
+	}
+
 	return &types.RepositoryResponse{
 		ID:            r.ID,
 		Name:          r.Name,
@@ -60,6 +65,8 @@ func ToRepositoryResponse(r *database.Repository) *types.RepositoryResponse {
 		CreatedAt:     time.Unix(r.CreatedUnix, 0),
 		UpdatedAt:     time.Unix(r.UpdatedUnix, 0),
 		Topics:        r.Topics,
+		Language:      r.PrimaryLanguage,
+		Languages:     langs,
 	}
 }
 

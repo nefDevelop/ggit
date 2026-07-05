@@ -99,16 +99,18 @@ import Copy from "lucide-svelte/icons/copy";
     </div>
   </div>
 
-  <div class="tech-info">
-    {#if repo.language}
+  {#if repo.language}
+    <div class="tech-info">
       <div class="lang">
         <span class="lang-dot" style="background-color: {getLanguageColor(repo.language)}"></span>
         {repo.language}
       </div>
-    {:else if repo.empty}
+    </div>
+  {:else if repo.empty}
+    <div class="tech-info">
       <div class="setup-hint">Ready for code</div>
-    {/if}
-  </div>
+    </div>
+  {/if}
 
   <div class="stats-info">
     <div class="stat-item {repo.num_commits > 0 ? 'active' : 'dim'}" title="Commits">
@@ -145,7 +147,7 @@ import Copy from "lucide-svelte/icons/copy";
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr 80px 220px 100px;
+    grid-template-columns: 56px 1fr auto 220px 100px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -275,7 +277,7 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 80px 180px 90px; 
+      grid-template-columns: 56px 1fr auto 180px 90px; 
     }
     .stats-info { gap: 0.5rem; }
     .stat-item { width: 38px; }
@@ -283,13 +285,13 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr 80px 90px; 
+      grid-template-columns: 56px 1fr auto 90px; 
     }
     .stats-info { display: none; }
   }
 
   @media (max-width: 800px) {
-    .repo-row { grid-template-columns: 56px 1fr 80px; }
+    .repo-row { grid-template-columns: 56px 1fr auto; }
     .tech-info { display: none; }
   }
 

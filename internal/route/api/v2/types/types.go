@@ -95,6 +95,8 @@ type RepositoryResponse struct {
 	Permissions           *RepositoryPermission `json:"permissions,omitempty"`
 	Parent                *RepositoryResponse   `json:"parent,omitempty"`
 	Topics                []string              `json:"topics"`
+	Language              string                `json:"language"`
+	Languages             map[string]int64      `json:"languages"`
 
 	// Activity Timestamps
 	LastCommitAt time.Time `json:"last_commit_at"`
