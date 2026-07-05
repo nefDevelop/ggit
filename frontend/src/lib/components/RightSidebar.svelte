@@ -121,7 +121,12 @@ import GitCommit from "lucide-svelte/icons/git-commit";
                       <XCircle size={14} class="mini-icon" />
                       closed PR in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
                     {:else}
-                      {act.content || 'activity'} 
+                      {#if act.content && act.content.startsWith('{')}
+                        {@const pushData = getPushData(act)}
+                        <span class="action-pill"><History size={12} /> {pushData.Len || 0} commits</span>
+                      {:else}
+                        {act.content || 'activity'}
+                      {/if}
                       in <a href="/{act.repo_user_name}/{act.repo_name}" class="repo-link">{act.repo_name}</a>
                     {/if}
                   </span>
