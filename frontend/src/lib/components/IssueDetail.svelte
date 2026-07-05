@@ -8,6 +8,8 @@
   import Select from "$lib/components/ui/Select.svelte";
   
 
+  import { timeAgo } from "$lib/utils/date";
+
   import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
   import AlertCircle from "lucide-svelte/icons/alert-circle";
   import IssueTimeline from "./IssueTimeline.svelte";
@@ -111,17 +113,6 @@
     if (repo.data) fetchIssueDetail();
   });
 
-  function timeAgo(dateInput: any) {
-    if (!dateInput) return "";
-    const date = new Date(dateInput);
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (seconds < 60) return "just now";
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return date.toLocaleDateString();
-  }
 </script>
 
 <div class="issue-detail-view">

@@ -2,6 +2,7 @@
   import { authState } from "$lib/auth.svelte";
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
+  import { formatDate } from "$lib/utils/date";
   import Card from "$lib/components/ui/Card.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import Badge from "$lib/components/ui/Badge.svelte";
@@ -52,7 +53,7 @@
            <span class="user">@{gist.owner?.username || 'anonymous'}</span>
         </div>
         <span class="sep">•</span>
-        <span class="date">{new Date(gist.created_at).toLocaleDateString()}</span>
+        <span class="date">{formatDate(gist.created_at)}</span>
         <span class="sep">•</span>
         <Badge variant="secondary" size="sm">{files.length} {files.length === 1 ? 'file' : 'files'}</Badge>
       </div>

@@ -32,6 +32,7 @@
   import FileDirectoryListing from './FileDirectoryListing.svelte';
   import FileContentViewer from './FileContentViewer.svelte';
   import RepoFileSidebar from './RepoFileSidebar.svelte';
+  import { timeAgo } from '$lib/utils/date';
 
   let { path = '' } = $props();
   let username = $derived(page.params.username);
@@ -127,17 +128,6 @@
   let visibleLanguages = $derived(showAllLanguages ? langEntries() : langEntries().slice(0, 10));
   let sidebarCollapsed = $state(false);
   function toggleSidebar() { sidebarCollapsed = !sidebarCollapsed; localStorage.setItem('repo-sidebar-collapsed', sidebarCollapsed.toString()); }
-
-  function timeAgo(dateInput: any) {
-    if (!dateInput) return '';
-    const date = new Date(dateInput);
-    const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (seconds < 60) return 'just now'; const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`; const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`; const days = Math.floor(hours / 24);
-    if (days < 30) return `${days}d ago`;
-    return date.toLocaleDateString();
-  }
 
   onMount(() => { sidebarCollapsed = localStorage.getItem('repo-sidebar-collapsed') === 'true'; });
 

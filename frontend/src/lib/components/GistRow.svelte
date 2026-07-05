@@ -6,6 +6,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
 
 
   import Badge from "./ui/Badge.svelte";
+  import { formatDate } from "$lib/utils/date";
 
   let { gist } = $props<{ gist: any }>();
 </script>
@@ -24,7 +25,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
     <div class="meta-line">
       <span>{gist.uuid.split('-')[0]}</span>
       <span class="sep">•</span>
-      <span>Updated {new Date(gist.updated_at).toLocaleDateString()}</span>
+      <span>Updated {formatDate(gist.updated_at)}</span>
     </div>
   </div>
   <div class="row-arrow">

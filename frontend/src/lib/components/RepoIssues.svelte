@@ -2,6 +2,7 @@
   import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
+  import { formatDate } from "$lib/utils/date";
   import PageHeader from "./ui/PageHeader.svelte";
   import IssueBoard from "./IssueBoard.svelte";
   import Button from "./ui/Button.svelte";
@@ -158,9 +159,7 @@ import MessageSquare from "lucide-svelte/icons/message-square";
                 {/each}
               </div>
               <div class="item-meta-data">
-                #{issue.number} opened {new Date(
-                  issue.created_at,
-                ).toLocaleDateString()} by <strong>{issue.user?.username}</strong>
+                #{issue.number} opened {formatDate(issue.created_at)} by <strong>{issue.user?.username}</strong>
               </div>
             </div>
             {#if issue.comments > 0}

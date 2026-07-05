@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
+  import { formatDate } from '$lib/utils/date';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import Avatar from './Avatar.svelte';
@@ -83,7 +84,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
                   <Avatar src={org.avatar_url} username={org.username} size={48} />
                   <div class="names">
                     <strong>{org.username}</strong>
-                    <span>Reg. {new Date(org.created_at).toLocaleDateString()}</span>
+                    <span>Reg. {formatDate(org.created_at)}</span>
                   </div>
                 </div>
               </td>

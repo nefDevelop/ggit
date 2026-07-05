@@ -13,6 +13,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { formatDate } from "$lib/utils/date";
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
@@ -281,7 +282,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
                   {#if ms.due_on}
                     <span class="due-date">
                       <Calendar size={14} />
-                      Due on {new Date(ms.due_on).toLocaleDateString()}
+                      Due on {formatDate(ms.due_on)}
                     </span>
                   {/if}
                   <span class="updated">Last updated {new Date().toLocaleDateString()}</span>

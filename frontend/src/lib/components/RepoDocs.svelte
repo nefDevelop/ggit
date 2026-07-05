@@ -2,6 +2,7 @@
   import type { RepoContext } from "$lib/types";
   import { onMount, getContext } from 'svelte';
   import { apiFetch } from '$lib/api';
+  import { formatDate } from '$lib/utils/date';
   import MarkdownRenderer from './ui/MarkdownRenderer.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
@@ -114,7 +115,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
             </div>
             {#if currentFile.last_commit}
                 <div class="last-update">
-                    Last updated {new Date(currentFile.last_commit.author.when).toLocaleDateString()} by {currentFile.last_commit.author.name}
+                    Last updated {formatDate(currentFile.last_commit.author.when)} by {currentFile.last_commit.author.name}
                 </div>
             {/if}
         </div>

@@ -3,6 +3,7 @@
   import { toast } from "$lib/toast.svelte";
   import { authState } from "$lib/auth.svelte";
   import { apiFetch } from "$lib/api";
+  import { formatDateTime } from "$lib/utils/date";
   import { onMount } from "svelte";
   import Button from "./ui/Button.svelte";
   
@@ -179,7 +180,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
                     <div class="notice-text">
                       <span class="system-badge">{item.type_name}</span>
                       <p class="message">{item.description}</p>
-                      <span class="time">{new Date(item.created_at).toLocaleString()}</span>
+                       <span class="time">{formatDateTime(item.created_at)}</span>
                     </div>
                   </div>
                 {/each}

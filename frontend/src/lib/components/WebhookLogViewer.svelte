@@ -52,9 +52,10 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
     }
   }
 
+  import { formatDateTime } from '$lib/utils/date';
+
   function formatDate(iso: string) {
-    const d = new Date(iso);
-    return d.toLocaleString();
+    return formatDateTime(iso);
   }
 
   onMount(fetchLogs);

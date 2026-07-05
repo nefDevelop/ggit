@@ -93,13 +93,7 @@ import Plus from "lucide-svelte/icons/plus";
     }
   }
 
-  function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  }
+  import { formatDate } from '$lib/utils/date';
 
   onMount(fetchKeys);
 </script>

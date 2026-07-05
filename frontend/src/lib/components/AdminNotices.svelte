@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { formatDateTime } from "$lib/utils/date";
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
@@ -111,7 +112,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
                   <div class="desc-preview">{notice.description}</div>
                 </td>
                 <td>
-                  <span class="date-tag">{new Date(notice.created_at).toLocaleString()}</span>
+                  <span class="date-tag">{formatDateTime(notice.created_at)}</span>
                 </td>
                 <td>
                   <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={(e) => { e.stopPropagation(); deleteNotice(notice.id); }} />
@@ -142,7 +143,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
     <div class="premium-detail">
       <div class="detail-top">
         <span class="type-badge tier-{selectedNotice.type} big">{selectedNotice.type_name}</span>
-        <span class="detail-time">Generado el {new Date(selectedNotice.created_at).toLocaleString()}</span>
+        <span class="detail-time">Generado el {formatDateTime(selectedNotice.created_at)}</span>
       </div>
       <div class="detail-content">
         <span class="detail-label">Contenido del Log</span>

@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api";
   import { i18n } from '$lib/i18n.svelte';
+  import { formatDateTime } from "$lib/utils/date";
   import { dialog } from '$lib/dialog.svelte';
   import { toast } from '$lib/toast.svelte';
   import Card from './ui/Card.svelte';
@@ -87,7 +88,7 @@
               <div class="meta-line">
                 <span class="ip">{session.remote_addr}</span>
                 <span class="dot">•</span>
-                <span class="time">{i18n.t("settings.sessions_last_activity")}: {new Date(session.updated_at).toLocaleString()}</span>
+                <span class="time">{i18n.t("settings.sessions_last_activity")}: {formatDateTime(session.updated_at)}</span>
               </div>
             </div>
           </div>

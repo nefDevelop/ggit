@@ -86,10 +86,11 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     }
   }
 
+  import { formatDateTime } from '$lib/utils/date';
+
   function formatTime(dateStr: string) {
     if (!dateStr || dateStr.startsWith('0001')) return '—';
-    const date = new Date(dateStr);
-    return date.toLocaleString();
+    return formatDateTime(dateStr);
   }
 
   onMount(fetchMonitor);

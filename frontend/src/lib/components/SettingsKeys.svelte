@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
+  import { formatDate } from '$lib/utils/date';
   import { dialog } from '$lib/dialog.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
@@ -91,7 +92,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
                 <div class="key-info">
                    <span class="key-title">{key.title}</span>
                    <code class="key-fingerprint">{key.fingerprint || 'Huella no disponible'}</code>
-                   <span class="key-date">Añadida el {new Date(key.created_at).toLocaleDateString()}</span>
+                   <span class="key-date">Añadida el {formatDate(key.created_at)}</span>
                 </div>
               </div>
               <div class="key-actions">

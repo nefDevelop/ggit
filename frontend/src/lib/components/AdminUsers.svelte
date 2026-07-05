@@ -9,6 +9,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { formatDate } from '$lib/utils/date';
   import AdminUserEditor from './AdminUserEditor.svelte';
   import Avatar from './Avatar.svelte';
   import Button from './ui/Button.svelte';
@@ -114,7 +115,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
                   </div>
                 </td>
                 <td class="email-cell" data-label={i18n.t('email')}>{user.email}</td>
-                <td class="date-cell" data-label={i18n.t('user.join_on')}>{new Date(user.created_at).toLocaleDateString()}</td>
+                <td class="date-cell" data-label={i18n.t('user.join_on')}>{formatDate(user.created_at)}</td>
                 <td data-label="Admin">
                   <button class="admin-badge" class:is-admin={user.is_admin} onclick={() => toggleAdmin(user)}>
                     {user.is_admin ? 'Administrador' : 'Usuario'}

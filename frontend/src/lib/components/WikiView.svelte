@@ -3,6 +3,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { goto } from '$app/navigation';
+  import { formatDate } from '$lib/utils/date';
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
   import Edit from "lucide-svelte/icons/edit";
@@ -222,7 +223,7 @@
                   <div class="history-node"></div>
                   <div class="history-content">
                     <span class="history-msg">{entry.message || entry.title}</span>
-                    <span class="history-meta">{entry.author} · {new Date(entry.date * 1000 || entry.date).toLocaleDateString()}</span>
+                    <span class="history-meta">{entry.author} · {formatDate(entry.date * 1000 || entry.date)}</span>
                   </div>
                 </div>
               {/each}

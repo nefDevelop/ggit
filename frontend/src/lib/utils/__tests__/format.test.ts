@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { timeAgo } from '../date';
 
 function formatSize(bytes: number) {
   if (bytes === 0) return '0 B';
@@ -6,20 +7,6 @@ function formatSize(bytes: number) {
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
-
-function timeAgo(dateInput: any) {
-  if (!dateInput) return '';
-  const date = new Date(dateInput);
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return date.toLocaleDateString();
 }
 
 function getHash(str: string) {

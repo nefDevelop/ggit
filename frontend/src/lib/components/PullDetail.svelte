@@ -2,6 +2,7 @@
   import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { formatDate } from "$lib/utils/date";
   import { toast } from "$lib/toast.svelte";
   import DiffViewer from '$lib/components/DiffViewer.svelte';
   import ReviewToolbar from '$lib/components/ReviewToolbar.svelte';
@@ -227,7 +228,7 @@
              {#each comments as comment}
                <div class="timeline-item-flat">
                  <div class="item-header">
-                   <a href="/{comment.user?.username}" class="user-link">{comment.user?.username}</a> commented on {new Date(comment.created_at).toLocaleDateString()}
+                    <a href="/{comment.user?.username}" class="user-link">{comment.user?.username}</a> commented on {formatDate(comment.created_at)}
                  </div>
                  <div class="item-body">
                    <MarkdownRenderer 

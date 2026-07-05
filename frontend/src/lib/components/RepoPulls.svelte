@@ -2,6 +2,7 @@
   import type { RepoContext } from "$lib/types";
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
+  import { formatDate } from "$lib/utils/date";
   import PageHeader from "./ui/PageHeader.svelte";
   import Button from "./ui/Button.svelte";
   
@@ -128,7 +129,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
               {/each}
             </div>
             <div class="item-meta-data">
-              #{pull.number} opened {new Date(pull.created_at).toLocaleDateString()} by <strong>{pull.user?.username}</strong>
+              #{pull.number} opened {formatDate(pull.created_at)} by <strong>{pull.user?.username}</strong>
               {#if pull.attention_state === 1 || pull.attention_state === 2}
                 <span class="attention-dot" class:author={pull.attention_state === 2} class:reviewer={pull.attention_state === 1} title={pull.attention_state === 1 ? 'Review required' : 'Waiting for author'}></span>
               {/if}
