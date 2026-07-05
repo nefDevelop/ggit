@@ -24,6 +24,7 @@ export const RepositorySchema = z.object({
   external_wiki_url: z.string().url('URL inválida').or(z.literal('')).optional(),
   archived: z.boolean().default(false),
   default_branch: z.string().optional(),
+  project_folder: z.string().max(100, 'El nombre de carpeta es demasiado largo').optional(),
 });
 
 export type RepositorySettings = z.infer<typeof RepositorySchema>;

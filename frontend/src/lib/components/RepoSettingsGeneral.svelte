@@ -210,6 +210,7 @@ import AlertTriangle from "lucide-svelte/icons/alert-triangle";
             <Input label="Propietario" value={settings.owner?.username || repo.data?.owner?.username || ''} disabled />
             <Input label="Descripción" bind:value={settings.description} placeholder="Una breve descripción sobre qué hace este proyecto..." class="full-width" />
             <Input label="Página Web" bind:value={settings.website} placeholder="https://mi-proyecto.com" class="full-width" />
+            <Input label="Carpeta / Grupo" bind:value={settings.project_folder} placeholder="ej. frontend, herramientas, docs" class="full-width" description="Agrupa este repositorio en una carpeta dentro del dashboard." />
           </div>
 
           <div class="options-grid">

@@ -7,18 +7,18 @@ import (
 
 // Action represents a user operation that can be logged and displayed in the news feed.
 type Action struct {
-	ID           int64
-	UserID       int64
-	OpType       int
-	ActUserID    int64
-	ActUserName  string
-	RepoID       int64
-	RepoUserName string
-	RepoName     string
-	RefName      string
-	IsPrivate    bool
-	Content      string
-	Created      time.Time
+	ID           int64     `json:"id"`
+	UserID       int64     `json:"user_id"`
+	OpType       int       `json:"op_type"`
+	ActUserID    int64     `json:"act_user_id"`
+	ActUserName  string    `json:"act_user_name"`
+	RepoID       int64     `json:"repo_id"`
+	RepoUserName string    `json:"repo_user_name"`
+	RepoName     string    `json:"repo_name"`
+	RefName      string    `json:"ref_name"`
+	IsPrivate    bool      `json:"is_private"`
+	Content      string    `json:"content"`
+	Created      time.Time `json:"created_at"`
 
 	// UI convenience
 	ActAvatar string `json:"act_avatar"`

@@ -16,5 +16,6 @@ type CreateOptions struct {
 	IsUnlisted    bool
 	IsArchived    bool
 	AutoInit      bool
+	ProjectFolder string
 	CreatedAt     time.Time
 }

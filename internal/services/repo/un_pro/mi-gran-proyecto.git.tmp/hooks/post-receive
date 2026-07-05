@@ -1,2 +1,2 @@
 #!/usr/bin/env 
-"/tmp/go-build2429320432/b752/repo.test" hook --config='' post-receive
+"/tmp/go-build3480057389/b001/repo.test" hook --config='' post-receive

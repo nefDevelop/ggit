@@ -160,6 +160,7 @@ type createRepoPayload struct {
 	License       string    `json:"license"`
 	Readme        string    `json:"readme"`
 	IsArchived    bool      `json:"is_archived"`
+	ProjectFolder string    `json:"project_folder"`
 	CreatedAt     time.Time `json:"created_at"`
 }
 
@@ -219,6 +220,7 @@ func CreateRepo(c *context.APIContext) {
 		License:       f.License,
 		Readme:        f.Readme,
 		IsArchived:    f.IsArchived,
+		ProjectFolder: f.ProjectFolder,
 		CreatedAt:     f.CreatedAt,
 	})
 	if err != nil {

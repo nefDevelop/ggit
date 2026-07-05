@@ -9,6 +9,7 @@
   let name = $state('');
   let description = $state('');
   let website = $state('');
+  let projectFolder = $state('');
   let defaultBranch = $state('');
   let isPrivate = $state(false);
   let isUnlisted = $state(false);
@@ -102,6 +103,7 @@
             name,
             description,
             website,
+            project_folder: projectFolder,
             default_branch: defaultBranch,
             private: isPrivate,
             unlisted: isUnlisted,
@@ -125,6 +127,7 @@
             repo_name: name,
             description,
             website,
+            project_folder: projectFolder,
             default_branch: defaultBranch,
             private: isPrivate,
             unlisted: isUnlisted,
@@ -287,6 +290,15 @@
               <input type="text" id="repo-branch" bind:value={defaultBranch} placeholder="main" disabled={loading} />
             </div>
           </div>
+        </div>
+
+        <div class="input-field">
+          <label for="repo-folder">Carpeta / Grupo <span class="optional">(opcional)</span></label>
+          <div class="input-wrapper">
+            <span class="prefix"><span class="material-symbols-rounded">folder</span></span>
+            <input type="text" id="repo-folder" bind:value={projectFolder} placeholder="ej. frontend, herramientas, docs" disabled={loading} />
+          </div>
+          <p class="helper-text">Agrupa este repositorio en una carpeta dentro del dashboard.</p>
         </div>
       </section>
 

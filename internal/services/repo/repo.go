@@ -52,6 +52,7 @@ func (s *RepositoryService) Create(ctx context.Context, doer, owner *database.Us
 			License:        opts.License,
 			Readme:         opts.Readme,
 			IsArchived:     opts.IsArchived,
+			ProjectFolder:  opts.ProjectFolder,
 			EnableWiki:     true,
 			EnableIssues:   true,
 			EnablePulls:    true,

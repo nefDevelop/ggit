@@ -130,6 +130,7 @@ type CreateRepoOptions struct {
 	EnableIssues   bool
 	EnablePulls    bool
 	IsArchived     bool
+	ProjectFolder  string
 	Fork           bool
 	ForkID         int64
 	CreatedAt      time.Time
@@ -178,6 +179,7 @@ func (s *RepositoriesStore) Create(ctx context.Context, ownerID int64, opts any)
 		EnableIssues:   options.EnableIssues,
 		EnablePulls:    options.EnablePulls,
 		IsArchived:     options.IsArchived,
+		ProjectFolder:  options.ProjectFolder,
 		IsBare:         true,
 		IsFork:         options.Fork,
 		ForkID:         options.ForkID,
