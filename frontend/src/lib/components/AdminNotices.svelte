@@ -194,5 +194,5 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
   .detail-content .detail-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 900; color: var(--primary-color); letter-spacing: 0.1em; }
   .code-box { background: #08080c; border: 1px solid #1a1a24; border-radius: 0.75rem; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; line-height: 1.6; font-size: 0.95rem; color: #6ee7b7; white-space: pre-wrap; word-break: break-all; }
 
-  .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 1.25rem; animation: pulse 1.5s infinite; }
+  .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 </style>

@@ -449,7 +449,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
     margin-top: 2.5rem;
     padding: 2.5rem;
     background: #08080c;
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     border: 1px solid #1a1a24;
     text-align: center;
   }
@@ -491,7 +491,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
   }
   .step-card {
     padding: 2rem;
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     position: relative;
   }
   @media (max-width: 600px) {
@@ -552,7 +552,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
     background: #000;
     border: 2px solid var(--primary-color);
     padding: 1rem;
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     color: white;
     width: 100%;
     box-sizing: border-box;

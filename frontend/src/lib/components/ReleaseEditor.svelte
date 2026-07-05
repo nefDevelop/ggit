@@ -348,7 +348,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   }
   .tonal {
     background: var(--md-sys-color-surface-container);
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
   }
   .field textarea {

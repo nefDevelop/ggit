@@ -239,7 +239,7 @@ import Plus from "lucide-svelte/icons/plus";
   .empty-state-guardian h3 { margin: 0; font-size: 1.75rem; font-weight: 950; }
   .empty-state-guardian p { max-width: 500px; margin: 0; color: var(--text-muted); font-size: 1.1rem; line-height: 1.5; }
 
-  .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }
 
   @media (max-width: 600px) {

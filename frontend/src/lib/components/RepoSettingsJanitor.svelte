@@ -222,7 +222,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .cleanup-hint { display: flex; align-items: center; gap: 1.25rem; padding: 1.5rem 2rem; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); color: var(--text-muted); font-size: 0.95rem; border: 1px solid rgba(var(--primary-rgb), 0.1); }
   .cleanup-hint span { font-size: 2rem; color: var(--primary-color); }
 
-  .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }
 
   @media (max-width: 800px) {

@@ -225,5 +225,5 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
   input:checked + .switch-slider::before { transform: translateX(24px); background: white; }
   .switch-label { font-size: 0.95rem; font-weight: 700; color: var(--text-color); }
 
-  .skeleton-config { height: 600px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-config { height: 600px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 </style>

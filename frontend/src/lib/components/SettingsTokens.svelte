@@ -231,9 +231,9 @@ import Key from "lucide-svelte/icons/key";
   .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 0.85rem 1.5rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; height: 3.5rem; box-sizing: border-box; }
   .field input:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
-  .skeleton-tokens { height: 160px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-tokens { height: 160px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 
-  .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 2rem; border-radius: 1.25rem; font-size: 0.9rem; font-weight: 700; margin: 1.5rem 0 0; border: 1px solid rgba(var(--error-rgb), 0.2); }
+  .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 2rem; border-radius: 1.5rem; font-size: 0.9rem; font-weight: 700; margin: 1.5rem 0 0; border: 1px solid rgba(var(--error-rgb), 0.2); }
 
   .empty-state-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; gap: 1.5rem; color: var(--text-muted); text-align: center; }
   .empty-state-box p { font-size: 1.1rem; font-weight: 600; opacity: 0.7; }

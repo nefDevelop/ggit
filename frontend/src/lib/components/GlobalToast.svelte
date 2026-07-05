@@ -42,7 +42,7 @@
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.25rem;
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     background: var(--md-sys-color-surface-container-highest);
     color: var(--md-sys-color-on-surface);
     box-shadow: var(--shadow-lg);

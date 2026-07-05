@@ -118,7 +118,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
     align-items: center;
     gap: 1.25rem;
     padding: 1.25rem;
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     border: 2px solid var(--md-sys-color-outline-variant);
     cursor: pointer;
     transition: all 0.2s;

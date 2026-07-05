@@ -118,7 +118,7 @@
     background: transparent; 
     border: 1px solid var(--md-sys-color-outline-variant); 
     padding: 0.5rem 1rem; 
-    border-radius: 2rem; 
+    border-radius: 0.75rem; 
     color: var(--text-muted); 
     font-weight: 700; 
     font-size: 0.85rem; 
@@ -189,7 +189,7 @@
     }
     .tab-pill:not(.active), .tab-pill.active {
       padding: 0.5rem 1rem;
-      border-radius: 2rem;
+      border-radius: 0.75rem;
     }
   }
 </style>

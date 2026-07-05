@@ -129,5 +129,5 @@ import LogOut from "lucide-svelte/icons/log-out";
   .empty-orgs-box { padding: 5rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1.5rem; }
   .empty-orgs-box :global(svg) { opacity: 0.2; }
 
-  .skeleton-orgs { height: 240px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-orgs { height: 240px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 </style>

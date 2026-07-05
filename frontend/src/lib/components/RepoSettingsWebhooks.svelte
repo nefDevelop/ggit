@@ -215,7 +215,7 @@ import Plus from "lucide-svelte/icons/plus";
   .empty-state p { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); margin: 0; }
 
   .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }
-  .skeleton-item { height: 80px; border-radius: 1.25rem; animation: pulse 1.5s infinite; }
+  .skeleton-item { height: 80px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }
 
   .error-banner { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; border-radius: 1.5rem; background: rgba(var(--error-rgb), 0.1); color: var(--error); font-weight: 700; }

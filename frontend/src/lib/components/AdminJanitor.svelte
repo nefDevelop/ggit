@@ -150,7 +150,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
     flex-direction: column; 
     gap: 2rem !important; 
     padding: 2rem !important;
-    border-radius: 1.25rem !important;
+    border-radius: 1.5rem !important;
   }
   
   .repo-info { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
@@ -187,6 +187,6 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   :global(.empty-card) { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   :global(.empty-card span) { font-size: 4rem; opacity: 0.2; }
   .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2rem; }
-  .skeleton-card { height: 260px; background: var(--md-sys-color-surface-container-high); border-radius: 1.25rem; animation: pulse 1.5s infinite; }
+  .skeleton-card { height: 260px; background: var(--md-sys-color-surface-container-high); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 </style>

@@ -229,7 +229,7 @@ import Moon from "lucide-svelte/icons/moon";
     box-shadow: var(--shadow-xl);
     border: 1px solid var(--md-sys-color-outline-variant);
     background: var(--md-sys-color-surface-container);
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

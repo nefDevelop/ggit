@@ -239,6 +239,6 @@ import Info from "lucide-svelte/icons/info";
   .info-text strong { display: block; margin-bottom: 0.25rem; font-size: 1.1rem; font-weight: 800; }
   .info-text p { margin: 0; font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
 
-  .skeleton-list { height: 200px; background: var(--md-sys-color-surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-list { height: 200px; background: var(--md-sys-color-surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }
 </style>

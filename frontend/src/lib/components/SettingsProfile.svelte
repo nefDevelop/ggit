@@ -307,7 +307,7 @@ import Dices from "lucide-svelte/icons/dices";
     position: relative;
     width: 80px;
     height: 80px;
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     overflow: hidden;
     border: 3px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-lg);
@@ -502,7 +502,7 @@ import Dices from "lucide-svelte/icons/dices";
   }
 
   .dicebear-preview { display: flex; align-items: center; justify-content: center; }
-  .preview-shield { position: relative; width: 140px; height: 140px; border-radius: 2rem; overflow: hidden; background: white; border: 4px solid var(--md-sys-color-outline-variant); }
+  .preview-shield { position: relative; width: 140px; height: 140px; border-radius: 1.5rem; overflow: hidden; background: white; border: 4px solid var(--md-sys-color-outline-variant); }
   .preview-shield img { width: 100%; height: 100%; }
   .shuffle-btn { position: absolute; bottom: 0.5rem; right: 0.5rem; background: var(--primary-color); color: white; border: none; padding: 0.5rem; border-radius: 0.75rem; cursor: pointer; }
 
@@ -514,6 +514,6 @@ import Dices from "lucide-svelte/icons/dices";
   .style-chip { padding: 0.5rem 1rem; border-radius: 100px; border: 1px solid var(--md-sys-color-outline-variant); background: transparent; color: var(--text-muted); font-weight: 600; cursor: pointer; font-size: 0.85rem; text-transform: capitalize; }
   .style-chip.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
 
-  .skeleton-form { height: 400px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-form { height: 400px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 </style>

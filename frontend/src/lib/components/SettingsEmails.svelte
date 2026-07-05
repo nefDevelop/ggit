@@ -217,9 +217,9 @@
   .premium-input-group span { color: var(--primary-color); opacity: 0.6; }
   .premium-input-group input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-color); font-size: 1rem; padding: 0.25rem 0; }
 
-  .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.25rem; background: rgba(16, 185, 129, 0.1); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); animation: fadeInUp 0.4s; }
+  .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.5rem; background: rgba(16, 185, 129, 0.1); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); animation: fadeInUp 0.4s; }
   .status-alert.is-error { background: rgba(var(--error-rgb), 0.1); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  .skeleton-emails { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-emails { height: 200px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 </style>

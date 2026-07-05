@@ -44,7 +44,7 @@
     position: relative;
     padding: 1rem;
     background: var(--md-sys-color-surface-container-low);
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     transition: all 0.2s;
     border: 1px solid transparent;
     user-select: none;

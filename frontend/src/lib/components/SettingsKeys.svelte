@@ -185,7 +185,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   .form-footer { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  .skeleton-keys { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-keys { height: 200px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 
   .error-msg { color: var(--error); background: rgba(var(--error-rgb), 0.1); padding: 1rem 1.5rem; border-radius: 1rem; font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; border: 1px solid rgba(var(--error-rgb), 0.2); }
 
