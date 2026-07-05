@@ -83,7 +83,7 @@
   .admin-content {
     display: flex;
     flex-direction: column;
-    padding: 0 1.5rem 4rem;
+    padding: 1.5rem 1.5rem 4rem;
     animation: contentFade 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     min-width: 0;
   }

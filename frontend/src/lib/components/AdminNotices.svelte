@@ -157,7 +157,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
 
 <style>
   .admin-notices-body {
-    padding: 0 1.5rem 4rem;
+    padding: 1.5rem 1.5rem 4rem;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
