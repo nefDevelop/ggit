@@ -84,7 +84,7 @@ import Key from "lucide-svelte/icons/key";
 
 <div class="settings-tokens-container">
 
-  <div class="flex-col gap-xl">
+  <div class="modular-stack">
     {#if generatedToken}
       <div class="generated-alert break-words">
         <div class="alert-top">
@@ -106,7 +106,7 @@ import Key from "lucide-svelte/icons/key";
     {/if}
 
     <!-- TOKENS LIST -->
-    <div class="flex-col gap-md">
+    <div class="config-module">
       <div class="module-tag">
         <List size={18} />
         Mis Tokens Activos
@@ -141,13 +141,13 @@ import Key from "lucide-svelte/icons/key";
     </div>
 
     <!-- GENERATE FORM -->
-    <div class="flex-col gap-md">
+    <div class="config-module">
       <div class="module-tag">
         <PlusCircle size={18} />
         Generar Nuevo Token
       </div>
       <div class="form-box">
-        <form onsubmit={(e) => { e.preventDefault(); createToken(); }} class="premium-token-form">
+        <form onsubmit={(e) => { e.preventDefault(); createToken(); }} class="create-token-form">
           <div class="inline-input-layout">
              <div class="field">
                 <label for="newTokenName">Nombre del Propósito</label>
@@ -172,6 +172,10 @@ import Key from "lucide-svelte/icons/key";
   
 
 
+  .modular-stack { display: flex; flex-direction: column; gap: 3rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
+  .create-token-form { display: flex; flex-direction: column; gap: 2rem; }
+
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
 
   .generated-alert { padding: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); border-radius: 1.5rem; display: flex; flex-direction: column; gap: 2rem; animation: slideDown 0.4s; }
@@ -186,8 +190,7 @@ import Key from "lucide-svelte/icons/key";
   .token-display code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #6ee7b7; word-break: break-all; }
   @media (max-width: 600px) { .token-display code { font-size: 1rem; } }
 
-  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
-  @media (max-width: 600px) { .tonal-list { border-radius: 1.25rem; } }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   .token-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
   
   @media (max-width: 800px) {
@@ -212,7 +215,7 @@ import Key from "lucide-svelte/icons/key";
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   /* FORM */
-  .form-box { padding: 3rem; background: rgba(255,255,255,0.01); border-radius: 1.25rem; }
+  .form-box { padding: 3rem; background: rgba(255,255,255,0.01); border-radius: 1.5rem; }
   .inline-input-layout { display: flex; align-items: flex-end; gap: 1.5rem; width: 100%; }
   
   .field { flex: 1; display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }

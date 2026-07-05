@@ -73,30 +73,32 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
   onMount(fetchBlocks);
 </script>
 
-<div class="blocks-settings">
-  <div class="settings-blocked-container">
-
-
-    <div class="add-block-form tonal">
-      <div class="form-row">
-        <Input 
-          label="Bloquear Usuario" 
-          bind:value={newUsername} 
-          placeholder="Escribe un nombre de usuario..." 
-          class="grow"
-        />
-        <Button 
-          variant="primary" 
-          onclick={blockUser} 
-          disabled={submitting || !newUsername.trim()}
-          icon="person_add_disabled"
-        >
-          {submitting ? 'Bloqueando...' : 'Bloquear'}
-        </Button>
-      </div>
+<div class="modular-stack">
+  <!-- ADD BLOCK FORM -->
+  <div class="config-module">
+    <div class="module-tag">
+      <UserPlus size={18} />
+      Bloquear Usuario
     </div>
+    <div class="form-box">
+      <form onsubmit={(e) => { e.preventDefault(); blockUser(); }} class="form-content">
+        <div class="form-row">
+          <Input bind:value={newUsername} placeholder="Escribe un nombre de usuario..." class="grow" />
+          <Button type="submit" variant="primary" disabled={submitting || !newUsername.trim()}>
+            {submitting ? 'Bloqueando...' : 'Bloquear'}
+          </Button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-    <div class="blocks-list">
+  <!-- BLOCKED USERS LIST -->
+  <div class="config-module">
+    <div class="module-tag">
+      <UserMinus size={18} />
+      Usuarios Bloqueados
+    </div>
+    <div class="tonal-list">
       {#if loading}
         <div class="skeleton-list"></div>
       {:else if blockedUsers.length === 0}
@@ -105,44 +107,47 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
            <p>No tienes a nadie bloqueado. ¡Genial!</p>
         </div>
       {:else}
-        <div class="list-container">
-          {#each blockedUsers as user}
-            <div class="block-item tonal">
-              <div class="user-info">
-                <Avatar src={user.avatar_url} username={user.username} size={40} />
-                <div class="details">
-                  <strong>{user.full_name || user.username}</strong>
-                  <span>@{user.username}</span>
-                </div>
+        {#each blockedUsers as user}
+          <div class="block-item">
+            <div class="user-info">
+              <Avatar src={user.avatar_url} username={user.username} size={40} />
+              <div class="details">
+                <strong>{user.full_name || user.username}</strong>
+                <span>@{user.username}</span>
               </div>
-              <Button variant="ghost" icon="person_remove" onclick={() => unblockUser(user.username)}>
-                Desbloquear
-              </Button>
             </div>
-          {/each}
-        </div>
+            <Button variant="ghost" icon="person_remove" onclick={() => unblockUser(user.username)}>
+              Desbloquear
+            </Button>
+          </div>
+        {/each}
       {/if}
     </div>
   </div>
 </div>
 
 <style>
-  .blocks-settings { display: flex; flex-direction: column; gap: 2rem; }
-  
+  .modular-stack { display: flex; flex-direction: column; gap: 3rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
-  .add-block-form { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 2rem; }
+  .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
+
+  .form-box { padding: 3rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(255,255,255,0.01); }
+  .form-content { display: flex; flex-direction: column; gap: 2rem; }
   .form-row { display: flex; gap: 1rem; align-items: flex-end; }
   :global(.grow) { flex: 1; }
 
-  .list-container { display: flex; flex-direction: column; gap: 0.75rem; }
-  .block-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
-  
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  .block-item { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
+  .block-item:last-child { border-bottom: none; }
+  .block-item:hover { background: rgba(255,255,255,0.02); }
+
   .user-info { display: flex; align-items: center; gap: 1.25rem; }
   .details { display: flex; flex-direction: column; }
   .details strong { font-size: 1rem; }
   .details span { font-size: 0.8rem; color: var(--text-muted); }
 
-  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; border-radius: 1.5rem; }
+  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
 
   .skeleton-list { height: 150px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }

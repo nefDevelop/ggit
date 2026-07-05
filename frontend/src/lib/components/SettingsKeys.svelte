@@ -67,9 +67,9 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
 <div class="settings-keys-container">
 
-  <div class="flex-col gap-xl">
+  <div class="modular-stack">
     <!-- KEYS LIST -->
-    <div class="flex-col gap-md">
+    <div class="config-module">
       <div class="module-tag">
         <Key size={18} />
         Llaves Activas
@@ -105,13 +105,13 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     </div>
 
     <!-- ADD KEY FORM -->
-    <div class="flex-col gap-md">
+    <div class="config-module">
       <div class="module-tag">
         <Link2 size={18} />
         Añadir Nueva Clave
       </div>
       <div class="form-box">
-        <form onsubmit={(e) => { e.preventDefault(); addKey(); }} class="flex-col gap-md">
+        <form onsubmit={(e) => { e.preventDefault(); addKey(); }} class="add-key-form">
             <div class="field">
               <label for="ssh-key-title">Título de la Clave</label>
               <input id="ssh-key-title" type="text" bind:value={newKeyTitle} placeholder="Ej: Portátil Trabajo" required />
@@ -143,12 +143,12 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   
 
 
+  .modular-stack { display: flex; flex-direction: column; gap: 3rem; }
+  .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
+
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
 
-  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
-  @media (max-width: 600px) {
-    .tonal-list { border-radius: 1.25rem; }
-  }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   .key-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
   
   @media (max-width: 800px) {
@@ -172,6 +172,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .key-date { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 700; }
 
   /* ADD FORM */
+  .add-key-form { display: flex; flex-direction: column; gap: 2rem; }
   .form-box { padding: 3rem; background: rgba(255,255,255,0.01); }
   @media (max-width: 600px) {
     .form-box { padding: 1.5rem; }
@@ -182,7 +183,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .field textarea { font-family: 'JetBrains Mono', monospace; min-height: 160px; font-size: 0.95rem; line-height: 1.6; resize: vertical; }
   .field input:focus, .field textarea:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
-  .form-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
+  .form-footer { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   .skeleton-keys { height: 200px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 
