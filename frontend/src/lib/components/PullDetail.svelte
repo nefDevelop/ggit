@@ -318,7 +318,7 @@
   .skeleton-detail { height: 400px; background: var(--surface-variant); border-radius: 1rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
 
-  .error-msg { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 2rem; border-radius: 1rem; text-align: center; font-weight: 700; }
+  .error-msg { background: rgba(var(--error-rgb), 0.1); color: var(--error); padding: 2rem; border-radius: 1rem; text-align: center; font-weight: 700; }
 
   .user-link {
     color: var(--text-color);

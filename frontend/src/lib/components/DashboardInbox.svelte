@@ -64,7 +64,7 @@
     display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
   .inbox-icon.pull { background: rgba(34,197,94,0.1); color: #22c55e; }
-  .inbox-icon.issue { background: rgba(239,68,68,0.1); color: #ef4444; }
+  .inbox-icon.issue { background: rgba(var(--error-rgb), 0.1); color: var(--error); }
   .inbox-content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
   .inbox-repo-line { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
   .inbox-title-line { display: flex; gap: 0.5rem; align-items: baseline; }

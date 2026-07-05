@@ -191,7 +191,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   .janitor-stack { display: flex; flex-direction: column; gap: 2.5rem; }
 
-  .summary-island { display: flex; justify-content: space-around; padding: 2rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .summary-island { display: flex; justify-content: space-around; padding: 2rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .stat-item { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.25rem; }
   .stat-value { font-size: 1.75rem; font-weight: 950; color: var(--primary-color); }
   .stat-label { font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.1em; }

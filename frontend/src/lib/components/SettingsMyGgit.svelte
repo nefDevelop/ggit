@@ -150,7 +150,7 @@
   
 
 
-  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .modular-stack { display: flex; flex-direction: column; gap: 3rem; }
   @media (max-width: 600px) {
     .modular-stack { gap: 2rem; }
   }
@@ -159,7 +159,7 @@
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
   .module-tag span { font-size: 1.25rem; }
 
-  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 2.25rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
+  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   @media (max-width: 600px) {
     .tonal-list { border-radius: 1.25rem; }
   }

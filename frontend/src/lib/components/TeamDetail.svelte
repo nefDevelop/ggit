@@ -501,7 +501,7 @@
   }
 
   .btn-danger-text {
-    color: #ef4444;
+    color: var(--error);
   }
   .btn-danger-text:hover {
     background: rgba(239, 68, 68, 0.1);

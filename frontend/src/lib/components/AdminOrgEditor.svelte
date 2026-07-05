@@ -99,7 +99,7 @@ import X from "lucide-svelte/icons/x";
   
   input, textarea { background: rgba(var(--primary-rgb), 0.05); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1rem; border-radius: 1rem; color: var(--text-color); font-family: inherit; font-size: 1rem; }
   textarea { min-height: 100px; resize: vertical; }
-  input:focus, textarea:focus { outline: none; border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); }
+  input:focus, textarea:focus { outline: none; border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
   .error-msg { color: var(--error); font-size: 0.9rem; font-weight: 600; margin-top: 1rem; }
 

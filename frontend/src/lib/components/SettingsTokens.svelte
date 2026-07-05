@@ -174,7 +174,7 @@ import Key from "lucide-svelte/icons/key";
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
 
-  .generated-alert { padding: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); border-radius: 1.25rem; display: flex; flex-direction: column; gap: 2rem; animation: slideDown 0.4s; }
+  .generated-alert { padding: 3rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); border-radius: 1.5rem; display: flex; flex-direction: column; gap: 2rem; animation: slideDown 0.4s; }
   @media (max-width: 600px) { .generated-alert { padding: 1.5rem; gap: 1.5rem; } }
   @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
   .alert-top { display: flex; align-items: center; gap: 1.5rem; }
@@ -226,7 +226,7 @@ import Key from "lucide-svelte/icons/key";
   
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
   .field input { background: var(--surface-variant); border: 2px solid transparent; padding: 0.85rem 1.5rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; width: 100%; height: 3.5rem; box-sizing: border-box; }
-  .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .field input:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
   .skeleton-tokens { height: 160px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
 

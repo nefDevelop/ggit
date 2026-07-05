@@ -149,7 +149,7 @@ import Copy from "lucide-svelte/icons/copy";
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     gap: 1.25rem;
     position: relative;
     border: none;

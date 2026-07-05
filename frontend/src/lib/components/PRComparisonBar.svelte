@@ -158,13 +158,13 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     font-size: 0.85rem;
     font-weight: 700;
   }
   .status-chip.success { background: rgba(34,197,94,0.1); color: #22c55e; }
   .status-chip.neutral { background: rgba(255,255,255,0.05); color: var(--text-muted); }
-  .status-chip.error { background: rgba(239,68,68,0.1); color: #ef4444; }
+  .status-chip.error { background: rgba(var(--error-rgb), 0.1); color: var(--error); }
   @media (max-width: 800px) {
     .comparison-bar { padding: 1rem; gap: 1rem; }
     .selector-group { min-width: 100%; }

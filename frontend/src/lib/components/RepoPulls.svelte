@@ -231,7 +231,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
   .ci-status-icon { display: inline-flex; align-items: center; vertical-align: middle; }
   .ci-status-icon.success { color: #10b981; }
   .ci-status-icon.pending { color: #f59e0b; }
-  .ci-status-icon.failure, .ci-status-icon.error { color: #ef4444; }
+  .ci-status-icon.failure, .ci-status-icon.error { color: var(--error); }
 
   .attention-dot {
     display: inline-block;

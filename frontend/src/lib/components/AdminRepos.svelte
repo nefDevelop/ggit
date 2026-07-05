@@ -245,7 +245,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     border: 2px solid currentColor;
     border-top-color: transparent;
     border-radius: 50%;
-    animation: spin 0.6s linear infinite;
+    animation: spin 0.8s linear infinite;
   }
 
   @keyframes spin {

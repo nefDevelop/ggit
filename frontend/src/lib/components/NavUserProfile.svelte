@@ -122,7 +122,7 @@
     transition: all 0.2s;
   }
   .minimal-logout:hover {
-    color: #ef4444;
+    color: var(--error);
     background: rgba(239, 68, 68, 0.1);
   }
   @media (max-width: 1024px) {

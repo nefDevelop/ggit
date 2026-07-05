@@ -135,7 +135,7 @@ import Building2 from "lucide-svelte/icons/building-2";
     display: flex;
     flex-direction: column;
     gap: 3rem;
-    animation: contentFade 0.5s ease-out;
+    animation: contentFade 0.3s ease-out;
     min-width: 0;
     max-width: 100%;
     width: 100%;

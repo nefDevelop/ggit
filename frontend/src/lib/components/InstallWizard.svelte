@@ -129,7 +129,7 @@ import ShieldCheck from "lucide-svelte/icons/shield-check";
 
   .card { border: 1px solid var(--md-sys-color-outline-variant); padding: 1.5rem; }
   
-  .error-banner { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 0.75rem; text-align: center; font-weight: 700; }
+  .error-banner { background: rgba(var(--error-rgb), 0.1); color: var(--error); padding: 1rem; border-radius: 0.75rem; text-align: center; font-weight: 700; }
 
   .info-banner { display: flex; gap: 1rem; align-items: center; padding: 1.5rem; border: 1px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
   .info-banner :global(svg) { color: var(--primary-color); flex-shrink: 0; }

@@ -18,6 +18,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
 
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
+  import Input from "./ui/Input.svelte";
 
   let oldPassword = $state("");
   let newPassword = $state("");
@@ -159,36 +160,9 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
           class="security-form"
         >
           <div class="form-grid">
-            <div class="field">
-              <label for="oldPassword">Contraseña Actual</label>
-              <input
-                id="oldPassword"
-                type="password"
-                bind:value={oldPassword}
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            <div class="field">
-              <label for="newPassword">Nueva Contraseña</label>
-              <input
-                id="newPassword"
-                type="password"
-                bind:value={newPassword}
-                placeholder="Mínimo 8 caracteres"
-                required
-              />
-            </div>
-            <div class="field">
-              <label for="repeatPassword">Confirmar Nueva Contraseña</label>
-              <input
-                id="repeatPassword"
-                type="password"
-                bind:value={repeatPassword}
-                placeholder="••••••••"
-                required
-              />
-            </div>
+            <Input label="Contraseña Actual" type="password" bind:value={oldPassword} placeholder="••••••••" required />
+            <Input label="Nueva Contraseña" type="password" bind:value={newPassword} placeholder="Mínimo 8 caracteres" required />
+            <Input label="Confirmar Nueva Contraseña" type="password" bind:value={repeatPassword} placeholder="••••••••" required />
           </div>
 
           <div class="form-footer">
@@ -345,7 +319,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
   .modular-stack {
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 3rem;
   }
   .config-module {
     display: flex;
@@ -372,7 +346,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
   }
 
   .island {
-    border-radius: 2.5rem;
+    border-radius: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     background: rgba(255, 255, 255, 0.01);
   }
@@ -394,33 +368,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
   .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
-    gap: 2rem;
-  }
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .field label {
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: var(--text-color);
-    margin-left: 0.5rem;
-  }
-  .field input {
-    background: var(--surface-variant);
-    border: 2px solid transparent;
-    padding: 1rem 1.5rem;
-    border-radius: 1.25rem;
-    color: var(--text-color);
-    font-size: 1.1rem;
-    transition: all 0.3s;
-    width: 100%;
-    box-sizing: border-box;
-  }
-  .field input:focus {
-    border-color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
+    gap: 1.5rem;
   }
 
   .form-footer {

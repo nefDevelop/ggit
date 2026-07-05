@@ -32,7 +32,7 @@
 </div>
 
 <style>
-    .switches-grid { display: flex; flex-direction: column; background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .switches-grid { display: flex; flex-direction: column; background: var(--surface-variant); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.5rem; overflow: hidden; box-shadow: var(--shadow-sm); }
     
     .switch-row-item { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 2rem; }
     .switch-row-item:last-child { border-bottom: none; }

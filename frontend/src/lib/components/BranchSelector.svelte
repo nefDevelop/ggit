@@ -209,7 +209,7 @@ import Check from "lucide-svelte/icons/check";
     cursor: pointer;
     border-radius: 0.5rem;
     text-align: left;
-    transition: all 0.15s;
+    transition: all 0.2s;
   }
   .branch-item:hover {
     background: rgba(255, 255, 255, 0.05);

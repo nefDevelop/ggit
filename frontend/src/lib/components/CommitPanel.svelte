@@ -111,7 +111,7 @@
     max-width: 540px;
     padding: 2.5rem;
     background: var(--surface);
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     box-shadow: var(--shadow-xl);
     position: relative;
@@ -180,7 +180,7 @@
     cursor: pointer;
     padding: 1rem 1.25rem;
     background: var(--md3-surface-2);
-    border-radius: 1.25rem;
+    border-radius: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
     transition: all 0.2s;
   }

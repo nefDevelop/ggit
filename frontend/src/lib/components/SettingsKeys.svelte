@@ -180,7 +180,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .field label { font-size: 0.85rem; font-weight: 800; color: var(--text-color); margin-left: 0.5rem; }
   .field input, .field textarea { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1.1rem; transition: all 0.3s; }
   .field textarea { font-family: 'JetBrains Mono', monospace; min-height: 160px; font-size: 0.95rem; line-height: 1.6; resize: vertical; }
-  .field input:focus, .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .field input:focus, .field textarea:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
   .form-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 

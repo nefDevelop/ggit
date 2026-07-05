@@ -134,7 +134,7 @@ import Plus from "lucide-svelte/icons/plus";
   .regex-box { font-family: var(--font-mono); font-size: 0.85rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.08); padding: 0.75rem; border-radius: 0.75rem; word-break: break-all; }
   .pattern-desc { margin: 0; font-size: 0.9rem; color: var(--text-muted); }
 
-  .add-global-pattern { padding: 2rem; border-radius: 1.25rem; border: 2px dashed var(--md-sys-color-outline-variant); }
+  .add-global-pattern { padding: 2rem; border-radius: 1.5rem; border: 2px dashed var(--md-sys-color-outline-variant); }
   .add-global-pattern h4 { margin: 0 0 1.5rem; font-weight: 900; }
   .form-row { display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; margin-bottom: 1rem; }
   .form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; }

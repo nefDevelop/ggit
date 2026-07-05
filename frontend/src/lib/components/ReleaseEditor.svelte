@@ -280,7 +280,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     flex-direction: column;
     gap: 2rem;
     background: var(--md-sys-color-surface);
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
   }
 

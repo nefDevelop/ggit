@@ -323,7 +323,7 @@ import AlertTriangle from "lucide-svelte/icons/alert-triangle";
 
   .settings-form { display: flex; flex-direction: column; gap: 3rem; }
 
-  .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding: 2rem; border-radius: 2rem; }
+  .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding: 2rem; border-radius: 1.5rem; }
   .avatar-preview-wrap { 
     position: relative; 
     border-radius: 1rem; 

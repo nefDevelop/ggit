@@ -262,7 +262,7 @@ git push -u origin main</code></pre>
   .btn-sidebar-toggle { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; padding: 6px; border-radius: 8px; transition: all 0.2s; }
   .btn-sidebar-toggle:hover { background: rgba(var(--primary-rgb),0.1); color: var(--primary-color); }
   .content-view { background: var(--md-sys-color-secondary-container); border: 3px solid var(--md-sys-color-outline-variant); border-radius: 1rem; overflow: hidden; box-shadow: var(--shadow-lg); }
-  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.25rem; overflow: hidden; box-shadow: var(--shadow-sm); }
+  .readme-section { margin-top: 2rem; background: var(--bg-color); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 1.5rem; overflow: hidden; box-shadow: var(--shadow-sm); }
   .readme-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; gap: 0.75rem; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); background: var(--surface-variant); }
   .readme-content { padding: 2rem; line-height: 1.6; }
   .skeleton-mode { pointer-events: none; }
@@ -276,12 +276,12 @@ git push -u origin main</code></pre>
   .title-placeholder { height: 1rem; width: 100px; margin-bottom: 1rem; }
   .lang-bar-placeholder { height: 12px; width: 100%; border-radius: 6px; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
-  .empty-state { padding: 6rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; color: var(--text-muted); }
+  .empty-state { padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; color: var(--text-muted); border-radius: 1.5rem; }
   .empty-state h2 { margin: 0; font-size: 1.75rem; font-weight: 950; color: var(--text-color); }
   .empty-state p { max-width: 400px; margin: 0; font-size: 1.1rem; line-height: 1.5; }
   .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--primary-color); background: rgba(var(--primary-rgb),0.05); }
   .empty-state-push .empty-icon-ring { border-color: var(--tertiary); color: var(--tertiary); margin-bottom: 2rem; }
-  .empty-state-push { padding: 5rem 2rem; text-align: center; }
+  .empty-state-push { padding: 4rem 2rem; text-align: center; }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; text-transform: uppercase; }
   .command-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }

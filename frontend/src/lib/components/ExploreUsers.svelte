@@ -94,7 +94,7 @@
     text-decoration: none; 
     color: inherit; 
     border: 1px solid var(--md-sys-color-outline-variant); 
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     background: var(--md-sys-color-surface-container-low);
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;

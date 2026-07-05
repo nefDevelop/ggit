@@ -249,7 +249,7 @@ import Save from "lucide-svelte/icons/save";
 <style>
   .user-editor {
     padding: 3.5rem;
-    border-radius: 2.5rem;
+    border-radius: 1.5rem;
     background: var(--md-sys-color-surface);
     border: 1px solid var(--md-sys-color-outline-variant);
     max-width: 1100px;
@@ -272,7 +272,7 @@ import Save from "lucide-svelte/icons/save";
 
   .editor-header { 
     margin-bottom: 4rem;
-    animation: slideDown 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: slideDown 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   @keyframes slideDown {
@@ -297,7 +297,7 @@ import Save from "lucide-svelte/icons/save";
   .form-sections { display: flex; flex-direction: column; gap: 4.5rem; }
   
   .form-section {
-    animation: fadeInScale 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+    animation: fadeInScale 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
   }
   
   .form-section:nth-child(1) { animation-delay: 0.1s; }
@@ -338,7 +338,7 @@ import Save from "lucide-svelte/icons/save";
     background: var(--md-sys-color-surface-container); 
     border: 2px solid transparent; 
     padding: 1.15rem 1.75rem; 
-    border-radius: 1.25rem; 
+    border-radius: 1.5rem; 
     color: var(--text-color); 
     font-size: 1.1rem; 
     font-weight: 500;

@@ -120,7 +120,7 @@ import Building2 from "lucide-svelte/icons/building-2";
 
   .org-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
 
-  .empty-state { padding: 5rem; text-align: center; background: var(--md-sys-color-surface-container-low); border-radius: 2rem; }
+  .empty-state { padding: 5rem; text-align: center; background: var(--md-sys-color-surface-container-low); border-radius: 1.5rem; }
   .empty-state :global(svg) { font-size: 4rem; color: var(--md-sys-color-primary); opacity: 0.3; }
 
   .skeletons { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }

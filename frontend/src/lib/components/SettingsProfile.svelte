@@ -4,6 +4,7 @@
   import { authState } from "$lib/auth.svelte";
   import Avatar from "./Avatar.svelte";
   import Checkbox from "./ui/Checkbox.svelte";
+  import Input from "./ui/Input.svelte";
   import { i18n } from "$lib/i18n.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
@@ -226,66 +227,12 @@ import Dices from "lucide-svelte/icons/dices";
             </div>
           </div>
           <div class="form-grid">
-            <div class="field">
-              <label for="username">{i18n.t("username")}</label>
-              <input
-                id="username"
-                type="text"
-                bind:value={profile.username}
-                disabled
-              />
-              <p class="hint">{i18n.t("settings.username_helper")}</p>
-            </div>
-
-            <div class="field">
-              <label for="full_name">{i18n.t("settings.full_name")}</label>
-              <input
-                id="full_name"
-                type="text"
-                bind:value={profile.full_name}
-                placeholder="Tu nombre real"
-              />
-            </div>
-
-            <div class="field">
-              <label for="email">{i18n.t("email")}</label>
-              <input
-                id="email"
-                type="email"
-                bind:value={profile.email}
-                disabled
-              />
-            </div>
-
-            <div class="field">
-              <label for="website">{i18n.t("website")}</label>
-              <input
-                id="website"
-                type="url"
-                bind:value={profile.website}
-                placeholder="https://tuweb.com"
-              />
-            </div>
-
-            <div class="field">
-              <label for="location">{i18n.t("settings.location")}</label>
-              <input
-                id="location"
-                type="text"
-                bind:value={profile.location}
-                placeholder="Ciudad, País"
-              />
-            </div>
-
-            <div class="field">
-              <label for="avatar_email">Correo de Avatar (Gravatar)</label>
-              <input
-                id="avatar_email"
-                type="email"
-                bind:value={profile.avatar_email}
-                placeholder="email@example.com"
-              />
-            </div>
+            <Input label={i18n.t("username")} bind:value={profile.username} disabled hint={i18n.t("settings.username_helper")} />
+            <Input label={i18n.t("settings.full_name")} bind:value={profile.full_name} placeholder="Tu nombre real" />
+            <Input label={i18n.t("email")} type="email" bind:value={profile.email} disabled />
+            <Input label={i18n.t("website")} type="url" bind:value={profile.website} placeholder="https://tuweb.com" />
+            <Input label={i18n.t("settings.location")} bind:value={profile.location} placeholder="Ciudad, País" />
+            <Input label="Correo de Avatar (Gravatar)" type="email" bind:value={profile.avatar_email} placeholder="email@example.com" />
             <div class="field">
               <label for="lang-select">{i18n.t("settings.language") || "Language"}</label>
               <div class="select-wrapper">
@@ -298,7 +245,6 @@ import Dices from "lucide-svelte/icons/dices";
               </div>
               <p class="hint">{i18n.t("settings.language_helper") || "Choose your preferred language for the interface."}</p>
             </div>
-
           </div>
 
           <div class="form-footer">
@@ -470,50 +416,32 @@ import Dices from "lucide-svelte/icons/dices";
     color: var(--text-color);
     margin-left: 0.5rem;
   }
-  .field input {
-    background: var(--surface-variant);
-    border: 2px solid transparent;
-    padding: 1rem 1.5rem;
-    border-radius: 1.25rem;
-    color: var(--text-color);
-    font-size: 1.05rem;
-    transition: all 0.3s;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-  @media (max-width: 600px) {
-    .field input {
-      padding: 0.75rem 1rem;
-    }
-  }
-
   .select-wrapper {
     position: relative;
     width: 100%;
   }
   .select-wrapper select {
     appearance: none;
-    background: rgba(255, 255, 255, 0.03);
-    border: 2px solid transparent;
-    padding: 1rem 1.5rem;
-    border-radius: 1.25rem;
-    color: var(--text-color);
-    font-size: 1.05rem;
-    transition: all 0.3s;
     width: 100%;
+    background: var(--md-sys-color-surface-container-high);
+    border: 1px solid var(--md-sys-color-outline-variant);
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: all 0.2s;
     cursor: pointer;
     box-sizing: border-box;
   }
   .select-wrapper select:focus {
     outline: none;
-    border-color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-    box-shadow: 0 0 20px rgba(var(--primary-rgb), 0.1);
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-surface-container-highest);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%);
   }
   :global(.dropdown-icon) {
     position: absolute;
-    right: 1.5rem;
+    right: 1rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--text-muted);
@@ -524,17 +452,6 @@ import Dices from "lucide-svelte/icons/dices";
     transform: translateY(-50%) rotate(180deg);
     color: var(--primary-color);
   }
-
-  .field input:focus {
-    border-color: var(--primary-color);
-    outline: none;
-    background: var(--md-sys-color-surface-container-high);
-    box-shadow: 0 0 0 4px var(--md-sys-color-primary-container);
-  }
-  .field input:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
   .hint {
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -544,7 +461,7 @@ import Dices from "lucide-svelte/icons/dices";
   .form-footer {
     display: flex;
     justify-content: flex-end;
-    padding-top: 2.5rem;
+    padding-top: 2rem;
     border-top: 1px solid var(--md-sys-color-outline-variant);
   }
   @media (max-width: 600px) {
@@ -559,7 +476,7 @@ import Dices from "lucide-svelte/icons/dices";
   .magic-avatar-panel {
     margin-bottom: 3rem;
     padding: 2.5rem !important;
-    border-radius: 2.5rem !important;
+    border-radius: 1.5rem !important;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 3rem;

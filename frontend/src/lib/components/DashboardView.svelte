@@ -324,7 +324,7 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   }
 
   .sidebar-card {
-    border-radius: 2rem;
+    border-radius: 1.5rem;
     padding: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);
   }
@@ -371,8 +371,8 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   }
 
   :global(.branch-pill.deleted) {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
+    background: rgba(var(--error-rgb), 0.1);
+    color: var(--error);
     text-decoration: line-through;
   }
 
@@ -409,7 +409,7 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   .inbox-card { display: flex; gap: 1.25rem; padding: 1.25rem; border-radius: 1.5rem; text-decoration: none; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
   .inbox-card:hover { transform: translateY(-2px); border-color: var(--primary-color); background: var(--md-sys-color-surface-variant); }
   .inbox-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .inbox-icon.issue { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+  .inbox-icon.issue { background: rgba(var(--error-rgb), 0.1); color: var(--error); }
   .inbox-icon.pull { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); }
   .inbox-content { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
   .inbox-repo-line { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.6; }
@@ -424,7 +424,7 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     border: 1px solid var(--md-sys-color-outline-variant) !important;
     border-radius: 1.5rem !important;
     box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   }
 
   :global(.repo-row:hover) {

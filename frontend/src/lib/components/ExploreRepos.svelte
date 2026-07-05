@@ -196,7 +196,7 @@ import Tag from "lucide-svelte/icons/tag";
   .card-link { text-decoration: none; color: inherit; display: block; }
 
   /* SIDEBAR */
-  .lang-sidebar { padding: 1.5rem 0.75rem; position: sticky; top: 2rem; background: var(--md-sys-color-surface-container-low); border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .lang-sidebar { padding: 1.5rem 0.75rem; position: sticky; top: 2rem; background: var(--md-sys-color-surface-container-low); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .sidebar-title { margin: 0 0 1rem 0.75rem; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: var(--md-sys-color-on-surface-variant); opacity: 0.5; }
   .lang-list { display: flex; flex-direction: column; gap: 0.2rem; }
   .lang-item { background: transparent; border: none; padding: 0.6rem 0.75rem; border-radius: 0.8rem; text-align: left; color: var(--md-sys-color-on-surface-variant); font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.75rem; }
@@ -222,7 +222,7 @@ import Tag from "lucide-svelte/icons/tag";
 
   .repo-topics { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
 
-  .empty-state { padding: 5rem; text-align: center; border-radius: 2rem; background: var(--md-sys-color-surface-container-low); }
+  .empty-state { padding: 5rem; text-align: center; border-radius: 1.5rem; background: var(--md-sys-color-surface-container-low); }
   
   .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
   :global(.skeleton-card) { height: 180px; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container-low); }

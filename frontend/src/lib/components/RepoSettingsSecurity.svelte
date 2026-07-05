@@ -199,7 +199,7 @@ import Plus from "lucide-svelte/icons/plus";
 
   .security-stack { display: flex; flex-direction: column; gap: 2.5rem; }
   
-  .mode-island { padding: 2rem; border-radius: 2rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .mode-island { padding: 2rem; border-radius: 1.5rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .patterns-container { display: flex; flex-direction: column; gap: 1.5rem; }
   .patterns-header { border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; }
@@ -225,7 +225,7 @@ import Plus from "lucide-svelte/icons/plus";
 
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
-  .add-pattern-box { padding: 2.5rem; border-radius: 2rem; border: 1px dashed var(--md-sys-color-outline); display: flex; flex-direction: column; gap: 2rem; }
+  .add-pattern-box { padding: 2.5rem; border-radius: 1.5rem; border: 1px dashed var(--md-sys-color-outline); display: flex; flex-direction: column; gap: 2rem; }
   .add-header { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-color); }
   .add-header :global(svg) { flex-shrink: 0; }
   .add-header strong { font-weight: 950; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; }

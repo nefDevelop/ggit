@@ -76,7 +76,7 @@
     width: 100%;
     outline: none;
   }
-  .field input:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb),0.05); }
+  .field input:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
   .field textarea {
     background: rgba(0,0,0,0.2);
     border: 1px solid var(--md-sys-color-outline-variant);
@@ -90,7 +90,7 @@
     outline: none;
     font-family: inherit;
   }
-  .field textarea:focus { border-color: var(--primary-color); background: rgba(var(--primary-rgb),0.05); }
+  .field textarea:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
   .form-actions { margin-top: 1rem; }
   @media (max-width: 1200px) {
     .creation-details { padding: 1.5rem; }

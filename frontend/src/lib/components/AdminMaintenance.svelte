@@ -221,7 +221,7 @@ import CloudDownload from "lucide-svelte/icons/cloud-download";
   .log-line { margin-bottom: 0.5rem; line-height: 1.5; padding-left: 0.75rem; border-left: 2px solid transparent; }
   .log-line.info { border-color: #3b82f6; color: #93c5fd; }
   .log-line.success { border-color: #10b981; color: #6ee7b7; }
-  .log-line.error { border-color: #ef4444; color: #fca5a5; }
+  .log-line.error { border-color: var(--error); color: #fca5a5; }
   .log-line .time { opacity: 0.4; margin-right: 0.5rem; font-size: 0.75rem; }
   .empty-log { height: 100%; display: flex; align-items: center; justify-content: center; color: #222; font-style: italic; }
 </style>

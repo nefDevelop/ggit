@@ -135,14 +135,14 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
   :global(.grow) { flex: 1; }
 
   .list-container { display: flex; flex-direction: column; gap: 0.75rem; }
-  .block-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .block-item { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   
   .user-info { display: flex; align-items: center; gap: 1.25rem; }
   .details { display: flex; flex-direction: column; }
   .details strong { font-size: 1rem; }
   .details span { font-size: 0.8rem; color: var(--text-muted); }
 
-  .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; border-radius: 1.5rem; }
 
   .skeleton-list { height: 150px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }

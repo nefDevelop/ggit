@@ -196,5 +196,5 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   .empty-state { padding: 4rem; text-align: center; color: var(--text-muted); font-weight: 700; font-size: 1.1rem; opacity: 0.5; }
 
-  .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 2rem; border: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-high); }
+  .editor-overlay { margin-bottom: 3rem; padding: 3rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: var(--md-sys-color-surface-container-high); }
 </style>

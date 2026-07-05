@@ -223,5 +223,5 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .file-name { margin: 0; display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 900; }
   .last-update { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-  :global(.markdown-body-card) { padding: 2.5rem !important; border-radius: 2rem !important; background: var(--bg-color) !important; border: 1px solid var(--md-sys-color-outline-variant) !important; }
+  :global(.markdown-body-card) { padding: 2.5rem !important; border-radius: 1.5rem !important; background: var(--bg-color) !important; border: 1px solid var(--md-sys-color-outline-variant) !important; }
 </style>

@@ -408,7 +408,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
     background: rgba(var(--primary-rgb), 0.05);
   }
 
-  .hill-state-editor-box { padding: 1.5rem; border-radius: 1.25rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .hill-state-editor-box { padding: 1.5rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .hill-editor-header { display: flex; justify-content: space-between; align-items: baseline; }
   .label-text { font-size: 0.9rem; font-weight: 800; color: var(--text-color); }
   .hill-phase-label { font-size: 0.75rem; font-weight: 700; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.05em; }
@@ -417,7 +417,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .hill-chart-edit { width: 100%; height: 100px; overflow: visible; }
   .hill-labels-wide { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.6; margin-top: 0.25rem; }
 
-  .hill-chart-display-box { margin-top: 0.5rem; padding: 1.5rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.2) !important; }
+  .hill-chart-display-box { margin-top: 0.5rem; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.2) !important; }
   .hill-chart-large { width: 100%; height: 80px; overflow: visible; }
   .hill-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; }
   .phase { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.4; transition: all 0.3s; }

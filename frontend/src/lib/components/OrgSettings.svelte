@@ -18,6 +18,7 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
   import Input from "./ui/Input.svelte";
   import Checkbox from "./ui/Checkbox.svelte";
   import Avatar from "./Avatar.svelte";
+  import PageHeader from "./ui/PageHeader.svelte";
 
   let { orgName } = $props();
 
@@ -121,15 +122,11 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
 
 <div class="org-settings-wrapper">
   <Card padding="none" class="settings-premium-card">
-    <header class="section-header-premium">
-      <div class="title-with-icon">
-        <Building2 size={48} class="hero-icon" />
-        <div>
-          <h2>Ajustes de la Organización</h2>
-          <p class="subtitle">Gestiona la identidad y visibilidad de tu organización</p>
-        </div>
-      </div>
-    </header>
+    <PageHeader
+      title="Ajustes de la Organización"
+      subtitle="Gestiona la identidad y visibilidad de tu organización"
+      icon={Building2}
+    />
 
     {#if loading}
       <div class="skeleton-form" style="padding: 2.5rem;"></div>
@@ -204,15 +201,11 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
 
   <div style="margin-top: 3rem;">
   <Card padding="none" class="settings-premium-card danger-card">
-    <header class="section-header-premium danger">
-      <div class="title-with-icon">
-        <HeartCrack size={48} class="hero-icon danger" />
-        <div>
-          <h2 class="danger-text">Zona de Peligro</h2>
-          <p class="subtitle">Acciones irreversibles sobre la organización</p>
-        </div>
-      </div>
-    </header>
+    <PageHeader
+      title="Zona de Peligro"
+      subtitle="Acciones irreversibles sobre la organización"
+      icon={HeartCrack}
+    />
     
     <div class="danger-zone-content">
       <div class="danger-item">
@@ -230,26 +223,9 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
 </div>
 
 <style>
-  .section-header-premium { padding: 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
-  .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  :global(.hero-icon) { background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
-  :global(.hero-icon.danger) { background: rgba(var(--error-rgb), 0.1); }
-  
-  h2 { margin: 0; font-size: 2rem; font-weight: 950; letter-spacing: -0.04em; }
-  .danger-text { color: var(--error); }
-  .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
-
+  .settings-form { padding: 2.5rem; display: flex; flex-direction: column; gap: 3rem; }
   @media (max-width: 600px) {
-    .section-header-premium { padding: 1.5rem; }
-    h2 { font-size: 1.25rem; }
-    :global(.hero-icon) { padding: 0.5rem; border-radius: 0.75rem; }
-    .title-with-icon { gap: 0.75rem; }
-    .subtitle { display: none; }
-  }
-
-  .settings-form { padding: 2.5rem; display: flex; flex-direction: column; gap: 2.5rem; }
-  @media (max-width: 600px) {
-    .settings-form { padding: 1.5rem; gap: 1.5rem; }
+    .settings-form { padding: 1.5rem; gap: 2rem; }
   }
   
   .avatar-settings-section { display: flex; align-items: center; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 1rem; }
@@ -266,14 +242,14 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
   .field { display: flex; flex-direction: column; gap: 0.75rem; }
   .field label { font-size: 0.9rem; font-weight: 700; color: var(--text-color); margin-left: 0.5rem; }
-  .field textarea { background: var(--surface-variant); border: 2px solid transparent; padding: 1rem 1.5rem; border-radius: 1.25rem; color: var(--text-color); font-size: 1.05rem; min-height: 100px; font-family: inherit; transition: all 0.2s; }
-  .field textarea:focus { border-color: var(--primary-color); outline: none; background: rgba(var(--primary-rgb), 0.05); }
+  .field textarea { background: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.75rem 1rem; border-radius: 0.75rem; color: var(--text-color); font-size: 1rem; min-height: 100px; font-family: inherit; transition: all 0.2s; }
+  .field textarea:focus { border-color: var(--md-sys-color-primary); outline: none; background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
   .full-width { grid-column: span 2; }
 
   .form-footer { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  :global(.danger-card) { border: 1px solid rgba(var(--error-rgb), 0.2); }
+  :global(.danger-card) { border: 2px solid var(--md-sys-color-error) !important; }
   .danger-zone-content { padding: 2.5rem; }
   .danger-item { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .danger-info strong { font-size: 1.1rem; color: var(--error); display: block; margin-bottom: 0.25rem; }
@@ -282,7 +258,7 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
   :global(.danger-btn) { background: var(--error) !important; color: white !important; }
   :global(.danger-text) { color: var(--error) !important; }
 
-  .skeleton-form { height: 400px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }
+  .skeleton-form { height: 400px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.6; } }
 
   @media (max-width: 800px) {

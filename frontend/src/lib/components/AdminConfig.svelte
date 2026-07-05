@@ -180,9 +180,9 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
     from { opacity: 0; transform: translateY(4px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .config-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-stack { display: flex; flex-direction: column; gap: 3rem; }
 
-  .config-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .config-stack { display: flex; flex-direction: column; gap: 3rem; }
 
   .config-modular-section { display: flex; flex-direction: column; gap: 1.5rem; }
   
@@ -199,7 +199,7 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
   .tile-key { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; }
   .tile-val { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .special-action-card { padding: 3rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
+  .special-action-card { padding: 3rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.03); }
   @media (max-width: 600px) {
     .special-action-card { padding: 1.5rem; border-radius: 1.5rem; }
     .action-header h4 { font-size: 1.1rem; }
@@ -210,7 +210,7 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
   .action-header h4 { margin: 0; font-size: 1.5rem; font-weight: 900; }
 
   .action-form { display: flex; flex-direction: column; gap: 2.5rem; margin-top: 2rem; }
-  .form-actions { display: flex; justify-content: flex-start; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
+  .form-actions { display: flex; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -219,10 +219,10 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
 
   .premium-switch { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
   .premium-switch input { display: none; }
-  .switch-slider { width: 44px; height: 24px; background: var(--surface-variant); border-radius: 0.5rem; position: relative; border: 1px solid var(--md-sys-color-outline-variant); transition: 0.3s; }
-  .switch-slider::before { content: ""; position: absolute; width: 16px; height: 16px; background: var(--text-muted); border-radius: 0.35rem; left: 3px; top: 3px; transition: 0.3s; }
-  input:checked + .switch-slider { background: var(--primary-color); }
-  input:checked + .switch-slider::before { transform: translateX(20px); background: white; }
+  .switch-slider { width: 52px; height: 28px; background: var(--surface-variant); border-radius: 100px; position: relative; border: 1px solid var(--md-sys-color-outline-variant); transition: 0.3s; flex-shrink: 0; }
+  .switch-slider::before { content: ""; position: absolute; width: 20px; height: 20px; background: var(--text-muted); border-radius: 50%; left: 3px; top: 3px; transition: 0.3s; }
+  input:checked + .switch-slider { background: var(--primary-color); border-color: var(--primary-color); }
+  input:checked + .switch-slider::before { transform: translateX(24px); background: white; }
   .switch-label { font-size: 0.95rem; font-weight: 700; color: var(--text-color); }
 
   .skeleton-config { height: 600px; background: var(--surface-variant); border-radius: 2rem; animation: pulse 1.5s infinite; }

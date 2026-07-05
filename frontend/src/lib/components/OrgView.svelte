@@ -233,7 +233,7 @@
     gap: 1rem;
   }
   :global(.repo-row-card) {
-    border-radius: 1.25rem !important;
+    border-radius: 1.5rem !important;
   }
 
   .empty-repos {

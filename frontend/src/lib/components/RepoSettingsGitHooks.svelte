@@ -201,7 +201,7 @@ import Info from "lucide-svelte/icons/info";
   .editor-info { display: flex; align-items: center; gap: 1rem; color: var(--text-muted); padding: 1rem 1.5rem; border-radius: 1rem; font-size: 0.9rem; }
   .editor-info code { background: rgba(0,0,0,0.3); padding: 0.1rem 0.3rem; border-radius: 4px; color: var(--primary-color); }
 
-  .textarea-container { border-radius: 1.25rem; overflow: hidden; border: 2px solid var(--md-sys-color-outline-variant); background: #000; }
+  .textarea-container { border-radius: 1.5rem; overflow: hidden; border: 2px solid var(--md-sys-color-outline-variant); background: #000; }
   .hook-textarea { width: 100%; height: 400px; background: transparent; color: #fff; border: none; padding: 1.5rem; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.6; resize: vertical; outline: none; }
   .hook-textarea:focus { caret-color: var(--primary-color); }
 

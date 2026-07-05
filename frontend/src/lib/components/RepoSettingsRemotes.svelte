@@ -199,7 +199,7 @@ import Info from "lucide-svelte/icons/info";
   .settings-content { padding: 2.5rem; display: flex; flex-direction: column; gap: 3rem; }
   @media (max-width: 1300px) { .settings-content { padding: 1.5rem; } }
   
-  .add-remote-section { padding: 2rem; border-radius: 2rem; display: flex; flex-direction: column; gap: 2rem; }
+  .add-remote-section { padding: 2rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 2rem; }
   .section-meta strong { font-size: 1.25rem; font-weight: 900; color: var(--text-color); }
   .section-meta p { margin: 0.25rem 0 0; color: var(--text-muted); font-size: 0.95rem; }
 
@@ -228,7 +228,7 @@ import Info from "lucide-svelte/icons/info";
   .remote-name { font-weight: 800; font-size: 1.1rem; color: var(--text-color); }
   .remote-url-hint { font-size: 0.75rem; color: var(--text-muted); opacity: 0.8; }
 
-  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; opacity: 0.6; }
+  .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; border-radius: 1.5rem; }
 
   .error-text { color: var(--error); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }
   .success-text { color: var(--success); font-size: 0.85rem; margin-top: 1rem; font-weight: 600; }

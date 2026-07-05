@@ -109,7 +109,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
   .form-group label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.8; }
   
   input { background: rgba(var(--primary-rgb), 0.03); border: 1px solid var(--md-sys-color-outline-variant); padding: 0.85rem 1.25rem; border-radius: 0.75rem; color: var(--text-color); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
-  input:focus { outline: none; border-color: var(--primary-color); background: rgba(var(--primary-rgb), 0.08); }
+  input:focus { outline: none; border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
 
   .error-msg { color: var(--error); font-size: 0.9rem; font-weight: 700; margin: 0 2rem 1rem; padding: 1rem; background: rgba(var(--error-rgb), 0.1); border-radius: 1rem; }
 

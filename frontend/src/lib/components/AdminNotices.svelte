@@ -176,13 +176,13 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
   .type-badge { padding: 0.4rem 0.8rem; border-radius: 0.75rem; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; background: #333; }
   .type-badge.tier-1 { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
   .type-badge.tier-2 { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
-  .type-badge.tier-3 { background: rgba(239, 68, 68, 0.12); color: #ef4444; }
+  .type-badge.tier-3 { background: rgba(var(--error-rgb), 0.12); color: var(--error); }
   .type-badge.big { font-size: 0.9rem; padding: 0.5rem 1.25rem; border-radius: 0.5rem; }
 
   .desc-preview { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #ddd; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
   .date-tag { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-  .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(0,0,0,0.1); border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(0,0,0,0.1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .count-info { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
   .nav-controls { display: flex; align-items: center; gap: 1.5rem; }
   .page-current { font-weight: 800; font-size: 0.9rem; }

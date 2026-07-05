@@ -36,7 +36,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
 <style>
   .gist-row {
     display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem;
-    text-decoration: none; transition: all 0.2s; border-radius: 1.25rem;
+    text-decoration: none; transition: all 0.2s; border-radius: 1.5rem;
   }
   .gist-row:hover { background: var(--md-sys-color-surface-container); }
   

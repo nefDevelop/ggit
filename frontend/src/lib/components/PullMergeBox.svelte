@@ -180,8 +180,8 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .status-item.success { background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2); color: #10b981; }
   .status-item.success span { color: #10b981; opacity: 0.8; }
   
-  .status-item.error { background: rgba(239, 68, 68, 0.05); border-color: rgba(239, 68, 68, 0.2); color: #ef4444; }
-  .status-item.error span { color: #ef4444; opacity: 0.8; }
+  .status-item.error { background: rgba(var(--error-rgb), 0.05); border-color: rgba(var(--error-rgb), 0.2); color: var(--error); }
+  .status-item.error span { color: var(--error); opacity: 0.8; }
 
   .status-item.warning { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2); color: #f59e0b; }
   .status-item.warning span { color: #f59e0b; opacity: 0.8; }

@@ -296,7 +296,7 @@ import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
 <style>
 
 
-  .modular-stack { display: flex; flex-direction: column; gap: 4rem; }
+  .modular-stack { display: flex; flex-direction: column; gap: 3rem; }
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
@@ -305,7 +305,7 @@ import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
   .scheme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
   .scheme-modular-card {
     position: relative; display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
-    padding: 3rem 2rem; border-radius: 1.25rem; border: 1px solid var(--md-sys-color-outline-variant);
+    padding: 3rem 2rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant);
     background: rgba(255,255,255,0.01); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
   }

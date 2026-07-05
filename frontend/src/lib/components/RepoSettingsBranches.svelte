@@ -317,7 +317,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
   :global(.back-link) { align-self: flex-start; color: var(--primary-color); font-weight: 800; }
 
   .protection-form { display: flex; flex-direction: column; gap: 2.5rem; }
-  .main-switch { padding: 2rem; border-radius: 2rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
+  .main-switch { padding: 2rem; border-radius: 1.5rem; border: 2px solid var(--primary-color); background: rgba(var(--primary-rgb), 0.05); }
 
   .protection-options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; animation: fadeIn 0.3s ease-out; }
   @media (max-width: 900px) { .protection-options-grid { grid-template-columns: 1fr; } }
