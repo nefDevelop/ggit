@@ -71,7 +71,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
         {scanning ? "Escaneando..." : "Escanear Todos"}
       </Button>
     {/snippet}
-  />
+  </PageHeader>
 
   <div class="admin-janitor-body">
 
