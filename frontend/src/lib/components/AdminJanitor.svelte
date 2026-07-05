@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
   import { tool } from "$lib/tool";
   import { i18n } from "$lib/i18n.svelte";
+  import { toast } from "$lib/toast.svelte";
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
@@ -14,10 +15,12 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 import Settings from "lucide-svelte/icons/settings";
 import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
 import Trash from "lucide-svelte/icons/trash";
+import RefreshCw from "lucide-svelte/icons/refresh-cw";
 
 
 
   let loading = $state(true);
+  let scanning = $state(false);
   let stats = $state<any[]>([]);
 
   async function fetchStats() {
@@ -35,6 +38,25 @@ import Trash from "lucide-svelte/icons/trash";
     }
   }
 
+  async function scanAll() {
+    scanning = true;
+    try {
+      const res = await apiFetch("/api/v2/admin/janitor/scan-all", { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        toast.success(`Escaneados ${data.scanned} de ${data.total} repositorios`);
+        fetchStats();
+      } else {
+        toast.error("Error al escanear repositorios");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Error de red al escanear");
+    } finally {
+      scanning = false;
+    }
+  }
+
   onMount(fetchStats);
 </script>
 
@@ -43,6 +65,12 @@ import Trash from "lucide-svelte/icons/trash";
     title={i18n.t("admin.janitor_global") || "Ggit Janitor"}
     subtitle={i18n.t("admin.janitor_global_desc") || "Limpieza y mantenimiento de espacio en disco de repositorios"}
     icon={Sparkles}
+  >
+    {#snippet actions()}
+      <Button variant="tonal" icon={RefreshCw} onclick={scanAll} loading={scanning} disabled={scanning}>
+        {scanning ? "Escaneando..." : "Escanear Todos"}
+      </Button>
+    {/snippet}
   />
 
   <div class="admin-janitor-body">

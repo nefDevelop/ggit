@@ -18,6 +18,7 @@ import (
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
 	"github.com/nef734/ggit/internal/services/backup"
 	"github.com/nef734/ggit/internal/services/health"
+	"github.com/nef734/ggit/internal/services/janitor"
 	"github.com/nef734/ggit/internal/services/repo"
 	"github.com/nef734/ggit/internal/tool"
 	"gopkg.in/ini.v1"
@@ -882,4 +883,28 @@ func GetAdminJanitorStats(c *context.APIContext) {
 		})
 	}
 	c.JSONSuccess(stats)
+}
+
+// ScanAllJanitor triggers a janitor scan for all repositories.
+func ScanAllJanitor(c *context.APIContext) {
+	repos, err := database.RepositoriesWithUsers(1, 1000)
+	if err != nil {
+		c.Error(err, "list repositories")
+		return
+	}
+
+	scanned := 0
+	for _, r := range repos {
+		_, err := janitor.Scan(c.Req.Context(), r.ID)
+		if err != nil {
+			log.Error("janitor scan failed for repo %d: %v", r.ID, err)
+			continue
+		}
+		scanned++
+	}
+
+	c.JSONSuccess(map[string]any{
+		"scanned": scanned,
+		"total":   len(repos),
+	})
 }

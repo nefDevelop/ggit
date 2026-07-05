@@ -2,6 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { i18n } from '$lib/i18n.svelte';
   import { onMount } from 'svelte';
+  import { formatDateTime } from '$lib/utils/date';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import TableSkeleton from './ui/TableSkeleton.svelte';
@@ -43,8 +44,8 @@ import ChevronDown from "lucide-svelte/icons/chevron-down";
 
   onMount(() => { fetchAuditLogs(); });
 
-  function formatDate(unix: number) {
-    return new Date(unix * 1000).toLocaleString();
+  function formatDate(unix: any) {
+    return formatDateTime(unix);
   }
 
   function getOpColor(opType: number) {
