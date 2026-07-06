@@ -97,6 +97,8 @@ import Copy from "lucide-svelte/icons/copy";
     </div>
   </div>
 
+  <span class="time-info">{timeAgo(repo.updated_at)}</span>
+
   <div class="actions-info">
     <Button 
       variant="ghost" 
@@ -106,14 +108,13 @@ import Copy from "lucide-svelte/icons/copy";
       onclick={(e) => { e.stopPropagation(); copyToClipboard(repo.clone_url); }} 
       aria-label="Copy Clone URL" 
     />
-    <span class="time">{timeAgo(repo.updated_at)}</span>
   </div>
 </div>
 
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr auto 160px 80px;
+    grid-template-columns: 56px 1fr auto auto 48px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -222,13 +223,14 @@ import Copy from "lucide-svelte/icons/copy";
   .stat-item.dim { opacity: 0.2; }
   .stat-item.active { color: var(--primary-color); font-weight: 700; }
 
-  .actions-info { display: flex; align-items: center; justify-content: flex-end; gap: 1rem; }
+  .time-info { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: flex-end; white-space: nowrap; }
+  .actions-info { display: flex; align-items: center; justify-content: flex-end; }
   :global(.success-icon) { color: var(--md-sys-color-primary) !important; }
   .time { font-size: 0.8rem; color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; }
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr auto 140px 70px; 
+      grid-template-columns: 56px 1fr auto auto 44px; 
     }
     .stats-info { gap: 0.5rem; }
     .stat-item { width: 38px; }
@@ -236,20 +238,20 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr auto 70px; 
+      grid-template-columns: 56px 1fr auto 44px; 
     }
     .stats-info { display: none; }
   }
 
   @media (max-width: 800px) {
-    .repo-row { grid-template-columns: 56px 1fr auto; }
-
+    .repo-row { grid-template-columns: 56px 1fr 44px; }
+    .time-info { display: none; }
   }
 
   @media (max-width: 480px) {
-    .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 30px; }
+    .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 36px; }
     .repo-name { font-size: 1rem; }
     .repo-desc { font-size: 0.8rem; }
-    .actions-info .time { display: none; }
+    .time-info { display: none; }
   }
 </style>
