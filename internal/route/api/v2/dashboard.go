@@ -98,12 +98,36 @@ func GetDashboardData(c *context.APIContext) {
 		log.Error("GetDashboardData: Error loading attributes for %d repos: %v", len(allRepos), err)
 	}
 
+	releaseCounts := make(map[int64]int64, len(allRepos))
+	if len(allRepos) > 0 {
+		repoIDs := make([]int64, len(allRepos))
+		for i, r := range allRepos {
+			repoIDs[i] = r.ID
+		}
+		type ReleaseCount struct {
+			RepoID int64
+			Count  int64
+		}
+		var counts []ReleaseCount
+		database.Handle.DB().Model(&database.Release{}).
+			Select("repo_id, COUNT(*) as count").
+			Where("repo_id IN (?) AND is_draft = ?", repoIDs, false).
+			Group("repo_id").
+			Find(&counts)
+		for _, c := range counts {
+			releaseCounts[c.RepoID] = c.Count
+		}
+	}
+
 	apiRepos := make([]any, 0, len(allRepos))
 	for _, r := range allRepos {
 		if r == nil {
 			continue
 		}
-		apiRepos = append(apiRepos, r.APIFormat(r.Owner))
+		count := releaseCounts[r.ID]
+		apiRepos = append(apiRepos, r.APIFormat(r.Owner, database.RepositoryAPIFormatOptions{
+			NumReleases: &count,
+		}))
 	}
 
 	apiOrgs := make([]any, 0, len(orgs))
