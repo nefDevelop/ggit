@@ -110,49 +110,6 @@
           </label>
         </div>
 
-        <div class="toggle-row">
-          <div class="row-info">
-            <div class="row-title">
-              <span class="material-symbols-rounded">corporate_fare</span>
-              {i18n.t('settings.orgs_sidebar')}
-            </div>
-            <p class="row-desc">{i18n.t('settings.orgs_sidebar_desc')}</p>
-          </div>
-          <label class="premium-switch">
-            <input 
-              type="checkbox" 
-              checked={userPrefs.current.showSidebarOrgs} 
-              onchange={() => {
-                userPrefs.current.showSidebarOrgs = !userPrefs.current.showSidebarOrgs;
-                userPrefs.save();
-              }}
-            />
-            <span class="switch-slider"></span>
-          </label>
-        </div>
-
-        <div class="toggle-row">
-          <div class="row-info">
-            <div class="row-title">
-              <span class="material-symbols-rounded">abc</span>
-              Texto del Lenguaje
-            </div>
-            <p class="row-desc">Muestra el nombre del lenguaje principal junto al dot de color.</p>
-          </div>
-          <label class="premium-switch">
-            <input 
-              type="checkbox" 
-              checked={userPrefs.current.showLangText} 
-              onchange={() => {
-                userPrefs.current.showLangText = !userPrefs.current.showLangText;
-                userPrefs.save();
-              }}
-            />
-            <span class="switch-slider"></span>
-          </label>
-        </div>
-
-
       </div>
     </div>
 

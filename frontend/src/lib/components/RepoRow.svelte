@@ -15,7 +15,6 @@ import Copy from "lucide-svelte/icons/copy";
   import { getLanguageColor } from '$lib/utils/languages';
   import { goto } from '$app/navigation';
   import { timeAgo } from '$lib/utils/date';
-  import { userPrefs } from '$lib/settings.svelte';
 
   let { repo, isOlder = false } = $props();
 
@@ -78,21 +77,6 @@ import Copy from "lucide-svelte/icons/copy";
       </p>
     </div>
   </div>
-
-  {#if repo.language}
-    <div class="tech-info">
-      <div class="lang">
-        <span class="lang-dot" style="background-color: {getLanguageColor(repo.language)}"></span>
-        {#if userPrefs.current.showLangText}
-          {repo.language}
-        {/if}
-      </div>
-    </div>
-  {:else if repo.empty}
-    <div class="tech-info">
-      <div class="setup-hint">Ready for code</div>
-    </div>
-  {/if}
 
   <div class="stats-info">
     <div class="stat-item {repo.num_commits > 0 ? 'active' : 'dim'}" title="Commits">
@@ -217,8 +201,6 @@ import Copy from "lucide-svelte/icons/copy";
   }
 
   .badge-empty { font-size: 0.65rem; background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; font-weight: 800; letter-spacing: 0.05em; }
-  .lang { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
-  .lang-dot { width: 10px; height: 10px; border-radius: 50%; }
 
   .stats-info { 
     display: flex; 
@@ -261,7 +243,7 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 800px) {
     .repo-row { grid-template-columns: 56px 1fr auto; }
-    .tech-info { display: none; }
+
   }
 
   @media (max-width: 480px) {
