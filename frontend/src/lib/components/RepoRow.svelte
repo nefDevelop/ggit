@@ -59,6 +59,15 @@ import Copy from "lucide-svelte/icons/copy";
 
 <div class="repo-row {isOlder ? 'older-row' : ''} {isNew() ? 'new-update' : ''}" onclick={() => goto(`/${repo.full_name}`)} role="link" tabindex="0" onkeydown={(e) => e.key === 'Enter' && goto(`/${repo.full_name}`)}>
   
+  <div class="title-area">
+    <a href="/{repo.full_name}" class="repo-name" title={repo.full_name} data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
+      {repo.name}
+    </a>
+    {#if repo.empty}
+      <span class="badge-empty">Empty</span>
+    {/if}
+  </div>
+
   <div class="repo-avatar-wrap">
     <Avatar 
       src={repo.avatar_url} 
@@ -69,16 +78,6 @@ import Copy from "lucide-svelte/icons/copy";
   </div>
 
   <div class="main-info">
-    <div class="title-line">
-      <a href="/{repo.full_name}" class="repo-name" title={repo.full_name} data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
-        {repo.name}
-      </a>
-      {#if repo.empty}
-        <span class="badge-empty">Empty</span>
-      {/if}
-    </div>
-
-    <!-- REAL MINI LANGUAGE BAR ABOVE DESCRIPTION -->
     {#if langEntries().length > 0 && userPrefs.current.showLangBar}
       <div class="mini-lang-bar subdued">
         {#each langEntries() as lang}
@@ -151,7 +150,7 @@ import Copy from "lucide-svelte/icons/copy";
   .repo-row {
     display: grid;
     grid-template-columns: 56px 1fr auto 160px 80px;
-    align-items: center;
+    align-items: start;
     padding: 1.15rem 1.5rem;
     background: transparent;
     transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -170,6 +169,15 @@ import Copy from "lucide-svelte/icons/copy";
     background: rgba(var(--primary-rgb), 0.05);
     z-index: 10;
     box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.1);
+  }
+
+  .title-area {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+    padding-bottom: 0.25rem;
   }
 
   .repo-avatar-wrap {
@@ -209,7 +217,7 @@ import Copy from "lucide-svelte/icons/copy";
   }
 
   .older-row { padding: 0.75rem 1.25rem; opacity: 0.8; }
-  .main-info { display: flex; flex-direction: column; min-width: 0; gap: 0.35rem; }
+  .main-info { display: flex; flex-direction: column; min-width: 0; gap: 0.35rem; padding-top: 0.15rem; }
 
   /* MINI LANG BAR */
   .mini-lang-bar {
@@ -233,13 +241,9 @@ import Copy from "lucide-svelte/icons/copy";
     color: var(--primary-color); 
     text-decoration: none; 
     font-size: 1.1rem; 
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    line-clamp: 2;
     overflow: hidden;
-    line-height: 1.3;
-    word-break: break-word;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .repo-desc {
     font-size: 0.85rem;
