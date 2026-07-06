@@ -14,6 +14,7 @@ export interface UserPreferences {
     labels: boolean;
   };
   showSidebarOrgs: boolean;
+  showLangText: boolean;
   showLangBar: boolean;
 }
 
@@ -31,6 +32,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     labels: true,
   },
   showSidebarOrgs: true,
+  showLangText: true,
   showLangBar: true
 };
 

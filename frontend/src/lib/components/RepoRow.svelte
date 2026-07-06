@@ -70,7 +70,7 @@ import Copy from "lucide-svelte/icons/copy";
 
   <div class="main-info">
     <div class="title-line">
-      <a href="/{repo.full_name}" class="repo-name" data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
+      <a href="/{repo.full_name}" class="repo-name" title={repo.full_name} data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
         {repo.name}
       </a>
       {#if repo.empty}
@@ -79,8 +79,8 @@ import Copy from "lucide-svelte/icons/copy";
     </div>
 
     <!-- REAL MINI LANGUAGE BAR ABOVE DESCRIPTION -->
-    {#if langEntries().length > 0}
-      <div class="mini-lang-bar" class:dimmed={!userPrefs.current.showLangBar}>
+    {#if langEntries().length > 0 && userPrefs.current.showLangBar}
+      <div class="mini-lang-bar subdued">
         {#each langEntries() as lang}
           <div class="lang-segment" style="width: {lang.percent}%; background: {lang.color}" title="{lang.name} {lang.percent}%"></div>
         {/each}
@@ -100,11 +100,13 @@ import Copy from "lucide-svelte/icons/copy";
     </div>
   </div>
 
-  {#if userPrefs.current.showLangBar && repo.language}
+  {#if repo.language}
     <div class="tech-info">
       <div class="lang">
         <span class="lang-dot" style="background-color: {getLanguageColor(repo.language)}"></span>
-        {repo.language}
+        {#if userPrefs.current.showLangText}
+          {repo.language}
+        {/if}
       </div>
     </div>
   {:else if repo.empty}
@@ -148,7 +150,7 @@ import Copy from "lucide-svelte/icons/copy";
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr auto 220px 100px;
+    grid-template-columns: 56px 1fr auto 160px 80px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -219,8 +221,8 @@ import Copy from "lucide-svelte/icons/copy";
     background: var(--md-sys-color-surface-variant);
     margin: 0.1rem 0;
   }
-  .mini-lang-bar.dimmed {
-    opacity: 0.25;
+  .mini-lang-bar.subdued {
+    opacity: 0.35;
   }
   .lang-segment { height: 100%; }
 
@@ -231,13 +233,13 @@ import Copy from "lucide-svelte/icons/copy";
     color: var(--primary-color); 
     text-decoration: none; 
     font-size: 1.1rem; 
-    display: inline-flex; 
-    align-items: center; 
-    gap: 0.5rem; 
-    max-width: 100%;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.3;
+    word-break: break-word;
   }
   .repo-desc {
     font-size: 0.85rem;
@@ -281,7 +283,7 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr auto 180px 90px; 
+      grid-template-columns: 56px 1fr auto 140px 70px; 
     }
     .stats-info { gap: 0.5rem; }
     .stat-item { width: 38px; }
@@ -289,7 +291,7 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 1000px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr auto 90px; 
+      grid-template-columns: 56px 1fr auto 70px; 
     }
     .stats-info { display: none; }
   }
@@ -300,7 +302,7 @@ import Copy from "lucide-svelte/icons/copy";
   }
 
   @media (max-width: 480px) {
-    .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 40px; }
+    .repo-row { padding: 0.75rem 0.5rem; gap: 0.75rem; grid-template-columns: 48px 1fr 30px; }
     .repo-name { font-size: 1rem; }
     .repo-desc { font-size: 0.8rem; }
     .actions-info .time { display: none; }

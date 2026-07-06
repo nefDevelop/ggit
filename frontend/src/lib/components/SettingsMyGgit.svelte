@@ -134,10 +134,31 @@
         <div class="toggle-row">
           <div class="row-info">
             <div class="row-title">
-              <span class="material-symbols-rounded">bar_chart</span>
-              Barra de Lenguajes
+              <span class="material-symbols-rounded">abc</span>
+              Texto del Lenguaje
             </div>
-            <p class="row-desc">Muestra la barra de lenguajes en la lista de repositorios del dashboard.</p>
+            <p class="row-desc">Muestra el nombre del lenguaje principal junto al dot de color.</p>
+          </div>
+          <label class="premium-switch">
+            <input 
+              type="checkbox" 
+              checked={userPrefs.current.showLangText} 
+              onchange={() => {
+                userPrefs.current.showLangText = !userPrefs.current.showLangText;
+                userPrefs.save();
+              }}
+            />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-row">
+          <div class="row-info">
+            <div class="row-title">
+              <span class="material-symbols-rounded">bar_chart</span>
+              Barra de Colores
+            </div>
+            <p class="row-desc">Barra horizontal con la distribución de lenguajes del repositorio.</p>
           </div>
           <label class="premium-switch">
             <input 
