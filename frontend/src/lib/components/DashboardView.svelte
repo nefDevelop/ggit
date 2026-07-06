@@ -81,12 +81,21 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     const all = [...repos].filter(r => r && r.name).sort((a, b) => a.name.localeCompare(b.name));
     
     if (viewMode === 'folders') {
+      function folderDisplayName(repo: any, folderName: string): string | undefined {
+        const name = repo.name;
+        if (name && folderName && name.startsWith(folderName + '-')) {
+          return name.substring(folderName.length + 1);
+        }
+        return undefined;
+      }
+
       const folders: Record<string, any[]> = {};
       const ungrouped: any[] = [];
       repos.forEach(r => {
         if (r && r.project_folder) {
           if (!folders[r.project_folder]) folders[r.project_folder] = [];
-          folders[r.project_folder].push(r);
+          const displayName = folderDisplayName(r, r.project_folder);
+          folders[r.project_folder].push(displayName ? { ...r, _displayName: displayName } : r);
         } else if (r) {
           if (userPrefs.current.autoFolder) {
             const dashIndex = r.name?.indexOf('-');
