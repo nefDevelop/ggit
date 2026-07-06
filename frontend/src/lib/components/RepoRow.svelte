@@ -16,7 +16,7 @@ import Copy from "lucide-svelte/icons/copy";
   import { goto } from '$app/navigation';
   import { timeAgo } from '$lib/utils/date';
 
-  let { repo, isOlder = false } = $props();
+  let { repo, isOlder = false, displayName } = $props();
 
   const isNew = $derived(() => {
     if (!repo?.updated_at) return false;
@@ -58,7 +58,7 @@ import Copy from "lucide-svelte/icons/copy";
   <div class="main-info">
     <div class="title-line">
       <a href="/{repo.full_name}" class="repo-name" title={repo.full_name} data-sveltekit-preload-data="hover" onclick={(e) => e.stopPropagation()}>
-        {repo.name}
+        {displayName ?? repo.name}
       </a>
       {#if repo.empty}
         <span class="badge-empty">Empty</span>
@@ -114,7 +114,7 @@ import Copy from "lucide-svelte/icons/copy";
 <style>
   .repo-row {
     display: grid;
-    grid-template-columns: 56px 1fr auto auto 48px;
+    grid-template-columns: 56px 1fr 46px 46px 46px 46px auto 48px;
     align-items: center;
     padding: 1.15rem 1.5rem;
     background: transparent;
@@ -204,19 +204,16 @@ import Copy from "lucide-svelte/icons/copy";
   .badge-empty { font-size: 0.65rem; background: var(--md3-surface-2); padding: 0.1rem 0.5rem; border-radius: 2rem; font-weight: 800; letter-spacing: 0.05em; }
 
   .stats-info { 
-    display: flex; 
-    align-items: center;
-    gap: 0.75rem; 
-    flex-wrap: nowrap;
+    display: contents;
   }
   
   .stat-item { 
     display: flex; 
     align-items: center; 
+    justify-content: center;
     gap: 0.35rem; 
     font-size: 0.85rem; 
     white-space: nowrap;
-    width: 46px;
   }
   
 
@@ -230,10 +227,8 @@ import Copy from "lucide-svelte/icons/copy";
 
   @media (max-width: 1200px) {
     .repo-row { 
-      grid-template-columns: 56px 1fr auto auto 44px; 
+      grid-template-columns: 56px 1fr 38px 38px 38px 38px auto 44px; 
     }
-    .stats-info { gap: 0.5rem; }
-    .stat-item { width: 38px; }
   }
 
   @media (max-width: 1000px) {

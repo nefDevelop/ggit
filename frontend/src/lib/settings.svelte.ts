@@ -14,6 +14,7 @@ export interface UserPreferences {
     labels: boolean;
   };
   showSidebarOrgs: boolean;
+  autoFolder: boolean;
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -29,7 +30,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
     releases: true,
     labels: true,
   },
-  showSidebarOrgs: true
+  showSidebarOrgs: true,
+  autoFolder: false
 };
 
 function createPreferences() {

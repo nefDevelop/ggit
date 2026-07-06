@@ -158,6 +158,8 @@
   "settings": {
     "activity_feed": "Activity Feed",
     "activity_feed_desc": "Control which events are shown in your main activity feed.",
+    "auto_folder": "Auto Folders",
+    "auto_folder_desc": "Auto-group repos without a folder by common name prefix (e.g. obsidian-plugin1, obsidian-plugin2 → 'obsidian' folder).",
     "appearance": "Appearance",
     "branch_desc": "View and manage different development branches of the project.",
     "branches": "Branches",

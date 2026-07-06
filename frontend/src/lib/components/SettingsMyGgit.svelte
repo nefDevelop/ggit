@@ -110,6 +110,24 @@
           </label>
         </div>
 
+        <div class="toggle-row">
+          <div class="row-info">
+            <div class="row-title">
+              <span class="material-symbols-rounded">auto_awesome</span>
+              {i18n.t('settings.auto_folder')}
+            </div>
+            <p class="row-desc">{i18n.t('settings.auto_folder_desc')}</p>
+          </div>
+          <label class="premium-switch">
+            <input 
+              type="checkbox" 
+              checked={userPrefs.current.autoFolder} 
+              onchange={() => userPrefs.update({ autoFolder: !userPrefs.current.autoFolder })}
+            />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
       </div>
     </div>
 

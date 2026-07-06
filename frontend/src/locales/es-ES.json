@@ -158,6 +158,8 @@
   "settings": {
     "activity_feed": "Feed de actividad",
     "activity_feed_desc": "Controla qué eventos se muestran en tu feed de actividad principal.",
+    "auto_folder": "Carpetas Automáticas",
+    "auto_folder_desc": "Agrupa automáticamente repos sin carpeta por prefijo común del nombre (ej. obsidian-plugin1, obsidian-plugin2 → carpeta 'obsidian').",
     "appearance": "Apariencia",
     "branch_desc": "Visualiza y gestiona las diferentes líneas de desarrollo del proyecto.",
     "branches": "Ramas",

@@ -88,7 +88,19 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
           if (!folders[r.project_folder]) folders[r.project_folder] = [];
           folders[r.project_folder].push(r);
         } else if (r) {
-          ungrouped.push(r);
+          if (userPrefs.current.autoFolder) {
+            const dashIndex = r.name?.indexOf('-');
+            if (dashIndex && dashIndex > 0) {
+              const prefix = r.name.substring(0, dashIndex).trim();
+              const shortName = r.name.substring(dashIndex + 1);
+              if (!folders[prefix]) folders[prefix] = [];
+              folders[prefix].push({ ...r, _displayName: shortName });
+            } else {
+              ungrouped.push(r);
+            }
+          } else {
+            ungrouped.push(r);
+          }
         }
       });
       return { folders, ungrouped: ungrouped.sort((a, b) => (a.name || '').localeCompare(b.name || '')) };
@@ -245,7 +257,7 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
                             </div>
                             <div class="folder-repos">
                                 {#each repos as repo}
-                                    <RepoRow {repo} />
+                                    <RepoRow {repo} displayName={repo._displayName} />
                                 {/each}
                             </div>
                         </div>
