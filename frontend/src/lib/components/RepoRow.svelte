@@ -19,19 +19,6 @@ import Copy from "lucide-svelte/icons/copy";
 
   let { repo, isOlder = false } = $props();
 
-  // Calculate language percentages for the mini bar
-  const langEntries = $derived(() => {
-    if (!repo?.languages) return [];
-    const total = Object.values(repo.languages as Record<string, number>).reduce((a, b) => a + b, 0);
-    return Object.entries(repo.languages as Record<string, number>)
-      .map(([name, bytes]) => ({
-        name,
-        percent: ((bytes / total) * 100).toFixed(1),
-        color: getLanguageColor(name)
-      }))
-      .sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
-  });
-  
   const isNew = $derived(() => {
     if (!repo?.updated_at) return false;
     const date = new Date(repo.updated_at);
@@ -65,6 +52,7 @@ import Copy from "lucide-svelte/icons/copy";
       username={repo.name} 
       size={48} 
       type="repo" 
+      langColor={getLanguageColor(repo.language)}
     />
   </div>
 
@@ -77,14 +65,6 @@ import Copy from "lucide-svelte/icons/copy";
         <span class="badge-empty">Empty</span>
       {/if}
     </div>
-
-    {#if langEntries().length > 0 && userPrefs.current.showLangBar}
-      <div class="mini-lang-bar subdued">
-        {#each langEntries() as lang}
-          <div class="lang-segment" style="width: {lang.percent}%; background: {lang.color}" title="{lang.name} {lang.percent}%"></div>
-        {/each}
-      </div>
-    {/if}
 
     <div class="desc-line">
       {#if repo.private}
@@ -211,19 +191,7 @@ import Copy from "lucide-svelte/icons/copy";
   .main-info { display: flex; flex-direction: column; min-width: 0; gap: 0.35rem; }
 
   /* MINI LANG BAR */
-  .mini-lang-bar {
-    display: flex;
-    height: 4px;
-    width: 120px;
-    border-radius: 2px;
-    overflow: hidden;
-    background: var(--md-sys-color-surface-variant);
-    margin: 0.1rem 0;
-  }
-  .mini-lang-bar.subdued {
-    opacity: 0.35;
-  }
-  .lang-segment { height: 100%; }
+
 
   .desc-line { display: flex; align-items: flex-start; gap: 0.5rem; min-width: 0; }
   :global(.status-icon) { color: var(--text-muted); opacity: 0.6; flex-shrink: 0; margin-top: 2px; }

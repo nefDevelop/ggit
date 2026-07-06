@@ -7,7 +7,8 @@
   let { 
     seed = '', 
     size = 100,
-    type = 'user' // 'user' or 'repo'
+    type = 'user', // 'user' or 'repo'
+    langColor = '' // hex color from repo language
   } = $props();
 
   // Función de hash simple para obtener un número basado en el string
@@ -79,6 +80,9 @@
 
   const clipId = $derived(`clip-${hash}-${type}`);
   const bgColor = $derived(`rgba(${parseInt(palette[0].slice(1,3), 16)}, ${parseInt(palette[0].slice(3,5), 16)}, ${parseInt(palette[0].slice(5,7), 16)}, 0.15)`);
+  const langBgColor = $derived(langColor
+    ? `rgba(${parseInt(langColor.slice(1,3), 16)}, ${parseInt(langColor.slice(3,5), 16)}, ${parseInt(langColor.slice(5,7), 16)}, 0.7)`
+    : '');
 </script>
 
 <svg
@@ -88,7 +92,7 @@
   xmlns="http://www.w3.org/2000/svg"
   class="identicon"
   class:repo-type={type === 'repo'}
-  style="background: {bgColor}; max-width: 100%; height: auto;"
+  style="background: {langBgColor || bgColor}; max-width: 100%; height: auto;"
 >
   <defs>
     <clipPath id={clipId}>

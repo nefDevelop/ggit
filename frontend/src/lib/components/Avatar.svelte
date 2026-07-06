@@ -12,6 +12,7 @@
     seed = '', 
     size = 40, 
     type = 'user',
+    langColor = '',
     class: className = '' 
   } = $props();
 
@@ -24,7 +25,7 @@
 
 <div class="avatar-container {className}" class:repo-avatar={type === 'repo'} style="width: 100%; height: auto; max-width: {size}px; max-height: {size}px;">
   {#if useIdenticon}
-    <Identicon seed={finalSeed} size={Number(size)} {type} />
+    <Identicon seed={finalSeed} size={Number(size)} {type} {langColor} />
   {:else}
     <img src={src} alt={username} class="avatar-img" loading="lazy" decoding="async" />
   {/if}
