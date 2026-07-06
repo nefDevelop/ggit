@@ -42,7 +42,7 @@
     if (type === 'repo') {
       // Estilo de cuadrícula simétrica para repositorios (estilo Pixel Art)
       // Generamos una matriz de 5x5, pero solo calculamos 3 columnas y espejamos
-      const gridColor = palette[hash % palette.length];
+      const gridColor = contrastColor || palette[hash % palette.length];
       const gridHash = hash.toString(2).padStart(15, '0'); // Necesitamos 15 bits para 3x5
       
       for (let i = 0; i < 5; i++) { // Filas
@@ -83,6 +83,15 @@
   const langBgColor = $derived(langColor
     ? `rgba(${parseInt(langColor.slice(1,3), 16)}, ${parseInt(langColor.slice(3,5), 16)}, ${parseInt(langColor.slice(5,7), 16)}, 0.7)`
     : '');
+  const contrastColor = $derived(langColor
+    ? (() => {
+        const r = parseInt(langColor.slice(1,3), 16);
+        const g = parseInt(langColor.slice(3,5), 16);
+        const b = parseInt(langColor.slice(5,7), 16);
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance > 0.5 ? '#1a1a2e' : '#ffffff';
+      })()
+    : '');
 </script>
 
 <svg
@@ -109,7 +118,7 @@
   <g clip-path="url(#{clipId})">
     {#if type === 'repo'}
       {#each shapes as s}
-        <rect x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} fill-opacity="0.8" />
+        <rect x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} fill-opacity={langColor ? '0.55' : '0.8'} />
       {/each}
     {:else}
       {#each shapes as s}
