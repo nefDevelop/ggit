@@ -130,6 +130,27 @@
             <span class="switch-slider"></span>
           </label>
         </div>
+
+        <div class="toggle-row">
+          <div class="row-info">
+            <div class="row-title">
+              <span class="material-symbols-rounded">bar_chart</span>
+              Barra de Lenguajes
+            </div>
+            <p class="row-desc">Muestra la barra de lenguajes en la lista de repositorios del dashboard.</p>
+          </div>
+          <label class="premium-switch">
+            <input 
+              type="checkbox" 
+              checked={userPrefs.current.showLangBar} 
+              onchange={() => {
+                userPrefs.current.showLangBar = !userPrefs.current.showLangBar;
+                userPrefs.save();
+              }}
+            />
+            <span class="switch-slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 

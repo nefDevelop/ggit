@@ -15,6 +15,7 @@ import Copy from "lucide-svelte/icons/copy";
   import { getLanguageColor } from '$lib/utils/languages';
   import { goto } from '$app/navigation';
   import { timeAgo } from '$lib/utils/date';
+  import { userPrefs } from '$lib/settings.svelte';
 
   let { repo, isOlder = false } = $props();
 
@@ -79,7 +80,7 @@ import Copy from "lucide-svelte/icons/copy";
 
     <!-- REAL MINI LANGUAGE BAR ABOVE DESCRIPTION -->
     {#if langEntries().length > 0}
-      <div class="mini-lang-bar">
+      <div class="mini-lang-bar" class:dimmed={!userPrefs.current.showLangBar}>
         {#each langEntries() as lang}
           <div class="lang-segment" style="width: {lang.percent}%; background: {lang.color}" title="{lang.name} {lang.percent}%"></div>
         {/each}
@@ -99,7 +100,7 @@ import Copy from "lucide-svelte/icons/copy";
     </div>
   </div>
 
-  {#if repo.language}
+  {#if userPrefs.current.showLangBar && repo.language}
     <div class="tech-info">
       <div class="lang">
         <span class="lang-dot" style="background-color: {getLanguageColor(repo.language)}"></span>
@@ -217,6 +218,9 @@ import Copy from "lucide-svelte/icons/copy";
     overflow: hidden;
     background: var(--md-sys-color-surface-variant);
     margin: 0.1rem 0;
+  }
+  .mini-lang-bar.dimmed {
+    opacity: 0.25;
   }
   .lang-segment { height: 100%; }
 
