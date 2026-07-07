@@ -1,100 +1,82 @@
-![ggit-brand](https://user-images.githubusercontent.com/2946214/146899259-6a8b58ad-8d6e-40d2-ab02-79dc6aadabbf.png)
+<div align="center">
+  <h1>ggit 🚀</h1>
+  <p><strong>A Modern, Ultra-Lightweight, and Secure Self-Hosted Git Service</strong></p>
+</div>
 
-[![GitHub Workflow Status](https://img.shields.io/github/checks-status/ggit/ggit/main?logo=github&style=for-the-badge)](https://github.com/ggit/ggit/actions?query=branch%3Amain) [![Sourcegraph](https://img.shields.io/badge/view%20on-Sourcegraph-brightgreen.svg?style=for-the-badge&logo=sourcegraph)](https://sourcegraph.com/github.com/ggit/ggit)
-
-👉 Deploy on DigitalOcean and [get $200 in free credits](https://m.do.co/c/5aeb02268b55)!
+---
 
 ## 🔮 Vision
 
-The Ggit (`/gɑgz/`) project aims to build a simple, stable and extensible self-hosted Git service that can be set up in the most painless way. With Go, this can be done with an independent binary distribution across all platforms that Go supports, including Linux, macOS, Windows and ARM-based systems.
+The **ggit** project is a complete modernization of a legacy Git service, rebuilt from the ground up for the modern era. Powered by **Go (Gin)** on the backend and **SvelteKit** on the frontend, `ggit` aims to be the most painless, fastest, and most resource-efficient self-hosted Git service available.
 
-## 📡 Overview
+We embrace a **Minimalist & Lean** philosophy: dropping heavy dependencies, standardizing on **SQLite**, and shifting rendering to the client to drastically reduce the binary footprint and server RAM usage.
 
-- Please visit [our home page](https://ggit.io) for user documentation.
-- Please refer to [CHANGELOG.md](CHANGELOG.md) for list of changes in each releases.
-- Want to try it before doing anything else? Do it [online](https://try.ggit.io/ggit/ggit)!
-- Having trouble? Help yourself with [troubleshooting](https://ggit.io/asking/troubleshooting) or ask questions in [Discussions](https://github.com/ggit/ggit/discussions).
-- Want to help with localization? Check out the [localization documentation](https://ggit.io/advancing/localization).
-- Ready to get hands dirty? Read our [contributing guide](.github/CONTRIBUTING.md).
-- Hmm... What about APIs? We have experimental support with [documentation](https://ggit.io/api-reference).
+## ✨ Features
 
-## 💌 Features
+### 🚀 Modern Architecture
+- **SvelteKit Frontend**: Completely decoupled from Go templates. Uses a modern, reactive UI with Material 3 Expressive design, glassmorphism, and deep theme support (Deep Night, Ayu, Monokai, Nord).
+- **Go + Gin Backend**: Pure Go approach. Replaced heavy legacy libraries with standard library implementations (`log/slog`, native `errors`, `goccy/go-json`) for maximum performance.
+- **SQLite Only**: We dropped support for MySQL/PostgreSQL to focus entirely on an ultra-optimized SQLite experience (WAL mode, high concurrency, low footprint).
 
-- User dashboard, user profile and activity timeline.
-- Access repositories via SSH, HTTP and HTTPS protocols.
-- User, organization and repository management.
-- Repository and organization webhooks.
-- Repository Git hooks, deploy keys and Git LFS.
-- Repository issues, pull requests, wiki, protected branches and collaboration.
-- Migrate repositories with wiki from other code hosts.
-- Web editor for quick editing repository files and wiki.
-- Jupyter Notebook and PDF rendering.
-- Authentication via SMTP, LDAP, reverse proxy, GitHub.com and GitHub Enterprise with 2FA.
-- Customize HTML templates, static files and many others.
-- Rich database backend support, including PostgreSQL, SQLite3 or any database backend that speaks one of those protocols.
-- Have localization over [31 languages](https://crowdin.com/project/ggit).
+### ⚡ ggit vs Legacy Gogs
+If you are coming from Gogs, `ggit` is a massive leap forward. Here is what `ggit` introduces:
+- **Code Review & Branch Protection**: Built-in pull request approvals, turn-based reviewing (Semáforo de turno), and inline diff commenting.
+- **Docs-as-Code (No more `.wiki.git`)**: Wikis are automatically generated from a `/docs` folder right inside your main repository.
+- **Kanban & Unified Inbox**: Manage issues with virtual Kanban boards and track multi-repo tasks from a single inbox.
+- **Anti-OOM & Self-Healing**: Dynamic Git process limiting based on available RAM, and automatic repair of missing Git hooks.
+- **Secret Guardian**: Proactive detection of secrets (API keys, `.env` files) before they are even pushed to the repository.
+- **Zero Server-Side Rendering**: Markdown, syntax highlighting, and UI are fully rendered on the client to save server CPU/RAM.
 
-## 💾 Hardware requirements
+### 🛡️ Security & Integrity (Top Priority)
+**Security and robust file handling are our core principles.** We mandate exhaustive testing for all features:
+- **Comprehensive Testing**: All operations undergo strict testing for success, failure, and malicious inputs.
+- **File System & DB Integrity**: We use a **Two-Phase Commit (2PC)** pattern for atomic consistency between SQLite and the file system. Write and delete operations are strictly verified.
+- **Secret Guardian**: Proactive detection of secrets (API keys, `.env` files) during Git pushes.
+- **Blindaje Anti-OOM**: Dynamic resource monitoring and Git concurrency limits based on available RAM.
+- **Webhooks & Network Security**: HMAC-SHA256 payload signing and strict SSRF mitigation.
 
-- A Raspberry Pi or $5 Digital Ocean Droplet is more than enough to get you started. Some even use 64MB RAM Docker [CaaS](https://www.docker.com/blog/containers-as-a-service-caas/).
-- 2 CPU cores and 512MB RAM would be the baseline for teamwork.
-- Increase CPU cores when your team size gets significantly larger, memory footprint remains low.
+### 🛠️ Developer Productivity
+- **Code Review & Branch Protection**: Require PRs, inline commenting, and approval workflows.
+- **Docs-as-Code**: Legacy wikis have been replaced by a dynamic "Wiki-Folder" system (reading from `/docs` or `.docs` directly from your repository).
+- **Unified Inbox & Kanban**: Manage issues with virtual Kanban boards and track all your tasks across repositories in one place.
+- **Integrated Gists & Technotes**: Built-in support for code snippets and ADRs (Architecture Decision Records).
 
-## 💻 Browser support
+## 🛠️ Tech Stack
 
-- Please see [Semantic UI](https://github.com/Semantic-Org/Semantic-UI#browser-support) for specific versions of supported browsers.
-- The smallest resolution officially supported is **1024\*768**, however the UI may still look right in smaller resolutions, but no promises or fixes.
+### Frontend
+- **Framework**: [Svelte 5](https://svelte.dev/) + [SvelteKit](https://kit.svelte.dev/).
+- **Tooling**: [Vite 8](https://vitejs.dev/) (Bundler), [TypeScript 6](https://www.typescriptlang.org/).
+- **UI & Markdown**: [Lucide Svelte](https://lucide.dev/) (Icons), [Marked](https://marked.js.org/) + [DOMPurify](https://github.com/cure53/DOMPurify) (Client-side markdown rendering), [Highlight.js](https://highlightjs.org/) (Syntax highlighting).
+- **Validation**: [Zod](https://zod.dev/) for robust client-side schemas.
+- **Testing**: [Vitest](https://vitest.dev/) (Unit) + [Playwright](https://playwright.dev/) (E2E).
 
-## 📜 Installation
+### Backend
+- **Core**: [Go 1.25+](https://go.dev/).
+- **Web Framework**: [Gin](https://github.com/gin-gonic/gin) for high-performance routing.
+- **Database**: [GORM](https://gorm.io/) with a Pure Go [SQLite](https://github.com/glebarez/sqlite) driver.
+- **Performance & Observability**: [OpenTelemetry](https://opentelemetry.io/) for tracing, `slog` for structured logging, `goccy/go-json` for ultra-fast JSON processing.
 
-Please follow [the guide in our documentation](https://ggit.io/getting-started/installation).
+## 💾 Hardware Requirements
 
-### Deploy to cloud
+`ggit` is designed to run on a potato. 
+- **Minimum**: A Raspberry Pi or a $5 VPS (512MB RAM, 1 CPU core) is more than enough for small teams.
+- **Optimization**: Thanks to our aggressive removal of background workers, OOM protections, and L2 cache trimming, `ggit` maintains a near-zero idle RAM footprint.
 
-- [Cloudron](https://www.cloudron.io/store/io.ggit.cloudronapp.html)
-- [YunoHost](https://github.com/YunoHost-Apps/ggit_ynh)
-- [alwaysdata](https://www.alwaysdata.com/en/marketplace/ggit/)
+## 📦 Installation
 
-### Tutorials
+*(Installation instructions are currently being updated for the new SvelteKit + Gin architecture. Stay tuned!)*
 
-- [Private Git Web Portal in Raspberry PI With Ggit](https://peppe8o.com/private-git-web-portal-in-raspberry-pi-with-ggit/)
-- [How To Set Up Ggit on Ubuntu 14.04](https://www.digitalocean.com/community/tutorials/how-to-set-up-ggit-on-ubuntu-14-04)
-- [Run your own GitHub-like service with the help of Docker](https://blog.hypriot.com/post/run-your-own-github-like-service-with-docker/)
-- [Dockerized Ggit git server and alpine postgres in 20 minutes or less](https://garthwaite.org/docker-ggit.html)
-- [Host Your Own Private GitHub with Ggit](https://eladnava.com/host-your-own-private-github-with-ggit-io/)
-- [使用 Ggit 搭建自己的 Git 服务器](https://blog.mynook.info/post/host-your-own-git-server-using-ggit/) (Chinese)
-- [阿里云上 Ubuntu 14.04 64 位安装 Ggit](https://my.oschina.net/luyao/blog/375654) (Chinese)
-- [Installing Ggit on FreeBSD](https://www.codejam.info/2015/03/installing-ggit-on-freebsd.html)
-- [How to install Ggit on a Linux Server (DigitalOcean)](https://www.youtube.com/watch?v=deSfX0gqefE)
+For development, you can run the backend and frontend separately:
+1. **Backend**: `go run main.go`
+2. **Frontend**: `cd frontend && npm install && npm run dev`
 
-## 📦 Software, service and product support
+## 🧪 Testing Guidelines
 
-- [Jenkins](https://plugins.jenkins.io/ggit-webhook/) (CI)
-- [Puppet](https://forge.puppet.com/modules/Siteminds/ggit) (IT)
-- [Synology](https://www.synology.com) (Docker)
-- [Syncloud](https://syncloud.org/) (App Store)
-
-## 🙇‍♂️ Acknowledgments
-
-<p>This project is proudly supported by:</p>
-<p>
-  <a href="https://m.do.co/c/5aeb02268b55">
-    <img src="https://opensource.nyc3.cdn.digitaloceanspaces.com/attribution/assets/SVG/DO_Logo_horizontal_blue.svg" width="201px">
-  </a>
-</p>
-
-Other acknowledgments:
-
-- Thanks [Egon Elbre](https://twitter.com/egonelbre) for designing the original version of the logo.
-- Thanks [Mintlify](https://mintlify.com) for sponsoring open source documentation plan.
-- Thanks [Crowdin](https://crowdin.com) for sponsoring open source translation plan.
-- Thanks [Buildkite](https://buildkite.com) for sponsoring open source CI/CD plan.
-
-## 👋 Contributors
-
-- See [contributors page](https://github.com/ggit/ggit/graphs/contributors) for top 100 contributors.
-- See [TRANSLATORS](conf/locale/TRANSLATORS) for public list of translators.
+Contributors **must** follow our strict testing philosophy:
+- **Exhaustive Scenarios**: Tests must cover "happy paths" (success), edge cases (failures), and malicious attempts.
+- **Security First**: Any feature involving authentication, authorization, or cryptography must have rigorous security tests.
+- **File Operations**: Features involving reading, writing, or deleting files on the host system are critical. They must have robust tests simulating permission errors, path traversals, and disk full scenarios.
 
 ## ⚖️ License
 
-This project is under the MIT License. See the [LICENSE](https://github.com/ggit/ggit/blob/main/LICENSE) file for the full license text.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for the full license text.
