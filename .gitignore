@@ -43,3 +43,12 @@ Thumbs.db
 internal/database/test-user/test-repo.git/hooks/post-receive
 internal/database/test-user/test-repo.git/hooks/pre-receive
 internal/database/test-user/test-repo.git/hooks/update
+
+# pm/ o cualquier otro gestor de paquetes
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Logs
+log/
+*.log
