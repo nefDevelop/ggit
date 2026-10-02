@@ -1,0 +1,72 @@
+# NOTICE
+
+Ggit es un **fork de [Gogs](https://github.com/gogs/gogs)**, no un proyecto
+independiente. Gogs se distribuye bajo licencia MIT, y este fork también. Ver [LICENSE](LICENSE).
+
+No hay relación institucional ni de patrocinio con el proyecto Gogs ni con
+ninguna de las personas que lo mantienen.
+
+## Upstream
+
+- **Proyecto:** Gogs
+- **Autoría:** The Gogs Authors, con Joe Chen (`jc@unknwon.io`) como autor principal
+- **Licencia:** MIT
+- **Origen:** <https://github.com/gogs/gogs>
+- **Base de la importación:** Gogs, importado el 2026-04-15 en el commit
+  `fafdda7` (2.521 ficheros, 351.500 líneas, en un único commit)
+
+El `.mailmap` del repositorio se conserva tal cual, con las identidades de Joe
+Chen mapeadas a su forma canónica. **No se modifica**: es lo que garantiza que los
+commits importados se atribuyan a Gogs y no a este fork.
+
+## Qué procede de Gogs
+
+Prácticamente todo el backend. El árbol de este repositorio tiene 343 ficheros Go
+y 61.222 líneas, frente a las 282 y 63.070 de Gogs v0.13.2. Ningún fichero Go es
+byte-idéntico al de Gogs: la importación reescribió las rutas de importación de
+`gogs.io/gogs` a `github.com/nef734/ggit` y después se migró el framework web.
+
+Al importar el código se quitaron los comentarios de cabecera
+`// Copyright 2020 The Gogs Authors` de los ficheros individuales. La licencia
+vive en el fichero `LICENSE` de la raíz, que es donde remitían esas propias
+cabeceras. Si alguna vez hay que volver a distribuirlos, deben llevar también la
+cabecera.
+
+## Qué se ha añadido o reescrito
+
+Estas son las diferencias de arquitectura, no una lista de correcciones sueltas.
+Cada una es una migración de un subsistema completo.
+
+### Backend
+
+| Cambio | Antes (Gogs) | Ahora |
+| :--- | :--- | :--- |
+| Framework HTTP | Macaron (`go-macaron/binding`) | **Gin v1.12** |
+| Persistencia | XORM | **GORM**, 13 migraciones nuevas (v20-v33) con `AutoMigrate` |
+| Base de datos | MySQL, PostgreSQL, SQLite, MSSQL | **Solo SQLite**, con WAL y `Max OpenConns: 1` |
+| API | v1 | **v2**, unas 20 rutas nuevas con sus tests |
+| Plantillas | Go templates renderizados en servidor | **Eliminadas** |
+| Capa de dominio | Acceso directo a la base de datos desde los handlers | **`internal/services/`**: auth, backup, guardian, health, issue, janitor, repo |
+
+### Frontend
+
+Gogs no tiene directorio `frontend/`. Este fork tiene uno propio: **SvelteKit 2 +
+Svelte 5**, 205 componentes, con Playwright para E2E, Vitest para unitarios, MSW
+para el mocking de red y testing-library. La API se consume por HTTP en lugar de
+por renders en servidor.
+
+### Funcionalidad propia
+
+- **Docs-as-Code.** La documentación vive en `docs/` y se sirve desde ahí, no
+  desde un repositorio `.wiki.git` aparte.
+- **Code Review.** Aprobaciones por turnos y comentarios en línea sobre el diff,
+  con protección de rama.
+- **Kanban e Inbox unificado.** Vistas de trabajo multi-repositorio.
+- **Secret Guardian.** Detección proactiva de claves de API y `.env` en los
+  pushes.
+
+## Nombre y marca
+
+`ggit` es un nombre propio. Este proyecto no usa la marca ni el logotipo de Gogs,
+y no afirma compatibilidad oficial con Gogs más allá de heredar su formato de
+repositorio y su base de código.

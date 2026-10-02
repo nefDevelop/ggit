@@ -1,2 +1,5 @@
 # Default
-* @gogs/core
+# Dueño de este fork. Antes decía @gogs/core, un equipo del repositorio
+# upstream que no existe aquí: las CODEOWNERS solo tienen efecto sobre el
+# repositorio en el que viven, así que esa regla nunca asignó nada.
+* @nef734

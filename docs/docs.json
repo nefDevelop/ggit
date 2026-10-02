@@ -4,18 +4,20 @@
   "fonts": {
     "family": "DM Sans"
   },
-  "name": "Gogs: A painless self-hosted Git service",
+  "name": "ggit: forge Git autoalojada",
   "colors": {
-    "primary": "#e45858",
-    "light": "#e45858",
-    "dark": "#e53170"
+    "primary": "#4f46e5",
+    "light": "#4f46e5",
+    "dark": "#6366f1"
   },
   "api": {
     "playground": {
       "display": "simple"
     },
     "examples": {
-      "languages": ["curl"]
+      "languages": [
+        "curl"
+      ]
     }
   },
   "favicon": "/images/favicon.svg",
@@ -28,6 +30,12 @@
       {
         "tab": "Docs",
         "groups": [
+          {
+            "group": "Sobre este proyecto",
+            "pages": [
+              "ggit/Added"
+            ]
+          },
           {
             "group": "Getting started",
             "pages": [
@@ -244,11 +252,17 @@
     }
   },
   "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude"]
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
   },
   "integrations": {
     "plausible": {
       "domain": "gogs.io"
     }
-  }
+  },
+  "description": "ggit es un fork de Gogs con el backend migrado de Macaron a Gin, persistencia en GORM sobre SQLite, y un frontend SvelteKit desacoplado."
 }

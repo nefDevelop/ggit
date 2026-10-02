@@ -1,4 +1,5 @@
-Copyright (c) The Ggit Authors
+Copyright (c) The Gogs Authors
+Copyright (c) 2026 nef734 (ggit contributors)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -15,5 +16,14 @@ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+Este proyecto es un fork de Gogs (https://github.com/gogs/gogs), que se distribuye
+bajo la misma licencia MIT. La línea "Copyright (c) The Gogs Authors" se mantiene
+porque el MIT exige conservar el aviso de copyright original en todas las copias
+o partes sustanciales del software, y la mayor parte de este árbol lo es.
+
+Consulta NOTICE para el detalle de qué procede de Gogs y qué se ha añadido.

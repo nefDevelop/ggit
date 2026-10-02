@@ -64,7 +64,7 @@
 
 | # | Problema | Archivo | Detalle |
 |---|----------|---------|---------|
-| 34 | Artefactos del migration | `fix_imports.py`, `migrate_errors.py`, `scratch_test_ignores.go`, `package-lock.json` raíz | Scripts y archivos sobrantes del fork |
+| 34 | Artefactos del migration | — | Resuelto: se eliminaron `fix_imports.py`, `migrate_errors.py`, `scratch_test_ignores.go`, `SELECT`, `temporary_features.md`, el `package-lock.json` raíz y el symlink `log -> /data/log`, que al clonar creaba un enlace a una ruta inexistente en otra máquina |
 | 35 | Debug prints en producción | `ginx/template.go:17,53,58` | `fmt.Printf("[DEBUG]")` en template setup |
 | 36 | Trace logging excesivo | `route/api/v2/repo.go` | 15+ `log.Trace()` en handler de alta frecuencia |
 | 37 | README desactualizado | `README.md` | Referencias a `ggit.io`, enlaces rotos |
