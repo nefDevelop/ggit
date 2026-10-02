@@ -123,8 +123,10 @@ import AlertTriangle from "lucide-svelte/icons/alert-triangle";
     try {
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings`, {
         method: "DELETE",
+        body: JSON.stringify({ name: deleteConfirm }),
       });
       if (res.ok) {
+        toast.success("Repositorio eliminado correctamente");
         goto("/dashboard");
       }
     } catch (e) {

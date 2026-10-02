@@ -48,9 +48,17 @@ const mockToast = vi.hoisted(() => ({
   info: vi.fn(),
   warning: vi.fn(),
 }));
+const mockDialog = vi.hoisted(() => ({
+  confirm: vi.fn(async () => true),
+  prompt: vi.fn(async () => null),
+  alert: vi.fn(async () => undefined),
+}));
+const mockGoto = vi.hoisted(() => vi.fn());
 
 vi.mock('$lib/api', () => ({ apiFetch: mockApiFetch }));
 vi.mock('$lib/toast.svelte', () => ({ toast: mockToast }));
+vi.mock('$lib/dialog.svelte', () => ({ dialog: mockDialog }));
+vi.mock('$app/navigation', () => ({ goto: mockGoto }));
 
 function setupDefaultMocks() {
   mockApiFetch.mockImplementation((_url: string, options?: any) => {
@@ -85,6 +93,7 @@ function setupDefaultMocks() {
 beforeEach(() => {
   vi.clearAllMocks();
   setupDefaultMocks();
+  mockDialog.confirm.mockResolvedValue(true);
 });
 
 describe('RepoSettingsGeneral', () => {
@@ -183,5 +192,66 @@ describe('RepoSettingsGeneral', () => {
     await waitFor(() => {
       expect(mockToast.success).not.toHaveBeenCalled();
     });
+  });
+
+  it('sends the confirmation name in the DELETE body', async () => {
+    // El handler DeleteRepository exige {"name": "<repo>"} y responde 400 sin cuerpo.
+    mockApiFetch.mockImplementation((_url: string, options?: any) => {
+      if (options?.method === 'DELETE') {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          json: async () => ({ status: 'ok' }),
+          headers: new Headers({ 'content-type': 'application/json' }),
+          text: async () => '{"status":"ok"}',
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => mockSettings,
+        headers: new Headers({ 'content-type': 'application/json' }),
+        text: async () => JSON.stringify(mockSettings),
+      });
+    });
+
+    render(RepoSettingsGeneralWrapper, { props: { repoContext } });
+
+    const confirmInput = await screen.findByPlaceholderText(
+      'Escribe el nombre del repositorio para confirmar',
+    );
+    await fireEvent.input(confirmInput, { target: { value: 'test-repo' } });
+
+    const deleteBtn = await screen.findByText('Eliminar Repositorio');
+    await waitFor(() => expect(deleteBtn).not.toBeDisabled());
+    await fireEvent.click(deleteBtn);
+
+    await waitFor(() => {
+      const del = mockApiFetch.mock.calls.find(
+        (c: any[]) => typeof c[0] === 'string' && c[1]?.method === 'DELETE' && c[0].includes('/settings'),
+      );
+      expect(del).toBeTruthy();
+      expect(del![0]).toContain('/testuser/test-repo/settings');
+      expect(JSON.parse(del![1].body)).toEqual({ name: 'test-repo' });
+    });
+
+    expect(mockGoto).toHaveBeenCalledWith('/dashboard');
+  });
+
+  it('does not call DELETE when the confirmation name does not match', async () => {
+    render(RepoSettingsGeneralWrapper, { props: { repoContext } });
+
+    const confirmInput = await screen.findByPlaceholderText(
+      'Escribe el nombre del repositorio para confirmar',
+    );
+    await fireEvent.input(confirmInput, { target: { value: 'otro-repo' } });
+
+    const deleteBtn = await screen.findByText('Eliminar Repositorio');
+    expect(deleteBtn).toBeDisabled();
+    await fireEvent.click(deleteBtn);
+
+    expect(
+      mockApiFetch.mock.calls.some((c: any[]) => c[1]?.method === 'DELETE'),
+    ).toBe(false);
   });
 });
