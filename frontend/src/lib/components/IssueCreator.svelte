@@ -22,7 +22,9 @@
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/issues`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body }),
+        // CreateIssueOptions binds "content"; "body" arrived empty and every
+        // issue was created with an empty description.
+        body: JSON.stringify({ title, content: body }),
       });
       if (res.ok) {
         const data = await res.json();

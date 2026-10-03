@@ -37,11 +37,17 @@ type CreateCommentOptions struct {
 }
 
 // UpdateIssueOptions contiene los datos para actualizar un issue.
+// UpdateIssueOptions carries a partial update of an issue.
+//
+// The json tags are load bearing. encoding/json matches field names case
+// insensitively but does not ignore underscores, so a client sending
+// "milestone_id" or "assignee_id" silently binds nothing against an untagged
+// field and the update is accepted while changing nothing.
 type UpdateIssueOptions struct {
-	Title       *string
-	Content     *string
-	MilestoneID *int64
-	AssigneeID  *int64
-	IsClosed    *bool
-	Deadline    *time.Time
+	Title       *string    `json:"title"`
+	Content     *string    `json:"content"`
+	MilestoneID *int64     `json:"milestone_id"`
+	AssigneeID  *int64     `json:"assignee_id"`
+	IsClosed    *bool      `json:"is_closed"`
+	Deadline    *time.Time `json:"deadline"`
 }

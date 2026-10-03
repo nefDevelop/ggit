@@ -91,11 +91,33 @@
   }
 
   async function updateIssue(patch: any) {
+    if (!repo?.data?.owner?.username || !repo?.data?.name) return;
+
+    // Labels have their own endpoints. UpdateIssueOptions has no LabelIDs field,
+    // so sending label_ids to the issue route bound nothing and the change was
+    // silently dropped.
+    if (patch && Array.isArray(patch.label_ids)) {
+      const labelsRes = await apiFetch(
+        `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/labels`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ labels: patch.label_ids }),
+        },
+      );
+      // ReplaceLabels responde 204 sin cuerpo, asi que no hay nada que
+      // deserializar: hay que volver a pedir el issue para reflejar el cambio.
+      if (labelsRes.ok) await fetchIssueDetail();
+      return;
+    }
+
     try {
       const res = await apiFetch(
         `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}`,
         {
-          method: "PATCH",
+          // The route is registered as PUT. With PATCH the request came back
+          // 405 and no issue field could be edited from the sidebar.
+          method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(patch),
         },

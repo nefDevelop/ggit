@@ -56,10 +56,10 @@
   async function deleteEmail(email: string) {
     if (!await dialog.confirm(`¿Seguro que quieres eliminar ${email}?`)) return;
     try {
-      const res = await apiFetch("/api/v2/user/settings/emails", {
+      // El handler lee el correo de la query, no del cuerpo: con body la
+      // peticion llegaba con el parametro vacio y no borraba nada.
+      const res = await apiFetch(`/api/v2/user/settings/emails?email=${encodeURIComponent(email)}`, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
       });
       if (res.ok) fetchEmails();
     } catch (e) { console.error(e); }
@@ -67,10 +67,8 @@
 
   async function makePrimary(email: string) {
     try {
-      const res = await apiFetch("/api/v2/user/settings/emails/primary", {
+      const res = await apiFetch(`/api/v2/user/settings/emails/primary?email=${encodeURIComponent(email)}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
       });
       if (res.ok) fetchEmails();
     } catch (e) { console.error(e); }
