@@ -128,8 +128,8 @@ describe('RepoSettingsGeneral', () => {
       const settingsCall = mockApiFetch.mock.calls.find((c: any[]) =>
         typeof c[0] === 'string' && c[0].includes('/settings'),
       );
-      expect(settingsCall).toBeTruthy();
-      expect(settingsCall[0]).toContain('/testuser/test-repo/settings');
+      expect(settingsCall).toBeDefined();
+      expect(settingsCall![0]).toContain('/testuser/test-repo/settings');
     });
   });
 
@@ -146,8 +146,8 @@ describe('RepoSettingsGeneral', () => {
       const patch = mockApiFetch.mock.calls.find(
         (c: any[]) => typeof c[0] === 'string' && c[0].includes('/settings') && c[1]?.method === 'PATCH',
       );
-      expect(patch).toBeTruthy();
-      const body = JSON.parse(patch[1].body);
+      expect(patch).toBeDefined();
+      const body = JSON.parse(patch![1].body);
       expect(body.description).toBe('Updated description');
       expect(body.name).toBe('test-repo');
     });

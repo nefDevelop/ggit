@@ -64,11 +64,6 @@
   let message = $state('');
   let error = $state('');
 
-  function getCsrfToken() {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
-    return match ? match[2] : '';
-  }
 
   async function fetchProfile() {
     try {

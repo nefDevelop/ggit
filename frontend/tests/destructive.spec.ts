@@ -4,10 +4,10 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 
 // Repository storage layout is <repo root>/<owner>/<lowercase repo>.git, see
-// repox.RepositoryPath. The E2E Makefile points REPO_ROOT_PATH at a throwaway
-// directory, so asserting on disk here cannot touch real data.
+// repox.RepositoryPath. The E2E Makefile redirects ROOT under data/test-e2e/, so
+// asserting on disk here cannot touch real data.
 const specDir = dirname(fileURLToPath(import.meta.url));
-const repoRootOnDisk = resolve(specDir, '../../ggit-repositories-test');
+const repoRootOnDisk = resolve(specDir, '../../data/test-e2e/repositories');
 const diskPath = (owner: string, repo: string) =>
   resolve(repoRootOnDisk, owner, `${repo.toLowerCase()}.git`);
 

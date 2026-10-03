@@ -88,7 +88,7 @@ import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
 </script>
 
 <div class="diff-viewer">
-  <DiffStats files={diff?.Files?.length || 0} {totalAdditions} {totalDeletions} />
+  <DiffStats files={diff?.Files?.length || 0} additions={totalAdditions} deletions={totalDeletions} />
 
   <div class="diff-files">
     {#each diff?.Files || [] as file}

@@ -83,9 +83,22 @@ test-e2e: clean-ports build
 	@mkdir -p data
 	@# Crear config temporal para tests
 	@cp conf/app.ini conf/app.test.ini
-	@sed -i -e 's|/data/data|data/data|g' \
-	        -e 's|data/repositories|ggit-repositories-test|g' \
-	        -e 's|data/data/ggit.db|data/ggit.test.db|g' conf/app.test.ini
+		@# Every data path is redirected under data/test-e2e/. The previous
+		@# patterns were "data/data/ggit.db" and "data/repositories", but the values
+		@# in app.ini are "data/ggit.db" and "data/repositories", so the database
+		@# substitution never matched: the suite ran against data/ggit.db, the real
+		@# one, while "rm -rf data/ggit.test.db" deleted a file nobody used. Two
+		@# independent things had to be true for this to stay fixed, so the paths
+		@# are now rewritten as a group and asserted below.
+	@sed -i -E \
+	        -e 's#^([[:space:]]*(APP_DATA_PATH|PATH|PROVIDER_CONFIG|OBJECTS_PATH|OBJECTS_TEMP_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH|ROOT)[[:space:]]*=[[:space:]]*)data/#\1data/test-e2e/#' \
+	        -e 's#^([[:space:]]*ROOT[[:space:]]*=[[:space:]]*)data/repositories#\1data/test-e2e/repositories#' \
+	        conf/app.test.ini
+	@# Fail loudly rather than run against the developer's database again.
+	@grep -qE '^[[:space:]]*PATH[[:space:]]*=[[:space:]]*data/test-e2e/ggit\.db' conf/app.test.ini \
+	    || { echo "ERROR: la base de datos de test no quedo aislada"; exit 1; }
+	@! grep -qE '^[[:space:]]*(PATH|ROOT|APP_DATA_PATH|PROVIDER_CONFIG|OBJECTS_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH)[[:space:]]*=[[:space:]]*data/(ggit\.db|repositories|data|attachments|avatars|repo-avatars|lfs-objects|tmp)([[:space:]]*)$$' conf/app.test.ini \
+	    || { echo "ERROR: queda una ruta de datos real en app.test.ini"; grep -nE '^[[:space:]]*(PATH|ROOT|APP_DATA_PATH|PROVIDER_CONFIG|OBJECTS_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH)[[:space:]]*=' conf/app.test.ini; exit 1; }
 	@echo "[security]" >> conf/app.test.ini
 	@echo "INSTALL_LOCK = true" >> conf/app.test.ini
 	@echo "ENABLE_CSRF = false" >> conf/app.test.ini
@@ -95,9 +108,8 @@ test-e2e: clean-ports build
 	@echo "REQUIRE_SIGNIN_VIEW = false" >> conf/app.test.ini
 	@echo "[server]" >> conf/app.test.ini
 	@echo "HTTP_PORT = 3006" >> conf/app.test.ini
-	@rm -rf data/ggit.test.db
-	@rm -rf ggit-repositories-test
-	@mkdir -p ggit-repositories-test
+	@rm -rf data/test-e2e
+	@mkdir -p data/test-e2e/repositories
 	@rm -rf frontend/tests/.auth/*
 	@rm -rf .bin/data # Limpiar rastro de ejecuciones fallidas
 	@echo "Asegurando usuario admin para tests..."

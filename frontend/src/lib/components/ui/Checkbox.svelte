@@ -10,10 +10,6 @@
 
   let { checked = $bindable(), label, description, onchange, class: className, simple = false }: Props = $props();
 
-  function toggle() {
-    checked = !checked;
-    if (onchange) onchange(checked);
-  }
 </script>
 
 <label class="checkbox-container {className}" class:simple>

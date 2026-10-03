@@ -30,11 +30,22 @@ func Init(db *database.DB) {
 }
 
 func (s *issueService) CreateIssue(ctx context.Context, repo *database.Repository, issue *database.Issue, opts CreateIssueOptions) error {
+	// The domain object is kept because the store assigns the index on it, and
+	// that value has to travel back to the caller. It was being built inline and
+	// dropped, which left this issue at index zero: the notification below read
+	// "0|title" and the API answered number: 0.
+	dIssue := issue.ToDomain()
+
 	// 1. Crear el issue en la base de datos (puro)
-	err := s.db.Issues().Create(ctx, repo.ToDomain(), issue.ToDomain(), opts.LabelIDs, opts.Attachments)
+	err := s.db.Issues().Create(ctx, repo.ToDomain(), dIssue, opts.LabelIDs, opts.Attachments)
 	if err != nil {
 		return err
 	}
+
+	issue.Index = dIssue.Index
+	issue.ID = dIssue.ID
+	issue.Created = dIssue.Created
+	issue.Updated = dIssue.Updated
 
 	// 2. Orquestación de efectos secundarios
 	if err = database.NotifyWatchers(&database.Action{

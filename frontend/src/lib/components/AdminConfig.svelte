@@ -1,5 +1,6 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
+  import { toast } from "$lib/toast.svelte";
   import { onMount } from "svelte";
   import { i18n } from '$lib/i18n.svelte';
   import Card from './ui/Card.svelte';
@@ -77,11 +78,22 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
   let sendingTest = $state(false);
 
   async function sendTestEmail() {
-    if (!testEmail) return;
+    if (!testEmail.trim()) return;
     sendingTest = true;
     try {
-      await apiFetch("/api/v2/admin/config/test_email", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: testEmail }) });
-    } catch (e) { console.error(e); } finally { sendingTest = false; }
+      const res = await apiFetch("/api/v2/admin/config/test_email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: testEmail }),
+      });
+      // apiFetch notifica los errores, asi que solo queda el camino feliz.
+      if (res.ok) {
+        toast.success(`Correo de prueba enviado a ${testEmail}`);
+        testEmail = "";
+      }
+    } finally {
+      sendingTest = false;
+    }
   }
 
   onMount(fetchConfig);
@@ -121,6 +133,27 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
               </div>
             </div>
           {/each}
+
+          <div class="special-action-card island">
+            <div class="action-header">
+               <Mail size={32} />
+               <h4>Probar el servicio de correo</h4>
+            </div>
+            <div class="action-body">
+               <p>Envia un correo de comprobacion con la configuracion actual. Si el envio falla, el problema esta en los datos SMTP de la seccion de arriba y no en el formulario de registro.</p>
+               <div class="field-row">
+                  <div class="field">
+                    <label for="test-email">Destinatario</label>
+                    <input id="test-email" type="email" bind:value={testEmail} placeholder="tu@correo.com" disabled={sendingTest} />
+                  </div>
+                  <div class="field">
+                    <Button variant="primary" onclick={sendTestEmail} disabled={sendingTest || !testEmail.trim()} loading={sendingTest}>
+                      {sendingTest ? 'Enviando...' : 'Enviar prueba'}
+                    </Button>
+                  </div>
+               </div>
+            </div>
+          </div>
 
           <div class="special-action-card island">
             <div class="action-header">

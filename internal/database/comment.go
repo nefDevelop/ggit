@@ -272,6 +272,13 @@ func createComment(tx *gorm.DB, opts *CreateCommentOptions) (_ *Comment, err err
 		return nil, err
 	}
 
+	// Created and Updated are gorm:"-" and only AfterFind derives them from the
+	// unix columns. A comment that has just been created never goes through
+	// AfterFind, so APIFormat on it reported year one. Setting them here means
+	// the response of a create carries the same timestamps a later read would.
+	comment.Created = time.Unix(comment.CreatedUnix, 0).Local()
+	comment.Updated = comment.Created
+
 	// Compose comment action, could be plain comment, close or reopen issue/pull request.
 	// This object will be used to notify watchers in the end of function.
 	act := &Action{

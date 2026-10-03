@@ -21,7 +21,6 @@
   let currentPage = $state<any>(null);
   let history = $state<any[]>([]);
   let loading = $state(true);
-  let saving = $state(false);
   let error = $state('');
 
   // The wiki is read only: the backend answers 501 to every write because the
@@ -37,10 +36,6 @@
     return null;
   }
 
-  function cleanContentForPreview(content: string): string {
-    if (!content) return '';
-    return content.replace(/^---[\s\S]*?\n---\n*/, '');
-  }
 
   function sortTree(items: any[]): any[] {
     return [...items].sort((a, b) => {

@@ -66,30 +66,6 @@
     }
   }
 
-  async function postComment() {
-    if (!newCommentBody.trim()) return;
-    submitting = true;
-    try {
-      const res = await apiFetch(
-        `/api/v2/${repo.data.owner.username}/${repo.data.name}/issues/${index}/comments`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ body: newCommentBody }),
-        },
-      );
-      if (res.ok) {
-        const newComment = await res.json();
-        comments = [...comments, newComment];
-        newCommentBody = "";
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      submitting = false;
-    }
-  }
-
   async function updateIssue(patch: any) {
     if (!repo?.data?.owner?.username || !repo?.data?.name) return;
 
@@ -320,19 +296,6 @@
     height: 1px;
   }
 
-  .new-comment-item textarea {
-    width: 100%;
-    min-height: 120px;
-    background: transparent;
-    border: none;
-    padding: 1.25rem;
-    color: var(--text-color);
-    font-family: inherit;
-    font-size: 1rem;
-    resize: vertical;
-    border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    outline: none;
-  }
   .comment-actions {
     padding: 0.75rem 1.25rem;
     display: flex;

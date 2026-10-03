@@ -20,7 +20,19 @@ func newIssuesStore(db *gorm.DB) *IssuesStore {
 func (s *IssuesStore) Create(ctx context.Context, repo *domain.Repository, issue *domain.Issue, labelIDs []int64, attachments []string) error {
 	mRepo := FromDomainRepository(repo)
 	mIssue := FromDomainIssue(issue)
-	return NewIssue(mRepo, mIssue, labelIDs, attachments)
+	if err := NewIssue(mRepo, mIssue, labelIDs, attachments); err != nil {
+		return err
+	}
+
+	// NewIssue assigns the index on mIssue, which is a throwaway model built here
+	// rather than the object the caller holds. Without this the caller keeps
+	// reading zero, which is what the API answered as "number": 0.
+	issue.Index = mIssue.Index
+	issue.ID = mIssue.ID
+	issue.Created = mIssue.Created
+	issue.Updated = mIssue.Updated
+
+	return nil
 }
 
 func (s *IssuesStore) GetByID(ctx context.Context, id int64) (*domain.Issue, error) {

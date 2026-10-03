@@ -5,8 +5,10 @@
 
   let { entries = [], username = "", reponame = "", branch = "", realPath = "", timeAgo }: {
     entries: any[];
-    username: string;
-    reponame: string;
+    // Optional because it has a default. SvelteKit types route params as
+    // string | undefined, so a required string prop rejected every caller.
+    username?: string;
+    reponame?: string;
     branch: string;
     realPath: string;
     timeAgo: (d: any) => string;

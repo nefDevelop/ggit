@@ -16,6 +16,10 @@
     min?: string | number;
     max?: string | number;
     step?: string | number;
+    // Helper text below the field. Both names were already being passed by
+    // callers and silently dropped, because neither existed here.
+    hint?: string;
+    description?: string;
   }
 
   let { 
@@ -34,8 +38,12 @@
     icon = '',
     min = undefined,
     max = undefined,
-    step = undefined
+    step = undefined,
+    hint = '',
+    description = ''
   }: Props = $props();
+
+  const helperText = $derived(hint || description);
   let inputId = $derived(id || `input-${Math.random().toString(36).substring(2, 9)}`);
 </script>
 
@@ -79,6 +87,10 @@
     {/if}
   </div>
 
+  {#if helperText && !error}
+    <span class="hint-text">{helperText}</span>
+  {/if}
+
   {#if error}
     <span class="error-text">{error}</span>
   {/if}
@@ -95,6 +107,12 @@
   .label {
     font-size: 0.9rem;
     font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-left: 0.25rem;
+  }
+
+  .hint-text {
+    font-size: 0.8rem;
     color: var(--md-sys-color-on-surface-variant);
     margin-left: 0.25rem;
   }

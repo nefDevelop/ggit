@@ -31,11 +31,6 @@
     fetchRegSettings();
   });
 
-  function getCsrfToken() {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
-    return match ? match[2] : '';
-  }
 
   let captcha_answer = $state('');
 

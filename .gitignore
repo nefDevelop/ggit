@@ -56,3 +56,7 @@ log/
 # Generado por "make test-e2e": lo copia desde conf/app.ini y lo borra al
 # terminar. Versionarlo arrastraba el SECRET_KEY autogenerado al repositorio.
 conf/app.test.ini
+
+# Entorno aislado de "make test-e2e". Antes se escribia dentro de data/, que es
+# justo el directorio que hay que dejar intacto.
+/data/test-e2e/

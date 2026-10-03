@@ -16,7 +16,14 @@ import Copy from "lucide-svelte/icons/copy";
   import { goto } from '$app/navigation';
   import { timeAgo } from '$lib/utils/date';
 
-  let { repo, isOlder = false, displayName } = $props();
+  // displayName is a fallback for the name, so it is genuinely optional. With no
+  // declared type Svelte infers it as required and every caller that only passes
+  // a repo was an error.
+  let { repo, isOlder = false, displayName = undefined }: {
+    repo: any;
+    isOlder?: boolean;
+    displayName?: string;
+  } = $props();
 
   const isNew = $derived(() => {
     if (!repo?.updated_at) return false;

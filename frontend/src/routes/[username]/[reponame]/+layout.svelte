@@ -2,7 +2,7 @@
   import { apiFetch } from "$lib/api";
   import { page } from '$app/state';
   import { onMount, setContext } from 'svelte';
-  import type { RepoContext } from '$lib/types';
+  import type { RepoContext, RepoData } from '$lib/types';
   import GlobalSearch from '$lib/components/GlobalSearch.svelte';
   import { userPrefs } from '$lib/settings.svelte';
   
@@ -84,7 +84,11 @@ import Calendar from "lucide-svelte/icons/calendar";
   });
 
   setContext<RepoContext>('repo', {
-    get data() { return repoData; },
+    // The single place where the nullable repository data crosses into the type
+    // that children see. It is safe because children() is rendered from the
+    // {:else if repoData} branch, so this getter is never observed while
+    // repoData is still null.
+    get data(): RepoData { return repoData as RepoData; },
     get full() { return fullRepoRes; }, // New full response
     get entries() { return rootEntries; },
     get stats() { return gitStats; },

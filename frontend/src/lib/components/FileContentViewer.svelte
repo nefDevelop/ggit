@@ -13,8 +13,10 @@
 
   let { repoData = null, username = "", reponame = "", realPath = "", showBlame = false, blameLoading = false, sidebarCollapsed = false, codeRows = [], formatSize, timeAgo, onToggleBlame, onToggleSidebar }: {
     repoData: any;
-    username: string;
-    reponame: string;
+    // Optional because it has a default. SvelteKit types route params as
+    // string | undefined, so a required string prop rejected every caller.
+    username?: string;
+    reponame?: string;
     realPath: string;
     showBlame: boolean;
     blameLoading: boolean;

@@ -8,8 +8,10 @@
   import GitFork from "lucide-svelte/icons/git-fork";
 
   let { username = "", reponame = "", metadata = null, baseBranch = $bindable(), headBranch = $bindable(), headRepoId = $bindable(), comparison = null, loadingComp = false }: {
-    username: string;
-    reponame: string;
+    // Optional because it has a default. SvelteKit types route params as
+    // string | undefined, so a required string prop rejected every caller.
+    username?: string;
+    reponame?: string;
     metadata: any;
     baseBranch: string;
     headBranch: string;

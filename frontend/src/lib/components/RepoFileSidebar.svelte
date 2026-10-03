@@ -8,8 +8,10 @@
   let { repoContext = null, repoData = null, username = "", reponame = "", langEntries = [], visibleLanguages = [], showAllLanguages = false, formatSize, onToggleLanguages }: {
     repoContext: any;
     repoData: any;
-    username: string;
-    reponame: string;
+    // Optional because it has a default; SvelteKit types route params as
+    // string | undefined, so a required string prop rejected every caller.
+    username?: string;
+    reponame?: string;
     langEntries: any[];
     visibleLanguages: any[];
     showAllLanguages: boolean;

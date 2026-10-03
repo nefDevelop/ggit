@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { render as testingRender } from '@testing-library/svelte';
 import type { RenderOptions, RenderResult } from '@testing-library/svelte';
 import type { Component } from 'svelte';
@@ -14,7 +15,7 @@ export function render<T extends Record<string, any>>(
   component: ComponentType,
   props?: T,
   options?: RenderWithContextOptions,
-): RenderResult {
+): RenderResult<ComponentType> {
   const { contexts = [], ...renderOptions } = options || {};
 
   const Wrapper = createWrapper(component, props, contexts);

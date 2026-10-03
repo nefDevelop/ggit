@@ -28,8 +28,10 @@
       });
       if (res.ok) {
         const data = await res.json();
-        // Redirect to newly created issue
-        goto(`/${repo.data.owner.username}/${repo.data.name}/issues/${data.number || data.index}`);
+        // Nullish coalescing, not ||: an index of 0 is falsy, so || turned it
+        // into undefined and the redirect landed on /issues/undefined.
+        const number = data.number ?? data.index;
+        goto(`/${repo.data.owner.username}/${repo.data.name}/issues/${number}`);
       } else {
         error = "Failed to create issue. Please check the inputs.";
       }

@@ -63,4 +63,22 @@ func TestIssueService_CreateIssue(t *testing.T) {
 		dbIssue, _ := database.Handle.Issues().GetByIndex(ctx, repoModel.ID, 2)
 		assert.Equal(t, int64(2), dbIssue.Index)
 	})
+
+	// The existing cases above re-read from the database, so they stayed green
+	// while the caller's struct kept index zero and the API answered
+	// number: 0. What matters to a handler is the struct it still holds.
+	t.Run("caller receives the assigned index", func(t *testing.T) {
+		issue := &database.Issue{
+			RepoID:   repoModel.ID,
+			PosterID: posterModel.ID,
+			Poster:   posterModel,
+			Title:    "Tercer issue",
+		}
+
+		require.NoError(t, Issues.CreateIssue(ctx, repoModel, issue, CreateIssueOptions{}))
+
+		assert.Equal(t, int64(3), issue.Index,
+			"the struct the caller holds must carry the index assigned during creation")
+		assert.NotZero(t, issue.ID, "the caller must receive the new id")
+	})
 }

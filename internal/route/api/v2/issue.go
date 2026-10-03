@@ -74,9 +74,18 @@ func CreateIssue(c *context.APIContext) {
 		return
 	}
 
-	apiIssue := issue.APIFormat()
+	// The index is assigned inside NewIssue, on a model reached through three
+	// conversions: the service takes issue.ToDomain() and the store rebuilds it
+	// with FromDomainIssue. That copy is the one that gets the number, so the
+	// struct held here still reads zero and the response used to say
+	// number: 0. Re-reading returns what was actually persisted.
+	created, err := database.GetIssueByID(issue.ID)
+	if err != nil {
+		c.Error(err, "get created issue")
+		return
+	}
 
-	c.JSON(http.StatusCreated, apiIssue)
+	c.JSON(http.StatusCreated, created.APIFormat())
 }
 
 // GetIssue returns a single issue by its index.
@@ -187,5 +196,9 @@ func CreateIssueComment(c *context.APIContext) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, comment)
+	// The raw model was serialised here, and it does not match what the rest of
+	// the API returns: Comment.Content has no json tag so it came out as
+	// "Content", and Poster is json:"-". The client reads "body" and "user", so
+	// the comment was posted successfully and then rendered empty.
+	c.JSON(http.StatusCreated, comment.APIFormat())
 }
