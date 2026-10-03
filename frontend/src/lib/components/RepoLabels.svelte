@@ -3,6 +3,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { dialog } from '$lib/dialog.svelte';
+  import { toast } from '$lib/toast.svelte';
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import Input from './ui/Input.svelte';
@@ -63,6 +64,9 @@ import Tag from "lucide-svelte/icons/tag";
         newName = '';
         newColor = '#444444';
         fetchLabels();
+      } else if (res.status === 404) {
+        // El backend exige permiso de administracion sobre el repositorio.
+        toast.error("No tienes permiso para gestionar las etiquetas de este repositorio.");
       }
     } catch (e) {
       console.error(e);
@@ -77,7 +81,11 @@ import Tag from "lucide-svelte/icons/tag";
       const res = await apiFetch(`/api/v2/${repo.data.owner.username}/${repo.data.name}/labels/${id}`, {
         method: 'DELETE'
       });
-      if (res.ok) fetchLabels();
+      if (res.ok) {
+        fetchLabels();
+      } else if (res.status === 404) {
+        toast.error("No tienes permiso para eliminar etiquetas de este repositorio.");
+      }
     } catch (e) {
       console.error(e);
     }
