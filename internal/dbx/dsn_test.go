@@ -3,6 +3,7 @@ package dbx
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/nef734/ggit/internal/conf"
@@ -18,28 +19,24 @@ func TestNewDSN(t *testing.T) {
 		assert.Equal(t, "unrecognized dialect: bad_dialect", fmt.Sprintf("%v", err))
 	})
 
-	tests := []struct {
-		name    string
-		opts    conf.DatabaseOpts
-		wantDSN string
-	}{
-		{
-			name: "sqlite3",
-			opts: conf.DatabaseOpts{
-				Type: "sqlite3",
-				Path: "/tmp/ggit.db",
-			},
-			wantDSN: "file:///tmp/ggit.db?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL",
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			path, _ := filepath.Abs(test.opts.Path)
-			test.wantDSN = "file://" + path + "?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL"
-
-			dsn, err := NewDSN(test.opts)
-			require.NoError(t, err)
-			assert.Equal(t, test.wantDSN, dsn)
+	t.Run("sqlite3", func(t *testing.T) {
+		dsn, err := NewDSN(conf.DatabaseOpts{
+			Type: "sqlite3",
+			Path: "/tmp/ggit.db",
 		})
-	}
+		require.NoError(t, err)
+
+		path, _ := filepath.Abs("/tmp/ggit.db")
+		assert.True(t, strings.HasPrefix(dsn, "file://"+path+"?"))
+		assert.Contains(t, dsn, "_journal_mode=WAL")
+
+		// Shared cache turns a conflicting table lock into SQLITE_LOCKED, which the
+		// busy handler does not retry, so concurrent writers fail outright.
+		assert.NotContains(t, dsn, "cache=shared",
+			"cache=shared provoca SQLITE_LOCKED y anula busy_timeout")
+
+		// Immediate mode was measured and rejected: it takes the write lock at
+		// BEGIN for every transaction, so all of them serialise.
+		assert.NotContains(t, dsn, "_txlock=immediate")
+	})
 }

@@ -16,7 +16,24 @@ func NewDSN(opts conf.DatabaseOpts) (dsn string, err error) {
 	}
 
 	path, _ := filepath.Abs(opts.Path)
-	return "file://" + path + "?cache=shared&mode=rwc&_journal_mode=WAL&_synchronous=NORMAL", nil
+
+	// Two decisions here are load bearing under concurrency:
+	//
+	// cache=shared is deliberately not set. In shared cache mode SQLite reports
+	// a conflicting table lock as SQLITE_LOCKED (6) instead of SQLITE_BUSY (5),
+	// and the busy handler is not consulted for it, so busy_timeout silently
+	// stops helping and concurrent writers fail outright with "database table is
+	// locked: database is deadlocked". WAL plus ordinary file locking already
+	// lets readers run beside a writer, which is all a single-process server
+	// needs.
+	//
+	// _txlock is deliberately left at the deferred default. Immediate mode would
+	// avoid the read-then-upgrade deadlock, but it also takes the write lock at
+	// BEGIN for every transaction, including read only ones, so all of them
+	// serialise. That measured worse than it fixed: busy_timeout could not absorb
+	// the contention. Shrinking the transactions that span slow work belongs in
+	// the callers instead.
+	return "file://" + path + "?mode=rwc&_journal_mode=WAL&_synchronous=NORMAL", nil
 }
 
 // OpenDB opens a new database connection encapsulated as gorm.DB using given

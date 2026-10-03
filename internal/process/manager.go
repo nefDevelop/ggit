@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+	"syscall"
 	"time"
 
 	log "github.com/nef734/ggit/internal/log"
@@ -83,6 +84,9 @@ func ExecDir(timeout time.Duration, dir, desc, cmdName string, args ...string) (
 	cmd := exec.Command(cmdName, args...)
 	cmd.Dir = dir
 	cmd.Env = append(os.Environ(), "GIT_TERMINAL_PROMPT=0")
+	// Own process group so Kill can signal the child and its helpers without
+	// touching ggit itself, which shares the group otherwise.
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	cmd.Stdout = bufOut
 	cmd.Stderr = bufErr
 	if err := cmd.Start(); err != nil {
@@ -122,17 +126,43 @@ func Exec(desc, cmdName string, args ...string) (string, string, error) {
 
 // Kill kills and removes a process from global list.
 func Kill(pid int64) error {
+	// The list is shared with Add and Remove, which hold the counter mutex, so it
+	// has to be read under the same lock.
+	counter.Lock()
+	var target *Process
 	for _, proc := range Processes {
 		if proc.PID == pid {
-			if proc.Cmd != nil && proc.Cmd.Process != nil &&
-				proc.Cmd.ProcessState != nil && !proc.Cmd.ProcessState.Exited() {
-				if err := proc.Cmd.Process.Kill(); err != nil {
-					return fmt.Errorf("fail to kill process [pid: %d, desc: %s]: %v", proc.PID, proc.Description, err)
-				}
-			}
-			Remove(pid)
-			return nil
+			target = proc
+			break
 		}
+	}
+	counter.Unlock()
+
+	if target == nil {
+		return nil
+	}
+
+	// The process is always dropped from the list, even when the signal fails:
+	// leaving it behind would leak an entry for every command that ever timed
+	// out, and the caller blocks on the command's completion either way.
+	defer Remove(pid)
+
+	if target.Cmd == nil || target.Cmd.Process == nil {
+		return nil
+	}
+
+	// Kill the whole process group. Commands such as "git push" spawn helpers of
+	// their own, and signalling only the direct child leaves those running: they
+	// inherit the pipes, so the caller keeps waiting on them. Setpgid in ExecDir
+	// is what makes the negative pid address the child alone instead of ggit.
+	if err := syscall.Kill(-target.Cmd.Process.Pid, syscall.SIGKILL); err == nil {
+		return nil
+	}
+
+	// Fall back to the single process when the group signal is not available,
+	// for instance if Setpgid did not apply.
+	if err := target.Cmd.Process.Kill(); err != nil && !errors.Is(err, os.ErrProcessDone) {
+		return fmt.Errorf("fail to kill process [pid: %d, desc: %s]: %v", target.PID, target.Description, err)
 	}
 	return nil
 }
