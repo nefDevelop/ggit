@@ -30,7 +30,14 @@ data/*
 # Test results and reports
 /frontend/playwright-report/
 /frontend/test-results/
-/ggit-repositories-test/
+
+# Artefactos de runtime que dejan los procesos de prueba. .backend.pid llego a
+# versionarse por un "git add -A" y_publicaba el PID del servidor en el
+# repositorio.
+/.backend.pid
+/.frontend.pid
+/.backend.log
+/.frontend.log
 
 # IDEs y Sistema
 .idea/
