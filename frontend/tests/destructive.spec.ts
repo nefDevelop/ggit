@@ -20,7 +20,9 @@ test.describe('Destructive paths', () => {
     await page.goto('/repo/create');
     await page.fill('#repo-name', repoName);
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(new RegExp(`/${repoName}`));
+    // Creating a repository initialises git and commits, and the default 5s for
+    // toHaveURL was not always enough while the rest of the suite was running.
+    await expect(page).toHaveURL(new RegExp(`/${repoName}`), { timeout: 20000 });
 
     // Sanity check. Without it a failure further down could just mean the repo
     // was never created, and the deletion assertions would prove nothing.

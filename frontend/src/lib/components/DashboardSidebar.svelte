@@ -80,4 +80,12 @@
     .dashboard-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
     .sidebar-card { flex: 1; min-width: 200px; }
   }
+  /* The rule that hides the sidebar below 1100px used to live in
+     DashboardView.svelte. Scoped styles put a per-component class on the
+     elements, so a selector in the parent never matched an element rendered by
+     the child and the media query was dead code: the sidebar was never hidden.
+     It has to be declared here, where the element is. */
+  @media (max-width: 1100px) {
+    .dashboard-sidebar { display: none; }
+  }
 </style>

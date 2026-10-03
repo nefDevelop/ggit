@@ -480,8 +480,10 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
   @media (max-width: 1100px) {
+    /* Only the layout is adjusted here. The sidebar is hidden by
+       DashboardSidebar.svelte's own media query; a selector for it in this file
+       does not match, because scoped styles give each component its own class. */
     .dashboard-layout { padding: 0; }
-    .dashboard-sidebar { display: none; }
   }
 
   @media (max-width: 600px) {

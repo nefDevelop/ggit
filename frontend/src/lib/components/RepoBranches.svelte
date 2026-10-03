@@ -54,7 +54,13 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
           <div class="branch-main-info">
             <Star size={18} class="branch-icon-acc" />
             <div class="branch-name-stack">
-              <a href={`/${username}/${reponame}/src/branch/${data.default.name}`} class="branch-name-text">{data.default.name}</a>
+              <!-- The canonical shape is /src/<branch>/<path>: FileDirectoryListing
+                   builds its own links that way and RepoFileBrowser strips the first
+                   two segments of the path to recover the real one. The extra
+                   "branch" segment was therefore read as the branch of a directory
+                   called branch, which showed an empty tree and linked from there
+                   into paths that do not exist. -->
+              <a href={`/${username}/${reponame}/src/${data.default.name}`} class="branch-name-text">{data.default.name}</a>
               <div class="badges-row">
                 <span class="badge-v2 primary">Primary</span>
                 {#if data.default.is_protected}
@@ -79,7 +85,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
             <div class="branch-main-info">
               <GitFork size={18} class="branch-icon" />
               <div class="branch-name-stack">
-                <a href={`/${username}/${reponame}/src/branch/${branch.name}`} class="branch-name-text">{branch.name}</a>
+                <a href={`/${username}/${reponame}/src/${branch.name}`} class="branch-name-text">{branch.name}</a>
                 {#if branch.is_protected}
                   <span class="badge-v2 protected">Protected</span>
                 {/if}
@@ -104,7 +110,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
             <div class="branch-main-info">
               <History size={18} class="branch-icon" />
               <div class="branch-name-stack">
-                <a href={`/${username}/${reponame}/src/branch/${branch.name}`} class="branch-name-text">{branch.name}</a>
+                <a href={`/${username}/${reponame}/src/${branch.name}`} class="branch-name-text">{branch.name}</a>
               </div>
             </div>
             <div class="branch-meta-info">

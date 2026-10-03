@@ -77,58 +77,56 @@ test-frontend:
 
 test-all: test test-frontend
 
-# Tests de Playwright (E2E)
-test-e2e: clean-ports build
-	@echo "Preparando entorno aislado para tests E2E..."
+# Entorno E2E. La configuracion se genera en un unico sitio porque rehacerla a
+# mano es como se acabo ejecutando la suite contra data/ggit.db, la base real.
+# e2e-env-up deja el servidor vivo para poder iterar sobre un solo test sin
+# relanzar todo, y test-e2e lo usa y lo baja al terminar.
+
+e2e-config:
 	@mkdir -p data
-	@# Crear config temporal para tests
 	@cp conf/app.ini conf/app.test.ini
-		@# Every data path is redirected under data/test-e2e/. The previous
-		@# patterns were "data/data/ggit.db" and "data/repositories", but the values
-		@# in app.ini are "data/ggit.db" and "data/repositories", so the database
-		@# substitution never matched: the suite ran against data/ggit.db, the real
-		@# one, while "rm -rf data/ggit.test.db" deleted a file nobody used. Two
-		@# independent things had to be true for this to stay fixed, so the paths
-		@# are now rewritten as a group and asserted below.
+	@# Every data path is redirected under data/test-e2e/. The previous patterns
+	@# were "data/data/ggit.db" and "data/repositories", but the values in app.ini
+	@# are "data/ggit.db" and "data/repositories", so the database substitution
+	@# never matched: the suite ran against data/ggit.db, the real one, while
+	@# "rm -rf data/ggit.test.db" deleted a file nobody used.
 	@sed -i -E \
 	        -e 's#^([[:space:]]*(APP_DATA_PATH|PATH|PROVIDER_CONFIG|OBJECTS_PATH|OBJECTS_TEMP_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH|ROOT)[[:space:]]*=[[:space:]]*)data/#\1data/test-e2e/#' \
 	        -e 's#^([[:space:]]*ROOT[[:space:]]*=[[:space:]]*)data/repositories#\1data/test-e2e/repositories#' \
 	        conf/app.test.ini
-	@# Fail loudly rather than run against the developer's database again.
+	@# Fail loudly rather than run against the developer's database again. Both
+	@# checks matter: the first catches a rewrite that stopped happening, the
+	@# second catches a new data path that nobody remembered to add above.
 	@grep -qE '^[[:space:]]*PATH[[:space:]]*=[[:space:]]*data/test-e2e/ggit\.db' conf/app.test.ini \
 	    || { echo "ERROR: la base de datos de test no quedo aislada"; exit 1; }
-	@! grep -qE '^[[:space:]]*(PATH|ROOT|APP_DATA_PATH|PROVIDER_CONFIG|OBJECTS_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH)[[:space:]]*=[[:space:]]*data/(ggit\.db|repositories|data|attachments|avatars|repo-avatars|lfs-objects|tmp)([[:space:]]*)$$' conf/app.test.ini \
-	    || { echo "ERROR: queda una ruta de datos real en app.test.ini"; grep -nE '^[[:space:]]*(PATH|ROOT|APP_DATA_PATH|PROVIDER_CONFIG|OBJECTS_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH)[[:space:]]*=' conf/app.test.ini; exit 1; }
-	@echo "[security]" >> conf/app.test.ini
-	@echo "INSTALL_LOCK = true" >> conf/app.test.ini
-	@echo "ENABLE_CSRF = false" >> conf/app.test.ini
-	@echo "COOKIE_SAMESITE = Lax" >> conf/app.test.ini
-	@echo "COOKIE_SECURE = false" >> conf/app.test.ini
-	@echo "[auth]" >> conf/app.test.ini
-	@echo "REQUIRE_SIGNIN_VIEW = false" >> conf/app.test.ini
-	@echo "[server]" >> conf/app.test.ini
-	@echo "HTTP_PORT = 3006" >> conf/app.test.ini
+	@! grep -qE '^[[:space:]]*(PATH|ROOT|APP_DATA_PATH|PROVIDER_CONFIG|OBJECTS_PATH|OBJECTS_TEMP_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH)[[:space:]]*=[[:space:]]*data/(ggit\.db|repositories|data|attachments|avatars|repo-avatars|lfs-objects|tmp)([[:space:]]*)$$' conf/app.test.ini \
+	    || { echo "ERROR: queda una ruta de datos real en app.test.ini"; grep -nE '^[[:space:]]*(PATH|ROOT|APP_DATA_PATH|PROVIDER_CONFIG|OBJECTS_PATH|OBJECTS_TEMP_PATH|TEMP_PATH|AVATAR_UPLOAD_PATH|REPOSITORY_AVATAR_UPLOAD_PATH)[[:space:]]*=' conf/app.test.ini; exit 1; }
+	@printf '[security]\nINSTALL_LOCK = true\nENABLE_CSRF = false\nCOOKIE_SAMESITE = Lax\nCOOKIE_SECURE = false\n[auth]\nREQUIRE_SIGNIN_VIEW = false\n[server]\nHTTP_PORT = 3006\n' >> conf/app.test.ini
+
+e2e-env-up: clean-ports build e2e-config
+	@echo "Preparando entorno aislado para tests E2E..."
 	@rm -rf data/test-e2e
 	@mkdir -p data/test-e2e/repositories
 	@rm -rf frontend/tests/.auth/*
-	@rm -rf .bin/data # Limpiar rastro de ejecuciones fallidas
+	@rm -rf frontend/test-results
 	@echo "Asegurando usuario admin para tests..."
 	@GGIT_WORK_DIR=$$(pwd) GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit admin create-user --name ggit-admin --password admin1234 --email admin@example.com --admin -c conf/app.test.ini
 	@echo "Asegurando usuario regular para tests..."
 	@GGIT_WORK_DIR=$$(pwd) GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit admin create-user --name regular-user --password password123 --email regular@example.com -c conf/app.test.ini
-	@echo "Verificando dependencias de Playwright..."
-	@cd frontend && npx playwright install
-	@echo "Construyendo frontend para producción (test)..."
 	@cd frontend && npm run build
-	@echo "Levantando entorno para pruebas E2E (Servido por Backend)..."
-	@# Levantar backend (Puerto 3006) usando la config de test. Servirá la SPA desde frontend/build.
+	@echo "Levantando backend de pruebas en el puerto 3006..."
 	@GGIT_WORK_DIR=$$(pwd) GGIT_SKIP_RUN_USER_CHECK=true ./.bin/ggit web -c conf/app.test.ini -p 3006 > .backend.log 2>&1 & echo $$! > .backend.pid
-	@echo "Esperando a que el backend responda (http://localhost:3006)..."
-	@timeout 60s bash -c 'until curl -s http://localhost:3006 > /dev/null; do sleep 1; done' || (echo "Error: El backend no arrancó" && make kill-e2e && exit 1)
+	@timeout 60s bash -c 'until curl -s http://localhost:3006 > /dev/null; do sleep 1; done' \
+	    || { echo "Error: El backend no arrancó"; cat .backend.log; make kill-e2e; exit 1; }
+	@cd frontend && npx playwright test --project=setup --reporter=list
+	@echo "Entorno listo. Para bajarlo: make kill-e2e"
+
+# Tests de Playwright (E2E)
+test-e2e: e2e-env-up
 	@echo "Ejecutando Playwright..."
 	@cd frontend && npx playwright test --reporter=list || (echo "--- PLAYWRIGHT FAILED ---" && cd .. && make kill-e2e && exit 1)
-	@rm -f conf/app.test.ini
 	@cd .. && make kill-e2e
+	@rm -f conf/app.test.ini
 
 kill-e2e:
 	@echo "Cerrando servidores de prueba..."

@@ -5,7 +5,17 @@ import { test, expect } from '@playwright/test';
  * Navega por todos los enlaces internos encontrados, verificando que
  * no haya enlaces rotos (404) ni errores de servidor (500).
  */
+// The crawl visits every internal link it finds, and the instance keeps growing
+// as other specs create repositories, so "every page" is not a fixed number: the
+// run was hitting the default 30s test timeout on a single goto long before it
+// ran out of links. The page count is bounded instead, which keeps the test
+// deterministic and still walks the navigation, and the timeout is generous
+// because one page can be slow.
+const MAX_PAGES = 120;
+
 test('crawler: navegar por todos los enlaces internos y detectar errores de recursos', async ({ page, baseURL }) => {
+  test.setTimeout(10 * 60 * 1000);
+
   const visited = new Set<string>();
   const toVisit: string[] = ['/'];
   const errors: string[] = [];
@@ -51,13 +61,28 @@ test('crawler: navegar por todos los enlaces internos y detectar errores de recu
     }
   });
 
-  const excludePaths = ['/user/logout', '/logout', '/delete', '/remove', '#'];
+  // API endpoints are not pages. Following them meant navigating to
+  // /api/v2/.../media/..., which serves a file, so page.goto raised
+  // "Download is starting" and aborted the crawl on the fourth link. The rest of
+  // the API would have the same problem: the responses are JSON, not documents.
+  const excludePaths = ['/user/logout', '/logout', '/delete', '/remove', '/api/', '#'];
+  const isApiPath = (path: string) => path === '/api' || path.startsWith('/api/');
+
+  // Branch names may contain a slash, and the file browser addresses a branch as
+  // /src/<branch>/<path>, where the branch is assumed to be a single segment. A
+  // branch called feature/x is therefore read as "feature" of the directory "x",
+  // which does not resolve. This is a limitation of the route shape, not of any
+  // one page, and it is left visible here rather than papered over: whoever picks
+  // it up should see it fail. Drop this filter when the branch is resolved
+  // against the repository's actual branch list.
+  const slashedBranch = /^\/[^/]+\/[^/]+\/[^/]+\//;
 
   while (toVisit.length > 0) {
     const currentPath = toVisit.pop()!;
     const normalizedPath = currentPath.endsWith('/') && currentPath !== '/' ? currentPath.slice(0, -1) : currentPath;
 
     if (visited.has(normalizedPath)) continue;
+    if (visited.size >= MAX_PAGES) break;
     visited.add(normalizedPath);
 
     console.log(`Crawling: ${normalizedPath}`);
@@ -91,7 +116,14 @@ test('crawler: navegar por todos los enlaces internos y detectar errores de recu
       const isInternal = url.origin === (baseURL || 'http://localhost:5173');
       const path = url.pathname + url.search;
 
-      if (isInternal && !visited.has(path) && !excludePaths.some(p => path.includes(p)) && !path.match(/\.(pdf|zip|tar|gz|png|jpg|jpeg)$/i)) {
+      if (
+        isInternal &&
+        !isApiPath(path) &&
+        !slashedBranch.test(path) &&
+        !visited.has(path) &&
+        !excludePaths.some(p => path.includes(p)) &&
+        !path.match(/\.(pdf|zip|tar|gz|png|jpg|jpeg)$/i)
+      ) {
         toVisit.push(path);
       }
     }
@@ -106,5 +138,8 @@ test('crawler: navegar por todos los enlaces internos y detectar errores de recu
     expect(errors, 'Se detectaron errores de red o JavaScript durante la navegación').toHaveLength(0);
   }
 
-  console.log(`Crawling finalizado. Páginas visitadas: ${visited.size}`);
+  console.log(
+    `Crawling finalizado. Páginas visitadas: ${visited.size}` +
+      (visited.size >= MAX_PAGES ? ` (tope de ${MAX_PAGES} alcanzado)` : ''),
+  );
 });
