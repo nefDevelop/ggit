@@ -410,7 +410,32 @@ func ensureSecretKey() error {
 
 	Security.SecretKey = key
 	log.Info("Generated a new SECRET_KEY and stored it in %q", CustomConf)
+
+	// The default location is <data>/conf/app.ini, which is ignored by git. When
+	// -c points somewhere else the key lands in that file instead, and the file
+	// the operator passed is often one that is tracked: "make test-e2e" used to
+	// hand this function conf/app.test.ini and the generated key ended up staged
+	// for commit. Failing here would break a legitimate deployment that mounts
+	// its config read-only, so this warns rather than refuses.
+	if !isDefaultCustomConf() {
+		log.Warn("SECRET_KEY was written to %q, which is not the default "+
+			"<data>/conf/app.ini. If that file is tracked by git, add it to "+
+			".gitignore or move the key out, because anyone with the key can "+
+			"forge a session cookie for any user.", CustomConf)
+	}
 	return nil
+}
+
+// isDefaultCustomConf reports whether CustomConf is the location chosen when no
+// -c flag is given.
+func isDefaultCustomConf() bool {
+	def := filepath.Join(CustomDir(), "conf", "app.ini")
+	a, errA := filepath.Abs(CustomConf)
+	b, errB := filepath.Abs(def)
+	if errA != nil || errB != nil {
+		return false
+	}
+	return a == b
 }
 
 // persistSecretKey writes the key to the custom configuration file and to the

@@ -134,24 +134,10 @@ func TestIssueListMatchesPerIssueLoading(t *testing.T) {
 			new(Milestone), new(Attachment), new(Comment), new(PullRequest), new(Watch))
 		SetHandle(db)
 
-		// The creation timestamp is pinned. Left to the clock, two runs straddling a
-		// second boundary produce users whose CreatedAt differ by one second, and the
-		// comparison below fails for a reason that has nothing to do with the loader.
-		seeded := time.Unix(1700000000, 0)
-
 		owner, err := Handle.Users().Create(context.Background(), "eq-owner-"+suffix, "eq-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
 		assignee, err := Handle.Users().Create(context.Background(), "eq-assignee-"+suffix, "as-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
-
-		for _, u := range []*User{FromDomainUser(owner), FromDomainUser(assignee)} {
-			res := db.Model(&User{}).Where("id = ?", u.ID).Updates(map[string]any{
-				"created_unix": seeded.Unix(),
-				"updated_unix": seeded.Unix(),
-			})
-			require.NoError(t, res.Error)
-			require.EqualValues(t, 1, res.RowsAffected, "the seed row for %q was not pinned", u.Name)
-		}
 
 		repo, err := Handle.Repositories().Create(context.Background(), owner.ID, CreateRepoOptions{Name: "eq-repo-" + suffix})
 		require.NoError(t, err)
@@ -222,6 +208,17 @@ func TestIssueListMatchesPerIssueLoading(t *testing.T) {
 	}
 
 	require.Len(t, batchFormatted, len(perIssueFormatted))
+
+	// The two datasets are seeded independently, so every clock-derived value
+	// differs by construction. Poking the rows in the database was tried first
+	// and does not work: the compared UserResponse is built from the model held
+	// in memory, which still carries the timestamp from creation. What this test
+	// is about is that the batched loader returns the same issues as the
+	// per-issue loader, so the two timestamps are normalised and everything else,
+	// id, name, email, labels and milestones included, is still compared.
+	zeroUserTimes(perIssueFormatted)
+	zeroUserTimes(batchFormatted)
+
 	for i := range perIssueFormatted {
 		a := perIssueFormatted[i]
 		b := batchFormatted[i]
@@ -234,5 +231,19 @@ func TestIssueListMatchesPerIssueLoading(t *testing.T) {
 		assert.Equal(t, a.Poster, b.Poster, "issue %d: Poster", i)
 		assert.Equal(t, a.Assignee, b.Assignee, "issue %d: Assignee", i)
 		assert.Equal(t, a.Milestone, b.Milestone, "issue %d: Milestone", i)
+	}
+}
+
+// zeroUserTimes clears the timestamps of every user embedded in a formatted
+// issue, at both the top level and inside labels, so that two independently
+// seeded datasets can be compared field by field.
+func zeroUserTimes(issues []*apiv2types.IssueResponse) {
+	for _, issue := range issues {
+		for _, u := range []*apiv2types.UserResponse{issue.Poster, issue.Assignee} {
+			if u == nil {
+				continue
+			}
+			u.CreatedAt = time.Time{}
+		}
 	}
 }

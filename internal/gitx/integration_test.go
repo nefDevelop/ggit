@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -90,7 +91,7 @@ func TestModule_Integration(t *testing.T) {
 
 		err = realModule.RemoteRemove(repoPath, "origin")
 		require.NoError(t, err)
-		
+
 		remotes, _ = realModule.Remotes(repoPath)
 		assert.NotContains(t, remotes, "origin")
 	})
@@ -115,7 +116,7 @@ func TestModule_Integration(t *testing.T) {
 		os.WriteFile(filepath.Join(basePath, "base.txt"), []byte("base"), 0644)
 		runGit(basePath, "add", ".")
 		runGit(basePath, "commit", "-m", "Base commit")
-		
+
 		// Guardar el hash del merge base esperado
 		expectedMergeBase := runGit(basePath, "rev-parse", "HEAD")
 
@@ -130,7 +131,7 @@ func TestModule_Integration(t *testing.T) {
 		os.WriteFile(filepath.Join(headPath, "feature.txt"), []byte("feature content"), 0644)
 		runGit(headPath, "add", ".")
 		runGit(headPath, "commit", "-m", "Feature commit 1")
-		
+
 		os.WriteFile(filepath.Join(headPath, "feature2.txt"), []byte("more content"), 0644)
 		runGit(headPath, "add", ".")
 		runGit(headPath, "commit", "-m", "Feature commit 2")
@@ -154,17 +155,34 @@ func TestModule_Integration(t *testing.T) {
 
 	t.Run("ListTagsAfter with real pagination", func(t *testing.T) {
 		repoPath := filepath.Join(tmpDir, "repo.git")
-		runGit := func(args ...string) {
-			cmd := exec.Command("git", args...)
-			cmd.Dir = repoPath
-			_ = cmd.Run()
+
+		// git-module lists tags with "--sort=-creatordate", so the creation date is
+		// what decides the order. Lightweight tags all inherit the commit date, and
+		// creating five of them back to back gives every one the same creatordate:
+		// git then returns them in an order that is stable per repository but not
+		// across repositories, which is why this test failed from time to time.
+		// Annotated tags with an explicit committer date pin the ordering.
+		tags := []string{"v1.0.0", "v1.1.0", "v1.2.0", "v2.0.0", "v2.1.0"}
+
+		// An earlier subtest shares this repository and leaves these tag names
+		// behind, so they are cleared first rather than silently reused.
+		for _, tag := range tags {
+			del := exec.Command("git", "tag", "-d", tag)
+			del.Dir = repoPath
+			_ = del.Run()
 		}
 
-		// Crear una serie de tags con tiempos diferentes (Git los ordena por fecha o nombre según flags)
-		// gogs/git-module suele devolverlos en orden cronológico inverso o alfabético según el helper.
-		tags := []string{"v1.0.0", "v1.1.0", "v1.2.0", "v2.0.0", "v2.1.0"}
-		for _, tag := range tags {
-			runGit("tag", tag)
+		base := time.Now().Add(-time.Hour)
+		for i, tag := range tags {
+			cmd := exec.Command("git", "tag", "-a", tag, "-m", tag)
+			cmd.Dir = repoPath
+			cmd.Env = append(os.Environ(),
+				"GIT_COMMITTER_DATE="+base.Add(time.Duration(i)*time.Minute).Format(time.RFC3339),
+				"GIT_AUTHOR_DATE="+base.Add(time.Duration(i)*time.Minute).Format(time.RFC3339),
+			)
+			if out, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("git tag %s: %v\n%s", tag, err, out)
+			}
 		}
 
 		// Probar paginación: Dame 2 tags después de v2.1.0 (en orden descendente)
@@ -172,8 +190,8 @@ func TestModule_Integration(t *testing.T) {
 		require.NoError(t, err)
 		assert.Len(t, page.Tags, 2)
 		assert.True(t, page.HasNext)
-		
-		// El orden real depende de cómo git-module ejecute 'git tag'. 
+
+		// El orden real depende de cómo git-module ejecute 'git tag'.
 		// Generalmente es alfabético descendente en Gogs.
 		assert.Equal(t, "v2.1.0", page.Tags[0])
 		assert.Equal(t, "v2.0.0", page.Tags[1])

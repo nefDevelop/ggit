@@ -1,6 +1,7 @@
 package netx
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -8,6 +9,20 @@ import (
 )
 
 func TestIsLocalHostname(t *testing.T) {
+	// The resolver is replaced instead of hitting DNS. Resolving gogs.io or
+	// google.com from a test made the verdict depend on the network, and the
+	// table below failed at random: one run in twelve saw gogs.io answer with a
+	// private address and the test reported it as a local hostname.
+	original := lookupIP
+	t.Cleanup(func() { lookupIP = original })
+
+	lookupIP = func(host string) ([]net.IP, error) {
+		if ip, ok := fakeDNS[host]; ok {
+			return []net.IP{ip}, nil
+		}
+		return nil, fmt.Errorf("no such host: %s", host)
+	}
+
 	tests := []struct {
 		hostname  string
 		allowlist []string
@@ -30,11 +45,21 @@ func TestIsLocalHostname(t *testing.T) {
 
 		{hostname: "192.168.123.45", allowlist: []string{"*"}, want: false}, // #12
 	}
+
 	for _, test := range tests {
 		t.Run("", func(t *testing.T) {
 			assert.Equal(t, test.want, IsBlockedLocalHostname(test.hostname, test.allowlist))
 		})
 	}
+}
+
+// fakeDNS maps the hostnames used above to the address each one is given, so no
+// lookup ever leaves the process.
+var fakeDNS = map[string]net.IP{
+	"gogs.io":         net.ParseIP("8.247.106.126"),
+	"google.com":      net.ParseIP("142.250.185.100"),
+	"165.232.140.255": net.ParseIP("165.232.140.255"),
+	"gogs.local":      net.ParseIP("10.0.0.9"),
 }
 
 func TestIsLocalIP(t *testing.T) {

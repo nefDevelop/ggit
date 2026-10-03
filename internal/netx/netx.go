@@ -64,7 +64,7 @@ func IsBlockedLocalHostname(hostname string, allowlist []string) bool {
 		}
 	}
 
-	ips, err := net.LookupIP(hostname)
+	ips, err := lookupIP(hostname)
 	if err != nil {
 		return true
 	}
@@ -75,6 +75,12 @@ func IsBlockedLocalHostname(hostname string, allowlist []string) bool {
 	}
 	return false
 }
+
+// lookupIP is the resolver behind IsBlockedLocalHostname. It is a variable so
+// the decision can be exercised without a network round trip: resolving names
+// like gogs.io from a test made the result depend on whatever DNS answered, and
+// the test failed at random.
+var lookupIP = net.LookupIP
 
 // NewSafeControl returns a control function for net.Dialer that blocks local
 // network addresses unless the hostname is in the allowlist.

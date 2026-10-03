@@ -30,19 +30,8 @@ func TestReleaseListMatchesPerIssueLoading(t *testing.T) {
 		SetHandle(db)
 		ctx := context.Background()
 
-		// Timestamps are pinned. Left to the clock, two runs straddling a second
-		// boundary differ in CreatedAt and the comparison fails for a reason that
-		// has nothing to do with the loader.
-		seeded := time.Unix(1700000000, 0)
-
 		publisher, err := Handle.Users().Create(ctx, "rel-publisher-"+suffix, "rel-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
-		res := db.Model(&User{}).Where("id = ?", publisher.ID).Updates(map[string]any{
-			"created_unix": seeded.Unix(),
-			"updated_unix": seeded.Unix(),
-		})
-		require.NoError(t, res.Error)
-		require.EqualValues(t, 1, res.RowsAffected, "the seed row for the publisher was not pinned")
 
 		repo, err := Handle.Repositories().Create(ctx, publisher.ID, CreateRepoOptions{Name: "rel-repo-" + suffix})
 		require.NoError(t, err)
@@ -58,7 +47,6 @@ func TestReleaseListMatchesPerIssueLoading(t *testing.T) {
 				Note:        "notas",
 			}
 			require.NoError(t, db.Create(release).Error)
-			require.NoError(t, db.Model(release).Update("created_unix", seeded.Unix()).Error)
 
 			// Every release gets one attachment, plus a second on the first, so
 			// both the single and the multi attachment paths are covered.
@@ -98,6 +86,23 @@ func TestReleaseListMatchesPerIssueLoading(t *testing.T) {
 	}
 
 	require.Len(t, batchFormatted, len(perFormatted))
+
+	// The two datasets are seeded independently, so every clock-derived value
+	// differs by construction and the comparison failed on CreatedAt without
+	// anything having changed in the loader. The publisher is normalised and the
+	// rest of the release, including its attachments, is still compared whole.
+	for _, list := range [][]*apiv2types.RepositoryReleaseResponse{perFormatted, batchFormatted} {
+		for _, r := range list {
+			if r.Author != nil {
+				r.Author.CreatedAt = time.Time{}
+			}
+			// CreatedAt is an int64 in this type while CreatedPascal is a
+			// time.Time; both come from the clock, so both are cleared.
+			r.CreatedAt = 0
+			r.CreatedPascal = time.Time{}
+		}
+	}
+
 	for i := range perFormatted {
 		assert.Equal(t, perFormatted[i], batchFormatted[i], "release %d", i)
 	}

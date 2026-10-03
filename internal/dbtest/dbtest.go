@@ -62,7 +62,12 @@ func NewDB(t testing.TB, suite string, tables ...any) *gorm.DB {
 			_ = sqlDB.Close()
 		}
 	default:
-		dbName = filepath.Join(os.TempDir(), fmt.Sprintf("ggit-%s-%d.db", suite, time.Now().Unix()))
+		// Nanoseconds, not seconds. At second resolution two databases created
+		// inside the same second land on the same file, so a test that builds a
+		// pair of independent fixtures for an A/B comparison silently compares one
+		// database against itself, and the first cleanup removes state the second
+		// is still using.
+		dbName = filepath.Join(os.TempDir(), fmt.Sprintf("ggit-%s-%d.db", suite, time.Now().UnixNano()))
 		dbOpts = conf.DatabaseOpts{
 			Type: "sqlite3",
 			Path: dbName,
