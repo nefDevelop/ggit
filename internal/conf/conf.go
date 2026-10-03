@@ -14,6 +14,8 @@ import (
 	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/semverx"
+	"github.com/nef734/ggit/internal/strx"
+	"github.com/nef734/ggit/internal/testx"
 	"gopkg.in/ini.v1"
 )
 
@@ -179,6 +181,10 @@ func Init(customConf string) error {
 
 	if err = File.Section("security").MapTo(&Security); err != nil {
 		return fmt.Errorf("mapping [security] section: %w", err)
+	}
+
+	if err = ensureSecretKey(); err != nil {
+		return fmt.Errorf("ensure secret key: %w", err)
 	}
 
 	// Check run user when the install is locked.
@@ -356,4 +362,77 @@ func MustInit(customConf string) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// embeddedSecretKey is the value that ships inside conf/app.ini. That file is
+// compiled into the executable through //go:embed and is also part of the public
+// source tree, so this constant must never be used to sign anything.
+const embeddedSecretKey = "RhgOvRxKpJ1A8ub"
+
+// secretKeyLength in characters. The generator draws from a 62 character
+// alphabet, so 43 characters give roughly 256 bits of entropy.
+const secretKeyLength = 43
+
+// ensureSecretKey guarantees that the session signing key is not the value
+// embedded in the binary.
+//
+// gorilla/securecookie is deterministic: whoever knows the key can mint a valid
+// session cookie. Because the default lives in a file that travels with the
+// executable and with the repository, shipping any real key there means every
+// deployment shares it and every session is forgeable.
+//
+// When the key is absent or still the embedded default, a random one is written
+// to CustomConf. Init appends that file after the embedded one, so the value on
+// disk takes precedence and survives restarts. An ephemeral key is never
+// generated silently: if it cannot be persisted the startup fails, because
+// otherwise every restart would invalidate all sessions.
+func ensureSecretKey() error {
+	if Security.SecretKey != "" && Security.SecretKey != embeddedSecretKey {
+		return nil
+	}
+
+	// Tests load conf against fixtures inside the source tree. Generating a key
+	// there would rewrite a tracked file on every run, so the test binaries keep
+	// the empty value instead.
+	if testx.InTest {
+		Security.SecretKey = "test-secret-key-not-used-to-sign-anything"
+		return nil
+	}
+
+	key, err := strx.RandomChars(secretKeyLength)
+	if err != nil {
+		return fmt.Errorf("generate: %w", err)
+	}
+
+	if err = persistSecretKey(key); err != nil {
+		return err
+	}
+
+	Security.SecretKey = key
+	log.Info("Generated a new SECRET_KEY and stored it in %q", CustomConf)
+	return nil
+}
+
+// persistSecretKey writes the key to the custom configuration file and to the
+// in-memory copy, so that the value on disk is also the one this process uses.
+func persistSecretKey(key string) error {
+	if err := os.MkdirAll(filepath.Dir(CustomConf), 0o750); err != nil {
+		return fmt.Errorf("create config directory: %w", err)
+	}
+
+	// Section.Key creates the key when it is missing, so the same code covers
+	// both a fresh install and an existing custom config.
+	cfg, err := ini.Load(CustomConf)
+	if err != nil {
+		cfg = ini.Empty()
+	}
+	cfg.Section("security").Key("SECRET_KEY").SetValue(key)
+	if err = cfg.SaveTo(CustomConf); err != nil {
+		return fmt.Errorf("write %q: %w", CustomConf, err)
+	}
+
+	// Keep the in-memory copy in sync so nothing downstream can still observe the
+	// embedded default.
+	File.Section("security").Key("SECRET_KEY").SetValue(key)
+	return nil
 }
