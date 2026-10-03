@@ -158,7 +158,7 @@ import FileArchive from "lucide-svelte/icons/file-archive";
           <div class="item-main-content">
             <div class="item-title-bar">
               <span class="item-title-link">
-                {release.title || release.tag_name}
+                {release.name || release.Title || release.tag_name}
               </span>
               {#if release.is_draft}
                 <span class="badge-mini" style="background: var(--text-muted)">Draft</span>
@@ -188,9 +188,9 @@ import FileArchive from "lucide-svelte/icons/file-archive";
               </span>
             </div>
 
-            {#if release.note}
+            {#if release.body || release.Note}
               <div class="release-note-preview" style="font-size: 0.9rem; color: var(--text-color); margin-top: 0.5rem; opacity: 0.9; max-height: 4.5em; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
-                {release.note}
+                {release.body || release.Note}
               </div>
             {/if}
 

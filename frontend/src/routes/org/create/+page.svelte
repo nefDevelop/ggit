@@ -13,7 +13,7 @@
     errorMsg = '';
     
     try {
-      const res = await apiFetch('/api/v2/user/orgs', {
+      const res = await apiFetch('/api/v2/user/settings/orgs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

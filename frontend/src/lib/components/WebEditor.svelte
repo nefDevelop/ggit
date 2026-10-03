@@ -27,7 +27,7 @@
     try {
       // Reusing repository raw view logic or similar
       const res = await apiFetch(
-        `/${username}/${reponame}/raw/${branch}/${treePath}`,
+        `/api/v2/${username}/${reponame}/raw/${branch}/${treePath}`,
       );
       if (res.ok) content = await res.text();
     } catch (e) {

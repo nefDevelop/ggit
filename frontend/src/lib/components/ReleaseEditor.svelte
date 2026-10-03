@@ -110,11 +110,14 @@ import Trash2 from "lucide-svelte/icons/trash-2";
       ? `/api/v2/${username}/${reponame}/releases/${release.id}`
       : `/api/v2/${username}/${reponame}/releases`;
 
+    // form.NewRelease y form.EditRelease enlazan "name" y "body". Enviando
+    // "title" y "content" el campo obligatorio "name" llegaba vacío y el servidor
+    // respondía 400 en cada intento.
     const body = {
       tag_name: tagName,
       target: target,
-      title: title,
-      content: note,
+      name: title,
+      body: note,
       draft: !publish && isDraft,
       prerelease: isPrerelease,
       files: attachments.map((a) => a.uuid),

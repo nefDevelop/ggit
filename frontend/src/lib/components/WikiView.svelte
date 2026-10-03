@@ -64,8 +64,9 @@
       const res = await apiFetch(`/api/v2/${repo.data?.owner?.username}/${repo.data?.name}/wiki`);
       if (res.ok) {
         const data = await res.json();
-        wikiPages = sortTree(data?.pages || []);
-        currentPage = data?.current_page || null;
+        // ListWikiPages responde un array plano, no un objeto con "pages". Leyendo
+        // data.pages la wiki se quedaba siempre vacia.
+        wikiPages = sortTree(Array.isArray(data) ? data : data?.pages || []);
         if (currentPage && currentPage.content) {
           editContent = currentPage.content;
           editTitle = currentPage.title || currentPage.name || '';
@@ -82,7 +83,10 @@
 
   async function fetchHistory() {
     try {
-      const res = await apiFetch(`/api/v2/${repo.data?.owner?.username}/${repo.data?.name}/wiki/history?page=${path}`);
+      // GetWikiPage distingue el historial por el prefijo de ruta "history/".
+      // Con ?page= el parametro llega como "history" a secas y el backend buscaba
+      // una pagina llamada "history", con un 404.
+      const res = await apiFetch(`/api/v2/${repo.data?.owner?.username}/${repo.data?.name}/wiki/history/${encodeURIComponent(path)}`);
       if (res.ok) history = await res.json();
     } catch (e) {
       console.error(e);
