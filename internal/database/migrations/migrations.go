@@ -83,6 +83,8 @@ var migrations = []Migration{
 	NewMigration("add adr_folder_name to repository table", v32),
 	// v32 -> v33:v0.13.2
 	NewMigration("add size to attachment table", v33),
+	// v33 -> v34
+	NewMigration("add indexes for the queries that scan by repository", v34),
 }
 
 var errMigrationSkipped = errors.New("the migration has been skipped")
