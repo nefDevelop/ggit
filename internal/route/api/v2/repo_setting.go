@@ -191,7 +191,7 @@ func GetRepoHooks(c *context.APIContext) {
 	c.JSON(http.StatusOK, resp)
 }
 
-func parseHookEvents(events []string, w *database.Webhook) {
+func parseHookEvents(events []string, w *database.Webhook) error {
 	w.HookEvent = &database.HookEvent{
 		ChooseEvents: true,
 	}
@@ -215,6 +215,13 @@ func parseHookEvents(events []string, w *database.Webhook) {
 			w.Release = true
 		}
 	}
+
+	// The events live in a HookEvent struct that the model does not persist, so
+	// without this the "events" column is written empty. The create and update
+	// responses both read the in-memory struct, which is why the webhook looked
+	// correct on the way out and then listed as a 500 on the way back in: the
+	// reload left HookEvent nil and EventsArray dereferenced it.
+	return w.UpdateEvent()
 }
 
 // CreateRepoHook creates a new webhook for the repository.
@@ -232,7 +239,10 @@ func CreateRepoHook(c *context.APIContext) {
 		Secret:      f.Secret,
 		IsActive:    f.Active,
 	}
-	parseHookEvents(f.Events, w)
+	if err := parseHookEvents(f.Events, w); err != nil {
+		c.Error(err, "parse hook events")
+		return
+	}
 
 	if err := database.CreateWebhook(w); err != nil {
 		c.Error(err, "create webhook")
@@ -270,7 +280,10 @@ func UpdateRepoHook(c *context.APIContext) {
 		w.IsActive = *f.Active
 	}
 	if len(f.Events) > 0 {
-		parseHookEvents(f.Events, w)
+		if err = parseHookEvents(f.Events, w); err != nil {
+			c.Error(err, "parse hook events")
+			return
+		}
 	}
 
 	if err = database.UpdateWebhook(w); err != nil {

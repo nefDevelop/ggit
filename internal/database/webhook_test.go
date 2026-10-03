@@ -1,89 +1,56 @@
 package database
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestWebhookSignatureLogic(t *testing.T) {
-	tests := []struct {
-		name     string
-		secret   string
-		payload  string
-		expected string // HMAC-SHA256 hex
+// Webhook embeds *HookEvent, which carries the event flags, and every Has*Event
+// helper reads through it. Rows written with an empty "events" column used to
+// come back with a nil embedded pointer, and listing the webhooks then panicked
+// with a nil dereference instead of returning them.
+func TestWebhookAfterFindAlwaysInitialisesHookEvent(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		events string
+		want   []string
 	}{
-		{
-			name:    "Simple payload",
-			secret:  "test-secret",
-			payload: `{"test":"data"}`,
-			// Actual SHA256 HMAC for this secret and payload
-			expected: "e914119c41a12d9a06ed4306f9f3c1ce32ee6618cbb06f54f00a280ba2dc7985",
-		},
-		{
-			name:     "Empty secret",
-			secret:   "",
-			payload:  `{"test":"data"}`,
-			expected: "",
-		},
-	}
+		{name: "empty events column", events: "", want: []string{}},
+		{name: "populated events column", events: `{"choose_events":true,"events":{"push":true}}`, want: []string{"push"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			w := &Webhook{Events: tc.events}
+			require.NoError(t, w.AfterFind(nil))
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var signature string
-			if len(tt.secret) > 0 {
-				sig := hmac.New(sha256.New, []byte(tt.secret))
-				_, _ = sig.Write([]byte(tt.payload))
-				signature = hex.EncodeToString(sig.Sum(nil))
-			}
+			require.NotNil(t, w.HookEvent, "HookEvent must never be nil after a load")
 
-			if tt.secret == "" {
-				assert.Empty(t, signature)
-			} else {
-				assert.Equal(t, tt.expected, signature)
-			}
+			// Reading through the embedded pointer is what used to panic.
+			assert.NotPanics(t, func() {
+				_ = w.HasPushEvent()
+				_ = w.EventsArray()
+			})
+			assert.Equal(t, tc.want, w.EventsArray())
 		})
 	}
 }
 
-func TestWebhookSignatureVerification(t *testing.T) {
-	secret := "my-secure-webhook-secret"
-	validPayload := `{"action": "push", "commits": []}`
+// The events column is what survives a round trip, so it has to be written on
+// the way in. It was not, which is why a webhook answered with its events and
+// then failed to list.
+func TestWebhookUpdateEventPersistsTheFlags(t *testing.T) {
+	w := &Webhook{HookEvent: &HookEvent{
+		ChooseEvents: true,
+		HookEvents:   HookEvents{Push: true, Issues: true},
+	}}
 
-	// Generar firma válida real para el test
-	mac := hmac.New(sha256.New, []byte(secret))
-	mac.Write([]byte(validPayload))
-	validSignature := hex.EncodeToString(mac.Sum(nil))
+	require.NoError(t, w.UpdateEvent())
+	assert.Contains(t, w.Events, `"push":true`)
+	assert.Contains(t, w.Events, `"issues":true`)
 
-	verifySignature := func(secret, payload, signature string) bool {
-		expectedMac := hmac.New(sha256.New, []byte(secret))
-		expectedMac.Write([]byte(payload))
-		expectedSignature := hex.EncodeToString(expectedMac.Sum(nil))
-
-		// Usamos ConstantTimeCompare para evitar ataques de timing (Timing Attacks)
-		return hmac.Equal([]byte(signature), []byte(expectedSignature))
-	}
-
-	t.Run("Superación: Firma Válida", func(t *testing.T) {
-		assert.True(t, verifySignature(secret, validPayload, validSignature), "La firma válida debe ser aceptada")
-	})
-
-	t.Run("Malintención: Payload alterado (Man-in-the-Middle)", func(t *testing.T) {
-		// El atacante intercepta la petición y cambia el payload pero mantiene la firma original
-		alteredPayload := `{"action": "delete_repository", "commits": []}`
-		assert.False(t, verifySignature(secret, alteredPayload, validSignature), "Debe rechazar payloads alterados que no coinciden con la firma original")
-	})
-
-	t.Run("Malintención: Firma falsificada", func(t *testing.T) {
-		// El atacante intenta adivinar o forzar una firma falsa
-		fakeSignature := "f914119c41a12d9a06ed4306f9f3c1ce32ee6618cbb06f54f00a280ba2dc7985"
-		assert.False(t, verifySignature(secret, validPayload, fakeSignature), "Debe rechazar firmas falsificadas")
-	})
-
-	t.Run("Error: Secreto vacío o nulo", func(t *testing.T) {
-		assert.False(t, verifySignature("", validPayload, validSignature), "No debe validar si no hay secreto configurado en el backend")
-	})
+	// And they must survive the trip back.
+	reloaded := &Webhook{Events: w.Events}
+	require.NoError(t, reloaded.AfterFind(nil))
+	assert.Equal(t, []string{"push", "issues"}, reloaded.EventsArray())
 }

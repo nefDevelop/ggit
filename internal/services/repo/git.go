@@ -39,11 +39,20 @@ func prepareRepoCommit(repo *database.Repository, tmpDir, repoPath string, opts 
 
 	var data []byte
 	// README
-	if len(opts.Readme) > 0 {
+	// auto_init with no README named still has to initialise the repository.
+	// Without a file to write, "git add --all" stages nothing and "git commit"
+	// aborts with "nothing to commit", which surfaced as a 500 from
+	// POST /api/v2/user/repos. The web form always sent a README name, so only
+	// API clients hit it.
+	readme := opts.Readme
+	if readme == "" {
+		readme = "Default"
+	}
+	if len(readme) > 0 {
 		var err error
-		data, err = getRepoInitFile("readme", opts.Readme)
+		data, err = getRepoInitFile("readme", readme)
 		if err != nil {
-			return fmt.Errorf("getRepoInitFile[%s]: %v", opts.Readme, err)
+			return fmt.Errorf("getRepoInitFile[%s]: %v", readme, err)
 		}
 
 		cloneLink := repox.NewCloneLink(repo.Owner.Name, repo.Name)

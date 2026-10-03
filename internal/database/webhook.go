@@ -126,8 +126,12 @@ func (w *Webhook) BeforeUpdate(tx *gorm.DB) error {
 
 // AfterFind implements the GORM query hook.
 func (w *Webhook) AfterFind(_ *gorm.DB) error {
+	// Allocated unconditionally. The embedded pointer is what carries the event
+	// flags, and every Has*Event helper reads through it, so leaving it nil turns
+	// any read into a panic. An empty "events" column is normal for rows written
+	// before the column was populated and for hooks created without events.
+	w.HookEvent = &HookEvent{}
 	if w.Events != "" {
-		w.HookEvent = &HookEvent{}
 		if err := json.Unmarshal([]byte(w.Events), w.HookEvent); err != nil {
 			log.Error("Unmarshal events [%d]: %v", w.ID, err)
 		}

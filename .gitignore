@@ -52,3 +52,7 @@ yarn.lock
 # Logs
 log/
 *.log
+
+# Generado por "make test-e2e": lo copia desde conf/app.ini y lo borra al
+# terminar. Versionarlo arrastraba el SECRET_KEY autogenerado al repositorio.
+conf/app.test.ini

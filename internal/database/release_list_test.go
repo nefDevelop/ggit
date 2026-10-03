@@ -37,10 +37,12 @@ func TestReleaseListMatchesPerIssueLoading(t *testing.T) {
 
 		publisher, err := Handle.Users().Create(ctx, "rel-publisher-"+suffix, "rel-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
-		require.NoError(t, db.Model(FromDomainUser(publisher)).Updates(map[string]any{
+		res := db.Model(&User{}).Where("id = ?", publisher.ID).Updates(map[string]any{
 			"created_unix": seeded.Unix(),
 			"updated_unix": seeded.Unix(),
-		}).Error)
+		})
+		require.NoError(t, res.Error)
+		require.EqualValues(t, 1, res.RowsAffected, "the seed row for the publisher was not pinned")
 
 		repo, err := Handle.Repositories().Create(ctx, publisher.ID, CreateRepoOptions{Name: "rel-repo-" + suffix})
 		require.NoError(t, err)

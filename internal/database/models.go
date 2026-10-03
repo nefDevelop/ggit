@@ -3,12 +3,13 @@ package database
 import (
 	"context"
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/nef734/ggit/internal/conf"
-	"github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/database/migrations"
 	"github.com/nef734/ggit/internal/dbx"
+	"github.com/nef734/ggit/internal/log"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -17,12 +18,33 @@ var (
 	HasEngine bool
 )
 
+// ensureLogDir creates the directory that will hold the gorm log file. The
+// console commands never call InitLogging(false), which is the only path that
+// creates the log root, so SetEngine cannot assume the directory is there.
+func ensureLogDir(logPath string) error {
+	if err := os.MkdirAll(filepath.Dir(logPath), os.ModePerm); err != nil {
+		return fmt.Errorf("create gorm log directory: %v", err)
+	}
+	return nil
+}
+
 func SetEngine() (*gorm.DB, error) {
 	var logPath string
 	if conf.HookMode {
 		logPath = filepath.Join(conf.Log.RootPath, "hooks", "gorm.log")
 	} else {
 		logPath = filepath.Join(conf.Log.RootPath, "gorm.log")
+	}
+
+	// Only "ggit web" reaches InitLogging(false), and that is the single caller
+	// that creates the log root. Every console command passes hookMode=true,
+	// which returns before the MkdirAll, and then lands here with HookMode still
+	// false and no directory to write into. On a fresh install that made
+	// "ggit admin create-user" abort with
+	// create "gorm.log": open data/log/gorm.log: no such file or directory,
+	// so the documented bootstrap command could not bootstrap.
+	if err := ensureLogDir(logPath); err != nil {
+		return nil, err
 	}
 
 	var err error

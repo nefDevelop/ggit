@@ -145,10 +145,12 @@ func TestIssueListMatchesPerIssueLoading(t *testing.T) {
 		require.NoError(t, err)
 
 		for _, u := range []*User{FromDomainUser(owner), FromDomainUser(assignee)} {
-			require.NoError(t, db.Model(u).Updates(map[string]any{
+			res := db.Model(&User{}).Where("id = ?", u.ID).Updates(map[string]any{
 				"created_unix": seeded.Unix(),
 				"updated_unix": seeded.Unix(),
-			}).Error)
+			})
+			require.NoError(t, res.Error)
+			require.EqualValues(t, 1, res.RowsAffected, "the seed row for %q was not pinned", u.Name)
 		}
 
 		repo, err := Handle.Repositories().Create(context.Background(), owner.ID, CreateRepoOptions{Name: "eq-repo-" + suffix})
