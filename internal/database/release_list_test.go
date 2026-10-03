@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/nef734/ggit/internal/dbtest"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
@@ -29,8 +30,17 @@ func TestReleaseListMatchesPerIssueLoading(t *testing.T) {
 		SetHandle(db)
 		ctx := context.Background()
 
+		// Timestamps are pinned. Left to the clock, two runs straddling a second
+		// boundary differ in CreatedAt and the comparison fails for a reason that
+		// has nothing to do with the loader.
+		seeded := time.Unix(1700000000, 0)
+
 		publisher, err := Handle.Users().Create(ctx, "rel-publisher-"+suffix, "rel-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
+		require.NoError(t, db.Model(FromDomainUser(publisher)).Updates(map[string]any{
+			"created_unix": seeded.Unix(),
+			"updated_unix": seeded.Unix(),
+		}).Error)
 
 		repo, err := Handle.Repositories().Create(ctx, publisher.ID, CreateRepoOptions{Name: "rel-repo-" + suffix})
 		require.NoError(t, err)
@@ -46,6 +56,7 @@ func TestReleaseListMatchesPerIssueLoading(t *testing.T) {
 				Note:        "notas",
 			}
 			require.NoError(t, db.Create(release).Error)
+			require.NoError(t, db.Model(release).Update("created_unix", seeded.Unix()).Error)
 
 			// Every release gets one attachment, plus a second on the first, so
 			// both the single and the multi attachment paths are covered.

@@ -6,15 +6,12 @@
   import { formatDate } from '$lib/utils/date';
   import { dialog } from '$lib/dialog.svelte';
   import Button from './ui/Button.svelte';
-  import Edit from "lucide-svelte/icons/edit";
   import History from "lucide-svelte/icons/history";
-  import Save from "lucide-svelte/icons/save";
-  import X from "lucide-svelte/icons/x";
-  import Trash2 from "lucide-svelte/icons/trash-2";
   import ArrowLeft from "lucide-svelte/icons/arrow-left";
   import MoreVertical from "lucide-svelte/icons/more-vertical";
+  import FileText from "lucide-svelte/icons/file-text";
+  import X from "lucide-svelte/icons/x";
   import WikiSidebar from "./WikiSidebar.svelte";
-  import WikiEditor from "./WikiEditor.svelte";
   import WikiPageViewer from "./WikiPageViewer.svelte";
 
   let { path = 'Home' } = $props();
@@ -27,12 +24,10 @@
   let saving = $state(false);
   let error = $state('');
 
-  let mode = $state<'view' | 'edit' | 'history'>('view');
-  let editContent = $state('');
-  let editTitle = $state('');
-  let commitMessage = $state('');
-  let parentPath = $state('');
-  let pageOrder = $state<number | null>(null);
+  // The wiki is read only: the backend answers 501 to every write because the
+  // pages live in the repository as docs, not in the database.
+  let mode = $state<'view' | 'history'>('view');
+  let showDocsHint = $state(false);
   let expandedFolders = $state<Record<string, boolean>>({});
 
   function parseFrontmatterOrder(content: string): number | null {
@@ -67,18 +62,39 @@
         // ListWikiPages responde un array plano, no un objeto con "pages". Leyendo
         // data.pages la wiki se quedaba siempre vacia.
         wikiPages = sortTree(Array.isArray(data) ? data : data?.pages || []);
-        if (currentPage && currentPage.content) {
-          editContent = currentPage.content;
-          editTitle = currentPage.title || currentPage.name || '';
-          const order = parseFrontmatterOrder(currentPage.content);
-          pageOrder = order;
-        }
       }
     } catch (e) {
       console.error(e);
     } finally {
       loading = false;
     }
+  }
+
+  // The wiki is served from the repository as docs, so a page is a file in the
+  // tree. GetWikiPage answers {name, path, content}; without this the viewer was
+  // always handed a null page and no content ever appeared.
+  async function loadPage(pagePath: string) {
+    if (!repo.data?.owner?.username || !repo.data?.name) return;
+
+    currentPage = null;
+    const res = await apiFetch(
+      `/api/v2/${repo.data.owner.username}/${repo.data.name}/wiki/${encodeURIComponent(pagePath)}`,
+    );
+
+    if (!res.ok) {
+      // A page that is not in the tree is not an error worth a toast: the file
+      // simply does not exist yet, and the viewer has an empty state for it.
+      currentPage = null;
+      return;
+    }
+
+    const data = await res.json();
+    currentPage = {
+      name: data.name || pagePath,
+      title: data.name || pagePath,
+      path: data.path || pagePath,
+      content: data.content || '',
+    };
   }
 
   async function fetchHistory() {
@@ -93,58 +109,9 @@
     }
   }
 
-  async function handleSave() {
-    if (!editTitle) return;
-    saving = true;
-    try {
-      let content = editContent || '';
-      if (pageOrder !== null && pageOrder !== undefined) {
-        content = content.replace(/^---[\s\S]*?\n---\n*/, '');
-        content = `---\norder: ${pageOrder}\n---\n${content}`;
-      }
-      const res = await apiFetch(`/api/v2/${repo.data?.owner?.username}/${repo.data?.name}/wiki/${editTitle}`, {
-        method: 'PUT',
-        body: JSON.stringify({ content, title: editTitle, commit_message: commitMessage, parent_path: parentPath }),
-      });
-      if (res.ok) {
-        mode = 'view';
-        await fetchWiki();
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      saving = false;
-    }
-  }
-
-  async function handleDelete() {
-    if (!await dialog.confirm(`¿Estás seguro de eliminar la página "${path}"?`)) return;
-    try {
-      const res = await apiFetch(`/api/v2/${repo.data?.owner?.username}/${repo.data?.name}/wiki/${path}`, { method: 'DELETE' });
-      if (res.ok) {
-        goto(`/${repo.data?.owner?.username}/${repo.data?.name}/wiki/Home`);
-        await fetchWiki();
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  function startEdit() {
-    editContent = currentPage?.content || '';
-    editTitle = currentPage?.title || currentPage?.name || '';
-    const order = parseFrontmatterOrder(currentPage?.content || '');
-    pageOrder = order;
-    mode = 'edit';
-  }
-
-  function startNew() {
-    editContent = '';
-    editTitle = '';
-    commitMessage = '';
-    pageOrder = null;
-    parentPath = '';
-    mode = 'edit';
+  // Both entry points that used to open the editor now explain why there is none.
+  function explainDocsAsCode() {
+    showDocsHint = true;
   }
 
   function toggleFolder(fullPath: string) {
@@ -162,13 +129,20 @@
   }
 
   onMount(() => { if (repo.data) fetchWiki(); });
+
+  // Navigating between pages swaps the path prop without remounting, so the
+  // content has to follow it.
+  $effect(() => {
+    if (!repo.data || !path) return;
+    loadPage(path);
+  });
 </script>
 
 <div class="wiki-container">
   <div class="wiki-grid" style={wikiPages.length === 0 ? 'display: block;' : ''}>
     {#if wikiPages.length > 0}
       <WikiSidebar {wikiPages} currentPath={path} {expandedFolders} repoOwner={repo.data?.owner?.username || ''} repoName={repo.data?.name || ''}
-        onNewPage={startNew} onToggleFolder={toggleFolder} />
+        onNewPage={explainDocsAsCode} onToggleFolder={toggleFolder} />
     {/if}
 
     <main class="wiki-main">
@@ -181,11 +155,7 @@
         {#if wikiPages.length > 0 || mode !== 'view'}
           <header class="wiki-content-header">
             <div class="header-left">
-              {#if mode === 'edit'}
-                <input type="text" class="title-input" bind:value={editTitle} placeholder="Título de la página..." />
-              {:else}
-                <h1>{currentPage?.name || 'Wiki'}</h1>
-              {/if}
+              <h1>{currentPage?.title || currentPage?.name || 'Wiki'}</h1>
             </div>
 
             <div class="header-right">
@@ -196,30 +166,40 @@
                 </div>
               {/if}
 
-              <div class="action-group">
-                {#if mode === 'view'}
-                  <Button variant="tonal" onclick={startEdit} icon={Edit}>Editar</Button>
-                {:else if mode === 'edit'}
-                  <Button variant="ghost" onclick={() => mode = 'view'} disabled={saving} icon={X}>Cancelar</Button>
-                  <Button variant="primary" onclick={handleSave} disabled={saving || !editTitle} loading={saving} icon={Save}>Guardar</Button>
-                {/if}
-                {#if mode === 'view' && path !== 'Home' && wikiPages.length > 0}
-                  <button class="btn-danger-icon" onclick={handleDelete} title="Eliminar Página" aria-label="Eliminar Página">
-                    <Trash2 size={18} />
-                  </button>
-                {/if}
-              </div>
+              {#if mode === 'view' && currentPage}
+                <div class="action-group">
+                  <Button variant="ghost" onclick={explainDocsAsCode} icon={FileText}>
+                    Editar en el repositorio
+                  </Button>
+                </div>
+              {/if}
             </div>
           </header>
+        {/if}
+
+        {#if showDocsHint}
+          <div class="docs-hint">
+            <FileText size={18} />
+            <div>
+              <strong>Esta wiki se edita en el repositorio</strong>
+              <p>
+                Las páginas son ficheros Markdown dentro de la carpeta
+                <code>{repo.data?.wiki_folder_name || 'docs'}</code>. El servidor
+                rechaza cualquier escritura aqui a proposito, asi que los cambios
+                llegan haciendo push y se ven en cuanto se fusionan.
+              </p>
+            </div>
+            <button class="docs-hint-close" onclick={() => showDocsHint = false} aria-label="Cerrar aviso">
+              <X size={16} />
+            </button>
+          </div>
         {/if}
 
         <div class="wiki-body" style={wikiPages.length === 0 && mode === 'view' ? 'padding: 0; display: flex; align-items: center; justify-content: center; min-height: 60vh;' : ''}>
           {#if mode === 'view'}
             <WikiPageViewer page={currentPage || null}
               repoOwner={repo.data?.owner?.username || ''} repoName={repo.data?.name || ''}
-              onCreatePage={startNew} />
-          {:else if mode === 'edit'}
-            <WikiEditor bind:editTitle bind:editContent bind:commitMessage bind:parentPath bind:pageOrder {wikiPages} />
+              onCreatePage={explainDocsAsCode} />
           {:else if mode === 'history'}
             <div class="history-list">
               {#each history as entry}
@@ -240,6 +220,38 @@
 </div>
 
 <style>
+  .docs-hint {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid var(--status-info-muted);
+    border-radius: var(--radius, 1rem);
+    background: var(--status-info-muted);
+    color: var(--md-sys-color-on-surface);
+  }
+  .docs-hint strong { display: block; margin-bottom: 0.2rem; }
+  .docs-hint p { margin: 0; font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); }
+  .docs-hint code {
+    font-family: var(--font-mono);
+    background: var(--output-surface-raised);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.3rem;
+  }
+  .docs-hint-close {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    padding: 0.25rem;
+    border: none;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+  .docs-hint-close:hover { background: var(--status-info-muted); }
+
   .wiki-container { padding: 1.5rem; }
   .wiki-grid { display: flex; gap: 2rem; align-items: flex-start; }
   .wiki-main { flex: 1; min-width: 0; }
@@ -249,14 +261,8 @@
   }
   .header-left { flex: 1; min-width: 200px; }
   .header-left h1 { margin: 0; font-size: 1.75rem; font-weight: 800; }
-  .title-input {
-    width: 100%; font-size: 1.5rem; font-weight: 800;
-    background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant);
-    color: inherit; padding: 0.5rem 1rem; border-radius: 0.5rem;
-    font-family: inherit; box-sizing: border-box;
-  }
   .header-right { display: flex; align-items: center; gap: 0.75rem; }
-  .tab-group { display: flex; background: rgba(0,0,0,0.1); border-radius: 0.5rem; padding: 2px; }
+  .tab-group { display: flex; background: var(--md-sys-color-surface-container-lowest); border-radius: 0.5rem; padding: 2px; }
   .tab-btn {
     padding: 0.4rem 1rem; border: none; background: transparent;
     color: var(--text-muted); cursor: pointer; border-radius: 0.4rem;
@@ -264,12 +270,6 @@
   }
   .tab-btn.active { background: var(--md-sys-color-surface-container-high); color: var(--text-color); }
   .action-group { display: flex; gap: 0.5rem; align-items: center; }
-  .btn-danger-icon {
-    background: transparent; border: none; color: var(--md-sys-color-error);
-    cursor: pointer; padding: 0.5rem; border-radius: 0.5rem;
-    transition: all 0.2s; opacity: 0.7;
-  }
-  .btn-danger-icon:hover { opacity: 1; background: rgba(var(--error-rgb),0.1); }
   .wiki-body { min-height: 400px; }
   .wiki-skeleton { display: flex; flex-direction: column; gap: 1rem; }
   .skeleton-header { height: 40px; background: var(--md-sys-color-surface-container-high); border-radius: 0.75rem; }

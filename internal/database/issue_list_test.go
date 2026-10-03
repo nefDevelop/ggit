@@ -134,10 +134,22 @@ func TestIssueListMatchesPerIssueLoading(t *testing.T) {
 			new(Milestone), new(Attachment), new(Comment), new(PullRequest), new(Watch))
 		SetHandle(db)
 
+		// The creation timestamp is pinned. Left to the clock, two runs straddling a
+		// second boundary produce users whose CreatedAt differ by one second, and the
+		// comparison below fails for a reason that has nothing to do with the loader.
+		seeded := time.Unix(1700000000, 0)
+
 		owner, err := Handle.Users().Create(context.Background(), "eq-owner-"+suffix, "eq-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
 		assignee, err := Handle.Users().Create(context.Background(), "eq-assignee-"+suffix, "as-"+suffix+"@example.com", CreateUserOptions{})
 		require.NoError(t, err)
+
+		for _, u := range []*User{FromDomainUser(owner), FromDomainUser(assignee)} {
+			require.NoError(t, db.Model(u).Updates(map[string]any{
+				"created_unix": seeded.Unix(),
+				"updated_unix": seeded.Unix(),
+			}).Error)
+		}
 
 		repo, err := Handle.Repositories().Create(context.Background(), owner.ID, CreateRepoOptions{Name: "eq-repo-" + suffix})
 		require.NoError(t, err)
