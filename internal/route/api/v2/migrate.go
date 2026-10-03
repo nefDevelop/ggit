@@ -1,13 +1,14 @@
 package v2
 
 import (
+	"errors"
 	"net/http"
-	"net/url"
 	"strings"
 
 	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/form"
 	log "github.com/nef734/ggit/internal/log"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 )
@@ -52,16 +53,19 @@ func MigrateRepo(c *context.APIContext) {
 		}
 	}
 
-	remoteAddr := strings.TrimPrefix(strings.TrimSpace(f.CloneAddr), "git clone ")
-
-	if strings.HasPrefix(remoteAddr, "http://") || strings.HasPrefix(remoteAddr, "https://") {
-		u, err := url.Parse(remoteAddr)
-		if err == nil {
-			if f.AuthUsername != "" || f.AuthPassword != "" {
-				u.User = url.UserPassword(f.AuthUsername, f.AuthPassword)
-			}
-			remoteAddr = u.String()
+	remoteAddr, err := form.MigrateRepo{
+		CloneAddr:    strings.TrimPrefix(strings.TrimSpace(f.CloneAddr), "git clone "),
+		AuthUsername: f.AuthUsername,
+		AuthPassword: f.AuthPassword,
+	}.ParseRemoteAddr(database.FromDomainUser(ctxUser))
+	if err != nil {
+		var invalidAddr database.ErrInvalidCloneAddr
+		if errors.As(err, &invalidAddr) {
+			c.StatusError(http.StatusBadRequest, "Invalid clone address.", err)
+			return
 		}
+		c.Error(err, "parse remote address")
+		return
 	}
 
 	repo, err := database.MigrateRepository(c.User, database.FromDomainUser(ctxUser), database.MigrateRepoOptions{
