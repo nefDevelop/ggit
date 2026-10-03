@@ -58,9 +58,18 @@ build-swagger-cdn: TAGS += swagger_cdn
 build-swagger-cdn: build
 
 # Tests
+# -race exposes data races; several packages mutate the shared database handle
+# from tests that call t.Parallel, so this is not optional.
+# -timeout fails fast instead of blocking until the ten minute default, which is
+# what a killed process used to do.
+# -shuffle=on varies test order, which is how the shared handle races surfaced.
 test:
 	@echo "Ejecutando tests de Go..."
-	@GGIT_SKIP_RUN_USER_CHECK=true go test -v ./...
+	@GGIT_SKIP_RUN_USER_CHECK=true go test -race -timeout 300s -shuffle=on ./...
+
+test-short:
+	@echo "Ejecutando tests de Go (sin los marcados como lentos)..."
+	@GGIT_SKIP_RUN_USER_CHECK=true go test -short -timeout 300s ./...
 
 test-frontend:
 	@echo "Ejecutando tests unitarios del frontend..."

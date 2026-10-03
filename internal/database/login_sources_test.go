@@ -139,8 +139,10 @@ func TestLoginSources(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
-	t.Parallel()
-
+	// t.Parallel() is deliberately absent. This test installs its own database
+	// through newTestDB, which writes the process wide database.Handle. Running
+	// two of these at once is a data race on that global, which the race
+	// detector reports intermittently depending on the interleaving.
 	ctx := context.Background()
 	s := &LoginSourcesStore{
 		db:    newTestDB(t, "LoginSourcesStore"),

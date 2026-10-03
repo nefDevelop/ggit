@@ -115,13 +115,19 @@ func TestEnsureSecretKeyRejectsEmbeddedDefault(t *testing.T) {
 }
 
 // swapCustomConf points the package level CustomConf at a temporary path and
-// returns a function that restores the previous value.
+// returns a function that restores every global the tests below touch.
+//
+// Security is restored too: these tests mutate Security.SecretKey, and the
+// golden test in this package serialises whatever value it finds there, so a
+// leaked key makes TestInit fail depending on the shuffled test order.
 func swapCustomConf(path string) func() {
 	previousConf := CustomConf
 	previousFile := File
+	previousSecurity := Security
 	CustomConf = path
 	return func() {
 		CustomConf = previousConf
 		File = previousFile
+		Security = previousSecurity
 	}
 }
