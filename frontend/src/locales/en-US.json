@@ -14,7 +14,12 @@
     "max_repos": "Max Repositories",
     "max_repos_helper": "-1 means system default",
     "modifying_account": "Modifying account: %s",
-    "monitor": "Monitoring",
+    "monitor": {
+      "kill_failed": "Could not stop the process",
+      "process_killed": "Process stopped",
+      "task_failed": "The task failed",
+      "task_triggered": "Task triggered"
+    },
     "notices": "System Notices",
     "organizations": "Organization Management",
     "prohibit_login": "Prohibit Login",
@@ -35,7 +40,8 @@
     "empty_janitor": "All repositories are clean or have not been scanned yet.",
     "security": "Security",
     "janitor": "Janitor",
-    "never": "Never"
+    "never": "Never",
+    "monitor_label": "Monitoring"
   },
   "admin_panel": "Admin Panel",
   "app_desc": "A painless self-hosted Git service",
@@ -220,7 +226,13 @@
     "releases": "Releases",
     "releases_desc": "Manage published versions, release notes, and binary assets.",
     "labels": "Labels",
-    "labels_desc": "Categorize issues and Pull Requests with custom colored labels."
+    "labels_desc": "Categorize issues and Pull Requests with custom colored labels.",
+    "saved_success": "Settings saved",
+    "saved_error": "Could not save the settings",
+    "language": "Language",
+    "language_desc": "Language of the interface",
+    "language_helper": "The interface language is stored in your profile.",
+    "org_delete_confirm": "This will permanently remove the organization and everything in it."
   },
   "settings_title": "Settings",
   "sign_in": "Sign In",

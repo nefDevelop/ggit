@@ -11,7 +11,7 @@
     { id: "/admin/orgs", name: i18n.t("admin.organizations") || "Organizations", icon: "corporate_fare", path: "/admin/orgs" },
     { id: "/admin/auth", name: i18n.t("admin.auths") || "Authentication", icon: "lock", path: "/admin/auth" },
     { id: "/admin/config", name: i18n.t("admin.config") || "Configuration", icon: "settings", path: "/admin/config" },
-    { id: "/admin/monitor", name: i18n.t("admin.monitor") || "Monitor", icon: "monitoring", path: "/admin/monitor" },
+    { id: "/admin/monitor", name: i18n.t("admin.monitor_label") || "Monitor", icon: "monitoring", path: "/admin/monitor" },
     { id: "/admin/maintenance", name: i18n.t("admin.maintenance") || "Maintenance", icon: "build", path: "/admin/maintenance" },
     { id: "/admin/audit_log", name: i18n.t("admin.audit_log") || "Audit Log", icon: "history_edu", path: "/admin/audit_log" },
     { id: "/admin/security", name: "Seguridad", icon: "shield", path: "/admin/security" },

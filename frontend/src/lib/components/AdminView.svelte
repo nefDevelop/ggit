@@ -24,7 +24,7 @@
     { id: "orgs", label: i18n.t('admin.organizations'), icon: "corporate_fare" },
     { id: "auths", label: i18n.t('admin.auths'), icon: "lock" },
     { id: "config", label: i18n.t('admin.config'), icon: "settings" },
-    { id: "monitor", label: i18n.t('admin.monitor'), icon: "monitoring" },
+    { id: "monitor", label: i18n.t('admin.monitor_label'), icon: "monitoring" },
     { id: "maintenance", label: i18n.t('admin.maintenance'), icon: "build" },
     { id: "security", label: i18n.t('admin.security'), icon: "shield_check" },
     { id: "audit", label: i18n.t('admin.audit_log'), icon: "history_edu" },

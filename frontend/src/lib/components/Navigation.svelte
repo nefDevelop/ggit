@@ -77,7 +77,7 @@
     { name: i18n.t("admin.organizations") || "Organizations", icon: Building2, path: "/admin/orgs" },
     { name: i18n.t("admin.auths") || "Authentication", icon: Lock, path: "/admin/auth" },
     { name: i18n.t("admin.config") || "Configuration", icon: Settings, path: "/admin/config" },
-    { name: i18n.t("admin.monitor") || "Monitor", icon: Activity, path: "/admin/monitor" },
+    { name: i18n.t("admin.monitor_label") || "Monitor", icon: Activity, path: "/admin/monitor" },
     { name: i18n.t("admin.maintenance") || "Maintenance", icon: Hammer, path: "/admin/maintenance" },
     { name: i18n.t("admin.audit_log") || "Audit Log", icon: ScrollText, path: "/admin/audit_log" },
     { name: i18n.t("admin.security") || "Seguridad", icon: Shield, path: "/admin/security" },

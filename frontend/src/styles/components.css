@@ -1,3 +1,16 @@
+/* Tonal list: a stacked list of rows sharing one rounded container.
+   It lived duplicated in eight settings components with a hardcoded
+   rgba(0,0,0,0.15) background, which is a dark overlay that does not adapt to
+   the light theme. The surface token resolves per theme instead. */
+.tonal-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
 /* Islands */
 .island {
   background-color: var(--bg-surface);

@@ -190,7 +190,6 @@ import Key from "lucide-svelte/icons/key";
   .token-display code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #6ee7b7; word-break: break-all; }
   @media (max-width: 600px) { .token-display code { font-size: 1rem; } }
 
-  .tonal-list { display: flex; flex-direction: column; background: rgba(0,0,0,0.15); border-radius: 1.5rem; overflow: hidden; border: 1px solid var(--md-sys-color-outline-variant); }
   .token-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
   
   @media (max-width: 800px) {

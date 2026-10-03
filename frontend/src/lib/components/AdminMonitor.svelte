@@ -98,7 +98,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
 <div class="admin-monitor-container">
   <PageHeader 
-    title={(i18n.t('admin.monitor') || "Monitor del Sistema") + " (v2)"}
+    title={(i18n.t('admin.monitor_label') || "Monitor del Sistema") + " (v2)"}
     subtitle="Tareas programadas, procesos activos y recursos"
     icon={Activity}
   />
