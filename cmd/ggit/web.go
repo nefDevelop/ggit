@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nef734/ggit/internal/conf"
@@ -135,6 +136,19 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 	server := &http.Server{
 		Addr:    listenAddr,
 		Handler: r,
+		// ReadHeaderTimeout corta los ataques Slowloris: sin el, un cliente puede
+		// enviar cabeceras a un byte por segundo y retener la conexion de forma
+		// indefinida. Solo limita la recepcion de cabeceras, no del cuerpo.
+		ReadHeaderTimeout: 30 * time.Second,
+		// IdleTimeout recupera las conexiones keep-alive abandonadas. Sin el, los
+		// descriptores se acumulan hasta agotar el limite del proceso.
+		IdleTimeout: 120 * time.Second,
+		// MaxHeaderBytes acota la memoria por conexion para las cabeceras.
+		MaxHeaderBytes: 1 << 20, // 1 MiB
+		// ReadTimeout y WriteTimeout se dejan deliberadamente sin fijar: este mismo
+		// servidor atiende el protocolo Git HTTP, donde un clone o un push de un
+		// repositorio grande mantiene la conexion abierta durante minutos. Un
+		// WriteTimeout corto abortaria transferencias legitimas.
 	}
 
 	if protocol == "https" {

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"reflect"
+	"strings"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/sessions"
@@ -18,6 +19,23 @@ import (
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/public"
 )
+
+// parseSameSite translates the configured cookie policy into a net/http value.
+// An unset or unrecognised value falls back to Lax: it is the strictest policy
+// that still lets a user follow an external link to the forge, and it keeps the
+// session cookie off cross-site requests. "none" is only honoured because the
+// deployment is expected to pair it with COOKIE_SECURE=true, which browsers now
+// require for SameSite=None.
+func parseSameSite(value string) http.SameSite {
+	switch strings.ToLower(strings.TrimSpace(value)) {
+	case "none":
+		return http.SameSiteNoneMode
+	case "strict":
+		return http.SameSiteStrictMode
+	default:
+		return http.SameSiteLaxMode
+	}
+}
 
 type Engine struct {
 	*gin.Engine
@@ -46,9 +64,9 @@ func New() *Engine {
 		Path:     "/",
 		Domain:   "",
 		MaxAge:   86400,
-		Secure:   false,
+		Secure:   conf.Security.CookieSecure,
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: parseSameSite(conf.Security.CookieSameSite),
 	})
 	r.Use(sessions.Sessions("ggit_session", store))
 	r.Use(context.Contexter(context.NewStore()))
