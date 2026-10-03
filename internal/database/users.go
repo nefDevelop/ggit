@@ -17,6 +17,7 @@ import (
 	"github.com/nef734/ggit/internal/errx"
 	"github.com/nef734/ggit/internal/fsx"
 	"github.com/nef734/ggit/internal/lazyregexp"
+	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/markup"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/repox"
@@ -738,11 +739,26 @@ func (s *UsersStore) IsUsernameUsed(ctx context.Context, Username string, exclud
 	if Username == "" {
 		return false
 	}
-	return s.db.WithContext(ctx).
+
+	err := s.db.WithContext(ctx).
 		Select("id").
 		Where("lower_name = ? AND id != ?", strings.ToLower(Username), excludeUserID).
-		First(&User{}).
-		Error != gorm.ErrRecordNotFound
+		First(&User{}).Error
+
+	if err == nil {
+		return true
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		// A lookup that failed is not evidence that the name is taken. Reporting
+		// it as taken turns any transient database error, a locked SQLite file or
+		// a missing table, into "User already exists", which is both wrong and
+		// hides the real cause behind a message about duplicates.
+		//
+		// Answering false here is safe: user.lower_name carries a unique index, so
+		// a duplicate is still rejected at INSERT time, with the real error.
+		log.Error("IsUsernameUsed(%q): %v", Username, err)
+	}
+	return false
 }
 
 // List returns a list of Users. Results are paginated by given page and page

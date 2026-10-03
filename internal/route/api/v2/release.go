@@ -20,9 +20,17 @@ func ListReleases(c *context.APIContext) {
 		return
 	}
 
+	if err := database.ReleaseList(releases).LoadAttributes(); err != nil {
+		c.Error(err, "load release attributes")
+		return
+	}
+
 	resp := make([]*apiv2types.RepositoryReleaseResponse, len(releases))
 	for i, r := range releases {
-		_ = r.LoadAttributes()
+		if r.Publisher == nil {
+			c.StatusError(http.StatusInternalServerError, "release publisher not found", nil)
+			return
+		}
 		resp[i] = r.APIFormat()
 	}
 

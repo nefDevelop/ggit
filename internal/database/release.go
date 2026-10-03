@@ -434,3 +434,86 @@ func DeleteReleaseOfRepoByID(repoID, id int64) error {
 
 	return nil
 }
+
+// ReleaseList is a list of releases whose publisher and attachments can be
+// loaded together.
+//
+// Release.loadAttributes resolved the repository, the publisher and the
+// attachments per release, three statements each, so a repository with many
+// releases turned one listing into a long chain of round trips. Release.APIFormat
+// does not read r.Repo at all, so a listing does not fetch it either.
+type ReleaseList []*Release
+
+func (releases ReleaseList) loadAttributes(tx *gorm.DB) error {
+	if len(releases) == 0 {
+		return nil
+	}
+
+	releaseIDs := make([]int64, 0, len(releases))
+	for _, release := range releases {
+		releaseIDs = append(releaseIDs, release.ID)
+
+		// Same derivation the single release path does. APIFormat serialises
+		// Created through this field, so leaving it zero silently changed the
+		// response.
+		if release.Created.IsZero() && release.CreatedUnix > 0 {
+			release.Created = time.Unix(release.CreatedUnix, 0).Local()
+		}
+	}
+
+	// Publishers.
+	userSet := make(map[int64]*User)
+	for _, release := range releases {
+		if release.Publisher == nil && release.PublisherID > 0 {
+			userSet[release.PublisherID] = nil
+		}
+	}
+	if len(userSet) > 0 {
+		userIDs := make([]int64, 0, len(userSet))
+		for userID := range userSet {
+			userIDs = append(userIDs, userID)
+		}
+		users := make([]*User, 0, len(userIDs))
+		if err := tx.Where("id IN (?)", userIDs).Find(&users).Error; err != nil {
+			return fmt.Errorf("find publishers: %w", err)
+		}
+		for i := range users {
+			userSet[users[i].ID] = users[i]
+		}
+	}
+	for _, release := range releases {
+		if release.Publisher == nil && release.PublisherID > 0 {
+			release.Publisher = userSet[release.PublisherID]
+		}
+	}
+
+	// Attachments, one query for the whole page. They hang off release_id, not
+	// issue_id.
+	attachments := make([]*Attachment, 0, len(releases))
+	if err := tx.Where("release_id IN (?)", releaseIDs).Find(&attachments).Error; err != nil {
+		return fmt.Errorf("find attachments: %w", err)
+	}
+	if len(attachments) > 0 {
+		byRelease := make(map[int64][]*Attachment, len(releases))
+		for _, attachment := range attachments {
+			byRelease[attachment.ReleaseID] = append(byRelease[attachment.ReleaseID], attachment)
+		}
+		for _, release := range releases {
+			if release.Attachments == nil {
+				release.Attachments = byRelease[release.ID]
+			}
+		}
+	} else {
+		for _, release := range releases {
+			if release.Attachments == nil {
+				release.Attachments = []*Attachment{}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (releases ReleaseList) LoadAttributes() error {
+	return releases.loadAttributes(Handle.db)
+}

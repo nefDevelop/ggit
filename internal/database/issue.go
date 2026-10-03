@@ -1013,11 +1013,8 @@ func Issues(opts *IssuesOptions) ([]*Issue, error) {
 		return nil, fmt.Errorf("find: %w", err)
 	}
 
-	// FIXME: use IssueList to improve performance.
-	for i := range issues {
-		if err := issues[i].LoadAttributes(); err != nil {
-			return nil, fmt.Errorf("LoadAttributes [%d]: %v", issues[i].ID, err)
-		}
+	if err := IssueList(issues).LoadAttributes(); err != nil {
+		return nil, fmt.Errorf("IssueList.LoadAttributes: %w", err)
 	}
 
 	return issues, nil
@@ -1405,4 +1402,193 @@ func updateIssueUsersByMentions(tx *gorm.DB, issueID int64, uids []int64) error 
 		}
 	}
 	return nil
+}
+
+// IssueList is a list of issues whose related objects can be loaded together.
+//
+// The per-issue LoadAttributes resolves the repository, the poster, the labels,
+// the milestone, the assignee, the pull request, the attachments and the
+// comments: about six queries per issue, so a page of twenty cost well over a
+// hundred statements and the unified inbox, capped at fifty, cost several
+// hundred. Loading them in batches makes the cost independent of the page size.
+//
+// Attachments and comments are deliberately not loaded. They are not serialised
+// by Issue.APIFormat, which reports the denormalised NumComments counter instead,
+// so fetching them for a listing was pure waste. Callers that need them must
+// still use LoadAttributes on a single issue.
+type IssueList []*Issue
+
+func (issues IssueList) loadAttributes(tx *gorm.DB) error {
+	if len(issues) == 0 {
+		return nil
+	}
+
+	issueIDs := make([]int64, 0, len(issues))
+	for _, issue := range issues {
+		issueIDs = append(issueIDs, issue.ID)
+	}
+
+	// Repositories. A listing usually spans a single one, but the inbox spans
+	// every repository the user has access to.
+	repoSet := make(map[int64]*Repository)
+	for _, issue := range issues {
+		if issue.Repo == nil {
+			repoSet[issue.RepoID] = nil
+		}
+	}
+	if len(repoSet) > 0 {
+		repoIDs := make([]int64, 0, len(repoSet))
+		for repoID := range repoSet {
+			repoIDs = append(repoIDs, repoID)
+		}
+		repos := make([]*Repository, 0, len(repoIDs))
+		if err := tx.Where("id IN (?)", repoIDs).Find(&repos).Error; err != nil {
+			return fmt.Errorf("find repositories: %w", err)
+		}
+		for i := range repos {
+			repoSet[repos[i].ID] = repos[i]
+		}
+	}
+	for _, issue := range issues {
+		if issue.Repo == nil {
+			issue.Repo = repoSet[issue.RepoID]
+		}
+	}
+
+	// Posters and assignees share one lookup: both are users.
+	userSet := make(map[int64]*User)
+	for _, issue := range issues {
+		if issue.Poster == nil && issue.PosterID > 0 {
+			userSet[issue.PosterID] = nil
+		}
+		if issue.Assignee == nil && issue.AssigneeID > 0 {
+			userSet[issue.AssigneeID] = nil
+		}
+	}
+	if len(userSet) > 0 {
+		userIDs := make([]int64, 0, len(userSet))
+		for userID := range userSet {
+			userIDs = append(userIDs, userID)
+		}
+		users := make([]*User, 0, len(userIDs))
+		if err := tx.Where("id IN (?)", userIDs).Find(&users).Error; err != nil {
+			return fmt.Errorf("find users: %w", err)
+		}
+		for i := range users {
+			userSet[users[i].ID] = users[i]
+		}
+	}
+	for _, issue := range issues {
+		if issue.Poster == nil {
+			if poster, ok := userSet[issue.PosterID]; ok && poster != nil {
+				issue.Poster = poster
+			} else {
+				// Matches the single issue behaviour for a deleted poster.
+				issue.PosterID = -1
+				issue.Poster = NewGhostUser()
+			}
+		}
+		if issue.Assignee == nil && issue.AssigneeID > 0 {
+			issue.Assignee = userSet[issue.AssigneeID]
+		}
+	}
+
+	// Labels: one join for the relations, one for the labels themselves.
+	issueLabels := make([]*IssueLabel, 0, len(issues))
+	if err := tx.Where("issue_id IN (?)", issueIDs).Find(&issueLabels).Error; err != nil {
+		return fmt.Errorf("find issue labels: %w", err)
+	}
+	if len(issueLabels) > 0 {
+		labelSet := make(map[int64]*Label)
+		labelIDs := make([]int64, 0, len(issueLabels))
+		for _, issueLabel := range issueLabels {
+			if _, ok := labelSet[issueLabel.LabelID]; !ok {
+				labelSet[issueLabel.LabelID] = nil
+				labelIDs = append(labelIDs, issueLabel.LabelID)
+			}
+		}
+		labels := make([]*Label, 0, len(labelIDs))
+		if err := tx.Where("id IN (?)", labelIDs).Order("name ASC").Find(&labels).Error; err != nil {
+			return fmt.Errorf("find labels: %w", err)
+		}
+		for i := range labels {
+			labelSet[labels[i].ID] = labels[i]
+		}
+
+		labelsByIssue := make(map[int64][]*Label, len(issues))
+		for _, issueLabel := range issueLabels {
+			if label := labelSet[issueLabel.LabelID]; label != nil {
+				labelsByIssue[issueLabel.IssueID] = append(labelsByIssue[issueLabel.IssueID], label)
+			}
+		}
+		for _, issue := range issues {
+			if issue.Labels == nil {
+				issue.Labels = labelsByIssue[issue.ID]
+				if issue.Labels == nil {
+					issue.Labels = []*Label{}
+				}
+			}
+		}
+	} else {
+		for _, issue := range issues {
+			if issue.Labels == nil {
+				issue.Labels = []*Label{}
+			}
+		}
+	}
+
+	// Milestones.
+	milestoneSet := make(map[int64]*Milestone)
+	for _, issue := range issues {
+		if issue.Milestone == nil && issue.MilestoneID > 0 {
+			milestoneSet[issue.MilestoneID] = nil
+		}
+	}
+	if len(milestoneSet) > 0 {
+		milestoneIDs := make([]int64, 0, len(milestoneSet))
+		for milestoneID := range milestoneSet {
+			milestoneIDs = append(milestoneIDs, milestoneID)
+		}
+		milestones := make([]*Milestone, 0, len(milestoneIDs))
+		if err := tx.Where("id IN (?)", milestoneIDs).Find(&milestones).Error; err != nil {
+			return fmt.Errorf("find milestones: %w", err)
+		}
+		for i := range milestones {
+			milestoneSet[milestones[i].ID] = milestones[i]
+		}
+	}
+	for _, issue := range issues {
+		if issue.Milestone == nil && issue.MilestoneID > 0 {
+			issue.Milestone = milestoneSet[issue.MilestoneID]
+		}
+	}
+
+	// Pull requests, only for the entries that are pull requests.
+	pullSet := make(map[int64]*PullRequest)
+	pullIssues := make([]*Issue, 0, len(issues))
+	for _, issue := range issues {
+		if issue.IsPull && issue.PullRequest == nil {
+			pullSet[issue.ID] = nil
+			pullIssues = append(pullIssues, issue)
+		}
+	}
+	if len(pullIssues) > 0 {
+		pulls := make([]*PullRequest, 0, len(pullIssues))
+		if err := tx.Where("issue_id IN (?)", issueIDs).Find(&pulls).Error; err != nil {
+			return fmt.Errorf("find pull requests: %w", err)
+		}
+		for i := range pulls {
+			pullSet[pulls[i].IssueID] = pulls[i]
+		}
+		for _, issue := range pullIssues {
+			// It is possible a pull request is not created yet.
+			issue.PullRequest = pullSet[issue.ID]
+		}
+	}
+
+	return nil
+}
+
+func (issues IssueList) LoadAttributes() error {
+	return issues.loadAttributes(Handle.db)
 }

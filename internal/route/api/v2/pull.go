@@ -37,9 +37,20 @@ func ListPullRequests(c *context.APIContext) {
 		return
 	}
 
+	if err := database.IssueList(issues).LoadAttributes(); err != nil {
+		c.Error(err, "load pull request attributes")
+		return
+	}
+
 	apiPullRequests := make([]*apiv2types.PullRequestResponse, len(issues))
 	for i, issue := range issues {
-		_ = issue.LoadAttributes()
+		if issue.PullRequest == nil {
+			// The batch loader cannot report a missing pull request as an error per
+			// row, so it is caught here instead of dereferencing nil.
+			c.StatusError(http.StatusInternalServerError,
+				"pull request not found for issue", nil)
+			return
+		}
 		apiPullRequests[i] = issue.PullRequest.APIFormat()
 	}
 

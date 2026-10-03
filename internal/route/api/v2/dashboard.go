@@ -48,7 +48,7 @@ func GetDashboardData(c *context.APIContext) {
 		log.Error("GetDashboardData: Error fetching orgs for UserID=%d: %v", ctxUser.ID, err)
 		orgs = []*database.User{}
 	}
-	
+
 	orgIDs := make([]int64, len(orgs))
 	for i, org := range orgs {
 		orgIDs[i] = org.ID
@@ -199,9 +199,12 @@ func GetUnifiedInbox(c *context.APIContext) {
 		return
 	}
 
-	// Load attributes (Repo, Poster, etc.)
-	for _, is := range assigned {
-		_ = is.LoadAttributes()
+	// Load attributes (Repo, Poster, etc.) in one batch. Per issue this cost about
+	// six statements, so the fifty entries of the inbox added up to several
+	// hundred queries per request.
+	if err := database.IssueList(assigned).LoadAttributes(); err != nil {
+		c.Error(err, "load inbox attributes")
+		return
 	}
 
 	type InboxItem struct {
