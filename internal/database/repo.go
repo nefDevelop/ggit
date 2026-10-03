@@ -524,6 +524,17 @@ func (r *Repository) AfterFind(_ *gorm.DB) error {
 	return nil
 }
 
+// loadAttributes populates the related objects a Repository carries.
+//
+// It deliberately does not touch the filesystem. It used to call
+// repox.SelfHealHooks on every repository it loaded, which meant a GET request
+// performed three stat calls, three reads and, when a hook did not match, three
+// writes; multiplied by the row count of every list that resolves repositories
+// one at a time. Hooks are already written on each path that creates a
+// repository (createRepository, initRepository, forks, adoption) and
+// database.SyncRepoHooks reconciles any drift on its cron, so the read path had
+// nothing left to repair. The cost of losing that is that out-of-band hook damage
+// is now repaired within the cron interval instead of on the next read.
 func (r *Repository) loadAttributes(tx *gorm.DB) (err error) {
 	if r.Owner == nil {
 		r.Owner, err = getUserByID(tx, r.OwnerID)
@@ -544,9 +555,6 @@ func (r *Repository) loadAttributes(tx *gorm.DB) (err error) {
 		}
 	}
 
-	if err := repox.SelfHealHooks(r.RepoPath()); err != nil {
-		log.Error("SelfHealHooks [%d]: %v", r.ID, err)
-	}
 	return nil
 }
 
