@@ -1902,10 +1902,6 @@ func updateRepository(tx *gorm.DB, repo *Repository, visibilityChanged bool) (er
 	// the only way to tell whether it changed. The check is limited to that case
 	// on purpose: enforcing it unconditionally would reject pre-existing
 	// repositories whose names predate the whitelist.
-	//
-	// updateRepository does not move the directory on disk, so a name carrying a
-	// path separator would point RepoPath outside conf.Repository.Root and hand
-	// git and the archive handlers an arbitrary path.
 	var currentName string
 	if err = tx.Model(&Repository{}).Where("id = ?", repo.ID).Pluck("name", &currentName).Error; err != nil {
 		return fmt.Errorf("read current name: %w", err)
@@ -1921,6 +1917,42 @@ func updateRepository(tx *gorm.DB, repo *Repository, visibilityChanged bool) (er
 		if has {
 			return ErrRepoAlreadyExist{args: errx.Args{"ownerID": repo.OwnerID, "name": repo.Name}}
 		}
+	}
+
+	// The directory is moved before the row is written, and moved back if the
+	// write fails.
+	//
+	// Repository.RepoPath derives the path from the name, so saving a new name
+	// without moving the directory leaves the row pointing at a path that does
+	// not exist: every later git operation, archive and clone URL for that
+	// repository fails. The frontend renames through this very endpoint and then
+	// navigates to the new URL, so the rename has to be real.
+	var renamedFrom string
+	if currentName != "" && currentName != repo.Name {
+		if err = repo.getOwner(tx); err != nil {
+			return fmt.Errorf("getOwner: %w", err)
+		}
+
+		oldPath := repox.RepositoryPath(repo.Owner.Name, currentName)
+		newPath := repox.RepositoryPath(repo.Owner.Name, repo.Name)
+
+		if osx.Exist(oldPath) {
+			if err = os.Rename(oldPath, newPath); err != nil {
+				return fmt.Errorf("rename repository directory %q to %q: %w", oldPath, newPath, err)
+			}
+			renamedFrom = oldPath
+		}
+
+		// Undo the move if anything below fails, otherwise the row and the disk
+		// disagree in the other direction.
+		defer func() {
+			if err == nil || renamedFrom == "" {
+				return
+			}
+			if rerr := os.Rename(newPath, renamedFrom); rerr != nil {
+				log.Error("Failed to move %q back to %q after a failed update: %v", newPath, renamedFrom, rerr)
+			}
+		}()
 	}
 
 	repo.LowerName = strings.ToLower(repo.Name)
