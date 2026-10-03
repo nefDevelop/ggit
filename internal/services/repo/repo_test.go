@@ -3,11 +3,13 @@ package repo
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"sync"
 	"testing"
 
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/dbtest"
+	"github.com/nef734/ggit/internal/repox"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -95,21 +97,32 @@ func TestRepositoryService_Create_Concurrency(t *testing.T) {
 	wg.Wait()
 	close(errs)
 
-	// Análisis de resultados:
-	// Debería haber exactamente 1 éxito y N-1 errores (por nombre duplicado)
-	// Si hay más de 1 éxito, hay una condición de carrera grave.
-	var successCount int
+	// Los perdedores tienen que fallar, no crear filas duplicadas.
+	var rejected int
 	for err := range errs {
-		fmt.Printf("Expected error during race: %v\n", err)
+		rejected++
+		assert.Error(t, err)
 	}
-	
-	// Contar cuántos hay en la DB
-	repos, _, _ := database.Handle.Repositories().List(ctx, database.ListRepoOptions{
-		OwnerID: ownerUser.ID,
-	})
-	successCount = len(repos)
+	assert.Equal(t, numGoroutines-1, rejected,
+		"solo una creacion concurrent deberia prosperar; el resto debe recibir un error")
 
-	assert.Equal(t, 1, successCount, "SOLO uno debería haber tenido éxito en la creación concurrente")
+	// PageSize es obligatorio: SearchRepositoryByName termina en
+	// "Limit(opts.PageSize)", asi que sin el la consulta devuelve LIMIT 0 y este
+	// recuento nunca podia dar 1.
+	repos, _, err := database.Handle.Repositories().List(ctx, database.ListRepoOptions{
+		OwnerID:  ownerUser.ID,
+		Page:     1,
+		PageSize: 10,
+	})
+	assert.NoError(t, err)
+	assert.Len(t, repos, 1, "el indice unico (owner_id, lower_name) debe dejar una sola fila")
+
+	// Y el directorio en disco tambien debe quedar en uno.
+	matches, err := filepath.Glob(filepath.Join(
+		repox.RepositoryPath(ownerUser.Name, "concurrent-repo") + "*"))
+	assert.NoError(t, err)
+	assert.Len(t, matches, 1,
+		"solo debe quedar el repositorioGanador, sin staging dirs huerfanos")
 }
 
 func BenchmarkRepositoryService_Create(b *testing.B) {
