@@ -1470,6 +1470,23 @@ var (
 
 // isRepoNameAllowed return an error if given name is a reserved name or pattern for repositories.
 func isRepoNameAllowed(name string) error {
+	// isNameAllowed only rejects the empty name, the exact "." and "..", and the
+	// reserved suffixes. It accepts path separators, so a name such as
+	// "../../srv/pwn" or "a/b" would pass and Repository.RepoPath would then
+	// resolve outside conf.Repository.Root, letting git init and RemoveAll run
+	// against an arbitrary directory. The character whitelist closes that.
+	//
+	// The raw name is validated on purpose rather than a trimmed copy: what gets
+	// validated has to be exactly what gets stored, otherwise a name carrying a
+	// trailing newline would pass as its trimmed form and then reach the path.
+	if !IsValidRepoName(name) {
+		return ErrNameNotAllowed{
+			args: errx.Args{
+				"reason": "must consist of letters, digits, dots, dashes or underscores, and cannot contain path separators",
+				"name":   name,
+			},
+		}
+	}
 	return isNameAllowed(reservedRepoNames, reservedRepoPatterns, name)
 }
 
@@ -1873,6 +1890,31 @@ func GetRepositoriesByForkID(forkID int64) ([]*Repository, error) {
 }
 
 func updateRepository(tx *gorm.DB, repo *Repository, visibilityChanged bool) (err error) {
+	// A rename arrives here already applied to repo.Name, so the stored name is
+	// the only way to tell whether it changed. The check is limited to that case
+	// on purpose: enforcing it unconditionally would reject pre-existing
+	// repositories whose names predate the whitelist.
+	//
+	// updateRepository does not move the directory on disk, so a name carrying a
+	// path separator would point RepoPath outside conf.Repository.Root and hand
+	// git and the archive handlers an arbitrary path.
+	var currentName string
+	if err = tx.Model(&Repository{}).Where("id = ?", repo.ID).Pluck("name", &currentName).Error; err != nil {
+		return fmt.Errorf("read current name: %w", err)
+	}
+	if currentName != repo.Name {
+		if err = isRepoNameAllowed(repo.Name); err != nil {
+			return err
+		}
+		has, err := isRepositoryExist(tx, &User{ID: repo.OwnerID}, repo.Name)
+		if err != nil {
+			return fmt.Errorf("IsRepositoryExist: %w", err)
+		}
+		if has {
+			return ErrRepoAlreadyExist{args: errx.Args{"ownerID": repo.OwnerID, "name": repo.Name}}
+		}
+	}
+
 	repo.LowerName = strings.ToLower(repo.Name)
 
 	if len(repo.Description) > 512 {
