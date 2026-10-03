@@ -167,7 +167,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   .key-info { display: flex; flex-direction: column; gap: 0.4rem; overflow: hidden; flex: 1; }
   .key-title { font-size: 1.25rem; font-weight: 900; color: var(--text-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .key-fingerprint { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #888; background: #111; padding: 0.3rem 0.75rem; border-radius: 8px; border: 1px solid #222; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+  .key-fingerprint { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--output-muted); background: var(--output-border); padding: 0.3rem 0.75rem; border-radius: 8px; border: 1px solid var(--output-border); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
   .key-date { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 700; }
 
   /* ADD FORM */

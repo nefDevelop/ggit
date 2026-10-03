@@ -345,8 +345,8 @@
   .field-hint { font-size: 0.75rem; color: var(--text-muted); }
 
 
-  .success-message { color: #10b981; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }
-  .error-message { color: #f87171; font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }
+  .success-message { color: var(--status-success); font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }
+  .error-message { color: var(--status-danger-soft); font-size: 0.9rem; margin-top: 1rem; font-weight: 600; }
 
   /* New Profile Card Layout */
   /* New Profile Card Layout */
@@ -361,7 +361,7 @@
 
   .overlay-action-mini { width: 32px; height: 32px; border-radius: 50%; background: white; color: var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: transform 0.2s; }
   .overlay-action-mini:hover { transform: scale(1.1); }
-  .overlay-action-mini.delete { color: #ef4444; }
+  .overlay-action-mini.delete { color: var(--status-danger); }
   .overlay-action-mini span { font-size: 1.2rem; }
 
   .section-info { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }

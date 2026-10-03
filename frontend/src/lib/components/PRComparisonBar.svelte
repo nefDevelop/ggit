@@ -162,7 +162,7 @@
     font-size: 0.85rem;
     font-weight: 700;
   }
-  .status-chip.success { background: rgba(34,197,94,0.1); color: #22c55e; }
+  .status-chip.success { background: color-mix(in srgb, var(--status-success) 10%, transparent); color: var(--status-success); }
   .status-chip.neutral { background: rgba(255,255,255,0.05); color: var(--text-muted); }
   .status-chip.error { background: rgba(var(--error-rgb), 0.1); color: var(--error); }
   @media (max-width: 800px) {

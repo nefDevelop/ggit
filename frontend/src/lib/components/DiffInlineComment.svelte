@@ -37,7 +37,7 @@
     border: 1px solid var(--md-sys-color-outline-variant);
     background: var(--md-sys-color-surface-container);
   }
-  .inline-comment-box.resolved { opacity: 0.7; background: rgba(16,185,129,0.02); }
+  .inline-comment-box.resolved { opacity: 0.7; background: color-mix(in srgb, var(--status-success) 2%, transparent); }
   .comment-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
   .comment-header strong { color: var(--secondary); }
   .comment-header .time { color: var(--text-muted); font-size: 0.75rem; }
@@ -49,7 +49,7 @@
   }
   .resolve-btn:hover { background: var(--surface-variant); color: var(--text-color); }
   .resolved-tag {
-    background: rgba(16,185,129,0.1); color: #10b981;
+    background: color-mix(in srgb, var(--status-success) 10%, transparent); color: var(--status-success);
     font-size: 0.7rem; font-weight: 700;
     padding: 2px 6px; border-radius: 4px;
     display: flex; align-items: center; gap: 4px; margin-left: 8px;

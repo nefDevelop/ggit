@@ -94,7 +94,7 @@ import Key from "lucide-svelte/icons/key";
               <p>Copia este token ahora. Por seguridad, no podrás volver a verlo.</p>
            </div>
         </div>
-        <div class="token-display">
+        <div class="output-panel token-display">
            <code>{generatedToken}</code>
            <Button variant="ghost" icon={Copy} onclick={() => {
              navigator.clipboard.writeText(generatedToken);
@@ -185,9 +185,9 @@ import Key from "lucide-svelte/icons/key";
   .alert-text strong { display: block; font-size: 1.25rem; font-weight: 950; }
   .alert-text p { margin: 0.25rem 0 0; color: var(--text-muted); }
 
-  .token-display { display: flex; align-items: center; gap: 1.5rem; background: #08080c; border: 1px solid #1a1a24; padding: 1rem 1.5rem; border-radius: 0.75rem; }
+  .token-display { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 1.5rem; }
   @media (max-width: 600px) { .token-display { padding: 0.75rem 1rem; border-radius: 1rem; gap: 0.75rem; } }
-  .token-display code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; color: #6ee7b7; word-break: break-all; }
+  .token-display code { flex: 1; font-size: 1.4rem; word-break: break-all; }
   @media (max-width: 600px) { .token-display code { font-size: 1rem; } }
 
   .token-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }

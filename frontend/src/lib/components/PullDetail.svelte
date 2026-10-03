@@ -158,9 +158,9 @@
 
   function getAttentionStateInfo(state: number) {
     switch (state) {
-      case 1: return { label: 'Review required', color: '#0061a4', icon: 'visibility' };
-      case 2: return { label: 'Waiting for author', color: '#ba1a1a', icon: 'pending' };
-      case 3: return { label: 'Approved', color: '#006d39', icon: 'check_circle' };
+      case 1: return { label: 'Review required', color: 'var(--status-info-strong)', icon: 'visibility' };
+      case 2: return { label: 'Waiting for author', color: 'var(--md-sys-color-error)', icon: 'pending' };
+      case 3: return { label: 'Approved', color: 'var(--status-success-strong)', icon: 'check_circle' };
       default: return null;
     }
   }

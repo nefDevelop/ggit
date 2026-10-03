@@ -99,9 +99,9 @@
     margin-right: 8px;
   }
 
-  .status-indicator.online { background-color: #10b981; }
-  .status-indicator.offline { background-color: #ef4444; }
-  .status-indicator.auth { background-color: #f59e0b; }
+  .status-indicator.online { background-color: var(--status-success); }
+  .status-indicator.offline { background-color: var(--status-danger); }
+  .status-indicator.auth { background-color: var(--color-warning); }
 
   @keyframes pulse {
     0% { opacity: 1; }

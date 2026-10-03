@@ -480,5 +480,5 @@ import Calendar from "lucide-svelte/icons/calendar";
   .body-skeleton { height: 100%; width: 100%; border-radius: 1rem; background: var(--md-sys-color-surface-container-low); }
 
   @keyframes skeleton-pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
-  .error-tonal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: #f87171; }
+  .error-tonal { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--status-danger-soft); }
 </style>

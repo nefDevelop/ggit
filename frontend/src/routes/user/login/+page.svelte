@@ -199,7 +199,7 @@ import Lock from "lucide-svelte/icons/lock";
   .c1 {
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, var(--primary-color), #3b82f6);
+    background: radial-gradient(circle, var(--primary-color), var(--status-info));
     top: -150px;
     right: -150px;
     animation-delay: 0s;
@@ -208,7 +208,7 @@ import Lock from "lucide-svelte/icons/lock";
   .c2 {
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, #8b5cf6, #d946ef);
+    background: radial-gradient(circle, var(--status-accent), var(--status-accent));
     bottom: -150px;
     left: -100px;
     animation-delay: -5s;
@@ -218,7 +218,7 @@ import Lock from "lucide-svelte/icons/lock";
   .c3 {
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, #06b6d4, #10b981);
+    background: radial-gradient(circle, var(--status-info), var(--status-success));
     top: 50%;
     left: -200px;
     transform: translateY(-50%);

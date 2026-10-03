@@ -62,6 +62,100 @@
   --main-content-border: var(--md-sys-color-outline-variant);
 }
 
+/* ==========================================================================
+   SEMANTIC STATUS SCALE
+   ==========================================================================
+
+   The interface renders status through a fixed vocabulary: online, active,
+   success, failure, error, warning, info. Those colours were written as literals
+   in twenty components, which meant the palette could not follow the theme and
+   two components showing "success" did not necessarily agree.
+
+   Each role has four steps, matching how they are actually used:
+
+     base     the solid colour of indicators, dots and bars
+     strong   the same hue darkened, for text and icons on a light surface
+     soft     the same hue lightened, for text on a dark surface
+     muted    a translucent wash for the background behind a status chip
+
+   muted is expressed with color-mix rather than a second literal, which is the
+   pattern ThemeSelector already uses to derive tints.
+
+   The values are the ones the components were already painting, so replacing the
+   literals with these tokens does not change how anything looks in the default
+   light theme; it makes the other themes able to reach them.
+   ========================================================================== */
+
+:root {
+  --status-success: #10b981;
+  --status-success-strong: #006d39;
+  --status-success-soft: #6ee7b7;
+  --status-success-muted: color-mix(in srgb, var(--status-success) 10%, transparent);
+
+  --status-danger: #ef4444;
+  --status-danger-strong: #b91c1c;
+  --status-danger-soft: #fca5a5;
+  --status-danger-muted: color-mix(in srgb, var(--status-danger) 10%, transparent);
+
+  --status-warning: #ff9800;
+  --status-warning-strong: #663c00;
+  --status-warning-soft: #ffb74d;
+  --status-warning-muted: color-mix(in srgb, var(--status-warning) 10%, transparent);
+  /* The warning toast needed a warm wash light enough to read dark text on. The
+     author had left a literal there with a comment asking for exactly this. */
+  --status-warning-wash: #fff4e5;
+
+  --status-info: #3b82f6;
+  --status-info-strong: #0061a4;
+  --status-info-soft: #93c5fd;
+  --status-info-muted: color-mix(in srgb, var(--status-info) 10%, transparent);
+
+  /* --------------------------------------------------------------------------
+     Tokens that components referenced but nothing ever declared.
+
+     Each one is a var() with no fallback, so the browser discarded the whole
+     declaration that used it: error alerts had no red wash, the danger button
+     hover did nothing, and several surfaces fell back to inherited values. They
+     are declared here mapped onto the palette that already exists, so following
+     the theme becomes possible instead of accidental.
+
+     --error-rgb alone was referenced by thirty components.
+     -------------------------------------------------------------------------- */
+  --error-rgb: 239, 68, 68;
+  --accent: var(--md-sys-color-tertiary);
+  --badge-color: var(--md-sys-color-primary-container);
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --warning: var(--color-warning);
+  --status-color: var(--md-sys-color-on-surface-variant);
+  --surface: var(--md-sys-color-surface);
+  --surface-2: var(--md-sys-color-surface-container-high);
+  --md3-surface-1: var(--md-sys-color-surface-container-lowest);
+  --md3-surface-4: var(--md-sys-color-surface-container-high);
+  --md3-surface-5: var(--md-sys-color-surface-container-highest);
+  --md3-surface-rgb: var(--surface-rgb);
+  --primary-hover: color-mix(in srgb, var(--md-sys-color-primary) 85%, black);
+  --primary-light: color-mix(in srgb, var(--md-sys-color-primary) 45%, transparent);
+  --primary-surface: var(--md-sys-color-primary-container);
+  --shadow-2xl: 0 16px 32px rgba(0, 0, 0, 0.18);
+
+  /* Dark output panels: the maintenance console, the notice payload, the access
+     token and the SSH key. They deliberately stay dark whatever the theme is,
+     because they show terminal and payload output rather than app chrome. Four
+     components were painting the same two colours by hand. */
+  --output-surface: #08080c;
+  --output-surface-raised: #0d0d14;
+  --output-border: #1a1a24;
+  --output-text: #ddd;
+  --output-muted: #888;
+  --output-dim: #555;
+  --output-border-strong: #444;
+
+  --status-accent: #6366f1;
+  --status-accent-strong: #4a148c;
+  --status-accent-soft: #c4b5fd;
+  --status-accent-muted: color-mix(in srgb, var(--status-accent) 10%, transparent);
+}
+
 /* Tonal Utility Classes */
 .md-tonal-primary {
   background-color: var(--md-sys-color-primary-container) !important;

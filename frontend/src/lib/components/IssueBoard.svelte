@@ -43,9 +43,9 @@
 
   function getStatusColor(title: string) {
       const t = title.toLowerCase();
-      if (t === 'done') return '#10b981';
-      if (t === 'in-progress' || t === 'doing') return '#3b82f6';
-      if (t === 'review') return '#f59e0b';
+      if (t === 'done') return 'var(--status-success)';
+      if (t === 'in-progress' || t === 'doing') return 'var(--status-info)';
+      if (t === 'review') return 'var(--color-warning)';
       if (t === 'todo') return '#6b7280';
       return 'var(--text-muted)';
   }

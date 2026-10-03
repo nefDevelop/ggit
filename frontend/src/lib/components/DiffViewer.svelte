@@ -418,8 +418,8 @@ import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
     color: var(--text-color);
   }
   .resolved-tag {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
+    background: color-mix(in srgb, var(--status-success) 10%, transparent);
+    color: var(--status-success);
     font-size: 0.7rem;
     font-weight: 700;
     padding: 2px 6px;
@@ -431,7 +431,7 @@ import MessageSquarePlus from "lucide-svelte/icons/message-square-plus";
   }
   .inline-comment-box.resolved {
     opacity: 0.7;
-    background: rgba(16, 185, 129, 0.02);
+    background: color-mix(in srgb, var(--status-success) 2%, transparent);
   }
 
   /* Colors */

@@ -212,7 +212,7 @@
   .toggle-text strong { font-size: 0.95rem; }
   .toggle-text span { font-size: 0.85rem; color: var(--text-muted); }
 
-  .error-msg { color: #f87171; font-weight: 600; font-size: 0.9rem; }
+  .error-msg { color: var(--status-danger-soft); font-weight: 600; font-size: 0.9rem; }
 
   .modal-footer { margin-top: 2rem; padding-top: 1.5rem; display: flex; align-items: center; gap: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
   .spacer { flex: 1; }

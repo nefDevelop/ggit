@@ -229,8 +229,8 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
   }
 
   .ci-status-icon { display: inline-flex; align-items: center; vertical-align: middle; }
-  .ci-status-icon.success { color: #10b981; }
-  .ci-status-icon.pending { color: #f59e0b; }
+  .ci-status-icon.success { color: var(--status-success); }
+  .ci-status-icon.pending { color: var(--color-warning); }
   .ci-status-icon.failure, .ci-status-icon.error { color: var(--error); }
 
   .attention-dot {
@@ -241,6 +241,6 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
     margin-left: 0.5rem;
     vertical-align: middle;
   }
-  .attention-dot.reviewer { background: #0061a4; box-shadow: 0 0 5px rgba(0, 97, 164, 0.5); }
-  .attention-dot.author { background: #ba1a1a; box-shadow: 0 0 5px rgba(186, 26, 26, 0.5); }
+  .attention-dot.reviewer { background: var(--status-info-strong); box-shadow: 0 0 5px color-mix(in srgb, var(--status-info) 50%, transparent); }
+  .attention-dot.author { background: var(--md-sys-color-error); box-shadow: 0 0 5px rgba(186, 26, 26, 0.5); }
 </style>

@@ -28,7 +28,7 @@
   const palettes = [
     ['#6366f1', '#a855f7', '#ec4899'], // Indigo + Purple + Pink
     ['#3b82f6', '#06b6d4', '#10b981'], // Blue + Cyan + Emerald
-    ['#f59e0b', '#ef4444', '#8b5cf6'], // Amber + Red + Violet
+    ['var(--color-warning)', '#ef4444', '#8b5cf6'], // Amber + Red + Violet
     ['#14b8a6', '#0ea5e9', '#6366f1'], // Teal + Sky + Indigo
     ['#d946ef', '#f43f5e', '#fb923c']  // Fuchsia + Rose + Orange
   ];
@@ -89,7 +89,7 @@
         const g = parseInt(langColor.slice(3,5), 16);
         const b = parseInt(langColor.slice(5,7), 16);
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-        return luminance > 0.5 ? '#1a1a2e' : '#ffffff';
+        return luminance > 0.5 ? '#1a1a2e' : 'var(--md-sys-color-on-error)';
       })()
     : '');
 </script>

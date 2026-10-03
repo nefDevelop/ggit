@@ -393,7 +393,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
     align-items: center;
     gap: 0.75rem;
     font-weight: 700;
-    color: #10b981;
+    color: var(--status-success);
   }
   .status-alert.is-error {
     color: var(--error);
@@ -410,8 +410,8 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
     }
   }
   .enrollment-box.is-protected {
-    background: rgba(16, 185, 129, 0.03);
-    border-color: rgba(16, 185, 129, 0.2);
+    background: color-mix(in srgb, var(--status-success) 3%, transparent);
+    border-color: color-mix(in srgb, var(--status-success) 20%, transparent);
   }
 
   .enrollment-header {
@@ -430,7 +430,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
     color: var(--text-muted);
   }
   .is-protected .status-indicator span {
-    color: #10b981;
+    color: var(--status-success);
   }
   .status-text {
     display: flex;
@@ -448,9 +448,9 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
   .recovery-view {
     margin-top: 2.5rem;
     padding: 2.5rem;
-    background: #08080c;
+    background: var(--output-surface);
     border-radius: 1.5rem;
-    border: 1px solid #1a1a24;
+    border: 1px solid var(--output-border);
     text-align: center;
   }
   @media (max-width: 600px) {
@@ -478,7 +478,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
     font-family: "JetBrains Mono", monospace;
     font-size: 1.1rem;
     letter-spacing: 0.1em;
-    border: 1px solid #222;
+    border: 1px solid var(--output-border);
   }
 
   .enrollment-flow {

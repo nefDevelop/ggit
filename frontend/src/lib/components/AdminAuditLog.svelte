@@ -49,11 +49,11 @@ import ChevronDown from "lucide-svelte/icons/chevron-down";
   }
 
   function getOpColor(opType: number) {
-    if (opType === 1 || opType === 19) return '#10b981'; 
-    if (opType === 17 || opType === 18) return '#ef4444';
-    if (opType === 5) return '#3b82f6';
-    if (opType === 20) return '#f59e0b';
-    return '#888';
+    if (opType === 1 || opType === 19) return 'var(--status-success)'; 
+    if (opType === 17 || opType === 18) return 'var(--status-danger)';
+    if (opType === 5) return 'var(--status-info)';
+    if (opType === 20) return 'var(--color-warning)';
+    return 'var(--output-muted)';
   }
 </script>
 
@@ -163,9 +163,9 @@ import ChevronDown from "lucide-svelte/icons/chevron-down";
   .repo-link { color: var(--primary-color); text-decoration: none; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
   .repo-link:hover { text-decoration: underline; }
 
-  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: #999; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
-  .muted-value { color: #555; font-weight: 800; }
-  .null-value { color: #444; font-style: italic; font-size: 0.85rem; }
+  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: var(--output-muted); font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
+  .muted-value { color: var(--output-dim); font-weight: 800; }
+  .null-value { color: var(--output-border-strong); font-style: italic; font-size: 0.85rem; }
 
   .footer-actions { margin-top: 3rem; display: flex; justify-content: center; }
   :global(.load-more-btn) { width: auto; min-width: 300px; border-radius: 0.75rem !important; }

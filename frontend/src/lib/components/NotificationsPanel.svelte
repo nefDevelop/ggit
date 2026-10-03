@@ -245,7 +245,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   }
   .close-btn:hover {
     color: var(--md-sys-color-error);
-    background: rgba(239, 68, 68, 0.1);
+    background: color-mix(in srgb, var(--status-danger) 10%, transparent);
   }
 
   .icon-btn {
@@ -399,11 +399,11 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   }
 
   .notice-item.warning {
-    border-color: #ffb74d;
-    background: rgba(255, 183, 77, 0.1);
+    border-color: var(--status-warning-soft);
+    background: color-mix(in srgb, var(--status-warning) 10%, transparent);
   }
   .notice-item.warning .type-icon {
-    color: #ffa726;
+    color: var(--status-warning-soft);
   }
 
   .type-icon {
@@ -465,7 +465,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   }
 
   .notice-item.system.tier-2 {
-    border-left-color: #ffa726;
+    border-left-color: var(--status-warning-soft);
   }
 
   .system-badge {

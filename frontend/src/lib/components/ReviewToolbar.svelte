@@ -130,10 +130,10 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .icon-box { width: 44px; height: 44px; border-radius: 12px; background: var(--surface-variant); display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
   .active .icon-box { background: var(--primary-color); color: white; }
 
-  .approve.active { border-color: var(--success); background: rgba(16, 185, 129, 0.05); }
+  .approve.active { border-color: var(--success); background: color-mix(in srgb, var(--status-success) 5%, transparent); }
   .approve.active .icon-box { background: var(--success); }
 
-  .reject.active { border-color: var(--error); background: rgba(239, 68, 68, 0.05); }
+  .reject.active { border-color: var(--error); background: color-mix(in srgb, var(--status-danger) 5%, transparent); }
   .reject.active .icon-box { background: var(--error); }
 
   .info { display: flex; flex-direction: column; gap: 0.1rem; }

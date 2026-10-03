@@ -144,7 +144,7 @@
   }
   :global(.org-avatar) {
     border-radius: 1.5rem !important;
-    background: #222;
+    background: var(--output-border);
   }
 
   .org-info {

@@ -147,7 +147,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
       </div>
       <div class="detail-content">
         <span class="detail-label">Contenido del Log</span>
-        <div class="code-box">
+        <div class="output-panel code-box">
           {selectedNotice.description}
         </div>
       </div>
@@ -173,13 +173,13 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
 
   .id-cell { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-muted); opacity: 0.5; }
 
-  .type-badge { padding: 0.4rem 0.8rem; border-radius: 0.75rem; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; background: #333; }
-  .type-badge.tier-1 { background: rgba(59, 130, 246, 0.12); color: #3b82f6; }
-  .type-badge.tier-2 { background: rgba(245, 158, 11, 0.12); color: #f59e0b; }
+  .type-badge { padding: 0.4rem 0.8rem; border-radius: 0.75rem; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; background: var(--output-border-strong); }
+  .type-badge.tier-1 { background: color-mix(in srgb, var(--status-info) 12%, transparent); color: var(--status-info); }
+  .type-badge.tier-2 { background: rgba(245, 158, 11, 0.12); color: var(--color-warning); }
   .type-badge.tier-3 { background: rgba(var(--error-rgb), 0.12); color: var(--error); }
   .type-badge.big { font-size: 0.9rem; padding: 0.5rem 1.25rem; border-radius: 0.5rem; }
 
-  .desc-preview { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #ddd; max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
+  .desc-preview { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--output-text); max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
   .date-tag { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
   .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(0,0,0,0.1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
@@ -192,7 +192,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
   .detail-time { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
   .detail-content { display: flex; flex-direction: column; gap: 0.75rem; }
   .detail-content .detail-label { font-size: 0.75rem; text-transform: uppercase; font-weight: 900; color: var(--primary-color); letter-spacing: 0.1em; }
-  .code-box { background: #08080c; border: 1px solid #1a1a24; border-radius: 0.75rem; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; line-height: 1.6; font-size: 0.95rem; color: #6ee7b7; white-space: pre-wrap; word-break: break-all; }
+  .code-box { padding: 1.5rem; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; word-break: break-all; }
 
   .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
 </style>

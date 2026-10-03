@@ -219,7 +219,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
                 {#if deleting === tag.name}
                   <span class="material-symbols-rounded spin">sync</span>
                 {:else if deleteConfirm === tag.name}
-                  <span style="color: #fb923c; font-weight: bold; font-size: 0.8rem;">Sure?</span>
+                  <span style="color: var(--status-warning); font-weight: bold; font-size: 0.8rem;">Sure?</span>
                 {:else}
                   <Trash2 size={16} />
                 {/if}
@@ -244,12 +244,12 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
   .form-control { background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text-color); font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
   .form-control:focus { border-color: var(--primary-color); }
-  .form-error { color: #f87171; font-size: 0.85rem; margin: 0; }
+  .form-error { color: var(--status-danger-soft); font-size: 0.85rem; margin: 0; }
   .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
   .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.15); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
 
-  .delete.confirm { color: #fb923c; background: rgba(251, 146, 60, 0.1); }
+  .delete.confirm { color: var(--status-warning); background: color-mix(in srgb, var(--status-warning) 10%, transparent); }
 
   .empty-state {
     display: flex;
@@ -293,7 +293,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .skeleton-row { height: 60px; border-radius: 0.875rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.25; } }
 
-  .alert-error { background: rgba(248,113,113,0.1); border: 1px solid #f87171; border-radius: 0.75rem; padding: 0.75rem 1rem; color: #f87171; font-size: 0.9rem; }
+  .alert-error { background: color-mix(in srgb, var(--status-danger) 10%, transparent); border: 1px solid var(--status-danger-soft); border-radius: 0.75rem; padding: 0.75rem 1rem; color: var(--status-danger-soft); font-size: 0.9rem; }
 
   .spin { animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }

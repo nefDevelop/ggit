@@ -64,9 +64,9 @@
   .toast-item.error .icon { color: var(--md-sys-color-error); }
 
   .toast-item.warning {
-    background: #fff4e5; /* Fallback o variable específica si existe */
-    color: #663c00;
-    border-color: #ff9800;
+    background: var(--status-warning-wash);
+    color: var(--status-warning-strong);
+    border-color: var(--status-warning);
   }
 
   .icon {

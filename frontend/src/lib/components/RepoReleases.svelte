@@ -163,7 +163,7 @@ import FileArchive from "lucide-svelte/icons/file-archive";
               {#if release.is_draft}
                 <span class="badge-mini" style="background: var(--text-muted)">Draft</span>
               {:else if release.is_prerelease}
-                <span class="badge-mini" style="background: #f59e0b">Pre-release</span>
+                <span class="badge-mini" style="background: var(--color-warning)">Pre-release</span>
               {/if}
               {#if release === releases.find((r) => !r.is_draft && !r.is_prerelease)}
                 <span class="badge-mini" style="background: var(--success)">Latest</span>

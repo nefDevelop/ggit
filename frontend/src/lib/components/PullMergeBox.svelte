@@ -177,14 +177,14 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .status-text strong { font-size: 1rem; }
   .status-text span { font-size: 0.85rem; color: var(--text-muted); }
 
-  .status-item.success { background: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2); color: #10b981; }
-  .status-item.success span { color: #10b981; opacity: 0.8; }
+  .status-item.success { background: color-mix(in srgb, var(--status-success) 5%, transparent); border-color: color-mix(in srgb, var(--status-success) 20%, transparent); color: var(--status-success); }
+  .status-item.success span { color: var(--status-success); opacity: 0.8; }
   
   .status-item.error { background: rgba(var(--error-rgb), 0.05); border-color: rgba(var(--error-rgb), 0.2); color: var(--error); }
   .status-item.error span { color: var(--error); opacity: 0.8; }
 
-  .status-item.warning { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2); color: #f59e0b; }
-  .status-item.warning span { color: #f59e0b; opacity: 0.8; }
+  .status-item.warning { background: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2); color: var(--color-warning); }
+  .status-item.warning span { color: var(--color-warning); opacity: 0.8; }
 
   .merge-actions { padding: 1.5rem; background: var(--surface-variant); border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; justify-content: flex-end; }
 </style>

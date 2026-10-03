@@ -192,8 +192,8 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
   .log-item.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); border-right: 3px solid var(--primary-color); }
   
   :global(.status-icon) { flex-shrink: 0; }
-  .log-item.success :global(.status-icon) { color: #4ade80; }
-  .log-item.failure :global(.status-icon) { color: #f87171; }
+  .log-item.success :global(.status-icon) { color: var(--status-success-soft); }
+  .log-item.failure :global(.status-icon) { color: var(--status-danger-soft); }
   
   .log-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
   .log-top { display: flex; justify-content: space-between; align-items: center; }
@@ -221,8 +221,8 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
   .header-row strong { color: var(--primary-color); }
   
   .status-line { font-weight: 800; font-size: 1rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
-  .status-line.success { color: #4ade80; }
-  .status-line.failure { color: #f87171; }
+  .status-line.success { color: var(--status-success-soft); }
+  .status-line.failure { color: var(--status-danger-soft); }
   
   .body-preview { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); }
   .body-preview h5 { margin: 0 0 0.75rem 0; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }

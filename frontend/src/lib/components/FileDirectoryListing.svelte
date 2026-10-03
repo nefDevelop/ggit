@@ -46,7 +46,7 @@
   .name-cell { display: flex; align-items: center; gap: 1rem; min-width: 200px; }
   .name-cell a { color: var(--text-color); text-decoration: none; font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .name-cell a:hover { color: var(--primary-color); }
-  :global(.icon-tree) { color: #facc15; }
+  :global(.icon-tree) { color: var(--status-warning-soft); }
   :global(.icon-blob) { color: var(--text-muted); opacity: 0.7; }
   .msg-cell { font-size: 0.85rem; color: var(--text-muted); max-width: 0; width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .msg-text { opacity: 0.7; }

@@ -199,7 +199,7 @@
   .profile-hero { position: relative; padding: 5rem 2rem 3rem; overflow: hidden; background: var(--md-sys-color-surface-container-low); border-bottom: 1px solid var(--md-sys-color-outline-variant); }
   .hero-bg { 
     position: absolute; top: 0; left: 0; right: 0; height: 100%;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #6366f1 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--status-accent) 100%);
     opacity: 0.1; z-index: 0;
     mask-image: linear-gradient(to bottom, black, transparent);
   }

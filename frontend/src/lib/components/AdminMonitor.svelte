@@ -271,19 +271,19 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     font-weight: 800;
   }
   .status-pill.running {
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    background: color-mix(in srgb, var(--status-success) 15%, transparent);
+    color: var(--status-success);
+    border: 1px solid color-mix(in srgb, var(--status-success) 30%, transparent);
   }
   .pulse-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #22c55e;
+    background: var(--status-success);
     animation: pulse-green 1.5s infinite;
   }
   @keyframes pulse-green {
-    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
-    50% { opacity: 0.7; box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-success) 40%, transparent); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 5px color-mix(in srgb, var(--status-success) 0%, transparent); }
   }
 </style>

@@ -248,8 +248,8 @@ import GitCommit from "lucide-svelte/icons/git-commit";
     border: 2px solid var(--bg-color);
   }
 
-  .type-icon.push { background: #10b981; }
-  .type-icon.create { background: #3b82f6; }
+  .type-icon.push { background: var(--status-success); }
+  .type-icon.create { background: var(--status-info); }
 
   .marker-line {
     width: 2px;

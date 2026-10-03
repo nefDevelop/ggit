@@ -114,7 +114,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
                     </div>
                   </td>
                   <td>
-                    <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : '#9c27b0'}">
+                    <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : 'var(--status-accent)'}">
                        {source.type_name || "Protocolo Estándar"}
                     </span>
                   </td>
@@ -167,10 +167,10 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .source-info strong { font-size: 1.1rem; font-weight: 800; color: var(--text-color); }
   .source-info span { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
 
-  .type-badge { font-size: 0.75rem; font-weight: 900; color: var(--accent); background: rgba(156, 39, 176, 0.1); padding: 0.4rem 1rem; border-radius: 0.5rem; border: 1px solid rgba(156, 39, 176, 0.2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .type-badge { font-size: 0.75rem; font-weight: 900; color: var(--accent); background: color-mix(in srgb, var(--status-accent) 10%, transparent); padding: 0.4rem 1rem; border-radius: 0.5rem; border: 1px solid color-mix(in srgb, var(--status-accent) 20%, transparent); text-transform: uppercase; letter-spacing: 0.05em; }
   
   .status-chip { display: inline-block; padding: 0.3rem 1rem; border-radius: 0.5rem; font-size: 0.7rem; font-weight: 900; background: rgba(255,255,255,0.05); color: var(--text-muted); text-transform: uppercase; border: 1px solid var(--md-sys-color-outline-variant); }
-  .status-chip.active { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+  .status-chip.active { color: var(--status-success); background: color-mix(in srgb, var(--status-success) 10%, transparent); border-color: color-mix(in srgb, var(--status-success) 30%, transparent); }
 
   .action-buttons { display: flex; gap: 0.5rem; }
   .icon-btn {

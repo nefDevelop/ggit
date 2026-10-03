@@ -1,3 +1,16 @@
+/* Dark output panel, shared by the maintenance console, the notice payload and
+   the token and key displays. */
+.output-panel {
+  background: var(--output-surface);
+  border: 1px solid var(--output-border);
+  border-radius: 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.output-panel code {
+  color: var(--status-success-soft);
+}
+
 /* Tonal list: a stacked list of rows sharing one rounded container.
    It lived duplicated in eight settings components with a hardcoded
    rgba(0,0,0,0.15) background, which is a dark overlay that does not adapt to

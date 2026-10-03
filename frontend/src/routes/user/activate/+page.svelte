@@ -210,15 +210,15 @@
   }
 
   .box-error {
-    background-color: rgba(239, 68, 68, 0.1);
-    border: 1px solid #ef4444;
-    color: #fca5a5;
+    background-color: color-mix(in srgb, var(--status-danger) 10%, transparent);
+    border: 1px solid var(--status-danger);
+    color: var(--status-danger-soft);
   }
 
   .box-success {
-    background-color: rgba(34, 197, 94, 0.1);
-    border: 1px solid #22c55e;
-    color: #86efac;
+    background-color: color-mix(in srgb, var(--status-success) 10%, transparent);
+    border: 1px solid var(--status-success);
+    color: var(--status-success-soft);
   }
 
   .loading-state {

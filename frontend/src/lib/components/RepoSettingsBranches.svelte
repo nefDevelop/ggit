@@ -303,7 +303,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
   .name { font-weight: 900; font-size: 1.15rem; color: var(--text-color); font-family: 'JetBrains Mono', monospace; }
   
   .status-row { display: flex; align-items: center; gap: 0.75rem; }
-  .protected-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 0.2rem 0.7rem; border-radius: 100px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
+  .protected-pill { display: inline-flex; align-items: center; gap: 0.4rem; background: color-mix(in srgb, var(--status-success) 10%, transparent); color: var(--status-success); padding: 0.2rem 0.7rem; border-radius: 100px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; }
   .protected-pill.mini { padding: 0.1rem 0.5rem; font-size: 0.6rem; }
   .unprotected-pill { font-size: 0.8rem; color: var(--text-muted); opacity: 0.6; font-weight: 600; }
 

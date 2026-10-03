@@ -121,7 +121,7 @@
 
   .form-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; }
   
-  .error-toast { background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
+  .error-toast { background: color-mix(in srgb, var(--status-danger) 10%, transparent); color: var(--status-danger); padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
   
   .spin { animation: spin 1s infinite linear; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

@@ -504,7 +504,7 @@
     color: var(--error);
   }
   .btn-danger-text:hover {
-    background: rgba(239, 68, 68, 0.1);
+    background: color-mix(in srgb, var(--status-danger) 10%, transparent);
   }
 
   .skeleton-detail {

@@ -199,8 +199,8 @@
   .badge-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
   .badge { font-size: 0.7rem; font-weight: 900; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-muted); }
   .badge.primary { background: var(--primary-color); color: white; }
-  .badge.active { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-  .badge.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+  .badge.active { background: color-mix(in srgb, var(--status-success) 15%, transparent); color: var(--status-success); }
+  .badge.pending { background: rgba(245, 158, 11, 0.15); color: var(--color-warning); }
 
   .email-actions { display: flex; gap: 0.75rem; }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
@@ -214,7 +214,7 @@
   .premium-input-group span { color: var(--primary-color); opacity: 0.6; }
   .premium-input-group input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-color); font-size: 1rem; padding: 0.25rem 0; }
 
-  .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.5rem; background: rgba(16, 185, 129, 0.1); color: #10b981; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.2); animation: fadeInUp 0.4s; }
+  .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.5rem; background: color-mix(in srgb, var(--status-success) 10%, transparent); color: var(--status-success); font-weight: 700; border: 1px solid color-mix(in srgb, var(--status-success) 20%, transparent); animation: fadeInUp 0.4s; }
   .status-alert.is-error { background: rgba(var(--error-rgb), 0.1); color: var(--error); border-color: rgba(var(--error-rgb), 0.2); }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 

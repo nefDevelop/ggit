@@ -113,7 +113,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 				document.documentElement.setAttribute("data-theme", theme);
 
 				if (theme === "custom") {
-					const customColor = localStorage.getItem("custom-theme-color") || "#0b57d0";
+					const customColor = localStorage.getItem("custom-theme-color") || "var(--md-sys-color-primary)";
 					const isDark = scheme === "dark" || (scheme === "auto" && window.matchMedia("(prefers-color-scheme: dark)").matches);
 					
 					document.documentElement.style.setProperty("--primary-color", customColor);
@@ -121,13 +121,13 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 					
 					// Basic background/surface fallbacks for custom themes to prevent white flash in dark mode
 					if (isDark) {
-						document.documentElement.style.setProperty("--md-sys-color-background", "#1a1c1e");
+						document.documentElement.style.setProperty("--md-sys-color-background", "var(--md-sys-color-surface)");
 						document.documentElement.style.setProperty("--md-sys-color-surface", "#1e2124");
-						document.documentElement.style.setProperty("--md-sys-color-on-surface", "#e2e2e6");
+						document.documentElement.style.setProperty("--md-sys-color-on-surface", "var(--md-sys-color-on-surface)");
 					} else {
 						document.documentElement.style.setProperty("--md-sys-color-background", "#f8f9ff");
-						document.documentElement.style.setProperty("--md-sys-color-surface", "#ffffff");
-						document.documentElement.style.setProperty("--md-sys-color-on-surface", "#1b1b1f");
+						document.documentElement.style.setProperty("--md-sys-color-surface", "var(--md-sys-color-on-error)");
+						document.documentElement.style.setProperty("--md-sys-color-on-surface", "var(--md-sys-color-on-surface)");
 					}
 
 					if (customColor.startsWith("#")) {

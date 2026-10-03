@@ -185,7 +185,7 @@ import Terminal from "lucide-svelte/icons/terminal";
 		margin: 0;
 		white-space: pre-wrap;
 		word-break: break-all;
-		color: #ffb4ab;
+		color: var(--md-sys-color-error);
 	}
 
 	/* Animations */
