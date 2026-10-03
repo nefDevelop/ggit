@@ -7,8 +7,71 @@ import (
 
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
+	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/errx"
 )
+
+// teamAccessLevel reports what the current user is allowed to do with the team
+// given by the "teamID" parameter.
+//
+// The team routes are mounted at /orgs/teams/:teamID rather than under
+// /orgs/:org, so context.OrgAssignment cannot resolve the organization for them
+// and the authorization has to be resolved from the team itself.
+//
+// Access is granted to site admins, to owners of the organization the team
+// belongs to, and to members of any of that organization's teams whose Authorize
+// is at least the requested level. This mirrors how context.OrgAssignment
+// derives IsTeamAdmin for the org-scoped routes.
+func teamAccessLevel(c *context.APIContext, team *database.Team) (level domain.AccessMode) {
+	if c.User == nil {
+		return domain.AccessModeNone
+	}
+	if c.User.IsAdmin {
+		return domain.AccessModeAdmin
+	}
+
+	org, err := database.Handle.Users().GetByID(c.Req.Context(), c.User.ID)
+	if err != nil {
+		return domain.AccessModeNone
+	}
+	orgUser := database.FromDomainUser(org)
+	if orgUser.IsOwnedBy(c.User.ID) {
+		return domain.AccessModeAdmin
+	}
+
+	teams, err := database.GetUserTeams(team.OrgID, c.User.ID)
+	if err != nil {
+		return domain.AccessModeNone
+	}
+	for _, t := range teams {
+		if t.Authorize > level {
+			level = t.Authorize
+		}
+	}
+	return level
+}
+
+// requireTeamAccess loads the team from the "teamID" parameter and aborts with
+// 404 unless the current user reaches the given access level. A 404 rather than
+// a 403 is used on purpose so that the existence of an organization is not
+// disclosed to users who may not see it.
+func requireTeamAccess(c *context.APIContext, required domain.AccessMode) *database.Team {
+	team, err := database.GetTeamByID(c.ParamsInt64("teamID"))
+	if err != nil {
+		c.NotFoundOrError(err, "get team")
+		return nil
+	}
+	if teamAccessLevel(c, team) < required {
+		c.NotFound()
+		return nil
+	}
+	return team
+}
+
+// requireTeamAdmin aborts unless the current user may administer the team.
+func requireTeamAdmin(c *context.APIContext) *database.Team {
+	return requireTeamAccess(c, domain.AccessModeAdmin)
+}
 
 // GetOrg returns the organization profile.
 func GetOrg(c *context.APIContext) {
@@ -175,10 +238,8 @@ func ListOrgTeams(c *context.APIContext) {
 
 // GetTeam returns a single team with its members and repositories.
 func GetTeam(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAccess(c, domain.AccessModeRead)
+	if t == nil {
 		return
 	}
 
@@ -231,10 +292,8 @@ func CreateOrgTeam(c *context.APIContext) {
 
 // UpdateOrgTeam updates a team's information.
 func UpdateOrgTeam(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAdmin(c)
+	if t == nil {
 		return
 	}
 
@@ -273,10 +332,8 @@ func UpdateOrgTeam(c *context.APIContext) {
 
 // DeleteOrgTeam deletes a team from the organization.
 func DeleteOrgTeam(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAdmin(c)
+	if t == nil {
 		return
 	}
 
@@ -290,12 +347,10 @@ func DeleteOrgTeam(c *context.APIContext) {
 
 // AddTeamMember adds a user to a team.
 func AddTeamMember(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
 	userName := c.Params("username")
 
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAdmin(c)
+	if t == nil {
 		return
 	}
 
@@ -315,12 +370,10 @@ func AddTeamMember(c *context.APIContext) {
 
 // RemoveTeamMember removes a user from a team.
 func RemoveTeamMember(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
 	userName := c.Params("username")
 
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAdmin(c)
+	if t == nil {
 		return
 	}
 
@@ -340,12 +393,10 @@ func RemoveTeamMember(c *context.APIContext) {
 
 // AddTeamRepo adds a repository to a team.
 func AddTeamRepo(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
 	repoName := c.Params("reponame")
 
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAdmin(c)
+	if t == nil {
 		return
 	}
 
@@ -365,12 +416,10 @@ func AddTeamRepo(c *context.APIContext) {
 
 // RemoveTeamRepo removes a repository from a team.
 func RemoveTeamRepo(c *context.APIContext) {
-	teamID := c.ParamsInt64("teamID")
 	repoID := c.ParamsInt64("repoID")
 
-	t, err := database.GetTeamByID(teamID)
-	if err != nil {
-		c.NotFoundOrError(err, "get team")
+	t := requireTeamAdmin(c)
+	if t == nil {
 		return
 	}
 

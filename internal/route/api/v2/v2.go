@@ -169,66 +169,66 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/stars", ginx.Handle(GetRepoStars))
 		repo.GET("/forks", ginx.Handle(GetRepoForks))
 		repo.GET("/statuses/:sha", ginx.Handle(GetCommitStatuses))
-		repo.POST("/statuses/:sha", ginx.Handle(CreateCommitStatus))
+		repo.POST("/statuses/:sha", context.RequireRepoWriter(), ginx.Handle(CreateCommitStatus))
 
 		issueGroup := repo.Group("/issues")
 		{
 			issueGroup.GET("", ginx.Handle(ListIssues))
-			issueGroup.POST("", ginx.Handle(CreateIssue))
+			issueGroup.POST("", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateIssue))
 			issueGroup.GET("/:index", ginx.Handle(GetIssue))
-			issueGroup.PUT("/:index", ginx.Handle(UpdateIssue))
+			issueGroup.PUT("/:index", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(UpdateIssue))
 			issueGroup.GET("/:index/comments", ginx.Handle(GetIssueComments))
-			issueGroup.POST("/:index/comments", ginx.Handle(CreateIssueComment))
+			issueGroup.POST("/:index/comments", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateIssueComment))
 
 			issueGroup.GET("/:index/labels", ginx.Handle(ListIssueLabels))
-			issueGroup.POST("/:index/labels", ginx.Handle(AddIssueLabels))
-			issueGroup.PUT("/:index/labels", ginx.Handle(ReplaceIssueLabels))
-			issueGroup.DELETE("/:index/labels", ginx.Handle(ClearIssueLabels))
+			issueGroup.POST("/:index/labels", context.RequireRepoWriter(), ginx.Handle(AddIssueLabels))
+			issueGroup.PUT("/:index/labels", context.RequireRepoWriter(), ginx.Handle(ReplaceIssueLabels))
+			issueGroup.DELETE("/:index/labels", context.RequireRepoWriter(), ginx.Handle(ClearIssueLabels))
 		}
 
 		pullGroup := repo.Group("/pulls")
 		{
 			pullGroup.GET("", ginx.Handle(ListPullRequests))
-			pullGroup.POST("", ginx.Handle(CreatePullRequest))
+			pullGroup.POST("", context.RequireRepoWriter(), ginx.Handle(CreatePullRequest))
 			pullGroup.GET("/:index", ginx.Handle(GetPullRequest))
 			pullGroup.GET("/:index/diff", ginx.Handle(GetPullRequestDiff))
-			pullGroup.POST("/:index/merge", ginx.Handle(MergePullRequest))
+			pullGroup.POST("/:index/merge", context.RequireRepoWriter(), ginx.Handle(MergePullRequest))
 			pullGroup.GET("/:index/protection", ginx.Handle(GetPullRequestProtection))
 			pullGroup.GET("/:index/reviews", ginx.Handle(ListPullReviews))
-			pullGroup.POST("/:index/reviews", ginx.Handle(CreatePullReview))
-			pullGroup.POST("/:index/reviews/:id/comments", ginx.Handle(AddPullReviewComment))
-			pullGroup.POST("/comments/:id/resolve", ginx.Handle(ResolvePullReviewComment))
+			pullGroup.POST("/:index/reviews", context.RequireRepoWriter(), ginx.Handle(CreatePullReview))
+			pullGroup.POST("/:index/reviews/:id/comments", context.RequireRepoWriter(), ginx.Handle(AddPullReviewComment))
+			pullGroup.POST("/comments/:id/resolve", context.RequireRepoWriter(), ginx.Handle(ResolvePullReviewComment))
 		}
 
 		wikiGroup := repo.Group("/wiki")
 		{
 			wikiGroup.GET("", ginx.Handle(GetWikiPage))
 			wikiGroup.GET("/*page", ginx.Handle(GetWikiPage))
-			wikiGroup.POST("", ginx.Handle(CreateWikiPage))
-			wikiGroup.PUT("/:page", ginx.Handle(UpdateWikiPage))
-			wikiGroup.DELETE("/:page", ginx.Handle(DeleteWikiPage))
+			wikiGroup.POST("", context.RequireRepoWriter(), ginx.Handle(CreateWikiPage))
+			wikiGroup.PUT("/:page", context.RequireRepoWriter(), ginx.Handle(UpdateWikiPage))
+			wikiGroup.DELETE("/:page", context.RequireRepoWriter(), ginx.Handle(DeleteWikiPage))
 		}
 
 		releaseGroup := repo.Group("/releases")
 		{
 			releaseGroup.GET("", ginx.Handle(ListReleases))
-			releaseGroup.POST("", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRelease))
+			releaseGroup.POST("", context.RequireRepoWriter(), ginx.Handle(CreateRelease))
 			releaseGroup.GET("/:id", ginx.Handle(GetRelease))
-			releaseGroup.PATCH("/:id", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(UpdateRelease))
-			releaseGroup.DELETE("/:id", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(DeleteRelease))
-			releaseGroup.POST("/attachments", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(UploadReleaseAttachment))
+			releaseGroup.PATCH("/:id", context.RequireRepoWriter(), ginx.Handle(UpdateRelease))
+			releaseGroup.DELETE("/:id", context.RequireRepoWriter(), ginx.Handle(DeleteRelease))
+			releaseGroup.POST("/attachments", context.RequireRepoWriter(), ginx.Handle(UploadReleaseAttachment))
 		}
 
 		repo.GET("/branches", ginx.Handle(ListRepoBranches))
-		repo.POST("/branches", ginx.Handle(CreateRepoBranch))
-		repo.DELETE("/branches/:branch", ginx.Handle(DeleteRepoBranch))
+		repo.POST("/branches", context.RequireRepoWriter(), ginx.Handle(CreateRepoBranch))
+		repo.DELETE("/branches/:branch", context.RequireRepoWriter(), ginx.Handle(DeleteRepoBranch))
 		repo.GET("/branches/:branch/protection", ginx.Handle(GetBranchProtection))
-		repo.PUT("/branches/:branch/protection", ginx.Handle(UpdateBranchProtection))
-		repo.DELETE("/branches/:branch/protection", ginx.Handle(DeleteBranchProtection))
+		repo.PUT("/branches/:branch/protection", context.RequireRepoAdmin(), ginx.Handle(UpdateBranchProtection))
+		repo.DELETE("/branches/:branch/protection", context.RequireRepoAdmin(), ginx.Handle(DeleteBranchProtection))
 
 		repo.GET("/tags", ginx.Handle(ListRepoTags))
-		repo.POST("/tags", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(CreateRepoTag))
-		repo.DELETE("/tags/:tag", context.Toggle(&context.ToggleOptions{SignInRequired: true}), ginx.Handle(DeleteRepoTag))
+		repo.POST("/tags", context.RequireRepoWriter(), ginx.Handle(CreateRepoTag))
+		repo.DELETE("/tags/:tag", context.RequireRepoWriter(), ginx.Handle(DeleteRepoTag))
 
 		repo.GET("/archive/*name", context.RepoRef(), ginx.Handle(GetRepoArchive))
 		repo.GET("/raw/:ref/*path", ginx.Handle(GetRepoRawFile))
@@ -237,21 +237,21 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		repo.GET("/compare/*info", context.RepoRef(), ginx.Handle(GetComparison))
 
 		repo.GET("/labels", ginx.Handle(ListRepoLabels))
-		repo.POST("/labels", ginx.Handle(CreateRepoLabel))
+		repo.POST("/labels", context.RequireRepoAdmin(), ginx.Handle(CreateRepoLabel))
 		repo.GET("/labels/:id", ginx.Handle(GetRepoLabel))
-		repo.PATCH("/labels/:id", ginx.Handle(UpdateRepoLabel))
-		repo.DELETE("/labels/:id", ginx.Handle(DeleteRepoLabel))
+		repo.PATCH("/labels/:id", context.RequireRepoAdmin(), ginx.Handle(UpdateRepoLabel))
+		repo.DELETE("/labels/:id", context.RequireRepoAdmin(), ginx.Handle(DeleteRepoLabel))
 
 		repo.GET("/milestones", ginx.Handle(ListRepoMilestones))
-		repo.POST("/milestones", ginx.Handle(CreateRepoMilestone))
+		repo.POST("/milestones", context.RequireRepoWriter(), ginx.Handle(CreateRepoMilestone))
 		repo.GET("/milestones/:id", ginx.Handle(GetRepoMilestone))
-		repo.PATCH("/milestones/:id", ginx.Handle(UpdateRepoMilestone))
-		repo.DELETE("/milestones/:id", ginx.Handle(DeleteRepoMilestone))
+		repo.PATCH("/milestones/:id", context.RequireRepoWriter(), ginx.Handle(UpdateRepoMilestone))
+		repo.DELETE("/milestones/:id", context.RequireRepoWriter(), ginx.Handle(DeleteRepoMilestone))
 
 		editor := repo.Group("/editor")
 		{
-			editor.POST("/edit", context.RepoRef(), ginx.Handle(EditRepoFile))
-			editor.POST("/delete", context.RepoRef(), ginx.Handle(DeleteRepoFile))
+			editor.POST("/edit", context.RequireRepoWriter(), context.RepoRef(), ginx.Handle(EditRepoFile))
+			editor.POST("/delete", context.RequireRepoWriter(), context.RepoRef(), ginx.Handle(DeleteRepoFile))
 		}
 
 		settingGroup := repo.Group("/settings", context.RequireRepoAdmin())
@@ -310,16 +310,26 @@ func RegisterRoutes(r *gin.RouterGroup) {
 
 	orgs := r.Group("/orgs", context.Toggle(&context.ToggleOptions{SignInRequired: false}))
 	{
+		// Lecturas: públicas para el perfil y la lista de miembros, restringidas a
+		// miembros de la organización para el listado de equipos.
 		orgs.GET("/:org", ginx.Handle(GetOrg))
-		orgs.PATCH("/:org", ginx.Handle(UpdateOrg))
-		orgs.POST("/:org/avatar", ginx.Handle(UpdateOrgAvatar))
-		orgs.DELETE("/:org/avatar", ginx.Handle(DeleteOrgAvatar))
-		orgs.DELETE("/:org", ginx.Handle(DeleteOrg))
 		orgs.GET("/:org/members", ginx.Handle(ListOrgMembers))
-		orgs.DELETE("/:org/members/:username", ginx.Handle(RemoveOrgMember))
+		orgs.GET("/:org/teams", context.OrgAssignment(true), ginx.Handle(ListOrgTeams))
 
-		orgs.GET("/:org/teams", ginx.Handle(ListOrgTeams))
-		orgs.POST("/:org/teams", ginx.Handle(CreateOrgTeam))
+		// Modificación del perfil y de los miembros: reservadas a la propiedad de la
+		// organización. OrgAssignment concede el acceso también a los administradores
+		// del sitio, y responde 404 cuando no se cumple, para no revelar que la
+		// organización existe.
+		orgs.PATCH("/:org", context.OrgAssignment(true, true), ginx.Handle(UpdateOrg))
+		orgs.POST("/:org/avatar", context.OrgAssignment(true, true), ginx.Handle(UpdateOrgAvatar))
+		orgs.DELETE("/:org/avatar", context.OrgAssignment(true, true), ginx.Handle(DeleteOrgAvatar))
+		orgs.DELETE("/:org", context.OrgAssignment(true, true), ginx.Handle(DeleteOrg))
+		orgs.DELETE("/:org/members/:username", context.OrgAssignment(true, true), ginx.Handle(RemoveOrgMember))
+		orgs.POST("/:org/teams", context.OrgAssignment(true, true), ginx.Handle(CreateOrgTeam))
+
+		// Equipos. Estas rutas no llevan ":org", así que OrgAssignment no puede
+		// resolver la organización y la comprobación se hace dentro del handler
+		// mediante requireTeamAccess, que deduce el permiso desde el propio equipo.
 		orgs.GET("/teams/:teamID", ginx.Handle(GetTeam))
 		orgs.PATCH("/teams/:teamID", ginx.Handle(UpdateOrgTeam))
 		orgs.DELETE("/teams/:teamID", ginx.Handle(DeleteOrgTeam))
