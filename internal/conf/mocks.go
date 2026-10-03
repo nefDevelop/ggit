@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"fmt"
+	"os"
 	"sync"
 	"testing"
 )
@@ -75,4 +77,25 @@ func SetMockPicture(t *testing.T, opts PictureOpts) {
 		Picture = before
 		mockPicture.Unlock()
 	})
+}
+
+// UseTempRepositoryRoot points Repository.Root at a directory outside the source
+// tree and returns its path.
+//
+// It exists because Repository.Root is empty until conf.Init runs, and test
+// binaries do not call it. repox.UserPath joins the user name straight onto that
+// empty root, so every repository fixture created by a test lands relative to the
+// package directory, inside the source tree. Running the suite then rewrites
+// tracked hook files with the build path and leaves stray git objects behind,
+// which is enough to corrupt an unrelated commit.
+//
+// Meant for TestMain, where no *testing.T is available yet; call RemoveTempRoot
+// from TestMain's exit path if the contents need to survive a failed run.
+func UseTempRepositoryRoot() (string, error) {
+	dir, err := os.MkdirTemp("", "ggit-test-repositories-")
+	if err != nil {
+		return "", fmt.Errorf("create temporary repository root: %w", err)
+	}
+	Repository.Root = dir
+	return dir, nil
 }
