@@ -63,4 +63,30 @@ describe('Identicon', () => {
     const clip = container.querySelector('clipPath');
     expect(clip).toBeInTheDocument();
   });
+
+  it('falls back to palette when langColor is not a hex color', () => {
+    // getLanguageColor devuelve "var(--...)" si el repo no tiene lenguaje.
+    // Antes daba NaN: fondo transparente + bloques blancos invisibles en claro.
+    const { container } = render(IdenticonWrapper, {
+      props: { seed: 'infra', type: 'repo', langColor: 'var(--text-muted)' },
+    });
+    const svg = container.querySelector('svg') as SVGElement;
+    expect(svg.style.background).not.toContain('NaN');
+    expect(svg.style.background).toMatch(/^rgba\(\d+, \d+, \d+, 0\.15\)$/);
+    const fills = [...container.querySelectorAll('g rect')].map((r) =>
+      r.getAttribute('fill'),
+    );
+    expect(fills.length).toBeGreaterThan(0);
+    for (const fill of fills) {
+      expect(fill).toMatch(/^#[0-9a-fA-F]{6}$/);
+    }
+  });
+
+  it('uses a valid hex langColor for background and blocks', () => {
+    const { container } = render(IdenticonWrapper, {
+      props: { seed: 'api-ejemplo', type: 'repo', langColor: '#00add8' },
+    });
+    const svg = container.querySelector('svg') as SVGElement;
+    expect(svg.style.background).toBe('rgba(0, 173, 216, 0.7)');
+  });
 });

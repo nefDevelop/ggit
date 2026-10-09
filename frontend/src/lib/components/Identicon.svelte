@@ -23,6 +23,12 @@
 
   // Generar datos deterministas a partir del seed
   const hash = $derived(getHash(seed));
+
+  // Solo un hex de 6 dígitos sirve para los cálculos de color.
+  // getLanguageColor devuelve "var(--...)" cuando el repo no tiene lenguaje
+  // y eso daba NaN: fondo transparente + bloques blancos (on-error), que en
+  // modo claro son invisibles. Sin hex válido se usa la paleta.
+  const hexLang = $derived(/^#[0-9a-fA-F]{6}$/.test(langColor || '') ? langColor : '');
   
   // Colores vibrantes y modernos
   const palettes = [
@@ -80,14 +86,14 @@
 
   const clipId = $derived(`clip-${hash}-${type}`);
   const bgColor = $derived(`rgba(${parseInt(palette[0].slice(1,3), 16)}, ${parseInt(palette[0].slice(3,5), 16)}, ${parseInt(palette[0].slice(5,7), 16)}, 0.15)`);
-  const langBgColor = $derived(langColor
-    ? `rgba(${parseInt(langColor.slice(1,3), 16)}, ${parseInt(langColor.slice(3,5), 16)}, ${parseInt(langColor.slice(5,7), 16)}, 0.7)`
+  const langBgColor = $derived(hexLang
+    ? `rgba(${parseInt(hexLang.slice(1,3), 16)}, ${parseInt(hexLang.slice(3,5), 16)}, ${parseInt(hexLang.slice(5,7), 16)}, 0.7)`
     : '');
-  const contrastColor = $derived(langColor
+  const contrastColor = $derived(hexLang
     ? (() => {
-        const r = parseInt(langColor.slice(1,3), 16);
-        const g = parseInt(langColor.slice(3,5), 16);
-        const b = parseInt(langColor.slice(5,7), 16);
+        const r = parseInt(hexLang.slice(1,3), 16);
+        const g = parseInt(hexLang.slice(3,5), 16);
+        const b = parseInt(hexLang.slice(5,7), 16);
         const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
         return luminance > 0.5 ? '#1a1a2e' : 'var(--md-sys-color-on-error)';
       })()
@@ -118,7 +124,7 @@
   <g clip-path="url(#{clipId})">
     {#if type === 'repo'}
       {#each shapes as s}
-        <rect x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} fill-opacity={langColor ? '0.55' : '0.8'} />
+        <rect x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} fill-opacity={hexLang ? '0.55' : '0.8'} />
       {/each}
     {:else}
       {#each shapes as s}
