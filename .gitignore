@@ -67,3 +67,9 @@ conf/app.test.ini
 # Entorno aislado de "make test-e2e". Antes se escribia dentro de data/, que es
 # justo el directorio que hay que dejar intacto.
 /data/test-e2e/
+
+# Entorno de "make demo": la config se copia desde conf/app.ini y en ella se
+# escribe el SECRET_KEY autogenerado, asi que no debe versionarse.
+conf/app.demo.ini
+/data/demo/
+/.demo.pid
