@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { apiFetch } from "$lib/api";
   import { dialog } from '$lib/dialog.svelte';
+  import { toast } from '$lib/toast.svelte';
   import Avatar from "$lib/components/Avatar.svelte";
   import Button from "./ui/Button.svelte";
   
@@ -54,7 +55,7 @@ import UserX from "lucide-svelte/icons/user-x";
         await fetchMembers();
       } else {
         const data = await res.json();
-        alert(data.message || "Failed to remove member");
+        toast.error(data.message || "Failed to remove member");
       }
     } catch (e) {
       console.error(e);

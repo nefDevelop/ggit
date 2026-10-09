@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { i18n } from '$lib/i18n.svelte';
   import { dialog } from '$lib/dialog.svelte';
+  import { toast } from '$lib/toast.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   
@@ -98,7 +99,7 @@ import Key from "lucide-svelte/icons/key";
            <code>{generatedToken}</code>
            <Button variant="ghost" icon={Copy} onclick={() => {
              navigator.clipboard.writeText(generatedToken);
-             alert('¡Token copiado al portapapeles!');
+             toast.success('¡Token copiado al portapapeles!');
            }} />
         </div>
         <Button variant="primary" onclick={() => generatedToken = ''}>He guardado el token</Button>

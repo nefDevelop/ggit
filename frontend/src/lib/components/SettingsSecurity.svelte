@@ -3,6 +3,7 @@
   import { apiFetch } from "$lib/api";
   import { i18n } from "$lib/i18n.svelte";
   import { dialog } from "$lib/dialog.svelte";
+  import { toast } from "$lib/toast.svelte";
   
 
 import KeyRound from "lucide-svelte/icons/key-round";
@@ -112,7 +113,7 @@ import ShieldOff from "lucide-svelte/icons/shield-off";
         enrollment = null;
         showRecovery = true;
       } else {
-        alert("Código inválido");
+        toast.error("Código inválido");
       }
     } catch (e) {
       console.error(e);

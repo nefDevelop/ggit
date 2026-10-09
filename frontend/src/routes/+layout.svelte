@@ -60,12 +60,14 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 				"es-ES";
 			await i18n.init(savedLocale);
 
-			// Redirection Logic
+			// Redirection Logic. replaceState para no ensuciar el historial:
+			// cada salto espurio a /install reaparecería al entrar con
+			// atrás/marcadores.
 			const path = $page.url.pathname;
 			if (!installResult && path !== "/install") {
-				goto("/install");
+				goto("/install", { replaceState: true });
 			} else if (installResult && path === "/install") {
-				goto("/");
+				goto("/", { replaceState: true });
 			}
 
 			checkSystemHealth();
@@ -177,7 +179,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 			</div>
 		{/if}
 		<main id="main-content">
-			{#if authState.loading}
+			{#if authState.loading || !authState.installChecked}
 				<div class="initial-loading">
 					<div class="spinner"></div>
 				</div>

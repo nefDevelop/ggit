@@ -1,7 +1,9 @@
 <script lang="ts">
   import { userPrefs } from "$lib/settings.svelte";
+  import Avatar from "./Avatar.svelte";
   import ScrollText from "lucide-svelte/icons/scroll-text";
   import Building2 from "lucide-svelte/icons/building-2";
+  import FileText from "lucide-svelte/icons/file-text";
   import Plus from "lucide-svelte/icons/plus";
 
   let { gists = [], organizations = [] }: {
@@ -20,7 +22,8 @@
       </header>
       <div class="gist-mini-list">
         {#each gists.slice(0, 5) as gist}
-          <a href="/gists/{gist.uuid}" class="gist-mini-item">
+          <a href="/gists/{gist.uuid}" class="gist-mini-item" title={gist.description || 'Untitled'}>
+            <FileText size={16} class="gist-mini-icon" />
             <span class="gist-mini-title">{gist.description || 'Untitled'}</span>
           </a>
         {/each}
@@ -35,10 +38,16 @@
         <h4>Organizations</h4>
         <a href="/org/create" class="mini-add-link" title="New Org" aria-label="New Organization"><Plus size={16} /></a>
       </header>
-      <div class="org-grid">
+      <div class="org-list">
         {#each organizations as org}
-          <a href="/org/{org.username}" class="org-chip" title={org.full_name || org.username}>
-            <img src={org.avatar_url} alt={org.username} loading="lazy" />
+          <a href="/org/{org.username}" class="org-row" title={org.full_name || org.username}>
+            <Avatar src={org.avatar_url} username={org.username} size={32} />
+            <span class="org-text">
+              <span class="org-name">{org.full_name || org.username}</span>
+              {#if org.full_name && org.full_name !== org.username}
+                <span class="org-username">@{org.username}</span>
+              {/if}
+            </span>
           </a>
         {/each}
       </div>
@@ -54,11 +63,16 @@
   .sidebar-card {
     padding: 1.25rem; border-radius: 1.5rem;
     background: var(--md-sys-color-surface-container-low);
+    border: 1px solid var(--md-sys-color-outline-variant);
   }
   .sidebar-header {
     display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+    color: var(--md-sys-color-on-surface-variant);
   }
-  .sidebar-header h4 { margin: 0; font-size: 0.85rem; font-weight: 800; flex: 1; }
+  .sidebar-header h4 {
+    margin: 0; font-size: 0.75rem; font-weight: 800; flex: 1;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
   .mini-add-link {
     color: var(--text-muted); text-decoration: none; transition: color 0.2s;
     display: flex; padding: 0.25rem;
@@ -66,16 +80,30 @@
   .mini-add-link:hover { color: var(--primary-color); }
   .gist-mini-list { display: flex; flex-direction: column; gap: 0.25rem; }
   .gist-mini-item {
-    padding: 0.5rem; border-radius: 0.5rem; color: var(--text-muted);
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.6rem 0.75rem; border-radius: 0.9rem; color: var(--text-muted);
     text-decoration: none; transition: all 0.2s; font-size: 0.9rem;
   }
-  .gist-mini-item:hover { background: rgba(255,255,255,0.03); color: var(--text-color); }
-  .org-grid { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .org-chip img {
-    width: 36px; height: 36px; border-radius: 50%;
-    transition: transform 0.2s;
+  .gist-mini-item:hover { background: rgba(var(--primary-rgb), 0.08); color: var(--text-color); }
+  .gist-mini-icon { flex-shrink: 0; }
+  .gist-mini-item:hover .gist-mini-icon { color: var(--primary-color); }
+  .gist-mini-title {
+    flex: 1; min-width: 0; overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
   }
-  .org-chip:hover img { transform: scale(1.1); }
+  .org-list { display: flex; flex-direction: column; gap: 0.25rem; }
+  .org-row {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.5rem 0.6rem; border-radius: 0.9rem;
+    text-decoration: none; transition: background 0.2s;
+  }
+  .org-row:hover { background: rgba(var(--primary-rgb), 0.08); }
+  .org-text { display: flex; flex-direction: column; min-width: 0; }
+  .org-name {
+    font-size: 0.9rem; font-weight: 700; color: var(--text-color);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .org-username { font-size: 0.75rem; color: var(--text-muted); }
   @media (max-width: 1200px) {
     .dashboard-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
     .sidebar-card { flex: 1; min-width: 200px; }

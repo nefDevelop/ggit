@@ -10,6 +10,7 @@ import LogOut from "lucide-svelte/icons/log-out";
 
 
   import { dialog } from '$lib/dialog.svelte';
+  import { toast } from '$lib/toast.svelte';
   import Card from './ui/Card.svelte';
   import Button from './ui/Button.svelte';
   import Avatar from './Avatar.svelte';
@@ -37,7 +38,7 @@ import LogOut from "lucide-svelte/icons/log-out";
         await fetchOrgs();
       } else {
         const data = await res.json();
-        alert(data.message || "Error al abandonar la organización");
+        toast.error(data.message || "Error al abandonar la organización");
       }
     } catch (e) { console.error(e); }
   }
