@@ -17,7 +17,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
 
 
   import { apiFetch } from "$lib/api";
-  import { authState } from '$lib/auth.svelte';
   import { userPrefs } from '$lib/settings.svelte';
   import { onMount } from 'svelte';
   import RepoRow from './RepoRow.svelte';
@@ -26,7 +25,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   import PageHeader from './ui/PageHeader.svelte';
   import Button from './ui/Button.svelte';
   import DashboardInbox from './DashboardInbox.svelte';
-  import DashboardSidebar from './DashboardSidebar.svelte';
 
   let data = $state<{
     repositories: any[],
@@ -169,12 +167,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
         inboxItems = Array.isArray(json) ? json : [];
       }
 
-      // Fetch gists for sidebar
-      const gistsRes = await apiFetch(`/api/v2/users/${authState.user?.username}/gists`);
-      if (gistsRes.ok) {
-        const json = await gistsRes.json();
-        data.gists = Array.isArray(json) ? json : [];
-      }
     } catch (e) {
       console.error("Failed to fetch dashboard data", e);
     } finally {
@@ -194,13 +186,9 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     if (viewMode === 'inbox') loadInbox();
   });
 
-  const hasSidebar = $derived(
-    (data?.organizations?.length ?? 0) > 0 && userPrefs.current.showSidebarOrgs
-  );
-
 </script>
 
-<div class="dashboard-layout" class:full-width={!hasSidebar}>
+<div class="dashboard-layout">
     <div class="dashboard-main-content">
         <PageHeader 
             title="Dashboard" 
@@ -285,9 +273,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
         </div>
     </div>
 
-    {#if hasSidebar}
-        <DashboardSidebar gists={data.gists || []} organizations={data.organizations || []} />
-    {/if}
 </div>
 
 <style>
@@ -298,10 +283,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     width: 100%;
     box-sizing: border-box;
     flex: 1 1 100%;
-  }
-
-  .dashboard-layout.full-width {
-    gap: 0;
   }
 
   .dashboard-main-content { 
@@ -334,48 +315,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .dashboard-sidebar {
-    width: 320px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-top: 1.5rem;
-    padding-right: 1.5rem;
-  }
-
-  .sidebar-card {
-    border-radius: 1.5rem;
-    padding: 1.5rem;
-    border: 1px solid var(--md-sys-color-outline-variant);
-  }
-
-  .sidebar-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    color: var(--text-muted);
-  }
-
-  .sidebar-header h4 {
-    margin: 0;
-    font-size: 0.9rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    flex: 1;
-  }
-
-  .mini-add-link { color: var(--text-muted); transition: color 0.2s; }
-  .mini-add-link:hover { color: var(--primary-color); }
-
-  .gist-mini-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .gist-mini-item { text-decoration: none; color: var(--text-color); font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.75rem; border-radius: 0.75rem; background: rgba(255,255,255,0.02); transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .gist-mini-item:hover { background: var(--primary-color); color: white; transform: translateX(4px); }
-
-
-
   :global(.action-summary a) {
     color: var(--primary-color);
     text-decoration: none;
@@ -395,25 +334,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
     background: rgba(var(--error-rgb), 0.1);
     color: var(--error);
     text-decoration: line-through;
-  }
-
-  .org-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-    gap: 0.75rem;
-  }
-
-  .org-chip img {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    transition: transform 0.2s;
-  }
-
-  .org-chip:hover img {
-    transform: scale(1.1) translateY(-2px);
-    border-color: var(--primary-color);
   }
 
   .flat-repo-list { 
@@ -480,9 +400,6 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
 
   @media (max-width: 1100px) {
-    /* Only the layout is adjusted here. The sidebar is hidden by
-       DashboardSidebar.svelte's own media query; a selector for it in this file
-       does not match, because scoped styles give each component its own class. */
     .dashboard-layout { padding: 0; }
   }
 
