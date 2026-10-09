@@ -1582,7 +1582,20 @@ func (issues IssueList) loadAttributes(tx *gorm.DB) error {
 		}
 		for _, issue := range pullIssues {
 			// It is possible a pull request is not created yet.
-			issue.PullRequest = pullSet[issue.ID]
+			pr := pullSet[issue.ID]
+			issue.PullRequest = pr
+			if pr == nil {
+				continue
+			}
+			// El issue de la lista ya trae Repo, Poster, Labels y Milestone;
+			// sin esto APIFormat() cae en nil (Poster) al serializar.
+			pr.Issue = issue
+			// Sin HeadRepo/BaseRepo, APIFormat() hace panic en
+			// BaseRepo.APIFormatLegacy (r.Owner nil). loadAttributes no toca
+			// Issue, asi que no hay recursion.
+			if err := pr.loadAttributes(tx); err != nil {
+				return fmt.Errorf("load pull request attributes: %w", err)
+			}
 		}
 	}
 

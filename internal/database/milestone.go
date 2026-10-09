@@ -329,13 +329,23 @@ func changeMilestoneAssign(tx *gorm.DB, issue *Issue, oldMilestoneID int64) erro
 
 		if err = updateMilestone(tx, m); err != nil {
 			return err
-		} else if err = tx.Model(new(IssueUser)).Where("issue_id = ?", issue.ID).Update("milestone_id", m.ID).Error; err != nil {
-			return err
+		} else if issue.ID > 0 {
+			// Sin ID aun (creación en newIssue) no hay filas IssueUser que
+			// actualizar; newIssueUsers se encarga de crearlas después.
+			if err = tx.Model(new(IssueUser)).Where("issue_id = ?", issue.ID).Update("milestone_id", m.ID).Error; err != nil {
+				return err
+			}
 		}
 
 		issue.Milestone = m
 	}
 
+	// Sin ID aun (creación en newIssue) no hay fila que actualizar: el INSERT
+	// posterior ya persiste MilestoneID. Sin esta guarda GORM rechaza el
+	// UPDATE global ("WHERE conditions required").
+	if issue.ID == 0 {
+		return nil
+	}
 	return updateIssue(tx, issue)
 }
 
