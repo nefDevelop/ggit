@@ -12,7 +12,7 @@ Sin relación institucional con el proyecto Gogs.
 | | Gogs upstream | ggit |
 | :--- | :--- | :--- |
 | Framework HTTP | Macaron | **Gin v1.12** |
-| Persistencia | XORM | **GORM**, 13 migraciones nuevas |
+| Persistencia | XORM | **GORM**, 14 migraciones nuevas |
 | Bases de datos soportadas | MySQL, PostgreSQL, SQLite, MSSQL | **Solo SQLite**, con WAL y un único escritor |
 | Frontend | Plantillas Go renderizadas en servidor | **`frontend/` SvelteKit 2 + Svelte 5**, 205 componentes, desacoplado |
 | API | v1 | **v2** |
@@ -26,7 +26,7 @@ mocking de red.
 
 XORM → GORM no fue un reemplazo de biblioteca. Cada Entidad de Gogs usa tipos de
 columna propios que GORM no conoce, así que las columnas se reconstruyeron
-explícitamente en 13 migraciones (v20 a v33) con `AutoMigrate`, verificadas contra
+explícitamente en 14 migraciones (v20 a v34) con `AutoMigrate`, verificadas contra
 la evolution del esquema de Gogs.
 
 ## Funcionalidades añadidas
