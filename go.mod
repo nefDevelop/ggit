@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/VictoriaMetrics/metrics v1.43.2
-	github.com/coreos/go-oidc/v3 v3.18.0
+	github.com/coreos/go-oidc/v3 v3.21.0
 	github.com/derision-test/go-mockgen/v2 v2.1.1
 	github.com/editorconfig/editorconfig-core-go/v2 v2.6.4
 	github.com/gin-contrib/gzip v1.2.6
