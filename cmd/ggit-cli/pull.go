@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -48,7 +49,20 @@ var prCommand = cli.Command{
 		&subcmdPRComment,
 		&subcmdPRReview,
 		&subcmdPRMerge,
+		&subcmdPRCreate,
 	},
+}
+
+var subcmdPRCreate = cli.Command{
+	Name:      "create",
+	Usage:     "Abre un pull request",
+	ArgsUsage: "OWNER/NAME",
+	Action:    runPRCreate,
+	Flags: append([]cli.Flag{
+		&cli.StringFlag{Name: "title", Usage: "Título del pull request"},
+		&cli.StringFlag{Name: "head", Usage: "Rama con los cambios"},
+		&cli.StringFlag{Name: "base", Usage: "Rama destino; por defecto la del repositorio"},
+	}, bodyFlags()...),
 }
 
 var subcmdPRReview = cli.Command{
@@ -284,6 +298,70 @@ func runPRComment(ctx context.Context, cmd *cli.Command) error {
 	fmt.Printf("comentario creado en #%d\n", index)
 	if comment.HTMLURL != "" {
 		fmt.Println(comment.HTMLURL)
+	}
+	return nil
+}
+
+func runPRCreate(ctx context.Context, cmd *cli.Command) error {
+	owner, name, err := repoArg(cmd)
+	if err != nil {
+		return err
+	}
+
+	title := strings.TrimSpace(cmd.String("title"))
+	if title == "" {
+		return fmt.Errorf("falta --title")
+	}
+	head := strings.TrimSpace(cmd.String("head"))
+	if head == "" {
+		return fmt.Errorf("falta --head")
+	}
+
+	body, err := resolveBody(cmd)
+	if err != nil {
+		return err
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	base := strings.TrimSpace(cmd.String("base"))
+	if base == "" {
+		repo, err := client.GetRepo(ctx, owner+"/"+name)
+		if err != nil {
+			return fmt.Errorf("resolver la rama por defecto: %w", err)
+		}
+		base = repo.DefaultBranch
+		if base == "" {
+			return fmt.Errorf("el repositorio no informa rama por defecto: usa --base")
+		}
+	}
+
+	raw, err := client.CreatePullRequest(ctx, owner, name, apiclient.CreatePullRequestOptions{
+		Title:      title,
+		Content:    body,
+		HeadBranch: head,
+		BaseBranch: base,
+	})
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printRawJSON(raw)
+	}
+
+	// El servidor devuelve el modelo interno; solo nos interesa el índice.
+	var created struct {
+		Index int64
+	}
+	_ = json.Unmarshal(raw, &created)
+
+	if created.Index > 0 {
+		fmt.Printf("pull request #%d creado: %s → %s\n", created.Index, head, base)
+	} else {
+		fmt.Printf("pull request creado: %s → %s\n", head, base)
 	}
 	return nil
 }

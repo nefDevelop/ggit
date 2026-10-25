@@ -42,6 +42,25 @@ func (c *Client) GetPullRequest(ctx context.Context, owner, name string, index i
 	return &pull, nil
 }
 
+// CreatePullRequestOptions son los campos de un pull request nuevo.
+type CreatePullRequestOptions struct {
+	Title      string `json:"title"`
+	Content    string `json:"content,omitempty"`
+	HeadBranch string `json:"head_branch"`
+	BaseBranch string `json:"base_branch"`
+}
+
+// CreatePullRequest abre un pull request. El servidor responde con el modelo
+// interno de la incidencia, así que devolvemos el JSON tal cual.
+func (c *Client) CreatePullRequest(ctx context.Context, owner, name string, opts CreatePullRequestOptions) (json.RawMessage, error) {
+	var raw json.RawMessage
+	path := repoPath(owner, name, "/pulls")
+	if err := c.Post(ctx, path, opts, &raw); err != nil {
+		return nil, err
+	}
+	return raw, nil
+}
+
 // ListPullReviews devuelve las revisiones de un pull request.
 func (c *Client) ListPullReviews(ctx context.Context, owner, name string, index int64) ([]*apiv2.PullReviewResponse, error) {
 	var reviews []*apiv2.PullReviewResponse

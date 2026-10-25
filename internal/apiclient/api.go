@@ -39,6 +39,28 @@ func (c *Client) CreateAccessToken(ctx context.Context, name string) (string, er
 	return res.Sha1, nil
 }
 
+// CreateRepoOptions son los campos aceptados al crear un repositorio.
+type CreateRepoOptions struct {
+	Name          string `json:"name"`
+	Description   string `json:"description,omitempty"`
+	Private       bool   `json:"private"`
+	Unlisted      bool   `json:"unlisted"`
+	AutoInit      bool   `json:"auto_init"`
+	Readme        string `json:"readme,omitempty"`
+	Gitignores    string `json:"gitignores,omitempty"`
+	License       string `json:"license,omitempty"`
+	DefaultBranch string `json:"default_branch,omitempty"`
+}
+
+// CreateRepo crea un repositorio en la cuenta del usuario autenticado.
+func (c *Client) CreateRepo(ctx context.Context, opts CreateRepoOptions) (*apiv2.RepositoryResponse, error) {
+	var repo apiv2.RepositoryResponse
+	if err := c.Post(ctx, "/user/repos", opts, &repo); err != nil {
+		return nil, err
+	}
+	return &repo, nil
+}
+
 // ListUserRepos devuelve los repositorios propios y las colaboraciones.
 func (c *Client) ListUserRepos(ctx context.Context) ([]*apiv2.RepositoryResponse, error) {
 	var repos []*apiv2.RepositoryResponse

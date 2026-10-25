@@ -70,8 +70,10 @@ export GGIT_HOST=https://ggit.734038.xyz
 .bin/ggit-cli auth login --username pi --password -
 .bin/ggit-cli auth status
 .bin/ggit-cli repo list
+.bin/ggit-cli repo create mi-repo --private --auto-init
 .bin/ggit-cli issue list pi/ggit --state open
 .bin/ggit-cli pr list pi/ggit
+.bin/ggit-cli pr create pi/ggit --title "Título" --head feature/x
 .bin/ggit-cli issue create pi/ggit --title "Título" --body "Texto"
 .bin/ggit-cli issue comment pi/ggit 12 --body-file nota.md
 .bin/ggit-cli issue close pi/ggit 12

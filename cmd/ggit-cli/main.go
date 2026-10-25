@@ -76,6 +76,22 @@ var repoCommand = cli.Command{
 			ArgsUsage: "OWNER/NAME",
 			Action:    runRepoView,
 		},
+		{
+			Name:      "create",
+			Usage:     "Crea un repositorio en tu cuenta",
+			ArgsUsage: "NAME",
+			Action:    runRepoCreate,
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "description", Usage: "Descripción"},
+				&cli.BoolFlag{Name: "private", Usage: "Repositorio privado"},
+				&cli.BoolFlag{Name: "unlisted", Usage: "No aparece en la exploración"},
+				&cli.BoolFlag{Name: "auto-init", Usage: "Crea un commit inicial"},
+				&cli.StringFlag{Name: "readme", Usage: "Plantilla de README"},
+				&cli.StringFlag{Name: "gitignore", Usage: "Plantilla de .gitignore"},
+				&cli.StringFlag{Name: "license", Usage: "Plantilla de licencia"},
+				&cli.StringFlag{Name: "default-branch", Usage: "Rama por defecto"},
+			},
+		},
 	},
 }
 
@@ -231,6 +247,45 @@ func runRepoList(ctx context.Context, cmd *cli.Command) error {
 		)
 	}
 	return w.Flush()
+}
+
+func runRepoCreate(ctx context.Context, cmd *cli.Command) error {
+	name := strings.TrimSpace(cmd.Args().First())
+	if name == "" {
+		return fmt.Errorf("uso: %s NAME", cmd.FullName())
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	repo, err := client.CreateRepo(ctx, apiclient.CreateRepoOptions{
+		Name:          name,
+		Description:   cmd.String("description"),
+		Private:       cmd.Bool("private"),
+		Unlisted:      cmd.Bool("unlisted"),
+		AutoInit:      cmd.Bool("auto-init"),
+		Readme:        cmd.String("readme"),
+		Gitignores:    cmd.String("gitignore"),
+		License:       cmd.String("license"),
+		DefaultBranch: cmd.String("default-branch"),
+	})
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printJSON(repo)
+	}
+
+	fmt.Printf("repositorio creado: %s (%s)\n", repo.FullName, visibility(repo))
+	if repo.CloneURL != "" {
+		fmt.Printf("clone https: %s\n", repo.CloneURL)
+	}
+	if repo.SSHURL != "" {
+		fmt.Printf("clone ssh:   %s\n", repo.SSHURL)
+	}
+	return nil
 }
 
 func runRepoView(ctx context.Context, cmd *cli.Command) error {
