@@ -46,6 +46,26 @@ var prCommand = cli.Command{
 			Action:    runPRDiff,
 		},
 		&subcmdPRComment,
+		&subcmdPRReview,
+		&subcmdPRMerge,
+	},
+}
+
+var subcmdPRReview = cli.Command{
+	Name:      "review",
+	Usage:     "Envía una revisión al pull request",
+	ArgsUsage: "OWNER/NAME NUMBER approve|comment|reject",
+	Action:    runPRReview,
+	Flags:     bodyFlags(),
+}
+
+var subcmdPRMerge = cli.Command{
+	Name:      "merge",
+	Usage:     "Fusiona un pull request",
+	ArgsUsage: "OWNER/NAME NUMBER",
+	Action:    runPRMerge,
+	Flags: []cli.Flag{
+		&cli.BoolFlag{Name: "yes", Aliases: []string{"y"}, Usage: "Confirma la fusión"},
 	},
 }
 
@@ -265,6 +285,81 @@ func runPRComment(ctx context.Context, cmd *cli.Command) error {
 	if comment.HTMLURL != "" {
 		fmt.Println(comment.HTMLURL)
 	}
+	return nil
+}
+
+func runPRReview(ctx context.Context, cmd *cli.Command) error {
+	owner, name, index, err := numberArg(cmd)
+	if err != nil {
+		return err
+	}
+
+	kind := strings.ToLower(cmd.Args().Get(2))
+	var reviewType apiclient.ReviewType
+	switch kind {
+	case "approve":
+		reviewType = apiclient.ReviewApprove
+	case "comment":
+		reviewType = apiclient.ReviewComment
+	case "reject":
+		reviewType = apiclient.ReviewReject
+	default:
+		return fmt.Errorf("uso: %s OWNER/NAME NUMBER approve|comment|reject", cmd.FullName())
+	}
+
+	body, err := resolveBody(cmd)
+	if err != nil {
+		return err
+	}
+	if reviewType == apiclient.ReviewComment && strings.TrimSpace(body) == "" {
+		return fmt.Errorf("una revisión de tipo comment requiere --body o --body-file")
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	raw, err := client.CreatePullReview(ctx, owner, name, index, apiclient.CreatePullReviewOptions{
+		Type:    reviewType,
+		Content: body,
+	})
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printRawJSON(raw)
+	}
+
+	fmt.Printf("revisión %s enviada a #%d\n", kind, index)
+	return nil
+}
+
+func runPRMerge(ctx context.Context, cmd *cli.Command) error {
+	owner, name, index, err := numberArg(cmd)
+	if err != nil {
+		return err
+	}
+
+	// No hay confirmación interactiva: fusionar exige --yes explícito.
+	if !cmd.Bool("yes") {
+		return fmt.Errorf("para fusionar #%d repite con --yes", index)
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	status, err := client.MergePullRequest(ctx, owner, name, index)
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printJSON(map[string]string{"status": status})
+	}
+
+	fmt.Printf("pull request #%d: %s\n", index, status)
 	return nil
 }
 

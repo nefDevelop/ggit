@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -154,6 +155,22 @@ func (c *Client) CreateIssueComment(ctx context.Context, owner, name string, ind
 		return nil, err
 	}
 	return &comment, nil
+}
+
+// UpdateIssueOptions son los campos modificables de una incidencia.
+type UpdateIssueOptions struct {
+	IsClosed *bool `json:"is_closed"`
+}
+
+// SetIssueClosed cierra o reabre una incidencia. El servidor responde con el
+// modelo interno (no con el DTO de la API), así que devolvemos el JSON tal cual.
+func (c *Client) SetIssueClosed(ctx context.Context, owner, name string, index int64, closed bool) (json.RawMessage, error) {
+	var raw json.RawMessage
+	path := repoPath(owner, name, "/issues/"+strconv.FormatInt(index, 10))
+	if err := c.Put(ctx, path, UpdateIssueOptions{IsClosed: &closed}, &raw); err != nil {
+		return nil, err
+	}
+	return raw, nil
 }
 
 // SplitRepoName valida y separa un argumento "owner/name".

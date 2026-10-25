@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"strconv"
 
@@ -59,6 +60,46 @@ func (c *Client) GetPullRequestDiff(ctx context.Context, owner, name string, ind
 		return nil, err
 	}
 	return &diff, nil
+}
+
+// ReviewType es el tipo de revisión tal como lo espera el servidor.
+type ReviewType int
+
+// Tipos de revisión aceptados por POST /pulls/{index}/reviews.
+const (
+	ReviewApprove ReviewType = 1
+	ReviewComment ReviewType = 2
+	ReviewReject  ReviewType = 3
+)
+
+// CreatePullReviewOptions son los campos de una revisión nueva.
+type CreatePullReviewOptions struct {
+	Type    ReviewType `json:"type"`
+	Content string     `json:"content,omitempty"`
+}
+
+// CreatePullReview envía una revisión. El servidor responde con el modelo
+// interno de la revisión, así que devolvemos el JSON tal cual.
+func (c *Client) CreatePullReview(ctx context.Context, owner, name string, index int64, opts CreatePullReviewOptions) (json.RawMessage, error) {
+	var raw json.RawMessage
+	path := repoPath(owner, name, "/pulls/"+strconv.FormatInt(index, 10)+"/reviews")
+	if err := c.Post(ctx, path, opts, &raw); err != nil {
+		return nil, err
+	}
+	return raw, nil
+}
+
+// MergePullRequest fusiona un pull request y devuelve el estado informado por
+// el servidor (normalmente "merged").
+func (c *Client) MergePullRequest(ctx context.Context, owner, name string, index int64) (string, error) {
+	var res struct {
+		Status string `json:"status"`
+	}
+	path := repoPath(owner, name, "/pulls/"+strconv.FormatInt(index, 10)+"/merge")
+	if err := c.Post(ctx, path, nil, &res); err != nil {
+		return "", err
+	}
+	return res.Status, nil
 }
 
 // Diff refleja el JSON de /pulls/{index}/diff. El servidor serializa

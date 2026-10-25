@@ -73,6 +73,9 @@ export GGIT_TOKEN=<token>
 .bin/ggit-cli pr list pi/ggit
 .bin/ggit-cli issue create pi/ggit --title "Título" --body "Texto"
 .bin/ggit-cli issue comment pi/ggit 12 --body-file nota.md
+.bin/ggit-cli issue close pi/ggit 12
+.bin/ggit-cli pr review pi/ggit 4 approve --body "LGTM"
+.bin/ggit-cli pr merge pi/ggit 4 --yes
 ```
 
 La configuración también puede vivir en `~/.config/ggit-cli/config.json`

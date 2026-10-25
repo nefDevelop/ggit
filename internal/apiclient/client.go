@@ -57,6 +57,11 @@ func (c *Client) Post(ctx context.Context, path string, body, out any) error {
 	return c.do(ctx, http.MethodPost, path, nil, body, out)
 }
 
+// Put ejecuta un PUT sobre path (relativo a /api/v2) con body en JSON.
+func (c *Client) Put(ctx context.Context, path string, body, out any) error {
+	return c.do(ctx, http.MethodPut, path, nil, body, out)
+}
+
 func (c *Client) do(ctx context.Context, method, path string, query url.Values, body, out any) error {
 	endpoint := c.baseURL + apiPrefix + path
 	if len(query) > 0 {

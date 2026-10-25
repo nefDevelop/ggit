@@ -12,6 +12,20 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+var subcmdIssueClose = cli.Command{
+	Name:      "close",
+	Usage:     "Cierra una incidencia",
+	ArgsUsage: "OWNER/NAME NUMBER",
+	Action:    runIssueClose,
+}
+
+var subcmdIssueReopen = cli.Command{
+	Name:      "reopen",
+	Usage:     "Reabre una incidencia",
+	ArgsUsage: "OWNER/NAME NUMBER",
+	Action:    runIssueReopen,
+}
+
 var subcmdIssueCreate = cli.Command{
 	Name:      "create",
 	Usage:     "Crea una incidencia",
@@ -74,6 +88,41 @@ func runIssueCreate(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	fmt.Printf("#%d %s (%s)\n", issue.Index, issue.Title, issue.State)
+	return nil
+}
+
+func runIssueClose(ctx context.Context, cmd *cli.Command) error {
+	return setIssueClosed(ctx, cmd, true)
+}
+
+func runIssueReopen(ctx context.Context, cmd *cli.Command) error {
+	return setIssueClosed(ctx, cmd, false)
+}
+
+func setIssueClosed(ctx context.Context, cmd *cli.Command, closed bool) error {
+	owner, name, index, err := numberArg(cmd)
+	if err != nil {
+		return err
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	raw, err := client.SetIssueClosed(ctx, owner, name, index, closed)
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printRawJSON(raw)
+	}
+
+	state := "reabierta"
+	if closed {
+		state = "cerrada"
+	}
+	fmt.Printf("incidencia #%d %s\n", index, state)
 	return nil
 }
 

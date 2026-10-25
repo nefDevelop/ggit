@@ -2,6 +2,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -94,6 +95,8 @@ var issueCommand = cli.Command{
 		},
 		&subcmdIssueCreate,
 		&subcmdIssueComment,
+		&subcmdIssueClose,
+		&subcmdIssueReopen,
 	},
 }
 
@@ -350,6 +353,22 @@ func printJSON(v any) error {
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	return enc.Encode(v)
+}
+
+// printRawJSON reindenta una respuesta que el cliente no modela (por ejemplo,
+// los modelos internos que devuelven PUT /issues y POST /pulls/{n}/reviews).
+func printRawJSON(raw json.RawMessage) error {
+	if len(bytes.TrimSpace(raw)) == 0 {
+		return nil
+	}
+
+	var buf bytes.Buffer
+	if err := json.Indent(&buf, raw, "", "  "); err != nil {
+		buf.Write(raw)
+	}
+	buf.WriteByte('\n')
+	_, err := os.Stdout.Write(buf.Bytes())
+	return err
 }
 
 func configHint() string {
