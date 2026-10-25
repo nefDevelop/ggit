@@ -144,6 +144,19 @@ var (
 		DisableRegularOrgCreation bool
 	}
 
+	// PikoCI settings
+	PikoCI struct {
+		Enabled     bool
+		Mode        string
+		URL         string `ini:"URL"`
+		PublicURL   string `ini:"PUBLIC_URL"`
+		BinaryPath  string
+		DataDir     string
+		Concurrency int
+		JWTSecret   string `ini:"JWT_SECRET"`
+		SecretKey   string
+	}
+
 	// Cron tasks
 	Cron struct {
 		RepoHealthCheck struct {

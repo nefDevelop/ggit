@@ -74,3 +74,7 @@ conf/app.demo.ini
 /data/demo/
 /.demo.pid
 .commandcode/
+
+# Clon temporal de PikoCI (código y docs) para la integración de ROADMAP_CI.md.
+# Es material de consulta, no una dependencia versionada.
+/tmp/pikoci/

@@ -1,349 +1,300 @@
 # Roadmap: ggit pikoci — CI/CD integrado
 
-**ggit pikoci** es la integración de [PikoCI](https://github.com/PikoCI/pikoci) como motor de CI/CD nativo dentro de ggit. Un solo binario externo (~20 MB), cualquier base de datos, pipelines en HCL.
+**ggit pikoci** es la integración de [PikoCI](https://github.com/PikoCI/pikoci) como motor
+de CI/CD dentro de ggit. PikoCI es un binario único (o contenedor) con pipelines en HCL,
+base de datos propia y UI web.
 
-> Filosofía: ggit gestiona el ciclo de vida de PikoCI como subproceso. El administrador controla todo desde la UI de ggit. Los desarrollores ven los resultados (✅/❌) en commits y PRs.
+> Filosofía revisada: el CI **no** se incrusta en el proceso de ggit. ggit configura,
+> dispara y muestra resultados; PikoCI ejecuta. El aislamiento manda sobre la comodidad.
+
+Verificado contra **PikoCI v0.8.0** (commit `6ec42e1`, 2026-10-25). El clon de consulta
+vive en `tmp/pikoci/` (ignorado por git); sus docs están en `tmp/pikoci/docs/`.
 
 ---
 
-## Fase 1: Fundación — Config + Binary Manager
+## Decisiones de arquitectura (leer antes de tocar código)
 
-**Objetivo:** ggit puede descargar, lanzar, monitorizar y detener PikoCI como subproceso gestionado.
+### 1. Aislamiento: sidecar por defecto, subproceso como modo reducido
 
-### 1.1 Config section `[pikoci]` en `app.ini`
+Los jobs de PikoCI son **código arbitrario ejecutado como subproceso del host** con los
+runners `exec`/`shell`; `docker` es opcional y no hay sandbox. Si ggit lo lanza como hijo
+con su mismo usuario, un pipeline puede leer `conf/app.ini` (con `SECRET_KEY`), la SQLite y
+todos los repos bare.
 
-- [ ] Crear `PikoCIOpts` struct en `internal/conf/static.go`
-- [ ] Mapear sección en `internal/conf/conf.go`
-- [ ] Agregar defaults en `conf/app.ini`
+- **Producción (recomendado): contenedor/sidecar.** Volumen propio, red interna, sin acceso
+  al sistema de ficheros de ggit. ggit solo consulta estado y envía triggers.
+- **Instalaciones single-binary: subproceso** con UID/GID distinto
+  (`SysProcAttr.Credential`), `XDG_DATA_HOME` propio y límites de recursos. Requiere
+  **apagado ordenado en ggit**, que hoy no existe (`cmd/ggit/web.go` usa `ListenAndServe`
+  sin `Shutdown`).
+
+Ningún modo se implementa sin resolver antes el aislamiento.
+
+### 2. Trigger: llamada directa desde el push, no webhooks de ggit
+
+La entrega de webhooks de ggit bloquea loopback por SSRF (`netx.IsBlockedLocalHostname`,
+`internal/database/webhook.go`). Además, PikoCI ignora el payload y no verifica HMAC: el
+webhook solo re-lanza el `check` del resource.
+
+Por tanto: el push llama **en proceso** a un servicio de ggit que hace
+`POST /webhooks/<token>` contra PikoCI. Sin webhook de ggit, sin allowlist de loopback.
+
+### 3. Estado: commit statuses nativos de ggit
+
+PikoCI notifica con `notification_type` + `notify "exec"` y ggit ya tiene
+`POST /api/v2/{owner}/{repo}/statuses/{sha}` (`internal/route/api/v2/repo.go`), con
+visualización en commits y PRs. No hace falta backend nuevo para esto.
+
+### 4. Pipelines: per-repo desde el propio repo
+
+En vez de un HCL global editable en la UI, el pipeline vive en `.ggit/ci.hcl` del repo y
+ggit lo publica en PikoCI al activar CI. Encaja con la filosofía docs-as-code del wiki.
+Ojo: la API espera el HCL **en base64** dentro de `{"config": ..., "vars": {...}}`.
+
+### 5. Despliegue: mismo PC o PC de CI
+
+Son dos decisiones separadas: dónde vive el **servidor** de PikoCI y dónde corren los
+**workers** (donde se ejecuta el código).
+
+| Escenario | Servidor | Workers | Cuándo |
+| :--- | :--- | :--- | :--- |
+| Mismo PC, contenedor | sidecar junto a ggit | embebido (`--run-worker=true`) | Simple; builds ligeros. Docker publica el puerto solo en loopback. |
+| Mismo PC, binario | subproceso con UID propio | embebido | Solo si no hay contenedores; exige apagado ordenado. |
+| PC de CI | contenedor o binario en el otro PC | embebido o workers extra | Builds pesados o separación física de la forja. |
+
+Recomendado para empezar: **mismo PC, PikoCI en contenedor**. El pipeline no puede leer
+`conf/app.ini`, la SQLite ni los repos bare porque no comparte volúmenes, y el mapeo
+`127.0.0.1:18080:18080` resuelve que PikoCI no tenga flag de bind.
+
+En el PC de CI, ggit y PikoCI se ven por red interna: PikoCI necesita alcanzar ggit por
+HTTPS para clonar, y ggit necesita alcanzar la URL de PikoCI (`[pikoci] URL`). Firewall
+para que el puerto solo acepte tráfico de ggit.
+
+Workers remotos (`pikoci worker --pikoci-url ... --worker-token ...`): permiten tener la
+máquina de builds separada del servidor, con `--run-worker=false` en el servidor y routing
+por `--tags`. Para una máquina air-gapped, las toolchains e imágenes Docker deben estar
+preinstaladas o en un mirror local; el worker solo necesita red hacia ggit y PikoCI.
+
+En ambos modos la integración es idéntica: ggit solo conoce una `URL` y habla HTTP.
+
+
+---
+
+## Correcciones respecto a la versión anterior del roadmap
+
+| Antes | Realidad en v0.8.0 |
+| :--- | :--- |
+| `--http-bind-addr 127.0.0.1:18080` | No existe. Solo `--port`, y escucha en `:port` (todas las interfaces). Exige firewall o red de contenedor. |
+| `--db-path ~/.ggit/pikoci/data/pikoci.db` | No existe. La ruta SQLite es fija en el data dir XDG; se controla con `XDG_DATA_HOME` del proceso. `--db-name` se ignora en sqlite. |
+| `GET /healthz` | Es `GET /health` (JSON con estado y ping a la base de datos). También `/version` y `/metrics` (Prometheus). |
+| `PUT /api/v1/teams/main/pipelines/...` | Sin prefijo `/api/v1`: `PUT /teams/main/pipelines/<nombre>`, body `{"config": "<HCL base64>", "vars": {...}}`. |
+| Webhooks con HMAC-SHA256 verificable | No hay HMAC ni validación de payload. `POST /webhooks/<token>` ignora el body; el token es el único secreto. |
+| `$notify_sha`, `$notify_state`, `$notify_target_url` automáticos | No se rellenan solos: existen como `$notify_<attr>` solo si el paso `notify` declara ese atributo. Para el SHA usa `$version_ref` (en `on_trigger` no hay checkout). |
+| `pikoci validate` | El comando es `pikoci pipeline validate <file.hcl>`. |
+| ggit crea un webhook hacia `127.0.0.1` | Bloqueado por el guard SSRF de ggit. Se sustituye por llamada directa (decisión 2). |
+| Fase de dashboard de builds en ggit | Duplica la UI de PikoCI. Se descarta: enlace o proxy. |
+
+También conviene saber: los tokens de API de PikoCI son JWT o `pko_`, y **crear un token
+requiere un JWT** (`POST /login`), así que ggit necesita guardar una credencial de servicio
+creada una vez. Y el usuario `admin`/`admin123` se siembra por defecto: hay que
+sobreescribirlo con `--users`.
+
+---
+
+## Fase 0 — Spike de viabilidad (antes de escribir código)
+
+**Objetivo:** validar las tres incógnitas que pueden tumbar el diseño.
+
+- [ ] Lanzar PikoCI a mano con `--db-system sqlite`, `--jwt-secret`, `XDG_DATA_HOME` propio
+      y `--users ci:<hash-bcrypt>`.
+- [ ] **Repo privado de ggit**: `pull` inyecta `https://oauth2:<token>@…` y ggit acepta el
+      token como contraseña (`internal/route/repo/http.go`), pero el fallback de `check`
+      (`git ls-remote` en `pikoci/builtin/resource_types/git.hcl`) **no inyecta
+      credenciales**. Verificar si el `check` funciona; si no, evaluar URL con credenciales
+      vía secret store o añadir un provider `ggit` al resource type.
+- [ ] Reportar estado a `POST /api/v2/{owner}/{repo}/statuses/{sha}` desde un `notify "exec"`
+      con `state`, `context`, `description`, `target_url` y `sha = "$version_ref"`.
+- [ ] Pipeline mínimo HCL con `get → task → notify` y `pikoci pipeline validate`.
+
+**Criterio de salida:** push a un repo privado → build ejecutado → estado visible en el
+commit de ggit.
+
+---
+
+## Fase 1 — Configuración y ciclo de vida
+
+**Objetivo:** ggit conoce, arranca (si aplica), vigila y detiene PikoCI.
+
+### 1.1 Sección `[pikoci]` en `app.ini`
+
+- [ ] `PikoCIOpts` en `internal/conf/static.go` (patrón de `[cron]`) y mapeo en
+      `internal/conf/conf.go`.
+- [ ] Defaults en `conf/app.ini`.
+- [ ] Secretos generados y persistidos como `SECRET_KEY` (`ensureSecretKey`), nunca en
+      `conf/app.ini`.
 
 ```ini
 [pikoci]
-ENABLED = false
-BINARY_PATH = ~/.ggit/pikoci/pikoci
-DATA_DIR = ~/.ggit/pikoci/data
-AUTO_DOWNLOAD = true
-DOWNLOAD_URL = https://github.com/PikoCI/pikoci/releases/latest/download/pikoci-linux-amd64
-PORT = 18080
-JWT_SECRET = auto-generado-en-init
+ENABLED     = false
+MODE        = sidecar   ; sidecar | subprocess
+URL         = http://127.0.0.1:18080
+BINARY_PATH =           ; solo MODE=subprocess
+DATA_DIR    =           ; se exporta como XDG_DATA_HOME al hijo
+CONCURRENCY = 2
+PUBLIC_URL  =           ; enlace a la UI de PikoCI para el admin
 ```
 
-### 1.2 Binary Manager (`internal/pikoci/manager.go`)
+### 1.2 Servicio `internal/services/pikoci`
 
-- [ ] `DownloadBinary(url, dest)` — descarga + `chmod +x`, con barra de progreso
-- [ ] `StartServer(ctx, opts)` — lanza `exec.Cmd` con flags:
-  ```
-  pikoci server \
-    --db-system sqlite \
-    --db-path ~/.ggit/pikoci/data/pikoci.db \
-    --http-bind-addr 127.0.0.1:18080 \
-    --jwt-secret <generado> \
-    --run-worker
-  ```
-- [ ] `StopServer()` — envía SIGTERM, espera graceful shutdown (5s), SIGKILL si no responde
-- [ ] `HealthCheck()` — GET `http://127.0.0.1:18080/healthz`, reintentos
-- [ ] Registrar PID en `process.Processes` para visibilidad en admin
+- [ ] `var CI *Service` + `Init(db, conf)` llamado desde `internal/services/services.go`,
+      siguiendo el patrón de `internal/services/repo`.
+- [ ] `Status(ctx)` (GET `/health`), `Restart(ctx)`, `LogTail(n)`.
+- [ ] Modo subprocess: supervisor con backoff + `process.Add("pikoci", cmd)` para que
+      aparezca en el monitor admin (`GetAdminMonitor`, `KillAdminProcess`).
+- [ ] Modo sidecar: sin gestión de proceso, solo health y credenciales.
 
-### 1.3 GlobalInit hook (`internal/route/init.go`)
+### 1.3 Apagado ordenado (prerrequisito del modo subprocess)
 
-- [ ] En `GlobalInit()`, si `pikoci.enabled`:
-  - Generar JWT secret si no existe (guardar en `data/` persistente)
-  - Llamar `DownloadBinary` si aplica
-  - Llamar `StartServer`
-  - Goroutine de health check cada 30s (restart automático si muere)
-- [ ] Registrar shutdown: `signal.NotifyContext` + `StopServer` en defer
+- [ ] `signal.NotifyContext` en `cmd/ggit/web.go` y `server.Shutdown(ctx)`.
+- [ ] `CI.Stop(ctx)`: `SIGQUIT` (drain, `--drain-timeout`) y `SIGKILL` si no responde.
 
-### 1.4 Admin monitor visibility
+### 1.4 Diagnóstico
 
-- [ ] PikoCI aparece como proceso en `GET /admin/monitor` con PID, uptime, estado
-- [ ] Botón "Restart PikoCI" en admin panel
+- [ ] `ggit admin pikoci status` (modo, URL, salud, versión) y `restart` (subprocess).
+- [ ] Logs de PikoCI con rotación (10 MB/archivo).
 
-### 1.5 CLI command
-
-- [ ] `ggit admin pikoci status` — muestra si está corriendo, PID, puerto, uptime
-- [ ] `ggit admin pikoci restart` — restart del subproceso
-- [ ] `ggit admin pikoci logs` — tail del stdout/stderr de PikoCI
+**Criterio de salida:** el admin ve el estado real de PikoCI desde ggit y el arranque/apagado
+no deja procesos huérfanos.
 
 ---
 
-## Fase 2: Admin UI — Enable/Disable CI
+## Fase 2 — Trigger en el push
 
-**Objetivo:** El administrador enciende CI desde el panel de administración de ggit.
+**Objetivo:** un push dispara el `check` del resource sin webhooks de ggit.
 
-### 2.1 Config API endpoints
+- [ ] `CI.NotifyPush(ctx, repo, ref)` → `POST /webhooks/<token>` de PikoCI.
+- [ ] Obtener y guardar el token con
+      `POST /teams/{team}/pipelines/{pipeline}/resources/{resource}/webhook_token`
+      (rol `maintain`).
+- [ ] Llamada desde `cmd/ggit/hook.go` (push por SSH) y desde el handler de push HTTP.
+- [ ] Deduplicar por `(repo, sha)` para no lanzar builds repetidos.
+- [ ] Si PikoCI no responde, el push **no** falla: se registra y se sigue.
 
-- [ ] `GET /admin/pikoci/config` — devuelve la config actual (sin secrets)
-- [ ] `PUT /admin/pikoci/config` — actualiza config (enabled, port, etc.)
-- [ ] `POST /admin/pikoci/restart` — restart del subproceso
-
-### 2.2 Admin panel UI (SvelteKit)
-
-- [ ] Sección "CI/CD" en el panel de administración
-- [ ] Toggle "Enable PikoCI CI/CD"
-- [ ] Indicador de estado: RUNNING / STOPPED / ERROR / DOWNLOADING
-- [ ] Botón "Restart" con confirmación
-- [ ] Config fields: Port, Auto-download, Binary path
-- [ ] Log viewer (streaming de logs de PikoCI)
-
-### 2.3 Default pipeline template
-
-- [ ] Template HCL embebido en ggit para el pipeline por defecto
-- [ ] Incluye resource type `ggit-status` para reportar commit status
-- [ ] Incluye job `test` con un paso `make test` por defecto
-- [ ] Se inyectan variables: `$GGIT_URL`, `$GGIT_TOKEN`, `$REPO_FULL_NAME`
-
-### 2.4 Startup pipeline
-
-- [ ] Al iniciar PikoCI, ggit crea un pipeline base que escucha webhooks
-- [ ] El pipeline se auto-registra via API de PikoCI (`PUT /api/v1/teams/main/pipelines/ggit-ci`)
+**Criterio de salida:** push → build en PikoCI en segundos, sin webhook de ggit configurado.
 
 ---
 
-## Fase 3: Webhook Integration — Push Trigger
+## Fase 3 — Estado en commits y PRs
 
-**Objetivo:** Cuando alguien hace push a un repo, ggit avisa a PikoCI y se dispara el pipeline.
+**Objetivo:** ✅/❌ en el commit y checks en el PR.
 
-### 3.1 Resource git + webhook token en PikoCI
+- [ ] Usuario bot `pikoci` + token de acceso, colaborador de los repos con CI.
+      (Los tokens de ggit son de usuario completo, sin scopes: el bot solo debe tener
+      acceso a esos repos.)
+- [ ] `notification_type "ggit-status"` con `notify "exec"` y `curl`, declarando:
+      `state`, `sha = "$version_ref"`, `context = "ci/pikoci"`, `description`,
+      `target_url` (enlace al build en PikoCI).
+- [ ] Estados usados: `pending` al empezar, `success`/`failure`/`error` al terminar.
+- [ ] Verificar que el PR muestra `combined_status` (`internal/database/commit_status.go`).
 
-- [ ] Al crear el pipeline en PikoCI, se define un resource `git` apuntando al repo local
-- [ ] Obtener webhook token via API de PikoCI: `POST /teams/main/pipelines/ggit-ci/resources/repo/webhook_token`
-- [ ] Guardar token en DB de ggit asociado al repo
-
-### 3.2 Auto-creación de webhook en ggit
-
-- [ ] Al activar CI, ggit crea automáticamente un webhook en el repo:
-  - URL: `http://127.0.0.1:18080/webhooks/<token>`
-  - Eventos: Push, Pull Request
-  - Content type: JSON
-  - Secret: mismo JWT secret (para verificar HMAC si PikoCI lo soporta)
-- [ ] Al desactivar CI, se elimina el webhook
-
-### 3.3 Post-receive hook alternativo (fallback)
-
-- [ ] El hook `post-receive` existente en `cmd/ggit/hook.go` ya llama un task trigger URL
-- [ ] Como respaldo, también puede notificar a PikoCI directamente:
-  ```
-  curl -sf -X POST http://127.0.0.1:18080/webhooks/<token>
-  ```
-
-### 3.4 Prueba de integración
-
-- [ ] Al hacer push a un repo con CI activo:
-  1. ggit recibe el push
-  2. Webhook delivery envía POST a PikoCI
-  3. PikoCI checkea el resource `git`, detecta nuevo commit
-  4. Se dispara el job `test`
-  5. Pipeline se ejecuta
+**Criterio de salida:** PR bloqueado por estado `failure` y mergeable tras `success`, con
+la protección de rama existente.
 
 ---
 
-## Fase 4: Commit Status — Feedback en ggit
+## Fase 4 — Pipeline per-repo desde `.ggit/ci.hcl`
 
-**Objetivo:** El estado del build (pending/success/failure) se refleja en commits y PRs de ggit.
+**Objetivo:** cada repo define su CI en su propio código.
 
-### 4.1 Custom notification type `ggit-status`
+- [ ] `EnablePikoCI bool` en `Repository` (`internal/database/repo.go`), espejo en
+      `internal/domain/repository.go` y en los conversores.
+- [ ] Migración explícita: `AutoMigrate` **no** añade columnas a tablas existentes; hace
+      falta un `NewMigration` al final de `internal/database/migrations/migrations.go`.
+- [ ] Al activar CI en un repo: leer `.ggit/ci.hcl` del commit, sustituir variables
+      (`$GGIT_URL`, `$REPO_FULL_NAME`) y `PUT /teams/main/pipelines/<owner-repo>` con el HCL
+      en base64.
+- [ ] Re-publicar al cambiar el fichero; borrar el pipeline al desactivar CI.
+- [ ] Validación previa con `pikoci pipeline validate` antes de publicar.
+- [ ] Endpoint `GET/PUT /:user/:repo/ci/pipeline` + toggle en ajustes del repo.
 
-- [ ] Definir `notification_type` dentro del pipeline de PikoCI:
-
-```hcl
-notification_type "ggit-status" {
-  params = ["ggit_url", "ggit_token", "repo"]
-  notify "exec" {
-    path = "/bin/sh"
-    args = ["-ec", <<-EOT
-      curl -sf -X POST "$param_ggit_url/api/v2/$param_repo/statuses/$notify_sha" \
-        -H "Authorization: token $param_ggit_token" \
-        -H "Content-Type: application/json" \
-        -d '{
-          "state": "$notify_state",
-          "context": "ci/pikoci",
-          "description": "$notify_description",
-          "target_url": "$notify_target_url"
-        }'
-    EOT]
-  }
-}
-```
-
-### 4.2 Pipeline template con status reporting
-
-- [ ] El pipeline template por defecto incluye `notify` steps:
-  - Al inicio: `status = "pending"`
-  - Al éxito: `state = "success"`
-  - Al fallo: `state = "failure"`
-
-### 4.3 Visualización en ggit
-
-- [ ] Los commit statuses ya se muestran en:
-  - Vista de commits (✅/❌ al lado del SHA) ✅ existente
-  - Vista de PR (checks antes de merge) ✅ existente
+**Criterio de salida:** dos repos con stacks distintos (Go y Node) ejecutan pipelines
+distintos definidos en su propio `.ggit/ci.hcl`.
 
 ---
 
-## Fase 5: Pipeline Customization
+## Fase 5 — UI admin mínima
 
-**Objetivo:** El administrador puede personalizar el pipeline desde la UI de ggit.
-
-### 5.1 Pipeline editor UI
-
-- [ ] Editor de HCL en el admin panel (textarea con resaltado de sintaxis)
-- [ ] Validación de sintaxis (llamar `pikoci validate` o parseo básico)
-- [ ] Botón "Test" que corre `pikoci run -p pipeline.hcl -j test` localmente
-
-### 5.2 API endpoints
-
-- [ ] `GET /admin/pikoci/pipeline` — devuelve el pipeline HCL actual
-- [ ] `PUT /admin/pikoci/pipeline` — actualiza el pipeline
-- [ ] `POST /admin/pikoci/pipeline/validate` — valida sintaxis
-- [ ] `POST /admin/pikoci/pipeline/test` — ejecuta dry-run
-
-### 5.3 Variables y secrets
-
-- [ ] `GET /admin/pikoci/vars` — lista variables del pipeline
-- [ ] `PUT /admin/pikoci/vars` — actualiza variables (git token, etc.)
-- [ ] Los secrets se guardan en la DB de ggit (encriptados)
+- [ ] Sección "CI/CD" en `frontend/src/routes/admin/` registrada en `admin/+layout.svelte`.
+- [ ] Estado (RUNNING / STOPPED / UNREACHABLE), modo, versión, salud de la base de datos.
+- [ ] Botón "Restart" (solo modo subprocess) con confirmación.
+- [ ] Enlace a la UI de PikoCI (`PUBLIC_URL`).
+- [ ] Aviso visible cuando `MODE=subprocess` (riesgo de aislamiento).
 
 ---
 
-## Fase 6: Per-repo CI (opcional — evaluar antes de implementar)
+## Backlog (no ahora)
 
-**Objetivo:** Cada repo puede tener CI activado o desactivado, con su propio pipeline.
-
-### Consideración — ¿Por qué per-repo?
-
-Distintos proyectos necesitan pipelines distintos:
-- Un repo Go necesita `make test`, otro Node necesita `npm test`
-- Diferentes branches, diferentes reglas
-- GitLab CI, Gitea Actions y GitHub Actions son per-repo
-
-### Diseño propuesto
-
-- [ ] Campo `ci_enabled` en modelo `Repository`
-- [ ] Toggle "Enable CI" en settings del repo (UI)
-- [ ] UI para editar pipeline específico del repo (hereda del template global)
-- [ ] El webhook se crea/elimina al activar/desactivar CI en el repo
-- [ ] Cada repo tiene su propio resource `git` en PikoCI con su webhook token
-
-### Migración desde Fase 2
-
-- [ ] El pipeline global pasa a ser el "template por defecto" para nuevos repos
-- [ ] Al activar CI en un repo, se copia el template y se inyectan las variables del repo
-- [ ] Admin puede sobreescribir el pipeline de cada repo desde la UI
+- Releases automáticas al pushear un tag (`push "exec"` + `$put_*` como parámetros
+  explícitos del paso `put`).
+- Aprobaciones manuales (`approve`, ya soportado por PikoCI).
+- Dashboard de builds en ggit: **descartado**; enlazar a PikoCI.
+- Scopes por repo en `AccessToken` (hoy son de usuario completo).
+- Proxy de la UI de PikoCI bajo autenticación de ggit (hoy implica doble login).
 
 ---
 
-## Fase 7: Releases automáticas
+## Seguridad
 
-**Objetivo:** PikoCI puede crear releases en ggit cuando se pushea un tag.
-
-### 7.1 Custom resource type `ggit-release`
-
-```hcl
-resource_type "ggit-release" {
-  params = ["ggit_url", "ggit_token", "repo"]
-  push "exec" {
-    path = "/bin/sh"
-    args = ["-ec", <<-EOT
-      curl -sf -X POST "$param_ggit_url/api/v2/$param_repo/releases" \
-        -H "Authorization: token $param_ggit_token" \
-        -H "Content-Type: application/json" \
-        -d '{
-          "tag_name": "$put_tag",
-          "target":   "$put_branch",
-          "name":     "$put_tag",
-          "body":     "$put_body"
-        }'
-    EOT]
-  }
-}
-```
-
-### 7.2 Pipeline template para tags
-
-- [ ] Resource `git` con `tag = true` para detectar tags nuevos
-- [ ] Job `release` que corre build + `put "ggit-release"` en `on_success`
-- [ ] Opción de subir artifacts como attachments del release
-
-### 7.3 Changelog automático
-
-- [ ] ggit genera changelog entre tags (usando commits)
-- [ ] Se inyecta como `$put_body` en el pipeline
+- **Aislamiento primero**: contenedor o UID separado; el pipeline no debe poder leer
+  `conf/app.ini`, la base de datos ni los repos bare de ggit.
+- PikoCI escucha en todas las interfaces: firewall o red de contenedor, nunca expuesto.
+- Cambiar `admin`/`admin123` con `--users` (hash bcrypt) y rotar `--jwt-secret` y
+  `--secret-key`.
+- Los webhooks de PikoCI no firman: token largo, secreto, rotable.
+- Token de ggit para CI: usuario bot, mínimo acceso, rotación periódica.
+- Versionar PikoCI: fijar release y verificar `SHA256SUMS`; no `latest` a ciegas.
 
 ---
 
-## Fase 8: Dashboard de Builds
+## Puntos de integración en ggit
 
-**Objetivo:** Los usuarios ven el historial de builds en ggit.
+| Necesidad | Dónde |
+| :--- | :--- |
+| Config y secretos | `internal/conf/static.go`, `internal/conf/conf.go`, `ensureSecretKey` |
+| Arranque/parada | `internal/route/init.go` (`GlobalInit`), `cmd/ggit/web.go` |
+| Registro de proceso | `internal/process/manager.go` (`Add`, `Kill`) |
+| Servicio nuevo | `internal/services/pikoci` + `internal/services/services.go` |
+| Trigger en push | `cmd/ggit/hook.go`, handler de push HTTP |
+| Commit status | `POST /api/v2/:user/:repo/statuses/:sha` (`internal/route/api/v2/repo.go`) |
+| Webhooks (solo si hicieran falta) | `internal/database/webhook.go` (guard SSRF, HMAC saliente) |
+| Modelo y migraciones | `internal/database/repo.go`, `internal/database/migrations/` |
+| Admin API | `internal/route/api/v2/admin.go`, `internal/route/api/v2/v2.go` |
+| Frontend admin | `frontend/src/routes/admin/*`, `frontend/src/lib/api.ts` |
 
-### 8.1 Vista de builds en el repo
+---
 
-- [ ] Nueva pestaña "CI" en el repo (visible si CI está activo)
-- [ ] Lista de builds: número, commit, branch, status, duración, fecha
-- [ ] Link a PikoCI UI para ver logs completos
+## Referencias de PikoCI v0.8.0
 
-### 8.2 API de builds
+Con el clon en `tmp/pikoci/`:
 
-- [ ] `GET /:user/:repo/ci/builds` — lista builds del repo
-- [ ] `GET /:user/:repo/ci/builds/:id` — detalle de build
-- [ ] `POST /:user/:repo/ci/trigger` — trigger manual de build
-
-### 8.3 Sincronización con PikoCI
-
-- [ ] Webhook de PikoCI hacia ggit cuando un build cambia de estado
-- [ ] O polling ligero desde ggit a PikoCI cada N segundos
+- Flags del servidor: `tmp/pikoci/cmd/server.go`.
+- Rutas HTTP: `tmp/pikoci/pikoci/transport/http/handler.go`.
+- Resource `git` (auth, `tag`, `pr`, `check`):
+  `tmp/pikoci/pikoci/builtin/resource_types/git.hcl`.
+- Notificaciones y variables: `tmp/pikoci/docs/Notifications.md`.
+- Pipelines y primitivas: `tmp/pikoci/docs/Pipeline.md`.
+- Base de datos y migraciones: `tmp/pikoci/docs/Database.md`.
+- Despliegue y releases: `tmp/pikoci/docs/Deployment.md`, `tmp/pikoci/deploy/pipeline.hcl`.
 
 ---
 
 ## Resumen de fases
 
-| Fase | Qué | Dependencias | Esfuerzo estimado |
-|:-----|:----|:-------------|:-----------------|
-| 1 | Binary manager + config + lifecycle | — | Media |
-| 2 | Admin UI enable/disable + pipeline template | Fase 1 | Media |
-| 3 | Webhook integration + push trigger | Fase 1, 2 | Media |
-| 4 | Commit status feedback | Fase 3 | Baja |
-| 5 | Pipeline customization (UI editor) | Fase 2, 3, 4 | Alta |
-| 6 | Per-repo CI (evaluar) | Fases 1-5 | Media |
-| 7 | Releases automáticas | Fase 3, 4, 6 | Media |
-| 8 | Dashboard de builds | Fase 3, 4 | Alta |
-
----
-
-## Notas de arquitectura
-
-### Comunicación ggit ↔ PikoCI
-
-```
-ggit (background)              PikoCI (subprocess)
-      │                              │
-      │  POST /webhooks/<token>       │  (webhook push)
-      │─────────────────────────────>│
-      │                              │  check git resource
-      │                              │  run pipeline job
-      │                              │
-      │  POST /api/v2/statuses/:sha   │  (commit status)
-      │<─────────────────────────────│
-      │                              │
-      │  POST /api/v2/releases        │  (create release)
-      │<─────────────────────────────│
-```
-
-### Seguridad
-
-- JWT secret auto-generado, almacenado en disco (`data/pikoci/jwt.secret`)
-- PikoCI solo escucha en `127.0.0.1` (no expuesto a la red)
-- Token de ggit para API se pasa como variable al pipeline (nunca hardcodeado)
-- Webhooks con HMAC-SHA256 verificable
-
-### Gestión de recursos
-
-- PikoCI en idle: ~15-30 MB RAM
-- PikoCI ejecutando pipeline: ~50-100 MB RAM
-- ggit mata el subproceso al hacer shutdown
-- Health check cada 30s con restart automático
-- Logs rotados, max 10 MB por archivo
-
-### Naming
-
-El proyecto se llama **ggit pikoci** — dando crédito a ambos proyectos:
-- **ggit**: la plataforma Git auto-hospedada
-- **PikoCI**: el motor de CI/CD portátil que corre como subproceso
+| Fase | Qué | Depende de | Riesgo |
+| :--- | :--- | :--- | :--- |
+| 0 | Spike: repo privado, status, notify | — | Alto (decide el diseño) |
+| 1 | Config, servicio, ciclo de vida | 0 | Medio |
+| 2 | Trigger directo en push | 1 | Bajo |
+| 3 | Commit status y checks en PR | 0, 2 | Bajo |
+| 4 | Pipeline per-repo desde `.ggit/ci.hcl` | 1, 2 | Medio |
+| 5 | UI admin mínima | 1 | Bajo |
