@@ -52,6 +52,11 @@ func (c *Client) Get(ctx context.Context, path string, query url.Values, out any
 	return c.do(ctx, http.MethodGet, path, query, nil, out)
 }
 
+// Post ejecuta un POST sobre path (relativo a /api/v2) con body en JSON.
+func (c *Client) Post(ctx context.Context, path string, body, out any) error {
+	return c.do(ctx, http.MethodPost, path, nil, body, out)
+}
+
 func (c *Client) do(ctx context.Context, method, path string, query url.Values, body, out any) error {
 	endpoint := c.baseURL + apiPrefix + path
 	if len(query) > 0 {

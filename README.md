@@ -70,6 +70,9 @@ export GGIT_TOKEN=<token>
 .bin/ggit-cli auth status
 .bin/ggit-cli repo list
 .bin/ggit-cli issue list pi/ggit --state open
+.bin/ggit-cli pr list pi/ggit
+.bin/ggit-cli issue create pi/ggit --title "Título" --body "Texto"
+.bin/ggit-cli issue comment pi/ggit 12 --body-file nota.md
 ```
 
 La configuración también puede vivir en `~/.config/ggit-cli/config.json`

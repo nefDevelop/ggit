@@ -127,6 +127,35 @@ func (c *Client) GetIssue(ctx context.Context, owner, name string, index int64) 
 	return &issue, nil
 }
 
+// CreateIssueOptions son los campos aceptados al crear una incidencia.
+type CreateIssueOptions struct {
+	Title       string  `json:"title"`
+	Content     string  `json:"content,omitempty"`
+	MilestoneID int64   `json:"milestone_id,omitempty"`
+	AssigneeID  int64   `json:"assignee_id,omitempty"`
+	LabelIDs    []int64 `json:"label_ids,omitempty"`
+}
+
+// CreateIssue crea una incidencia y devuelve la incidencia persistida.
+func (c *Client) CreateIssue(ctx context.Context, owner, name string, opts CreateIssueOptions) (*apiv2.IssueResponse, error) {
+	var issue apiv2.IssueResponse
+	path := repoPath(owner, name, "/issues")
+	if err := c.Post(ctx, path, opts, &issue); err != nil {
+		return nil, err
+	}
+	return &issue, nil
+}
+
+// CreateIssueComment añade un comentario a una incidencia del repositorio.
+func (c *Client) CreateIssueComment(ctx context.Context, owner, name string, index int64, body string) (*apiv2.IssueCommentResponse, error) {
+	var comment apiv2.IssueCommentResponse
+	path := repoPath(owner, name, "/issues/"+strconv.FormatInt(index, 10)+"/comments")
+	if err := c.Post(ctx, path, map[string]string{"body": body}, &comment); err != nil {
+		return nil, err
+	}
+	return &comment, nil
+}
+
 // SplitRepoName valida y separa un argumento "owner/name".
 func SplitRepoName(fullName string) (owner, name string, err error) {
 	parts := strings.Split(strings.Trim(fullName, "/"), "/")

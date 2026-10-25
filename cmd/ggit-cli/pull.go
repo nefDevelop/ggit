@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -46,7 +45,16 @@ var prCommand = cli.Command{
 			ArgsUsage: "OWNER/NAME NUMBER",
 			Action:    runPRDiff,
 		},
+		&subcmdPRComment,
 	},
+}
+
+var subcmdPRComment = cli.Command{
+	Name:      "comment",
+	Usage:     "Añade un comentario a un pull request",
+	ArgsUsage: "OWNER/NAME NUMBER",
+	Action:    runPRComment,
+	Flags:     bodyFlags(),
 }
 
 func runPRList(ctx context.Context, cmd *cli.Command) error {
@@ -92,7 +100,7 @@ func runPRList(ctx context.Context, cmd *cli.Command) error {
 }
 
 func runPRView(ctx context.Context, cmd *cli.Command) error {
-	owner, name, index, err := prArgs(cmd)
+	owner, name, index, err := numberArg(cmd)
 	if err != nil {
 		return err
 	}
@@ -152,7 +160,7 @@ func runPRView(ctx context.Context, cmd *cli.Command) error {
 }
 
 func runPRReviews(ctx context.Context, cmd *cli.Command) error {
-	owner, name, index, err := prArgs(cmd)
+	owner, name, index, err := numberArg(cmd)
 	if err != nil {
 		return err
 	}
@@ -189,7 +197,7 @@ func runPRReviews(ctx context.Context, cmd *cli.Command) error {
 }
 
 func runPRDiff(ctx context.Context, cmd *cli.Command) error {
-	owner, name, index, err := prArgs(cmd)
+	owner, name, index, err := numberArg(cmd)
 	if err != nil {
 		return err
 	}
@@ -227,17 +235,37 @@ func runPRDiff(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-func prArgs(cmd *cli.Command) (owner, name string, index int64, err error) {
-	owner, name, err = repoArg(cmd)
+func runPRComment(ctx context.Context, cmd *cli.Command) error {
+	owner, name, index, err := numberArg(cmd)
 	if err != nil {
-		return
+		return err
 	}
 
-	index, err = strconv.ParseInt(cmd.Args().Get(1), 10, 64)
-	if err != nil || index <= 0 {
-		return "", "", 0, fmt.Errorf("uso: %s OWNER/NAME NUMBER", cmd.FullName())
+	body, err := requiredBody(cmd)
+	if err != nil {
+		return err
 	}
-	return owner, name, index, nil
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	// En la API v2 un pull request es una incidencia, así que el comentario va
+	// por el mismo endpoint que las incidencias.
+	comment, err := client.CreateIssueComment(ctx, owner, name, index, body)
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printJSON(comment)
+	}
+
+	fmt.Printf("comentario creado en #%d\n", index)
+	if comment.HTMLURL != "" {
+		fmt.Println(comment.HTMLURL)
+	}
+	return nil
 }
 
 func pullState(pull *apiv2.PullRequestResponse) string {

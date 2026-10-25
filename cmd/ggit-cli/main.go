@@ -92,6 +92,8 @@ var issueCommand = cli.Command{
 			ArgsUsage: "OWNER/NAME NUMBER",
 			Action:    runIssueView,
 		},
+		&subcmdIssueCreate,
+		&subcmdIssueComment,
 	},
 }
 
