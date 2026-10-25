@@ -43,6 +43,22 @@ func TestLoadConfigEnvOverridesFile(t *testing.T) {
 	assert.Equal(t, "del-entorno", cfg.Token)
 }
 
+func TestRemoveConfig(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("XDG_CONFIG_HOME", dir)
+	t.Setenv(EnvHost, "")
+	t.Setenv(EnvToken, "")
+
+	require.NoError(t, SaveConfig(Config{Host: "https://ggit.example.com", Token: "secreto"}))
+	require.NoError(t, RemoveConfig())
+
+	_, err := os.Stat(filepath.Join(dir, "ggit-cli", "config.json"))
+	require.ErrorIs(t, err, os.ErrNotExist)
+
+	// Borrar dos veces no es un error.
+	require.NoError(t, RemoveConfig())
+}
+
 func TestLoadConfigWithoutFile(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv(EnvHost, "https://solo-entorno.example.com")

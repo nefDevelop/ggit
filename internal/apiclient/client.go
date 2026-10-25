@@ -72,6 +72,12 @@ func (c *Client) Put(ctx context.Context, path string, body, out any) error {
 	return c.do(ctx, http.MethodPut, path, nil, body, out)
 }
 
+// Delete ejecuta un DELETE sobre path (relativo a /api/v2). Algunos endpoints
+// piden confirmación en el cuerpo, así que body puede ser nil.
+func (c *Client) Delete(ctx context.Context, path string, body, out any) error {
+	return c.do(ctx, http.MethodDelete, path, nil, body, out)
+}
+
 func (c *Client) do(ctx context.Context, method, path string, query url.Values, body, out any) error {
 	endpoint := c.baseURL + apiPrefix + path
 	if len(query) > 0 {

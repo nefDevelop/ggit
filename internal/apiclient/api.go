@@ -39,6 +39,21 @@ func (c *Client) CreateAccessToken(ctx context.Context, name string) (string, er
 	return res.Sha1, nil
 }
 
+// ListAccessTokens devuelve los tokens del usuario autenticado. El valor en
+// claro no viaja en el listado, solo el nombre y la fecha.
+func (c *Client) ListAccessTokens(ctx context.Context) ([]*apiv2.UserAccessTokenResponse, error) {
+	var tokens []*apiv2.UserAccessTokenResponse
+	if err := c.Get(ctx, "/user/settings/tokens", nil, &tokens); err != nil {
+		return nil, err
+	}
+	return tokens, nil
+}
+
+// DeleteAccessToken revoca un token por su ID.
+func (c *Client) DeleteAccessToken(ctx context.Context, id int64) error {
+	return c.Delete(ctx, "/user/settings/tokens/"+strconv.FormatInt(id, 10), nil, nil)
+}
+
 // CreateRepoOptions son los campos aceptados al crear un repositorio.
 type CreateRepoOptions struct {
 	Name          string `json:"name"`
@@ -50,6 +65,8 @@ type CreateRepoOptions struct {
 	Gitignores    string `json:"gitignores,omitempty"`
 	License       string `json:"license,omitempty"`
 	DefaultBranch string `json:"default_branch,omitempty"`
+	// UID crea el repositorio a nombre de una organización.
+	UID int64 `json:"uid,omitempty"`
 }
 
 // CreateRepo crea un repositorio en la cuenta del usuario autenticado.
@@ -59,6 +76,19 @@ func (c *Client) CreateRepo(ctx context.Context, opts CreateRepoOptions) (*apiv2
 		return nil, err
 	}
 	return &repo, nil
+}
+
+// DeleteRepo borra un repositorio. El servidor exige el nombre como
+// confirmación, así que se envía tal cual.
+func (c *Client) DeleteRepo(ctx context.Context, owner, name string) (string, error) {
+	var res struct {
+		Status string `json:"status"`
+	}
+	path := repoPath(owner, name, "/settings")
+	if err := c.Delete(ctx, path, map[string]string{"name": name}, &res); err != nil {
+		return "", err
+	}
+	return res.Status, nil
 }
 
 // ListUserRepos devuelve los repositorios propios y las colaboraciones.
@@ -192,20 +222,30 @@ func (c *Client) CreateIssueComment(ctx context.Context, owner, name string, ind
 	return &comment, nil
 }
 
-// UpdateIssueOptions son los campos modificables de una incidencia.
+// UpdateIssueOptions son los campos modificables de una incidencia. Son
+// punteros para distinguir "no lo cambies" de "ponlo a vacío".
 type UpdateIssueOptions struct {
-	IsClosed *bool `json:"is_closed"`
+	Title       *string `json:"title,omitempty"`
+	Content     *string `json:"content,omitempty"`
+	MilestoneID *int64  `json:"milestone_id,omitempty"`
+	AssigneeID  *int64  `json:"assignee_id,omitempty"`
+	IsClosed    *bool   `json:"is_closed,omitempty"`
 }
 
-// SetIssueClosed cierra o reabre una incidencia. El servidor responde con el
-// modelo interno (no con el DTO de la API), así que devolvemos el JSON tal cual.
-func (c *Client) SetIssueClosed(ctx context.Context, owner, name string, index int64, closed bool) (json.RawMessage, error) {
+// UpdateIssue aplica un cambio parcial. El servidor responde con el modelo
+// interno, así que devolvemos el JSON tal cual.
+func (c *Client) UpdateIssue(ctx context.Context, owner, name string, index int64, opts UpdateIssueOptions) (json.RawMessage, error) {
 	var raw json.RawMessage
 	path := repoPath(owner, name, "/issues/"+strconv.FormatInt(index, 10))
-	if err := c.Put(ctx, path, UpdateIssueOptions{IsClosed: &closed}, &raw); err != nil {
+	if err := c.Put(ctx, path, opts, &raw); err != nil {
 		return nil, err
 	}
 	return raw, nil
+}
+
+// SetIssueClosed cierra o reabre una incidencia.
+func (c *Client) SetIssueClosed(ctx context.Context, owner, name string, index int64, closed bool) (json.RawMessage, error) {
+	return c.UpdateIssue(ctx, owner, name, index, UpdateIssueOptions{IsClosed: &closed})
 }
 
 // SplitRepoName valida y separa un argumento "owner/name".

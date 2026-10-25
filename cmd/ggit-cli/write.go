@@ -91,6 +91,75 @@ func runIssueCreate(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
+var subcmdIssueEdit = cli.Command{
+	Name:      "edit",
+	Usage:     "Modifica una incidencia",
+	ArgsUsage: "OWNER/NAME NUMBER",
+	Action:    runIssueEdit,
+	Flags: append([]cli.Flag{
+		&cli.StringFlag{Name: "title", Usage: "Nuevo título"},
+		&cli.IntFlag{Name: "assignee", Usage: "ID del usuario asignado (0 para desasignar)"},
+		&cli.IntFlag{Name: "milestone", Usage: "ID del hito (0 para quitarlo)"},
+	}, bodyFlags()...),
+}
+
+func runIssueEdit(ctx context.Context, cmd *cli.Command) error {
+	owner, name, index, err := numberArg(cmd)
+	if err != nil {
+		return err
+	}
+
+	var opts apiclient.UpdateIssueOptions
+	changed := false
+
+	if cmd.IsSet("title") {
+		title := strings.TrimSpace(cmd.String("title"))
+		if title == "" {
+			return fmt.Errorf("--title no puede estar vacío")
+		}
+		opts.Title = &title
+		changed = true
+	}
+	if cmd.IsSet("body") || cmd.IsSet("body-file") {
+		body, err := resolveBody(cmd)
+		if err != nil {
+			return err
+		}
+		opts.Content = &body
+		changed = true
+	}
+	if cmd.IsSet("assignee") {
+		assignee := int64(cmd.Int("assignee"))
+		opts.AssigneeID = &assignee
+		changed = true
+	}
+	if cmd.IsSet("milestone") {
+		milestone := int64(cmd.Int("milestone"))
+		opts.MilestoneID = &milestone
+		changed = true
+	}
+
+	if !changed {
+		return fmt.Errorf("nada que cambiar: usa --title, --body, --body-file, --assignee o --milestone")
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	raw, err := client.UpdateIssue(ctx, owner, name, index, opts)
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printRawJSON(raw)
+	}
+
+	fmt.Printf("incidencia #%d actualizada\n", index)
+	return nil
+}
+
 func runIssueClose(ctx context.Context, cmd *cli.Command) error {
 	return setIssueClosed(ctx, cmd, true)
 }

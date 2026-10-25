@@ -71,14 +71,18 @@ export GGIT_HOST=https://ggit.734038.xyz
 .bin/ggit-cli auth status
 .bin/ggit-cli repo list
 .bin/ggit-cli repo create mi-repo --private --auto-init
+.bin/ggit-cli repo create otro --org acme
 .bin/ggit-cli issue list pi/ggit --state open
 .bin/ggit-cli pr list pi/ggit
 .bin/ggit-cli pr create pi/ggit --title "Título" --head feature/x
 .bin/ggit-cli issue create pi/ggit --title "Título" --body "Texto"
 .bin/ggit-cli issue comment pi/ggit 12 --body-file nota.md
+.bin/ggit-cli issue edit pi/ggit 12 --title "Nuevo título" --assignee 3
 .bin/ggit-cli issue close pi/ggit 12
 .bin/ggit-cli pr review pi/ggit 4 approve --body "LGTM"
 .bin/ggit-cli pr merge pi/ggit 4 --yes
+.bin/ggit-cli repo delete mi-repo --yes
+.bin/ggit-cli auth logout
 ```
 
 La configuración también puede vivir en `~/.config/ggit-cli/config.json`

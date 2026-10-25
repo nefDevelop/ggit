@@ -84,6 +84,18 @@ func SaveConfig(cfg Config) error {
 	return nil
 }
 
+// RemoveConfig borra el archivo de configuración local. No falla si no existe.
+func RemoveConfig() error {
+	path, err := configPath()
+	if err != nil {
+		return err
+	}
+	if err := os.Remove(path); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return fmt.Errorf("borrar %s: %w", path, err)
+	}
+	return nil
+}
+
 func configPath() (string, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {

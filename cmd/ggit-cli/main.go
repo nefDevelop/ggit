@@ -58,6 +58,14 @@ var authCommand = cli.Command{
 				&cli.StringFlag{Name: "name", Value: "ggit-cli", Usage: "Nombre del token"},
 			},
 		},
+		{
+			Name:   "logout",
+			Usage:  "Revoca el token y borra la configuración local",
+			Action: runAuthLogout,
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "name", Value: "ggit-cli", Usage: "Nombre del token a revocar"},
+			},
+		},
 	},
 }
 
@@ -90,6 +98,16 @@ var repoCommand = cli.Command{
 				&cli.StringFlag{Name: "gitignore", Usage: "Plantilla de .gitignore"},
 				&cli.StringFlag{Name: "license", Usage: "Plantilla de licencia"},
 				&cli.StringFlag{Name: "default-branch", Usage: "Rama por defecto"},
+				&cli.StringFlag{Name: "org", Usage: "Crea el repositorio en esta organización"},
+			},
+		},
+		{
+			Name:      "delete",
+			Usage:     "Borra un repositorio (irreversible)",
+			ArgsUsage: "OWNER/NAME",
+			Action:    runRepoDelete,
+			Flags: []cli.Flag{
+				&cli.BoolFlag{Name: "yes", Aliases: []string{"y"}, Usage: "Confirma el borrado"},
 			},
 		},
 	},
@@ -122,6 +140,7 @@ var issueCommand = cli.Command{
 		},
 		&subcmdIssueCreate,
 		&subcmdIssueComment,
+		&subcmdIssueEdit,
 		&subcmdIssueClose,
 		&subcmdIssueReopen,
 	},
@@ -196,6 +215,47 @@ func runAuthLogin(ctx context.Context, cmd *cli.Command) error {
 	return nil
 }
 
+func runAuthLogout(ctx context.Context, cmd *cli.Command) error {
+	cfg, err := apiclient.LoadConfig()
+	if err != nil {
+		return err
+	}
+
+	revoked := false
+	if cfg.Host != "" && cfg.Token != "" {
+		// Revocar es best-effort: si el token ya no vale, el logout local sigue.
+		client := apiclient.New(cfg.Host, cfg.Token)
+		tokens, err := client.ListAccessTokens(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "aviso: no se pudieron listar los tokens: %v\n", err)
+		} else {
+			want := cmd.String("name")
+			for _, token := range tokens {
+				if token.Name != want {
+					continue
+				}
+				if err := client.DeleteAccessToken(ctx, token.ID); err != nil {
+					fmt.Fprintf(os.Stderr, "aviso: no se pudo revocar %q: %v\n", want, err)
+				} else {
+					revoked = true
+				}
+				break
+			}
+		}
+	}
+
+	if err := apiclient.RemoveConfig(); err != nil {
+		return err
+	}
+
+	if revoked {
+		fmt.Println("token revocado y configuración local borrada")
+	} else {
+		fmt.Println("configuración local borrada")
+	}
+	return nil
+}
+
 func resolvePassword(cmd *cli.Command) (string, error) {
 	password := cmd.String("password")
 	if password == "" {
@@ -260,6 +320,15 @@ func runRepoCreate(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	var uid int64
+	if orgName := strings.TrimSpace(cmd.String("org")); orgName != "" {
+		org, err := client.GetOrg(ctx, orgName)
+		if err != nil {
+			return fmt.Errorf("resolver la organización %q: %w", orgName, err)
+		}
+		uid = org.ID
+	}
+
 	repo, err := client.CreateRepo(ctx, apiclient.CreateRepoOptions{
 		Name:          name,
 		Description:   cmd.String("description"),
@@ -270,6 +339,7 @@ func runRepoCreate(ctx context.Context, cmd *cli.Command) error {
 		Gitignores:    cmd.String("gitignore"),
 		License:       cmd.String("license"),
 		DefaultBranch: cmd.String("default-branch"),
+		UID:           uid,
 	})
 	if err != nil {
 		return err
@@ -285,6 +355,34 @@ func runRepoCreate(ctx context.Context, cmd *cli.Command) error {
 	if repo.SSHURL != "" {
 		fmt.Printf("clone ssh:   %s\n", repo.SSHURL)
 	}
+	return nil
+}
+
+func runRepoDelete(ctx context.Context, cmd *cli.Command) error {
+	owner, name, err := repoArg(cmd)
+	if err != nil {
+		return err
+	}
+
+	// Sin confirmación interactiva: borrar exige --yes explícito.
+	if !cmd.Bool("yes") {
+		return fmt.Errorf("para borrar %s/%s repite con --yes", owner, name)
+	}
+
+	client, err := newClient(cmd)
+	if err != nil {
+		return err
+	}
+
+	status, err := client.DeleteRepo(ctx, owner, name)
+	if err != nil {
+		return err
+	}
+	if wantJSON(cmd) {
+		return printJSON(map[string]string{"status": status})
+	}
+
+	fmt.Printf("repositorio %s/%s eliminado\n", owner, name)
 	return nil
 }
 

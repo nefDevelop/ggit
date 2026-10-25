@@ -48,6 +48,24 @@ func TestCreateRepo(t *testing.T) {
 	assert.NotContains(t, gotBody, "default_branch")
 }
 
+func TestCreateRepoInOrganization(t *testing.T) {
+	var gotBody map[string]any
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&gotBody))
+		w.WriteHeader(http.StatusCreated)
+		_, _ = w.Write([]byte(`{"full_name":"acme/nuevo"}`))
+	}))
+	defer server.Close()
+
+	_, err := New(server.URL, "t").CreateRepo(context.Background(), CreateRepoOptions{
+		Name: "nuevo",
+		UID:  9,
+	})
+
+	require.NoError(t, err)
+	assert.Equal(t, float64(9), gotBody["uid"])
+}
+
 func TestCreateRepoSurfacesValidation(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
