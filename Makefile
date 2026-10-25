@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend build build-swagger build-swagger-cdn rebuild clean help install sync test test-frontend test-all lint test-e2e kill-e2e clean-ports demo demo-config seed-demo kill-demo
+.PHONY: dev backend frontend build build-cli build-swagger build-swagger-cdn rebuild clean help install sync test test-frontend test-all lint test-e2e kill-e2e clean-ports demo demo-config seed-demo kill-demo
 
 # Variables de compilación
 PKG_PATH := github.com/nef734/ggit/internal/conf
@@ -14,6 +14,7 @@ help:
 	@echo "  make backend   - Ejecuta el servidor Ggit (puerto 3005)"
 	@echo "  make frontend  - Ejecuta el servidor de desarrollo Svelte (puerto 5555)"
 	@echo "  make build             - Compila el binario de Ggit"
+	@echo "  make build-cli         - Compila el cliente de la API v2 (ggit-cli)"
 	@echo "  make build-swagger     - Compila con Swagger embebido"
 	@echo "  make build-swagger-cdn - Compila con Swagger vía CDN"
 	@echo "  make test      - Ejecuta los tests de Go"
@@ -52,6 +53,12 @@ build:
 	@echo "Compilando Ggit..."
 	@mkdir -p .bin
 	@go build -v -tags "$(shell echo $(TAGS) | tr ' ' ',')" -ldflags '$(LDFLAGS)' -o .bin/ggit ./cmd/ggit
+
+# Compila el cliente de la API v2 (no arrastra dependencias del servidor)
+build-cli:
+	@echo "Compilando ggit-cli..."
+	@mkdir -p .bin
+	@go build -v -ldflags '-s -w' -o .bin/ggit-cli ./cmd/ggit-cli
 
 build-swagger: TAGS += swagger
 build-swagger: build

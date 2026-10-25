@@ -59,6 +59,23 @@ Con Docker:
 docker compose up -d
 ```
 
+## Cliente CLI
+
+`cmd/ggit-cli` es un cliente de la API v2, separado del binario del servidor:
+
+```bash
+make build-cli
+export GGIT_HOST=https://ggit.734038.xyz
+export GGIT_TOKEN=<token>
+.bin/ggit-cli auth status
+.bin/ggit-cli repo list
+.bin/ggit-cli issue list pi/ggit --state open
+```
+
+La configuración también puede vivir en `~/.config/ggit-cli/config.json`
+(`{"host": "...", "token": "..."}`); las variables de entorno tienen prioridad.
+Todos los comandos aceptan `--json`.
+
 ## Documentación
 
 `docs/` contiene la documentación del producto. El sitio que se despliega desde
