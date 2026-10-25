@@ -7,6 +7,7 @@ package apiclient
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -20,9 +21,10 @@ const apiPrefix = "/api/v2"
 
 // Client es un cliente mínimo de la API v2. Es seguro para uso concurrente.
 type Client struct {
-	baseURL string
-	token   string
-	http    *http.Client
+	baseURL   string
+	token     string
+	basicAuth string
+	http      *http.Client
 }
 
 // New crea un cliente apuntando a baseURL (con o sin esquema) usando token.
@@ -32,6 +34,14 @@ func New(baseURL, token string) *Client {
 		token:   token,
 		http:    &http.Client{Timeout: 30 * time.Second},
 	}
+}
+
+// WithBasicAuth devuelve una copia del cliente que autentica con usuario y
+// contraseña. Se usa para crear el primer token, cuando aún no hay ninguno.
+func (c *Client) WithBasicAuth(username, password string) *Client {
+	clone := *c
+	clone.basicAuth = base64.StdEncoding.EncodeToString([]byte(username + ":" + password))
+	return &clone
 }
 
 // Error representa una respuesta HTTP fuera del rango 2xx.
@@ -86,8 +96,11 @@ func (c *Client) do(ctx context.Context, method, path string, query url.Values, 
 		req.Header.Set("Content-Type", "application/json")
 	}
 	// Ggit espera el esquema "token", no "Bearer" (ver internal/context/auth.go).
-	if c.token != "" {
+	switch {
+	case c.token != "":
 		req.Header.Set("Authorization", "token "+c.token)
+	case c.basicAuth != "":
+		req.Header.Set("Authorization", "Basic "+c.basicAuth)
 	}
 
 	resp, err := c.http.Do(req)

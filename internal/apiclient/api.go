@@ -26,6 +26,19 @@ func (c *Client) AuthStatus(ctx context.Context) (*apiv2.UserResponse, error) {
 	return res.User, nil
 }
 
+// CreateAccessToken crea un token de acceso con el nombre dado y devuelve su
+// valor en claro. Solo se puede leer en el momento de la creación.
+func (c *Client) CreateAccessToken(ctx context.Context, name string) (string, error) {
+	var res apiv2.UserAccessTokenResponse
+	if err := c.Post(ctx, "/user/settings/tokens", map[string]string{"name": name}, &res); err != nil {
+		return "", err
+	}
+	if res.Sha1 == "" {
+		return "", fmt.Errorf("la API no devolvió el token creado")
+	}
+	return res.Sha1, nil
+}
+
 // ListUserRepos devuelve los repositorios propios y las colaboraciones.
 func (c *Client) ListUserRepos(ctx context.Context) ([]*apiv2.RepositoryResponse, error) {
 	var repos []*apiv2.RepositoryResponse

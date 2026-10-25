@@ -57,6 +57,33 @@ func ConfigPath() (string, error) {
 	return configPath()
 }
 
+// SaveConfig escribe la configuración con permisos 0600, porque contiene el token.
+func SaveConfig(cfg Config) error {
+	path, err := configPath()
+	if err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+		return fmt.Errorf("crear %s: %w", filepath.Dir(path), err)
+	}
+
+	raw, err := json.MarshalIndent(cfg, "", "  ")
+	if err != nil {
+		return fmt.Errorf("serializar configuración: %w", err)
+	}
+	raw = append(raw, '\n')
+
+	if err := os.WriteFile(path, raw, 0o600); err != nil {
+		return fmt.Errorf("escribir %s: %w", path, err)
+	}
+	// WriteFile respeta el modo de un archivo existente, así que lo forzamos.
+	if err := os.Chmod(path, 0o600); err != nil {
+		return fmt.Errorf("ajustar permisos de %s: %w", path, err)
+	}
+	return nil
+}
+
 func configPath() (string, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {

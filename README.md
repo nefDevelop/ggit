@@ -66,7 +66,8 @@ docker compose up -d
 ```bash
 make build-cli
 export GGIT_HOST=https://ggit.734038.xyz
-export GGIT_TOKEN=<token>
+# Crea un token con tu contraseña y lo deja guardado en la configuración
+.bin/ggit-cli auth login --username pi --password -
 .bin/ggit-cli auth status
 .bin/ggit-cli repo list
 .bin/ggit-cli issue list pi/ggit --state open

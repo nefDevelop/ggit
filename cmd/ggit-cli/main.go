@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -46,6 +47,16 @@ var authCommand = cli.Command{
 			Name:   "status",
 			Usage:  "Muestra el usuario autenticado",
 			Action: runAuthStatus,
+		},
+		{
+			Name:   "login",
+			Usage:  "Crea un token de acceso y lo guarda en la configuración",
+			Action: runAuthLogin,
+			Flags: []cli.Flag{
+				&cli.StringFlag{Name: "username", Usage: "Usuario"},
+				&cli.StringFlag{Name: "password", Usage: "Contraseña; usa - para leer de stdin"},
+				&cli.StringFlag{Name: "name", Value: "ggit-cli", Usage: "Nombre del token"},
+			},
 		},
 	},
 }
@@ -122,6 +133,71 @@ func runAuthStatus(ctx context.Context, cmd *cli.Command) error {
 	fmt.Printf("email:   %s\n", user.Email)
 	fmt.Printf("admin:   %s\n", yesNo(user.IsAdmin))
 	return nil
+}
+
+func runAuthLogin(ctx context.Context, cmd *cli.Command) error {
+	cfg, err := apiclient.LoadConfig()
+	if err != nil {
+		return err
+	}
+
+	host := stringValue(cmd, "host")
+	if host == "" {
+		host = cfg.Host
+	}
+	baseURL, err := requireHost(host)
+	if err != nil {
+		return err
+	}
+
+	username := strings.TrimSpace(cmd.String("username"))
+	if username == "" {
+		return fmt.Errorf("falta --username")
+	}
+
+	password, err := resolvePassword(cmd)
+	if err != nil {
+		return err
+	}
+
+	// Basic auth basta para /user/settings/tokens: SignInRequired solo mira
+	// IsLogged, que también se marca con credenciales básicas.
+	client := apiclient.New(baseURL, "").WithBasicAuth(username, password)
+	token, err := client.CreateAccessToken(ctx, cmd.String("name"))
+	if err != nil {
+		return err
+	}
+
+	if err := apiclient.SaveConfig(apiclient.Config{Host: baseURL, Token: token}); err != nil {
+		return err
+	}
+
+	path, err := apiclient.ConfigPath()
+	if err != nil {
+		return err
+	}
+	fmt.Printf("token creado para %s y guardado en %s\n", username, path)
+	return nil
+}
+
+func resolvePassword(cmd *cli.Command) (string, error) {
+	password := cmd.String("password")
+	if password == "" {
+		return "", fmt.Errorf("falta --password (usa --password - para leer de stdin)")
+	}
+	if password != "-" {
+		return password, nil
+	}
+
+	raw, err := io.ReadAll(os.Stdin)
+	if err != nil {
+		return "", fmt.Errorf("leer la contraseña de stdin: %w", err)
+	}
+	password = strings.TrimRight(string(raw), "\r\n")
+	if password == "" {
+		return "", fmt.Errorf("la contraseña leída de stdin está vacía")
+	}
+	return password, nil
 }
 
 func runRepoList(ctx context.Context, cmd *cli.Command) error {
@@ -304,15 +380,24 @@ func newClient(cmd *cli.Command) (*apiclient.Client, error) {
 	if host == "" {
 		host = cfg.Host
 	}
-	if apiclient.NormalizeHost(host) == "" {
-		return nil, fmt.Errorf("falta el host: usa --host, %s o %s", apiclient.EnvHost, configHint())
+	baseURL, err := requireHost(host)
+	if err != nil {
+		return nil, err
 	}
 
 	token := stringValue(cmd, "token")
 	if token == "" {
 		token = cfg.Token
 	}
-	return apiclient.New(host, token), nil
+	return apiclient.New(baseURL, token), nil
+}
+
+func requireHost(host string) (string, error) {
+	normalized := apiclient.NormalizeHost(host)
+	if normalized == "" {
+		return "", fmt.Errorf("falta el host: usa --host, %s o %s", apiclient.EnvHost, configHint())
+	}
+	return normalized, nil
 }
 
 func repoArg(cmd *cli.Command) (owner, name string, err error) {
