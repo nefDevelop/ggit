@@ -3,7 +3,8 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { formatDate } from "$lib/utils/date";
-  import PageHeader from "./ui/PageHeader.svelte";
+  import PageActions from "./ui/PageActions.svelte";
+  import EmptyState from "./ui/EmptyState.svelte";
   import Button from "./ui/Button.svelte";
   
 
@@ -48,8 +49,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
 </script>
 
 <div class="pulls-view">
-  <PageHeader title="" icon="" compact noBorder>
-    {#snippet actions()}
+  <PageActions>
       <div class="pill-filter-group-inline">
         <Button 
           variant={stateFilter === 'open' ? 'primary' : 'ghost'} 
@@ -72,8 +72,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
           New Pull Request
         </Button>
       {/if}
-    {/snippet}
-  </PageHeader>
+    </PageActions>
 
 
   {#if loading}
@@ -81,20 +80,17 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if pulls.length === 0}
-    <div class="empty-state">
-      <div class="empty-icon-ring">
-        <GitPullRequest size={40} />
-      </div>
-      <h2>No pull requests found</h2>
-      <p>There are no {stateFilter} pull requests in this repository.</p>
+    <EmptyState
+      icon={GitPullRequest}
+      title="No pull requests found"
+      description={`There are no ${stateFilter} pull requests in this repository.`}
+    >
       {#if stateFilter === 'open'}
-        <div style="margin-top: 1rem;">
-          <Button variant="primary" href="./pulls/new" icon={Plus}>
-            Create your first pull request
-          </Button>
-        </div>
+        <Button variant="primary" href="./pulls/new" icon={Plus}>
+          Create your first pull request
+        </Button>
       {/if}
-    </div>
+    </EmptyState>
   {:else}
     <div class="flat-list-container">
       {#each pulls as pull}
@@ -187,42 +183,9 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6rem 2rem;
-    gap: 1.25rem;
-    color: var(--text-muted);
-    text-align: center;
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 
   @keyframes spin {
     to { transform: rotate(360deg); }

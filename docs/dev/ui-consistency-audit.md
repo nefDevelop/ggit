@@ -244,6 +244,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   móvil `--space-4`/`--space-6`), fuera el `margin: -2rem` de commits, padding inferior
   duplicado de ajustes eliminado, `WikiView` sin doble padding, tablas con scroll
   horizontal y fondo del tema, y `data-label` restaurado en `AdminNotices` y `AdminAuths`.
+- **Fase 2b**: `PageActions.svelte` sustituye las cuatro cabeceras "stub" (pulls, issues,
+  labels, tags) y `EmptyState` reemplaza los estados vacíos de pulls, issues y labels,
+  borrando su CSS local. El CTA de issues deja de ser un `<a>` manual.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

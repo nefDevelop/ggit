@@ -2,7 +2,7 @@
   import { apiFetch } from '$lib/api';
   import { page } from '$app/state';
   import { fade } from 'svelte/transition';
-  import PageHeader from "$lib/components/ui/PageHeader.svelte";
+  import PageActions from "$lib/components/ui/PageActions.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   
 
@@ -119,15 +119,13 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 </svelte:head>
 
 <div class="tags-page">
-  <PageHeader title="" icon="" compact noBorder>
-    {#snippet actions()}
+  <PageActions>
       {#if tags.length > 0}
         <Button variant="primary" onclick={() => { showNewTag = !showNewTag; createError = ''; }} icon={Plus}>
           New tag
         </Button>
       {/if}
-    {/snippet}
-  </PageHeader>
+    </PageActions>
 
   <div class="tags-content">
     {#if showNewTag}

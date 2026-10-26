@@ -7,7 +7,8 @@
   import Button from './ui/Button.svelte';
   import Card from './ui/Card.svelte';
   import Input from './ui/Input.svelte';
-  import PageHeader from './ui/PageHeader.svelte';
+  import PageActions from "./ui/PageActions.svelte";
+  import EmptyState from "./ui/EmptyState.svelte";
   
 
 import Plus from "lucide-svelte/icons/plus";
@@ -102,15 +103,13 @@ import Tag from "lucide-svelte/icons/tag";
 </script>
 
 <div class="repo-labels">
-  <PageHeader title="" icon="" compact noBorder>
-    {#snippet actions()}
+  <PageActions>
       {#if labels.length > 0}
         <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = '#444444'; showEditor = true; }} icon={Plus}>
           New Label
         </Button>
       {/if}
-    {/snippet}
-  </PageHeader>
+    </PageActions>
 
   <div class="labels-content">
 
@@ -153,18 +152,15 @@ import Tag from "lucide-svelte/icons/tag";
         <div class="spinner"></div>
       </div>
     {:else if labels.length === 0}
-      <div class="empty-state">
-        <div class="empty-icon-ring">
-          <Tag size={40} />
-        </div>
-        <h2>No labels found</h2>
-        <p>There are no labels defined yet for this repository.</p>
-        <div style="margin-top: 1rem;">
-          <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = 'var(--status-info-strong)'; showEditor = true; }} icon={Plus}>
-            Create your first label
-          </Button>
-        </div>
-      </div>
+      <EmptyState
+        icon={Tag}
+        title="No labels found"
+        description="There are no labels defined yet for this repository."
+      >
+        <Button variant="primary" onclick={() => { editingLabel = null; newName = ''; newColor = 'var(--status-info-strong)'; showEditor = true; }} icon={Plus}>
+          Create your first label
+        </Button>
+      </EmptyState>
     {:else}
       <div class="flat-list-container">
         {#each labels as label}
@@ -221,42 +217,9 @@ import Tag from "lucide-svelte/icons/tag";
 
   .editor-footer { display: flex; justify-content: flex-end; gap: 1rem; }
 
-  .empty-state {
-    text-align: center;
-    padding: 6rem 2rem;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
   
   .loading-state { display: flex; justify-content: center; padding: 3rem; }
   .spinner { width: 32px; height: 32px; border: 3px solid var(--md-sys-color-outline-variant); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s infinite linear; }
