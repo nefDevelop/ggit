@@ -182,7 +182,6 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--md-sys-color-on-surface-variant); font-weight: 800; opacity: 0.8; }
   .value { font-size: 1.1rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
   .card-actions { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
-  :global(.card-actions .btn) { border-radius: 0.5rem !important; font-weight: 700 !important; }
 
   @media (max-width: 600px) {
     .stats-grid { grid-template-columns: 1fr; }

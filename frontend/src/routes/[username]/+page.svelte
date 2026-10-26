@@ -252,7 +252,6 @@
   .profile-content { flex: 1; min-width: 0; }
   .repo-stack, .loading-stack { display: flex; flex-direction: column; gap: 1rem; }
   
-  :global(.row-card) { border-radius: 1.25rem !important; }
 
   :global(.skeleton-row) { height: 100px; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container-low); border-radius: 1.25rem; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }

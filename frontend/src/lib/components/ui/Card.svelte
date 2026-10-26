@@ -6,8 +6,9 @@
     children?: Snippet;
     padding?: 'none' | 'sm' | 'md' | 'lg';
     hover?: boolean;
-    variant?: 'lowest' | 'low' | 'container' | 'high' | 'highest';
+    variant?: 'canvas' | 'lowest' | 'low' | 'container' | 'high' | 'highest';
     tonal?: boolean;
+    danger?: boolean;
   }
 
   let { 
@@ -16,7 +17,8 @@
     padding = 'md',
     hover = false,
     variant = 'container',
-    tonal = false
+    tonal = false,
+    danger = false
   }: Props = $props();
 
   const paddings: Record<NonNullable<Props['padding']>, string> = {
@@ -27,6 +29,7 @@
   };
 
   const variants: Record<NonNullable<Props['variant']>, string> = {
+    canvas: 'bg-canvas',
     lowest: 'bg-lowest',
     low: 'bg-low',
     container: 'bg-container',
@@ -35,7 +38,7 @@
   };
 </script>
 
-<div class="card {paddings[padding]} {variants[variant]} {hover ? 'hoverable' : ''} {tonal ? 'tonal' : ''} {className}">
+<div class="card {paddings[padding]} {variants[variant]} {hover ? 'hoverable' : ''} {tonal ? 'tonal' : ''} {danger ? 'tone-danger' : ''} {className}">
   {#if children}
     {@render children()}
   {/if}
@@ -54,11 +57,14 @@
     box-sizing: border-box;
   }
 
+  .bg-canvas { background: var(--md-sys-color-background); }
   .bg-lowest { background: var(--md-sys-color-surface-container-lowest); }
   .bg-low { background: var(--md-sys-color-surface-container-low); }
   .bg-container { background: var(--md-sys-color-surface-container); }
   .bg-high { background: var(--md-sys-color-surface-container-high); }
   .bg-highest { background: var(--md-sys-color-surface-container-highest); }
+  .tone-danger { border: 2px solid var(--md-sys-color-error); }
+
   .tonal {
     background: var(--md-sys-color-secondary-container);
     color: var(--md-sys-color-on-secondary-container);

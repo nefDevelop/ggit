@@ -99,9 +99,9 @@ import Building2 from "lucide-svelte/icons/building-2";
   .orgs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
   .card-link { text-decoration: none; color: inherit; display: block; }
   
-  :global(.org-card) { display: flex !important; gap: 1.25rem !important; align-items: flex-start !important; }
+  :global(.org-card) { display: flex; gap: 1.25rem; align-items: flex-start; }
 
-  :global(.org-avatar) { border-radius: 1rem !important; border: 1px solid var(--md-sys-color-outline-variant); }
+  :global(.org-avatar) { border-radius: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   
   .org-info { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-width: 0; }
   .org-name { font-size: 1.1rem; font-weight: 800; color: var(--md-sys-color-on-surface); }

@@ -278,6 +278,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **`.tonal` decidido**: canónico `secondary-container`. Se retiró el `!important`,
   `.island.tonal` y `Card` usan los mismos tokens, y el `.tonal` local de
   `ReleaseEditor` se renombró a `.panel-surface` (no era un tonal).
+- **Overrides de tarjeta eliminados**: `Card` gana `variant="canvas"` y `danger`; los
+  siete `!important` de tarjeta desaparecen (RepoDocs, zonas de peligro, row-card,
+  Explore* y el parche de botones de Janitor).
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

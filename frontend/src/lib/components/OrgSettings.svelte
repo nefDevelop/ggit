@@ -200,7 +200,7 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
   </Card>
 
   <div style="margin-top: 3rem;">
-  <Card padding="none" class="settings-premium-card danger-card">
+  <Card padding="none" class="settings-premium-card" danger>
     <PageHeader
       title="Zona de Peligro"
       subtitle="Acciones irreversibles sobre la organización"
@@ -249,7 +249,6 @@ import HeartCrack from "lucide-svelte/icons/heart-crack";
 
   .form-footer { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-  :global(.danger-card) { border: 2px solid var(--md-sys-color-error) !important; }
   .danger-zone-content { padding: 2.5rem; }
   .danger-item { display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
   .danger-info strong { font-size: 1.1rem; color: var(--error); display: block; margin-bottom: 0.25rem; }

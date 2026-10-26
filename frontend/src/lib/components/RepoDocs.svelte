@@ -116,7 +116,7 @@ import EmptyState from "./ui/EmptyState.svelte";
             {/if}
         </div>
         
-        <Card class="markdown-body-card">
+        <Card variant="canvas" padding="lg">
             <MarkdownRenderer content={currentFile.content} />
         </Card>
       </div>
@@ -185,5 +185,4 @@ import EmptyState from "./ui/EmptyState.svelte";
   .file-name { margin: 0; display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 900; }
   .last-update { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-  :global(.markdown-body-card) { padding: 2.5rem !important; border-radius: 1.5rem !important; background: var(--bg-color) !important; border: 1px solid var(--md-sys-color-outline-variant) !important; }
 </style>
