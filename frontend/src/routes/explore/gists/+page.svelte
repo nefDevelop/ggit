@@ -69,7 +69,7 @@
 </div>
 
 <style>
-  .explore-gists-page { min-height: 100vh; background: var(--bg-color); padding: 4rem 2rem; }
+  .explore-gists-page { min-height: 100vh; background: var(--bg-color); padding: var(--space-7) var(--space-6); }
   .container { max-width: 1000px; margin: 0 auto; }
   
   .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; }
@@ -85,4 +85,8 @@
 
   :global(.empty-state) { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   :global(.empty-state span) { font-size: 4rem; color: var(--md-sys-color-on-surface-variant); opacity: 0.3; }
+
+  @media (max-width: 600px) {
+    .explore-gists-page { padding: var(--space-6) var(--space-4); }
+  }
 </style>

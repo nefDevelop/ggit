@@ -87,11 +87,15 @@
 </div>
 
 <style>
-  .gist-edit-page { min-height: 100vh; background: var(--bg-color); padding: 4rem 2rem; }
+  .gist-edit-page { min-height: 100vh; background: var(--bg-color); padding: var(--space-7) var(--space-6); }
   .container { max-width: 900px; margin: 0 auto; }
   
   .skeleton-view { display: flex; flex-direction: column; gap: 2rem; }
   .skeleton-header { height: 100px; background: var(--md-sys-color-surface-container-low); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   .skeleton-body { height: 400px; background: var(--md-sys-color-surface-container-low); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
+
+  @media (max-width: 600px) {
+    .gist-edit-page { padding: var(--space-6) var(--space-4); }
+  }
 </style>

@@ -121,6 +121,7 @@
 
 .page--wide { max-width: none; }
 .page--narrow { max-width: 900px; }
+.page--medium { max-width: 1200px; }
 .page--flush { padding: 0; }
 
 @media (max-width: 600px) {

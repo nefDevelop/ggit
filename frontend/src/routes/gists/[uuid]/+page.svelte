@@ -57,7 +57,7 @@
 </div>
 
 <style>
-  .gist-page { min-height: 100vh; background: var(--bg-color); padding: 4rem 2rem; }
+  .gist-page { min-height: 100vh; background: var(--bg-color); padding: var(--space-7) var(--space-6); }
   .container { max-width: 900px; margin: 0 auto; }
   
   .skeleton-view { display: flex; flex-direction: column; gap: 2rem; }
@@ -68,4 +68,8 @@
 
   :global(.error-state) { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   :global(.error-state span) { font-size: 4rem; color: var(--md-sys-color-error); }
+
+  @media (max-width: 600px) {
+    .gist-page { padding: var(--space-6) var(--space-4); }
+  }
 </style>

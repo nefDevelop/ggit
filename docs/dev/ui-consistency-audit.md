@@ -254,6 +254,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Fase 4 (parcial)**: grids de Janitor, equipos y miembros con una columna en móvil;
   modales con padding móvil y cierre de 44px; panel de notificaciones y popover de ramas
   acotados al viewport; el visor de logs de webhooks pasa a una columna por debajo de 900px.
+- **Fase 3 (parcial)**: dashboard, explore, gists (listado, nuevo, vista, edición y
+  explore/gists) y organización usan la escala `--space`; las páginas de organización
+  adoptan `.page.page--medium` y eliminan su `.page-container` local. Reglas móviles
+  añadidas a explore, gists y org.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

@@ -57,7 +57,7 @@
 </div>
 
 <style>
-  .new-gist-page { min-height: 100vh; background: var(--bg-color); padding: 4rem 2rem; }
+  .new-gist-page { min-height: 100vh; background: var(--bg-color); padding: var(--space-7) var(--space-6); }
   .container { max-width: 900px; margin: 0 auto; }
   
   .page-header { margin-bottom: 3rem; }
@@ -69,5 +69,9 @@
     color: var(--md-sys-color-on-error-container); border-radius: 1rem;
     display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2rem;
     font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .new-gist-page { padding: var(--space-6) var(--space-4); }
   }
 </style>

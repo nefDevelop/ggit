@@ -9,14 +9,8 @@
   <title>Settings · {orgName}</title>
 </svelte:head>
 
-<div class="page-container">
+<div class="page page--medium">
   <OrgSettings {orgName} />
 </div>
 
-<style>
-  .page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-</style>
+
