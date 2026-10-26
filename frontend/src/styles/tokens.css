@@ -20,6 +20,11 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
+  /* Subtle status surfaces: base definitions so every theme has them. */
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--color-danger), transparent 90%);
+
   /* GLOBAL DYNAMIC MAPPINGS (MD3 to Legacy) */
   /* These map the Material Design 3 tokens to the application's legacy variables */
   /* This ensures that any change to md-sys tokens (via preset or custom) propagates everywhere */

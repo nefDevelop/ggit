@@ -261,6 +261,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Fase 3 (cierre)**: ajustes de usuario con `--space` y hueco inferior para el sub-nav
   móvil; las cuatro páginas de auth sin regla móvil (`sign_up`, `activate`,
   `reset_password`, `forgot_password`) reducen el padding de la tarjeta por debajo de 600px.
+- **Fase 5 (parcial)**: `Select` alineado con `Input` (label, fondo, foco, `id` único,
+  `hint`/`error`, `class`); tokens `--bg-*-subtle` definidos para todos los temas;
+  eliminado `AdminView.svelte`, que no usaba ninguna ruta.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 
