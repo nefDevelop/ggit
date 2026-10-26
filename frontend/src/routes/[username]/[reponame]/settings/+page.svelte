@@ -10,6 +10,7 @@
   import RepoSettingsGitHooks from '$lib/components/RepoSettingsGitHooks.svelte';
   import RepoSettingsSecurity from '$lib/components/RepoSettingsSecurity.svelte';
   import RepoSettingsJanitor from '$lib/components/RepoSettingsJanitor.svelte';
+  import RepoSettingsPikoCI from '$lib/components/RepoSettingsPikoCI.svelte';
   import ChipNavigation from '$lib/components/ui/ChipNavigation.svelte';
   import { authState } from '$lib/auth.svelte';
 
@@ -24,6 +25,7 @@ import Key from "lucide-svelte/icons/key";
 import Terminal from "lucide-svelte/icons/terminal";
 import Shield from "lucide-svelte/icons/shield";
 import Sparkles from "lucide-svelte/icons/sparkles";
+import Rocket from "lucide-svelte/icons/rocket";
 
 
 
@@ -41,7 +43,8 @@ import Sparkles from "lucide-svelte/icons/sparkles";
     { id: 'webhooks', label: 'Webhooks', icon: Webhook },
     { id: 'keys', label: 'Deploy Keys', icon: Key },
     { id: 'security', label: 'Seguridad', icon: Shield },
-    { id: 'janitor', label: 'Janitor', icon: Sparkles }
+    { id: 'janitor', label: 'Janitor', icon: Sparkles },
+    { id: 'pikoci', label: 'CI/CD', icon: Rocket }
   ];
 
   const visibleTabs = $derived(
@@ -96,6 +99,8 @@ import Sparkles from "lucide-svelte/icons/sparkles";
         <RepoSettingsSecurity />
     {:else if activeTab === 'janitor'}
         <RepoSettingsJanitor />
+    {:else if activeTab === 'pikoci'}
+        <RepoSettingsPikoCI />
     {/if}
   </main>
 

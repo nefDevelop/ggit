@@ -298,3 +298,40 @@ Con el clon en `tmp/pikoci/`:
 | 3 | Commit status y checks en PR | 0, 2 | Bajo |
 | 4 | Pipeline per-repo desde `.ggit/ci.hcl` | 1, 2 | Medio |
 | 5 | UI admin mínima | 1 | Bajo |
+
+---
+
+## Estado de implementación
+
+Rama `feature/pikoci-ci`.
+
+| Fase | Estado |
+| :--- | :--- |
+| 0 | **Pendiente**: requiere ggit y PikoCI vivos |
+| 1.1 Configuración | Hecho |
+| 1.2 Servicio sidecar | Hecho (health y estado) |
+| 1.2 Subprocess | Pendiente (opcional, decidido sidecar) |
+| 1.3 Apagado ordenado | Hecho |
+| 1.4 CLI `admin pikoci status` | Hecho |
+| 2 Trigger en push | Hecho (SSH y HTTP) |
+| 3 Estado en commits | Hecho: bot, token y plantilla validada con `pikoci pipeline validate` |
+| 4 Aprovisionamiento | Hecho: sync, webhook token, auto-republicación al cambiar el fichero y toggle por repo |
+| 5 UI | Tarjeta de estado en admin y pestaña CI/CD en ajustes del repo |
+
+Cambios de diseño respecto al plan original:
+
+- No se añade `EnablePikoCI` a `Repository`: la fila en `pikoci_repo` **es** el estado
+  de CI activado, así que no hay migración ni segunda fuente de verdad.
+- Se descarta el dedupe por `(repo, sha)`: el webhook solo relanza el `check` y PikoCI no
+  construye si la versión no cambió.
+- `API_TOKEN` y `BOT_TOKEN` viven en `app.ini`, como el resto de credenciales de ggit.
+- La plantilla solo se republica cuando el push toca `.ggit/ci.hcl` en la rama por
+  defecto, para no resetear el estado del resource en cada push.
+
+Pendiente real:
+
+- Fase 0: verificar el `check` de repos privados y el reporte de estados con instancias
+  reales.
+- Fase 5 restante: editar configuración, restart y logs desde el panel.
+- Supervisor del modo subprocess, si alguna vez se quiere.
+
