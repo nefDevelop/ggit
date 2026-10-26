@@ -215,4 +215,8 @@ import UserX from "lucide-svelte/icons/user-x";
     gap: 1rem;
     border-radius: 1rem;
   }
+
+  @media (max-width: 600px) {
+    .members-grid { grid-template-columns: 1fr; }
+  }
 </style>

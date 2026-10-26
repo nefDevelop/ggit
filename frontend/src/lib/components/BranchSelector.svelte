@@ -150,6 +150,7 @@ import Check from "lucide-svelte/icons/check";
     top: calc(100% + 0.5rem);
     left: 0;
     width: 300px;
+    max-width: calc(100vw - 2rem);
     max-height: 400px;
     z-index: 1000;
     display: flex;

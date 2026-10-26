@@ -236,4 +236,17 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
 
   .btn-icon-minimal { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; padding: 0.25rem; border-radius: 50%; transition: all 0.2s; }
   .btn-icon-minimal:hover { background: rgba(255,255,255,0.05); color: var(--text-color); }
+
+  @media (max-width: 900px) {
+    .modal-body-split {
+      grid-template-columns: 1fr;
+      height: auto;
+      max-height: 85vh;
+    }
+    .logs-sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      max-height: 40vh;
+    }
+  }
 </style>

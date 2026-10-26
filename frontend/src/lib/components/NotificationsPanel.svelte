@@ -209,7 +209,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   .panel-content {
     background: var(--md-sys-color-surface-container);
     color: var(--md-sys-color-on-surface);
-    width: 320px;
+    width: min(320px, calc(100vw - 2rem));
     height: 100%;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.25);
     border-right: 1px solid var(--md-sys-color-outline-variant);

@@ -309,4 +309,8 @@
     gap: 1rem;
     margin-top: 1rem;
   }
+
+  @media (max-width: 600px) {
+    .teams-grid { grid-template-columns: 1fr; }
+  }
 </style>

@@ -102,7 +102,7 @@ import X from "lucide-svelte/icons/x";
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border-radius: 50%;
     transition: all 0.2s;
   }
@@ -117,5 +117,11 @@ import X from "lucide-svelte/icons/x";
     font-size: 1rem;
     line-height: 1.6;
     color: var(--text-color);
+  }
+
+  @media (max-width: 600px) {
+    .modal-wrapper { padding: 1rem; }
+    .modal-header { padding: 1rem 1.25rem; }
+    .modal-body { padding: 1.25rem; }
   }
 </style>

@@ -251,6 +251,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   milestones, releases, forks/stars/watchers y el de error del navegador de archivos;
   se elimina el CSS local de `.empty-state` y `.empty-icon-ring` donde ya no se usa.
   `RepoFileBrowser` conserva su bloque especial "Push your code".
+- **Fase 4 (parcial)**: grids de Janitor, equipos y miembros con una columna en móvil;
+  modales con padding móvil y cierre de 44px; panel de notificaciones y popover de ramas
+  acotados al viewport; el visor de logs de webhooks pasa a una columna por debajo de 900px.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

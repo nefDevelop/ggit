@@ -183,4 +183,9 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   .value { font-size: 1.1rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
   .card-actions { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
   :global(.card-actions .btn) { border-radius: 0.5rem !important; font-weight: 700 !important; }
+
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .repo-details { grid-template-columns: 1fr; }
+  }
 </style>
