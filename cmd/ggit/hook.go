@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/gogs/git-module"
 	"github.com/nef734/ggit/internal/conf"
@@ -20,9 +21,18 @@ import (
 	log "github.com/nef734/ggit/internal/log"
 	"github.com/nef734/ggit/internal/osx"
 	"github.com/nef734/ggit/internal/services/guardian"
+	pikociservice "github.com/nef734/ggit/internal/services/pikoci"
 	reposervice "github.com/nef734/ggit/internal/services/repo"
 	"github.com/urfave/cli/v3"
 )
+
+// pikoCITriggerTimeout acota la espera del trigger: un push no debe quedarse
+// colgado esperando a PikoCI.
+const pikoCITriggerTimeout = 5 * time.Second
+
+// pikoCISyncTimeout cubre publicar el pipeline y pedir el webhook token, que
+// son dos llamadas más lentas que el trigger.
+const pikoCISyncTimeout = 20 * time.Second
 
 var (
 	hookCommand = cli.Command{
@@ -206,6 +216,39 @@ func runHookUpdate(_ context.Context, cmd *cli.Command) error {
 	return nil
 }
 
+// syncPikoCIPipelineIfChanged republica el pipeline cuando el push toca el
+// fichero de CI en la rama por defecto. Es best-effort: el push ya terminó.
+func syncPikoCIPipelineIfChanged(repoID int64, options database.PushUpdateOptions) {
+	branch := git.RefShortName(options.FullRefspec)
+
+	ctx, cancel := context.WithTimeout(context.Background(), pikoCISyncTimeout)
+	defer cancel()
+
+	repo, err := database.Handle.Repositories().GetByID(ctx, repoID)
+	if err != nil {
+		log.Error("PikoCI pipeline sync: get repository: %v", err)
+		return
+	}
+	if branch != repo.DefaultBranch {
+		return
+	}
+
+	changed, err := pikociservice.PipelineFileChanged(options.RepoUserName, options.RepoName,
+		options.OldCommitID, options.NewCommitID, conf.PikoCI.PipelineFile)
+	if err != nil {
+		log.Error("PikoCI pipeline sync: compare file: %v", err)
+		return
+	}
+	if !changed {
+		return
+	}
+
+	client := pikociservice.NewWithAuth(conf.PikoCI.URL, conf.PikoCI.Team, conf.PikoCI.APIToken)
+	if _, err := client.SyncRepoPipeline(ctx, repoID, options.RepoUserName, options.RepoName, branch); err != nil {
+		log.Error("PikoCI pipeline sync: %v", err)
+	}
+}
+
 func runHookPostReceive(_ context.Context, cmd *cli.Command) error {
 	if os.Getenv("SSH_ORIGINAL_COMMAND") == "" {
 		return nil
@@ -239,6 +282,21 @@ func runHookPostReceive(_ context.Context, cmd *cli.Command) error {
 		}
 		if err := database.PushUpdate(options); err != nil {
 			log.Error("PushUpdate: %v", err)
+		}
+
+		// Avisa a PikoCI para que revalide el resource del repositorio. El
+		// post-receive también corre en pushes HTTP, así que cubre ambos caminos.
+		if conf.PikoCI.Enabled {
+			repoID, parseErr := strconv.ParseInt(os.Getenv(database.EnvRepoID), 10, 64)
+			if parseErr == nil && repoID > 0 {
+				syncPikoCIPipelineIfChanged(repoID, options)
+
+				ctx, cancel := context.WithTimeout(context.Background(), pikoCITriggerTimeout)
+				if err := pikociservice.New(conf.PikoCI.URL).NotifyPush(ctx, repoID); err != nil {
+					log.Error("PikoCI notify push: %v", err)
+				}
+				cancel()
+			}
 		}
 
 		// Update repository languages

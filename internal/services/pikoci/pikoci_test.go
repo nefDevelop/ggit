@@ -88,3 +88,50 @@ func TestReachable(t *testing.T) {
 func TestBaseURLTrimsTrailingSlash(t *testing.T) {
 	assert.Equal(t, "http://127.0.0.1:18080", New("http://127.0.0.1:18080/").BaseURL())
 }
+
+func TestTriggerWebhook(t *testing.T) {
+	var gotMethod, gotPath string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotMethod = r.Method
+		gotPath = r.URL.EscapedPath()
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	err := New(server.URL).TriggerWebhook(context.Background(), "tok/en")
+
+	require.NoError(t, err)
+	assert.Equal(t, http.MethodPost, gotMethod)
+	// El token viaja escapado: un "/" no debe abrir un segmento de ruta nuevo.
+	assert.Equal(t, "/webhooks/tok%2Fen", gotPath)
+}
+
+func TestTriggerWebhookWithoutTokenDoesNothing(t *testing.T) {
+	var calls int
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+	}))
+	defer server.Close()
+
+	require.NoError(t, New(server.URL).TriggerWebhook(context.Background(), ""))
+	assert.Equal(t, 0, calls)
+}
+
+func TestTriggerWebhookSurfacesError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer server.Close()
+
+	err := New(server.URL).TriggerWebhook(context.Background(), "token")
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "respondió 404")
+}
+
+func TestTriggerWebhookUnreachable(t *testing.T) {
+	err := New("http://127.0.0.1:1").TriggerWebhook(context.Background(), "token")
+
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "no se pudo avisar")
+}

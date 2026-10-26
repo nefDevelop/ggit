@@ -52,7 +52,7 @@ var Tables = []any{
 	new(Milestone),
 	new(Notice),
 	new(OrgUser),
-	new(ProtectBranch), new(ProtectBranchWhitelist), new(PublicKey), new(PullRequest),
+	new(PikoCIRepo), new(ProtectBranch), new(ProtectBranchWhitelist), new(PublicKey), new(PullRequest),
 	new(Release), new(Repository), new(RepoTopic),
 	new(SecretPattern),
 	new(Star),

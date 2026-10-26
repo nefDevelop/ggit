@@ -2,10 +2,14 @@ package main
 
 import (
 	stdctx "context"
+	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +26,10 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
+// shutdownTimeout es el máximo que se espera a las peticiones en vuelo al
+// recibir SIGTERM. Un clone o push grande puede superarlo y se corta.
+const shutdownTimeout = 15 * time.Second
+
 var webCommand = cli.Command{
 	Name:  "web",
 	Usage: "Start Ggit web server",
@@ -32,7 +40,7 @@ var webCommand = cli.Command{
 	Action: runWeb,
 }
 
-func runWeb(_ stdctx.Context, cmd *cli.Command) error {
+func runWeb(ctx stdctx.Context, cmd *cli.Command) error {
 	err := route.GlobalInit(configFromLineage(cmd))
 	if err != nil {
 		log.Fatal("Failed to initialize application: %v", err)
@@ -151,8 +159,37 @@ func runWeb(_ stdctx.Context, cmd *cli.Command) error {
 		// WriteTimeout corto abortaria transferencias legitimas.
 	}
 
+	serve := server.ListenAndServe
 	if protocol == "https" {
-		return server.ListenAndServeTLS(conf.Server.CertFile, conf.Server.KeyFile)
+		serve = func() error {
+			return server.ListenAndServeTLS(conf.Server.CertFile, conf.Server.KeyFile)
+		}
 	}
-	return server.ListenAndServe()
+
+	// Sin este cierre ordenado, un SIGTERM mataba el proceso sin terminar las
+	// peticiones en vuelo ni dar ocasión de parar procesos hijos.
+	sigCtx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	serveErr := make(chan error, 1)
+	go func() {
+		serveErr <- serve()
+	}()
+
+	select {
+	case err := <-serveErr:
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			return err
+		}
+		return nil
+	case <-sigCtx.Done():
+	}
+
+	log.Info("Shutting down: waiting up to %s for in-flight requests", shutdownTimeout)
+	shutdownCtx, cancel := stdctx.WithTimeout(stdctx.Background(), shutdownTimeout)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		return fmt.Errorf("shutdown: %w", err)
+	}
+	return nil
 }

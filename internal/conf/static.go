@@ -146,15 +146,19 @@ var (
 
 	// PikoCI settings
 	PikoCI struct {
-		Enabled     bool
-		Mode        string
-		URL         string `ini:"URL"`
-		PublicURL   string `ini:"PUBLIC_URL"`
-		BinaryPath  string
-		DataDir     string
-		Concurrency int
-		JWTSecret   string `ini:"JWT_SECRET"`
-		SecretKey   string
+		Enabled      bool
+		Mode         string
+		URL          string `ini:"URL"`
+		PublicURL    string `ini:"PUBLIC_URL"`
+		BinaryPath   string
+		DataDir      string
+		Concurrency  int
+		JWTSecret    string `ini:"JWT_SECRET"`
+		SecretKey    string
+		Team         string
+		APIToken     string `ini:"API_TOKEN"`
+		BotToken     string `ini:"BOT_TOKEN"`
+		PipelineFile string `ini:"PIPELINE_FILE"`
 	}
 
 	// Cron tasks

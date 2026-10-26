@@ -7,11 +7,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
 	"github.com/nef734/ggit/internal/conf"
+	"github.com/nef734/ggit/internal/database"
 )
 
 // Health es la respuesta de GET /health.
@@ -24,23 +27,36 @@ type Health struct {
 
 // Service consulta un servidor de PikoCI.
 type Service struct {
-	baseURL string
-	http    *http.Client
+	baseURL  string
+	team     string
+	apiToken string
+	http     *http.Client
 }
 
 // CI es el servicio global, inicializado desde services.Init.
 var CI *Service
 
-// Init crea el cliente con la URL configurada. No hace ninguna petición.
+// Init crea el cliente con la URL y las credenciales configuradas. No hace
+// ninguna petición.
 func Init() {
-	CI = New(conf.PikoCI.URL)
+	CI = NewWithAuth(conf.PikoCI.URL, conf.PikoCI.Team, conf.PikoCI.APIToken)
 }
 
-// New crea un cliente apuntando a baseURL.
+// New crea un cliente apuntando a baseURL, sin credenciales de administración.
 func New(baseURL string) *Service {
+	return NewWithAuth(baseURL, "main", "")
+}
+
+// NewWithAuth crea un cliente con el equipo y el token de la API de PikoCI.
+func NewWithAuth(baseURL, team, apiToken string) *Service {
+	if team == "" {
+		team = "main"
+	}
 	return &Service{
-		baseURL: strings.TrimRight(baseURL, "/"),
-		http:    &http.Client{Timeout: 5 * time.Second},
+		baseURL:  strings.TrimRight(baseURL, "/"),
+		team:     team,
+		apiToken: apiToken,
+		http:     &http.Client{Timeout: 30 * time.Second},
 	}
 }
 
@@ -81,4 +97,43 @@ func (s *Service) Health(ctx context.Context) (*Health, error) {
 func (s *Service) Reachable(ctx context.Context) bool {
 	health, err := s.Health(ctx)
 	return err == nil && health.Status == "ok"
+}
+
+// TriggerWebhook lanza el check del resource asociado al token. PikoCI ignora
+// el cuerpo y no firma: el token es el único secreto.
+func (s *Service) TriggerWebhook(ctx context.Context, token string) error {
+	if token == "" {
+		return nil
+	}
+
+	endpoint := s.baseURL + "/webhooks/" + url.PathEscape(token)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, nil)
+	if err != nil {
+		return fmt.Errorf("construir petición: %w", err)
+	}
+
+	resp, err := s.http.Do(req)
+	if err != nil {
+		return fmt.Errorf("no se pudo avisar a %s: %w", s.baseURL, err)
+	}
+	defer resp.Body.Close()
+	_, _ = io.Copy(io.Discard, resp.Body)
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("PikoCI respondió %d al trigger del webhook", resp.StatusCode)
+	}
+	return nil
+}
+
+// NotifyPush avisa a PikoCI de que el repositorio tiene refs nuevas. Es
+// best-effort: si el repositorio no tiene pipeline asociado no hace nada.
+func (s *Service) NotifyPush(ctx context.Context, repoID int64) error {
+	link, err := database.Handle.PikoCIRepos().GetByRepoID(ctx, repoID)
+	if err != nil {
+		if database.IsErrPikoCIRepoNotExist(err) {
+			return nil
+		}
+		return fmt.Errorf("buscar vínculo de PikoCI: %w", err)
+	}
+	return s.TriggerWebhook(ctx, link.WebhookToken)
 }

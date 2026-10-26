@@ -151,6 +151,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.POST("/janitor/scan-all", ginx.Handle(ScanAllJanitor))
 
 		admin.GET("/pikoci/status", ginx.Handle(GetAdminPikoCIStatus))
+		admin.GET("/pikoci/pipeline-template", ginx.Handle(GetAdminPikoCIPipelineTemplate))
+		admin.PUT("/pikoci/repos/:repoID", ginx.Handle(UpdateAdminPikoCIRepo))
+		admin.POST("/pikoci/repos/:repoID/sync", ginx.Handle(SyncAdminPikoCIRepo))
+		admin.DELETE("/pikoci/repos/:repoID", ginx.Handle(DeleteAdminPikoCIRepo))
 
 		admin.GET("/security/guardian/patterns", ginx.Handle(GetAdminGuardianPatterns))
 		admin.POST("/security/guardian/patterns", ginx.Handle(AddAdminGuardianPattern))
@@ -285,6 +289,10 @@ func RegisterRoutes(r *gin.RouterGroup) {
 			settingGroup.GET("/remotes", ginx.Handle(ListRepoRemotes))
 			settingGroup.POST("/remotes", ginx.Handle(AddRepoRemote))
 			settingGroup.DELETE("/remotes/:name", ginx.Handle(DeleteRepoRemote))
+
+			settingGroup.GET("/pikoci", ginx.Handle(GetRepoPikoCI))
+			settingGroup.POST("/pikoci", ginx.Handle(EnableRepoPikoCI))
+			settingGroup.DELETE("/pikoci", ginx.Handle(DisableRepoPikoCI))
 
 			gitHooks := settingGroup.Group("/hooks/git", context.GitHookService())
 			{
