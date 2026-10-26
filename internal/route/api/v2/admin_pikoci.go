@@ -92,11 +92,19 @@ func GetAdminPikoCIRepos(c *context.APIContext) {
 	c.JSON(http.StatusOK, res)
 }
 
-// GetAdminPikoCIPipelineTemplate devuelve la plantilla HCL que ggit publica en
-// PikoCI, con el bloque que reporta estados a ggit.
+// GetAdminPikoCIPipelineTemplate devuelve la plantilla HCL de CI que ggit
+// publica en PikoCI, con el bloque que reporta estados a ggit.
 func GetAdminPikoCIPipelineTemplate(c *context.APIContext) {
 	c.JSON(http.StatusOK, map[string]string{
 		"template": pikociservice.PipelineTemplate,
+	})
+}
+
+// GetAdminPikoCIReleaseTemplate devuelve la plantilla HCL de releases: se
+// dispara con tags y crea la release en ggit.
+func GetAdminPikoCIReleaseTemplate(c *context.APIContext) {
+	c.JSON(http.StatusOK, map[string]string{
+		"template": pikociservice.ReleaseTemplate,
 	})
 }
 

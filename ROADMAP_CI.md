@@ -234,8 +234,8 @@ distintos definidos en su propio `.ggit/ci.hcl`.
 
 ## Backlog (no ahora)
 
-- Releases automáticas al pushear un tag (`push "exec"` + `$put_*` como parámetros
-  explícitos del paso `put`).
+- Releases automáticas al pushear un tag: **hecho** como plantilla opcional
+  (`GET /api/v2/admin/pikoci/release-template`), validada con PikoCI v0.8.0.
 - Aprobaciones manuales (`approve`, ya soportado por PikoCI).
 - Dashboard de builds en ggit: **descartado**; enlazar a PikoCI.
 - Scopes por repo en `AccessToken` (hoy son de usuario completo).
@@ -317,6 +317,7 @@ Rama `feature/pikoci-ci`.
 | 3 Estado en commits | Hecho: bot, token y plantilla validada con `pikoci pipeline validate` |
 | 4 Aprovisionamiento | Hecho: sync, webhook token, auto-republicación al cambiar el fichero y toggle por repo |
 | 5 UI | Tarjeta de estado en admin y pestaña CI/CD en ajustes del repo |
+| 7 Releases | Plantilla validada y servida por API; se activa como pipeline aparte |
 
 Cambios de diseño respecto al plan original:
 

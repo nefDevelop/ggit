@@ -153,6 +153,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/pikoci/status", ginx.Handle(GetAdminPikoCIStatus))
 		admin.GET("/pikoci/repos", ginx.Handle(GetAdminPikoCIRepos))
 		admin.GET("/pikoci/pipeline-template", ginx.Handle(GetAdminPikoCIPipelineTemplate))
+		admin.GET("/pikoci/release-template", ginx.Handle(GetAdminPikoCIReleaseTemplate))
 		admin.PUT("/pikoci/repos/:repoID", ginx.Handle(UpdateAdminPikoCIRepo))
 		admin.POST("/pikoci/repos/:repoID/sync", ginx.Handle(SyncAdminPikoCIRepo))
 		admin.DELETE("/pikoci/repos/:repoID", ginx.Handle(DeleteAdminPikoCIRepo))

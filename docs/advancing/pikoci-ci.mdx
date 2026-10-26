@@ -143,16 +143,24 @@ ggit admin pikoci bot      # usuario bot + token
 
 ## Releases automáticas
 
-La API de releases de ggit ya existe (`POST /api/v2/<owner>/<repo>/releases`). Para que
-PikoCI las cree al empujar un tag, añade un resource type con `push "exec"`:
+La API de releases de ggit ya existe (`POST /api/v2/<owner>/<repo>/releases`) y la pestaña
+Releases los muestra. ggit incluye una plantilla validada contra PikoCI v0.8.0:
+
+```text
+GET /api/v2/admin/pikoci/pipeline-template   # CI normal
+GET /api/v2/admin/pikoci/release-template    # releases por tag
+```
+
+La plantilla de releases define un resource `git` en modo tags, un
+`resource_type "ggit-release"` con `push "exec"` y un job que se dispara con el `get`:
 
 ```hcl
 resource "git" "repo" {
   params {
-    url    = var.git_url
-    name   = "repo"
-    token  = var.ggit_token
-    tag    = "true"   # modo tags; exige token
+    url   = var.git_url
+    name  = "repo"
+    token = var.ggit_token
+    tag   = "true"   # modo tags; exige token
   }
 }
 
@@ -176,24 +184,36 @@ resource_type "ggit-release" {
   }
 }
 
+resource "ggit-release" "release" {
+  params {
+    ggit_url   = var.ggit_url
+    ggit_token = var.ggit_token
+    repo       = var.repo
+    target     = var.target
+  }
+}
+
 job "release" {
   get "git" "repo" { trigger = true }
 
-  task "build" {
-    run "shell" { cmd = "cd repo && make build" }
+  task "notes" {
+    run "shell" { cmd = "cd repo && git log -1 --pretty=%B > ../notes.md" }
   }
 
-  put "ggit-release" "rel" {
-    params {
-      target = "main"
-    }
-  }
+  put "ggit-release" "release" {}
 }
 ```
 
-Los `params` del paso `put` son estáticos, así que el tag se deriva dentro del script con
-`git describe --tags --exact-match`. `target` debe ser una rama existente. Los adjuntos
-requieren subirlos antes al endpoint de attachments del release.
+Tres detalles que cuestan un rato descubrir:
+
+- Los `params` del paso `put` son **atributos**, no un bloque. El bloque `params { ... }`
+  que aparece en algunos ejemplos de la documentación de PikoCI no lo acepta el validador
+  de v0.8.0; para pasar valores usa `put "tipo" "nombre" { timeout = "5m" }`.
+- El tag no se puede inyectar desde el build: se deriva dentro del script con
+  `git describe --tags --exact-match`, y las notas se leen de `notes.md`, que genera el task
+  anterior.
+- `target` debe ser una rama existente. Los adjuntos requieren subirlos antes al endpoint de
+  attachments del release.
 
 ## Diagnóstico
 
