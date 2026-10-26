@@ -228,7 +228,7 @@
   }
   
   .btn-ghost { background: transparent; border: none; color: var(--text-muted); font-weight: 600; padding: 0.75rem 1.5rem; border-radius: 1rem; cursor: pointer; }
-  .btn-ghost:hover { background: rgba(0,0,0,0.05); color: var(--text-color); }
+  .btn-ghost:hover { background: var(--sunken-1); color: var(--text-color); }
 
   @media (max-width: 600px) {
     .commit-panel { padding: 1.5rem; border-radius: 1.5rem; }

@@ -182,7 +182,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
   .desc-preview { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--output-text); max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
   .date-tag { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-  .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(0,0,0,0.1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: var(--sunken-1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .count-info { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
   .nav-controls { display: flex; align-items: center; gap: 1.5rem; }
   .page-current { font-weight: 800; font-size: 0.9rem; }

@@ -322,7 +322,7 @@ import CheckCircle2 from "lucide-svelte/icons/check-circle-2";
   .theme-modular-tile {
     display: flex; align-items: center; gap: 1.5rem;
     padding: 1.25rem 1.5rem; border-radius: 1rem; border: 1px solid var(--md-sys-color-outline-variant);
-    background: rgba(0,0,0,0.1); transition: all 0.3s;
+    background: var(--sunken-1); transition: all 0.3s;
     cursor: pointer;
     text-align: left;
   }

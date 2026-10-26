@@ -130,7 +130,7 @@ import FileText from "lucide-svelte/icons/file-text";
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85rem;
     color: var(--text-color);
-    background: rgba(0,0,0,0.2);
+    background: var(--sunken-2);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
     overflow: hidden;

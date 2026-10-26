@@ -67,7 +67,7 @@
   .field { display: flex; flex-direction: column; gap: 0.5rem; }
   .field label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
   .field input {
-    background: rgba(0,0,0,0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     color: #fff;
     padding: 1rem;
@@ -78,7 +78,7 @@
   }
   .field input:focus { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
   .field textarea {
-    background: rgba(0,0,0,0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     color: #fff;
     padding: 1rem;

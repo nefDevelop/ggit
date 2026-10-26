@@ -240,12 +240,12 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
   .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-control { background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text-color); font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+  .form-control { background: var(--sunken-2); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text-color); font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
   .form-control:focus { border-color: var(--primary-color); }
   .form-error { color: var(--status-danger-soft); font-size: 0.85rem; margin: 0; }
   .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
-  .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.15); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
+  .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: var(--sunken-2); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
 
   .delete.confirm { color: var(--status-warning); background: color-mix(in srgb, var(--status-warning) 10%, transparent); }
 

@@ -291,7 +291,7 @@
   .field input,
   .field textarea,
   .field select {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;

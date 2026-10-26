@@ -109,7 +109,7 @@
   .init-item.full { grid-column: 1 / -1; }
   .init-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
   .section-label { display: flex; align-items: center; gap: 0.5rem; }
-  .search-box-mini { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.1); padding: 0.3rem 0.8rem; border-radius: 2rem; }
+  .search-box-mini { display: flex; align-items: center; gap: 0.5rem; background: var(--sunken-1); padding: 0.3rem 0.8rem; border-radius: 2rem; }
   .search-box-mini input { background: transparent; border: none; color: inherit; outline: none; width: 180px; font-family: inherit; }
   .gitignore-group { margin-bottom: 1rem; }
   .group-label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; }

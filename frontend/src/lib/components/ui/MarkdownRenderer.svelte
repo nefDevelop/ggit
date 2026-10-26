@@ -161,7 +161,7 @@
     color: var(--md-sys-color-primary);
     font-weight: 600;
     text-decoration: none;
-    background: var(--md-sys-color-primary-container, rgba(0, 0, 0, 0.05));
+    background: var(--md-sys-color-primary-container, var(--sunken-1));
     padding: 0 0.4rem;
     border-radius: 4px;
     font-size: 0.9em;

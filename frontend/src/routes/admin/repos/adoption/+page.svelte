@@ -152,7 +152,7 @@
 
   .repo-name-text { font-size: 1.1rem; color: var(--primary-color); font-weight: 900; }
   
-  .path-code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .path-code { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--text-muted); background: var(--sunken-2); padding: 0.4rem 0.75rem; border-radius: 0.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
 
   .empty-state { padding: 5rem 0; text-align: center; }
   .empty-msg { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; color: var(--text-muted); }

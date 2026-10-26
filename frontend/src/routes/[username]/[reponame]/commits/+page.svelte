@@ -152,7 +152,7 @@
   }
 
   .commit-row:last-child { border-bottom: none; }
-  .commit-row:nth-child(even) { background: rgba(0,0,0,0.02); }
+  .commit-row:nth-child(even) { background: var(--sunken-1); }
   .commit-row:hover { background: rgba(var(--primary-rgb), 0.04); }
 
   :global(.user-avatar) {

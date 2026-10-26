@@ -390,7 +390,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   .label-tag.scoped .key {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     padding: 2px 8px;
     font-weight: 800;
     opacity: 0.8;
@@ -399,7 +399,7 @@
     padding: 2px 8px;
   }
   .remove-label {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: none;
     color: white;
     width: 16px;

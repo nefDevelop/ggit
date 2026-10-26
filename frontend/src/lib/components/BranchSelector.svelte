@@ -179,7 +179,7 @@ import Check from "lucide-svelte/icons/check";
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
   }
   .search-box :global(svg) {
     color: var(--text-muted);

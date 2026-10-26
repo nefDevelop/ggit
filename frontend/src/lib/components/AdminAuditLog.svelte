@@ -163,7 +163,7 @@ import ChevronDown from "lucide-svelte/icons/chevron-down";
   .repo-link { color: var(--primary-color); text-decoration: none; font-weight: 800; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; }
   .repo-link:hover { text-decoration: underline; }
 
-  .mini-snippet { background: rgba(0,0,0,0.25); padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: var(--output-muted); font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
+  .mini-snippet { background: var(--sunken-3); padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 0.85rem; color: var(--output-muted); font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(255,255,255,0.05); }
   .muted-value { color: var(--output-dim); font-weight: 800; }
   .null-value { color: var(--output-border-strong); font-style: italic; font-size: 0.85rem; }
 

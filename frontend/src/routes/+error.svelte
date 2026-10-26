@@ -171,7 +171,7 @@ import Terminal from "lucide-svelte/icons/terminal";
 
 	.error-stack {
 		margin: 2rem 0;
-		background: rgba(0, 0, 0, 0.2);
+		background: var(--sunken-2);
 		padding: 1rem;
 		border-radius: 12px;
 		text-align: left;

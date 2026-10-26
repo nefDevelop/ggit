@@ -268,6 +268,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   safe-area, `hasSubNav` cubre ajustes del repo y el sub-nav de ajustes se alinea con
   admin/usuario. Además, el endpoint de instalación responde `Cache-Control: no-store` y
   `/install` no se pinta cuando la instancia ya está instalada.
+- **Temas (contrato y superficies)**: ayu/monokai/nord completan los 6 tokens que les
+  faltaban; `make check-theme-tokens` valida 39 tokens por esquema en 4 temas. Nuevos
+  tokens `--scrim` y `--sunken-1..3` (por esquema) y 48 fondos negros translúcidos
+  sustituidos por superficies del tema; los 13 scrims de modales/overlays se mantienen.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

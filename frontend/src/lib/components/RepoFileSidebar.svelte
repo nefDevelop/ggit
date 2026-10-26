@@ -82,7 +82,7 @@
   .side-item-text { font-size: 0.9rem; }
   .side-item-row { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
   .side-items-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
-  .lang-bar { height: 12px; border-radius: 6px; overflow: hidden; display: flex; background: rgba(0,0,0,0.2); margin-bottom: 1.25rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); }
+  .lang-bar { height: 12px; border-radius: 6px; overflow: hidden; display: flex; background: var(--sunken-2); margin-bottom: 1.25rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.3); }
   .lang-progress { height: 100%; transition: width 1s ease; }
   .lang-list { display: flex; flex-direction: column; gap: 0.6rem; }
   .lang-item { display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem; }

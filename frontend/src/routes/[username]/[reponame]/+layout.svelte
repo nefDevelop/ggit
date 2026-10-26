@@ -417,11 +417,11 @@ import Calendar from "lucide-svelte/icons/calendar";
   .section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; letter-spacing: 0.05em; }
   .dropdown-divider { height: 1px; background: var(--border-color); margin: 0.75rem -1.25rem; opacity: 0.5; }
 
-  .protocol-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.1); padding: 3px; border-radius: 10px; }
+  .protocol-tabs { display: flex; gap: 4px; background: var(--sunken-1); padding: 3px; border-radius: 10px; }
   .proto-btn { flex: 1; border: none; background: transparent; color: var(--text-muted); padding: 0.4rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
   .proto-btn.active { background: var(--primary-color); color: white; }
 
-  .clone-copy-row { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
+  .clone-copy-row { display: flex; align-items: center; gap: 0.5rem; background: var(--sunken-2); padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
   .url-display { flex: 1; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
   .copy-action { background: transparent; border: none; color: var(--primary-color); cursor: pointer; display: flex; padding: 4px; border-radius: 6px; transition: background 0.2s; }
   .copy-action:hover { background: rgba(var(--primary-rgb), 0.1); }
@@ -448,7 +448,7 @@ import Calendar from "lucide-svelte/icons/calendar";
   .tab { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; border-radius: 0.75rem 0.75rem 0 0; }
   .tab:hover { color: var(--text-color); background: rgba(255,255,255,0.03); }
   .tab.active { color: var(--primary-color); background: var(--bg-color); border: none; }
-  .tab-count { font-variant-numeric: tabular-nums; background: rgba(0,0,0,0.05); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
+  .tab-count { font-variant-numeric: tabular-nums; background: var(--sunken-1); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
   .tab.active .tab-count { background: var(--primary-container); color: var(--on-primary-container); }
   .tab-label { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
 

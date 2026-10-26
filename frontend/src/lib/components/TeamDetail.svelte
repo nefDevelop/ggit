@@ -352,7 +352,7 @@
   }
 
   .edit-title {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--sunken-3);
     border: 1px solid var(--primary-color);
     font-size: 2.25rem;
     font-weight: 800;
@@ -362,7 +362,7 @@
     padding: 0.5rem;
   }
   .edit-desc {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--sunken-3);
     border: 1px solid var(--md-sys-color-outline-variant);
     font-size: 1.1rem;
     color: var(--text-muted);
@@ -450,7 +450,7 @@
   }
   .add-form input {
     flex: 1;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.6rem 1rem;
     border-radius: 0.75rem;
@@ -533,7 +533,7 @@
   }
 
   .field select {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;

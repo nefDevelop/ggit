@@ -621,7 +621,7 @@
   }
 
   .prefix {
-    background: rgba(0,0,0,0.05);
+    background: var(--sunken-1);
     padding: 1rem;
     font-weight: 700;
     font-size: 0.9rem;
@@ -760,7 +760,7 @@
     max-height: 250px;
     overflow-y: auto;
     padding: 0.5rem;
-    background: rgba(0,0,0,0.05);
+    background: var(--sunken-1);
     border-radius: 1rem;
     min-height: 50px;
   }

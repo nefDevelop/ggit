@@ -247,6 +247,11 @@
   --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
   --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
   --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --scrim: rgba(0, 0, 0, 0.7);
+  --sunken-1: color-mix(in srgb, var(--md-sys-color-surface), black 4%);
+  --sunken-2: color-mix(in srgb, var(--md-sys-color-surface), black 8%);
+  --sunken-3: color-mix(in srgb, var(--md-sys-color-surface), black 15%);
 }
 
 /* Default Dark */
@@ -299,6 +304,11 @@
   --shadow-xl: 0 12px 32px rgba(0,0,0,0.5);
   --inner-shadow: inset 0 2px 8px rgba(0,0,0,0.4), inset 0 10px 48px rgba(0,0,0,0.15);
   --island-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --scrim: rgba(0, 0, 0, 0.7);
+  --sunken-1: color-mix(in srgb, var(--md-sys-color-surface), black 10%);
+  --sunken-2: color-mix(in srgb, var(--md-sys-color-surface), black 20%);
+  --sunken-3: color-mix(in srgb, var(--md-sys-color-surface), black 35%);
 }
 
 /* AYU Theme */
@@ -337,6 +347,12 @@
   --surface-rgb: 253, 251, 255;
   --color-success: var(--md-sys-color-tertiary);
   --color-warning: #ff9940;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
 }
 
 [data-theme="ayu"][data-color-scheme="dark"] {
@@ -374,6 +390,12 @@
   --surface-rgb: 15, 20, 25;
   --color-success: var(--md-sys-color-tertiary);
   --color-warning: #ffb454;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), white 5%);
 }
 
 /* MONOKAI Theme */
@@ -412,6 +434,12 @@
   --surface-rgb: 253, 251, 255;
   --color-success: var(--md-sys-color-primary);
   --color-warning: var(--md-sys-color-tertiary);
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
 }
 
 [data-theme="monokai"][data-color-scheme="dark"] {
@@ -449,6 +477,12 @@
   --surface-rgb: 39, 40, 34;
   --color-success: var(--md-sys-color-primary);
   --color-warning: var(--md-sys-color-tertiary);
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), white 5%);
 }
 
 /* NORD Theme */
@@ -487,6 +521,12 @@
   --surface-rgb: 253, 251, 255;
   --color-success: #a3be8c;
   --color-warning: #ebcb8b;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
 }
 
 [data-theme="nord"][data-color-scheme="dark"] {
@@ -524,6 +564,12 @@
   --surface-rgb: 46, 52, 64;
   --color-success: #a3be8c;
   --color-warning: #ebcb8b;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), white 5%);
 }
 
 /* GLOBAL UI COMPONENTS */

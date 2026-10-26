@@ -382,7 +382,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .hill-chart-edit { width: 100%; height: 100px; overflow: visible; }
   .hill-labels-wide { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.6; margin-top: 0.25rem; }
 
-  .hill-chart-display-box { margin-top: 0.5rem; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.2) !important; }
+  .hill-chart-display-box { margin-top: 0.5rem; padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); background: var(--sunken-2) !important; }
   .hill-chart-large { width: 100%; height: 80px; overflow: visible; }
   .hill-labels { display: flex; justify-content: space-between; margin-top: 0.75rem; }
   .phase { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.4; transition: all 0.3s; }

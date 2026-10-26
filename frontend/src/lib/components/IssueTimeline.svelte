@@ -94,7 +94,7 @@
   .timeline-divider { height: 1px; background: var(--md-sys-color-outline-variant); margin: 0 0 0 60px; }
   .new-comment-item textarea {
     width: 100%; min-height: 100px; resize: vertical;
-    background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--sunken-2); border: 1px solid var(--md-sys-color-outline-variant);
     color: inherit; padding: 0.75rem; border-radius: 0.5rem;
     font-family: inherit; font-size: 0.95rem; outline: none; box-sizing: border-box;
   }

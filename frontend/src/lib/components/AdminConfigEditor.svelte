@@ -113,7 +113,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 
   .error-msg { color: var(--error); font-size: 0.9rem; font-weight: 700; margin: 0 2rem 1rem; padding: 1rem; background: rgba(var(--error-rgb), 0.1); border-radius: 1rem; }
 
-  .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; justify-content: space-between; gap: 2rem; background: rgba(0,0,0,0.1); }
+  .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; justify-content: space-between; gap: 2rem; background: var(--sunken-1); }
   
   .warning-box { display: flex; align-items: center; gap: 0.75rem; color: var(--status-warning-soft); }
   .warning-box p { margin: 0; font-size: 0.85rem; font-weight: 700; max-width: 300px; line-height: 1.3; }

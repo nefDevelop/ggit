@@ -66,7 +66,7 @@
     display: flex;
     gap: 1rem;
     padding: 0.5rem 1rem;
-    background: rgba(0,0,0,0.1);
+    background: var(--sunken-1);
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
 
@@ -117,7 +117,7 @@
     justify-content: flex-end;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    background: rgba(0,0,0,0.05);
+    background: var(--sunken-1);
     border-top: 1px solid var(--md-sys-color-outline-variant);
   }
 </style>

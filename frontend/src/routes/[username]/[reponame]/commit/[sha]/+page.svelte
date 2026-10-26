@@ -163,7 +163,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
     font-family: inherit;
     font-size: 0.95rem;
     color: var(--md-sys-color-on-surface-variant);
-    background: rgba(0,0,0,0.02);
+    background: var(--sunken-1);
     padding: 1rem;
     border-radius: 12px;
     border-left: 4px solid var(--md-sys-color-outline-variant);
