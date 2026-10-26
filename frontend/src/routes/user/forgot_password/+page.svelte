@@ -199,4 +199,8 @@
     border: 1px solid var(--status-success);
     color: var(--status-success-soft);
   }
+
+  @media (max-width: 600px) {
+    .auth-window { padding: var(--space-6) var(--space-5); }
+  }
 </style>

@@ -258,6 +258,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   explore/gists) y organización usan la escala `--space`; las páginas de organización
   adoptan `.page.page--medium` y eliminan su `.page-container` local. Reglas móviles
   añadidas a explore, gists y org.
+- **Fase 3 (cierre)**: ajustes de usuario con `--space` y hueco inferior para el sub-nav
+  móvil; las cuatro páginas de auth sin regla móvil (`sign_up`, `activate`,
+  `reset_password`, `forgot_password`) reducen el padding de la tarjeta por debajo de 600px.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

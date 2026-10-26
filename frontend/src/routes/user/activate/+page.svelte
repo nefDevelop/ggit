@@ -246,4 +246,8 @@
       text-align: center;
       color: var(--text-muted);
   }
+
+  @media (max-width: 600px) {
+    .auth-window { padding: var(--space-6) var(--space-5); }
+  }
 </style>
