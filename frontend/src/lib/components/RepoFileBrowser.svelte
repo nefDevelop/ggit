@@ -10,6 +10,7 @@
   import CommitStatusIcon from './CommitStatusIcon.svelte';
   import Avatar from './Avatar.svelte';
   import hljs from "$lib/hljs";
+  import EmptyState from "./ui/EmptyState.svelte";
   import AlertCircle from "lucide-svelte/icons/alert-circle";
   import Terminal from "lucide-svelte/icons/terminal";
   import History from "lucide-svelte/icons/history";
@@ -165,11 +166,11 @@
       </aside>
     </div>
   {:else if error}
-    <div class="empty-state">
-      <div class="empty-icon-ring"><AlertCircle size={40} /></div>
-      <h2>No content found</h2>
-      <p>{error || 'This repository is empty or the path does not exist.'}</p>
-    </div>
+    <EmptyState
+      icon={AlertCircle}
+      title="No content found"
+      description={error || 'This repository is empty or the path does not exist.'}
+    />
   {:else if repoData}
     {#if searchQuery}
       <RepoSearchResults query={searchQuery} branch={repoData.branch || 'HEAD'} />
@@ -276,12 +277,7 @@ git push -u origin main</code></pre>
   .title-placeholder { height: 1rem; width: 100px; margin-bottom: 1rem; }
   .lang-bar-placeholder { height: 12px; width: 100%; border-radius: 6px; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.7; } 100% { opacity: 0.3; } }
-  .empty-state { padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; color: var(--text-muted); border-radius: 1.5rem; }
-  .empty-state h2 { margin: 0; font-size: 1.75rem; font-weight: 950; color: var(--text-color); }
-  .empty-state p { max-width: 400px; margin: 0; font-size: 1.1rem; line-height: 1.5; }
   .empty-icon-ring { width: 80px; height: 80px; border: 2px dashed var(--md-sys-color-outline-variant); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; color: var(--primary-color); background: rgba(var(--primary-rgb),0.05); }
-  .empty-state-push .empty-icon-ring { border-color: var(--tertiary); color: var(--tertiary); margin-bottom: 2rem; }
-  .empty-state-push { padding: 4rem 2rem; text-align: center; }
   .command-block { background: #000; padding: 1.5rem; border-radius: 1rem; text-align: left; margin-top: 2.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .cmd-label { font-size: 0.75rem; font-weight: 800; color: var(--primary-color); display: block; text-transform: uppercase; }
   .command-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }

@@ -3,7 +3,8 @@
   
 
 import PlusCircle from "lucide-svelte/icons/plus-circle";
-import Calendar from "lucide-svelte/icons/calendar";
+import EmptyState from "./ui/EmptyState.svelte";
+  import Calendar from "lucide-svelte/icons/calendar";
 import TrendingUp from "lucide-svelte/icons/trending-up";
 import TrendingDown from "lucide-svelte/icons/trending-down";
 import Edit from "lucide-svelte/icons/edit";
@@ -254,18 +255,15 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
         <div class="spinner"></div>
       </div>
     {:else if milestones.length === 0}
-      <div class="empty-state">
-        <div class="empty-icon-ring">
-          <Calendar size={40} />
-        </div>
-        <h2>No milestones found</h2>
-        <p>There are no milestones in this repository.</p>
-        <div style="margin-top: 1rem;">
-          <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
-            Create your first milestone
-          </Button>
-        </div>
-      </div>
+      <EmptyState
+        icon={Calendar}
+        title="No milestones found"
+        description="There are no milestones in this repository."
+      >
+        <Button variant="primary" onclick={() => { editingMilestone = null; form = { title: '', description: '', due_on: '', state: 'open', hill_state: 0 }; showEditor = true; }} icon={PlusCircle}>
+          Create your first milestone
+        </Button>
+      </EmptyState>
     {:else}
       <div class="flat-list-container">
         {#each milestones as ms}
@@ -371,42 +369,9 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
   :global(.danger-btn:hover) { color: var(--error) !important; }
 
-  .empty-state {
-    text-align: center;
-    padding: 6rem 2rem;
-    color: var(--text-muted);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 
   .hill-state-editor-box { padding: 1.5rem; border-radius: 1.5rem; display: flex; flex-direction: column; gap: 1rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .hill-editor-header { display: flex; justify-content: space-between; align-items: baseline; }

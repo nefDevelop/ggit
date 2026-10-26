@@ -247,6 +247,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Fase 2b**: `PageActions.svelte` sustituye las cuatro cabeceras "stub" (pulls, issues,
   labels, tags) y `EmptyState` reemplaza los estados vacíos de pulls, issues y labels,
   borrando su CSS local. El CTA de issues deja de ser un `<a>` manual.
+- **Fase 2c**: `EmptyState` reemplaza también los estados vacíos de documentación,
+  milestones, releases, forks/stars/watchers y el de error del navegador de archivos;
+  se elimina el CSS local de `.empty-state` y `.empty-icon-ring` donde ya no se usa.
+  `RepoFileBrowser` conserva su bloque especial "Push your code".
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

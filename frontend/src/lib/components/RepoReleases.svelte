@@ -10,7 +10,8 @@
   
 
 import Tag from "lucide-svelte/icons/tag";
-import Rocket from "lucide-svelte/icons/rocket";
+import EmptyState from "./ui/EmptyState.svelte";
+  import Rocket from "lucide-svelte/icons/rocket";
 import Plus from "lucide-svelte/icons/plus";
 import Edit from "lucide-svelte/icons/edit";
 import Trash2 from "lucide-svelte/icons/trash-2";
@@ -139,14 +140,13 @@ import FileArchive from "lucide-svelte/icons/file-archive";
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
-    <div class="empty-state">
-      <div class="empty-icon-ring">
-        <Rocket size={40} />
-      </div>
-      <h2>No releases yet</h2>
-      <p>Start tagging your milestones by creating the first release.</p>
+    <EmptyState
+      icon={Rocket}
+      title="No releases yet"
+      description="Start tagging your milestones by creating the first release."
+    >
       <Button onclick={handleAdd} icon={Plus}>Create your first release</Button>
-    </div>
+    </EmptyState>
   {:else}
     <div class="flat-list-container">
       {#each releases as release}
@@ -277,40 +277,7 @@ import FileArchive from "lucide-svelte/icons/file-archive";
     }
   }
 
-  .empty-state {
-    padding: 6rem 2rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-    color: var(--text-muted);
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 </style>
