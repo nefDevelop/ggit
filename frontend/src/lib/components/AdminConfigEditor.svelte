@@ -93,7 +93,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 
 <style>
   .editor-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 2rem; }
-  .editor-modal { width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline-variant); overflow: hidden; box-shadow: 0 24px 48px rgba(0,0,0,0.4); }
+  .editor-modal { width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline-variant); overflow: hidden; box-shadow: var(--shadow-modal); }
   
   .modal-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.05); }
   .title-wrap { display: flex; align-items: center; gap: 1rem; }

@@ -25,6 +25,8 @@ GLOBAL_TOKENS = {
     "--sunken-1",
     "--sunken-2",
     "--sunken-3",
+    "--shadow-popover",
+    "--shadow-modal",
 }
 
 DEFAULT_LIGHT = ':root, [data-theme="default"][data-color-scheme="light"]'

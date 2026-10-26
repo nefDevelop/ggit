@@ -79,7 +79,7 @@ import X from "lucide-svelte/icons/x";
     pointer-events: auto;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-modal);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 

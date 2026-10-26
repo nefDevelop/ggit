@@ -254,7 +254,7 @@ import Save from "lucide-svelte/icons/save";
     border: 1px solid var(--md-sys-color-outline-variant);
     max-width: 1100px;
     margin: 0 auto;
-    box-shadow: 0 32px 64px -12px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-modal);
     position: relative;
     overflow: hidden;
   }

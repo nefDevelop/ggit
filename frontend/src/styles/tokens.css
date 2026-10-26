@@ -260,6 +260,8 @@
   --sunken-1: color-mix(in srgb, var(--md-sys-color-surface), black 4%);
   --sunken-2: color-mix(in srgb, var(--md-sys-color-surface), black 8%);
   --sunken-3: color-mix(in srgb, var(--md-sys-color-surface), black 15%);
+  --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.18);
+  --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.4);
 }
 
 /* Default Dark */
@@ -317,6 +319,8 @@
   --sunken-1: color-mix(in srgb, var(--md-sys-color-surface), black 10%);
   --sunken-2: color-mix(in srgb, var(--md-sys-color-surface), black 20%);
   --sunken-3: color-mix(in srgb, var(--md-sys-color-surface), black 35%);
+  --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.55);
+  --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.7);
 }
 
 /* AYU Theme */

@@ -158,7 +158,7 @@ import Check from "lucide-svelte/icons/check";
     overflow: hidden;
     background: var(--md3-surface-2);
     border: 1px solid var(--md-sys-color-outline-variant);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-popover);
     animation: slideDown 0.2s cubic-bezier(0, 0, 0.2, 1);
   }
 
