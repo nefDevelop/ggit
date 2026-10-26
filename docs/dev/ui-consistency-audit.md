@@ -272,6 +272,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   faltaban; `make check-theme-tokens` valida 39 tokens por esquema en 4 temas. Nuevos
   tokens `--scrim` y `--sunken-1..3` (por esquema) y 48 fondos negros translúcidos
   sustituidos por superficies del tema; los 13 scrims de modales/overlays se mantienen.
+- **`/dev/ui`**: página de muestra (solo desarrollo) con selector de tema/esquema,
+  superficies, comparación de `.tonal`, botones, formularios, tarjetas, cabeceras,
+  estados vacíos/skeletons y tipografía. Sirve para decidir `.tonal` viéndolo.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 
