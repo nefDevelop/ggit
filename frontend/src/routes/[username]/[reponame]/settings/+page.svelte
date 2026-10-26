@@ -194,7 +194,6 @@ import Sparkles from "lucide-svelte/icons/sparkles";
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding-bottom: calc(160px + env(safe-area-inset-bottom));
     }
     .settings-sidebar {
       display: none;
@@ -210,8 +209,10 @@ import Sparkles from "lucide-svelte/icons/sparkles";
       right: 0;
       width: 100vw;
       box-sizing: border-box;
-      z-index: 999;
-      background: var(--md-sys-color-surface-container);
+      z-index: 500;
+      background: rgba(var(--surface-rgb), 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: 0.75rem 1rem;
       margin-bottom: 0;
     }

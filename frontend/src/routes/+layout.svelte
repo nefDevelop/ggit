@@ -97,8 +97,9 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 			!authState.user?.disable_news_feed,
 	);
 	const hasSubNav = $derived(
-		$page.url.pathname.startsWith("/admin") || 
-		$page.url.pathname.startsWith("/user/settings")
+		$page.url.pathname.startsWith("/admin") ||
+		$page.url.pathname.startsWith("/user/settings") ||
+		/^\/[^/]+\/[^/]+\/settings(?:\/|$)/.test($page.url.pathname)
 	);
 </script>
 
@@ -179,7 +180,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 			</div>
 		{/if}
 		<main id="main-content">
-			{#if authState.loading || !authState.installChecked}
+			{#if authState.loading || !authState.installChecked || (authState.isInstalled && $page.url.pathname === "/install")}
 				<div class="initial-loading">
 					<div class="spinner"></div>
 				</div>

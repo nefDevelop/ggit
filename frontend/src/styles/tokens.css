@@ -20,6 +20,10 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
+  /* Mobile shell */
+  --mobile-nav-height: 60px;
+  --mobile-subnav-height: 68px;
+
   /* Subtle status surfaces: base definitions so every theme has them. */
   --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
   --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);

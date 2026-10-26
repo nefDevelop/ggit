@@ -264,6 +264,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Fase 5 (parcial)**: `Select` alineado con `Input` (label, fondo, foco, `id` único,
   `hint`/`error`, `class`); tokens `--bg-*-subtle` definidos para todos los temas;
   eliminado `AdminView.svelte`, que no usaba ninguna ruta.
+- **Shell móvil corregido**: alturas de nav y sub-nav como tokens, `100dvh` con
+  safe-area, `hasSubNav` cubre ajustes del repo y el sub-nav de ajustes se alinea con
+  admin/usuario. Además, el endpoint de instalación responde `Cache-Control: no-store` y
+  `/install` no se pinta cuando la instancia ya está instalada.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

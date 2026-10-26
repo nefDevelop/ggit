@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Card from '$lib/components/ui/Card.svelte';
@@ -30,6 +31,7 @@
       const res = await apiFetch('/api/v2/install/settings', { silent: true });
       if (res.status === 403) {
         alreadyInstalled = true;
+        goto('/', { replaceState: true });
         return;
       }
       if (res.ok) {
