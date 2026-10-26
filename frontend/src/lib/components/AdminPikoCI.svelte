@@ -29,11 +29,24 @@
     reachable?: boolean;
     health?: Health;
     error?: string;
+    team?: string;
+    pipeline_file?: string;
+    api_token_set?: boolean;
+    bot_token_set?: boolean;
+    linked_repos?: number;
+  };
+
+  type Link = {
+    repo_id: number;
+    repo: string;
+    pipeline: string;
+    updated_at: number;
   };
 
   let loading = $state(true);
   let status = $state<PikoCIStatus | null>(null);
   let loadError = $state("");
+  let links = $state<Link[]>([]);
 
   async function fetchStatus() {
     loading = true;
@@ -53,7 +66,25 @@
     }
   }
 
-  onMount(fetchStatus);
+  async function fetchLinks() {
+    try {
+      const res = await apiFetch("/api/v2/admin/pikoci/repos", { silent: true });
+      if (res.ok && Array.isArray(res.data)) {
+        links = res.data as Link[];
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function refresh() {
+    await fetchStatus();
+    if (status?.enabled) {
+      await fetchLinks();
+    }
+  }
+
+  onMount(refresh);
 
   const summary = $derived.by(() => {
     if (!status) return { label: "Desconocido", tone: "muted" };
@@ -73,7 +104,7 @@
     icon={Rocket}
   >
     {#snippet actions()}
-      <Button variant="tonal" icon={RefreshCw} onclick={fetchStatus} loading={loading} disabled={loading}>
+      <Button variant="tonal" icon={RefreshCw} onclick={refresh} loading={loading} disabled={loading}>
         Actualizar
       </Button>
     {/snippet}
@@ -130,6 +161,18 @@
           </div>
         {/if}
 
+        {#if status.enabled && (!status.api_token_set || !status.bot_token_set)}
+          <div class="notice warning">
+            <AlertTriangle size={18} />
+            <p>
+              Falta configuración para publicar pipelines:
+              {#if !status.api_token_set}<code>[pikoci] API_TOKEN</code>{/if}
+              {#if !status.api_token_set && !status.bot_token_set} y {/if}
+              {#if !status.bot_token_set}<code>[pikoci] BOT_TOKEN</code>{/if}.
+            </p>
+          </div>
+        {/if}
+
         {#if status.enabled && status.error}
           <div class="notice error">
             <CloudOff size={18} />
@@ -158,6 +201,18 @@
             <span class="value">{status.health?.db || "—"}</span>
           </div>
           <div class="detail">
+            <span class="label">Equipo</span>
+            <span class="value">{status.team || "—"}</span>
+          </div>
+          <div class="detail">
+            <span class="label">Pipeline</span>
+            <code>{status.pipeline_file || "—"}</code>
+          </div>
+          <div class="detail">
+            <span class="label">Repos con CI</span>
+            <span class="value">{status.linked_repos ?? 0}</span>
+          </div>
+          <div class="detail">
             <span class="label">Interfaz</span>
             {#if status.public_url}
               <a class="link" href={status.public_url} target="_blank" rel="noopener noreferrer">
@@ -170,6 +225,20 @@
           </div>
         </div>
       </Card>
+
+      {#if status.enabled && links.length > 0}
+        <Card class="links-card">
+          <h4>Repositorios con CI</h4>
+          <ul>
+            {#each links as link}
+              <li>
+                <a href={`/${link.repo}`}>{link.repo}</a>
+                <code>{link.pipeline}</code>
+              </li>
+            {/each}
+          </ul>
+        </Card>
+      {/if}
 
       {#if !status.enabled}
         <Card class="hint-card">
@@ -399,6 +468,50 @@
     border-radius: 1.5rem;
     background: var(--md-sys-color-surface-container-high);
     animation: pulse 1.5s infinite;
+  }
+
+  :global(.links-card) {
+    margin-top: 1.5rem;
+    padding: 1.5rem !important;
+    border-radius: 1rem !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  :global(.links-card h4) {
+    margin: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--md-sys-color-on-surface-variant);
+  }
+
+  :global(.links-card ul) {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  :global(.links-card li) {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.9rem;
+  }
+
+  :global(.links-card a) {
+    color: var(--md-sys-color-primary);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  :global(.links-card a:hover) {
+    text-decoration: underline;
   }
 
   @keyframes pulse {

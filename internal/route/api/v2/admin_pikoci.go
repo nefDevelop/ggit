@@ -18,11 +18,23 @@ const pikoCIHealthTimeout = 5 * time.Second
 // devolver un error: el panel necesita justamente mostrar ese estado.
 func GetAdminPikoCIStatus(c *context.APIContext) {
 	res := map[string]any{
-		"enabled":    conf.PikoCI.Enabled,
-		"mode":       conf.PikoCI.Mode,
-		"url":        conf.PikoCI.URL,
-		"public_url": conf.PikoCI.PublicURL,
+		"enabled":       conf.PikoCI.Enabled,
+		"mode":          conf.PikoCI.Mode,
+		"url":           conf.PikoCI.URL,
+		"public_url":    conf.PikoCI.PublicURL,
+		"team":          conf.PikoCI.Team,
+		"pipeline_file": conf.PikoCI.PipelineFile,
+		"api_token_set": conf.PikoCI.APIToken != "",
+		"bot_token_set": conf.PikoCI.BotToken != "",
 	}
+
+	linked, err := database.Handle.PikoCIRepos().Count(c.Req.Context())
+	if err != nil {
+		c.Error(err, "count pikoci links")
+		return
+	}
+	res["linked_repos"] = linked
+
 	if !conf.PikoCI.Enabled {
 		c.JSON(http.StatusOK, res)
 		return
@@ -41,6 +53,42 @@ func GetAdminPikoCIStatus(c *context.APIContext) {
 
 	res["reachable"] = health.Status == "ok"
 	res["health"] = health
+	c.JSON(http.StatusOK, res)
+}
+
+// GetAdminPikoCIRepos lista los repositorios con CI y su pipeline.
+func GetAdminPikoCIRepos(c *context.APIContext) {
+	links, err := database.Handle.PikoCIRepos().List(c.Req.Context(), 100)
+	if err != nil {
+		c.Error(err, "list pikoci links")
+		return
+	}
+
+	type linkResponse struct {
+		RepoID    int64  `json:"repo_id"`
+		Repo      string `json:"repo"`
+		Pipeline  string `json:"pipeline"`
+		UpdatedAt int64  `json:"updated_at"`
+	}
+
+	res := make([]linkResponse, 0, len(links))
+	for _, link := range links {
+		repo, err := database.Handle.Repositories().GetByID(c.Req.Context(), link.RepoID)
+		if err != nil {
+			continue // repositorio borrado: el vínculo quedó huérfano
+		}
+		owner, err := database.Handle.Users().GetByID(c.Req.Context(), repo.OwnerID)
+		if err != nil {
+			continue
+		}
+		res = append(res, linkResponse{
+			RepoID:    link.RepoID,
+			Repo:      owner.Name + "/" + repo.Name,
+			Pipeline:  link.PipelineName,
+			UpdatedAt: link.UpdatedAt,
+		})
+	}
+
 	c.JSON(http.StatusOK, res)
 }
 

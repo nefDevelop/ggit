@@ -151,6 +151,7 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.POST("/janitor/scan-all", ginx.Handle(ScanAllJanitor))
 
 		admin.GET("/pikoci/status", ginx.Handle(GetAdminPikoCIStatus))
+		admin.GET("/pikoci/repos", ginx.Handle(GetAdminPikoCIRepos))
 		admin.GET("/pikoci/pipeline-template", ginx.Handle(GetAdminPikoCIPipelineTemplate))
 		admin.PUT("/pikoci/repos/:repoID", ginx.Handle(UpdateAdminPikoCIRepo))
 		admin.POST("/pikoci/repos/:repoID/sync", ginx.Handle(SyncAdminPikoCIRepo))

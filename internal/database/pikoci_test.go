@@ -33,6 +33,11 @@ func TestPikoCIReposStore(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, int64(1), count)
 
+	links, err := store.List(ctx, 0)
+	require.NoError(t, err)
+	require.Len(t, links, 1)
+	assert.Equal(t, int64(1), links[0].RepoID)
+
 	// Un segundo Upsert actualiza el vínculo en lugar de duplicarlo.
 	require.NoError(t, store.Upsert(ctx, &PikoCIRepo{
 		RepoID:       1,
@@ -52,4 +57,8 @@ func TestPikoCIReposStore(t *testing.T) {
 	count, err = store.Count(ctx)
 	require.NoError(t, err)
 	assert.Zero(t, count)
+
+	links, err = store.List(ctx, 0)
+	require.NoError(t, err)
+	assert.Empty(t, links)
 }

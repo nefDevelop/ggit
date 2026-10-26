@@ -35,6 +35,7 @@ func IsErrPikoCIRepoNotExist(err error) bool {
 // PikoCIRepoStore gestiona los vínculos entre repositorios y pipelines.
 type PikoCIRepoStore interface {
 	GetByRepoID(ctx context.Context, repoID int64) (*PikoCIRepo, error)
+	List(ctx context.Context, limit int) ([]*PikoCIRepo, error)
 	Upsert(ctx context.Context, link *PikoCIRepo) error
 	Delete(ctx context.Context, repoID int64) error
 	Count(ctx context.Context) (int64, error)
@@ -59,6 +60,15 @@ func (s *PikoCIRepos) GetByRepoID(ctx context.Context, repoID int64) (*PikoCIRep
 		return nil, err
 	}
 	return &link, nil
+}
+
+func (s *PikoCIRepos) List(ctx context.Context, limit int) ([]*PikoCIRepo, error) {
+	if limit <= 0 || limit > 500 {
+		limit = 100
+	}
+	var links []*PikoCIRepo
+	err := s.db.WithContext(ctx).Order("updated_at DESC").Limit(limit).Find(&links).Error
+	return links, err
 }
 
 func (s *PikoCIRepos) Upsert(ctx context.Context, link *PikoCIRepo) error {
