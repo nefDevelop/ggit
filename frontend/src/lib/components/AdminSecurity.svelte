@@ -117,7 +117,7 @@ import Plus from "lucide-svelte/icons/plus";
 
 <style>
   .admin-security-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

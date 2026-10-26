@@ -143,7 +143,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
 <style>
   .admin-users-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

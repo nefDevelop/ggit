@@ -134,7 +134,7 @@ import ChevronDown from "lucide-svelte/icons/chevron-down";
 
 <style>
   .admin-audit-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

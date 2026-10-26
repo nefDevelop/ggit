@@ -24,7 +24,7 @@
   <title>{adminSubItems.find(i => i.id === page.url.pathname)?.name || 'Admin'} · Ggit</title>
 </svelte:head>
 
-<div class="admin-layout-container" class:edge-to-edge={page.url.pathname.startsWith('/admin')}>
+<div class="admin-layout-container">
   <main class="admin-content-full">
     {@render children()}
   </main>
@@ -41,14 +41,10 @@
 
 <style>
   .admin-layout-container {
-    padding: 0 1.5rem 4rem;
+    padding: 1.5rem 1.5rem 4rem;
     width: 100%;
     box-sizing: border-box;
     margin: 0;
-  }
-
-  .admin-layout-container.edge-to-edge {
-    padding: 0;
   }
 
   .admin-mobile-nav {
@@ -71,8 +67,8 @@
 
   /* Adjust for mobile if needed */
   @media (max-width: 1024px) {
-    .admin-layout-container, .admin-layout-container.edge-to-edge {
-      padding: 1rem 0;
+    .admin-layout-container {
+      padding: 1rem 1rem 5rem;
       display: block;
       min-height: auto;
     }
