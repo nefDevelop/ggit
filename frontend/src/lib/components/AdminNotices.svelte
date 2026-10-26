@@ -104,17 +104,17 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
           {:else}
             {#each notices as notice}
               <tr class="hover-row clickable" onclick={() => openDetail(notice)}>
-                <td class="id-cell">#{notice.id}</td>
-                <td>
+                <td class="id-cell" data-label="ID">#{notice.id}</td>
+                <td data-label="Tipo">
                   <span class="type-badge tier-{notice.type}">{notice.type_name}</span>
                 </td>
-                <td>
+                <td data-label="Descripción">
                   <div class="desc-preview">{notice.description}</div>
                 </td>
-                <td>
+                <td data-label="Fecha">
                   <span class="date-tag">{formatDateTime(notice.created_at)}</span>
                 </td>
-                <td>
+                <td data-label="Acciones">
                   <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={(e) => { e.stopPropagation(); deleteNotice(notice.id); }} />
                 </td>
               </tr>

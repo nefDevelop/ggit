@@ -240,6 +240,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Piloto admin hecho**: el layout de admin es el único dueño del padding
   (`1.5rem 1.5rem 4rem`, móvil `1rem 1rem 5rem`) y los 12 `Admin*` pasan a `padding: 0`.
   `AdminJanitor` usa ya `EmptyState` y `Skeleton`.
+- **Fase 2 (parcial)**: gutters del repo unificados con admin (`--space-5`/`--space-7`,
+  móvil `--space-4`/`--space-6`), fuera el `margin: -2rem` de commits, padding inferior
+  duplicado de ajustes eliminado, `WikiView` sin doble padding, tablas con scroll
+  horizontal y fondo del tema, y `data-label` restaurado en `AdminNotices` y `AdminAuths`.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

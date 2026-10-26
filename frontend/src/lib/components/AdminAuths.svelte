@@ -97,8 +97,8 @@ import Trash2 from "lucide-svelte/icons/trash-2";
             {:else}
               {#each sources as source}
                 <tr class="hover-row">
-                  <td class="id-cell">#{source.id}</td>
-                  <td>
+                  <td class="id-cell" data-label="ID">#{source.id}</td>
+                  <td data-label="Nombre del Origen">
                     <div class="source-cell">
                       <div class="source-icon tonal">
                         {#if source.type === 2 || source.type === 5}
@@ -113,17 +113,17 @@ import Trash2 from "lucide-svelte/icons/trash-2";
                       </div>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Tipo / Protocolo">
                     <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : 'var(--status-accent)'}">
                        {source.type_name || "Protocolo Estándar"}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Estado">
                     <span class="status-chip" class:active={source.is_actived}>
                       {source.is_actived ? 'Operativo' : 'Inactivo'}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Acciones">
                     <div class="action-buttons">
                       <button class="icon-btn" onclick={() => editSource(source)} title="Configurar">
                         <Settings size={18} />

@@ -130,9 +130,7 @@
   .commits-view {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin: -2rem;
-    padding: 2rem;
+    gap: var(--space-5);
   }
 
   .commits-list {

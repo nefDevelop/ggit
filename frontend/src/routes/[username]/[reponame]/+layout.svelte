@@ -465,14 +465,10 @@ import Calendar from "lucide-svelte/icons/calendar";
     .clone-dropdown { width: calc(100vw - 3rem); right: -1.5rem; }
   }
 
-  .master-body { flex: 1; overflow-y: auto; background: var(--bg-color); padding: 1rem; box-sizing: border-box; }
+  .master-body { flex: 1; overflow-y: auto; background: var(--bg-color); padding: var(--space-5) var(--space-5) var(--space-7); box-sizing: border-box; }
   .master-body-skeleton { flex: 1; padding: 2rem; display: flex; flex-direction: column; background: var(--bg-color); }
   @media (max-width: 600px) {
-    .master-body { padding: 0.5rem; }
-  }
-
-  @media (max-width: 480px) {
-    .master-body { padding: 0.5rem; }
+    .master-body { padding: var(--space-4) var(--space-4) var(--space-6); }
   }
   .skeleton-master { background: var(--md-sys-color-surface-container-low); height: 100vh; display: flex; flex-direction: column; }
   .skeleton-pulse { background: var(--md-sys-color-surface-container-high); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }

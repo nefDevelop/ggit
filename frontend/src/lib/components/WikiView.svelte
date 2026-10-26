@@ -247,7 +247,7 @@
   }
   .docs-hint-close:hover { background: var(--status-info-muted); }
 
-  .wiki-container { padding: 1.5rem; }
+  .wiki-container { padding: 0; }
   .wiki-grid { display: flex; gap: 2rem; align-items: flex-start; }
   .wiki-main { flex: 1; min-width: 0; }
   .wiki-content-header {

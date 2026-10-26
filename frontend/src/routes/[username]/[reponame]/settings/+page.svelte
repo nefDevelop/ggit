@@ -116,7 +116,6 @@ import Sparkles from "lucide-svelte/icons/sparkles";
     grid-template-columns: 280px 1fr;
     gap: 2rem;
     align-items: start;
-    padding-bottom: 2rem;
     animation: fadeIn 0.3s ease-out;
   }
 
