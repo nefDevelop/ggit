@@ -113,24 +113,24 @@
     <section>
       <h2>Tonal</h2>
       <p class="hint">
-        Hoy conviven tres definiciones. El <code>!important</code> global de
-        <code>tokens.css</code> gana, así que las otras dos nunca se pintan.
+        Canónico: <code>secondary-container</code>. Las tres variantes deben verse
+        iguales; el tinte primary queda como referencia descartada.
       </p>
       <div class="tonal-grid">
         <div>
           <div class="tonal-sample tonal">.tonal global</div>
-          <code>tokens.css: !important</code>
+          <code>canónico</code>
         </div>
         <Card tonal>
           Card tonal
         </Card>
         <div>
           <div class="tonal-sample island tonal">.island.tonal</div>
-          <code>components.css</code>
+          <code>island</code>
         </div>
         <div>
           <div class="tonal-sample primary-tint">primary 5%</div>
-          <code>intención original</code>
+          <code>descartado</code>
         </div>
       </div>
     </section>

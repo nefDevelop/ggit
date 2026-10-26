@@ -182,10 +182,18 @@
   border: 1px solid var(--md-sys-color-outline-variant) !important;
 }
 
-.md-tonal-secondary, .tonal {
+.md-tonal-secondary {
   background-color: var(--md-sys-color-secondary-container) !important;
   color: var(--md-sys-color-on-secondary-container) !important;
   border: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+
+/* Canónico: .tonal es secondary-container. Las variantes locales deben usar
+   estos mismos tokens en vez de inventar un tinte propio. */
+.tonal {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .md-tonal-tertiary, .tonal-tertiary {

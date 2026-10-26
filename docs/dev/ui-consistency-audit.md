@@ -275,6 +275,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **`/dev/ui`**: página de muestra (solo desarrollo) con selector de tema/esquema,
   superficies, comparación de `.tonal`, botones, formularios, tarjetas, cabeceras,
   estados vacíos/skeletons y tipografía. Sirve para decidir `.tonal` viéndolo.
+- **`.tonal` decidido**: canónico `secondary-container`. Se retiró el `!important`,
+  `.island.tonal` y `Card` usan los mismos tokens, y el `.tonal` local de
+  `ReleaseEditor` se renombró a `.panel-surface` (no era un tonal).
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

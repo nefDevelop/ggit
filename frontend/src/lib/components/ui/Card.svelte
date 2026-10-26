@@ -59,7 +59,10 @@
   .bg-container { background: var(--md-sys-color-surface-container); }
   .bg-high { background: var(--md-sys-color-surface-container-high); }
   .bg-highest { background: var(--md-sys-color-surface-container-highest); }
-  .tonal { background: rgba(var(--primary-rgb), 0.05); }
+  .tonal {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+  }
 
   .hoverable:hover {
     transform: translateY(-4px);
