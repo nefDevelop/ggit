@@ -11,6 +11,7 @@
 - **Instalación Directa:** Pre-configuración automática (bypass del antiguo instalador de base de datos).
 - **UI/UX:** Micro-animaciones, soporte nativo de temas avanzados (Deep Night, Solarized, Ayu, Monokai, Nord).
 - **Documentación:** Especificación y soporte integrado para **OpenAPI / Swagger** en la API v2.
+- **CI/CD:** Integración con **PikoCI** como motor de pipelines por repositorio (`.ggit/ci.hcl`), disparo en el push y estados en commits y PRs.
 - **Monitoreo:** Panel de estado en tiempo real (CPU, Memoria, Goroutines) integrado nativamente en Svelte.
 
 ## 🗑️ Eliminado / Deprecado

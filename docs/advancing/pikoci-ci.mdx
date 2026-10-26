@@ -1,0 +1,205 @@
+---
+title: "CI/CD con PikoCI"
+description: "Pipelines por repositorio, disparo en el push y estados en commits y pull requests"
+icon: "rocket"
+---
+
+ggit integra [PikoCI](https://github.com/PikoCI/pikoci) como motor de CI/CD. ggit no ejecuta
+los pipelines: publica la definición de cada repositorio en PikoCI, le avisa en cada push y
+muestra el resultado en la interfaz.
+
+## Cómo funciona
+
+```
+push  ──►  post-receive (ggit)
+             │  si cambió .ggit/ci.hcl en la rama por defecto: PUT pipeline
+             │  POST /webhooks/<token>  (dispara el check)
+             ▼
+          PikoCI ──► clona el repo con el token del bot y ejecuta el job
+             │
+             └──► POST /api/v2/<owner>/<repo>/statuses/<sha>
+                    (context: ci/pikoci)
+```
+
+El post-receive se ejecuta igual en pushes SSH y HTTP, así que ambos caminos disparan el
+build. La republicación solo ocurre cuando el push toca el fichero del pipeline y en la
+rama por defecto, para no resetear el estado del resource en cada push.
+
+## Requisitos
+
+- PikoCI v0.8.0 o posterior, con su API accesible desde ggit.
+- Un **usuario bot** de ggit con acceso de escritura a los repositorios con CI (se crea con
+  el comando de más abajo).
+- Un **token de API de PikoCI** con rol `maintain` en el equipo configurado (se crea desde
+  la interfaz de PikoCI).
+
+:::warning Aislamiento
+Los jobs de PikoCI se ejecutan como procesos del host, sin sandbox. Ejecuta PikoCI en un
+contenedor o con un usuario del sistema distinto al de ggit. PikoCI escucha en todas las
+interfaces: limita el puerto con firewall o red de contenedor.
+:::
+
+## Configuración
+
+Sección `[pikoci]` de `app.ini`:
+
+| Opción | Por defecto | Descripción |
+| :--- | :--- | :--- |
+| `ENABLED` | `false` | Activa la integración. Sin esto no se publica ni se dispara nada. |
+| `URL` | `http://127.0.0.1:18080` | URL interna de la API de PikoCI. |
+| `PUBLIC_URL` | vacío | URL pública de la interfaz de PikoCI. Se usa en los enlaces de estado. |
+| `TEAM` | `main` | Equipo de PikoCI donde se publican los pipelines. |
+| `API_TOKEN` | vacío | Token de la API de PikoCI para publicar pipelines y pedir webhooks. |
+| `BOT_TOKEN` | vacío | Token del usuario bot de ggit, inyectado en el pipeline como `ggit_token`. |
+| `PIPELINE_FILE` | `.ggit/ci.hcl` | Ruta del pipeline dentro del repositorio. |
+| `MODE` | `sidecar` | `sidecar` (PikoCI externo) o `subprocess` (reservado; no implementado). |
+| `CONCURRENCY`, `BINARY_PATH`, `DATA_DIR`, `JWT_SECRET`, `SECRET_KEY` | — | Reservadas para el modo `subprocess`, que no está implementado. El modo sidecar las ignora. |
+
+`API_TOKEN` y `BOT_TOKEN` son secretos: viven en `app.ini`, como el resto de credenciales de
+ggit, y nunca se muestran en la API (`/admin/pikoci/status` solo informa si están puestos).
+
+## Puesta en marcha
+
+1. Crea el usuario bot y su token. El token se muestra una sola vez:
+
+```bash
+ggit admin pikoci bot --repo pi/ggit
+```
+
+Esto crea el usuario `pikoci` (si no existe), genera un token y lo añade como colaborador
+con permiso de escritura del repositorio indicado. Repite `--repo` por cada repositorio con
+CI. Puedes cambiar el nombre y el nombre del token con `--name` y `--token-name`.
+
+2. Copia el token en `BOT_TOKEN`.
+
+3. Crea un token de API en PikoCI (interfaz → API tokens) y cópialo en `API_TOKEN`.
+
+4. Escribe `.ggit/ci.hcl` en el repositorio. La plantilla por defecto, que ya reporta
+   estados a ggit, se sirve en:
+
+```text
+GET /api/v2/admin/pikoci/pipeline-template
+```
+
+5. Activa CI en **Ajustes → CI/CD** del repositorio. Desde ahí puedes republicar el
+   pipeline, desactivarlo y abrir PikoCI.
+
+## El pipeline del repositorio
+
+PikoCI usa HCL. La plantilla por defecto declara estas variables:
+
+| Variable | Valor que inyecta ggit |
+| :--- | :--- |
+| `ggit_url` | URL externa de ggit. |
+| `ggit_token` | Token del usuario bot. |
+| `repo` | `owner/name` del repositorio. |
+| `git_url` | URL de clone (`https://…/owner/name.git`). |
+| `branch` | Rama por defecto del repositorio. |
+| `pikoci_url` | `PUBLIC_URL` de PikoCI, para enlazar el build. |
+
+Puedes sustituir el fichero por tu propio pipeline. Si usas el resource `git` de PikoCI
+contra un repositorio privado de ggit, pasa `token` en sus params: ggit acepta el token como
+contraseña en la autenticación básica del transporte Git.
+
+## Estados en la interfaz
+
+El pipeline reporta a `POST /api/v2/<owner>/<repo>/statuses/<sha>` con:
+
+- `context`: `ci/pikoci`
+- `state`: `pending` al empezar, `success`/`failure`/`error` al terminar
+- `description`: texto corto del resultado
+- `target_url`: enlace al build en PikoCI
+
+ggit lo muestra en:
+
+- **Commits**: icono junto al SHA y bloque *Commit Statuses* en la página del commit, con
+  enlace al build.
+- **Explorador de archivos**: icono en el último commit de cada fila.
+- **Pull requests**: icono en la lista y estado combinado en la caja de merge; la protección
+  de rama puede bloquear el merge mientras el estado no sea `success`.
+
+No hay historial de builds en ggit: los logs y el detalle viven en la interfaz de PikoCI.
+
+## Referencia de endpoints
+
+| Método y ruta | Permiso | Uso |
+| :--- | :--- | :--- |
+| `GET /api/v2/admin/pikoci/status` | admin | Estado, configuración visible y salud. |
+| `GET /api/v2/admin/pikoci/repos` | admin | Repositorios con CI y su pipeline. |
+| `GET /api/v2/admin/pikoci/pipeline-template` | admin | Plantilla HCL por defecto. |
+| `PUT /api/v2/admin/pikoci/repos/:repoID` | admin | Enlaza a mano pipeline y token de webhook. |
+| `POST /api/v2/admin/pikoci/repos/:repoID/sync` | admin | Publica o republica el pipeline. |
+| `DELETE /api/v2/admin/pikoci/repos/:repoID` | admin | Borra el pipeline y el vínculo. |
+| `GET /api/v2/:owner/:repo/settings/pikoci` | admin del repo | Estado del CI del repositorio. |
+| `POST /api/v2/:owner/:repo/settings/pikoci` | admin del repo | Activa y publica el pipeline. |
+| `DELETE /api/v2/:owner/:repo/settings/pikoci` | admin del repo | Desactiva y borra el pipeline. |
+
+Y por consola:
+
+```bash
+ggit admin pikoci status   # configuración, repos vinculados y salud
+ggit admin pikoci bot      # usuario bot + token
+```
+
+## Releases automáticas
+
+La API de releases de ggit ya existe (`POST /api/v2/<owner>/<repo>/releases`). Para que
+PikoCI las cree al empujar un tag, añade un resource type con `push "exec"`:
+
+```hcl
+resource "git" "repo" {
+  params {
+    url    = var.git_url
+    name   = "repo"
+    token  = var.ggit_token
+    tag    = "true"   # modo tags; exige token
+  }
+}
+
+resource_type "ggit-release" {
+  params = ["ggit_url", "ggit_token", "repo", "target"]
+
+  push "exec" {
+    path = "/bin/sh"
+    args = [
+      "-ec",
+      <<-EOT
+      TAG=$(git -C repo describe --tags --exact-match)
+      BODY=$(cat notes.md 2>/dev/null || echo "Release $TAG")
+      jq -n --arg tag "$TAG" --arg target "$param_target" --arg body "$BODY" \
+        '{tag_name:$tag,target:$target,name:$tag,body:$body}' \
+      | curl -sf -X POST "$param_ggit_url/api/v2/$param_repo/releases" \
+          -H "Authorization: token $param_ggit_token" \
+          -H "Content-Type: application/json" -d @-
+      EOT
+    ]
+  }
+}
+
+job "release" {
+  get "git" "repo" { trigger = true }
+
+  task "build" {
+    run "shell" { cmd = "cd repo && make build" }
+  }
+
+  put "ggit-release" "rel" {
+    params {
+      target = "main"
+    }
+  }
+}
+```
+
+Los `params` del paso `put` son estáticos, así que el tag se deriva dentro del script con
+`git describe --tags --exact-match`. `target` debe ser una rama existente. Los adjuntos
+requieren subirlos antes al endpoint de attachments del release.
+
+## Diagnóstico
+
+- `GET /health` de PikoCI responde `{"status","db","version"}`; un `503` con
+  `db: disconnected` sigue siendo una respuesta válida.
+- La tarjeta **Admin → CI/CD** avisa si falta `API_TOKEN` o `BOT_TOKEN`.
+- Los errores del hook se registran en `log/hooks/post-receive.log`.
+- Si el pipeline no aparece, comprueba que `.ggit/ci.hcl` está en la rama por defecto y que
+  el token de API tiene rol `maintain` en el equipo.

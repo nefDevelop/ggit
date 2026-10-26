@@ -89,10 +89,47 @@ La configuración también puede vivir en `~/.config/ggit-cli/config.json`
 (`{"host": "...", "token": "..."}`); las variables de entorno tienen prioridad.
 Todos los comandos aceptan `--json`.
 
+## CI con PikoCI
+
+ggit integra [PikoCI](https://github.com/PikoCI/pikoci) como motor de CI. El servidor de
+PikoCI corre aparte (recomendado: contenedor) y ggit publica el pipeline de cada repositorio
+desde su `.ggit/ci.hcl`.
+
+1. Configura la sección `[pikoci]` de `app.ini`:
+
+```ini
+[pikoci]
+ENABLED       = true
+URL           = http://127.0.0.1:18080
+PUBLIC_URL    = https://ci.example.com
+TEAM          = main
+API_TOKEN     = <token de la API de PikoCI>
+BOT_TOKEN     = <token del usuario bot de ggit>
+PIPELINE_FILE = .ggit/ci.hcl
+```
+
+2. Crea el usuario bot y su token (se muestra una sola vez):
+
+```bash
+ggit admin pikoci bot --repo pi/ggit
+```
+
+3. Copia el token en `BOT_TOKEN` y crea un token de API en la interfaz de PikoCI para
+   `API_TOKEN`.
+
+4. Añade `.ggit/ci.hcl` al repositorio. La plantilla por defecto, con el reporte de estado
+   ya incluido, está en `GET /api/v2/admin/pikoci/pipeline-template`.
+
+5. Activa CI en **Ajustes → CI/CD** del repositorio. Desde ahí puedes republicar el
+   pipeline o desactivarlo. Los pushes a la rama por defecto disparan el build y el estado
+   aparece en el commit y en el PR.
+
+Referencia completa: [docs/advancing/pikoci-ci.mdx](docs/advancing/pikoci-ci.mdx).
+
 ## Documentación
 
 `docs/` contiene la documentación del producto. El sitio que se despliega desde
-ahí usa VitePress.
+ahí usa Mintlify (`docs/docs.json`).
 
 ## Licencia
 

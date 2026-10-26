@@ -59,7 +59,8 @@
               "advancing/git-lfs",
               "advancing/custom-templates",
               "advancing/localization",
-              "advancing/cli-reference"
+              "advancing/cli-reference",
+              "advancing/pikoci-ci"
             ]
           },
           {
