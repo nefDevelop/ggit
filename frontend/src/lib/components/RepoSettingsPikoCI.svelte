@@ -26,6 +26,7 @@
 
   let loading = $state(true);
   let busy = $state(false);
+  let forbidden = $state(false);
   let ci = $state<State>({ enabled: false, linked: false });
 
   const endpoint = $derived(`/api/v2/${repo.data.owner.username}/${repo.data.name}/settings/pikoci`);
@@ -33,8 +34,10 @@
   async function fetchState() {
     loading = true;
     try {
-      const res = await apiFetch(endpoint);
-      if (res.ok) {
+      const res = await apiFetch(endpoint, { silent: true });
+      if (res.status === 403) {
+        forbidden = true;
+      } else if (res.ok) {
         ci = res.data as State;
       }
     } catch (e) {
@@ -97,6 +100,8 @@
   <Card class="pikoci-card">
     {#if loading}
       <p class="muted">Cargando estado…</p>
+    {:else if forbidden}
+      <p class="muted">Solo los administradores del repositorio pueden configurar la integración continua.</p>
     {:else}
       <div class="row">
         <div class="service">

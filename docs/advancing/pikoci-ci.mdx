@@ -96,6 +96,11 @@ PikoCI usa HCL. La plantilla por defecto declara estas variables:
 | `git_url` | URL de clone (`https://…/owner/name.git`). |
 | `branch` | Rama por defecto del repositorio. |
 | `pikoci_url` | `PUBLIC_URL` de PikoCI, para enlazar el build. |
+| `serial_group` | Nombre canónico del pipeline, usado en `serial_groups`. |
+
+La plantilla limita a un build concurrente por repositorio (`concurrency = 1`),
+cancela builds anteriores al llegar un push nuevo (`interruptible = true`) y pone un timeout
+de 30 minutos.
 
 Puedes sustituir el fichero por tu propio pipeline. Si usas el resource `git` de PikoCI
 contra un repositorio privado de ggit, pasa `token` en sus params: ggit acepta el token como
@@ -206,7 +211,8 @@ job "release" {
 
 Tres detalles que cuestan un rato descubrir:
 
-- Los `params` del paso `put` son **atributos**, no un bloque. El bloque `params { ... }`
+- La plantilla completa añade `serial_group` y los mismos límites de concurrencia y timeout.
+Los `params` del paso `put` son **atributos**, no un bloque. El bloque `params { ... }`
   que aparece en algunos ejemplos de la documentación de PikoCI no lo acepta el validador
   de v0.8.0; para pasar valores usa `put "tipo" "nombre" { timeout = "5m" }`.
 - El tag no se puede inyectar desde el build: se deriva dentro del script con

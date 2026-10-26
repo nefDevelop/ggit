@@ -40,6 +40,11 @@ func GlobalInit(customConf string) error {
 	log.Trace("Custom config: %s", conf.CustomConf)
 	log.Trace("Log path: %s", conf.Log.RootPath)
 	log.Trace("Build time: %s", conf.BuildTime)
+
+	if conf.PikoCI.Enabled && (conf.PikoCI.APIToken == "" || conf.PikoCI.BotToken == "") {
+		log.Warn("PikoCI is enabled but [pikoci] API_TOKEN or BOT_TOKEN is empty; " +
+			"pipelines cannot be published until both are set")
+	}
 	log.Trace("Build commit: %s", conf.BuildCommit)
 
 	if conf.Email.Enabled {

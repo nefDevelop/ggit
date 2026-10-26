@@ -47,6 +47,7 @@
   let status = $state<PikoCIStatus | null>(null);
   let loadError = $state("");
   let links = $state<Link[]>([]);
+  let syncing = $state<number | null>(null);
 
   async function fetchStatus() {
     loading = true;
@@ -74,6 +75,20 @@
       }
     } catch (e) {
       console.error(e);
+    }
+  }
+
+  async function syncRepo(repoID: number) {
+    syncing = repoID;
+    try {
+      const res = await apiFetch(`/api/v2/admin/pikoci/repos/${repoID}/sync`, { method: "POST" });
+      if (res.ok) {
+        await fetchLinks();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      syncing = null;
     }
   }
 
@@ -233,7 +248,18 @@
             {#each links as link}
               <li>
                 <a href={`/${link.repo}`}>{link.repo}</a>
-                <code>{link.pipeline}</code>
+                <span class="link-actions">
+                  <code>{link.pipeline}</code>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={RefreshCw}
+                    onclick={() => syncRepo(link.repo_id)}
+                    loading={syncing === link.repo_id}
+                    disabled={syncing !== null}
+                    title="Republicar pipeline"
+                  />
+                </span>
               </li>
             {/each}
           </ul>
@@ -512,6 +538,12 @@
 
   :global(.links-card a:hover) {
     text-decoration: underline;
+  }
+
+  :global(.links-card .link-actions) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   @keyframes pulse {

@@ -31,6 +31,7 @@ type Service struct {
 	team     string
 	apiToken string
 	http     *http.Client
+	links    database.PikoCIRepoStore // nil: se resuelve con database.Handle
 }
 
 // CI es el servicio global, inicializado desde services.Init.
@@ -58,6 +59,14 @@ func NewWithAuth(baseURL, team, apiToken string) *Service {
 		apiToken: apiToken,
 		http:     &http.Client{Timeout: 30 * time.Second},
 	}
+}
+
+// repoLinks devuelve el store de vínculos, inyectable en los tests.
+func (s *Service) repoLinks() database.PikoCIRepoStore {
+	if s.links != nil {
+		return s.links
+	}
+	return database.Handle.PikoCIRepos()
 }
 
 // BaseURL devuelve la URL configurada de PikoCI.
@@ -128,7 +137,7 @@ func (s *Service) TriggerWebhook(ctx context.Context, token string) error {
 // NotifyPush avisa a PikoCI de que el repositorio tiene refs nuevas. Es
 // best-effort: si el repositorio no tiene pipeline asociado no hace nada.
 func (s *Service) NotifyPush(ctx context.Context, repoID int64) error {
-	link, err := database.Handle.PikoCIRepos().GetByRepoID(ctx, repoID)
+	link, err := s.repoLinks().GetByRepoID(ctx, repoID)
 	if err != nil {
 		if database.IsErrPikoCIRepoNotExist(err) {
 			return nil

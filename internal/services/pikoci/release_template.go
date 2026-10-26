@@ -27,6 +27,10 @@ variable "git_url" {
   type    = string
   default = ""
 }
+variable "serial_group" {
+  type    = string
+  default = "ggit-ci"
+}
 variable "target" {
   type    = string
   default = "main"
@@ -72,9 +76,14 @@ resource "ggit-release" "release" {
 }
 
 job "release" {
+  concurrency   = 1
+  serial_groups = [var.serial_group]
+  interruptible = true
+
   get "git" "repo" { trigger = true }
 
   task "notes" {
+    timeout = "5m"
     run "shell" { cmd = "cd repo && git log -1 --pretty=%B > ../notes.md" }
   }
 

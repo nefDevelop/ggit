@@ -42,12 +42,13 @@ func (s *Service) SyncRepoPipeline(ctx context.Context, repoID int64, owner, nam
 
 	externalURL := strings.TrimRight(conf.Server.ExternalURL, "/")
 	vars := map[string]string{
-		"ggit_url":   externalURL,
-		"ggit_token": conf.PikoCI.BotToken,
-		"repo":       owner + "/" + name,
-		"git_url":    externalURL + "/" + owner + "/" + name + ".git",
-		"branch":     branch,
-		"pikoci_url": conf.PikoCI.PublicURL,
+		"ggit_url":     externalURL,
+		"ggit_token":   conf.PikoCI.BotToken,
+		"repo":         owner + "/" + name,
+		"git_url":      externalURL + "/" + owner + "/" + name + ".git",
+		"branch":       branch,
+		"pikoci_url":   conf.PikoCI.PublicURL,
+		"serial_group": pipeline,
 	}
 
 	if err := s.PublishPipeline(ctx, pipeline, hcl, vars); err != nil {
@@ -64,7 +65,7 @@ func (s *Service) SyncRepoPipeline(ctx context.Context, repoID int64, owner, nam
 		PipelineName: pipeline,
 		WebhookToken: token,
 	}
-	if err := database.Handle.PikoCIRepos().Upsert(ctx, link); err != nil {
+	if err := s.repoLinks().Upsert(ctx, link); err != nil {
 		return nil, fmt.Errorf("guardar vínculo de PikoCI: %w", err)
 	}
 	return link, nil
@@ -74,7 +75,7 @@ func (s *Service) SyncRepoPipeline(ctx context.Context, repoID int64, owner, nam
 // el vínculo local.
 func (s *Service) DisableRepoPipeline(ctx context.Context, repoID int64, pipeline string) error {
 	if pipeline == "" {
-		link, err := database.Handle.PikoCIRepos().GetByRepoID(ctx, repoID)
+		link, err := s.repoLinks().GetByRepoID(ctx, repoID)
 		switch {
 		case err == nil:
 			pipeline = link.PipelineName
@@ -89,7 +90,26 @@ func (s *Service) DisableRepoPipeline(ctx context.Context, repoID int64, pipelin
 			return err
 		}
 	}
-	return database.Handle.PikoCIRepos().Delete(ctx, repoID)
+	return s.repoLinks().Delete(ctx, repoID)
+}
+
+// RemoveRepoPipeline intenta borrar el pipeline en PikoCI y elimina siempre el
+// vínculo local. Se usa al borrar, renombrar o transferir un repositorio.
+func (s *Service) RemoveRepoPipeline(ctx context.Context, repoID int64) error {
+	link, err := s.repoLinks().GetByRepoID(ctx, repoID)
+
+	var pipelineErr error
+	switch {
+	case err == nil && link.PipelineName != "":
+		pipelineErr = s.DeletePipeline(ctx, link.PipelineName)
+	case err != nil && !database.IsErrPikoCIRepoNotExist(err):
+		return err
+	}
+
+	if err := database.Handle.PikoCIRepos().Delete(ctx, repoID); err != nil {
+		return err
+	}
+	return pipelineErr
 }
 
 // PipelineFileChanged informa si el fichero del pipeline cambió entre dos

@@ -1,17 +1,61 @@
 package v2
 
 import (
+	stdcontext "context"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/nef734/ggit/internal/conf"
 	"github.com/nef734/ggit/internal/context"
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/domain"
 	"github.com/nef734/ggit/internal/form"
+	log "github.com/nef734/ggit/internal/log"
+	"github.com/nef734/ggit/internal/osx"
 	apiv2types "github.com/nef734/ggit/internal/route/api/v2/types"
+	pikociservice "github.com/nef734/ggit/internal/services/pikoci"
 )
+
+// pikoCIMoveTimeout acota la limpieza o republicación al mover un repositorio.
+const pikoCIMoveTimeout = 20 * time.Second
+
+// removePikoCIPipeline limpia el pipeline y el vínculo de un repositorio que se
+// borra o se mueve. Es best-effort: nunca bloquea la operación principal.
+func removePikoCIPipeline(ctx stdcontext.Context, repoID int64) {
+	ctx, cancel := stdcontext.WithTimeout(ctx, pikoCIMoveTimeout)
+	defer cancel()
+
+	if !conf.PikoCI.Enabled {
+		if err := database.Handle.PikoCIRepos().Delete(ctx, repoID); err != nil {
+			log.Error("PikoCI: forget repository %d: %v", repoID, err)
+		}
+		return
+	}
+
+	if err := pikociservice.CI.RemoveRepoPipeline(ctx, repoID); err != nil {
+		log.Error("PikoCI: cleanup repository %d: %v", repoID, err)
+	}
+}
+
+// resyncPikoCIPipeline republica el pipeline tras renombrar o transferir.
+func resyncPikoCIPipeline(ctx stdcontext.Context, repoID int64, owner, name, branch string) {
+	if !conf.PikoCI.Enabled {
+		return
+	}
+	if branch == "" {
+		branch = "main"
+	}
+
+	ctx, cancel := stdcontext.WithTimeout(ctx, pikoCIMoveTimeout)
+	defer cancel()
+
+	if _, err := pikociservice.CI.SyncRepoPipeline(ctx, repoID, owner, name, branch); err != nil {
+		log.Error("PikoCI: republish repository %d: %v", repoID, err)
+	}
+}
 
 // GetRepoSettings returns the repository settings.
 func GetRepoSettings(c *context.APIContext) {
@@ -57,6 +101,7 @@ func UpdateRepoSettings(c *context.APIContext) {
 	}
 
 	repo := c.Repo.Repository
+	oldName := repo.Name
 	visibilityChanged := repo.IsPrivate != f.Private || repo.IsUnlisted != f.Unlisted
 	repo.Name = f.RepoName
 	repo.LowerName = strings.ToLower(f.RepoName)
@@ -93,6 +138,15 @@ func UpdateRepoSettings(c *context.APIContext) {
 	if err := database.UpdateRepository(repo, visibilityChanged); err != nil {
 		c.Error(err, "update repository")
 		return
+	}
+
+	if oldName != repo.Name {
+		removePikoCIPipeline(c.Req.Context(), repo.ID)
+		if osx.IsDir(database.RepoPath(c.Repo.Owner.Name, repo.Name)) {
+			resyncPikoCIPipeline(c.Req.Context(), repo.ID, c.Repo.Owner.Name, repo.Name, repo.DefaultBranch)
+		} else {
+			log.Warn("PikoCI: repository %d was renamed but its git directory was not moved; CI stays disabled", repo.ID)
+		}
 	}
 
 	c.JSON(http.StatusOK, repo)
@@ -389,6 +443,8 @@ func DeleteRepository(c *context.APIContext) {
 		return
 	}
 
+	removePikoCIPipeline(c.Req.Context(), c.Repo.Repository.ID)
+
 	if err := database.DeleteRepository(c.User.ID, c.Repo.Repository.ID); err != nil {
 		c.Error(err, "delete repository")
 		return
@@ -451,6 +507,9 @@ func TransferRepoOwnership(c *context.APIContext) {
 		c.Error(err, "transfer ownership")
 		return
 	}
+
+	removePikoCIPipeline(c.Req.Context(), c.Repo.Repository.ID)
+	resyncPikoCIPipeline(c.Req.Context(), c.Repo.Repository.ID, f.NewOwner, c.Repo.Repository.Name, c.Repo.Repository.DefaultBranch)
 
 	c.JSON(http.StatusOK, map[string]any{"status": "ok"})
 }

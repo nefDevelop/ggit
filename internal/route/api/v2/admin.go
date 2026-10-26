@@ -512,6 +512,7 @@ func DeleteAdminRepo(c *context.APIContext) {
 	}
 
 	log.Trace("Admin: Repository found: %s/%s. Starting database deletion...", repo.Owner.Name, repo.Name)
+	removePikoCIPipeline(c.Req.Context(), repo.ID)
 	if err := database.DeleteRepository(repo.OwnerID, repo.ID); err != nil {
 		c.Error(err, "delete repository")
 		return

@@ -32,6 +32,10 @@ variable "branch" {
   type    = string
   default = "main"
 }
+variable "serial_group" {
+  type    = string
+  default = "ggit-ci"
+}
 variable "pikoci_url" {
   type    = string
   default = ""
@@ -81,6 +85,10 @@ notification "ggit-status" "ci" {
 }
 
 job "test" {
+  concurrency   = 1
+  serial_groups = [var.serial_group]
+  interruptible = true
+
   get "git" "repo" { trigger = true }
 
   notify "ggit-status" "ci" {
@@ -89,6 +97,7 @@ job "test" {
   }
 
   task "test" {
+    timeout = "30m"
     run "shell" { cmd = "cd repo && make test" }
   }
 

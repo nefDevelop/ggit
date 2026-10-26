@@ -47,11 +47,14 @@ import Rocket from "lucide-svelte/icons/rocket";
     { id: 'pikoci', label: 'CI/CD', icon: Rocket }
   ];
 
-  const visibleTabs = $derived(
-    (authState.user?.is_admin || authState.user?.allow_git_hook)
-      ? [...tabs, { id: 'git_hooks', label: 'Git Hooks', icon: Terminal }]
-      : tabs
-  );
+  const canAdminRepo = $derived(repo?.data?.permissions?.admin !== false);
+
+  const visibleTabs = $derived([
+    ...tabs.filter((tab) => tab.id !== 'pikoci' || canAdminRepo),
+    ...((authState.user?.is_admin || authState.user?.allow_git_hook)
+      ? [{ id: 'git_hooks', label: 'Git Hooks', icon: Terminal }]
+      : [])
+  ]);
 </script>
 
 <svelte:head>
