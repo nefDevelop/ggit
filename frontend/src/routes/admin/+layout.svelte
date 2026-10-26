@@ -16,6 +16,7 @@
     { id: "/admin/audit_log", name: i18n.t("admin.audit_log") || "Audit Log", icon: "history_edu", path: "/admin/audit_log" },
     { id: "/admin/security", name: "Seguridad", icon: "shield", path: "/admin/security" },
     { id: "/admin/janitor", name: "Janitor", icon: "mop", path: "/admin/janitor" },
+    { id: "/admin/pikoci", name: "CI/CD", icon: "rocket", path: "/admin/pikoci" },
     { id: "/admin/notices", name: i18n.t("admin.notices") || "Notices", icon: "notifications", path: "/admin/notices" },
   ].map(item => ({ ...item, label: item.name }));
 </script>

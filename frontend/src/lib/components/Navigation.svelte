@@ -23,6 +23,7 @@
   import ScrollText from "lucide-svelte/icons/scroll-text";
   import Shield from "lucide-svelte/icons/shield";
   import Trash2 from "lucide-svelte/icons/trash-2";
+  import Rocket from "lucide-svelte/icons/rocket";
   import Bell from "lucide-svelte/icons/bell";
   import Palette from "lucide-svelte/icons/palette";
   import Mail from "lucide-svelte/icons/mail";
@@ -82,6 +83,7 @@
     { name: i18n.t("admin.audit_log") || "Audit Log", icon: ScrollText, path: "/admin/audit_log" },
     { name: i18n.t("admin.security") || "Seguridad", icon: Shield, path: "/admin/security" },
     { name: i18n.t("admin.janitor") || "Janitor", icon: Trash2, path: "/admin/janitor" },
+    { name: "CI/CD", icon: Rocket, path: "/admin/pikoci" },
     { name: i18n.t("admin.notices") || "Notices", icon: Bell, path: "/admin/notices" },
   ]);
 

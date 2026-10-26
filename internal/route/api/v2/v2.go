@@ -150,6 +150,8 @@ func RegisterRoutes(r *gin.RouterGroup) {
 		admin.GET("/janitor", ginx.Handle(GetAdminJanitorStats))
 		admin.POST("/janitor/scan-all", ginx.Handle(ScanAllJanitor))
 
+		admin.GET("/pikoci/status", ginx.Handle(GetAdminPikoCIStatus))
+
 		admin.GET("/security/guardian/patterns", ginx.Handle(GetAdminGuardianPatterns))
 		admin.POST("/security/guardian/patterns", ginx.Handle(AddAdminGuardianPattern))
 		admin.DELETE("/security/guardian/patterns/:id", ginx.Handle(DeleteAdminGuardianPattern))

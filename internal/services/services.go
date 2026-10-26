@@ -4,6 +4,7 @@ import (
 	"github.com/nef734/ggit/internal/database"
 	"github.com/nef734/ggit/internal/services/auth"
 	"github.com/nef734/ggit/internal/services/issue"
+	"github.com/nef734/ggit/internal/services/pikoci"
 	"github.com/nef734/ggit/internal/services/repo"
 )
 
@@ -12,4 +13,5 @@ func Init() {
 	repo.Init(database.Handle)
 	issue.Init(database.Handle)
 	auth.Init(database.Handle)
+	pikoci.Init()
 }
