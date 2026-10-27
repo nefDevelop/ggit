@@ -290,6 +290,13 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Iconos unificados en lucide**: 117 `<span class="material-symbols-rounded">` más los
   iconos dinámicos de nav, settings, PRs, emails, janitor y toasts convertidos a
   componentes; eliminados el `<link>` de Google Fonts y todo el CSS de Material Symbols.
+- **Accesibilidad**: foco visible global con el color primario, `prefers-reduced-motion`,
+  objetivos táctiles de 44px en el header del repo y botón de resolver del diff más
+  grande. `scripts/check_theme_contrast.py` (y `make check-ui`) valida 12 pares
+  texto/fondo por tema; se corrigieron 13 pares que no llegaban a 4.5:1.
+- **Fuentes autoalojadas**: Inter, Outfit y JetBrains Mono (latin y latin-ext, 16
+  woff2, ~686 KB) con `@font-face` propio, preload de Inter y sus licencias OFL.
+  Eliminadas las peticiones a Google Fonts.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 
