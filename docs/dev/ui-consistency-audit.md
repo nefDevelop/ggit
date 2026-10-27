@@ -281,6 +281,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Overrides de tarjeta eliminados**: `Card` gana `variant="canvas"` y `danger`; los
   siete `!important` de tarjeta desaparecen (RepoDocs, zonas de peligro, row-card,
   Explore* y el parche de botones de Janitor).
+- **Tipografía con roles**: tokens de tamaño/peso/interlineado, `body` con
+  `line-height: 1.6`, h3/h4 con tamaño propio, `h1` sólido por defecto y degradado
+  opt-in (`.text-gradient`) aplicado solo a landing, login e instalación. Queda pendiente
+  decidir el divisor automático de `h2::after`.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

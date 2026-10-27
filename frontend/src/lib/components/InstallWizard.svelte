@@ -96,7 +96,7 @@
         <div class="install-brand">
           <div class="brand-content">
             <Terminal size={64} class="logo-icon" />
-            <h1>Ggit</h1>
+            <h1 class="text-gradient">Ggit</h1>
             <p>Tu plataforma Git autoalojada, ligera y elegante, lista en minutos.</p>
           </div>
           <div class="brand-footer">

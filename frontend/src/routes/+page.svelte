@@ -38,7 +38,7 @@
 {:else}
   <div class="container landing-container">
     <header style="margin-bottom: 4rem; text-align: center;">
-      <h1 class="hero-title">Ggit</h1>
+      <h1 class="hero-title text-gradient">Ggit</h1>
       <p style="color: var(--text-muted); font-size: 1.25rem;">
         The world's easiest self-hosted Git service, now faster and more beautiful.
       </p>

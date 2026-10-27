@@ -28,6 +28,8 @@ html, body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   margin: 0; padding: 0;
   width: 100vw; height: 100vh;
   overflow: hidden;
@@ -42,9 +44,14 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
+  font-size: var(--font-size-display);
+  font-weight: var(--weight-extrabold);
+  line-height: var(--line-height-heading);
+  margin-bottom: var(--space-5);
+}
+
+/* Opt-in: solo las cabeceras de marca llevan degradado. */
+.text-gradient {
   background: linear-gradient(135deg, var(--color-primary), var(--secondary, var(--color-primary)));
   -webkit-background-clip: text;
   background-clip: text;
@@ -53,13 +60,28 @@ h1 {
 }
 
 h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: var(--font-size-title);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-heading);
   color: var(--text-base);
-  margin-bottom: 1.25rem;
+  margin-bottom: var(--space-4);
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+h3 {
+  font-size: var(--font-size-subtitle);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-heading);
+  margin-bottom: var(--space-3);
+}
+
+h4 {
+  font-size: var(--font-size-body);
+  font-weight: var(--weight-bold);
+  line-height: var(--line-height-heading);
+  margin-bottom: var(--space-2);
 }
 
 h2::after {

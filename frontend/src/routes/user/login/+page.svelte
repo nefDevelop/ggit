@@ -90,7 +90,7 @@ import Lock from "lucide-svelte/icons/lock";
         <div class="login-brand">
           <div class="brand-content">
             <Terminal size={64} class="logo-icon" />
-            <h1>Ggit</h1>
+            <h1 class="text-gradient">Ggit</h1>
             <p>El servicio de Git más ligero y elegante, ahora rediseñado para ti.</p>
           </div>
           <div class="brand-footer">
