@@ -401,7 +401,7 @@ import Calendar from "lucide-svelte/icons/calendar";
 
   .repo-meta-actions { display: flex; align-items: center; gap: 1.5rem; }
   .license-tag { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-  .settings-link { color: var(--text-muted); display: flex; padding: 4px; transition: color 0.2s; text-decoration: none; }
+  .settings-link { color: var(--text-muted); display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0; border-radius: 0.75rem; transition: color 0.2s; text-decoration: none; }
   .settings-link:hover { color: var(--primary-color); }
 
   .clone-zone { position: relative; }
@@ -423,7 +423,7 @@ import Calendar from "lucide-svelte/icons/calendar";
 
   .clone-copy-row { display: flex; align-items: center; gap: 0.5rem; background: var(--sunken-2); padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
   .url-display { flex: 1; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
-  .copy-action { background: transparent; border: none; color: var(--primary-color); cursor: pointer; display: flex; padding: 4px; border-radius: 6px; transition: background 0.2s; }
+  .copy-action { background: transparent; border: none; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0; border-radius: 0.5rem; transition: background 0.2s; }
   .copy-action:hover { background: rgba(var(--primary-rgb), 0.1); }
   .protocol-hint { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
 

@@ -1,4 +1,4 @@
-.PHONY: dev backend frontend build build-cli check-theme-tokens build-swagger build-swagger-cdn rebuild clean help install sync test test-frontend test-all lint test-e2e kill-e2e clean-ports demo demo-config seed-demo kill-demo
+.PHONY: dev backend frontend build build-cli check-theme-tokens check-theme-contrast check-ui build-swagger build-swagger-cdn rebuild clean help install sync test test-frontend test-all lint test-e2e kill-e2e clean-ports demo demo-config seed-demo kill-demo
 
 # Variables de compilación
 PKG_PATH := github.com/nef734/ggit/internal/conf
@@ -17,7 +17,9 @@ help:
 	@echo "  make build-cli         - Compila el cliente de la API v2 (ggit-cli)"
 	@echo "  make build-swagger     - Compila con Swagger embebido"
 	@echo "  make build-swagger-cdn - Compila con Swagger vía CDN"
-	@echo "  make check-theme-tokens - Verifica el contrato de tokens de los temas"
+	@echo "  make check-theme-tokens   - Verifica el contrato de tokens de los temas"
+	@echo "  make check-theme-contrast - Verifica el contraste WCAG de cada tema"
+	@echo "  make check-ui             - Ejecuta las dos comprobaciones anteriores"
 	@echo "  make test      - Ejecuta los tests de Go"
 	@echo "  make test-e2e  - Ejecuta los tests de Playwright (E2E)"
 	@echo "  make demo      - Levanta una instancia aislada con datos de ejemplo (puerto 3007)"
@@ -27,6 +29,12 @@ help:
 # Verifica que todos los temas definen el mismo contrato de tokens.
 check-theme-tokens:
 	@python3 scripts/check_theme_tokens.py
+
+# Verifica el contraste WCAG de los pares texto/fondo de cada tema.
+check-theme-contrast:
+	@python3 scripts/check_theme_contrast.py
+
+check-ui: check-theme-tokens check-theme-contrast
 
 # Sincroniza plantillas de gitignore
 sync:
