@@ -53,6 +53,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   }
 
   onMount(fetchAuths);
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="admin-auths-container">
@@ -68,7 +69,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   <div class="admin-auths-body">
     {#if editing}
-      <div class="editor-overlay">
+      <div class="editor-overlay" role="dialog" aria-modal="true" aria-label="Editar origen de autenticación" use:focusTrap>
         <AdminAuthEditor 
           source={selectedSource} 
           onSave={fetchAuths} 

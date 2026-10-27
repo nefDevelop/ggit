@@ -36,10 +36,11 @@ import X from "lucide-svelte/icons/x";
       saving = false;
     }
   }
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="editor-overlay">
-  <div class="editor-modal island">
+  <div class="editor-modal island" role="dialog" aria-modal="true" aria-label="Editar organización" use:focusTrap>
     <header class="modal-header">
       <h3>Editar Organización: {org.username}</h3>
       <Button variant="ghost" icon={X} onclick={onCancel} />

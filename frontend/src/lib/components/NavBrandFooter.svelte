@@ -15,6 +15,7 @@
   </div>
   <button
     class="minimal-theme-btn"
+    aria-expanded={showThemePanel} aria-haspopup="dialog"
     onclick={() => (showThemePanel = !showThemePanel)}
     title="Apariencia"
     aria-label="Abrir panel de apariencia"

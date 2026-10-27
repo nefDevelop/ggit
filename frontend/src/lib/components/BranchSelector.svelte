@@ -40,7 +40,7 @@ import Check from "lucide-svelte/icons/check";
     <span class="selector-label">{label}</span>
   {/if}
   <div class="selector-control">
-    <button class="selector-trigger tonal" onclick={() => (isOpen = !isOpen)}>
+    <button class="selector-trigger tonal" aria-expanded={isOpen} aria-haspopup="listbox" onclick={() => (isOpen = !isOpen)}>
       <Icon size={18} />
       <span class="current-name">{selected || "Select branch..."}</span>
       <ChevronDown size={20} class="expand" />

@@ -193,11 +193,11 @@ import Calendar from "lucide-svelte/icons/calendar";
             
             <div class="clone-zone">
               <div class="split-btn-group">
-                <button class="btn btn-sm btn-primary main-clone-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                <button class="btn btn-sm btn-primary main-clone-btn" aria-expanded={showCloneDropdown} aria-haspopup="menu" onclick={() => showCloneDropdown = !showCloneDropdown}>
                   <Download size={18} />
                   <span class="clone-text">Clone</span>
                 </button>
-                <button class="btn btn-sm btn-primary arrow-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                <button class="btn btn-sm btn-primary arrow-btn" aria-expanded={showCloneDropdown} aria-haspopup="menu" aria-label="Opciones de clonado" onclick={() => showCloneDropdown = !showCloneDropdown}>
                   <ChevronDown size={20} />
                 </button>
               </div>

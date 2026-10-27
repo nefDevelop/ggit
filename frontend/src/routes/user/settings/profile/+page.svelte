@@ -209,7 +209,7 @@
           <div class="section-info">
             <h2 class="section-title">Public Profile</h2>
             {#if profile.enable_dicebear_avatar}
-              <button class="magic-btn-mini" class:active={showDiceBear} onclick={() => showDiceBear = !showDiceBear}>
+              <button class="magic-btn-mini" class:active={showDiceBear} aria-expanded={showDiceBear} onclick={() => showDiceBear = !showDiceBear}>
                 <WandSparkles size={18} />
                 {showDiceBear ? 'Hide Generator' : 'Magic Avatar'}
               </button>

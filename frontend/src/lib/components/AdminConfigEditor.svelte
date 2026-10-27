@@ -42,10 +42,11 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
       saving = false;
     }
   }
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="editor-overlay">
-  <div class="editor-modal island">
+  <div class="editor-modal island" role="dialog" aria-modal="true" aria-label="Editar configuración" use:focusTrap>
     <header class="modal-header">
       <div class="title-wrap">
         <Settings size={20} />

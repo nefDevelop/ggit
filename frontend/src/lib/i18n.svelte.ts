@@ -68,6 +68,9 @@ export const i18n = {
       }
     } finally {
       loading = false;
+      if (typeof document !== "undefined") {
+        document.documentElement.lang = currentLocale;
+      }
     }
   },
 

@@ -301,6 +301,9 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   revisión (con `role="dialog"`, `aria-modal` y nombre); enlace "Saltar al contenido";
   16 botones/enlaces solo-icono etiquetados (`aria-label`, 0 restantes); `aria-current`
   en la navegación principal y `ChipNavigation`; toasts con `aria-live`.
+  Segunda pasada: `focusTrap` también en los editores de configuración, organización,
+  usuarios, auths y releases; `aria-expanded`/`aria-haspopup` en clone, selector de rama
+  y panel de tema; `document.lang` sincronizado con el idioma activo.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

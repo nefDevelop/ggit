@@ -106,11 +106,12 @@ import FileArchive from "lucide-svelte/icons/file-archive";
   }
 
   onMount(() => fetchReleases());
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="repo-releases">
   {#if showEditor}
-    <div class="editor-overlay">
+    <div class="editor-overlay" role="dialog" aria-modal="true" aria-label="Editar release" use:focusTrap>
       <ReleaseEditor
         {username}
         {reponame}
