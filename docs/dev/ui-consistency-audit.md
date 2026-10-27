@@ -285,6 +285,11 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
   `line-height: 1.6`, h3/h4 con tamaño propio, `h1` sólido por defecto y degradado
   opt-in (`.text-gradient`) aplicado solo a landing, login e instalación. Queda pendiente
   decidir el divisor automático de `h2::after`.
+- **Divisor de `h2` opt-in**: ya no se inyecta en cada título; `PageHeader` lo conserva
+  con `.title-divider` y los estados vacíos dejan de mostrar una línea que no pedían.
+- **Iconos unificados en lucide**: 117 `<span class="material-symbols-rounded">` más los
+  iconos dinámicos de nav, settings, PRs, emails, janitor y toasts convertidos a
+  componentes; eliminados el `<link>` de Google Fonts y todo el CSS de Material Symbols.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

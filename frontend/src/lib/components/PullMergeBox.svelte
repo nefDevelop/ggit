@@ -149,7 +149,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
       <footer class="merge-actions">
         <Button 
           variant="primary" 
-          icon="merge" 
+          icon={GitMerge} 
           disabled={!protection.mergeable || merging} 
           onclick={doMerge}
         >

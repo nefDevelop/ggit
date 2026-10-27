@@ -18,7 +18,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 </script>
 
 <div class="review-toolbar">
-  <Button variant="primary" icon="rate_review" onclick={() => showModal = true}>
+  <Button variant="primary" icon={MessageSquare} onclick={() => showModal = true}>
     Finalizar Revisión
   </Button>
 

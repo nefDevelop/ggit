@@ -79,6 +79,7 @@ import EmptyState from "./ui/EmptyState.svelte";
     parts.pop();
     loadPath(parts.join('/') || adrFolder);
   }
+  import ChevronRight from "lucide-svelte/icons/chevron-right";
 </script>
 
 <div class="repo-docs-container">
@@ -142,7 +143,7 @@ import EmptyState from "./ui/EmptyState.svelte";
               {/if}
             </div>
             <div class="item-actions-right">
-              <span class="material-symbols-rounded" style="color: var(--text-muted); opacity: 0.5; font-size: 1.2rem;">chevron_right</span>
+              <span style="color: var(--text-muted); opacity: 0.5;"><ChevronRight size={18} /></span>
             </div>
           </button>
         {/each}

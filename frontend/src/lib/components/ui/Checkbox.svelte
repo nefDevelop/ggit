@@ -10,6 +10,7 @@
 
   let { checked = $bindable(), label, description, onchange, class: className, simple = false }: Props = $props();
 
+  import Check from "lucide-svelte/icons/check";
 </script>
 
 <label class="checkbox-container {className}" class:simple>
@@ -20,7 +21,7 @@
   />
   <span class="checkmark" class:checked>
     {#if checked}
-      <span class="material-symbols-rounded">check</span>
+      <Check size={18} />
     {/if}
   </span>
   <div class="checkbox-text">

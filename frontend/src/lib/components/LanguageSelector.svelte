@@ -8,13 +8,15 @@
         const select = event.currentTarget as HTMLSelectElement;
         i18n.init(select.value);
     }
+  import Languages from "lucide-svelte/icons/languages";
+  import ChevronDown from "lucide-svelte/icons/chevron-down";
 </script>
 
 <div class="switches-grid">
     <div class="switch-row-item">
         <div class="item-info">
             <div class="title-with-icon">
-                <span class="material-symbols-rounded mini">language</span>
+                <Languages size={16} />
                 <span class="label">{i18n.t('language') || 'System Language'}</span>
             </div>
             <p class="desc">{i18n.t('settings.language_desc') || 'Choose your preferred language for the interface.'}</p>
@@ -26,7 +28,7 @@
                     <option value={lang.code}>{lang.name}</option>
                 {/each}
             </select>
-            <span class="material-symbols-rounded dropdown-icon">expand_more</span>
+            <ChevronDown class="dropdown-icon" size={18} />
         </div>
     </div>
 </div>

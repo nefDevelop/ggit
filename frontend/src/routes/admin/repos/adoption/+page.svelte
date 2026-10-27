@@ -51,6 +51,11 @@
   }
 
   onMount(fetchUnmanaged);
+  import Link from "lucide-svelte/icons/link";
+  import ChevronRight from "lucide-svelte/icons/chevron-right";
+  import FolderArchive from "lucide-svelte/icons/folder-archive";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import User from "lucide-svelte/icons/user";
 </script>
 
 <svelte:head>
@@ -60,14 +65,14 @@
 <div class="adoption-view">
   <div class="breadcrumb">
     <a href="/admin/repos">Repositorios</a>
-    <span class="material-symbols-rounded">chevron_right</span>
+    <ChevronRight size={18} />
     <span>Adopción</span>
   </div>
 
   <Card class="settings-premium-card" padding="lg">
     <header class="section-header">
       <div class="title-with-icon">
-        <span class="material-symbols-rounded hero-icon">folder_zip</span>
+        <FolderArchive class="hero-icon" size={18} />
         <div>
           <h2>Adopción de Repositorios</h2>
           <p class="subtitle">Se han detectado carpetas Git en el disco que no están registradas en la base de datos.</p>
@@ -92,7 +97,7 @@
             <tr>
               <td colspan="4" class="empty-state">
                 <div class="empty-msg">
-                  <span class="material-symbols-rounded">check_circle</span>
+                  <CircleCheck size={18} />
                   <p>No se encontraron repositorios huérfanos. ¡Todo está en orden!</p>
                 </div>
               </td>
@@ -102,7 +107,7 @@
               <tr class="hover-row">
                 <td data-label="Propietario">
                   <div class="owner-chip">
-                    <span class="material-symbols-rounded">person</span>
+                    <User size={18} />
                     {repo.owner_name}
                   </div>
                 </td>
@@ -116,7 +121,7 @@
                   <Button 
                     variant="primary" 
                     size="sm" 
-                    icon="link"
+                    icon={Link}
                     onclick={() => adoptRepo(repo.owner_name, repo.repo_name)}
                     disabled={adopting !== null}
                   >

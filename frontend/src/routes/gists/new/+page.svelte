@@ -34,6 +34,7 @@
       loading = false;
     }
   }
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
 </script>
 
 <div class="new-gist-page">
@@ -47,7 +48,7 @@
 
     {#if error}
       <div class="error-banner">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         {error}
       </div>
     {/if}

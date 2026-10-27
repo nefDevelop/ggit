@@ -3,6 +3,7 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { goto } from "$app/navigation";
+  import Bug from "lucide-svelte/icons/bug";
   import PageHeader from "./ui/PageHeader.svelte";
   import Button from "./ui/Button.svelte";
   import Card from "./ui/Card.svelte";
@@ -44,7 +45,7 @@
 </script>
 
 <div class="issue-creator-view">
-  <PageHeader title="New Issue" icon="bug_report" compact>
+  <PageHeader title="New Issue" icon={Bug} compact>
     {#snippet actions()}
       <Button variant="ghost" onclick={() => goto(`/${repo.data.owner.username}/${repo.data.name}/issues`)}>
         Cancel

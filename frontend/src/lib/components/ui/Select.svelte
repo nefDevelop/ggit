@@ -31,6 +31,7 @@
     value = target.value;
     if (onchange) onchange(value);
   }
+  import ChevronDown from "lucide-svelte/icons/chevron-down";
 </script>
 
 <div class="select-container {className}">
@@ -43,7 +44,7 @@
         <option value={option.value}>{option.label}</option>
       {/each}
     </select>
-    <span class="material-symbols-rounded arrow">expand_more</span>
+    <ChevronDown class="arrow" size={18} />
   </div>
   {#if error}
     <span class="error-text">{error}</span>

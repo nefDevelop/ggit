@@ -56,9 +56,7 @@
     class="btn {variants[variant]} {sizes[size]} {className}" 
     onclick={(e) => !disabled && onclick?.(e as any)}
   >
-    {#if typeof icon === 'string'}
-      <span class="material-symbols-rounded">{icon}</span>
-    {:else if icon}
+    {#if icon}
       {@const Icon = icon}
       <Icon size={18} />
     {/if}
@@ -78,9 +76,7 @@
     {#if loading}
       <span class="spinner"></span>
     {:else}
-      {#if typeof icon === 'string'}
-        <span class="material-symbols-rounded">{icon}</span>
-      {:else if icon}
+      {#if icon}
         {@const Icon = icon}
         <Icon size={18} />
       {/if}
@@ -178,11 +174,6 @@
   }
   .btn-tonal:hover:not(:disabled) {
     background: color-mix(in srgb, var(--md-sys-color-secondary-container), var(--md-sys-color-on-secondary-container) 8%);
-  }
-
-  .material-symbols-rounded { 
-    font-size: 1.25rem; 
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
 
   .spinner {

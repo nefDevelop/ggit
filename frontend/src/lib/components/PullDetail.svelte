@@ -158,9 +158,9 @@
 
   function getAttentionStateInfo(state: number) {
     switch (state) {
-      case 1: return { label: 'Review required', color: 'var(--status-info-strong)', icon: 'visibility' };
-      case 2: return { label: 'Waiting for author', color: 'var(--md-sys-color-error)', icon: 'pending' };
-      case 3: return { label: 'Approved', color: 'var(--status-success-strong)', icon: 'check_circle' };
+      case 1: return { label: 'Review required', color: 'var(--status-info-strong)', icon: Eye };
+      case 2: return { label: 'Waiting for author', color: 'var(--md-sys-color-error)', icon: Clock };
+      case 3: return { label: 'Approved', color: 'var(--status-success-strong)', icon: CircleCheck };
       default: return null;
     }
   }
@@ -168,6 +168,12 @@
   onMount(() => {
     if (repo.data) fetchPullDetail();
   });
+  import MessageCircle from "lucide-svelte/icons/message-circle";
+  import Diff from "lucide-svelte/icons/diff";
+  import Eye from "lucide-svelte/icons/eye";
+  import Clock from "lucide-svelte/icons/clock";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import GitMerge from "lucide-svelte/icons/git-merge";
 </script>
 
 <div class="pull-detail-view">
@@ -182,16 +188,15 @@
          <h1>{pull.title} <span class="index">#{pull.number}</span></h1>
          
          {#if info}
+           {@const InfoIcon = info.icon}
            <div class="attention-badge" style="--badge-color: {info.color}">
-              <span class="material-symbols-rounded mini">{info.icon}</span>
+              <InfoIcon size={16} />
               {info.label}
            </div>
          {/if}
 
          <div class="status-pill" class:merged={pull.pull_request?.merged}>
-            <span class="material-symbols-rounded">
-              {pull.pull_request?.merged ? 'merge' : 'merge_type'}
-            </span>
+            <GitMerge size={18} />
             {pull.pull_request?.merged ? 'Merged' : 'Open'}
          </div>
        </div>
@@ -202,11 +207,11 @@
 
     <nav class="pull-tabs-bar">
       <button class="tab-pill" class:active={activeView === 'conversation'} onclick={() => activeView = 'conversation'}>
-        <span class="material-symbols-rounded mini">chat</span>
+        <MessageCircle size={16} />
         {activeView === 'conversation' ? 'Conversation' : ''}
       </button>
       <button class="tab-pill" class:active={activeView === 'files'} onclick={() => activeView = 'files'}>
-        <span class="material-symbols-rounded mini">diff</span>
+        <Diff size={16} />
         {activeView === 'files' ? 'Files' : ''}
         <span class="count">{diff?.Files?.length || 0}</span>
       </button>

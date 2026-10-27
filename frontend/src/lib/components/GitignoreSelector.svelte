@@ -26,10 +26,10 @@
       return !g.toLowerCase().includes('ggit') && !OS_NAMES.some(os => name.includes(os)) && !EDITOR_NAMES.some(ed => name.includes(ed));
     });
     return [
-      { name: 'Seguridad y Estándar', icon: 'security', items: security, type: 'recommended', iconType: 'verified' },
-      { name: 'Sistemas Operativos', icon: 'desktop_windows', items: oss, iconType: 'public' },
-      { name: 'Editores e IDEs', icon: 'edit_square', items: editors, iconType: 'edit' },
-      { name: 'Otros Globales', icon: 'extension', items: others, iconType: 'public' },
+      { name: 'Seguridad y Estándar', icon: ShieldCheck, items: security, type: 'recommended', iconType: BadgeCheck },
+      { name: 'Sistemas Operativos', icon: Monitor, items: oss, iconType: Globe },
+      { name: 'Editores e IDEs', icon: SquarePen, items: editors, iconType: Pencil },
+      { name: 'Otros Globales', icon: Puzzle, items: others, iconType: Globe },
     ].filter(g => g.items.length > 0);
   });
 
@@ -40,36 +40,50 @@
       selectedGitignores = [...selectedGitignores, g];
     }
   }
+  import Globe from "lucide-svelte/icons/globe";
+  import Search from "lucide-svelte/icons/search";
+  import X from "lucide-svelte/icons/x";
+  import Terminal from "lucide-svelte/icons/terminal";
+  import Code from "lucide-svelte/icons/code";
+  import Check from "lucide-svelte/icons/check";
+  import ShieldCheck from "lucide-svelte/icons/shield-check";
+  import BadgeCheck from "lucide-svelte/icons/badge-check";
+  import Monitor from "lucide-svelte/icons/monitor";
+  import SquarePen from "lucide-svelte/icons/square-pen";
+  import Pencil from "lucide-svelte/icons/pencil";
+  import Puzzle from "lucide-svelte/icons/puzzle";
 </script>
 
 <div class="init-item full">
   <div class="init-header-row">
     <div class="section-label">
-      <span class="material-symbols-rounded">public</span>
+      <Globe size={18} />
       <strong>Templates Globales</strong>
     </div>
     <div class="search-box-mini">
-      <span class="material-symbols-rounded">search</span>
+      <Search size={18} />
       <input type="text" bind:value={gitignoreSearch} placeholder="Buscar templates..." />
     </div>
   </div>
 
   {#each groupedGlobals as group}
+    {@const GroupIcon = group.icon}
     <div class="gitignore-group">
       <div class="group-label">
-        <span class="material-symbols-rounded">{group.icon}</span>
+        <GroupIcon size={18} />
         {group.name}
       </div>
       <div class="gitignore-chips">
         {#each group.items as g}
+          {@const TypeIcon = group.iconType || Globe}
           <button type="button" class="chip" title={g}
             class:active={selectedGitignores.includes(g)}
             class:recommended={group.type === 'recommended'}
             onclick={() => toggleGitignore(g)}>
-            <span class="material-symbols-rounded">{group.iconType || 'public'}</span>
+            <TypeIcon size={18} />
             {g.replace('global/', '').replace('.gitignore', '').replace(/_/g, ' ').trim()}
             {#if selectedGitignores.includes(g)}
-              <span class="material-symbols-rounded">close</span>
+              <X size={18} />
             {/if}
           </button>
         {/each}
@@ -79,7 +93,7 @@
 
   <div class="gitignore-group" style="margin-top: 1.5rem;">
     <div class="group-label">
-      <span class="material-symbols-rounded">terminal</span>
+      <Terminal size={18} />
       <strong>Por Lenguaje</strong>
     </div>
     <div class="gitignore-chips">
@@ -87,10 +101,10 @@
         <button type="button" class="chip" title={g}
           class:active={selectedGitignores.includes(g)}
           onclick={() => toggleGitignore(g)}>
-          <span class="material-symbols-rounded">code</span>
+          <Code size={18} />
           {g.replace('languages/', '').replace('.gitignore', '')}
           {#if selectedGitignores.includes(g)}
-            <span class="material-symbols-rounded">close</span>
+            <X size={18} />
           {/if}
         </button>
       {/each}
@@ -99,7 +113,7 @@
 
   {#if selectedGitignores.length > 0}
     <div class="selection-summary">
-      <span class="material-symbols-rounded">check</span>
+      <Check size={18} />
       <strong>Mix seleccionado:</strong> {selectedGitignores.map(g => (g.split('/').pop() || '').replace('.gitignore', '')).join(' + ')}
     </div>
   {/if}

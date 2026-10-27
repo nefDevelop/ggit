@@ -54,12 +54,17 @@
   }
 
   onMount(fetchSessions);
+  import LogOut from "lucide-svelte/icons/log-out";
+  import X from "lucide-svelte/icons/x";
+  import MonitorSmartphone from "lucide-svelte/icons/monitor-smartphone";
+  import Smartphone from "lucide-svelte/icons/smartphone";
+  import Monitor from "lucide-svelte/icons/monitor";
 </script>
 
 <div class="settings-sessions-container">
   {#if sessions.length > 1}
     <div class="revoke-all-bar">
-      <Button variant="ghost" class="danger-btn" icon="logout" onclick={revokeOtherSessions}>
+      <Button variant="ghost" class="danger-btn" icon={LogOut} onclick={revokeOtherSessions}>
         {i18n.t("settings.sessions_revoke_all")}
       </Button>
     </div>
@@ -68,7 +73,7 @@
   <div class="modular-stack">
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">devices</span>
+        <MonitorSmartphone size={18} />
         Sesiones Activas
       </div>
       <div class="tonal-list">
@@ -82,8 +87,12 @@
           {#each sessions as session}
             <div class="session-item" class:is-current={session.current}>
               <div class="session-info">
-                <span class="material-symbols-rounded device-icon">
-                  {session.user_agent.includes('Mobi') ? 'smartphone' : 'desktop_windows'}
+                <span class="device-icon">
+                  {#if session.user_agent.includes('Mobi')}
+                    <Smartphone size={18} />
+                  {:else}
+                    <Monitor size={18} />
+                  {/if}
                 </span>
                 <div class="details">
                   <div class="ua-line">
@@ -100,7 +109,7 @@
                 </div>
               </div>
               {#if !session.current}
-                <Button variant="ghost" icon="cancel" onclick={() => revokeSession(session.id)}>{i18n.t("settings.sessions_revoke")}</Button>
+                <Button variant="ghost" icon={X} onclick={() => revokeSession(session.id)}>{i18n.t("settings.sessions_revoke")}</Button>
               {/if}
             </div>
           {/each}

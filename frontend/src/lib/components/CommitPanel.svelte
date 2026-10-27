@@ -6,12 +6,18 @@
   let message = $state("");
   let commitChoice = $state("direct");
   let newBranchName = $state("");
+  import GitCommitHorizontal from "lucide-svelte/icons/git-commit-horizontal";
+  import GitMerge from "lucide-svelte/icons/git-merge";
+  import GitBranch from "lucide-svelte/icons/git-branch";
+  import CornerDownRight from "lucide-svelte/icons/corner-down-right";
+  import RefreshCw from "lucide-svelte/icons/refresh-cw";
+  import Check from "lucide-svelte/icons/check";
 </script>
 
 <div class="commit-panel glass-panel">
   <div class="commit-header">
     <div class="header-icon-ring">
-      <span class="material-symbols-rounded">commit</span>
+      <GitCommitHorizontal size={18} />
     </div>
     <div class="header-text">
         <h3>Commit changes</h3>
@@ -54,7 +60,7 @@
             <strong>Commit directly to the base branch</strong>
             <p>Your changes will be immediately visible.</p>
           </div>
-          <span class="material-symbols-rounded choice-icon">merge_type</span>
+          <GitMerge class="choice-icon" size={18} />
         </div>
       </label>
 
@@ -70,13 +76,13 @@
             <strong>Create a new branch for this commit</strong>
             <p>Safely iterate without affecting the main line.</p>
           </div>
-          <span class="material-symbols-rounded choice-icon">branch</span>
+          <GitBranch class="choice-icon" size={18} />
         </div>
       </label>
       
       {#if commitChoice === "branch"}
         <div class="branch-input-container" transition:fade>
-          <span class="material-symbols-rounded branch-prefix">subdirectory_arrow_right</span>
+          <CornerDownRight class="branch-prefix" size={18} />
           <input
             type="text"
             bind:value={newBranchName}
@@ -96,7 +102,11 @@
       onclick={() =>
         onCommit({ summary, message, commitChoice, newBranchName })}
     >
-      <span class="material-symbols-rounded">{isSaving ? 'sync' : 'check'}</span>
+      {#if isSaving}
+        <RefreshCw size={18} />
+      {:else}
+        <Check size={18} />
+      {/if}
       <span>{isSaving ? "Committing..." : "Commit changes"}</span>
     </button>
   </footer>

@@ -34,6 +34,7 @@
   $effect(() => {
     if (uuid) fetchGist();
   });
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
 </script>
 
 <div class="gist-page">
@@ -45,7 +46,7 @@
       </div>
     {:else if error}
       <Card variant="low" padding="lg" class="error-state">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         <h3>{error}</h3>
         <p>The gist you are looking for might be private or deleted.</p>
         <Button variant="primary" href="/">Go Home</Button>

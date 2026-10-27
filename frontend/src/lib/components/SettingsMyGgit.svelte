@@ -10,16 +10,16 @@
 
   type RepoTabKey = keyof (typeof userPrefs.current.repoTabs);
 
-  const sections = $derived<{ id: RepoTabKey, label: string, icon: string, desc: string }[]>([
-    { id: 'pr', label: i18n.t('pull_requests'), icon: 'merge', desc: i18n.t('settings.pr_desc') },
-    { id: 'issue', label: i18n.t('issues'), icon: 'error', desc: i18n.t('settings.issue_desc') },
-    { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: 'menu_book', desc: i18n.t('settings.wiki_desc') },
-    { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: 'fork_right', desc: i18n.t('settings.branch_desc') },
-    { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: 'history', desc: i18n.t('settings.commits_desc') },
-    { id: 'tags', label: i18n.t('settings.tags') || 'Tags', icon: 'sell', desc: i18n.t('settings.tags_desc') || 'Gestiona versiones y etiquetas del código' },
-    { id: 'milestones', label: i18n.t('settings.milestones') || 'Milestones', icon: 'event', desc: i18n.t('settings.milestones_desc') || 'Organiza el trabajo en hitos temporales' },
-    { id: 'releases', label: i18n.t('settings.releases') || 'Releases', icon: 'rocket_launch', desc: i18n.t('settings.releases_desc') || 'Gestiona las versiones publicadas y binarios' },
-    { id: 'labels', label: i18n.t('settings.labels') || 'Labels', icon: 'label', desc: i18n.t('settings.labels_desc') || 'Clasifica issues y PRs con etiquetas personalizadas' }
+  const sections = $derived<{ id: RepoTabKey, label: string, icon: any, desc: string }[]>([
+    { id: 'pr', label: i18n.t('pull_requests'), icon: GitMerge, desc: i18n.t('settings.pr_desc') },
+    { id: 'issue', label: i18n.t('issues'), icon: CircleAlert, desc: i18n.t('settings.issue_desc') },
+    { id: 'wiki', label: i18n.t('settings.wiki') || 'Wiki', icon: BookOpen, desc: i18n.t('settings.wiki_desc') },
+    { id: 'branch', label: i18n.t('settings.branches') || 'Branches', icon: GitFork, desc: i18n.t('settings.branch_desc') },
+    { id: 'commits', label: i18n.t('settings.commits') || 'Commits', icon: History, desc: i18n.t('settings.commits_desc') },
+    { id: 'tags', label: i18n.t('settings.tags') || 'Tags', icon: Tag, desc: i18n.t('settings.tags_desc') || 'Gestiona versiones y etiquetas del código' },
+    { id: 'milestones', label: i18n.t('settings.milestones') || 'Milestones', icon: CalendarDays, desc: i18n.t('settings.milestones_desc') || 'Organiza el trabajo en hitos temporales' },
+    { id: 'releases', label: i18n.t('settings.releases') || 'Releases', icon: Rocket, desc: i18n.t('settings.releases_desc') || 'Gestiona las versiones publicadas y binarios' },
+    { id: 'labels', label: i18n.t('settings.labels') || 'Labels', icon: Tag, desc: i18n.t('settings.labels_desc') || 'Clasifica issues y PRs con etiquetas personalizadas' }
   ]);
 
   let profile = $state<any>({ disable_news_feed: false });
@@ -51,6 +51,18 @@
   }
 
   onMount(fetchProfile);
+  import Puzzle from "lucide-svelte/icons/puzzle";
+  import LayoutDashboard from "lucide-svelte/icons/layout-dashboard";
+  import History from "lucide-svelte/icons/history";
+  import Sparkles from "lucide-svelte/icons/sparkles";
+  import Languages from "lucide-svelte/icons/languages";
+  import GitMerge from "lucide-svelte/icons/git-merge";
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import BookOpen from "lucide-svelte/icons/book-open";
+  import GitFork from "lucide-svelte/icons/git-fork";
+  import Tag from "lucide-svelte/icons/tag";
+  import CalendarDays from "lucide-svelte/icons/calendar-days";
+  import Rocket from "lucide-svelte/icons/rocket";
 </script>
 
 <div class="settings-myggit-container">
@@ -59,15 +71,16 @@
     <!-- REPO MODULES -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">extension</span>
+        <Puzzle size={18} />
         {i18n.t('settings.repo_tab_modules')}
       </div>
       <div class="island tonal-list">
         {#each sections as section}
+          {@const Icon = section.icon}
           <div class="toggle-row">
             <div class="row-info">
               <div class="row-title">
-                <span class="material-symbols-rounded">{section.icon}</span>
+                <Icon size={18} />
                 {section.label}
               </div>
               <p class="row-desc">{section.desc}</p>
@@ -88,14 +101,14 @@
     <!-- DASHBOARD PREFS -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">dashboard_customize</span>
+        <LayoutDashboard size={18} />
         {i18n.t('settings.dashboard_preferences')}
       </div>
       <div class="island tonal-list">
         <div class="toggle-row">
           <div class="row-info">
             <div class="row-title">
-              <span class="material-symbols-rounded">timeline</span>
+              <History size={18} />
               {i18n.t('settings.activity_feed')}
             </div>
             <p class="row-desc">{i18n.t('settings.activity_feed_desc')}</p>
@@ -113,7 +126,7 @@
         <div class="toggle-row">
           <div class="row-info">
             <div class="row-title">
-              <span class="material-symbols-rounded">auto_awesome</span>
+              <Sparkles size={18} />
               {i18n.t('settings.auto_folder')}
             </div>
             <p class="row-desc">{i18n.t('settings.auto_folder_desc')}</p>
@@ -134,7 +147,7 @@
     <!-- LANGUAGE -->
     <div class="config-module">
        <div class="module-tag">
-         <span class="material-symbols-rounded">translate</span>
+         <Languages size={18} />
          Región e Idioma
        </div>
        <div class="island tonal-list language-card">

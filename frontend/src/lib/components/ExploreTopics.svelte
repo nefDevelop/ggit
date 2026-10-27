@@ -27,6 +27,7 @@
   $effect(() => {
     fetchTopics();
   });
+  import Tag from "lucide-svelte/icons/tag";
 </script>
 
 <div class="explore-topics">
@@ -39,7 +40,7 @@
       </div>
     {:else if topics.length === 0}
       <div class="empty-state tonal">
-        <span class="material-symbols-rounded">tag_off</span>
+        <Tag size={18} />
         <p>No topics found matching your search.</p>
       </div>
     {:else}
@@ -47,7 +48,7 @@
         {#each topics as topic}
           <a href="/explore/repos?q=topic:{topic.Name}" class="topic-card tonal hover-lift">
             <div class="topic-icon">
-              <span class="material-symbols-rounded">tag</span>
+              <Tag size={18} />
             </div>
             <div class="topic-info">
               <strong>{topic.Name}</strong>

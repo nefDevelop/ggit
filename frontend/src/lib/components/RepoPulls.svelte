@@ -46,6 +46,11 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
     if (pull.pull_request?.merged) return 'var(--tertiary)'; 
     return pull.is_closed ? 'var(--md-sys-color-error)' : 'var(--primary-color)';
   }
+  import MessageSquare from "lucide-svelte/icons/message-square";
+  import X from "lucide-svelte/icons/x";
+  import GitMerge from "lucide-svelte/icons/git-merge";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import Clock from "lucide-svelte/icons/clock";
 </script>
 
 <div class="pulls-view">
@@ -96,17 +101,23 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
       {#each pulls as pull}
         <div class="list-item-row">
           <div class="status-indicator" style="color: {getStatusColor(pull)}">
-            <span class="material-symbols-rounded">
-              {pull.pull_request?.merged ? 'merge' : (pull.is_closed ? 'cancel' : 'merge')}
-            </span>
+            {#if pull.is_closed && !pull.pull_request?.merged}
+              <X size={18} />
+            {:else}
+              <GitMerge size={18} />
+            {/if}
           </div>
           <div class="item-main-content">
             <div class="item-title-bar">
               {#if pull.combined_status}
                 <span class="ci-status-icon {pull.combined_status}">
-                  <span class="material-symbols-rounded mini">
-                    {pull.combined_status === 'success' ? 'check_circle' : (pull.combined_status === 'pending' ? 'pending' : 'cancel')}
-                  </span>
+                  {#if pull.combined_status === 'success'}
+                    <CircleCheck size={16} />
+                  {:else if pull.combined_status === 'pending'}
+                    <Clock size={16} />
+                  {:else}
+                    <X size={16} />
+                  {/if}
                 </span>
               {/if}
               <a href="/{repo.data.owner.username}/{repo.data.name}/pulls/{pull.number}" class="item-title-link">
@@ -133,7 +144,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
           </div>
           {#if pull.comments > 0}
             <div class="item-comment-badge">
-              <span class="material-symbols-rounded">chat_bubble</span>
+              <MessageSquare size={18} />
               {pull.comments}
             </div>
           {/if}

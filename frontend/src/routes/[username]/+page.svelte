@@ -75,6 +75,11 @@
       fetchTabData(activeTab);
     }
   });
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import Folder from "lucide-svelte/icons/folder";
+  import Star from "lucide-svelte/icons/star";
+  import Code from "lucide-svelte/icons/code";
+  import FolderX from "lucide-svelte/icons/folder-x";
 </script>
 
 <svelte:head>
@@ -86,7 +91,7 @@
     <div class="error-container">
       <Card variant="low" padding="lg">
         <div class="error-msg">
-          <span class="material-symbols-rounded">error</span>
+          <CircleAlert size={18} />
           <h3>{error}</h3>
           <p>The user you are looking for does not exist or has been removed.</p>
           <Button variant="primary" href="/explore/users">Explore Users</Button>
@@ -138,21 +143,21 @@
             class:active={activeTab === "repos"}
             onclick={() => fetchTabData("repos")}
           >
-            <span class="material-symbols-rounded">folder</span>
+            <Folder size={18} />
             Repositories
           </button>
           <button
             class:active={activeTab === "stars"}
             onclick={() => fetchTabData("stars")}
           >
-            <span class="material-symbols-rounded">star</span>
+            <Star size={18} />
             Stars
           </button>
           <button
             class:active={activeTab === "gists"}
             onclick={() => fetchTabData("gists")}
           >
-            <span class="material-symbols-rounded">code</span>
+            <Code size={18} />
             Gists
           </button>
         </nav>
@@ -168,7 +173,7 @@
         {:else if data.length === 0}
           <Card variant="low" padding="lg" class="empty-state">
             <div class="empty-icon-circle">
-              <span class="material-symbols-rounded">folder_off</span>
+              <FolderX size={18} />
             </div>
             <h3>No items found</h3>
             <p>This user hasn't added anything here yet.</p>

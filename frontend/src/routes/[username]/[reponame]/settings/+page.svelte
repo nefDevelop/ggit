@@ -65,9 +65,7 @@ import Sparkles from "lucide-svelte/icons/sparkles";
           class:active={activeTab === tab.id}
           onclick={() => activeTab = tab.id}
         >
-          {#if typeof tab.icon === 'string'}
-            <span class="material-symbols-rounded">{tab.icon}</span>
-          {:else if tab.icon}
+          {#if tab.icon}
             {@const Icon = tab.icon}
             <Icon size={18} />
           {/if}

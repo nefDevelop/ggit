@@ -116,7 +116,7 @@ import ShieldAlert from "lucide-svelte/icons/shield-alert";
                 <span>@{user.username}</span>
               </div>
             </div>
-            <Button variant="ghost" icon="person_remove" onclick={() => unblockUser(user.username)}>
+            <Button variant="ghost" icon={UserMinus} onclick={() => unblockUser(user.username)}>
               Desbloquear
             </Button>
           </div>

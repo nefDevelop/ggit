@@ -37,6 +37,9 @@
   });
 
   onMount(fetchUsers);
+  import MapPin from "lucide-svelte/icons/map-pin";
+  import Calendar from "lucide-svelte/icons/calendar";
+  import UserX from "lucide-svelte/icons/user-x";
 </script>
 
 <div class="explore-users">
@@ -58,12 +61,12 @@
             </div>
             {#if user.location}
               <div class="user-meta">
-                <span class="material-symbols-rounded">location_on</span>
+                <MapPin size={18} />
                 {user.location}
               </div>
             {/if}
             <div class="user-meta">
-              <span class="material-symbols-rounded">calendar_today</span>
+              <Calendar size={18} />
               Joined {new Date(user.created_at).getFullYear()}
             </div>
           </a>
@@ -71,7 +74,7 @@
       </div>
     {:else}
       <div class="empty-state">
-        <span class="material-symbols-rounded">person_off</span>
+        <UserX size={18} />
         <h3>No users found</h3>
         <p>Try searching for a different username.</p>
       </div>

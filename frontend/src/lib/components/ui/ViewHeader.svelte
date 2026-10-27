@@ -48,9 +48,7 @@
               onclick={() => { activeTab = tab.id; onSelect?.(tab.id); }}
             >
               <div class="tab-content-wrapper">
-                {#if typeof tab.icon === 'string'}
-                  <span class="material-symbols-rounded mini">{tab.icon}</span>
-                {:else if tab.icon}
+                {#if tab.icon}
                   {@const Icon = tab.icon}
                   <Icon size={16} />
                 {/if}

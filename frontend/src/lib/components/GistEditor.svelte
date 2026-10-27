@@ -70,6 +70,8 @@
     showDeleteModal = false;
     ondelete?.();
   }
+  import Plus from "lucide-svelte/icons/plus";
+  import Trash2 from "lucide-svelte/icons/trash-2";
 </script>
 
 <div class="gist-editor">
@@ -106,7 +108,7 @@
           <div class="spacer"></div>
           {#if files.length > 1}
             <button class="delete-btn" onclick={() => removeFile(i)}>
-              <span class="material-symbols-rounded">delete</span>
+              <Trash2 size={18} />
             </button>
           {/if}
         </div>
@@ -122,7 +124,7 @@
   </div>
 
   <div class="editor-footer">
-    <Button variant="secondary" onclick={addFile} icon="add">
+    <Button variant="secondary" onclick={addFile} icon={Plus}>
       Add File
     </Button>
     <div class="spacer"></div>
@@ -137,7 +139,7 @@
     </div>
     {#if isEdit && ondelete}
       <Button variant="ghost" onclick={() => showDeleteModal = true} class="delete-gist-btn">
-        <span class="material-symbols-rounded">delete</span>
+        <Trash2 size={18} />
         Eliminar Gist
       </Button>
     {/if}

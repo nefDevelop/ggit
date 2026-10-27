@@ -165,6 +165,11 @@
   }
 
   onMount(fetchProfile);
+  import CloudUpload from "lucide-svelte/icons/cloud-upload";
+  import Trash2 from "lucide-svelte/icons/trash-2";
+  import WandSparkles from "lucide-svelte/icons/wand-sparkles";
+  import Dices from "lucide-svelte/icons/dices";
+  import Check from "lucide-svelte/icons/check";
 </script>
 
 <svelte:head>
@@ -191,12 +196,12 @@
             <img src={`${profile.avatar_url}${profile.avatar_url.includes('?') ? '&' : '?'}t=${avatarCacheBuster}`} alt="Current Avatar" class="profile-avatar" />
             <div class="avatar-overlay">
               <label class="overlay-action-mini" title="Upload Photo">
-                <span class="material-symbols-rounded">cloud_upload</span>
+                <CloudUpload size={18} />
                 <input type="file" accept="image/*" onchange={handleAvatarUpload} hidden />
               </label>
               {#if profile.use_custom_avatar}
                 <button class="overlay-action-mini delete" onclick={deleteAvatar} title="Remove Custom Avatar">
-                  <span class="material-symbols-rounded">delete</span>
+                  <Trash2 size={18} />
                 </button>
               {/if}
             </div>
@@ -205,7 +210,7 @@
             <h2 class="section-title">Public Profile</h2>
             {#if profile.enable_dicebear_avatar}
               <button class="magic-btn-mini" class:active={showDiceBear} onclick={() => showDiceBear = !showDiceBear}>
-                <span class="material-symbols-rounded">auto_fix_high</span>
+                <WandSparkles size={18} />
                 {showDiceBear ? 'Hide Generator' : 'Magic Avatar'}
               </button>
             {/if}
@@ -256,7 +261,7 @@
               <div class="dicebear-preview">
                 <img src={dicebearUrl} alt="DiceBear Preview" class="preview-img" />
                 <button class="shuffle-btn" onclick={shuffleDicebear} title="Shuffle Seed">
-                  <span class="material-symbols-rounded">casino</span>
+                  <Dices size={18} />
                 </button>
               </div>
               <div class="dicebear-config">
@@ -272,7 +277,7 @@
                   {/each}
                 </div>
                 <button class="btn btn-secondary btn-sm" onclick={saveDicebearAvatar} disabled={saving}>
-                  <span class="material-symbols-rounded">check</span> Use this Avatar
+                  <Check size={18} /> Use this Avatar
                 </button>
               </div>
             </div>

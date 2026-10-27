@@ -70,6 +70,8 @@
   }
 
   onMount(fetchFile);
+  import CloudUpload from "lucide-svelte/icons/cloud-upload";
+  import NotebookPen from "lucide-svelte/icons/notebook-pen";
 </script>
 
 <div class="web-editor-container">
@@ -77,7 +79,7 @@
     <header class="editor-toolbar">
       <div class="toolbar-left">
         <div class="bread-container">
-          <span class="material-symbols-rounded mini-icon">edit_note</span>
+          <NotebookPen class="mini-icon" size={16} />
           <div class="file-path">
             <span class="repo-name">{reponame}</span>
             <span class="sep">/</span>
@@ -88,7 +90,7 @@
       <div class="toolbar-right">
         <div class="btn-group">
           <button class="btn-action-primary" onclick={() => (showCommit = true)} disabled={loading}>
-            <span class="material-symbols-rounded">cloud_upload</span>
+            <CloudUpload size={18} />
             <span>Commit Changes</span>
           </button>
         </div>

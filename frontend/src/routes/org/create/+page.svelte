@@ -34,6 +34,8 @@
       loading = false;
     }
   }
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import RefreshCw from "lucide-svelte/icons/refresh-cw";
 </script>
 
 <div class="create-wrapper">
@@ -48,7 +50,7 @@
     <form class="create-form tonal island" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       {#if errorMsg}
         <div class="error-toast">
-          <span class="material-symbols-rounded">error</span>
+          <CircleAlert size={18} />
           {errorMsg}
         </div>
       {/if}
@@ -82,7 +84,7 @@
         <button type="button" class="btn btn-ghost" onclick={() => history.back()}>Cancelar</button>
         <button type="submit" class="btn btn-primary" disabled={loading || !username}>
           {#if loading}
-            <span class="material-symbols-rounded spin">sync</span> Creando...
+            <RefreshCw class="spin" size={18} /> Creando...
           {:else}
             Crear Organización
           {/if}

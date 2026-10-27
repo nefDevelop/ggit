@@ -43,14 +43,19 @@
   }
 
   onMount(fetchData);
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
 </script>
 
 <div class="social-list-view island">
   <header class="view-header">
     <div class="title-group">
-        <span class="material-symbols-rounded">
-            {type === 'watchers' ? 'visibility' : type === 'stars' ? 'star' : 'fork_left'}
-        </span>
+        {#if type === 'watchers'}
+          <Eye size={18} />
+        {:else if type === 'stars'}
+          <Star size={18} />
+        {:else}
+          <GitFork size={18} />
+        {/if}
         <h2>{titles[type as 'watchers' | 'stars' | 'forks']}</h2>
     </div>
     <div class="meta">
@@ -67,7 +72,7 @@
       </div>
     {:else if error}
       <div class="error-msg">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         <p>{error}</p>
       </div>
     {:else if data.length === 0}

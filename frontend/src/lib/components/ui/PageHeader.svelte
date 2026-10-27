@@ -22,18 +22,14 @@
         {@render avatar()}
       </div>
     {:else if icon}
+      {@const Icon = icon}
       <div class="icon-slot" class:large={largeIcon}>
-        {#if typeof icon === 'string'}
-          <span class="material-symbols-rounded">{icon}</span>
-        {:else if icon}
-          {@const Icon = icon}
-          <Icon size={largeIcon ? 40 : 32} />
-        {/if}
+        <Icon size={largeIcon ? 40 : 32} />
       </div>
     {/if}
     
     <div class="title-stack">
-      <h2>{title}</h2>
+      <h2 class="title-divider">{title}</h2>
       {#if subtitle}
         <p class="subtitle">{subtitle}</p>
       {/if}

@@ -31,6 +31,10 @@
   }
 
   onMount(fetchRepos);
+  import Plus from "lucide-svelte/icons/plus";
+  import LogOut from "lucide-svelte/icons/log-out";
+  import Package from "lucide-svelte/icons/package";
+  import FolderOpen from "lucide-svelte/icons/folder-open";
 </script>
 
 <div class="settings-repos-container">
@@ -39,7 +43,7 @@
   <div class="modular-stack">
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">inventory_2</span>
+        <Package size={18} />
         Inventario de Código
       </div>
       <div class="island tonal-list">
@@ -47,9 +51,9 @@
           <div class="skeleton-repos"></div>
         {:else if repos.length === 0}
           <div class="empty-state-box">
-             <span class="material-symbols-rounded">folder_open</span>
+             <FolderOpen size={18} />
              <p>Aún no tienes repositorios vinculados.</p>
-             <Button variant="primary" href="/repo/create" icon="add">Crear Primer Repositorio</Button>
+             <Button variant="primary" href="/repo/create" icon={Plus}>Crear Primer Repositorio</Button>
           </div>
         {:else}
           {#each repos as repo}
@@ -62,7 +66,7 @@
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    icon="logout" 
+                    icon={LogOut} 
                     class="danger-btn" 
                     onclick={() => leaveRepo(repo.id, repo.full_name)}
                   >Dejar Colaboración</Button>

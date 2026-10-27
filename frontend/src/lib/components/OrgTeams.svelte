@@ -40,12 +40,15 @@
   }
 
   onMount(fetchTeams);
+  import Plus from "lucide-svelte/icons/plus";
+  import User from "lucide-svelte/icons/user";
+  import Book from "lucide-svelte/icons/book";
 </script>
 
 <div class="org-teams">
   <header class="section-actions">
     <button class="btn btn-primary" onclick={() => (showModal = true)}>
-      <span class="material-symbols-rounded">add</span>
+      <Plus size={18} />
       New Team
     </button>
   </header>
@@ -143,11 +146,11 @@
         <div class="team-footer">
           <div class="team-stats">
             <div class="item">
-              <span class="material-symbols-rounded">person</span>
+              <User size={18} />
               {team.NumMembers} Members
             </div>
             <div class="item">
-              <span class="material-symbols-rounded">book</span>
+              <Book size={18} />
               {team.NumRepos} Repos
             </div>
           </div>

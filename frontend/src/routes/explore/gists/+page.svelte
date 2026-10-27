@@ -29,6 +29,8 @@
   }
 
   onMount(fetchGists);
+  import Plus from "lucide-svelte/icons/plus";
+  import CodeXml from "lucide-svelte/icons/code-xml";
 </script>
 
 <div class="explore-gists-page">
@@ -39,7 +41,7 @@
         <p>Discover useful snippets and notes from the community.</p>
       </div>
       <Button variant="primary" href="/gists/new">
-        <span class="material-symbols-rounded">add</span>
+        <Plus size={18} />
         New Gist
       </Button>
     </header>
@@ -52,7 +54,7 @@
       </div>
     {:else if gists.length === 0}
       <Card variant="low" padding="lg" class="empty-state">
-        <span class="material-symbols-rounded">code_off</span>
+        <CodeXml size={18} />
         <h3>No public gists found</h3>
         <p>Be the first to share something!</p>
       </Card>

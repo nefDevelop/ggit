@@ -105,6 +105,7 @@
       submitting = false;
     }
   }
+  import Send from "lucide-svelte/icons/send";
 </script>
 
 <div class="webhook-editor">
@@ -165,7 +166,7 @@
     <footer class="modal-footer">
       {#if hook}
         <button type="button" class="btn btn-tonal" onclick={handleTest} disabled={submitting}>
-          <span class="material-symbols-rounded">send</span>
+          <Send size={18} />
           Test Webhook
         </button>
       {/if}

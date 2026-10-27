@@ -15,6 +15,8 @@ import Check from "lucide-svelte/icons/check";
     icon = GitBranch,
   } = $props();
 
+  const Icon = $derived(icon);
+
   let isOpen = $state(false);
   let filter = $state("");
 
@@ -39,12 +41,7 @@ import Check from "lucide-svelte/icons/check";
   {/if}
   <div class="selector-control">
     <button class="selector-trigger tonal" onclick={() => (isOpen = !isOpen)}>
-      {#if typeof icon === 'string'}
-        <GitBranch size={18} />
-      {:else}
-        {@const Icon = icon}
-        <Icon size={18} />
-      {/if}
+      <Icon size={18} />
       <span class="current-name">{selected || "Select branch..."}</span>
       <ChevronDown size={20} class="expand" />
     </button>

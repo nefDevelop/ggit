@@ -112,6 +112,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   $effect(() => {
     if (username && reponame) fetchTags();
   });
+  import RefreshCw from "lucide-svelte/icons/refresh-cw";
 </script>
 
 <svelte:head>
@@ -215,7 +216,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
                 title={deleteConfirm === tag.name ? 'Click again to confirm delete' : 'Delete tag'}
               >
                 {#if deleting === tag.name}
-                  <span class="material-symbols-rounded spin">sync</span>
+                  <RefreshCw class="spin" size={18} />
                 {:else if deleteConfirm === tag.name}
                   <span style="color: var(--status-warning); font-weight: bold; font-size: 0.8rem;">Sure?</span>
                 {:else}
