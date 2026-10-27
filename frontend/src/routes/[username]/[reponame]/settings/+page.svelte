@@ -172,10 +172,6 @@ import Sparkles from "lucide-svelte/icons/sparkles";
     color: var(--primary-color);
   }
 
-  .nav-item span {
-    font-size: 1.25rem;
-  }
-
   .settings-content {
     display: flex;
     flex-direction: column;

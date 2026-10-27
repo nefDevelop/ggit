@@ -147,13 +147,12 @@
 
   .section-header { margin-bottom: 3rem; }
   .title-with-icon { display: flex; align-items: center; gap: 2rem; }
-  .hero-icon { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
+  :global(.hero-icon) { font-size: 3rem; color: var(--primary-color); background: rgba(var(--primary-rgb), 0.1); padding: 1.25rem; border-radius: 2rem; flex-shrink: 0; }
 
   h2 { margin: 0; font-size: 2.25rem; font-weight: 950; letter-spacing: -0.04em; }
   .subtitle { margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1.1rem; }
 
   .owner-chip { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; color: var(--text-color); background: var(--md-sys-color-surface-variant); padding: 0.4rem 0.8rem; border-radius: 0.75rem; width: fit-content; }
-  .owner-chip span { font-size: 1.1rem; opacity: 0.6; }
 
   .repo-name-text { font-size: 1.1rem; color: var(--primary-color); font-weight: 900; }
   
@@ -161,7 +160,6 @@
 
   .empty-state { padding: 5rem 0; text-align: center; }
   .empty-msg { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; color: var(--text-muted); }
-  .empty-msg span { font-size: 4rem; color: var(--primary-color); opacity: 0.4; }
   .empty-msg p { font-size: 1.2rem; font-weight: 700; margin: 0; }
 
   @media (max-width: 800px) {

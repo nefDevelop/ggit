@@ -263,11 +263,9 @@
 
   :global(.empty-state) { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-icon-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--md-sys-color-surface-container-highest); display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant); opacity: 0.5; margin-bottom: 1rem; }
-  .empty-icon-circle span { font-size: 2.5rem; }
 
   .error-container { max-width: 600px; margin: 10rem auto; }
   .error-msg { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .error-msg span { font-size: 4rem; color: var(--md-sys-color-error); }
   .error-msg h3 { margin: 0; color: var(--md-sys-color-on-surface); }
   .error-msg p { color: var(--md-sys-color-on-surface-variant); margin-bottom: 1.5rem; }
 

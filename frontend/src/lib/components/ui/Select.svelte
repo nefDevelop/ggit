@@ -119,7 +119,7 @@
     transition: transform 0.2s;
   }
 
-  select:focus + .arrow {
+  select:focus + :global(.arrow) {
     transform: translateY(-50%) rotate(180deg);
     color: var(--md-sys-color-primary);
   }

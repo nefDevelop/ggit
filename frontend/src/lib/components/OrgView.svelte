@@ -187,9 +187,6 @@
     color: var(--primary-color);
     text-decoration: none;
   }
-  .meta-item span {
-    font-size: 1.2rem;
-  }
 
   .org-nav {
     display: flex;
@@ -252,7 +249,6 @@
     color: var(--text-muted);
     text-align: center;
   }
-  .empty-repos span { font-size: 3rem; opacity: 0.3; }
 
   .skeleton-org {
     height: 600px;

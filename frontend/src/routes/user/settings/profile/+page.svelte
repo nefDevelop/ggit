@@ -362,7 +362,6 @@
   .overlay-action-mini { width: 32px; height: 32px; border-radius: 50%; background: white; color: var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: transform 0.2s; }
   .overlay-action-mini:hover { transform: scale(1.1); }
   .overlay-action-mini.delete { color: var(--status-danger); }
-  .overlay-action-mini span { font-size: 1.2rem; }
 
   .section-info { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   .section-title { margin-bottom: 0 !important; }

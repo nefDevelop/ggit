@@ -193,7 +193,6 @@ import Users from "lucide-svelte/icons/users";
 
   .add-collab-box { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .add-header-minimal { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; color: var(--primary-color); }
-  .add-header-minimal span { font-size: 1.5rem; }
   .add-header-minimal strong { font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.85rem; }
 
   .add-form .input-row { display: flex; gap: 1rem; align-items: flex-start; }
@@ -220,7 +219,6 @@ import Users from "lucide-svelte/icons/users";
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .empty-state span { font-size: 3rem; opacity: 0.3; }
   .empty-state p { font-weight: 700; }
 
   .skeleton-tile { height: 84px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }

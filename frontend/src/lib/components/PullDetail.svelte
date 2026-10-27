@@ -294,7 +294,6 @@
     font-weight: 700;
     border: 1px solid color-mix(in srgb, var(--badge-color), transparent 70%);
   }
-  .attention-badge span { font-size: 1.1rem; }
 
   .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; line-height: 1.5; }
   .subtitle code { background: var(--surface-variant); padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--primary-color); }

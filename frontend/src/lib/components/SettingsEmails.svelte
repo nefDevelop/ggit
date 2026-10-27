@@ -191,7 +191,6 @@
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .module-tag span { font-size: 1.25rem; }
 
   
   .email-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
@@ -231,7 +230,6 @@
   .premium-input-group { display: flex; align-items: center; gap: 1rem; background: var(--md-sys-color-surface-container-high); padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; }
   @media (max-width: 600px) { .premium-input-group { flex-direction: column; align-items: stretch; } }
   .premium-input-group:focus-within { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
-  .premium-input-group span { color: var(--primary-color); opacity: 0.6; }
   .premium-input-group input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-color); font-size: 1rem; padding: 0.25rem 0; }
 
   .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.5rem; background: color-mix(in srgb, var(--status-success) 10%, transparent); color: var(--status-success); font-weight: 700; border: 1px solid color-mix(in srgb, var(--status-success) 20%, transparent); animation: fadeInUp 0.4s; }

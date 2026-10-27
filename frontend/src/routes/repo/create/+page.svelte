@@ -548,8 +548,6 @@
     color: var(--primary-color);
     box-shadow: var(--shadow-sm);
   }
-  
-  .tab-item span { font-size: 1.2rem; }
 
   .auth-grid {
     display: grid;
@@ -734,7 +732,6 @@
   }
 
   .item-toggle input { width: 20px; height: 20px; margin-top: 3px; }
-  .item-toggle span { color: var(--primary-color); font-size: 1.5rem; }
   .item-toggle div { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
   .item-toggle strong { font-size: 1rem; color: var(--text-primary); }
 
@@ -878,11 +875,11 @@
   .vm-option input { display: none; }
   .vm-option.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
   
-  .vm-icon { font-size: 2rem; color: var(--primary-color); }
+  :global(.vm-icon) { font-size: 2rem; color: var(--primary-color); }
   .vm-info { display: flex; flex-direction: column; }
   .vm-info strong { font-size: 1.1rem; color: var(--text-primary); }
   .vm-info span { font-size: 0.85rem; color: var(--text-muted); }
-  .dot { position: absolute; top: 1rem; right: 1rem; color: var(--primary-color); }
+  :global(.dot) { position: absolute; top: 1rem; right: 1rem; color: var(--primary-color); }
 
   @media (max-width: 600px) {
     .visibility-selector {
@@ -925,7 +922,7 @@
     justify-content: center;
   }
 
-  .check-icon {
+  :global(.check-icon) {
     font-size: 16px;
     color: var(--on-primary);
     opacity: 0;
@@ -938,7 +935,7 @@
     border-color: var(--primary-color);
   }
 
-  .fancy-checkbox input:checked + .check-box .check-icon {
+  :global(.fancy-checkbox) input:checked + :global(.check-box) :global(:global(.check-icon)) {
     opacity: 1;
     transform: scale(1);
   }
@@ -984,7 +981,7 @@
     75% { transform: translateX(-5px); }
   }
 
-  .spin { animation: spin 1s infinite linear; }
+  :global(.spin) { animation: spin 1s infinite linear; }
   @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
 
   @media (max-width: 900px) {

@@ -125,7 +125,7 @@
   
   .error-toast { background: color-mix(in srgb, var(--status-danger) 10%, transparent); color: var(--status-danger); padding: 1rem; border-radius: 0.75rem; display: flex; align-items: center; gap: 0.75rem; font-weight: 600; }
   
-  .spin { animation: spin 1s infinite linear; }
+  :global(.spin) { animation: spin 1s infinite linear; }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>

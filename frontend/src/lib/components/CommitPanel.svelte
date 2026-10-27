@@ -214,7 +214,7 @@
   }
   .choice-meta strong { display: block; font-size: 0.95rem; color: var(--text-color); }
   .choice-meta p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
-  .choice-icon { color: var(--primary-color); opacity: 0.5; font-size: 1.5rem; }
+  :global(.choice-icon) { color: var(--primary-color); opacity: 0.5; font-size: 1.5rem; }
 
   .branch-input-container {
     display: flex;
@@ -226,7 +226,7 @@
   
   @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
   
-  .branch-prefix { font-size: 1.25rem; color: var(--primary-color); opacity: 0.5; }
+  :global(.branch-prefix) { font-size: 1.25rem; color: var(--primary-color); opacity: 0.5; }
   .branch-input { flex: 1; font-family: monospace; border-style: dashed; }
 
   .commit-footer {

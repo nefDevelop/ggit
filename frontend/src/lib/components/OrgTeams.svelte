@@ -236,10 +236,6 @@
     font-size: 0.8rem;
     color: var(--text-muted);
   }
-  .team-stats .item span {
-    font-size: 1.1rem;
-    opacity: 0.7;
-  }
 
   .small {
     padding: 0.4rem 0.8rem;

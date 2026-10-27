@@ -43,7 +43,7 @@
     .item-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
     .title-with-icon { display: flex; align-items: center; gap: 1rem; font-weight: 700; color: var(--text-color); }
     .desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; opacity: 0.8; }
-    .mini { font-size: 1.25rem; color: var(--primary-color); }
+    :global(.mini) { font-size: 1.25rem; color: var(--primary-color); }
 
     .select-wrapper { position: relative; display: flex; align-items: center; }
     
@@ -68,7 +68,7 @@
         background: rgba(var(--primary-rgb), 0.05);
     }
 
-    .dropdown-icon {
+    :global(.dropdown-icon) {
         position: absolute;
         right: 1rem;
         pointer-events: none;

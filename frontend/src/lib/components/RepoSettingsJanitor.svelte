@@ -227,12 +227,10 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .issue-meta-size { font-weight: 900; color: var(--text-muted); font-size: 0.85rem; opacity: 0.6; }
 
   .empty-state-janitor { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
-  .empty-state-janitor span { font-size: 5rem; color: var(--success); opacity: 0.3; }
   .empty-state-janitor h3 { margin: 0; font-size: 1.75rem; font-weight: 950; }
   .empty-state-janitor p { color: var(--text-muted); font-size: 1.1rem; max-width: 450px; }
 
   .cleanup-hint { display: flex; align-items: center; gap: 1.25rem; padding: 1.5rem 2rem; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); color: var(--text-muted); font-size: 0.95rem; border: 1px solid rgba(var(--primary-rgb), 0.1); }
-  .cleanup-hint span { font-size: 2rem; color: var(--primary-color); }
 
   .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }

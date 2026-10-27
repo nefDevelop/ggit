@@ -294,7 +294,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
   .alert-error { background: color-mix(in srgb, var(--status-danger) 10%, transparent); border: 1px solid var(--status-danger-soft); border-radius: 0.75rem; padding: 0.75rem 1rem; color: var(--status-danger-soft); font-size: 0.9rem; }
 
-  .spin { animation: spin 1s linear infinite; }
+  :global(.spin) { animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 600px) {

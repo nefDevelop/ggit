@@ -181,7 +181,7 @@
   }
 
   .commit-message { font-weight: 700; font-size: 0.95rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .more-icon { font-size: 1rem; color: var(--text-muted); opacity: 0.5; }
+  :global(.more-icon) { font-size: 1rem; color: var(--text-muted); opacity: 0.5; }
 
   .commit-meta { font-size: 0.8rem; display: flex; gap: 0.5rem; align-items: center; color: var(--text-muted); margin-top: 2px; }
   .author-name { font-weight: 800; color: var(--text-color); }
@@ -201,7 +201,7 @@
     transition: all 0.2s;
   }
   .id-tag:hover { background: var(--primary-color); color: white; }
-  .id-tag .mini { font-size: 0.9rem; opacity: 0.7; }
+  :global(.id-tag) :global(.mini) { font-size: 0.9rem; opacity: 0.7; }
   .sha-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; }
 
   .commit-message-link, .id-tag-link {

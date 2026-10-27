@@ -163,7 +163,7 @@
     border: 1px solid var(--md-sys-color-outline-variant);
   }
 
-  .mini-icon { font-size: 1.25rem; color: var(--primary-color); }
+  :global(.mini-icon) { font-size: 1.25rem; color: var(--primary-color); }
 
   .file-path {
     font-family: inherit;

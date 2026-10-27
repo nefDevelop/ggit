@@ -116,11 +116,6 @@
     gap: 0.75rem;
   }
 
-  .title-group span {
-    color: var(--primary);
-    font-size: 1.5rem;
-  }
-
   .view-header h2 {
     margin: 0;
     font-size: 1.25rem;

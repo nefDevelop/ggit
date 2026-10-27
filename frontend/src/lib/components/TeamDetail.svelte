@@ -427,9 +427,6 @@
     align-items: center;
     gap: 0.75rem;
   }
-  .header-title span {
-    color: var(--primary-color);
-  }
   .card-header h3 {
     margin: 0;
     font-size: 1.1rem;
@@ -483,7 +480,7 @@
     background: rgba(255, 255, 255, 0.04);
   }
 
-  .repo-icon {
+  :global(.repo-icon) {
     font-size: 1.25rem;
     color: var(--primary-color);
     opacity: 0.6;

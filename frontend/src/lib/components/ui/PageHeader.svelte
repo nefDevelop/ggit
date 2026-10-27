@@ -92,8 +92,6 @@
     border-radius: 1.5rem;
   }
 
-  .icon-slot span { font-size: var(--header-icon-size, 32px); }
-
   .icon-slot :global(svg) {
     width: var(--header-icon-size, 32px) !important;
     height: var(--header-icon-size, 32px) !important;
