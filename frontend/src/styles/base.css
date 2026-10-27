@@ -97,3 +97,22 @@ h4 {
     scroll-behavior: auto !important;
   }
 }
+
+/* Salto al contenido: invisible hasta recibir foco. */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: var(--space-4, 1rem);
+  z-index: 3000;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-radius: var(--space-2, 0.5rem);
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  font-weight: var(--weight-bold, 700);
+  text-decoration: none;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: var(--space-4, 1rem);
+}

@@ -197,15 +197,15 @@ import FileArchive from "lucide-svelte/icons/file-archive";
             <div class="asset-links-inline" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem;">
               {#if release.attachments && release.attachments.length > 0}
                 {#each release.attachments as asset}
-                  <a href={asset.download_url} class="btn-icon-minimal" title={asset.name} download>
+                  <a href={asset.download_url} class="btn-icon-minimal" title={asset.name} aria-label={`Descargar ${asset.name}`} download>
                     <Download size={16} />
                   </a>
                 {/each}
               {/if}
-              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="btn-icon-minimal" title="Source code (zip)" download>
+              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="btn-icon-minimal" title="Source code (zip)" aria-label="Descargar código fuente (zip)" download>
                 <FileArchive size={16} />
               </a>
-              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="btn-icon-minimal" title="Source code (tar.gz)" download>
+              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="btn-icon-minimal" title="Source code (tar.gz)" aria-label="Descargar código fuente (tar.gz)" download>
                 <FileArchive size={16} />
               </a>
             </div>

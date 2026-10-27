@@ -209,7 +209,7 @@ import Dices from "lucide-svelte/icons/dices";
                     <button
                       class="overlay-btn-mini delete"
                       onclick={deleteAvatar}
-                      title="Quitar foto"
+                      title="Quitar foto" aria-label="Quitar foto"
                     >
                       <Trash2 size={18} />
                     </button>

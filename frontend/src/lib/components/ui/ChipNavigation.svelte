@@ -46,6 +46,7 @@
           href={item.path} 
           class="chip-item" 
           class:active={activeId === item.id || activeId === item.path || (item.path !== '/' && activeId.startsWith(item.path + '/'))}
+          aria-current={activeId === item.id || activeId === item.path ? 'page' : undefined}
           onclick={() => onSelect?.(item.id)}
         >
           {#if item.icon}
@@ -59,6 +60,7 @@
           type="button"
           class="chip-item" 
           class:active={activeId === item.id}
+          aria-current={activeId === item.id ? 'page' : undefined}
           onclick={() => onSelect?.(item.id)}
         >
           {#if item.icon}

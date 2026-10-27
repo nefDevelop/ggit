@@ -7,7 +7,7 @@
   import Info from "lucide-svelte/icons/info";
 </script>
 
-<div class="toast-container">
+<div class="toast-container" aria-live="polite" aria-atomic="false">
   {#each toast.list as item (item.id)}
     <div
       class="toast-item {item.type}"

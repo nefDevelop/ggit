@@ -66,7 +66,7 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
      <aside class="logs-sidebar">
         <header class="sidebar-header">
            <span class="url-hint">{hook.url}</span>
-           <button class="btn-icon-minimal" onclick={fetchLogs} title="Refresh">
+           <button class="btn-icon-minimal" onclick={fetchLogs} title="Refresh" aria-label="Actualizar registros">
              <RefreshCw size={18} />
            </button>
         </header>

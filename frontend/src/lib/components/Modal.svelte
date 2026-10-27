@@ -17,6 +17,7 @@ import X from "lucide-svelte/icons/x";
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "Escape" && show) onclose();
   }
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -32,10 +33,10 @@ import X from "lucide-svelte/icons/x";
 
   <!-- MODAL CONTENT -->
   <div class="modal-wrapper" transition:fly={{ y: 20, duration: 300 }}>
-    <div class="modal-card tonal" style="max-width: {maxWidth}">
+    <div class="modal-card tonal" style="max-width: {maxWidth}" use:focusTrap role="dialog" aria-modal="true" aria-label={title}>
       <header class="modal-header">
         <h3>{title}</h3>
-        <button class="close-btn" onclick={onclose}>
+        <button class="close-btn" onclick={onclose} aria-label="Cerrar">
           <X size={20} />
         </button>
       </header>

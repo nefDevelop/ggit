@@ -297,6 +297,10 @@ Quick wins (una sola sesión): `.page` en admin, `EmptyState`, tablas con
 - **Fuentes autoalojadas**: Inter, Outfit y JetBrains Mono (latin y latin-ext, 16
   woff2, ~686 KB) con `@font-face` propio, preload de Inter y sus licencias OFL.
   Eliminadas las peticiones a Google Fonts.
+- **A11y profunda**: acción `focusTrap` aplicada a `Modal`, `GlobalDialog`, equipos y
+  revisión (con `role="dialog"`, `aria-modal` y nombre); enlace "Saltar al contenido";
+  16 botones/enlaces solo-icono etiquetados (`aria-label`, 0 restantes); `aria-current`
+  en la navegación principal y `ChipNavigation`; toasts con `aria-live`.
 - **Detectado**: `AdminView.svelte` no lo importa ninguna ruta (código muerto); conserva
   el padding duplicado y se puede eliminar en una fase de limpieza.
 

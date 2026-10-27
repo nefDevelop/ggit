@@ -125,7 +125,7 @@
             {#if orgs.length > 0}
               <div class="org-strip">
                 {#each orgs as org}
-                  <a href="/org/{org.username}" class="org-mini" title={org.full_name || org.username}>
+                  <a href="/org/{org.username}" class="org-mini" title={org.full_name || org.username} aria-label={`Abrir ${org.full_name || org.username}`}>
                     <Avatar src={org.avatar_url} username={org.username} size={32} />
                   </a>
                 {/each}

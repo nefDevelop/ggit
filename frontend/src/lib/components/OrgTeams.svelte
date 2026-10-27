@@ -43,6 +43,7 @@
   import Plus from "lucide-svelte/icons/plus";
   import User from "lucide-svelte/icons/user";
   import Book from "lucide-svelte/icons/book";
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="org-teams">
@@ -64,7 +65,8 @@
       <div
         class="modal-content tonal"
         role="dialog" tabindex="-1"
-        aria-modal="true"
+        aria-modal="true" aria-label="Crear equipo"
+        use:focusTrap
         onclick={(e) => e.stopPropagation()}
         onkeydown={(e) => e.stopPropagation()}
       >

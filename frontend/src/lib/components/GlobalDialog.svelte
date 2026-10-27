@@ -18,6 +18,7 @@
        else dialog.close(true);
     }
   }
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -33,7 +34,7 @@
 
   <!-- DIALOG CONTENT -->
   <div class="dialog-wrapper" transition:fly={{ y: 20, duration: 300 }}>
-    <div class="dialog-card tonal">
+    <div class="dialog-card tonal" use:focusTrap role="dialog" aria-modal="true" aria-label={dialog.current.title}>
       <header class="dialog-header">
         <h3>{dialog.current.title}</h3>
       </header>

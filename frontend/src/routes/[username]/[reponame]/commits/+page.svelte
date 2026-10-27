@@ -112,7 +112,7 @@
                 <code class="sha-text">{truncateSHA(id)}</code>
               </div>
             </a>
-            <a href={`/api/v2/${username}/${reponame}/archive/${id}.zip`} class="btn-icon" download title="Download ZIP at this commit">
+            <a href={`/api/v2/${username}/${reponame}/archive/${id}.zip`} class="btn-icon" download title="Download ZIP at this commit" aria-label="Descargar ZIP de este commit">
               <FolderArchive size={18} />
             </a>
           </div>

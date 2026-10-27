@@ -199,13 +199,13 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
             </div>
 
             <div class="item-actions-right">
-              <a href={tag.zip_url} class="btn-icon-minimal" title="Download ZIP">
+              <a href={tag.zip_url} class="btn-icon-minimal" title="Download ZIP" aria-label="Descargar ZIP">
                 <FolderDown size={16} />
               </a>
-              <a href={tag.tar_url} class="btn-icon-minimal" title="Download TAR.GZ">
+              <a href={tag.tar_url} class="btn-icon-minimal" title="Download TAR.GZ" aria-label="Descargar TAR.GZ">
                 <Archive size={16} />
               </a>
-              <a href={`/${username}/${reponame}/releases`} class="btn-icon-minimal" title="Release">
+              <a href={`/${username}/${reponame}/releases`} class="btn-icon-minimal" title="Release" aria-label="Ver releases">
                 <Rocket size={16} />
               </a>
               <button

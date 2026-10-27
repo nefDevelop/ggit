@@ -200,7 +200,7 @@
                 <input type="file" accept="image/*" onchange={handleAvatarUpload} hidden />
               </label>
               {#if profile.use_custom_avatar}
-                <button class="overlay-action-mini delete" onclick={deleteAvatar} title="Remove Custom Avatar">
+                <button class="overlay-action-mini delete" onclick={deleteAvatar} title="Remove Custom Avatar" aria-label="Quitar avatar personalizado">
                   <Trash2 size={18} />
                 </button>
               {/if}
@@ -260,7 +260,7 @@
             <div class="dicebear-tool">
               <div class="dicebear-preview">
                 <img src={dicebearUrl} alt="DiceBear Preview" class="preview-img" />
-                <button class="shuffle-btn" onclick={shuffleDicebear} title="Shuffle Seed">
+                <button class="shuffle-btn" onclick={shuffleDicebear} title="Shuffle Seed" aria-label="Cambiar semilla">
                   <Dices size={18} />
                 </button>
               </div>

@@ -20,6 +20,7 @@
     {@const Icon = item.icon}
     <a href={item.path} class="nav-item"
       class:active={page.url.pathname === item.path || (item.isParent && ((isAdminPath && !item.isSettings) || (isSettingsPath && item.isSettings)))}
+      aria-current={page.url.pathname === item.path ? 'page' : undefined}
     >
       <Icon size={20} />
       <span class="item-label">{item.name}</span>

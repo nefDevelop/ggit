@@ -143,7 +143,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
               </td>
               <td data-label="Acciones">
                 <div class="action-row">
-                  <a class="icon-btn" href="/{repo.owner?.username}/{repo.name}" title="Ver">
+                  <a class="icon-btn" href="/{repo.owner?.username}/{repo.name}" title="Ver" aria-label="Ver repositorio">
                     <Eye size={18} />
                   </a>
                   <button class="icon-btn" onclick={() => checkIntegrity(repo.id, repo.name)} title="Verificar Integridad">

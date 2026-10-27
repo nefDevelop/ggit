@@ -174,7 +174,7 @@ import Calendar from "lucide-svelte/icons/calendar";
               class="header-repo-avatar"
             />
             <div class="breadcrumb-nav">
-              <a href="/dashboard" class="bc-home"><LayoutGrid size={20} /></a>
+              <a href="/dashboard" class="bc-home" aria-label="Ir al panel"><LayoutGrid size={20} /></a>
               <span class="bc-sep">/</span>
               <a href={`/${username}`} class="bc-item">{username}</a>
               <span class="bc-sep">/</span>
@@ -272,7 +272,7 @@ import Calendar from "lucide-svelte/icons/calendar";
                 </div>
               {/if}
             </div>
-            <a href={`/${username}/${reponame}/settings`} class="settings-link" class:active={activeTab === 'settings'} title="Settings">
+            <a href={`/${username}/${reponame}/settings`} class="settings-link" class:active={activeTab === 'settings'} title="Settings" aria-label="Ajustes del repositorio">
               <Settings size={20} />
             </a>
           </div>
