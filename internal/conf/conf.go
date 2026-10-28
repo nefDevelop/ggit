@@ -338,7 +338,12 @@ func Init(customConf string) error {
 		return fmt.Errorf("mapping [webhook] section: %w", err)
 	} else if err = File.Section("admin").MapTo(&Admin); err != nil {
 		return fmt.Errorf("mapping [admin] section: %w", err)
-	} else if err = File.Section("pikoci").MapTo(&PikoCI); err != nil {
+	}
+
+	// MapTo omite los valores vacíos, así que sin este reset los secretos de un
+	// Init anterior sobreviven cuando la nueva configuración los deja en blanco.
+	PikoCI = PikoCIOpts{}
+	if err = File.Section("pikoci").MapTo(&PikoCI); err != nil {
 		return fmt.Errorf("mapping [pikoci] section: %w", err)
 	} else if err = File.Section("cron").MapTo(&Cron); err != nil {
 		return fmt.Errorf("mapping [cron] section: %w", err)
