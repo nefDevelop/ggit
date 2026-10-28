@@ -1,0 +1,26 @@
+# PikoCI como sidecar de ggit. Se combina con el compose principal para que
+# ambos servicios compartan la red del proyecto y ggit lo alcance como
+# http://pikoci:8080:
+#
+#   podman-compose -f docker-compose.yml -f docker-compose.pikoci.yml up -d
+#
+# data/pikoci/pikoci.env lo genera scripts/bootstrap_pikoci.sh junto con los
+# tokens de ggit. Ejecuta el script antes del primer arranque.
+services:
+  pikoci:
+    image: ghcr.io/pikoci/pikoci:v0.8.0@sha256:6dbf992930cfd03b26f2d1f2be32930b25523e3576847becc630c2304a727082
+    container_name: pikoci
+    restart: always
+    command: ["server"]
+    env_file:
+      - ./data/pikoci/pikoci.env
+    volumes:
+      - ./data/pikoci:/data:Z
+    ports:
+      - "${PIKOCI_HTTP_PORT:-18080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

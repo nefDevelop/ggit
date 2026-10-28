@@ -27,7 +27,8 @@ services:
 
     volumes:
       # We map everything to /data, which is what the Dockerfile expects.
-      - ./data:/data
+      # :Z relabela el volumen para SELinux (necesario con Podman en Fedora/RHEL).
+      - ./data:/data:Z
 
     ports:
       # Web Interface

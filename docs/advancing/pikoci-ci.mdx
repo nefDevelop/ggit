@@ -84,6 +84,32 @@ GET /api/v2/admin/pikoci/pipeline-template
 5. Activa CI en **Ajustes → CI/CD** del repositorio. Desde ahí puedes republicar el
    pipeline, desactivarlo y abrir PikoCI.
 
+## Docker Compose
+
+PikoCI se sirve en su propio compose, `docker-compose.pikoci.yml`, y se combina con el
+principal para compartir la red del proyecto. ggit lo alcanza como `http://pikoci:8080`:
+
+```bash
+./scripts/bootstrap_pikoci.sh
+```
+
+El script es idempotente y hace el trabajo que no se puede declarar en el compose:
+
+- genera `data/pikoci/pikoci.env` con `JWT_SECRET`, `USERS` (contraseña de admin hasheada) y
+  la base SQLite en `/data/pikoci.db`;
+- levanta `docker-compose.yml` + `docker-compose.pikoci.yml`;
+- crea el API token de PikoCI y el token del bot de ggit, y escribe `[pikoci]` en
+  `data/conf/app.ini`;
+- reinicia ggit para aplicar la configuración.
+
+Si `app.ini` ya tiene `API_TOKEN` y `BOT_TOKEN`, no genera ninguno nuevo. Acepta
+`PIKOCI_TEAM`, `GGIT_REPO` (para añadir el bot como colaborador), `PIKOCI_HTTP_PORT` y
+`SKIP_UP=true`, entre otras variables documentadas en el propio script. Ambas rutas de
+datos quedan bajo `data/`, que está en `.gitignore`.
+
+La imagen está fijada por tag y digest (`v0.8.0`). Para actualizarla hay que cambiar el tag,
+el digest y `PIKOCI_IMAGE` del script a la vez.
+
 ## El pipeline del repositorio
 
 PikoCI usa HCL. La plantilla por defecto declara estas variables:
