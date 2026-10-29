@@ -2,7 +2,7 @@
   import { apiFetch } from '$lib/api';
   import { page } from '$app/state';
   import { fade } from 'svelte/transition';
-  import PageHeader from "$lib/components/ui/PageHeader.svelte";
+  import PageActions from "$lib/components/ui/PageActions.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   
 
@@ -112,6 +112,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   $effect(() => {
     if (username && reponame) fetchTags();
   });
+  import RefreshCw from "lucide-svelte/icons/refresh-cw";
 </script>
 
 <svelte:head>
@@ -119,15 +120,13 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 </svelte:head>
 
 <div class="tags-page">
-  <PageHeader title="" icon="" compact noBorder>
-    {#snippet actions()}
+  <PageActions>
       {#if tags.length > 0}
         <Button variant="primary" onclick={() => { showNewTag = !showNewTag; createError = ''; }} icon={Plus}>
           New tag
         </Button>
       {/if}
-    {/snippet}
-  </PageHeader>
+    </PageActions>
 
   <div class="tags-content">
     {#if showNewTag}
@@ -200,13 +199,13 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
             </div>
 
             <div class="item-actions-right">
-              <a href={tag.zip_url} class="btn-icon-minimal" title="Download ZIP">
+              <a href={tag.zip_url} class="btn-icon-minimal" title="Download ZIP" aria-label="Descargar ZIP">
                 <FolderDown size={16} />
               </a>
-              <a href={tag.tar_url} class="btn-icon-minimal" title="Download TAR.GZ">
+              <a href={tag.tar_url} class="btn-icon-minimal" title="Download TAR.GZ" aria-label="Descargar TAR.GZ">
                 <Archive size={16} />
               </a>
-              <a href={`/${username}/${reponame}/releases`} class="btn-icon-minimal" title="Release">
+              <a href={`/${username}/${reponame}/releases`} class="btn-icon-minimal" title="Release" aria-label="Ver releases">
                 <Rocket size={16} />
               </a>
               <button
@@ -217,7 +216,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
                 title={deleteConfirm === tag.name ? 'Click again to confirm delete' : 'Delete tag'}
               >
                 {#if deleting === tag.name}
-                  <span class="material-symbols-rounded spin">sync</span>
+                  <RefreshCw class="spin" size={18} />
                 {:else if deleteConfirm === tag.name}
                   <span style="color: var(--status-warning); font-weight: bold; font-size: 0.8rem;">Sure?</span>
                 {:else}
@@ -242,12 +241,12 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
   .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .form-control { background: rgba(0,0,0,0.15); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text-color); font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+  .form-control { background: var(--sunken-2); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.6rem 0.9rem; color: var(--text-color); font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
   .form-control:focus { border-color: var(--primary-color); }
   .form-error { color: var(--status-danger-soft); font-size: 0.85rem; margin: 0; }
   .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; }
 
-  .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: rgba(0,0,0,0.15); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
+  .tag-sha { font-size: 0.75rem; font-family: 'JetBrains Mono', monospace; background: var(--sunken-2); padding: 0.15rem 0.5rem; border-radius: 6px; color: var(--text-muted); }
 
   .delete.confirm { color: var(--status-warning); background: color-mix(in srgb, var(--status-warning) 10%, transparent); }
 
@@ -295,7 +294,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
   .alert-error { background: color-mix(in srgb, var(--status-danger) 10%, transparent); border: 1px solid var(--status-danger-soft); border-radius: 0.75rem; padding: 0.75rem 1rem; color: var(--status-danger-soft); font-size: 0.9rem; }
 
-  .spin { animation: spin 1s linear infinite; }
+  :global(.spin) { animation: spin 1s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 600px) {

@@ -3,7 +3,8 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from 'svelte';
   import { formatDate } from "$lib/utils/date";
-  import PageHeader from "./ui/PageHeader.svelte";
+  import PageActions from "./ui/PageActions.svelte";
+  import EmptyState from "./ui/EmptyState.svelte";
   import Button from "./ui/Button.svelte";
   
 
@@ -45,11 +46,15 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
     if (pull.pull_request?.merged) return 'var(--tertiary)'; 
     return pull.is_closed ? 'var(--md-sys-color-error)' : 'var(--primary-color)';
   }
+  import MessageSquare from "lucide-svelte/icons/message-square";
+  import X from "lucide-svelte/icons/x";
+  import GitMerge from "lucide-svelte/icons/git-merge";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import Clock from "lucide-svelte/icons/clock";
 </script>
 
 <div class="pulls-view">
-  <PageHeader title="" icon="" compact noBorder>
-    {#snippet actions()}
+  <PageActions>
       <div class="pill-filter-group-inline">
         <Button 
           variant={stateFilter === 'open' ? 'primary' : 'ghost'} 
@@ -72,8 +77,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
           New Pull Request
         </Button>
       {/if}
-    {/snippet}
-  </PageHeader>
+    </PageActions>
 
 
   {#if loading}
@@ -81,36 +85,39 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if pulls.length === 0}
-    <div class="empty-state">
-      <div class="empty-icon-ring">
-        <GitPullRequest size={40} />
-      </div>
-      <h2>No pull requests found</h2>
-      <p>There are no {stateFilter} pull requests in this repository.</p>
+    <EmptyState
+      icon={GitPullRequest}
+      title="No pull requests found"
+      description={`There are no ${stateFilter} pull requests in this repository.`}
+    >
       {#if stateFilter === 'open'}
-        <div style="margin-top: 1rem;">
-          <Button variant="primary" href="./pulls/new" icon={Plus}>
-            Create your first pull request
-          </Button>
-        </div>
+        <Button variant="primary" href="./pulls/new" icon={Plus}>
+          Create your first pull request
+        </Button>
       {/if}
-    </div>
+    </EmptyState>
   {:else}
     <div class="flat-list-container">
       {#each pulls as pull}
         <div class="list-item-row">
           <div class="status-indicator" style="color: {getStatusColor(pull)}">
-            <span class="material-symbols-rounded">
-              {pull.pull_request?.merged ? 'merge' : (pull.is_closed ? 'cancel' : 'merge')}
-            </span>
+            {#if pull.is_closed && !pull.pull_request?.merged}
+              <X size={18} />
+            {:else}
+              <GitMerge size={18} />
+            {/if}
           </div>
           <div class="item-main-content">
             <div class="item-title-bar">
               {#if pull.combined_status}
                 <span class="ci-status-icon {pull.combined_status}">
-                  <span class="material-symbols-rounded mini">
-                    {pull.combined_status === 'success' ? 'check_circle' : (pull.combined_status === 'pending' ? 'pending' : 'cancel')}
-                  </span>
+                  {#if pull.combined_status === 'success'}
+                    <CircleCheck size={16} />
+                  {:else if pull.combined_status === 'pending'}
+                    <Clock size={16} />
+                  {:else}
+                    <X size={16} />
+                  {/if}
                 </span>
               {/if}
               <a href="/{repo.data.owner.username}/{repo.data.name}/pulls/{pull.number}" class="item-title-link">
@@ -137,7 +144,7 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
           </div>
           {#if pull.comments > 0}
             <div class="item-comment-badge">
-              <span class="material-symbols-rounded">chat_bubble</span>
+              <MessageSquare size={18} />
               {pull.comments}
             </div>
           {/if}
@@ -187,42 +194,9 @@ import GitPullRequest from "lucide-svelte/icons/git-pull-request";
     to { opacity: 1; transform: translateY(0); }
   }
 
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6rem 2rem;
-    gap: 1.25rem;
-    color: var(--text-muted);
-    text-align: center;
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 
   @keyframes spin {
     to { transform: rotate(360deg); }

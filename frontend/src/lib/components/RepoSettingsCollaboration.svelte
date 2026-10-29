@@ -99,6 +99,10 @@ import Users from "lucide-svelte/icons/users";
   }
 
   onMount(fetchCollaborators);
+  import Search from "lucide-svelte/icons/search";
+  import UserMinus from "lucide-svelte/icons/user-minus";
+  import UserPlus from "lucide-svelte/icons/user-plus";
+  import UserX from "lucide-svelte/icons/user-x";
 </script>
 
 <Card padding="none" class="settings-premium-card">
@@ -111,7 +115,7 @@ import Users from "lucide-svelte/icons/users";
   <div class="settings-content">
     <div class="add-collab-box island">
       <div class="add-header-minimal">
-        <span class="material-symbols-rounded">person_add</span>
+        <UserPlus size={18} />
         <strong>Añadir Colaborador</strong>
       </div>
       <form class="add-form" onsubmit={(e) => { e.preventDefault(); addCollaborator(); }}>
@@ -119,7 +123,7 @@ import Users from "lucide-svelte/icons/users";
           <Input 
             bind:value={newCollaborator} 
             placeholder="Buscar por nombre de usuario..." 
-            icon="search"
+            icon={Search}
             error={message}
           />
           <Button 
@@ -164,7 +168,7 @@ import Users from "lucide-svelte/icons/users";
               </div>
               <Button 
                 variant="ghost" 
-                icon="person_remove" 
+                icon={UserMinus} 
                 class="danger-btn" 
                 onclick={() => removeCollaborator(col.username)} 
               />
@@ -174,7 +178,7 @@ import Users from "lucide-svelte/icons/users";
 
         {#if collaborators.length === 0}
           <div class="empty-state">
-            <span class="material-symbols-rounded">group_off</span>
+            <UserX size={18} />
             <p>Este repositorio no tiene colaboradores externos.</p>
           </div>
         {/if}
@@ -189,7 +193,6 @@ import Users from "lucide-svelte/icons/users";
 
   .add-collab-box { padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .add-header-minimal { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; color: var(--primary-color); }
-  .add-header-minimal span { font-size: 1.5rem; }
   .add-header-minimal strong { font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.85rem; }
 
   .add-form .input-row { display: flex; gap: 1rem; align-items: flex-start; }
@@ -216,7 +219,6 @@ import Users from "lucide-svelte/icons/users";
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
 
   .empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .empty-state span { font-size: 3rem; opacity: 0.3; }
   .empty-state p { font-weight: 700; }
 
   .skeleton-tile { height: 84px; border-radius: 1.5rem; animation: pulse 1.5s infinite; }

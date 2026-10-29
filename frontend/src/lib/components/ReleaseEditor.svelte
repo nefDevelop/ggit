@@ -212,7 +212,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
         {#if attachments.length > 0}
           <div class="attachment-list">
             {#each attachments as a}
-              <div class="attachment-item tonal">
+              <div class="attachment-item panel-surface">
                 <FileText size={18} />
                 <span class="name">{a.name}</span>
                 <Button
@@ -231,7 +231,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     </div>
 
     <aside class="editor-sidebar">
-      <div class="options tonal">
+      <div class="options panel-surface">
         <h4>Options</h4>
         <label class="checkbox-row">
           <input type="checkbox" bind:checked={isPrerelease} />
@@ -349,7 +349,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
     border-color: var(--md-sys-color-primary);
     background: var(--md-sys-color-surface-container-high);
   }
-  .tonal {
+  .panel-surface {
     background: var(--md-sys-color-surface-container);
     border-radius: 1.5rem;
     border: 1px solid var(--md-sys-color-outline-variant);

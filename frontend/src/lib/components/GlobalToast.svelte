@@ -2,9 +2,12 @@
   import { flip } from "svelte/animate";
   import { fly } from "svelte/transition";
   import { toast } from "$lib/toast.svelte";
+  import X from "lucide-svelte/icons/x";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import Info from "lucide-svelte/icons/info";
 </script>
 
-<div class="toast-container">
+<div class="toast-container" aria-live="polite" aria-atomic="false">
   {#each toast.list as item (item.id)}
     <div
       class="toast-item {item.type}"
@@ -12,13 +15,16 @@
       transition:fly={{ x: 100, duration: 300 }}
       role="alert"
     >
-      <span class="material-symbols-rounded icon">
-        {#if item.type === 'success'}check_circle
-        {:else}info{/if}
+      <span class="icon">
+        {#if item.type === 'success'}
+          <CircleCheck size={18} />
+        {:else}
+          <Info size={18} />
+        {/if}
       </span>
       <p>{item.message}</p>
       <button class="close-btn" onclick={() => toast.remove(item.id)}>
-        <span class="material-symbols-rounded">close</span>
+        <X size={18} />
       </button>
     </div>
   {/each}

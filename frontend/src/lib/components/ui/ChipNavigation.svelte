@@ -22,7 +22,7 @@
     items: Tab[];
     activeId: string;
     title?: string;
-    titleIcon?: string | any;
+    titleIcon?: any;
     onSelect?: (id: string) => void;
     class?: string;
   } = $props();
@@ -32,12 +32,8 @@
   {#if title}
     <div class="chip-nav-header">
       {#if titleIcon}
-        {#if typeof titleIcon === 'string'}
-          <span class="material-symbols-rounded">{titleIcon}</span>
-        {:else}
-          {@const Icon = titleIcon}
-          <Icon size={24} />
-        {/if}
+        {@const Icon = titleIcon}
+        <Icon size={24} />
       {/if}
       <h3 class="chip-nav-title">{title}</h3>
     </div>
@@ -50,11 +46,10 @@
           href={item.path} 
           class="chip-item" 
           class:active={activeId === item.id || activeId === item.path || (item.path !== '/' && activeId.startsWith(item.path + '/'))}
+          aria-current={activeId === item.id || activeId === item.path ? 'page' : undefined}
           onclick={() => onSelect?.(item.id)}
         >
-          {#if typeof item.icon === 'string'}
-            <span class="material-symbols-rounded">{item.icon}</span>
-          {:else if item.icon}
+          {#if item.icon}
             {@const Icon = item.icon}
             <Icon size={18} />
           {/if}
@@ -65,11 +60,10 @@
           type="button"
           class="chip-item" 
           class:active={activeId === item.id}
+          aria-current={activeId === item.id ? 'page' : undefined}
           onclick={() => onSelect?.(item.id)}
         >
-          {#if typeof item.icon === 'string'}
-            <span class="material-symbols-rounded">{item.icon}</span>
-          {:else if item.icon}
+          {#if item.icon}
             {@const Icon = item.icon}
             <Icon size={18} />
           {/if}
@@ -153,10 +147,6 @@
     color: var(--md-sys-color-on-primary);
     border-color: var(--primary-color);
     box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
-  }
-
-  .chip-item span.material-symbols-rounded {
-    font-size: 1.25rem;
   }
 
   @media (max-width: 1024px) {

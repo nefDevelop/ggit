@@ -28,6 +28,9 @@
   onMount(() => {
     hljs.highlightAll();
   });
+  import Share2 from "lucide-svelte/icons/share-2";
+  import Pencil from "lucide-svelte/icons/pencil";
+  import FileText from "lucide-svelte/icons/file-text";
 </script>
 
 <div class="gist-view">
@@ -41,9 +44,9 @@
           {/if}
         </div>
         <div class="gist-actions">
-           <Button variant="ghost" icon="share" onclick={copyLink}>Compartir</Button>
+           <Button variant="ghost" icon={Share2} onclick={copyLink}>Compartir</Button>
            {#if gist.owner?.username === authState.user?.username}
-              <Button variant="ghost" icon="edit" href="/gists/{gist.uuid}/edit">Editar</Button>
+              <Button variant="ghost" icon={Pencil} href="/gists/{gist.uuid}/edit">Editar</Button>
            {/if}
         </div>
       </div>
@@ -64,7 +67,7 @@
     {#each files as file}
       <Card variant="low" padding="none" class="file-card">
         <div class="file-header">
-          <span class="material-symbols-rounded">description</span>
+          <FileText size={18} />
           <span class="filename">{file.filename}</span>
           <div class="spacer"></div>
           <Badge variant="ghost">{file.language || 'Plain Text'}</Badge>

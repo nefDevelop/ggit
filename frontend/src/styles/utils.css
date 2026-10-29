@@ -32,9 +32,6 @@
   to { transform: rotate(360deg); }
 }
 
-.status-indicator .material-symbols-rounded.success { color: var(--color-success); }
-.status-indicator .material-symbols-rounded.failure { color: var(--color-danger); }
-.status-indicator .material-symbols-rounded.neutral { color: var(--text-muted); }
 
 /* Utilities */
 .line-clamp-1 {

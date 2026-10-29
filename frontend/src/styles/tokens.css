@@ -3,12 +3,45 @@
   --radius: 1.5rem;
   --font-family: 'Inter', system-ui, sans-serif;
   --font-heading: 'Outfit', sans-serif;
+
+  /* Typography scale */
+  --font-size-display: 2.5rem;
+  --font-size-title: 1.75rem;
+  --font-size-subtitle: 1.25rem;
+  --font-size-body: 1rem;
+  --font-size-label: 0.9rem;
+  --font-size-small: 0.8rem;
+  --weight-regular: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+  --line-height-body: 1.6;
+  --line-height-heading: 1.2;
   --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 8px rgba(0,0,0,0.1);
   --shadow-lg: 0 8px 16px rgba(0,0,0,0.15);
   --shadow-xl: 0 12px 32px rgba(0,0,0,0.2);
   --inner-shadow: inset 0 2px 8px rgba(0,0,0,0.1), inset 0 10px 48px rgba(0,0,0,0.06);
   --island-shadow: 0 4px 12px rgba(0,0,0,0.08);
+
+  /* Spacing scale: single source for margins, padding and gaps */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Mobile shell */
+  --mobile-nav-height: 60px;
+  --mobile-subnav-height: 68px;
+
+  /* Subtle status surfaces: base definitions so every theme has them. */
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--color-danger), transparent 90%);
 
   /* GLOBAL DYNAMIC MAPPINGS (MD3 to Legacy) */
   /* These map the Material Design 3 tokens to the application's legacy variables */
@@ -163,10 +196,18 @@
   border: 1px solid var(--md-sys-color-outline-variant) !important;
 }
 
-.md-tonal-secondary, .tonal {
+.md-tonal-secondary {
   background-color: var(--md-sys-color-secondary-container) !important;
   color: var(--md-sys-color-on-secondary-container) !important;
   border: 1px solid var(--md-sys-color-outline-variant) !important;
+}
+
+/* Canónico: .tonal es secondary-container. Las variantes locales deben usar
+   estos mismos tokens en vez de inventar un tinte propio. */
+.tonal {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
 }
 
 .md-tonal-tertiary, .tonal-tertiary {
@@ -228,6 +269,13 @@
   --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
   --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
   --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --scrim: rgba(0, 0, 0, 0.7);
+  --sunken-1: color-mix(in srgb, var(--md-sys-color-surface), black 4%);
+  --sunken-2: color-mix(in srgb, var(--md-sys-color-surface), black 8%);
+  --sunken-3: color-mix(in srgb, var(--md-sys-color-surface), black 15%);
+  --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.18);
+  --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.4);
 }
 
 /* Default Dark */
@@ -280,12 +328,19 @@
   --shadow-xl: 0 12px 32px rgba(0,0,0,0.5);
   --inner-shadow: inset 0 2px 8px rgba(0,0,0,0.4), inset 0 10px 48px rgba(0,0,0,0.15);
   --island-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --scrim: rgba(0, 0, 0, 0.7);
+  --sunken-1: color-mix(in srgb, var(--md-sys-color-surface), black 10%);
+  --sunken-2: color-mix(in srgb, var(--md-sys-color-surface), black 20%);
+  --sunken-3: color-mix(in srgb, var(--md-sys-color-surface), black 35%);
+  --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.55);
+  --shadow-modal: 0 24px 48px rgba(0, 0, 0, 0.7);
 }
 
 /* AYU Theme */
 [data-theme="ayu"][data-color-scheme="light"] {
   --md-sys-color-primary: #ff9940;
-  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-on-primary: #000000;
   --md-sys-color-primary-container: #ffdbb8;
   --md-sys-color-on-primary-container: #4d2b0e;
   --md-sys-color-secondary: #5c6166;
@@ -293,11 +348,11 @@
   --md-sys-color-secondary-container: #e0e2e6;
   --md-sys-color-on-secondary-container: #191c1e;
   --md-sys-color-tertiary: #73d031;
-  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-on-tertiary: #000000;
   --md-sys-color-tertiary-container: #d2f8b0;
   --md-sys-color-on-tertiary-container: #102100;
   --md-sys-color-error: #f24130;
-  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-on-error: #000000;
   --md-sys-color-error-container: #ffdad4;
   --md-sys-color-on-error-container: #410001;
   --md-sys-color-background: #fafafa;
@@ -318,6 +373,12 @@
   --surface-rgb: 253, 251, 255;
   --color-success: var(--md-sys-color-tertiary);
   --color-warning: #ff9940;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
 }
 
 [data-theme="ayu"][data-color-scheme="dark"] {
@@ -355,12 +416,18 @@
   --surface-rgb: 15, 20, 25;
   --color-success: var(--md-sys-color-tertiary);
   --color-warning: #ffb454;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), white 5%);
 }
 
 /* MONOKAI Theme */
 [data-theme="monokai"][data-color-scheme="light"] {
   --md-sys-color-primary: #75aa00;
-  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-on-primary: #000000;
   --md-sys-color-primary-container: #e2f0c7;
   --md-sys-color-on-primary-container: #263c00;
   --md-sys-color-secondary: #5a5a55;
@@ -368,11 +435,11 @@
   --md-sys-color-secondary-container: #e0dfdb;
   --md-sys-color-on-secondary-container: #1b1c17;
   --md-sys-color-tertiary: #fd971f;
-  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-on-tertiary: #000000;
   --md-sys-color-tertiary-container: #ffddb3;
   --md-sys-color-on-tertiary-container: #2a1800;
   --md-sys-color-error: #f92672;
-  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-on-error: #000000;
   --md-sys-color-error-container: #ffdad9;
   --md-sys-color-on-error-container: #410014;
   --md-sys-color-background: #f7f7f4;
@@ -393,6 +460,12 @@
   --surface-rgb: 253, 251, 255;
   --color-success: var(--md-sys-color-primary);
   --color-warning: var(--md-sys-color-tertiary);
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
 }
 
 [data-theme="monokai"][data-color-scheme="dark"] {
@@ -409,7 +482,7 @@
   --md-sys-color-tertiary-container: #693c00;
   --md-sys-color-on-tertiary-container: #ffddb3;
   --md-sys-color-error: #f92672;
-  --md-sys-color-on-error: #640026;
+  --md-sys-color-on-error: #000000;
   --md-sys-color-error-container: #8f003a;
   --md-sys-color-on-error-container: #ffdad9;
   --md-sys-color-background: #272822;
@@ -430,24 +503,30 @@
   --surface-rgb: 39, 40, 34;
   --color-success: var(--md-sys-color-primary);
   --color-warning: var(--md-sys-color-tertiary);
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), white 5%);
 }
 
 /* NORD Theme */
 [data-theme="nord"][data-color-scheme="light"] {
   --md-sys-color-primary: #5e81ac;
-  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-on-primary: #000000;
   --md-sys-color-primary-container: #d8dee9;
   --md-sys-color-on-primary-container: #2e3440;
   --md-sys-color-secondary: #81a1c1;
-  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-on-secondary: #000000;
   --md-sys-color-secondary-container: #e5e9f0;
   --md-sys-color-on-secondary-container: #3b4252;
   --md-sys-color-tertiary: #88c0d0;
-  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-on-tertiary: #000000;
   --md-sys-color-tertiary-container: #d1e8ee;
   --md-sys-color-on-tertiary-container: #001f25;
   --md-sys-color-error: #bf616a;
-  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-on-error: #000000;
   --md-sys-color-error-container: #ffdad9;
   --md-sys-color-on-error-container: #410009;
   --md-sys-color-background: #eceff4;
@@ -468,6 +547,12 @@
   --surface-rgb: 253, 251, 255;
   --color-success: #a3be8c;
   --color-warning: #ebcb8b;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), black 5%);
 }
 
 [data-theme="nord"][data-color-scheme="dark"] {
@@ -480,11 +565,11 @@
   --md-sys-color-secondary-container: #004a6d;
   --md-sys-color-on-secondary-container: #c5e7ff;
   --md-sys-color-tertiary: #5e81ac;
-  --md-sys-color-on-tertiary: #003258;
+  --md-sys-color-on-tertiary: #000000;
   --md-sys-color-tertiary-container: #00497c;
   --md-sys-color-on-tertiary-container: #d2e4ff;
   --md-sys-color-error: #bf616a;
-  --md-sys-color-on-error: #680006;
+  --md-sys-color-on-error: #000000;
   --md-sys-color-error-container: #93000d;
   --md-sys-color-on-error-container: #ffdad9;
   --md-sys-color-background: #2e3440;
@@ -505,6 +590,12 @@
   --surface-rgb: 46, 52, 64;
   --color-success: #a3be8c;
   --color-warning: #ebcb8b;
+  --success: var(--color-success);
+  --success-container: color-mix(in srgb, var(--color-success), transparent 80%);
+  --bg-success-subtle: color-mix(in srgb, var(--color-success), transparent 85%);
+  --bg-warning-subtle: color-mix(in srgb, var(--color-warning), transparent 85%);
+  --bg-danger-subtle: color-mix(in srgb, var(--md-sys-color-error), transparent 90%);
+  --surface-variant-hover: color-mix(in srgb, var(--md-sys-color-surface-variant), white 5%);
 }
 
 /* GLOBAL UI COMPONENTS */

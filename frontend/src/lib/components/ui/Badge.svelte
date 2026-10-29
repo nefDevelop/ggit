@@ -36,12 +36,8 @@
 
 <span class="badge {variants[variant]} {sizes[size]} {className}">
   {#if icon}
-    {#if typeof icon === 'string'}
-      <span class="material-symbols-rounded icon">{icon}</span>
-    {:else}
-      {@const Icon = icon}
-      <Icon size={size === 'sm' ? 12 : 14} class="icon" />
-    {/if}
+    {@const Icon = icon}
+    <Icon size={size === 'sm' ? 12 : 14} class="icon" />
   {/if}
   {#if children}
     {@render children()}

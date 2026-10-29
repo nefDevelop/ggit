@@ -42,10 +42,11 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
       saving = false;
     }
   }
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="editor-overlay">
-  <div class="editor-modal island">
+  <div class="editor-modal island" role="dialog" aria-modal="true" aria-label="Editar configuración" use:focusTrap>
     <header class="modal-header">
       <div class="title-wrap">
         <Settings size={20} />
@@ -93,7 +94,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 
 <style>
   .editor-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 2rem; }
-  .editor-modal { width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline-variant); overflow: hidden; box-shadow: 0 24px 48px rgba(0,0,0,0.4); }
+  .editor-modal { width: 100%; max-width: 900px; max-height: 90vh; display: flex; flex-direction: column; background: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline-variant); overflow: hidden; box-shadow: var(--shadow-modal); }
   
   .modal-header { padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(var(--primary-rgb), 0.05); }
   .title-wrap { display: flex; align-items: center; gap: 1rem; }
@@ -113,7 +114,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 
   .error-msg { color: var(--error); font-size: 0.9rem; font-weight: 700; margin: 0 2rem 1rem; padding: 1rem; background: rgba(var(--error-rgb), 0.1); border-radius: 1rem; }
 
-  .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; justify-content: space-between; gap: 2rem; background: rgba(0,0,0,0.1); }
+  .modal-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); display: flex; align-items: center; justify-content: space-between; gap: 2rem; background: var(--sunken-1); }
   
   .warning-box { display: flex; align-items: center; gap: 0.75rem; color: var(--status-warning-soft); }
   .warning-box p { margin: 0; font-size: 0.85rem; font-weight: 700; max-width: 300px; line-height: 1.3; }

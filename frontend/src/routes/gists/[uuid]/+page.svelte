@@ -34,6 +34,7 @@
   $effect(() => {
     if (uuid) fetchGist();
   });
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
 </script>
 
 <div class="gist-page">
@@ -45,7 +46,7 @@
       </div>
     {:else if error}
       <Card variant="low" padding="lg" class="error-state">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         <h3>{error}</h3>
         <p>The gist you are looking for might be private or deleted.</p>
         <Button variant="primary" href="/">Go Home</Button>
@@ -57,7 +58,7 @@
 </div>
 
 <style>
-  .gist-page { min-height: 100vh; background: var(--bg-color); padding: 4rem 2rem; }
+  .gist-page { min-height: 100vh; background: var(--bg-color); padding: var(--space-7) var(--space-6); }
   .container { max-width: 900px; margin: 0 auto; }
   
   .skeleton-view { display: flex; flex-direction: column; gap: 2rem; }
@@ -68,4 +69,8 @@
 
   :global(.error-state) { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   :global(.error-state span) { font-size: 4rem; color: var(--md-sys-color-error); }
+
+  @media (max-width: 600px) {
+    .gist-page { padding: var(--space-6) var(--space-4); }
+  }
 </style>

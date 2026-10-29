@@ -88,6 +88,14 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   }
 
   onMount(fetchReport);
+  import BadgeCheck from "lucide-svelte/icons/badge-check";
+  import Package from "lucide-svelte/icons/package";
+  import Hammer from "lucide-svelte/icons/hammer";
+  import Monitor from "lucide-svelte/icons/monitor";
+  import FileCheck from "lucide-svelte/icons/file-check";
+  import WandSparkles from "lucide-svelte/icons/wand-sparkles";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import Circle from "lucide-svelte/icons/circle";
 </script>
 
 <Card padding="none" class="settings-premium-card">
@@ -113,7 +121,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
       <div class="skeleton-form"></div>
     {:else if !report || !report.issues || report.issues.length === 0}
       <div class="empty-state-janitor island">
-        <span class="material-symbols-rounded">verified</span>
+        <BadgeCheck size={18} />
         <h3>{i18n.t("settings.everything_clean")}</h3>
         <p>{i18n.t("settings.no_waste_detected")}</p>
         <Button variant="outline" size="sm" onclick={runScan}>{i18n.t("settings.repeat_scan")}</Button>
@@ -149,17 +157,21 @@ import Trash2 from "lucide-svelte/icons/trash-2";
               tabindex="0"
             >
               <div class="issue-selector">
-                <span class="material-symbols-rounded">{selectedPaths.includes(issue.path) ? 'check_circle' : 'circle'}</span>
+                {#if selectedPaths.includes(issue.path)}
+                  <CircleCheck size={18} />
+                {:else}
+                  <Circle size={18} />
+                {/if}
               </div>
               <div class="issue-icon">
                 {#if issue.type === 'dependency'}
-                  <span class="material-symbols-rounded">package_2</span>
+                  <Package size={18} />
                 {:else if issue.type === 'build'}
-                  <span class="material-symbols-rounded">construction</span>
+                  <Hammer size={18} />
                 {:else if issue.type === 'system'}
-                  <span class="material-symbols-rounded">desktop_windows</span>
+                  <Monitor size={18} />
                 {:else}
-                  <span class="material-symbols-rounded">file_present</span>
+                  <FileCheck size={18} />
                 {/if}
               </div>
               <div class="issue-body">
@@ -177,7 +189,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
         </div>
 
         <div class="cleanup-hint island">
-          <span class="material-symbols-rounded">magic_button</span>
+          <WandSparkles size={18} />
           <p>{@html i18n.t("settings.cleanup_hint")}</p>
         </div>
       </div>
@@ -215,12 +227,10 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .issue-meta-size { font-weight: 900; color: var(--text-muted); font-size: 0.85rem; opacity: 0.6; }
 
   .empty-state-janitor { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
-  .empty-state-janitor span { font-size: 5rem; color: var(--success); opacity: 0.3; }
   .empty-state-janitor h3 { margin: 0; font-size: 1.75rem; font-weight: 950; }
   .empty-state-janitor p { color: var(--text-muted); font-size: 1.1rem; max-width: 450px; }
 
   .cleanup-hint { display: flex; align-items: center; gap: 1.25rem; padding: 1.5rem 2rem; border-radius: 1.5rem; background: rgba(var(--primary-rgb), 0.05); color: var(--text-muted); font-size: 0.95rem; border: 1px solid rgba(var(--primary-rgb), 0.1); }
-  .cleanup-hint span { font-size: 2rem; color: var(--primary-color); }
 
   .skeleton-form { height: 400px; background: var(--md-sys-color-surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 50% { opacity: 0.5; } }

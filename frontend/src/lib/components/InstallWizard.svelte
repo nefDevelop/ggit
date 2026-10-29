@@ -1,6 +1,7 @@
 <script lang="ts">
   import { apiFetch } from "$lib/api";
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Card from '$lib/components/ui/Card.svelte';
@@ -30,6 +31,7 @@
       const res = await apiFetch('/api/v2/install/settings', { silent: true });
       if (res.status === 403) {
         alreadyInstalled = true;
+        goto('/', { replaceState: true });
         return;
       }
       if (res.ok) {
@@ -94,7 +96,7 @@
         <div class="install-brand">
           <div class="brand-content">
             <Terminal size={64} class="logo-icon" />
-            <h1>Ggit</h1>
+            <h1 class="text-gradient">Ggit</h1>
             <p>Tu plataforma Git autoalojada, ligera y elegante, lista en minutos.</p>
           </div>
           <div class="brand-footer">
@@ -269,7 +271,7 @@
       0 32px 80px rgba(0, 0, 0, 0.4),
       inset 0 1px 1px rgba(255, 255, 255, 0.1),
       inset 0 -1px 1px rgba(0, 0, 0, 0.2) !important;
-    border: 1px solid rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid var(--md-sys-color-outline-variant) !important;
     background: var(--md-sys-color-surface-container-highest) !important;
   }
 

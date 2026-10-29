@@ -17,6 +17,7 @@ import X from "lucide-svelte/icons/x";
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === "Escape" && show) onclose();
   }
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -32,10 +33,10 @@ import X from "lucide-svelte/icons/x";
 
   <!-- MODAL CONTENT -->
   <div class="modal-wrapper" transition:fly={{ y: 20, duration: 300 }}>
-    <div class="modal-card tonal" style="max-width: {maxWidth}">
+    <div class="modal-card tonal" style="max-width: {maxWidth}" use:focusTrap role="dialog" aria-modal="true" aria-label={title}>
       <header class="modal-header">
         <h3>{title}</h3>
-        <button class="close-btn" onclick={onclose}>
+        <button class="close-btn" onclick={onclose} aria-label="Cerrar">
           <X size={20} />
         </button>
       </header>
@@ -79,7 +80,7 @@ import X from "lucide-svelte/icons/x";
     pointer-events: auto;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-modal);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
@@ -102,7 +103,7 @@ import X from "lucide-svelte/icons/x";
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 0.75rem;
     border-radius: 50%;
     transition: all 0.2s;
   }
@@ -117,5 +118,11 @@ import X from "lucide-svelte/icons/x";
     font-size: 1rem;
     line-height: 1.6;
     color: var(--text-color);
+  }
+
+  @media (max-width: 600px) {
+    .modal-wrapper { padding: 1rem; }
+    .modal-header { padding: 1rem 1.25rem; }
+    .modal-body { padding: 1.25rem; }
   }
 </style>

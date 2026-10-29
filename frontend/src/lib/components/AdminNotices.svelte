@@ -104,17 +104,17 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
           {:else}
             {#each notices as notice}
               <tr class="hover-row clickable" onclick={() => openDetail(notice)}>
-                <td class="id-cell">#{notice.id}</td>
-                <td>
+                <td class="id-cell" data-label="ID">#{notice.id}</td>
+                <td data-label="Tipo">
                   <span class="type-badge tier-{notice.type}">{notice.type_name}</span>
                 </td>
-                <td>
+                <td data-label="Descripción">
                   <div class="desc-preview">{notice.description}</div>
                 </td>
-                <td>
+                <td data-label="Fecha">
                   <span class="date-tag">{formatDateTime(notice.created_at)}</span>
                 </td>
-                <td>
+                <td data-label="Acciones">
                   <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={(e) => { e.stopPropagation(); deleteNotice(notice.id); }} />
                 </td>
               </tr>
@@ -157,7 +157,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
 
 <style>
   .admin-notices-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -182,7 +182,7 @@ import ChevronRight from "lucide-svelte/icons/chevron-right";
   .desc-preview { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--output-text); max-width: 500px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
   .date-tag { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-  .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: rgba(0,0,0,0.1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
+  .pagination-footer { margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; background: var(--sunken-1); border-radius: 1.5rem; border: 1px solid var(--md-sys-color-outline-variant); }
   .count-info { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
   .nav-controls { display: flex; align-items: center; gap: 1.5rem; }
   .page-current { font-weight: 800; font-size: 0.9rem; }

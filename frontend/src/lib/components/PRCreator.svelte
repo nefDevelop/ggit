@@ -193,7 +193,7 @@
   }
   .panel-tabs {
     display: flex;
-    background: rgba(0,0,0,0.2);
+    background: var(--sunken-2);
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
   .panel-tabs button {

@@ -121,10 +121,10 @@ import Building2 from "lucide-svelte/icons/building-2";
   }
 
   .settings-premium-body {
-    padding: 0 1.5rem 4rem;
+    padding: 0 var(--space-5) var(--space-7);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: var(--space-6);
   }
 
   .mobile-nav-wrapper {
@@ -134,7 +134,7 @@ import Building2 from "lucide-svelte/icons/building-2";
   .settings-content {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: var(--space-7);
     animation: contentFade 0.3s ease-out;
     min-width: 0;
     max-width: 100%;
@@ -178,8 +178,8 @@ import Building2 from "lucide-svelte/icons/building-2";
       margin-top: 0;
     }
     .settings-content {
-      padding: 1.5rem;
-      gap: 2rem;
+      padding: var(--space-5) var(--space-5) calc(var(--space-7) + 2rem);
+      gap: var(--space-6);
       flex: 1;
     }
   }
@@ -189,8 +189,8 @@ import Building2 from "lucide-svelte/icons/building-2";
       gap: 0;
     }
     .settings-content {
-      padding: 1rem;
-      gap: 1.5rem;
+      padding: var(--space-4) var(--space-4) calc(var(--space-7) + 2rem);
+      gap: var(--space-5);
     }
   }
 </style>

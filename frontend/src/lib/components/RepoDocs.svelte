@@ -13,7 +13,8 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
 import Scale from "lucide-svelte/icons/scale";
 import FileText from "lucide-svelte/icons/file-text";
 import Folder from "lucide-svelte/icons/folder";
-import AlertCircle from "lucide-svelte/icons/alert-circle";
+import EmptyState from "./ui/EmptyState.svelte";
+  import AlertCircle from "lucide-svelte/icons/alert-circle";
 
 
 
@@ -78,6 +79,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
     parts.pop();
     loadPath(parts.join('/') || adrFolder);
   }
+  import ChevronRight from "lucide-svelte/icons/chevron-right";
 </script>
 
 <div class="repo-docs-container">
@@ -89,16 +91,11 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
         <p>Loading documentation...</p>
       </div>
     {:else if error}
-      <div class="empty-state">
-        <div class="empty-icon-ring">
-          <AlertCircle size={40} />
-        </div>
-        <h2>No documentation found</h2>
-        <p>{error}</p>
+      <EmptyState icon={AlertCircle} title="No documentation found" description={error}>
         <div class="hint">
-            Tip: Create a <code>docs/</code> or <code>ADR/</code> folder in your root branch to see it here.
+          Tip: Create a <code>docs/</code> or <code>ADR/</code> folder in your root branch to see it here.
         </div>
-      </div>
+      </EmptyState>
     {:else if currentFile}
       <div class="file-view">
         <div class="file-header">
@@ -120,7 +117,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
             {/if}
         </div>
         
-        <Card class="markdown-body-card">
+        <Card variant="canvas" padding="lg">
             <MarkdownRenderer content={currentFile.content} />
         </Card>
       </div>
@@ -146,7 +143,7 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
               {/if}
             </div>
             <div class="item-actions-right">
-              <span class="material-symbols-rounded" style="color: var(--text-muted); opacity: 0.5; font-size: 1.2rem;">chevron_right</span>
+              <span style="color: var(--text-muted); opacity: 0.5;"><ChevronRight size={18} /></span>
             </div>
           </button>
         {/each}
@@ -168,43 +165,9 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
 
   .hint { margin-top: 1rem; font-size: 0.85rem; opacity: 0.7; }
 
-  .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 6rem 2rem;
-    text-align: center;
-    gap: 1.25rem;
-    color: var(--text-muted);
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 
   .list-item-clickable {
     width: 100%;
@@ -223,5 +186,4 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   .file-name { margin: 0; display: flex; align-items: center; gap: 0.75rem; font-size: 1.5rem; font-weight: 900; }
   .last-update { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-  :global(.markdown-body-card) { padding: 2.5rem !important; border-radius: 1.5rem !important; background: var(--bg-color) !important; border: 1px solid var(--md-sys-color-outline-variant) !important; }
 </style>

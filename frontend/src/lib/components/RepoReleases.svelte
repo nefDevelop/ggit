@@ -10,7 +10,8 @@
   
 
 import Tag from "lucide-svelte/icons/tag";
-import Rocket from "lucide-svelte/icons/rocket";
+import EmptyState from "./ui/EmptyState.svelte";
+  import Rocket from "lucide-svelte/icons/rocket";
 import Plus from "lucide-svelte/icons/plus";
 import Edit from "lucide-svelte/icons/edit";
 import Trash2 from "lucide-svelte/icons/trash-2";
@@ -105,11 +106,12 @@ import FileArchive from "lucide-svelte/icons/file-archive";
   }
 
   onMount(() => fetchReleases());
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="repo-releases">
   {#if showEditor}
-    <div class="editor-overlay">
+    <div class="editor-overlay" role="dialog" aria-modal="true" aria-label="Editar release" use:focusTrap>
       <ReleaseEditor
         {username}
         {reponame}
@@ -139,14 +141,13 @@ import FileArchive from "lucide-svelte/icons/file-archive";
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if releases.length === 0}
-    <div class="empty-state">
-      <div class="empty-icon-ring">
-        <Rocket size={40} />
-      </div>
-      <h2>No releases yet</h2>
-      <p>Start tagging your milestones by creating the first release.</p>
+    <EmptyState
+      icon={Rocket}
+      title="No releases yet"
+      description="Start tagging your milestones by creating the first release."
+    >
       <Button onclick={handleAdd} icon={Plus}>Create your first release</Button>
-    </div>
+    </EmptyState>
   {:else}
     <div class="flat-list-container">
       {#each releases as release}
@@ -197,15 +198,15 @@ import FileArchive from "lucide-svelte/icons/file-archive";
             <div class="asset-links-inline" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem;">
               {#if release.attachments && release.attachments.length > 0}
                 {#each release.attachments as asset}
-                  <a href={asset.download_url} class="btn-icon-minimal" title={asset.name} download>
+                  <a href={asset.download_url} class="btn-icon-minimal" title={asset.name} aria-label={`Descargar ${asset.name}`} download>
                     <Download size={16} />
                   </a>
                 {/each}
               {/if}
-              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="btn-icon-minimal" title="Source code (zip)" download>
+              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.zip`} class="btn-icon-minimal" title="Source code (zip)" aria-label="Descargar código fuente (zip)" download>
                 <FileArchive size={16} />
               </a>
-              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="btn-icon-minimal" title="Source code (tar.gz)" download>
+              <a href={`/api/v2/${username}/${reponame}/archive/${release.tag_name}.tar.gz`} class="btn-icon-minimal" title="Source code (tar.gz)" aria-label="Descargar código fuente (tar.gz)" download>
                 <FileArchive size={16} />
               </a>
             </div>
@@ -277,40 +278,7 @@ import FileArchive from "lucide-svelte/icons/file-archive";
     }
   }
 
-  .empty-state {
-    padding: 6rem 2rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-    color: var(--text-muted);
-  }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0 0 1rem 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 </style>

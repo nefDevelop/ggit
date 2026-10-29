@@ -31,6 +31,10 @@
   }
 
   onMount(fetchRepos);
+  import Plus from "lucide-svelte/icons/plus";
+  import LogOut from "lucide-svelte/icons/log-out";
+  import Package from "lucide-svelte/icons/package";
+  import FolderOpen from "lucide-svelte/icons/folder-open";
 </script>
 
 <div class="settings-repos-container">
@@ -39,7 +43,7 @@
   <div class="modular-stack">
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">inventory_2</span>
+        <Package size={18} />
         Inventario de Código
       </div>
       <div class="island tonal-list">
@@ -47,9 +51,9 @@
           <div class="skeleton-repos"></div>
         {:else if repos.length === 0}
           <div class="empty-state-box">
-             <span class="material-symbols-rounded">folder_open</span>
+             <FolderOpen size={18} />
              <p>Aún no tienes repositorios vinculados.</p>
-             <Button variant="primary" href="/repo/create" icon="add">Crear Primer Repositorio</Button>
+             <Button variant="primary" href="/repo/create" icon={Plus}>Crear Primer Repositorio</Button>
           </div>
         {:else}
           {#each repos as repo}
@@ -62,7 +66,7 @@
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    icon="logout" 
+                    icon={LogOut} 
                     class="danger-btn" 
                     onclick={() => leaveRepo(repo.id, repo.full_name)}
                   >Dejar Colaboración</Button>
@@ -87,7 +91,6 @@
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .module-tag span { font-size: 1.25rem; }
 
   
   .repo-modular-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }

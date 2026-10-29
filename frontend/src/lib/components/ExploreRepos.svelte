@@ -205,7 +205,7 @@ import Tag from "lucide-svelte/icons/tag";
 
   /* MAIN */
   .repos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-  :global(.repo-card) { display: flex !important; flex-direction: column !important; gap: 1rem !important; }
+  :global(.repo-card) { display: flex; flex-direction: column; gap: 1rem; }
 
   .repo-header { display: flex; align-items: center; gap: 0.75rem; }
   .repo-type-icon { margin-left: auto; color: var(--md-sys-color-primary); opacity: 0.6; display: flex; }

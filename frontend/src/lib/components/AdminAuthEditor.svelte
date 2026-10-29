@@ -340,7 +340,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 1rem;
-    background: rgba(0,0,0,0.2);
+    background: var(--sunken-2);
     padding: 1.5rem;
     border-radius: 0.75rem;
   }

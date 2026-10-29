@@ -15,6 +15,8 @@ import Check from "lucide-svelte/icons/check";
     icon = GitBranch,
   } = $props();
 
+  const Icon = $derived(icon);
+
   let isOpen = $state(false);
   let filter = $state("");
 
@@ -38,13 +40,8 @@ import Check from "lucide-svelte/icons/check";
     <span class="selector-label">{label}</span>
   {/if}
   <div class="selector-control">
-    <button class="selector-trigger tonal" onclick={() => (isOpen = !isOpen)}>
-      {#if typeof icon === 'string'}
-        <GitBranch size={18} />
-      {:else}
-        {@const Icon = icon}
-        <Icon size={18} />
-      {/if}
+    <button class="selector-trigger tonal" aria-expanded={isOpen} aria-haspopup="listbox" onclick={() => (isOpen = !isOpen)}>
+      <Icon size={18} />
       <span class="current-name">{selected || "Select branch..."}</span>
       <ChevronDown size={20} class="expand" />
     </button>
@@ -150,6 +147,7 @@ import Check from "lucide-svelte/icons/check";
     top: calc(100% + 0.5rem);
     left: 0;
     width: 300px;
+    max-width: calc(100vw - 2rem);
     max-height: 400px;
     z-index: 1000;
     display: flex;
@@ -157,7 +155,7 @@ import Check from "lucide-svelte/icons/check";
     overflow: hidden;
     background: var(--md3-surface-2);
     border: 1px solid var(--md-sys-color-outline-variant);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-popover);
     animation: slideDown 0.2s cubic-bezier(0, 0, 0.2, 1);
   }
 
@@ -178,7 +176,7 @@ import Check from "lucide-svelte/icons/check";
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
   }
   .search-box :global(svg) {
     color: var(--text-muted);

@@ -97,8 +97,9 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 			!authState.user?.disable_news_feed,
 	);
 	const hasSubNav = $derived(
-		$page.url.pathname.startsWith("/admin") || 
-		$page.url.pathname.startsWith("/user/settings")
+		$page.url.pathname.startsWith("/admin") ||
+		$page.url.pathname.startsWith("/user/settings") ||
+		/^\/[^/]+\/[^/]+\/settings(?:\/|$)/.test($page.url.pathname)
 	);
 </script>
 
@@ -162,6 +163,7 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 </svelte:head>
 
 <div id="app-layout" class:has-right-sidebar={showRightSidebar} class:has-sub-nav={hasSubNav}>
+	<a class="skip-link" href="#main-content">Saltar al contenido</a>
 	{#if authState.isAuthenticated}
 		<div class="navigation-sidebar">
 			<Navigation />
@@ -178,8 +180,8 @@ import TriangleAlert from "lucide-svelte/icons/triangle-alert";
 				</p>
 			</div>
 		{/if}
-		<main id="main-content">
-			{#if authState.loading || !authState.installChecked}
+		<main id="main-content" tabindex="-1">
+			{#if authState.loading || !authState.installChecked || (authState.isInstalled && $page.url.pathname === "/install")}
 				<div class="initial-loading">
 					<div class="spinner"></div>
 				</div>

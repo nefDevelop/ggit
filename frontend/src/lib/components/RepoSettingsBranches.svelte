@@ -98,6 +98,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
   }
 
   onMount(fetchBranches);
+  import Settings from "lucide-svelte/icons/settings";
 </script>
 
 {#if !selectedBranch}
@@ -139,7 +140,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
                     </div>
                   </div>
                 </div>
-                <Button variant="outline" size="sm" icon="settings" onclick={() => editProtection(branches.default.name)}>
+                <Button variant="outline" size="sm" icon={Settings} onclick={() => editProtection(branches.default.name)}>
                   Configurar Reglas
                 </Button>
               </div>
@@ -166,7 +167,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
                         {/if}
                       </div>
                     </div>
-                    <Button variant="ghost" size="sm" icon="settings" onclick={() => editProtection(branch.name)} />
+                    <Button variant="ghost" size="sm" icon={Settings} onclick={() => editProtection(branch.name)} />
                   </div>
                 {/each}
               </div>
@@ -178,7 +179,7 @@ import ArrowLeft from "lucide-svelte/icons/arrow-left";
   </Card>
 {:else}
   <div class="protection-view">
-    <Button variant="ghost" icon="arrow_back" onclick={() => selectedBranch = null} class="back-link">
+    <Button variant="ghost" icon={ArrowLeft} onclick={() => selectedBranch = null} class="back-link">
       Volver a la lista de ramas
     </Button>
 

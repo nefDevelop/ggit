@@ -40,12 +40,16 @@
   }
 
   onMount(fetchTeams);
+  import Plus from "lucide-svelte/icons/plus";
+  import User from "lucide-svelte/icons/user";
+  import Book from "lucide-svelte/icons/book";
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="org-teams">
   <header class="section-actions">
     <button class="btn btn-primary" onclick={() => (showModal = true)}>
-      <span class="material-symbols-rounded">add</span>
+      <Plus size={18} />
       New Team
     </button>
   </header>
@@ -61,7 +65,8 @@
       <div
         class="modal-content tonal"
         role="dialog" tabindex="-1"
-        aria-modal="true"
+        aria-modal="true" aria-label="Crear equipo"
+        use:focusTrap
         onclick={(e) => e.stopPropagation()}
         onkeydown={(e) => e.stopPropagation()}
       >
@@ -143,11 +148,11 @@
         <div class="team-footer">
           <div class="team-stats">
             <div class="item">
-              <span class="material-symbols-rounded">person</span>
+              <User size={18} />
               {team.NumMembers} Members
             </div>
             <div class="item">
-              <span class="material-symbols-rounded">book</span>
+              <Book size={18} />
               {team.NumRepos} Repos
             </div>
           </div>
@@ -233,10 +238,6 @@
     font-size: 0.8rem;
     color: var(--text-muted);
   }
-  .team-stats .item span {
-    font-size: 1.1rem;
-    opacity: 0.7;
-  }
 
   .small {
     padding: 0.4rem 0.8rem;
@@ -291,7 +292,7 @@
   .field input,
   .field textarea,
   .field select {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
@@ -308,5 +309,9 @@
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .teams-grid { grid-template-columns: 1fr; }
   }
 </style>

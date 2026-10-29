@@ -4,6 +4,10 @@
   import { page } from '$app/state';
   import UserRow from '$lib/components/UserRow.svelte';
   import RepoRow from '$lib/components/RepoRow.svelte';
+  import EmptyState from '$lib/components/ui/EmptyState.svelte';
+  import GitFork from 'lucide-svelte/icons/git-fork';
+  import Star from 'lucide-svelte/icons/star';
+  import Eye from 'lucide-svelte/icons/eye';
 
   let { type } = $props<{ type: 'watchers' | 'stars' | 'forks' }>();
   
@@ -39,14 +43,19 @@
   }
 
   onMount(fetchData);
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
 </script>
 
 <div class="social-list-view island">
   <header class="view-header">
     <div class="title-group">
-        <span class="material-symbols-rounded">
-            {type === 'watchers' ? 'visibility' : type === 'stars' ? 'star' : 'fork_left'}
-        </span>
+        {#if type === 'watchers'}
+          <Eye size={18} />
+        {:else if type === 'stars'}
+          <Star size={18} />
+        {:else}
+          <GitFork size={18} />
+        {/if}
         <h2>{titles[type as 'watchers' | 'stars' | 'forks']}</h2>
     </div>
     <div class="meta">
@@ -63,14 +72,14 @@
       </div>
     {:else if error}
       <div class="error-msg">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         <p>{error}</p>
       </div>
     {:else if data.length === 0}
-      <div class="empty-state">
-        <span class="material-symbols-rounded">group_off</span>
-        <p>Aún no hay {type} en este repositorio.</p>
-      </div>
+      <EmptyState
+        icon={type === 'forks' ? GitFork : type === 'stars' ? Star : Eye}
+        description={`Aún no hay ${type} en este repositorio.`}
+      />
     {:else}
       <div class="list-grid">
         {#each data as item}
@@ -107,11 +116,6 @@
     gap: 0.75rem;
   }
 
-  .title-group span {
-    color: var(--primary);
-    font-size: 1.5rem;
-  }
-
   .view-header h2 {
     margin: 0;
     font-size: 1.25rem;
@@ -137,18 +141,7 @@
     gap: 0.75rem;
   }
 
-  .empty-state {
-    padding: 4rem;
-    text-align: center;
-    color: var(--text-muted);
-  }
 
-  .empty-state span {
-    font-size: 3rem;
-    opacity: 0.2;
-    margin-bottom: 1rem;
-    display: block;
-  }
 
   .skeleton-list {
     display: flex;

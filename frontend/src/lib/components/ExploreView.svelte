@@ -71,6 +71,10 @@ import Hash from "lucide-svelte/icons/hash";
     flex-direction: column; 
   }
 
-  .explore-content { padding: 0 1.5rem 4rem; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .explore-content { padding: 0 var(--space-5) var(--space-7); animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 600px) {
+    .explore-content { padding: 0 var(--space-4) var(--space-6); }
+  }
 </style>

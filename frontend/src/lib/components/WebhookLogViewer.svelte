@@ -66,7 +66,7 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
      <aside class="logs-sidebar">
         <header class="sidebar-header">
            <span class="url-hint">{hook.url}</span>
-           <button class="btn-icon-minimal" onclick={fetchLogs} title="Refresh">
+           <button class="btn-icon-minimal" onclick={fetchLogs} title="Refresh" aria-label="Actualizar registros">
              <RefreshCw size={18} />
            </button>
         </header>
@@ -179,12 +179,12 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
 <style>
   .webhook-logs { display: flex; flex-direction: column; height: 100%; }
   
-  .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.05); }
+  .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); background: var(--sunken-1); }
   .url-hint { font-size: 0.75rem; opacity: 0.5; font-family: monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
 
   .modal-body-split { display: grid; grid-template-columns: 350px 1fr; height: 700px; max-height: 80vh; overflow: hidden; }
 
-  .logs-sidebar { border-right: 1px solid var(--md-sys-color-outline-variant); background: rgba(0,0,0,0.1); overflow-y: auto; }
+  .logs-sidebar { border-right: 1px solid var(--md-sys-color-outline-variant); background: var(--sunken-1); overflow-y: auto; }
   .log-list { display: flex; flex-direction: column; }
   
   .log-item { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem; background: transparent; border: none; border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--text-color); cursor: pointer; text-align: left; transition: all 0.2s; width: 100%; }
@@ -198,7 +198,7 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
   .log-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
   .log-top { display: flex; justify-content: space-between; align-items: center; }
   .uuid { font-family: monospace; font-size: 0.8rem; opacity: 0.7; }
-  .status-code { font-size: 0.75rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 0.1rem 0.4rem; border-radius: 4px; }
+  .status-code { font-size: 0.75rem; font-weight: 800; background: var(--sunken-2); padding: 0.1rem 0.4rem; border-radius: 4px; }
   
   .log-bottom { display: flex; justify-content: space-between; align-items: baseline; }
   .event-type { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -236,4 +236,17 @@ import MousePointerClick from "lucide-svelte/icons/mouse-pointer-click";
 
   .btn-icon-minimal { background: transparent; border: none; color: var(--text-muted); cursor: pointer; display: flex; padding: 0.25rem; border-radius: 50%; transition: all 0.2s; }
   .btn-icon-minimal:hover { background: rgba(255,255,255,0.05); color: var(--text-color); }
+
+  @media (max-width: 900px) {
+    .modal-body-split {
+      grid-template-columns: 1fr;
+      height: auto;
+      max-height: 85vh;
+    }
+    .logs-sidebar {
+      border-right: none;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+      max-height: 40vh;
+    }
+  }
 </style>

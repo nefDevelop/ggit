@@ -91,7 +91,7 @@ import Search from "lucide-svelte/icons/search";
 <style>
   .dashboard-grid { display: flex; flex-direction: column; height: 100%; }
   .dashboard-main-content { display: flex; flex-direction: column; }
-  .gists-content { padding: 0 1.5rem 4rem; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .gists-content { padding: 0 var(--space-5) var(--space-7); animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
   .gist-list { display: flex; flex-direction: column; gap: 1rem; }

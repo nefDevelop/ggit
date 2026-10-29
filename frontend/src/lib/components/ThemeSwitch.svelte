@@ -215,7 +215,7 @@ import Moon from "lucide-svelte/icons/moon";
     position: fixed;
     inset: 0;
     z-index: 999;
-    background: rgba(0,0,0,0.2);
+    background: var(--sunken-2);
     backdrop-filter: blur(4px);
   }
 

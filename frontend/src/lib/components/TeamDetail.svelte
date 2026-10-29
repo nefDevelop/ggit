@@ -131,6 +131,14 @@
   }
 
   onMount(fetchTeam);
+  import ArrowLeft from "lucide-svelte/icons/arrow-left";
+  import Trash2 from "lucide-svelte/icons/trash-2";
+  import Pencil from "lucide-svelte/icons/pencil";
+  import Users from "lucide-svelte/icons/users";
+  import Book from "lucide-svelte/icons/book";
+  import X from "lucide-svelte/icons/x";
+  import UserMinus from "lucide-svelte/icons/user-minus";
+  import User from "lucide-svelte/icons/user";
 </script>
 
 {#if loading}
@@ -140,7 +148,7 @@
     <header class="detail-header tonal">
       <div class="title-group">
         <a href="/org/{orgName}/teams" class="back-link">
-          <span class="material-symbols-rounded">arrow_back</span>
+          <ArrowLeft size={18} />
           Back to Teams
         </a>
         {#if editing}
@@ -166,12 +174,12 @@
               class="btn btn-icon-text btn-danger-text"
               onclick={deleteTeam}
             >
-              <span class="material-symbols-rounded">delete</span>
+              <Trash2 size={18} />
               Delete Team
             </button>
           {/if}
           <button class="btn btn-primary" onclick={() => (editing = true)}>
-            <span class="material-symbols-rounded">edit</span>
+            <Pencil size={18} />
             Edit Team
           </button>
         {/if}
@@ -199,7 +207,7 @@
       <section class="management-card">
         <header class="card-header">
           <div class="header-title">
-            <span class="material-symbols-rounded">group</span>
+            <Users size={18} />
             <h3>Members</h3>
           </div>
           <span class="count">{team.NumMembers}</span>
@@ -243,8 +251,7 @@
                       title="Remove member"
                       onclick={() => removeMember(member.username)}
                     >
-                      <span class="material-symbols-rounded">person_remove</span
-                      >
+                      <UserMinus size={18} />
                     </button>
                   {/if}
                 </div>
@@ -260,7 +267,7 @@
       <section class="management-card">
         <header class="card-header">
           <div class="header-title">
-            <span class="material-symbols-rounded">book</span>
+            <Book size={18} />
             <h3>Repositories</h3>
           </div>
           <span class="count">{team.NumRepos}</span>
@@ -289,7 +296,7 @@
             {#if team.Repos && team.Repos.length > 0}
               {#each team.Repos as repo}
                 <div class="list-item">
-                  <span class="material-symbols-rounded repo-icon">book</span>
+                  <Book class="repo-icon" size={18} />
                   <div class="repo-meta">
                     <span class="name">{repo.name}</span>
                   </div>
@@ -298,7 +305,7 @@
                     title="Remove repository"
                     onclick={() => removeRepo(repo.id)}
                   >
-                    <span class="material-symbols-rounded">close</span>
+                    <X size={18} />
                   </button>
                 </div>
               {/each}
@@ -352,7 +359,7 @@
   }
 
   .edit-title {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--sunken-3);
     border: 1px solid var(--primary-color);
     font-size: 2.25rem;
     font-weight: 800;
@@ -362,7 +369,7 @@
     padding: 0.5rem;
   }
   .edit-desc {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--sunken-3);
     border: 1px solid var(--md-sys-color-outline-variant);
     font-size: 1.1rem;
     color: var(--text-muted);
@@ -420,9 +427,6 @@
     align-items: center;
     gap: 0.75rem;
   }
-  .header-title span {
-    color: var(--primary-color);
-  }
   .card-header h3 {
     margin: 0;
     font-size: 1.1rem;
@@ -450,7 +454,7 @@
   }
   .add-form input {
     flex: 1;
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.6rem 1rem;
     border-radius: 0.75rem;
@@ -476,7 +480,7 @@
     background: rgba(255, 255, 255, 0.04);
   }
 
-  .repo-icon {
+  :global(.repo-icon) {
     font-size: 1.25rem;
     color: var(--primary-color);
     opacity: 0.6;
@@ -533,7 +537,7 @@
   }
 
   .field select {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--sunken-2);
     border: 1px solid var(--md-sys-color-outline-variant);
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;

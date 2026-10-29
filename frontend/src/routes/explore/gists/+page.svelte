@@ -29,6 +29,8 @@
   }
 
   onMount(fetchGists);
+  import Plus from "lucide-svelte/icons/plus";
+  import CodeXml from "lucide-svelte/icons/code-xml";
 </script>
 
 <div class="explore-gists-page">
@@ -39,7 +41,7 @@
         <p>Discover useful snippets and notes from the community.</p>
       </div>
       <Button variant="primary" href="/gists/new">
-        <span class="material-symbols-rounded">add</span>
+        <Plus size={18} />
         New Gist
       </Button>
     </header>
@@ -52,7 +54,7 @@
       </div>
     {:else if gists.length === 0}
       <Card variant="low" padding="lg" class="empty-state">
-        <span class="material-symbols-rounded">code_off</span>
+        <CodeXml size={18} />
         <h3>No public gists found</h3>
         <p>Be the first to share something!</p>
       </Card>
@@ -69,7 +71,7 @@
 </div>
 
 <style>
-  .explore-gists-page { min-height: 100vh; background: var(--bg-color); padding: 4rem 2rem; }
+  .explore-gists-page { min-height: 100vh; background: var(--bg-color); padding: var(--space-7) var(--space-6); }
   .container { max-width: 1000px; margin: 0 auto; }
   
   .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 3rem; }
@@ -85,4 +87,8 @@
 
   :global(.empty-state) { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   :global(.empty-state span) { font-size: 4rem; color: var(--md-sys-color-on-surface-variant); opacity: 0.3; }
+
+  @media (max-width: 600px) {
+    .explore-gists-page { padding: var(--space-6) var(--space-4); }
+  }
 </style>

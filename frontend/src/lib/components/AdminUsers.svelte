@@ -63,6 +63,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   }
 
   onMount(fetchUsers);
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="admin-users-container">
@@ -78,7 +79,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   <div class="admin-users-body">
   {#if editingUserId}
-    <div class="editor-overlay">
+    <div class="editor-overlay" role="dialog" aria-modal="true" aria-label="Editar usuario" use:focusTrap>
        <AdminUserEditor 
          userId={editingUserId === 'new' ? null : editingUserId} 
          onSave={fetchUsers} 
@@ -143,7 +144,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
 <style>
   .admin-users-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

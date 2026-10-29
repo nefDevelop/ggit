@@ -294,18 +294,17 @@ import ScrollText from "lucide-svelte/icons/scroll-text";
   }
 
   .repository-stream {
-    padding: 2rem 1.5rem 4rem;
+    padding: var(--space-6) var(--space-5) var(--space-7);
     width: 100%;
     animation: fadeIn 0.4s ease-out;
   }
 
   @media (max-width: 600px) {
-    .repository-stream { padding: 1rem 0.75rem 5rem; }
+    .repository-stream { padding: var(--space-4) var(--space-4) calc(var(--space-7) + 2rem); }
     .folder-repos { padding-left: 0.75rem; margin-left: 0.5rem; }
   }
 
   @media (max-width: 480px) {
-    .repository-stream { padding: 0.5rem 0.25rem 5rem; }
     .divider-text { padding: 1.5rem 0.5rem 0.25rem; }
     .folder-group { margin-bottom: 1rem; }
   }

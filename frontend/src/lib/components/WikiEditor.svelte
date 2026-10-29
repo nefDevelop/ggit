@@ -59,12 +59,12 @@
   .meta-field { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 0.25rem; }
   .meta-field label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
   .meta-field select, .meta-field input {
-    background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--sunken-2); border: 1px solid var(--md-sys-color-outline-variant);
     color: inherit; padding: 0.5rem; border-radius: 0.5rem; font-family: inherit;
   }
   .wiki-editor {
     width: 100%; min-height: 400px; resize: vertical;
-    background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--sunken-2); border: 1px solid var(--md-sys-color-outline-variant);
     color: inherit; padding: 1rem; border-radius: 0.75rem;
     font-family: "JetBrains Mono", monospace; font-size: 0.9rem;
     box-sizing: border-box; outline: none;
@@ -72,7 +72,7 @@
   .commit-msg-box { display: flex; flex-direction: column; gap: 0.25rem; }
   .commit-msg-box label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
   .commit-msg-box input {
-    background: rgba(0,0,0,0.2); border: 1px solid var(--md-sys-color-outline-variant);
+    background: var(--sunken-2); border: 1px solid var(--md-sys-color-outline-variant);
     color: inherit; padding: 0.5rem 1rem; border-radius: 0.5rem; font-family: inherit;
   }
 </style>

@@ -278,7 +278,7 @@ import AlertTriangle from "lucide-svelte/icons/alert-triangle";
 
   {#if settings}
   <div class="danger-zone-container">
-    <Card class="tonal" padding="none">
+    <Card class="tonal" padding="none" danger>
       <header class="danger-header">
         <AlertTriangle size={32} />
         <h3>Zona de Peligro</h3>
@@ -428,8 +428,6 @@ import AlertTriangle from "lucide-svelte/icons/alert-triangle";
   .form-actions-premium { display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   /* DANGER ZONE */
-  .danger-zone-container { }
-  .danger-zone-container :global(.card) { border: 2px solid var(--md-sys-color-error) !important; }
   .danger-header { padding: 2rem 2.5rem; border-bottom: 1px solid rgba(var(--error-rgb), 0.1); display: flex; align-items: center; gap: 1rem; color: var(--error); }
   .danger-header h3 { margin: 0; font-size: 1.5rem; font-weight: 900; }
 

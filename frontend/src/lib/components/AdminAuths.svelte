@@ -53,6 +53,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   }
 
   onMount(fetchAuths);
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="admin-auths-container">
@@ -68,7 +69,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
   <div class="admin-auths-body">
     {#if editing}
-      <div class="editor-overlay">
+      <div class="editor-overlay" role="dialog" aria-modal="true" aria-label="Editar origen de autenticación" use:focusTrap>
         <AdminAuthEditor 
           source={selectedSource} 
           onSave={fetchAuths} 
@@ -97,8 +98,8 @@ import Trash2 from "lucide-svelte/icons/trash-2";
             {:else}
               {#each sources as source}
                 <tr class="hover-row">
-                  <td class="id-cell">#{source.id}</td>
-                  <td>
+                  <td class="id-cell" data-label="ID">#{source.id}</td>
+                  <td data-label="Nombre del Origen">
                     <div class="source-cell">
                       <div class="source-icon tonal">
                         {#if source.type === 2 || source.type === 5}
@@ -113,17 +114,17 @@ import Trash2 from "lucide-svelte/icons/trash-2";
                       </div>
                     </div>
                   </td>
-                  <td>
+                  <td data-label="Tipo / Protocolo">
                     <span class="type-badge" style="--accent: {source.type === 2 || source.type === 5 ? 'var(--primary-color)' : 'var(--status-accent)'}">
                        {source.type_name || "Protocolo Estándar"}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Estado">
                     <span class="status-chip" class:active={source.is_actived}>
                       {source.is_actived ? 'Operativo' : 'Inactivo'}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Acciones">
                     <div class="action-buttons">
                       <button class="icon-btn" onclick={() => editSource(source)} title="Configurar">
                         <Settings size={18} />
@@ -145,7 +146,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
 <style>
   .admin-auths-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 

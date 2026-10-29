@@ -174,7 +174,7 @@ import Calendar from "lucide-svelte/icons/calendar";
               class="header-repo-avatar"
             />
             <div class="breadcrumb-nav">
-              <a href="/dashboard" class="bc-home"><LayoutGrid size={20} /></a>
+              <a href="/dashboard" class="bc-home" aria-label="Ir al panel"><LayoutGrid size={20} /></a>
               <span class="bc-sep">/</span>
               <a href={`/${username}`} class="bc-item">{username}</a>
               <span class="bc-sep">/</span>
@@ -193,11 +193,11 @@ import Calendar from "lucide-svelte/icons/calendar";
             
             <div class="clone-zone">
               <div class="split-btn-group">
-                <button class="btn btn-sm btn-primary main-clone-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                <button class="btn btn-sm btn-primary main-clone-btn" aria-expanded={showCloneDropdown} aria-haspopup="menu" onclick={() => showCloneDropdown = !showCloneDropdown}>
                   <Download size={18} />
                   <span class="clone-text">Clone</span>
                 </button>
-                <button class="btn btn-sm btn-primary arrow-btn" onclick={() => showCloneDropdown = !showCloneDropdown}>
+                <button class="btn btn-sm btn-primary arrow-btn" aria-expanded={showCloneDropdown} aria-haspopup="menu" aria-label="Opciones de clonado" onclick={() => showCloneDropdown = !showCloneDropdown}>
                   <ChevronDown size={20} />
                 </button>
               </div>
@@ -272,7 +272,7 @@ import Calendar from "lucide-svelte/icons/calendar";
                 </div>
               {/if}
             </div>
-            <a href={`/${username}/${reponame}/settings`} class="settings-link" class:active={activeTab === 'settings'} title="Settings">
+            <a href={`/${username}/${reponame}/settings`} class="settings-link" class:active={activeTab === 'settings'} title="Settings" aria-label="Ajustes del repositorio">
               <Settings size={20} />
             </a>
           </div>
@@ -401,7 +401,7 @@ import Calendar from "lucide-svelte/icons/calendar";
 
   .repo-meta-actions { display: flex; align-items: center; gap: 1.5rem; }
   .license-tag { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-  .settings-link { color: var(--text-muted); display: flex; padding: 4px; transition: color 0.2s; text-decoration: none; }
+  .settings-link { color: var(--text-muted); display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0; border-radius: 0.75rem; transition: color 0.2s; text-decoration: none; }
   .settings-link:hover { color: var(--primary-color); }
 
   .clone-zone { position: relative; }
@@ -417,13 +417,13 @@ import Calendar from "lucide-svelte/icons/calendar";
   .section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); opacity: 0.7; letter-spacing: 0.05em; }
   .dropdown-divider { height: 1px; background: var(--border-color); margin: 0.75rem -1.25rem; opacity: 0.5; }
 
-  .protocol-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.1); padding: 3px; border-radius: 10px; }
+  .protocol-tabs { display: flex; gap: 4px; background: var(--sunken-1); padding: 3px; border-radius: 10px; }
   .proto-btn { flex: 1; border: none; background: transparent; color: var(--text-muted); padding: 0.4rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
   .proto-btn.active { background: var(--primary-color); color: white; }
 
-  .clone-copy-row { display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.2); padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
+  .clone-copy-row { display: flex; align-items: center; gap: 0.5rem; background: var(--sunken-2); padding: 0.5rem 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
   .url-display { flex: 1; font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
-  .copy-action { background: transparent; border: none; color: var(--primary-color); cursor: pointer; display: flex; padding: 4px; border-radius: 6px; transition: background 0.2s; }
+  .copy-action { background: transparent; border: none; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding: 0; border-radius: 0.5rem; transition: background 0.2s; }
   .copy-action:hover { background: rgba(var(--primary-rgb), 0.1); }
   .protocol-hint { font-size: 0.75rem; color: var(--text-muted); margin: 0; }
 
@@ -448,7 +448,7 @@ import Calendar from "lucide-svelte/icons/calendar";
   .tab { display: flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem; color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-weight: 700; transition: all 0.2s; border-radius: 0.75rem 0.75rem 0 0; }
   .tab:hover { color: var(--text-color); background: rgba(255,255,255,0.03); }
   .tab.active { color: var(--primary-color); background: var(--bg-color); border: none; }
-  .tab-count { font-variant-numeric: tabular-nums; background: rgba(0,0,0,0.05); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
+  .tab-count { font-variant-numeric: tabular-nums; background: var(--sunken-1); padding: 0.1rem 0.4rem; border-radius: 4px; font-size: 0.75rem; color: var(--text-muted); }
   .tab.active .tab-count { background: var(--primary-container); color: var(--on-primary-container); }
   .tab-label { text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
 
@@ -465,14 +465,10 @@ import Calendar from "lucide-svelte/icons/calendar";
     .clone-dropdown { width: calc(100vw - 3rem); right: -1.5rem; }
   }
 
-  .master-body { flex: 1; overflow-y: auto; background: var(--bg-color); padding: 1rem; box-sizing: border-box; }
+  .master-body { flex: 1; overflow-y: auto; background: var(--bg-color); padding: var(--space-5) var(--space-5) var(--space-7); box-sizing: border-box; }
   .master-body-skeleton { flex: 1; padding: 2rem; display: flex; flex-direction: column; background: var(--bg-color); }
   @media (max-width: 600px) {
-    .master-body { padding: 0.5rem; }
-  }
-
-  @media (max-width: 480px) {
-    .master-body { padding: 0.5rem; }
+    .master-body { padding: var(--space-4) var(--space-4) var(--space-6); }
   }
   .skeleton-master { background: var(--md-sys-color-surface-container-low); height: 100vh; display: flex; flex-direction: column; }
   .skeleton-pulse { background: var(--md-sys-color-surface-container-high); animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 0.5rem; }

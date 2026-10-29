@@ -3,7 +3,8 @@
   import { apiFetch } from "$lib/api";
   import { onMount, getContext } from "svelte";
   import { formatDate } from "$lib/utils/date";
-  import PageHeader from "./ui/PageHeader.svelte";
+  import PageActions from "./ui/PageActions.svelte";
+  import EmptyState from "./ui/EmptyState.svelte";
   import IssueBoard from "./IssueBoard.svelte";
   import Button from "./ui/Button.svelte";
   
@@ -55,8 +56,7 @@ import MessageSquare from "lucide-svelte/icons/message-square";
 </script>
 
 <div class="issues-view">
-  <PageHeader title="" icon="" compact noBorder>
-    {#snippet actions()}
+  <PageActions>
       <div class="pill-filter-group-inline">
         <Button
           variant={stateFilter === "open" ? "primary" : "ghost"}
@@ -97,8 +97,7 @@ import MessageSquare from "lucide-svelte/icons/message-square";
           New Issue
         </a>
       {/if}
-    {/snippet}
-  </PageHeader>
+    </PageActions>
 
 
   {#if loading}
@@ -109,19 +108,17 @@ import MessageSquare from "lucide-svelte/icons/message-square";
   {:else if error}
     <div class="error-msg">{error}</div>
   {:else if issues.length === 0}
-    <div class="empty-state">
-      <div class="empty-icon-ring">
-        <AlertCircle size={40} />
-      </div>
-      <h2>No issues found</h2>
-      <p>There are no {stateFilter} issues in this repository.</p>
+    <EmptyState
+      icon={AlertCircle}
+      title="No issues found"
+      description={`There are no ${stateFilter} issues in this repository.`}
+    >
       {#if stateFilter === 'open'}
-        <a href="/{repo.data.owner.username}/{repo.data.name}/issues/new" class="btn-action-primary" style="margin-top: 1rem; text-decoration: none;">
-          <Plus size={18} />
+        <Button variant="primary" href={`/${repo.data.owner.username}/${repo.data.name}/issues/new`} icon={Plus}>
           Create your first issue
-        </a>
+        </Button>
       {/if}
-    </div>
+    </EmptyState>
   {:else}
     {#if view === 'list'}
       <div class="flat-list-container">
@@ -216,8 +213,7 @@ import MessageSquare from "lucide-svelte/icons/message-square";
     color: var(--text-muted);
   }
 
-  .loading-state,
-  .empty-state {
+  .loading-state {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,32 +223,8 @@ import MessageSquare from "lucide-svelte/icons/message-square";
     text-align: center;
   }
 
-  .empty-state h2 {
-    margin: 0;
-    font-size: 1.75rem;
-    font-weight: 950;
-    color: var(--text-color);
-  }
 
-  .empty-state p {
-    max-width: 400px;
-    margin: 0;
-    font-size: 1.1rem;
-    line-height: 1.5;
-  }
 
-  .empty-icon-ring {
-    width: 80px;
-    height: 80px;
-    border: 2px dashed var(--md-sys-color-outline-variant);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    background: rgba(var(--primary-rgb), 0.05);
-  }
 
   .spinner {
     width: 32px;

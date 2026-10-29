@@ -8,13 +8,15 @@
         const select = event.currentTarget as HTMLSelectElement;
         i18n.init(select.value);
     }
+  import Languages from "lucide-svelte/icons/languages";
+  import ChevronDown from "lucide-svelte/icons/chevron-down";
 </script>
 
 <div class="switches-grid">
     <div class="switch-row-item">
         <div class="item-info">
             <div class="title-with-icon">
-                <span class="material-symbols-rounded mini">language</span>
+                <Languages size={16} />
                 <span class="label">{i18n.t('language') || 'System Language'}</span>
             </div>
             <p class="desc">{i18n.t('settings.language_desc') || 'Choose your preferred language for the interface.'}</p>
@@ -26,7 +28,7 @@
                     <option value={lang.code}>{lang.name}</option>
                 {/each}
             </select>
-            <span class="material-symbols-rounded dropdown-icon">expand_more</span>
+            <ChevronDown class="dropdown-icon" size={18} />
         </div>
     </div>
 </div>
@@ -41,7 +43,7 @@
     .item-info { flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
     .title-with-icon { display: flex; align-items: center; gap: 1rem; font-weight: 700; color: var(--text-color); }
     .desc { font-size: 0.85rem; color: var(--text-muted); margin: 0; opacity: 0.8; }
-    .mini { font-size: 1.25rem; color: var(--primary-color); }
+    :global(.mini) { font-size: 1.25rem; color: var(--primary-color); }
 
     .select-wrapper { position: relative; display: flex; align-items: center; }
     
@@ -66,7 +68,7 @@
         background: rgba(var(--primary-rgb), 0.05);
     }
 
-    .dropdown-icon {
+    :global(.dropdown-icon) {
         position: absolute;
         right: 1rem;
         pointer-events: none;

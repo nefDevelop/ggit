@@ -75,6 +75,11 @@
       fetchTabData(activeTab);
     }
   });
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import Folder from "lucide-svelte/icons/folder";
+  import Star from "lucide-svelte/icons/star";
+  import Code from "lucide-svelte/icons/code";
+  import FolderX from "lucide-svelte/icons/folder-x";
 </script>
 
 <svelte:head>
@@ -86,7 +91,7 @@
     <div class="error-container">
       <Card variant="low" padding="lg">
         <div class="error-msg">
-          <span class="material-symbols-rounded">error</span>
+          <CircleAlert size={18} />
           <h3>{error}</h3>
           <p>The user you are looking for does not exist or has been removed.</p>
           <Button variant="primary" href="/explore/users">Explore Users</Button>
@@ -120,7 +125,7 @@
             {#if orgs.length > 0}
               <div class="org-strip">
                 {#each orgs as org}
-                  <a href="/org/{org.username}" class="org-mini" title={org.full_name || org.username}>
+                  <a href="/org/{org.username}" class="org-mini" title={org.full_name || org.username} aria-label={`Abrir ${org.full_name || org.username}`}>
                     <Avatar src={org.avatar_url} username={org.username} size={32} />
                   </a>
                 {/each}
@@ -138,21 +143,21 @@
             class:active={activeTab === "repos"}
             onclick={() => fetchTabData("repos")}
           >
-            <span class="material-symbols-rounded">folder</span>
+            <Folder size={18} />
             Repositories
           </button>
           <button
             class:active={activeTab === "stars"}
             onclick={() => fetchTabData("stars")}
           >
-            <span class="material-symbols-rounded">star</span>
+            <Star size={18} />
             Stars
           </button>
           <button
             class:active={activeTab === "gists"}
             onclick={() => fetchTabData("gists")}
           >
-            <span class="material-symbols-rounded">code</span>
+            <Code size={18} />
             Gists
           </button>
         </nav>
@@ -168,7 +173,7 @@
         {:else if data.length === 0}
           <Card variant="low" padding="lg" class="empty-state">
             <div class="empty-icon-circle">
-              <span class="material-symbols-rounded">folder_off</span>
+              <FolderX size={18} />
             </div>
             <h3>No items found</h3>
             <p>This user hasn't added anything here yet.</p>
@@ -252,18 +257,15 @@
   .profile-content { flex: 1; min-width: 0; }
   .repo-stack, .loading-stack { display: flex; flex-direction: column; gap: 1rem; }
   
-  :global(.row-card) { border-radius: 1.25rem !important; }
 
   :global(.skeleton-row) { height: 100px; animation: pulse 1.5s infinite; background: var(--md-sys-color-surface-container-low); border-radius: 1.25rem; }
   @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
   :global(.empty-state) { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
   .empty-icon-circle { width: 80px; height: 80px; border-radius: 50%; background: var(--md-sys-color-surface-container-highest); display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant); opacity: 0.5; margin-bottom: 1rem; }
-  .empty-icon-circle span { font-size: 2.5rem; }
 
   .error-container { max-width: 600px; margin: 10rem auto; }
   .error-msg { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .error-msg span { font-size: 4rem; color: var(--md-sys-color-error); }
   .error-msg h3 { margin: 0; color: var(--md-sys-color-on-surface); }
   .error-msg p { color: var(--md-sys-color-on-surface-variant); margin-bottom: 1.5rem; }
 

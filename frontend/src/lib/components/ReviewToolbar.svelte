@@ -15,16 +15,17 @@ import AlertCircle from "lucide-svelte/icons/alert-circle";
   let showModal = $state(false);
   let type = $state(2); // 1: Approve, 2: Comment, 3: Reject
   let content = $state("");
+  import { focusTrap } from "$lib/utils/focusTrap";
 </script>
 
 <div class="review-toolbar">
-  <Button variant="primary" icon="rate_review" onclick={() => showModal = true}>
+  <Button variant="primary" icon={MessageSquare} onclick={() => showModal = true}>
     Finalizar Revisión
   </Button>
 
   {#if showModal}
     <div class="modal-overlay" onclick={() => showModal = false} onkeydown={(e) => { if (e.key === 'Escape') showModal = false; }} role="button" tabindex="-1">
-      <div class="modal-content island" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" tabindex="-1" aria-modal="true">
+      <div class="modal-content island" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="dialog" tabindex="-1" aria-modal="true" aria-label="Finalizar revisión" use:focusTrap>
         <header>
           <h3>Finalizar Revisión</h3>
           <p>Envía tus comentarios y decide el estado del Pull Request.</p>

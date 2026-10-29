@@ -211,7 +211,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
 
 <style>
   .admin-monitor-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -257,7 +257,7 @@ import Trash2 from "lucide-svelte/icons/trash-2";
   .skeleton-monitor { height: 600px; background: var(--surface-variant); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
   @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 0.6; } 100% { opacity: 0.3; } }
 
-  .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: rgba(0,0,0,0.1); border-radius: 1.5rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
+  .empty-monitor-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; background: var(--sunken-1); border-radius: 1.5rem; border: 1px dashed var(--md-sys-color-outline-variant); color: var(--text-muted); gap: 1rem; text-align: center; }
   .empty-monitor-state p { margin: 0; font-size: 1.1rem; font-weight: 600; }
 
   /* Running status pill */

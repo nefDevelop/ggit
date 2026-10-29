@@ -96,6 +96,9 @@ import Plus from "lucide-svelte/icons/plus";
   import { formatDate } from '$lib/utils/date';
 
   onMount(fetchKeys);
+  import Trash2 from "lucide-svelte/icons/trash-2";
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import KeyRound from "lucide-svelte/icons/key-round";
 </script>
 
 <Card padding="none" class="settings-premium-card">
@@ -118,12 +121,12 @@ import Plus from "lucide-svelte/icons/plus";
       </div>
     {:else if error}
       <div class="error-banner">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         {error}
       </div>
     {:else if keys.length === 0}
       <div class="empty-state island">
-        <span class="material-symbols-rounded">key_off</span>
+        <KeyRound size={18} />
         <p>No hay claves de despliegue configuradas para este repositorio.</p>
         <Button variant="outline" size="sm" onclick={() => (showModal = true)}>Configurar la primera</Button>
       </div>
@@ -133,7 +136,7 @@ import Plus from "lucide-svelte/icons/plus";
           <div class="key-tile tonal">
             <div class="key-main">
               <div class="key-icon-wrap">
-                <span class="material-symbols-rounded">key</span>
+                <Key size={18} />
               </div>
               <div class="key-info">
                 <div class="key-header-row">
@@ -156,7 +159,7 @@ import Plus from "lucide-svelte/icons/plus";
               <Button 
                 variant="ghost" 
                 size="sm" 
-                icon="delete" 
+                icon={Trash2} 
                 class="danger-btn" 
                 onclick={() => handleDelete(key.id)} 
                 title="Eliminar"
@@ -216,7 +219,6 @@ import Plus from "lucide-svelte/icons/plus";
 
   .key-main { display: flex; align-items: center; gap: 1.5rem; flex: 1; min-width: 0; }
   .key-icon-wrap { width: 44px; height: 44px; border-radius: 1rem; background: rgba(var(--primary-rgb), 0.1); color: var(--primary-color); display: flex; align-items: center; justify-content: center; }
-  .key-icon-wrap span { font-size: 1.5rem; }
 
   .key-info { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; min-width: 0; }
   .key-header-row { display: flex; align-items: center; gap: 1rem; }
@@ -242,7 +244,6 @@ import Plus from "lucide-svelte/icons/plus";
   .modal-actions-premium { display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1rem; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
   .empty-state { padding: 4rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  .empty-state span { font-size: 4rem; color: var(--primary-color); opacity: 0.2; }
   .empty-state p { font-weight: 700; color: var(--text-muted); }
 
   .skeleton-stack { display: flex; flex-direction: column; gap: 1rem; }

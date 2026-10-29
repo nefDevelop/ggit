@@ -7,6 +7,8 @@
   import Card from "./ui/Card.svelte";
   import Button from "./ui/Button.svelte";
   import PageHeader from "./ui/PageHeader.svelte";
+  import EmptyState from "./ui/EmptyState.svelte";
+  import Skeleton from "./ui/Skeleton.svelte";
   
 
 import Sparkles from "lucide-svelte/icons/sparkles";
@@ -76,16 +78,13 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   <div class="admin-janitor-body">
 
   {#if loading}
-    <div class="skeleton-grid">
+    <div class="stats-grid">
       {#each Array(3) as _}
-        <div class="skeleton-card"></div>
+        <Skeleton variant="card" />
       {/each}
     </div>
   {:else if stats.length === 0}
-    <Card class="empty-card">
-      <CheckCircle2 size={48} />
-      <p>{i18n.t("admin.empty_janitor")}</p>
-    </Card>
+    <EmptyState icon={CheckCircle2} description={i18n.t("admin.empty_janitor")} />
   {:else}
     <div class="stats-grid">
       {#each stats as repo}
@@ -133,7 +132,7 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
 
 <style>
   .admin-janitor-body {
-    padding: 1.5rem 1.5rem 4rem;
+    padding: 0;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
@@ -183,10 +182,9 @@ import RefreshCw from "lucide-svelte/icons/refresh-cw";
   .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--md-sys-color-on-surface-variant); font-weight: 800; opacity: 0.8; }
   .value { font-size: 1.1rem; font-weight: 700; color: var(--md-sys-color-on-surface); }
   .card-actions { display: flex; justify-content: flex-end; margin-top: 0.5rem; }
-  :global(.card-actions .btn) { border-radius: 0.5rem !important; font-weight: 700 !important; }
-  :global(.empty-card) { padding: 4rem; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-  :global(.empty-card span) { font-size: 4rem; opacity: 0.2; }
-  .skeleton-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 2rem; }
-  .skeleton-card { height: 260px; background: var(--md-sys-color-surface-container-high); border-radius: 1.5rem; animation: pulse 1.5s infinite; }
-  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+  @media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .repo-details { grid-template-columns: 1fr; }
+  }
 </style>

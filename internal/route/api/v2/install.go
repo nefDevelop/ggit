@@ -18,6 +18,10 @@ import (
 
 // GetInstallSettings returns the default settings for the installation page.
 func GetInstallSettings(c *context.APIContext) {
+	// Un 200 cacheado de antes de instalar haría que el cliente redirigiese a
+	// /install en cada carga.
+	c.Header("Cache-Control", "no-store")
+
 	if conf.Security.InstallLock {
 		c.StatusError(http.StatusForbidden, "Install lock is enabled.", nil)
 		return

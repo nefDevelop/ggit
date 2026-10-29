@@ -47,6 +47,10 @@
     if (!sha) return '-------';
     return String(sha).substring(0, 7);
   }
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import Ellipsis from "lucide-svelte/icons/ellipsis";
+  import Fingerprint from "lucide-svelte/icons/fingerprint";
+  import FolderArchive from "lucide-svelte/icons/folder-archive";
 </script>
 
 <div class="commits-view">
@@ -58,7 +62,7 @@
     </div>
   {:else if error}
     <div class="tonal error-tonal">
-      <span class="material-symbols-rounded">error</span>
+      <CircleAlert size={18} />
       <p>{error}</p>
       <button class="btn btn-tonal" onclick={fetchCommits}>Retry</button>
     </div>
@@ -89,7 +93,7 @@
                 <span class="commit-message">{String(message || '').split('\n')[0]}</span>
               </a>
               {#if String(message || '').split('\n').length > 1}
-                <span class="material-symbols-rounded more-icon">more_horiz</span>
+                <Ellipsis class="more-icon" size={18} />
               {/if}
             </div>
             
@@ -104,12 +108,12 @@
           <div class="commit-actions-cell">
             <a href={`/${username}/${reponame}/commit/${id}`} class="id-tag-link">
               <div class="id-tag">
-                <span class="material-symbols-rounded mini">fingerprint</span>
+                <Fingerprint size={16} />
                 <code class="sha-text">{truncateSHA(id)}</code>
               </div>
             </a>
-            <a href={`/api/v2/${username}/${reponame}/archive/${id}.zip`} class="btn-icon" download title="Download ZIP at this commit">
-              <span class="material-symbols-rounded">folder_zip</span>
+            <a href={`/api/v2/${username}/${reponame}/archive/${id}.zip`} class="btn-icon" download title="Download ZIP at this commit" aria-label="Descargar ZIP de este commit">
+              <FolderArchive size={18} />
             </a>
           </div>
         </div>
@@ -118,7 +122,7 @@
 
     {#if commitsData.commits.length === 0}
       <div class="empty-state">
-        <span class="material-symbols-rounded">error_outline</span>
+        <CircleAlert size={18} />
         <h3>No commits found</h3>
         <p>There are no commits in this repository yet.</p>
       </div>
@@ -130,9 +134,7 @@
   .commits-view {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    margin: -2rem;
-    padding: 2rem;
+    gap: var(--space-5);
   }
 
   .commits-list {
@@ -154,7 +156,7 @@
   }
 
   .commit-row:last-child { border-bottom: none; }
-  .commit-row:nth-child(even) { background: rgba(0,0,0,0.02); }
+  .commit-row:nth-child(even) { background: var(--sunken-1); }
   .commit-row:hover { background: rgba(var(--primary-rgb), 0.04); }
 
   :global(.user-avatar) {
@@ -179,7 +181,7 @@
   }
 
   .commit-message { font-weight: 700; font-size: 0.95rem; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .more-icon { font-size: 1rem; color: var(--text-muted); opacity: 0.5; }
+  :global(.more-icon) { font-size: 1rem; color: var(--text-muted); opacity: 0.5; }
 
   .commit-meta { font-size: 0.8rem; display: flex; gap: 0.5rem; align-items: center; color: var(--text-muted); margin-top: 2px; }
   .author-name { font-weight: 800; color: var(--text-color); }
@@ -199,7 +201,7 @@
     transition: all 0.2s;
   }
   .id-tag:hover { background: var(--primary-color); color: white; }
-  .id-tag .mini { font-size: 0.9rem; opacity: 0.7; }
+  :global(.id-tag) :global(.mini) { font-size: 0.9rem; opacity: 0.7; }
   .sha-text { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 800; }
 
   .commit-message-link, .id-tag-link {
@@ -251,11 +253,6 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-  }
-
-  .empty-state .material-symbols-rounded {
-    font-size: 3rem;
-    opacity: 0.3;
   }
 
   .error-tonal {

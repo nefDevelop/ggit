@@ -75,6 +75,16 @@
   }
 
   onMount(fetchEmails);
+  import Star from "lucide-svelte/icons/star";
+  import Trash2 from "lucide-svelte/icons/trash-2";
+  import List from "lucide-svelte/icons/list";
+  import Mail from "lucide-svelte/icons/mail";
+  import CirclePlus from "lucide-svelte/icons/circle-plus";
+  import MailCheck from "lucide-svelte/icons/mail-check";
+  import BadgeCheck from "lucide-svelte/icons/badge-check";
+  import AtSign from "lucide-svelte/icons/at-sign";
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
 </script>
 
 <div class="settings-emails-container">
@@ -84,7 +94,7 @@
     <!-- EMAIL LIST -->
     <div class="config-module">
       <div class="module-tag">
-        <span class="material-symbols-rounded">list_alt</span>
+        <List size={18} />
         Direcciones Vinculadas
       </div>
       <div class="island tonal-list">
@@ -92,14 +102,20 @@
           <div class="skeleton-emails"></div>
         {:else if emails.length === 0}
            <div class="empty-state-box">
-              <span class="material-symbols-rounded">mail_lock</span>
+              <Mail size={18} />
               <p>No hay direcciones de correo configuradas.</p>
            </div>
         {:else}
           {#each emails as email}
             <div class="email-row" class:is-primary={email.is_primary}>
               <div class="email-core">
-                <span class="material-symbols-rounded email-icon">{email.is_primary ? 'verified' : 'alternate_email'}</span>
+                <span class="email-icon">
+                  {#if email.is_primary}
+                    <BadgeCheck size={18} />
+                  {:else}
+                    <AtSign size={18} />
+                  {/if}
+                </span>
                 <div class="email-meta">
                   <span class="address">{email.email}</span>
                   <div class="badge-row">
@@ -116,10 +132,10 @@
               </div>
               <div class="email-actions">
                 {#if !email.is_primary && email.is_activated}
-                   <Button variant="ghost" size="sm" icon="star" onclick={() => makePrimary(email.email)}>Principal</Button>
+                   <Button variant="ghost" size="sm" icon={Star} onclick={() => makePrimary(email.email)}>Principal</Button>
                 {/if}
                 {#if !email.is_primary}
-                   <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => deleteEmail(email.email)} />
+                   <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => deleteEmail(email.email)} />
                 {/if}
               </div>
             </div>
@@ -131,13 +147,13 @@
     <!-- ADD EMAIL -->
     <div class="config-module">
        <div class="module-tag">
-         <span class="material-symbols-rounded">add_circle</span>
+         <CirclePlus size={18} />
          Añadir Nueva Dirección
        </div>
        <div class="island add-form-box">
           <form onsubmit={(e) => { e.preventDefault(); addEmail(); }} class="add-email-form">
             <div class="premium-input-group">
-               <span class="material-symbols-rounded">mark_email_read</span>
+               <MailCheck size={18} />
                <input 
                  type="email" 
                  placeholder="ejemplo@correo.com" 
@@ -151,7 +167,11 @@
           </form>
           {#if message}
             <div class="status-alert" class:is-error={isError}>
-               <span class="material-symbols-rounded">{isError ? 'error' : 'check_circle'}</span>
+               {#if isError}
+                 <CircleAlert size={18} />
+               {:else}
+                 <CircleCheck size={18} />
+               {/if}
                {message}
             </div>
           {/if}
@@ -171,7 +191,6 @@
   .config-module { display: flex; flex-direction: column; gap: 1.5rem; }
 
   .module-tag { font-size: 0.8rem; font-weight: 950; text-transform: uppercase; color: var(--primary-color); letter-spacing: 0.15em; display: flex; align-items: center; gap: 0.75rem; border-bottom: 2px solid var(--md-sys-color-outline-variant); padding-bottom: 0.75rem; width: fit-content; opacity: 0.8; }
-  .module-tag span { font-size: 1.25rem; }
 
   
   .email-row { display: flex; align-items: center; justify-content: space-between; padding: 2rem 2.5rem; border-bottom: 1px solid var(--md-sys-color-outline-variant); gap: 3rem; transition: background 0.3s; }
@@ -211,7 +230,6 @@
   .premium-input-group { display: flex; align-items: center; gap: 1rem; background: var(--md-sys-color-surface-container-high); padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid var(--md-sys-color-outline-variant); transition: all 0.2s; }
   @media (max-width: 600px) { .premium-input-group { flex-direction: column; align-items: stretch; } }
   .premium-input-group:focus-within { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-highest); box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary), transparent 85%); }
-  .premium-input-group span { color: var(--primary-color); opacity: 0.6; }
   .premium-input-group input { flex: 1; background: transparent; border: none; outline: none; color: var(--text-color); font-size: 1rem; padding: 0.25rem 0; }
 
   .status-alert { margin-top: 1.5rem; display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border-radius: 1.5rem; background: color-mix(in srgb, var(--status-success) 10%, transparent); color: var(--status-success); font-weight: 700; border: 1px solid color-mix(in srgb, var(--status-success) 20%, transparent); animation: fadeInUp 0.4s; }

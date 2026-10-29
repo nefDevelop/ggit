@@ -53,9 +53,7 @@
   {/if}
   
   <div class="input-container {error ? 'has-error' : ''} {icon ? 'with-icon' : ''}">
-    {#if typeof icon === 'string'}
-      <span class="material-symbols-rounded input-icon">{icon}</span>
-    {:else if icon}
+    {#if icon}
       {@const Icon = icon}
       <div class="input-icon">
         <Icon size={18} />

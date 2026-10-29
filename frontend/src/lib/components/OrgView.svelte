@@ -39,6 +39,13 @@
   }
 
   onMount(fetchOrg);
+  import MapPin from "lucide-svelte/icons/map-pin";
+  import Languages from "lucide-svelte/icons/languages";
+  import Settings from "lucide-svelte/icons/settings";
+  import Book from "lucide-svelte/icons/book";
+  import Users from "lucide-svelte/icons/users";
+  import FolderX from "lucide-svelte/icons/folder-x";
+  import UserIcon from "lucide-svelte/icons/user";
 </script>
 
 {#if loading}
@@ -58,13 +65,13 @@
         <div class="org-meta">
           {#if org.location}
             <span class="meta-item">
-              <span class="material-symbols-rounded">location_on</span>
+              <MapPin size={18} />
               {org.location}
             </span>
           {/if}
           {#if org.website}
             <a href={org.website} class="meta-item link" target="_blank">
-              <span class="material-symbols-rounded">language</span>
+              <Languages size={18} />
               {org.website}
             </a>
           {/if}
@@ -72,7 +79,7 @@
       </div>
       <div class="org-actions">
         <a href="/org/{org.username}/settings" class="btn btn-outline">
-          <span class="material-symbols-rounded">settings</span>
+          <Settings size={18} />
           Settings
         </a>
       </div>
@@ -83,7 +90,7 @@
         class:active={activeTab === "repos"}
         onclick={() => (activeTab = "repos")}
       >
-        <span class="material-symbols-rounded">book</span>
+        <Book size={18} />
         Repositories
         <span class="count">{repos.length}</span>
       </button>
@@ -91,7 +98,7 @@
         class:active={activeTab === "teams"}
         onclick={() => (activeTab = "teams")}
       >
-        <span class="material-symbols-rounded">groups</span>
+        <Users size={18} />
         Teams
         <span class="count">{org.num_teams}</span>
       </button>
@@ -99,7 +106,7 @@
         class:active={activeTab === "members"}
         onclick={() => (activeTab = "members")}
       >
-        <span class="material-symbols-rounded">person</span>
+        <UserIcon size={18} />
         People
         <span class="count">{org.num_members}</span>
       </button>
@@ -115,7 +122,7 @@
           {/each}
           {#if repos.length === 0}
             <div class="empty-repos island tonal">
-              <span class="material-symbols-rounded">folder_off</span>
+              <FolderX size={18} />
               <p>Esta organización aún no tiene repositorios públicos.</p>
             </div>
           {/if}
@@ -180,9 +187,6 @@
     color: var(--primary-color);
     text-decoration: none;
   }
-  .meta-item span {
-    font-size: 1.2rem;
-  }
 
   .org-nav {
     display: flex;
@@ -245,7 +249,6 @@
     color: var(--text-muted);
     text-align: center;
   }
-  .empty-repos span { font-size: 3rem; opacity: 0.3; }
 
   .skeleton-org {
     height: 600px;

@@ -80,6 +80,13 @@ import Plus from "lucide-svelte/icons/plus";
   }
 
   onMount(fetchWebhooks);
+  import History from "lucide-svelte/icons/history";
+  import Pencil from "lucide-svelte/icons/pencil";
+  import Trash2 from "lucide-svelte/icons/trash-2";
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import CalendarDays from "lucide-svelte/icons/calendar-days";
+  import CircleQuestionMark from "lucide-svelte/icons/circle-question-mark";
 </script>
 
 <Card padding="none" class="settings-premium-card">
@@ -102,12 +109,12 @@ import Plus from "lucide-svelte/icons/plus";
       </div>
     {:else if error}
       <div class="error-banner">
-        <span class="material-symbols-rounded">error</span>
+        <CircleAlert size={18} />
         {error}
       </div>
     {:else if webhooks.length === 0}
       <div class="empty-state island">
-        <span class="material-symbols-rounded">webhook</span>
+        <Webhook size={18} />
         <p>No hay webhooks configurados para este repositorio.</p>
         <Button variant="outline" size="sm" onclick={handleAdd}>Configurar el primero</Button>
       </div>
@@ -123,26 +130,26 @@ import Plus from "lucide-svelte/icons/plus";
               <div class="hook-meta">
                 <div class="status-indicator">
                   {#if hook.last_status === 'success'}
-                    <span class="material-symbols-rounded success">check_circle</span>
+                    <CircleCheck class="success" size={18} />
                     <span class="status-text">Último envío OK</span>
                   {:else if hook.last_status === 'failure'}
-                    <span class="material-symbols-rounded failure">error</span>
+                    <CircleAlert class="failure" size={18} />
                     <span class="status-text">Fallo en último envío</span>
                   {:else}
-                    <span class="material-symbols-rounded neutral">help</span>
+                    <CircleQuestionMark class="neutral" size={18} />
                     <span class="status-text">Sin envíos aún</span>
                   {/if}
                 </div>
                 <div class="events-list">
-                  <span class="material-symbols-rounded">event</span>
+                  <CalendarDays size={18} />
                   {hook.events.join(', ')}
                 </div>
               </div>
             </div>
             <div class="hook-actions">
-              <Button variant="ghost" size="sm" icon="history" onclick={() => handleLogs(hook)} title="Historial" />
-              <Button variant="ghost" size="sm" icon="edit" onclick={() => handleEdit(hook)} title="Editar" />
-              <Button variant="ghost" size="sm" icon="delete" class="danger-btn" onclick={() => handleDelete(hook.id)} title="Eliminar" />
+              <Button variant="ghost" size="sm" icon={History} onclick={() => handleLogs(hook)} title="Historial" />
+              <Button variant="ghost" size="sm" icon={Pencil} onclick={() => handleEdit(hook)} title="Editar" />
+              <Button variant="ghost" size="sm" icon={Trash2} class="danger-btn" onclick={() => handleDelete(hook.id)} title="Eliminar" />
             </div>
           </div>
         {/each}
@@ -193,13 +200,12 @@ import Plus from "lucide-svelte/icons/plus";
 
   .hook-meta { display: flex; align-items: center; gap: 2rem; }
   .status-indicator { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; font-weight: 600; }
-  .status-indicator .success { color: var(--success); font-size: 1.25rem; }
-  .status-indicator .failure { color: var(--error); font-size: 1.25rem; }
-  .status-indicator .neutral { color: var(--text-muted); opacity: 0.5; font-size: 1.25rem; }
+  :global(.status-indicator) :global(.success) { color: var(--success); font-size: 1.25rem; }
+  :global(.status-indicator) :global(.failure) { color: var(--error); font-size: 1.25rem; }
+  :global(.status-indicator) :global(.neutral) { color: var(--text-muted); opacity: 0.5; font-size: 1.25rem; }
   .status-text { color: var(--text-muted); }
 
   .events-list { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text-muted); opacity: 0.8; font-weight: 600; }
-  .events-list span { font-size: 1rem; }
 
   .hook-actions { display: flex; gap: 0.5rem; }
   :global(.danger-btn:hover) { color: var(--error) !important; background: rgba(var(--error-rgb), 0.1) !important; }
@@ -211,7 +217,6 @@ import Plus from "lucide-svelte/icons/plus";
   }
 
   .empty-state { padding: 5rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
-  .empty-state span { font-size: 4rem; color: var(--primary-color); opacity: 0.3; }
   .empty-state p { font-size: 1.1rem; font-weight: 700; color: var(--text-muted); margin: 0; }
 
   .skeleton-list { display: flex; flex-direction: column; gap: 1rem; }

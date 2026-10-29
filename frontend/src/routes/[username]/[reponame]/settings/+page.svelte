@@ -71,9 +71,7 @@ import Rocket from "lucide-svelte/icons/rocket";
           class:active={activeTab === tab.id}
           onclick={() => activeTab = tab.id}
         >
-          {#if typeof tab.icon === 'string'}
-            <span class="material-symbols-rounded">{tab.icon}</span>
-          {:else if tab.icon}
+          {#if tab.icon}
             {@const Icon = tab.icon}
             <Icon size={18} />
           {/if}
@@ -124,7 +122,6 @@ import Rocket from "lucide-svelte/icons/rocket";
     grid-template-columns: 280px 1fr;
     gap: 2rem;
     align-items: start;
-    padding-bottom: 2rem;
     animation: fadeIn 0.3s ease-out;
   }
 
@@ -183,10 +180,6 @@ import Rocket from "lucide-svelte/icons/rocket";
     color: var(--primary-color);
   }
 
-  .nav-item span {
-    font-size: 1.25rem;
-  }
-
   .settings-content {
     display: flex;
     flex-direction: column;
@@ -203,7 +196,6 @@ import Rocket from "lucide-svelte/icons/rocket";
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding-bottom: calc(160px + env(safe-area-inset-bottom));
     }
     .settings-sidebar {
       display: none;
@@ -219,8 +211,10 @@ import Rocket from "lucide-svelte/icons/rocket";
       right: 0;
       width: 100vw;
       box-sizing: border-box;
-      z-index: 999;
-      background: var(--md-sys-color-surface-container);
+      z-index: 500;
+      background: rgba(var(--surface-rgb), 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: 0.75rem 1rem;
       margin-bottom: 0;
     }

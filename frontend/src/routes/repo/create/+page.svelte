@@ -152,6 +152,26 @@
       loading = false;
     }
   }
+  import CirclePlus from "lucide-svelte/icons/circle-plus";
+  import CloudDownload from "lucide-svelte/icons/cloud-download";
+  import CircleAlert from "lucide-svelte/icons/circle-alert";
+  import IdCard from "lucide-svelte/icons/id-card";
+  import Link from "lucide-svelte/icons/link";
+  import User from "lucide-svelte/icons/user";
+  import Languages from "lucide-svelte/icons/languages";
+  import GitFork from "lucide-svelte/icons/git-fork";
+  import Folder from "lucide-svelte/icons/folder";
+  import Eye from "lucide-svelte/icons/eye";
+  import Globe from "lucide-svelte/icons/globe";
+  import CircleCheck from "lucide-svelte/icons/circle-check";
+  import Lock from "lucide-svelte/icons/lock";
+  import Check from "lucide-svelte/icons/check";
+  import Settings from "lucide-svelte/icons/settings";
+  import FileText from "lucide-svelte/icons/file-text";
+  import Scale from "lucide-svelte/icons/scale";
+  import RefreshCw from "lucide-svelte/icons/refresh-cw";
+  import Rocket from "lucide-svelte/icons/rocket";
+  import Cloud from "lucide-svelte/icons/cloud";
 </script>
 
 <div class="create-wrapper">
@@ -177,7 +197,7 @@
         class:active={creationMode === 'new'} 
         onclick={() => creationMode = 'new'}
       >
-        <span class="material-symbols-rounded">add_circle</span>
+        <CirclePlus size={18} />
         Nuevo Repositorio
       </button>
       <button 
@@ -186,7 +206,7 @@
         class:active={creationMode === 'migrate'} 
         onclick={() => creationMode = 'migrate'}
       >
-        <span class="material-symbols-rounded">cloud_download</span>
+        <CloudDownload size={18} />
         Importar / Clonar
       </button>
     </div>
@@ -195,14 +215,14 @@
     <form class="create-form-content" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       {#if errorMsg}
         <div class="error-toast">
-          <span class="material-symbols-rounded">error</span>
+          <CircleAlert size={18} />
           {errorMsg}
         </div>
       {/if}
 
       <section class="form-section island tonal">
         <div class="section-header">
-          <span class="material-symbols-rounded">id_card</span>
+          <IdCard size={18} />
           <h2>{creationMode === 'new' ? 'Información Básica' : 'Origen y Destino'}</h2>
         </div>
         
@@ -210,7 +230,7 @@
           <div class="input-field">
             <label for="clone-addr">URL de Clonación (Git)</label>
             <div class="input-wrapper">
-              <span class="prefix"><span class="material-symbols-rounded">link</span></span>
+              <span class="prefix"><Link size={18} /></span>
               <input 
                 type="url" 
                 id="clone-addr" 
@@ -238,7 +258,7 @@
         <div class="input-field">
           <label for="repo-owner">Propietario</label>
           <div class="input-wrapper select-only">
-            <span class="prefix"><span class="material-symbols-rounded">person</span></span>
+            <span class="prefix"><User size={18} /></span>
             <select id="repo-owner" bind:value={ownerID} disabled={loading}>
               <option value={authState.user?.id}>{authState.user?.username} (Mío)</option>
               {#each organizations as org}
@@ -279,14 +299,14 @@
           <div class="input-field">
             <label for="repo-site">Sitio Web <span class="optional">(opcional)</span></label>
             <div class="input-wrapper">
-              <span class="prefix"><span class="material-symbols-rounded">language</span></span>
+              <span class="prefix"><Languages size={18} /></span>
               <input type="url" id="repo-site" bind:value={website} placeholder="https://..." disabled={loading} />
             </div>
           </div>
           <div class="input-field">
             <label for="repo-branch">Rama por defecto <span class="optional">(opcional)</span></label>
             <div class="input-wrapper">
-              <span class="prefix"><span class="material-symbols-rounded">fork_right</span></span>
+              <span class="prefix"><GitFork size={18} /></span>
               <input type="text" id="repo-branch" bind:value={defaultBranch} placeholder="main" disabled={loading} />
             </div>
           </div>
@@ -295,7 +315,7 @@
         <div class="input-field">
           <label for="repo-folder">Carpeta / Grupo <span class="optional">(opcional)</span></label>
           <div class="input-wrapper">
-            <span class="prefix"><span class="material-symbols-rounded">folder</span></span>
+            <span class="prefix"><Folder size={18} /></span>
             <input type="text" id="repo-folder" bind:value={projectFolder} placeholder="ej. frontend, herramientas, docs" disabled={loading} />
           </div>
           <p class="helper-text">Agrupa este repositorio en una carpeta dentro del dashboard.</p>
@@ -304,29 +324,29 @@
 
       <section class="form-section island tonal">
         <div class="section-header">
-          <span class="material-symbols-rounded">visibility</span>
+          <Eye size={18} />
           <h2>Visibilidad</h2>
         </div>
         
         <div class="visibility-selector">
           <label class="vm-option" class:selected={!isPrivate} class:disabled={loading}>
             <input type="radio" bind:group={isPrivate} value={false} disabled={loading} />
-            <span class="material-symbols-rounded vm-icon">public</span>
+            <Globe class="vm-icon" size={18} />
             <div class="vm-info">
               <strong>Público</strong>
               <span>Visible para todos en el servidor.</span>
             </div>
-            {#if !isPrivate}<span class="material-symbols-rounded dot">check_circle</span>{/if}
+            {#if !isPrivate}<CircleCheck class="dot" size={18} />{/if}
           </label>
 
           <label class="vm-option" class:selected={isPrivate} class:disabled={loading}>
             <input type="radio" bind:group={isPrivate} value={true} disabled={loading} />
-            <span class="material-symbols-rounded vm-icon">lock</span>
+            <Lock class="vm-icon" size={18} />
             <div class="vm-info">
               <strong>Privado</strong>
               <span>Solo tú y tus colaboradores.</span>
             </div>
-            {#if isPrivate}<span class="material-symbols-rounded dot">check_circle</span>{/if}
+            {#if isPrivate}<CircleCheck class="dot" size={18} />{/if}
           </label>
         </div>
 
@@ -334,7 +354,7 @@
           <label class="fancy-checkbox" class:disabled={loading}>
             <input type="checkbox" bind:checked={isUnlisted} disabled={loading} />
             <div class="check-box">
-              <span class="material-symbols-rounded check-icon">check</span>
+              <Check class="check-icon" size={18} />
             </div>
             <div class="check-text">
               <strong>Repositorio no listado (Unlisted)</strong>
@@ -347,7 +367,7 @@
           <label class="fancy-checkbox" class:disabled={loading}>
             <input type="checkbox" bind:checked={isArchived} disabled={loading} />
             <div class="check-box">
-              <span class="material-symbols-rounded check-icon">check</span>
+              <Check class="check-icon" size={18} />
             </div>
             <div class="check-text">
               <strong>Archivar repositorio</strong>
@@ -361,14 +381,14 @@
       {#if creationMode === 'new'}
       <section class="form-section island tonal">
         <div class="section-header">
-          <span class="material-symbols-rounded">settings</span>
+          <Settings size={18} />
           <h2>Inicialización</h2>
         </div>
         
         <label class="fancy-checkbox" class:disabled={loading}>
           <input type="checkbox" bind:checked={autoInit} disabled={loading} />
           <div class="check-box">
-            <span class="material-symbols-rounded check-icon">check</span>
+            <Check class="check-icon" size={18} />
           </div>
           <div class="check-text">
             <strong>Inicializar repositorio</strong>
@@ -382,7 +402,7 @@
             <div class="init-item">
               <label class="item-toggle">
                 <input type="checkbox" bind:checked={includeReadme} />
-                <span class="material-symbols-rounded">description</span>
+                <FileText size={18} />
                 <div>
                   <strong>Incluir README.md</strong>
                   {#if includeReadme}
@@ -405,7 +425,7 @@
                     selectedLicense = target.checked ? (licenses[0] || '') : '';
                   }} 
                 />
-                <span class="material-symbols-rounded">balance</span>
+                <Scale size={18} />
                 <div>
                   <strong>Incluir Licencia</strong>
                   {#if selectedLicense !== ''}
@@ -429,10 +449,14 @@
         <button type="button" class="btn-text" onclick={() => goto('/dashboard')}>Cancelar</button>
         <button type="submit" class="btn-action-primary" disabled={loading || !name}>
           {#if loading}
-            <span class="material-symbols-rounded spin">sync</span>
+            <RefreshCw class="spin" size={18} />
             Despegando...
           {:else}
-            <span class="material-symbols-rounded">{creationMode === 'new' ? 'rocket_launch' : 'cloud_sync'}</span>
+            {#if creationMode === 'new'}
+              <Rocket size={18} />
+            {:else}
+              <Cloud size={18} />
+            {/if}
             {creationMode === 'new' ? 'Crear Repositorio' : 'Importar Repositorio'}
           {/if}
         </button>
@@ -524,8 +548,6 @@
     color: var(--primary-color);
     box-shadow: var(--shadow-sm);
   }
-  
-  .tab-item span { font-size: 1.2rem; }
 
   .auth-grid {
     display: grid;
@@ -621,7 +643,7 @@
   }
 
   .prefix {
-    background: rgba(0,0,0,0.05);
+    background: var(--sunken-1);
     padding: 1rem;
     font-weight: 700;
     font-size: 0.9rem;
@@ -710,7 +732,6 @@
   }
 
   .item-toggle input { width: 20px; height: 20px; margin-top: 3px; }
-  .item-toggle span { color: var(--primary-color); font-size: 1.5rem; }
   .item-toggle div { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
   .item-toggle strong { font-size: 1rem; color: var(--text-primary); }
 
@@ -760,7 +781,7 @@
     max-height: 250px;
     overflow-y: auto;
     padding: 0.5rem;
-    background: rgba(0,0,0,0.05);
+    background: var(--sunken-1);
     border-radius: 1rem;
     min-height: 50px;
   }
@@ -854,11 +875,11 @@
   .vm-option input { display: none; }
   .vm-option.disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
   
-  .vm-icon { font-size: 2rem; color: var(--primary-color); }
+  :global(.vm-icon) { font-size: 2rem; color: var(--primary-color); }
   .vm-info { display: flex; flex-direction: column; }
   .vm-info strong { font-size: 1.1rem; color: var(--text-primary); }
   .vm-info span { font-size: 0.85rem; color: var(--text-muted); }
-  .dot { position: absolute; top: 1rem; right: 1rem; color: var(--primary-color); }
+  :global(.dot) { position: absolute; top: 1rem; right: 1rem; color: var(--primary-color); }
 
   @media (max-width: 600px) {
     .visibility-selector {
@@ -901,7 +922,7 @@
     justify-content: center;
   }
 
-  .check-icon {
+  :global(.check-icon) {
     font-size: 16px;
     color: var(--on-primary);
     opacity: 0;
@@ -914,7 +935,7 @@
     border-color: var(--primary-color);
   }
 
-  .fancy-checkbox input:checked + .check-box .check-icon {
+  :global(.fancy-checkbox) input:checked + :global(.check-box) :global(:global(.check-icon)) {
     opacity: 1;
     transform: scale(1);
   }
@@ -960,7 +981,7 @@
     75% { transform: translateX(-5px); }
   }
 
-  .spin { animation: spin 1s infinite linear; }
+  :global(.spin) { animation: spin 1s infinite linear; }
   @keyframes spin { from { rotate: 0deg; } to { rotate: 360deg; } }
 
   @media (max-width: 900px) {
