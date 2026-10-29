@@ -7,3 +7,8 @@ updates:
       interval: "monthly"
     commit-message:
       prefix: "mod:"
+    # Agrupa todas las actualizaciones en un único PR mensual
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
