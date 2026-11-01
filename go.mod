@@ -14,7 +14,7 @@ require (
 	github.com/gin-gonic/gin v1.12.0
 	github.com/glebarez/sqlite v1.11.0
 	github.com/go-ldap/ldap/v3 v3.4.15
-	github.com/goccy/go-json v0.11.2
+	github.com/goccy/go-json v0.12.0
 	github.com/gogs/chardet v0.0.0-20211120154057-b7413eaefb8f
 	github.com/gogs/cron v0.0.0-20171120032916-9f6c956d3e14
 	github.com/gogs/git-module v1.8.9
@@ -35,9 +35,9 @@ require (
 	go.opentelemetry.io/otel v1.47.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.47.0
 	go.opentelemetry.io/otel/sdk v1.47.0
-	golang.org/x/crypto v0.57.0
+	golang.org/x/crypto v0.58.0
 	golang.org/x/image v0.47.0
-	golang.org/x/net v0.59.0
+	golang.org/x/net v0.60.0
 	golang.org/x/oauth2 v0.37.0
 	golang.org/x/sync v0.24.0
 	golang.org/x/text v0.43.0
